@@ -6897,6 +6897,49 @@
   },
   {
     "system": "AMIGA",
+    "id": "dragonstone",
+    "slug": "dragonstone",
+    "title": "Dragonstone",
+    "sorttitle": "Dragonstone",
+    "year": 1994,
+    "genres": [
+      "action-adventure"
+    ],
+    "collections": [],
+    "videoid": "nNikuNhBcic",
+    "thumbnail": "resources/images/thumbnails/all/dragonstone.png",
+    "pdf": "",
+    "disk": [],
+    "download_status": "",
+    "lemon": [],
+    "zzap": [],
+    "description": "Dragonstone is a colourful fantasy action adventure released for the Commodore Amiga by Core Design. Originally developed from ideas connected to Darkmere, it became a brighter overhead adventure focused on exploration, sword combat, Psychic Charge attacks, item-based puzzles and character progression. Players explore forests, villages, caves and mountain areas, talk to characters, search for hidden passages and use stronger charged attacks or ranged Psychic Bolts against enemies. With detailed graphics, a distinctive dragon-shaped interface and plenty of personality, Dragonstone remains an interesting Amiga adventure despite some awkward navigation, inconsistent collision detection and occasional difficulty spikes.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "I gave Dragonstone 7/10 because I enjoyed far more of it than I disliked. The graphics are excellent, the dragon interface gives the game plenty of character and the Psychic Charge system makes the combat more interesting once you understand how it works.",
+    "credits": {
+      "publisher": [
+        "Core Design"
+      ],
+      "producer": "",
+      "coder": [
+        "Barry Irvine"
+      ],
+      "graphics": [
+        "Mark K. Jones",
+        "Simon Phipps"
+      ],
+      "musician": [
+        "Martin Iveson"
+      ],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "AMIGA",
     "id": "dreamweb",
     "slug": "dreamweb",
     "title": "Dreamweb",
