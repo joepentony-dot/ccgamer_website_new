@@ -71,6 +71,7 @@
     ["v10-42-r71-equipment-inventory.js","CCGLostSizzlerV142R71EquipmentInventory"],
     ["v10-42-r80-wearable-equipment.js","CCGLostSizzlerV142R80WearableEquipment"],
     ["v10-42-r82-rpg-death-rollback.js","CCGLostSizzlerV142R82RpgDeathRollback"],
+    ["v10-42-r83-death-cache-progression.js","CCGLostSizzlerV142R83DeathCacheProgression"],
     ["v10-42-r72-map-death-feedback.js","CCGLostSizzlerV142R72MapDeathFeedback"],
     ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
