@@ -321,6 +321,8 @@ try{
   assert.equal(sealedDeath.hitStun,0,"respawn transition must clear hit-stun immediately");
   assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must temporarily lock controls while YOU DIED is visible");
   assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must temporarily lock duplicate control ownership while YOU DIED is visible");
+  await page.waitForSelector("#ccg-r72-death-feedback.active #ccg-r72-death-continue",{state:"visible",timeout:4000});
+  await page.click("#ccg-r72-death-continue");
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&p1&&!p1.controlLocked&&!p1.controlsLocked,null,{timeout:4000});
   const respawnRecovered=await snap(page);
   assert.equal(respawnRecovered.mode,"playing","normal sealed-room death must return to playing after the R72 presentation");
