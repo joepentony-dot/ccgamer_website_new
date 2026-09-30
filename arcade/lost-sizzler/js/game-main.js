@@ -138,6 +138,7 @@ async function shareQuest(){
 function handleHeaderQuit(){
   if(mode==="menu"){location.assign("/games/ccg-games/");return}
   if(mode==="ended"){quitToMenu();return}
+  if(mode==="respawning")return false;
   openPauseMenu()
 }
 function clearPauseAttackCadence(reason="resume"){

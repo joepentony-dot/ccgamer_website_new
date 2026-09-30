@@ -143,10 +143,10 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r71");assert.equal(boot.cache,"20260930r71");assert.equal(boot.metaBuild,"V10.42 r71");assert.equal(boot.metaCache,"20260930r71");
+  assert.equal(boot.build,"V10.42 r72");assert.equal(boot.cache,"20260930r72");assert.equal(boot.metaBuild,"V10.42 r72");assert.equal(boot.metaCache,"20260930r72");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260930r71"),"every ordered V10.42 module must use the r71 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260930r71")),"expected r71 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260930r72"),"every ordered V10.42 module must use the r71 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260930r72")),"expected r71 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -313,14 +313,19 @@ try{
   });
   assert.equal(sealedDeath.ok,true,`sealed-room death regression could not be staged: ${JSON.stringify(sealedDeath)}`);
   assert.equal(sealedDeath.deathsAfter,sealedDeath.deathsBefore+1,"sealed-room regression must execute a real normal death");
-  assert.equal(sealedDeath.mode,"playing","normal sealed-room death must respawn rather than end the run");
-  assert.equal(sealedDeath.atStart,true,"normal sealed-room death must respawn at the floor start");
-  assert.ok(sealedDeath.doors.length>0&&sealedDeath.doors.every(d=>!d.locked&&d.open),"all ordinary doors for the death room must reopen after respawn");
+  assert.equal(sealedDeath.mode,"respawning","normal sealed-room death must enter the visible R72 respawn transition rather than end the run");
+  assert.equal(sealedDeath.atStart,true,"normal sealed-room death must relocate to the floor start before the respawn presentation completes");
+  assert.ok(sealedDeath.doors.length>0&&sealedDeath.doors.every(d=>!d.locked&&d.open),"all ordinary doors for the death room must reopen as soon as death recovery begins");
   assert.equal(sealedDeath.cache?.active,true,"sealed-room death must leave an active death box");
   assert.equal(sealedDeath.cache?.roomId,sealedDeath.roomId,"death box must remain in the room where the player died");
-  assert.equal(sealedDeath.hitStun,0,"respawn must clear hit-stun");
-  assert.equal(sealedDeath.controlLocked,false,"respawn must clear controlLocked");
-  assert.equal(sealedDeath.controlsLocked,false,"respawn must clear controlsLocked");
+  assert.equal(sealedDeath.hitStun,0,"respawn transition must clear hit-stun immediately");
+  assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must temporarily lock controls while YOU DIED is visible");
+  assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must temporarily lock duplicate control ownership while YOU DIED is visible");
+  await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&p1&&!p1.controlLocked&&!p1.controlsLocked,null,{timeout:4000});
+  const respawnRecovered=await snap(page);
+  assert.equal(respawnRecovered.mode,"playing","normal sealed-room death must return to playing after the R72 presentation");
+  assert.equal(respawnRecovered.controlLocked,false,"respawn completion must release controlLocked");
+  assert.equal(respawnRecovered.controlsLocked,false,"respawn completion must release controlsLocked");
 
   await settleGameplayMode(page,"post-cycle");assert.equal(await armEnemy(page),true,"post-cycle enemy unavailable");
   await fireCycle(page,"Space",97);

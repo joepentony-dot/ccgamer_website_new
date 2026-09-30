@@ -327,13 +327,16 @@
     setTimeout(()=>{try{sayKey("hazardPain",{cooldown:45000})}catch(_){}},420);
   }
   function onShopFirearmUpgradeVoice(){try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
+  function onFirearmEvolvedVoice(event){const detail=event?.detail||{},before=Math.max(0,Number(detail.beforeTier)||0),after=Math.max(0,Number(detail.afterTier)||0);if(detail.first||after<=before)return;try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
   window.addEventListener?.("ccg:item-collected",onRecordedPickupVoice);
   window.addEventListener?.("ccg:hazard-damage",onHazardDamageVoice);
   window.addEventListener?.("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
+  window.addEventListener?.("ccg:firearm-evolved",onFirearmEvolvedVoice);
   window.addEventListener?.("pagehide",()=>{
     window.removeEventListener?.("ccg:item-collected",onRecordedPickupVoice);
     window.removeEventListener?.("ccg:hazard-damage",onHazardDamageVoice);
     window.removeEventListener?.("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
+    window.removeEventListener?.("ccg:firearm-evolved",onFirearmEvolvedVoice);
   },{once:true});
   document.addEventListener("pointerdown",unlock,{once:true,capture:true});document.addEventListener("keydown",unlock,{once:true,capture:true});
   if(window.speechSynthesis){const refresh=()=>{state.voices=window.speechSynthesis.getVoices?.()||[]};refresh();window.speechSynthesis.onvoiceschanged=refresh}
@@ -386,7 +389,7 @@
     if(/BANISHMENT FLASK ACQUIRED/.test(s))return"banishmentFlaskAcquired";
     if(/EXIT SIGIL/.test(s)&&/ACQUIRED|FOUND|COLLECTED/.test(s))return"exitSigilAcquired";
     if(/BRONZE KEY/.test(s)&&/FOUND|COLLECTED|ACQUIRED/.test(s))return"bronzeKeyCollected";
-    if(/WEAPON.*UPGRADE|WEAPON CACHE/.test(s))return"weaponUpgraded";
+    if(/WEAPON EVOLVED|FIREARM UPGRADE COMPLETE/.test(s))return"weaponUpgraded";
     if(/HAZARD CHAMBER|TRAPS NEARBY/.test(s))return"trapsNearby";
     // Lore, door and shop messages also mention these names. A threat cue is
     // authorised only by the corresponding live enemy in the player's room.

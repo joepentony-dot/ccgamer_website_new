@@ -60,7 +60,10 @@
         </div>
         <div class="ccg-full-map-stage"><canvas id="ccg-solo-full-map-canvas" width="1024" height="672" aria-label="Full explored dungeon map"></canvas></div>
         <div class="ccg-full-map-footer">
-          <div class="ccg-full-map-legend"><span><i class="ccg-map-dot ccg-map-player"></i>YOU</span><span><i class="ccg-map-dot ccg-map-key"></i>KEY</span><span><i class="ccg-map-dot ccg-map-sigil"></i>SIGIL</span><span><i class="ccg-map-dot ccg-map-cache"></i>DEATH CACHE</span><span><i class="ccg-map-dot ccg-map-exit"></i>EXIT</span></div>
+          <div>
+            <div class="ccg-full-map-legend"><span><i class="ccg-map-dot ccg-map-player"></i>YOU</span><span><i class="ccg-map-dot ccg-map-sanctuary"></i>SANCTUARY</span><span><i class="ccg-map-dot ccg-map-key"></i>KEY</span><span><i class="ccg-map-dot ccg-map-sigil"></i>SIGIL / GATE</span><span><i class="ccg-map-dot ccg-map-shop"></i>SHOP</span><span><i class="ccg-map-dot ccg-map-cache"></i>DEATH CACHE</span><span><i class="ccg-map-dot ccg-map-warden"></i>WARDEN</span><span><i class="ccg-map-dot ccg-map-refuge"></i>REFUGE</span><span><i class="ccg-map-dot ccg-map-exit"></i>EXIT</span></div>
+            <div class="ccg-full-map-room-legend"><span><i class="radar-room-normal"></i>NORMAL</span><span><i class="radar-room-sanctuary"></i>SANCTUARY</span><span><i class="radar-room-shop"></i>SHOP</span><span><i class="radar-room-danger"></i>DANGER</span><span><i class="radar-room-sigil"></i>SIGIL</span><span><i class="radar-room-optional"></i>OPTIONAL</span></div>
+          </div>
           <span>PRESS M OR ESC TO RETURN</span>
         </div>
       </div>`;
@@ -84,24 +87,28 @@
     return Boolean(q&&ex.has(`${Math.round(Number(q.x))},${Math.round(Number(q.y))}`));
   }
 
+  function fullMapRoomType(room,roomId){
+    if(!room)return"normal";if(room.sanctuary)return"sanctuary";if(room.sigilRoom)return"sigil";if(room.traderRoom||room.shopRoom)return"shop";
+    if(room.dedicatedHazard||room.dangerous||room.spiderNest||room.skeletonHorde||room.boulderRoom)return"danger";
+    if(Number(roomId)===Number(world?.exitRoomId))return"exit";if(Number(roomId)===Number(world?.startRoomId))return"start";if(room.optional)return"optional";return"normal"
+  }
+  function fullMapTileColour(x,y,wall){
+    const roomId=typeof W!=="undefined"&&W?.roomAt?W.roomAt(world,x,y):-1,room=roomId>=0?world.rooms?.[roomId]:null,type=fullMapRoomType(room,roomId);
+    const floors={normal:"#655879",sanctuary:"#3c8b67",sigil:"#7550a0",shop:"#9a8134",danger:"#9a4552",exit:"#5d4b79",start:"#4b7886",optional:"#426f79"},walls={normal:"#2c2435",sanctuary:"#213b31",sigil:"#342741",shop:"#403720",danger:"#43242b",exit:"#302943",start:"#26383d",optional:"#253b40"};
+    return wall?(walls[type]||walls.normal):(floors[type]||floors.normal)
+  }
   function drawMarker(context,q,colour,shape="square",label=""){
     if(!q)return;
     const x=Math.round((Number(q.x)+.5)*CELL),y=Math.round((Number(q.y)+.5)*CELL),size=Math.max(5,CELL-1);
-    context.save();
-    context.fillStyle=colour;
-    context.strokeStyle="#ffffff";
-    context.lineWidth=1.5;
-    if(shape==="diamond"){
-      context.translate(x,y);context.rotate(Math.PI/4);context.fillRect(-size/2,-size/2,size,size);context.strokeRect(-size/2,-size/2,size,size);context.rotate(-Math.PI/4);context.translate(-x,-y);
-    }else if(shape==="cross"){
-      context.strokeStyle=colour;context.lineWidth=2.5;context.beginPath();context.moveTo(x-4,y-4);context.lineTo(x+4,y+4);context.moveTo(x+4,y-4);context.lineTo(x-4,y+4);context.stroke();
-    }else{
-      context.fillRect(x-size/2,y-size/2,size,size);context.strokeRect(x-size/2,y-size/2,size,size);
-    }
-    if(label){
-      context.font='bold 9px Consolas, "Courier New", monospace';context.textAlign="center";context.textBaseline="bottom";context.fillStyle="#fff";context.fillText(label,x,y-7);
-    }
-    context.restore();
+    context.save();context.fillStyle=colour;context.strokeStyle="#ffffff";context.lineWidth=1.5;
+    if(shape==="diamond"){context.translate(x,y);context.rotate(Math.PI/4);context.fillRect(-size/2,-size/2,size,size);context.strokeRect(-size/2,-size/2,size,size);context.rotate(-Math.PI/4);context.translate(-x,-y)}
+    else if(shape==="cross"){context.strokeStyle=colour;context.lineWidth=2.5;context.beginPath();context.moveTo(x-4,y-4);context.lineTo(x+4,y+4);context.moveTo(x+4,y-4);context.lineTo(x-4,y+4);context.stroke()}
+    else if(shape==="plus"){context.fillRect(x-2,y-6,4,12);context.fillRect(x-6,y-2,12,4);context.strokeRect(x-2.5,y-6.5,5,13);context.strokeRect(x-6.5,y-2.5,13,5)}
+    else if(shape==="ring"){context.beginPath();context.arc(x,y,5,0,Math.PI*2);context.fill();context.stroke();context.fillStyle="#fff";context.fillRect(x-1,y-3,2,6);context.fillRect(x-3,y-1,6,2)}
+    else if(shape==="triangle"){context.beginPath();context.moveTo(x,y-6);context.lineTo(x+5,y+5);context.lineTo(x-5,y+5);context.closePath();context.fill();context.stroke()}
+    else{context.fillRect(x-size/2,y-size/2,size,size);context.strokeRect(x-size/2,y-size/2,size,size)}
+    if(label){context.font='bold 9px Consolas, "Courier New", monospace';context.textAlign="center";context.textBaseline="bottom";context.fillStyle="#fff";context.fillText(label,x,y-7)}
+    context.restore()
   }
 
   function drawMap(){
@@ -120,7 +127,7 @@
     for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
       if(!ex.has(`${x},${y}`))continue;
       const tile=world.map[y]?.[x];
-      context.fillStyle=tile?"#2c2435":"#655879";
+      context.fillStyle=fullMapTileColour(x,y,Boolean(tile));
       context.fillRect(x*CELL,y*CELL,CELL,CELL);
       if(!tile){context.fillStyle="rgba(255,255,255,.035)";context.fillRect(x*CELL+1,y*CELL+1,CELL-2,CELL-2)}
     }
@@ -136,8 +143,10 @@
       if(item.kind==="exitSigil"&&(visibleKnowledge(ex,item)||host?.radarSigilSeen))drawMarker(context,item,"#b978ff","diamond");
     }
 
+    const visited=new Set((host?.enteredRoomIds||[]).map(Number));for(const room of world.rooms||[])if(room?.sanctuary&&visited.has(Number(room.id))){const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};drawMarker(context,q,"#64ffa2","plus")}
     for(const cache of host?.deathCaches||[])if(cache?.active)drawMarker(context,cache,"#ff6076","cross");
     for(const shop of host?.shops||[])if(shop?.active&&shop?.discovered)drawMarker(context,shop,"#ffd85a","square");
+    try{for(const marker of window.CCGLostSizzlerV142WardenNavigationCues?.markerState?.(p1)||[]){const colour=marker.kind==="refuge"?"#8deeff":marker.kind==="cache"?"#ffd85a":marker.kind==="broken-warden"?"#ff5270":"#e260ff",shape=marker.kind==="refuge"?"ring":marker.kind==="broken-warden"?"cross":marker.kind==="corruption"?"diamond":"square";drawMarker(context,marker,colour,shape)}}catch(_){}
 
     for(const marker of host?.progressionRecoveryMarkers||[]){
       if(!marker?.active)continue;
@@ -145,7 +154,7 @@
     }
 
     if(world.exit&&visibleKnowledge(ex,world.exit))drawMarker(context,world.exit,host?.exitOpen?"#b978ff":"#71637d","square");
-    drawMarker(context,p1,"#6cecff","square","YOU");
+    drawMarker(context,p1,"#6cecff","triangle","YOU");
 
     context.strokeStyle="rgba(108,236,255,.20)";context.lineWidth=2;context.strokeRect(1,1,width-2,height-2);
     state.renderedAt=performance.now();
