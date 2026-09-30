@@ -11,11 +11,11 @@
   if(!C||!W||typeof W.createHostState!=="function")return;
 
   const BIOMES={
-    threshold:{id:"threshold",name:"RUINED THRESHOLD",material:"weathered flagstone",weather:"rain",accent:"108,206,178",shadow:.18,motes:"rain"},
-    iron:{id:"iron",name:"IRON KEEP",material:"riveted keepstone",weather:"draft",accent:"207,137,76",shadow:.26,motes:"sparks"},
+    threshold:{id:"threshold",name:"RUINED THRESHOLD",material:"weathered flagstone",weather:"rain",accent:"168,163,156",shadow:.18,motes:"rain"},
+    iron:{id:"iron",name:"IRON KEEP",material:"blue-steel keepstone",weather:"draft",accent:"127,179,221",shadow:.26,motes:"sparks"},
     bone:{id:"bone",name:"MOSS CRYPT",material:"crypt limestone",weather:"crypt-mist",accent:"122,176,105",shadow:.31,motes:"mist"},
     ash:{id:"ash",name:"EMBER DEPTHS",material:"scorched basalt",weather:"ashfall",accent:"255,103,52",shadow:.25,motes:"embers"},
-    sigil:{id:"sigil",name:"SIGIL SANCTUM",material:"rune-cut obsidian",weather:"arcane-dust",accent:"176,104,255",shadow:.29,motes:"sigils"}
+    sigil:{id:"sigil",name:"CRIMSON SIGIL SANCTUM",material:"blood-rune obsidian",weather:"arcane-dust",accent:"255,96,118",shadow:.29,motes:"sigils"}
   };
   const state={profiles:0,tileFrames:0,atmosphereFrames:0,lastFloor:0,lastBiome:"",installed:{host:false,tile:false,view:false}};
   const num=(v,f=0)=>{const n=Number(v);return Number.isFinite(n)?n:f};
