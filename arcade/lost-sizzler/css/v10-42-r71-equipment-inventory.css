@@ -1,5 +1,6 @@
 /* C64 Dungeon Carnage V10.42 R71 — compact RPG equipment/inventory presentation. */
 #inventory-panel .inventory-panel.r71-inventory-panel{
+  --r71-rpg-font:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
   width:min(1120px,96vw)!important;
   max-width:1120px!important;
   height:min(760px,93dvh)!important;
@@ -24,7 +25,7 @@
 .r71-inventory-panel .mobile-panel-head h2{
   margin:0!important;
   color:#e5c77a!important;
-  font-family:Georgia,"Palatino Linotype","Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:25px!important;
   letter-spacing:1px!important;
   text-transform:none!important;
@@ -75,7 +76,7 @@
 .r71-objective-copy small{
   margin:0!important;
   color:#9f7fb2!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:10px!important;
   letter-spacing:1px!important;
 }
@@ -159,13 +160,13 @@
 .r71-loadout-head span,
 .r71-strip-title{
   color:#9e809f!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:9px!important;
   letter-spacing:1px!important;
 }
 .r71-loadout-head b{
   color:#e7d5ab!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:16px!important;
 }
 .r71-loadout-head em{
@@ -213,7 +214,7 @@
 .r71-slot-label{
   grid-column:1/-1!important;
   color:#9b7c8e!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:8px!important;
   letter-spacing:.8px!important;
 }
@@ -309,7 +310,7 @@
 .r71-character-stage>strong{
   max-width:100%!important;
   color:#d4bd83!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:8px!important;
   letter-spacing:.9px!important;
   white-space:nowrap!important;
@@ -411,7 +412,7 @@
   background:#09060b!important;
 }
 .r71-stat span{font-size:6.5px!important;color:#8d7d93!important}
-.r71-stat b{font-family:Georgia,"Times New Roman",serif!important;font-size:13px!important;color:#d5bf83!important}
+.r71-stat b{font-family:var(--r71-rpg-font)!important;font-size:13px!important;color:#d5bf83!important}
 .r71-relic-strip{
   min-width:0!important;
   display:grid!important;
@@ -495,7 +496,7 @@
   min-width:0!important;
   margin:0!important;
   color:#e0d6e2!important;
-  font-family:Georgia,"Times New Roman",serif!important;
+  font-family:var(--r71-rpg-font)!important;
   font-size:9px!important;
   white-space:nowrap!important;
   overflow:hidden!important;
