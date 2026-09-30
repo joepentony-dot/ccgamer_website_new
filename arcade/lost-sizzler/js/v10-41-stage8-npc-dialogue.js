@@ -106,7 +106,8 @@
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
-    return{...base,text:`${base.text} ${briefing}`}
+    const trade=shop?.shopType==="hidden"?" Trade 3 rare artefacts for a Banishment Flask.":"";
+    return{...base,text:`${base.text}${trade} ${briefing}`.trim()}
   }
   function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){
     if(!line?.voiceKey||!line?.text)return false;
