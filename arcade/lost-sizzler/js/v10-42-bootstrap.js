@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r67";
-  const CACHE="20260929r67";
+  const BUILD="V10.42 r68";
+  const CACHE="20260929r68";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -16,6 +16,8 @@
     ["v10-41-r31-solo-dungeon-regressions.js","CCGLostSizzlerV141R31SoloDungeon"],
     ["v10-41-horde-frame-performance.js","CCGLostSizzlerV141HordeFramePerformance"],
     ["v10-41-r60-horde-owner-composition.js","CCGLostSizzlerV141R60HordeOwnerComposition"],
+    ["v10-16-voice-director.js","CCGLostSizzlerVoice"],
+    ["v10-17-voice-expansion.js","CCGLostSizzlerVoiceExpansion"],
     ["v10-41-stage8-npc-dialogue.js","CCGLostSizzlerStage8NpcDialogue"],
     ["v10-41-stage13-encounter-completion.js","CCGLostSizzlerStage13EncounterCompletion"]
   ];
@@ -219,6 +221,9 @@
     if(marker==="CCGLostSizzlerModeRuntime"){
       return typeof value.detect==="function"&&typeof value.sync==="function"&&typeof value.snapshot==="function"&&Boolean(value.state)
     }
+    if(marker==="CCGLostSizzlerVoice"){
+      return typeof value.say==="function"&&typeof value.sayDialogue==="function"&&Boolean(value.state)&&Boolean(value.lines)
+    }
     return true
   }
   function alreadyLoaded(marker){return prerequisiteReady(marker)}
@@ -227,6 +232,11 @@
     try{delete window[marker]}catch(_){try{window[marker]=undefined}catch(__){}}
     if(marker==="CCGLostSizzlerModeRuntime"){
       try{delete window.__CCG_LOST_SIZZLER_V141_MODE_RUNTIME__}catch(_){try{window.__CCG_LOST_SIZZLER_V141_MODE_RUNTIME__=false}catch(__){}}
+    }
+    if(marker==="CCGLostSizzlerVoice"){
+      try{delete window.__CCG_LOST_SIZZLER_VOICE_DIRECTOR_V116__}catch(_){try{window.__CCG_LOST_SIZZLER_VOICE_DIRECTOR_V116__=false}catch(__){}}
+      try{delete window.CCGLostSizzlerVoiceExpansion}catch(_){try{window.CCGLostSizzlerVoiceExpansion=undefined}catch(__){}}
+      try{delete window.__CCG_LOST_SIZZLER_VOICE_EXPANSION_V117__}catch(_){try{window.__CCG_LOST_SIZZLER_VOICE_EXPANSION_V117__=false}catch(__){}}
     }
   }
   function loadPrerequisite(file,marker){

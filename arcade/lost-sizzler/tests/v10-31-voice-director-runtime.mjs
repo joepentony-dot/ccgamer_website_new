@@ -57,6 +57,22 @@ tutorial.state.active=true;
 assert.equal(voice.say("secret"),false,"tutorial mode must reject every voice cue");
 tutorial.state.active=false;
 
+assert.equal(typeof voice.sayDialogue,"function","voice owner must expose one bounded dialogue speech entry point");
+voice.stop();
+const speechBefore=speech.spoken.length;
+assert.equal(voice.sayDialogue("npc.scout.found","There you are. Get me to the lights.",{cooldown:9000}),true,"first NPC dialogue line should use the existing voice channel");
+assert.equal(speech.spoken.length,speechBefore+1,"NPC dialogue without a recorded override must fall back through the existing speech owner");
+assert.equal(speech.spoken.at(-1)?.text,"There you are. Get me to the lights.","dialogue fallback must speak the supplied character text");
+voice.stop();
+assert.equal(voice.sayDialogue("npc.scout.found","There you are. Get me to the lights.",{cooldown:9000}),false,"the same dialogue key must respect its cooldown after playback ends");
+now+=9001;
+assert.equal(voice.sayDialogue("npc.scout.found","Still here.",{cooldown:9000}),true,"dialogue may speak again only after its bounded cooldown");
+voice.stop();
+voice.setEnabled(false);
+now+=9001;
+assert.equal(voice.sayDialogue("npc.scout.found","Voice disabled.",{cooldown:0}),false,"disabled voice must suppress NPC dialogue without affecting the game");
+voice.setEnabled(true);
+
 context.host.enemies=[{alive:true,deathStalker:true,voidStalker:true,x:12,y:2}];
 assert.equal(voice.classifyToast("DOOR CLOSED","The floor's one Death Stalker can open it."),"","remote lore text must not create an encounter voice");
 context.host.enemies[0].x=3;

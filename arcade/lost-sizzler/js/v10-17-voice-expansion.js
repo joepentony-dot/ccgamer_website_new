@@ -1,11 +1,11 @@
 /* The Lost Sizzler V10.17 — rare-event voice expansion. */
 (()=>{
   "use strict";
-  if(window.__CCG_LOST_SIZZLER_VOICE_EXPANSION_V117__)return;
-  window.__CCG_LOST_SIZZLER_VOICE_EXPANSION_V117__=true;
+  if(window.CCGLostSizzlerVoiceExpansion)return;
 
   const voice=window.CCGLostSizzlerVoice;
   if(!voice?.lines||typeof voice.say!=="function")return;
+  window.__CCG_LOST_SIZZLER_VOICE_EXPANSION_V117__=true;
 
   Object.assign(voice.lines,{
     merchant:{variants:["Wandering merchant nearby.","Travelling shopkeeper. He will not stay long."],priority:38,cooldown:15000},
@@ -41,9 +41,9 @@
 
   if(typeof showToast==="function"){
     const originalShowToast=showToast;
-    showToast=function showToastV117VoiceExpansion(title,text,tone,duration){
+    showToast=function showToastV117VoiceExpansion(title,text,tone,duration,meta){
       const result=originalShowToast.apply(this,arguments);
-      try{const key=classifyRare(title,text);if(key)voice.say(key)}catch(_){}
+      try{if(meta?.ccgDialogueVoiceHandled!==true){const key=classifyRare(title,text);if(key)voice.say(key)}}catch(_){}
       return result;
     };
   }

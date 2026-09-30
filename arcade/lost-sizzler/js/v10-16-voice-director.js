@@ -213,6 +213,25 @@
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
     state.lastByKey.set(key,now);state.played++;return true;
   }
+  function sayDialogue(key,text,opts={}){
+    const voiceKey=String(key||"dialogue").trim()||"dialogue";
+    const spokenText=String(text||"").trim();
+    if(!spokenText||!state.enabled||tutorialSilent())return false;
+    const priority=Number(opts.priority??44),cooldown=Math.max(0,Number(opts.cooldown??9000)),now=performance.now();
+    if(!coolReady(voiceKey,cooldown,now))return false;
+    if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key:voiceKey,reason:"unavailable",at:now};return false}
+    if(state.active){
+      const mayInterrupt=Boolean(opts.interrupt);
+      if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false}
+      stopActive("interrupted")
+    }
+    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(voiceKey):"";let started=false;
+    if(src)started=playClip(src,priority,spokenText,voiceKey);
+    if(!started&&!forceTts)started=playSprite(voiceKey,priority,spokenText);
+    if(!started)started=speakText(spokenText,priority,voiceKey);
+    if(!started){state.skipped++;state.lastSkipped={key:voiceKey,reason:"playback",at:now};return false}
+    state.lastByKey.set(voiceKey,now);state.played++;return true
+  }
   function setEnabled(value){state.enabled=Boolean(value);saveEnabled();if(!state.enabled){state.queue.length=0;stopActive()}updateButton();return state.enabled}
   function updateButton(){if(state.button){state.button.textContent=state.enabled?"VOICE ON":"VOICE OFF";state.button.setAttribute("aria-pressed",String(state.enabled));state.button.title=state.enabled?"Disable spoken game prompts":"Enable spoken game prompts"}}
   function mountButton(){
@@ -269,7 +288,7 @@
 
   if(typeof showToast==="function"){
     const originalShowToast=showToast;
-    showToast=function showToastV116Voice(title,text,tone,duration){const result=originalShowToast.apply(this,arguments);try{const key=classifyToast(title,text);if(key)sayKey(key)}catch(_){}return result};
+    showToast=function showToastV116Voice(title,text,tone,duration,meta){const result=originalShowToast.apply(this,arguments);try{if(meta?.ccgDialogueVoiceHandled!==true){const key=classifyToast(title,text);if(key)sayKey(key)}}catch(_){}return result};
   }
   if(typeof hurtPlayer==="function"){
     const originalHurtPlayer=hurtPlayer;
@@ -337,5 +356,5 @@
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountButton,{once:true});else mountButton();
-  window.CCGLostSizzlerVoice={say:sayKey,stop:stopActive,classifyToast,setEnabled,get enabled(){return state.enabled},get state(){return state},lines,bundledSprite:BUNDLED_SPRITE};
+  window.CCGLostSizzlerVoice={say:sayKey,sayDialogue,stop:stopActive,classifyToast,setEnabled,get enabled(){return state.enabled},get state(){return state},lines,bundledSprite:BUNDLED_SPRITE};
 })();
