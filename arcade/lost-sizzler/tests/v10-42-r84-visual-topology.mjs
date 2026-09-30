@@ -17,7 +17,7 @@ assert(
   "Door topology validator is required."
 );
 assert(
-  systems.includes('jambs.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]!==0)'),
+  systems.includes('jambs.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]===1)'),
   "Doorways must retain solid wall jambs."
 );
 assert(
