@@ -48,7 +48,7 @@ window.CCGSystems=(()=>{
     const through=vertical?[[ -1,0],[1,0]]:[[0,-1],[0,1]];
     const jambs=vertical?[[0,-1],[0,1]]:[[-1,0],[1,0]];
     return through.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]===0)
-      &&jambs.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]!==0);
+      &&jambs.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]===1);
   }
   function roomDoorSet(world){
     const doors=[];
