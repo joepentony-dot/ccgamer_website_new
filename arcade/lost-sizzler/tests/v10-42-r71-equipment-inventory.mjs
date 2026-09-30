@@ -15,6 +15,7 @@ assert.ok(moduleSource.includes("r71-equipment-board"));
 assert.ok(moduleSource.includes("r71-character-stage"));
 assert.ok(moduleSource.includes("playerSheetSource"));
 assert.ok(moduleSource.includes("explorer-sheet-v10-34.png"));
+assert.ok(moduleSource.includes("../assets/pixel/explorer-sheet-v10-34.png"),"R71 CSS custom-property sprite URL must resolve out of css/ into the canonical assets directory");
 assert.ok(moduleSource.includes("BODY ARMOUR"));
 assert.ok(moduleSource.includes("EQUIPPED RELICS"));
 assert.ok(!moduleSource.includes("HELMET"),"R71 must not invent a helmet equipment slot before one exists in gameplay");
