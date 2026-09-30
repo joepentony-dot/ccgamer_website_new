@@ -161,8 +161,9 @@
     <div id="floor-complete" class="overlay hidden"><div class="panel compact"><h2 id="floor-title">Floor Cleared</h2><p id="floor-summary"></p><div class="menu-buttons"><button id="descend-btn" class="primary">Descend Deeper</button><button id="stay-floor-btn">Stay on This Floor</button><button id="extract-btn">Bank Loot & Exit</button></div></div></div>
 
     <div id="shop-panel" class="overlay hidden"><div class="panel v10-info-panel shop-panel-card">
-      <div class="shop-panel-head"><h2 id="shop-title">Dungeon Supply Shop</h2><button id="shop-close" class="primary shop-close-top" type="button">Leave Shop</button></div>
+      <div class="shop-panel-head"><div><span class="shop-kicker">DUNGEON MERCHANT</span><h2 id="shop-title">Dungeon Supply Shop</h2></div><button id="shop-close" class="primary shop-close-top" type="button">LEAVE SHOP</button></div>
       <p id="shop-copy">Choose what you actually need. Normal score stock can be bought repeatedly, with the price doubling after every purchase at this shop.</p>
+      <div class="shop-controls" aria-label="Shop controls"><span><kbd>ESC</kbd> or <kbd>X</kbd> leave</span><span><b>GAMEPAD</b> B / START leave · D-PAD browse · A buy</span></div>
       <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ESSENCE <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
       <div id="shop-status" class="shop-status hidden" role="status" aria-live="assertive" aria-atomic="true"><b id="shop-status-title">SHOP READY</b><span id="shop-status-text">Purchase feedback will appear here.</span></div>
       <div id="shop-items" class="shop-grid"></div>
