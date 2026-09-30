@@ -120,7 +120,7 @@
     armourRestored:{text:"Armour restored.",priority:12,cooldown:60000},
     bronzeKeyCollected:{text:"Bronze key collected.",priority:28,cooldown:2500},
     artefactCollected:{text:"Artefact collected.",priority:28,cooldown:2500},
-    essenceCollected:{text:"Banishment Essence collected.",priority:28,cooldown:2500},
+    essenceCollected:{text:"Banishment Essence collected.",priority:30,cooldown:2200},
     weaponUpgraded:{text:"Weapon upgraded.",priority:36,cooldown:2500},
     upgradeAvailable:{text:"Upgrade available.",priority:44,cooldown:2500},
     exitSigilAcquired:{text:"Exit Sigil acquired.",priority:62,cooldown:2500},
