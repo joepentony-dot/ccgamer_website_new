@@ -28,7 +28,7 @@
   const hasGun=p=>Boolean(p?.firearmUnlocked&&p?.weapon);
   const meleeFor=p=>p?.meleeWeapon||START_SWORD;
   const meleeMastery=p=>Math.floor(Math.max(0,Number(p?.level||1)-1)/5);
-  const meleeDamageFor=p=>Math.max(1,Number(meleeFor(p).power||1)+meleeMastery(p)+Math.floor(Number(p?.damageBonus||0)*.5));
+  const meleeDamageFor=p=>Math.max(1,Number(meleeFor(p).power||1)+meleeMastery(p)+Number(p?.damageBonus||0));
   const toneFor=rarity=>rarity==="ZZAP! 97%"?"red":rarity==="GOLD MEDAL"?"gold":"cyan";
 
   function configureAmmoModel(){
@@ -212,7 +212,7 @@
   function equipMelee(p,melee){
     if(!p||!melee)return false;
     const old=meleeFor(p);p.meleeWeapon={...melee};
-    try{S.sfx("elite");showToast(`${melee.rarity} ${melee.name}`,`${melee.desc} Current damage ${meleeDamageFor(p)} including level mastery. This occupies the dedicated melee slot, not an inventory slot.${old?.name?` Replaced ${old.name}.`:""}`,toneFor(melee.rarity),8500)}catch(_){}
+    try{S.sfx("elite");showToast(`${melee.rarity} ${melee.name}`,`${melee.desc} Current damage ${meleeDamageFor(p)} including level mastery and Might. This occupies the dedicated melee slot, not an inventory slot.${old?.name?` Replaced ${old.name}.`:""}`,toneFor(melee.rarity),8500)}catch(_){}
     return true;
   }
 
