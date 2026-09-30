@@ -53,4 +53,4 @@ assert.match(supabase,/ccgSupabaseDebug/,"Supabase debug logging must be opt-in"
 assert.match(supabase,/supabaseDebugSeen = new Set\(\)/,"duplicate debug payloads must be suppressed");
 assert.match(supabase,/if \(!supabaseDebugEnabled\(\)\) return;/,"normal production traffic must not emit debug logs");
 
-console.log("PASS V10.42 R71 severe performance recovery contract");
+console.log("PASS V10.42 R70 severe performance recovery contract");
