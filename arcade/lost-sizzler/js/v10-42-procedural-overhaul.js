@@ -289,9 +289,9 @@
     const value=stat(player,id),points=Math.max(0,value-RPG_BASE),specialised=Boolean(player?.v142R23BuildMilestones?.[id])||value>=10;
     if(id==="might")return `CURRENT EFFECT · +${Math.floor(points/2)} canonical melee/firearm damage`;
     if(id==="vitality")return `CURRENT EFFECT · +${points+(specialised?2:0)} max health from Vitality${specialised?" including VIT 10 specialisation":""}`;
-    if(id==="agility"){const factor=Math.pow(.97,points)*(specialised?.95:1),faster=Math.max(0,Math.round((1-factor)*100));return `CURRENT EFFECT · about ${faster}% faster movement${specialised?" · +1 dash contact damage from AGI 10":""}`}
+    if(id==="agility"){const factor=Math.pow(.97,points)*(specialised ? .95 : 1),faster=Math.max(0,Math.round((1-factor)*100));return `CURRENT EFFECT · about ${faster}% faster movement${specialised?" · +1 dash contact damage from AGI 10":""}`}
     if(id==="endurance")return `CURRENT EFFECT · +${points*14+(specialised?40:0)} max ammo from Endurance${specialised?" · END 10 reserve bonus active":""}; each point also grants +1 armour when chosen`;
-    if(id==="luck"){const quality=Number((points*1.35).toFixed(2)),drop=Math.min(10,points*2),rarity=Math.min(20,points*4);return `CURRENT EFFECT · chest quality depth +${quality} · wearable rolls +${drop} drop / +${rarity} rarity percentage points`}
+    if(id==="luck"){const quality=Number((points*1.35).toFixed(2)),drop=points*2,rarity=points*4;return `CURRENT EFFECT · chest quality depth +${quality} · wearable rolls up to +${drop} drop / +${rarity} rarity percentage points before roll caps`}
     if(id==="arcana"){const ward=Math.max(14000,Number(player?.v142WardCooldownMs)||30000-points*1800),reveal=player?.sigilReveal?2+Math.floor(points/3):0;return `CURRENT EFFECT · Flask cost ${essenceCost(player)} Essence · Ward ${Math.round(ward/1000)}s${reveal?` · Reveal +${reveal} sight`:""}`}
     return"CURRENT EFFECT · active"
   }
