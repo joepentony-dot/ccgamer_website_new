@@ -145,6 +145,8 @@
   }
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
+    const now=clockNow(),previous=memory.get(shop);
+    if(!force&&previous&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
     const task=fieldTaskSnapshot(),shown=present(shop,lineForMerchant(shop,task),{force});
     if(shown){
       merchantVoiceVisits.set(shop,Math.max(0,Number(merchantVoiceVisits.get(shop)||0))+1);
