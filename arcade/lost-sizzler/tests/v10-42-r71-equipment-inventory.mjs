@@ -15,6 +15,7 @@ assert.ok(moduleSource.includes("r71-equipment-board"));
 assert.ok(moduleSource.includes("r71-character-stage"));
 assert.ok(moduleSource.includes("playerSheetSource"));
 assert.ok(moduleSource.includes("explorer-sheet-v10-34.png"));
+assert.ok(moduleSource.includes("../assets/pixel/explorer-sheet-v10-34.png"),"R71 CSS custom-property sprite URL must resolve out of css/ into the canonical assets directory");
 assert.ok(moduleSource.includes("BODY ARMOUR"));
 assert.ok(moduleSource.includes("EQUIPPED RELICS"));
 assert.ok(!moduleSource.includes("HELMET"),"R71 must not invent a helmet equipment slot before one exists in gameplay");
@@ -47,4 +48,4 @@ assert.ok(!render.includes("fillRect(cx-5,cy-3,10,5)"));
 assert.ok(render.includes("fillRect(cx-4,cy-2,8,2)"));
 assert.ok(render.includes("fillRect(cx-4,cy-12,8,2)"));
 
-console.log("PASS V10.42 R72 equipment inventory contract");
+console.log("PASS V10.42 R71 equipment inventory contract");
