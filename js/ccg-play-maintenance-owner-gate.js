@@ -1,8 +1,8 @@
-/* CCG owner-only maintenance preview gate for C64 Dungeon Carnage.
+/* CCG owner + tester-code preview gate for C64 Dungeon Carnage.
  *
  * Production remains closed to ordinary visitors while maintenance is active.
- * The signed-in Cheeky Commodore Gamer admin profile is allowed through so the
- * live build can be acceptance-tested without reopening the game publicly.
+ * The signed-in Cheeky Commodore Gamer admin profile is allowed through, and
+ * invited testers can unlock the browser build with the current tester code.
  */
 (function () {
   "use strict";
@@ -13,6 +13,8 @@
   const OWNER_DISPLAY_NAME = "cheeky commodore gamer";
   const OWNER_ROLE = "admin";
   const AUTH_TIMEOUT_MS = 5000;
+  const TESTER_SESSION_KEY = "ccg_dungeon_carnage_tester_access_v1";
+  const TESTER_CODE_SHA256 = "6ae3a54376666b176371fe98ec4ae42b9cf93e0f8cfaf51c48a7634daa1eea24";
 
   function normalise(value) {
     return String(value || "").trim().toLowerCase();
@@ -28,10 +30,24 @@
     if (document.body) document.body.dataset.ccgPlayMaintenanceGate = state;
   }
 
-  function redirectToMaintenance() {
-    mark("blocked");
-    if (window.location.pathname === MAINTENANCE_DESTINATION) return;
-    window.location.replace(MAINTENANCE_DESTINATION);
+  function hasTesterSession() {
+    try {
+      return sessionStorage.getItem(TESTER_SESSION_KEY) === "allowed";
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function rememberTesterSession() {
+    try {
+      sessionStorage.setItem(TESTER_SESSION_KEY, "allowed");
+    } catch (_error) {}
+  }
+
+  function dispatchAllowed(access) {
+    window.dispatchEvent(new CustomEvent("ccg:play-maintenance-access-granted", {
+      detail: { allowed: true, access: access }
+    }));
   }
 
   function snapshotOwnerHint() {
@@ -81,9 +97,117 @@
       && profile.banned !== true;
   }
 
-  async function checkOwner() {
+  async function sha256(value) {
+    if (!window.crypto?.subtle || typeof TextEncoder !== "function") return "";
+    const data = new TextEncoder().encode(normalise(value));
+    const digest = await window.crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function isValidTesterCode(value) {
+    if (!value) return false;
+    try {
+      return await sha256(value) === TESTER_CODE_SHA256;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function removeTesterGate() {
+    const gate = document.getElementById("ccg-tester-access-gate");
+    if (gate) gate.remove();
+    if (document.documentElement.dataset.ccgTesterOverflowLock === "1") {
+      document.documentElement.style.overflow = "";
+      delete document.documentElement.dataset.ccgTesterOverflowLock;
+    }
+  }
+
+  function showTesterGate() {
+    mark("tester-code-required");
+    if (document.getElementById("ccg-tester-access-gate")) return;
+
+    const gate = document.createElement("div");
+    gate.id = "ccg-tester-access-gate";
+    gate.setAttribute("role", "dialog");
+    gate.setAttribute("aria-modal", "true");
+    gate.setAttribute("aria-labelledby", "ccg-tester-access-title");
+    gate.innerHTML = [
+      '<style>',
+      '#ccg-tester-access-gate{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 18%,rgba(64,35,95,.48),rgba(4,3,10,.97) 58%);font-family:Arial,sans-serif;color:#fff;}',
+      '#ccg-tester-access-gate *{box-sizing:border-box;}',
+      '#ccg-tester-access-card{width:min(520px,100%);border:1px solid rgba(193,132,255,.68);border-radius:16px;padding:28px;background:linear-gradient(180deg,rgba(22,12,35,.98),rgba(8,5,15,.99));box-shadow:0 28px 80px rgba(0,0,0,.58),0 0 42px rgba(149,74,219,.16);text-align:center;}',
+      '#ccg-tester-access-card .ccg-kicker{display:block;margin-bottom:8px;color:#d7a8ff;font-size:12px;font-weight:800;letter-spacing:.18em;}',
+      '#ccg-tester-access-card h1{margin:0 0 10px;font-size:clamp(26px,6vw,38px);line-height:1.02;text-transform:uppercase;}',
+      '#ccg-tester-access-card p{margin:0 0 20px;color:#d4cee0;line-height:1.55;}',
+      '#ccg-tester-access-form{display:grid;gap:12px;text-align:left;}',
+      '#ccg-tester-access-form label{font-size:12px;font-weight:800;letter-spacing:.12em;color:#cbb7dc;}',
+      '#ccg-tester-access-code{width:100%;border:1px solid #69448a;border-radius:9px;padding:14px 15px;background:#09060f;color:#fff;font:700 17px/1.2 monospace;outline:none;}',
+      '#ccg-tester-access-code:focus{border-color:#c389f0;box-shadow:0 0 0 3px rgba(195,137,240,.14);}',
+      '#ccg-tester-access-submit{border:0;border-radius:9px;padding:14px 18px;background:#9c5ed0;color:#fff;font-weight:900;letter-spacing:.06em;cursor:pointer;}',
+      '#ccg-tester-access-submit:disabled{opacity:.55;cursor:wait;}',
+      '#ccg-tester-access-error{min-height:20px;margin:0;color:#ff9f9f;font-size:13px;font-weight:700;text-align:center;}',
+      '#ccg-tester-access-exit{display:inline-block;margin-top:14px;color:#bcaacb;font-size:13px;text-decoration:none;}',
+      '#ccg-tester-access-exit:hover{text-decoration:underline;}',
+      '</style>',
+      '<div id="ccg-tester-access-card">',
+      '<span class="ccg-kicker">CHEEKY COMMODORE GAMER</span>',
+      '<h1 id="ccg-tester-access-title">C64 Dungeon Carnage</h1>',
+      '<p>This beta build is currently available to invited testers only. Enter your tester access code to continue.</p>',
+      '<form id="ccg-tester-access-form" autocomplete="off">',
+      '<label for="ccg-tester-access-code">TESTER ACCESS CODE</label>',
+      '<input id="ccg-tester-access-code" name="ccg-tester-access-code" type="password" inputmode="text" autocapitalize="none" spellcheck="false" autocomplete="off" required>',
+      '<button id="ccg-tester-access-submit" type="submit">ENTER DUNGEON</button>',
+      '<p id="ccg-tester-access-error" role="alert" aria-live="polite"></p>',
+      '</form>',
+      '<a id="ccg-tester-access-exit" href="' + MAINTENANCE_DESTINATION + '">Return to CCG Games</a>',
+      '</div>'
+    ].join("");
+
+    document.documentElement.dataset.ccgTesterOverflowLock = "1";
+    document.documentElement.style.overflow = "hidden";
+    (document.body || document.documentElement).appendChild(gate);
+
+    const form = gate.querySelector("#ccg-tester-access-form");
+    const input = gate.querySelector("#ccg-tester-access-code");
+    const submit = gate.querySelector("#ccg-tester-access-submit");
+    const error = gate.querySelector("#ccg-tester-access-error");
+
+    gate.addEventListener("keydown", (event) => event.stopPropagation());
+    gate.addEventListener("keyup", (event) => event.stopPropagation());
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submit.disabled = true;
+      error.textContent = "";
+
+      const valid = await isValidTesterCode(input.value);
+      if (!valid) {
+        mark("tester-code-rejected");
+        error.textContent = "That tester code is not recognised.";
+        input.select();
+        submit.disabled = false;
+        return;
+      }
+
+      rememberTesterSession();
+      removeTesterGate();
+      mark("tester-preview");
+      dispatchAllowed("tester");
+    });
+
+    window.setTimeout(() => input.focus(), 0);
+  }
+
+  async function checkAccess() {
     if (!isProduction()) {
       mark("development");
+      dispatchAllowed("development");
+      return;
+    }
+
+    if (hasTesterSession()) {
+      mark("tester-preview");
+      dispatchAllowed("tester");
       return;
     }
 
@@ -101,22 +225,24 @@
         window.dispatchEvent(new CustomEvent("ccg:play-maintenance-owner-preview", {
           detail: { allowed: true }
         }));
+        dispatchAllowed("owner");
         return;
       }
     } catch (_error) {
-      // Fail closed: maintenance stays in force for every unresolved visitor.
+      // Owner resolution failed; invited testers can still use the code gate.
     } finally {
       if (timeoutId) window.clearTimeout(timeoutId);
     }
 
-    redirectToMaintenance();
+    showTesterGate();
   }
 
   window.CCGPlayMaintenanceOwnerGate = Object.freeze({
-    check: checkOwner,
+    check: checkAccess,
     isOwnerProfile: isOwnerProfile,
+    isValidTesterCode: isValidTesterCode,
     maintenanceDestination: MAINTENANCE_DESTINATION
   });
 
-  void checkOwner();
+  void checkAccess();
 })();
