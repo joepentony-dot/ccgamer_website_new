@@ -44,7 +44,10 @@ host.v142WardenDomain.active=false;host.v142WardenDomain.cleansed=true;
 host.v142WardenCheckpoint={active:true,floor:2,x:15,y:14,roomId:1};
 markers=api.markerState(player,run,host,world);
 assert.equal(markers.some(m=>m.kind==="corruption"),false,"Cleansing the domain should remove the corruption radar marker");
-assert.deepEqual({...markers.find(m=>m.kind==="refuge")},{kind:"refuge",x:15,y:14,label:"CLEANSED REFUGE",roomId:1},"A cleansed recovery anchor should become a known refuge marker");
+assert.equal(markers.some(m=>m.kind==="refuge"),false,"The legacy Warden checkpoint must not create the R72 Refuge marker");
+host.v142CleansedRefuge={active:true,floor:2,x:15,y:14,roomId:1};
+markers=api.markerState(player,run,host,world);
+assert.deepEqual({...markers.find(m=>m.kind==="refuge")},{kind:"refuge",x:15,y:14,label:"WARDEN REFUGE",roomId:1},"The real cleansed Refuge state should become the known cyan Refuge marker");
 
 host.chests=[{id:"warden-cache",x:16,y:14,roomId:1,active:true,v142WardenCache:true}];
 markers=api.markerState(player,run,host,world);
