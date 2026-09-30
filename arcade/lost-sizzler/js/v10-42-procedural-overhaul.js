@@ -215,7 +215,7 @@
       #v142-relic-choice{position:fixed;inset:0;z-index:12100;display:grid;place-items:center;padding:18px;background:rgba(2,1,6,.84);backdrop-filter:blur(4px)}#v142-relic-choice.hidden{display:none!important}
       #v142-relic-choice .v142-card{width:min(900px,95vw);max-height:88dvh;overflow:auto;padding:24px;border:2px solid #ffd85a;border-radius:16px;background:linear-gradient(160deg,#130c20,#070912);box-shadow:0 20px 80px #000;text-align:left}
       #v142-relic-choice h2{margin:4px 0 8px;color:#ffd85a}#v142-relic-choice p{color:#d8cfdf}.v142-relic-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.v142-relic-grid button{min-height:150px;padding:16px;text-align:left;border:1px solid #6cecff;background:#0f1521;color:#fff}.v142-relic-grid button b{display:block;margin-bottom:8px;color:#ffd85a}.v142-relic-grid button span{font-size:.83rem;line-height:1.4;color:#d9d5df}
-      .v142-rpg-sheet{margin:12px 0;padding:12px;border:1px solid rgba(108,236,255,.35);border-radius:10px;background:rgba(10,18,28,.72)}.v142-rpg-sheet h3{margin:0 0 8px;color:#ffd85a}.v142-rpg-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.v142-rpg-stat{padding:8px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04)}.v142-rpg-stat b{display:block;color:#6cecff}.v142-rpg-stat span{font-size:.72rem;color:#c9c2d0}.v142-rpg-meta{margin-top:8px;font-size:.78rem;color:#e5d9ef}
+      .v142-rpg-sheet{margin:12px 0;padding:12px;border:1px solid rgba(108,236,255,.35);border-radius:10px;background:rgba(10,18,28,.72)}.v142-rpg-sheet h3{margin:0 0 8px;color:#ffd85a}.v142-rpg-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.v142-rpg-stat{padding:8px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04)}.v142-rpg-stat b{display:block;color:#6cecff}.v142-rpg-stat span{font-size:.72rem;color:#c9c2d0}.v142-rpg-effect{display:block;margin-top:5px;padding-top:5px;border-top:1px solid rgba(108,236,255,.14);font:700 .68rem/1.35 "Courier New",monospace;color:#ffd85a}.v142-rpg-meta{margin-top:8px;font-size:.78rem;color:#e5d9ef}
       @media(max-width:700px){.v142-relic-grid,.v142-rpg-grid{grid-template-columns:1fr}#v142-relic-choice .v142-card{padding:17px}}
     `;document.head.appendChild(style);
     modal=document.createElement("section");modal.id="v142-relic-choice";modal.className="hidden";modal.setAttribute("role","dialog");modal.setAttribute("aria-modal","true");document.body.appendChild(modal);return modal;
@@ -285,10 +285,20 @@
     };
   }
 
+  function attributeEffect(player,id){
+    const value=stat(player,id),points=Math.max(0,value-RPG_BASE),specialised=Boolean(player?.v142R23BuildMilestones?.[id])||value>=10;
+    if(id==="might")return `CURRENT EFFECT · +${Math.floor(points/2)} canonical melee/firearm damage`;
+    if(id==="vitality")return `CURRENT EFFECT · +${points+(specialised?2:0)} max health from Vitality${specialised?" including VIT 10 specialisation":""}`;
+    if(id==="agility"){const factor=Math.pow(.97,points)*(specialised?.95:1),faster=Math.max(0,Math.round((1-factor)*100));return `CURRENT EFFECT · about ${faster}% faster movement${specialised?" · +1 dash contact damage from AGI 10":""}`}
+    if(id==="endurance")return `CURRENT EFFECT · +${points*14+(specialised?40:0)} max ammo from Endurance${specialised?" · END 10 reserve bonus active":""}; each point also grants +1 armour when chosen`;
+    if(id==="luck"){const quality=Number((points*1.35).toFixed(2)),drop=Math.min(10,points*2),rarity=Math.min(20,points*4);return `CURRENT EFFECT · chest quality depth +${quality} · wearable rolls +${drop} drop / +${rarity} rarity percentage points`}
+    if(id==="arcana"){const ward=Math.max(14000,Number(player?.v142WardCooldownMs)||30000-points*1800),reveal=player?.sigilReveal?2+Math.floor(points/3):0;return `CURRENT EFFECT · Flask cost ${essenceCost(player)} Essence · Ward ${Math.round(ward/1000)}s${reveal?` · Reveal +${reveal} sight`:""}`}
+    return"CURRENT EFFECT · active"
+  }
   function renderRpgSheet(){
     const player=currentPlayer();if(!player||!UI?.inventory)return;initRpg(player);let sheet=document.getElementById("v142-rpg-sheet");if(!sheet){sheet=document.createElement("section");sheet.id="v142-rpg-sheet";sheet.className="v142-rpg-sheet";const list=UI.inventoryList;if(list?.parentElement)list.parentElement.insertBefore(sheet,list)}
     const relicNames=(player.relics||[]).map(id=>RELICS.find(row=>row.id===id)?.name||id).join(" · ")||"NONE";
-    sheet.innerHTML=`<h3>CHARACTER ATTRIBUTES · LEVEL ${player.level||1}</h3><div class="v142-rpg-grid">${RPG_STATS.map(row=>`<div class="v142-rpg-stat"><b>${row.name} ${stat(player,row.id)}</b><span>${row.desc}</span></div>`).join("")}</div><div class="v142-rpg-meta"><b>SIGIL:</b> ${[player.sigilReveal&&"REVEAL",player.sigilWard&&"WARD",player.sigilBind&&"BIND",player.sigilBanish&&"BANISH"].filter(Boolean).join(" · ")||"DORMANT"} &nbsp; <b>VESSEL:</b> ${player.banishmentEssence||0}/${essenceCost(player)} ESSENCE &nbsp; <b>RELICS:</b> ${relicNames}</div>`;
+    sheet.innerHTML=`<h3>CHARACTER ATTRIBUTES · LEVEL ${player.level||1}</h3><div class="v142-rpg-grid">${RPG_STATS.map(row=>`<div class="v142-rpg-stat"><b>${row.name} ${stat(player,row.id)}</b><span>${row.desc}</span><small class="v142-rpg-effect">${attributeEffect(player,row.id)}</small></div>`).join("")}</div><div class="v142-rpg-meta"><b>SIGIL:</b> ${[player.sigilReveal&&"REVEAL",player.sigilWard&&"WARD",player.sigilBind&&"BIND",player.sigilBanish&&"BANISH"].filter(Boolean).join(" · ")||"DORMANT"} &nbsp; <b>VESSEL:</b> ${player.banishmentEssence||0}/${essenceCost(player)} ESSENCE &nbsp; <b>RELICS:</b> ${relicNames}</div>`;
   }
   if(typeof renderInventoryPanel==="function"){
     const baseRenderInventoryPanel=renderInventoryPanel;
@@ -325,6 +335,7 @@
     gameDeck,
     initRpg,
     statSummary,
+    attributeEffect,
     essenceCost
   };
 })();
