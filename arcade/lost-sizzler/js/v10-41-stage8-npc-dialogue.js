@@ -102,7 +102,6 @@
     }else{
       base=visits===0?lines.merchant.entrance:(visits%2?lines.merchant.entranceRepeat:lines.merchant.entranceLook);
     }
-    merchantVoiceVisits.set(shop,visits+1);
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
@@ -147,7 +146,11 @@
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
     const task=fieldTaskSnapshot(),shown=present(shop,lineForMerchant(shop,task),{force});
-    if(shown){state.merchantTaskBriefings++;state.lastMerchantTask={...task,at:clockNow()}}
+    if(shown){
+      merchantVoiceVisits.set(shop,Math.max(0,Number(merchantVoiceVisits.get(shop)||0))+1);
+      state.merchantTaskBriefings++;
+      state.lastMerchantTask={...task,at:clockNow()}
+    }
     return shown
   }
   function sanctuaryRoom(){
