@@ -9,6 +9,7 @@
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function progression(){return window.CCGProgression||null}
   function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
+  function alchemistOpen(){try{return Boolean(activeShop&&(activeShop.v142Alchemist||String(activeShop.title||"").includes("ALCHEMIST")))}catch(_){return false}}
   function chainOwnsArtefactBoundary(owner=currentShopOwner()){
     const seen=new Set();
     let current=owner;
@@ -48,6 +49,7 @@
   function tradeArtefactsForFlask(){
     const PGR=progression(),player=currentPlayer();
     if(!PGR||!player)return false;
+    if(!alchemistOpen()){try{showToast("ALCHEMIST REQUIRED","Banishment Flasks can only be distilled at a Banishment Alchemist.","cyan",5200)}catch(_){}return false}
     const need=Math.max(1,Math.floor(Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
     const physicalHave=physicalArtefactCount(player);
     const essenceHave=nonNegativeInt(player.banishmentEssence);
