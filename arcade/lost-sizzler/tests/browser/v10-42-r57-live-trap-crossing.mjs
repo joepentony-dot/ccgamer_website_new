@@ -103,7 +103,8 @@ try{
   await page.waitForTimeout(1150);
   await page.evaluate(()=>{p1.hitStunMs=0;move1=0;});
   await page.keyboard.press(fixture.key,{delay:24});
-  await page.waitForFunction(args=>Number(p1.x)===args.target.x&&Number(p1.y)===args.target.y&&Number(p1.health)===args.health-1,{target:fixture.target,health:first.health},{timeout:3000,polling:16});
+  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  await page.waitForFunction(health=>Number(p1.health)===health-1,first.health,{timeout:3000,polling:16});
   const second=await page.evaluate(()=>({health:Number(p1.health),armor:Number(p1.armor),events:[...(window.__r67HazardEvents||[])],ordinary:(host.traps||[]).length,mode:String(mode||"")}));
   assert.equal(second.health,first.health-1,"leaving and re-entering the still ACTIVE dedicated hazard after cooldown must remove another HP");
   assert.equal(second.armor,fixture.before.armor,"second dedicated hazard hit must still preserve armour");

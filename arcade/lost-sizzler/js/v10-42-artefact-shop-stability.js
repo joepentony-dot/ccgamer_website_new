@@ -88,7 +88,7 @@
     const PGR=progression(),player=currentPlayer();
     if(!PGR||!player)return false;
     if(!alchemistOpen()){try{showToast("ALCHEMIST REQUIRED","Banishment Flasks can only be distilled at a Banishment Alchemist.","cyan",5200)}catch(_){}return false}
-    const need=Math.max(1,Math.floor(Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
+    const need=Math.max(1,Math.floor(Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(player))||Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
     const physicalHave=physicalArtefactCount(player);
     const essenceHave=nonNegativeInt(player.banishmentEssence);
     const have=physicalHave+essenceHave;
