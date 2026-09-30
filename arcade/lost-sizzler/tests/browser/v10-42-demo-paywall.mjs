@@ -179,12 +179,12 @@ try{
     runActive:document.body.dataset.runActive
   }));
   assert.equal(offerAudit.shown,true,"A guarded full-game click must present the permanent-unlock screen.");
-  assert.match(offerAudit.title,/Unlock The Lost Sizzler permanently/i,"Demo offer must describe a permanent Lost Sizzler unlock.");
+  assert.match(offerAudit.title,/Unlock C64 Dungeon Carnage permanently/i,"Demo offer must describe a permanent C64 Dungeon Carnage unlock.");
   assert.match(offerAudit.price,/£1\.99 ONE-OFF/i,"Demo offer must retain the draft £1.99 one-off launch presentation.");
   assert.match(offerAudit.account,/SIGN IN OR CREATE A CCG ACCOUNT TO CONTINUE/i,"Signed-out demo users must be directed through account access before checkout.");
   assert.equal(offerAudit.paypalButtons,0,"Signed-out demo users must not receive a direct PayPal purchase button.");
-  assert.match(offerAudit.loginHref,/^\/auth\/login\.html\?returnTo=/,"Demo sign-in must preserve the Lost Sizzler purchase return target.");
-  assert.match(offerAudit.registerHref,/^\/auth\/register\.html\?returnTo=/,"Demo registration must preserve the Lost Sizzler purchase return target.");
+  assert.match(offerAudit.loginHref,/^\/auth\/login\.html\?returnTo=/,"Demo sign-in must preserve the C64 Dungeon Carnage purchase return target.");
+  assert.match(offerAudit.registerHref,/^\/auth\/register\.html\?returnTo=/,"Demo registration must preserve the C64 Dungeon Carnage purchase return target.");
   assert.notEqual(offerAudit.runActive,"true","The intercepted Solo click must not start paid gameplay underneath the unlock screen.");
   await closeDemoOffer(demo.page);
 
@@ -251,7 +251,7 @@ try{
   assert.equal(entitlementAudit.badges,0,"Accepted permanent ownership must remove FULL GAME badges.");
   assert.deepEqual(demo.pageErrors,[],`Demo-mode V10.42 paywall flow must not raise page errors: ${demo.pageErrors.join("\n")}`);
   assert.deepEqual(demo.failedScripts,[],`Demo-mode V10.42 paywall scripts must load without same-origin failures: ${demo.failedScripts.join("\n")}`);
-  console.log("Lost Sizzler V10.42 explicit demo lock, safe offer rendering, post-checkout verification, provider-bound entitlement, resume guard and physical zero-server online-entry retirement browser contract passed.");
+  console.log("C64 Dungeon Carnage V10.42 explicit demo lock, safe offer rendering, post-checkout verification, provider-bound entitlement, resume guard and physical zero-server online-entry retirement browser contract passed.");
   await demoContext.close();
 }finally{
   await browser.close();

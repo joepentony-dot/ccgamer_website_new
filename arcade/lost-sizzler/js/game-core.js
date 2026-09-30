@@ -321,7 +321,7 @@ async function submitWeeklyResultOnce(){if(!run?.daily||run.weeklySubmitted)retu
 function endRun(reason){
   if(!run)return;mode="ended";run.runComplete=!run.dailyFailed&&!run.xpGameOver;S.setStalkerNear(false);S.setNamedEnemy?.(null);S.stopMusic();if(!run.daily)PGR.clearCheckpoint();updateSavedRunButton();
   const dailyBest=run.daily?PGR.recordDailyResult(run,score,p1):null;if(run.daily)submitWeeklyResultOnce();
-  UI.endTitle.textContent=run.xpGameOver?"GAME OVER — XP DEPLETED":run.floor>=C.maxFloors&&!run.dailyFailed?"THE LOST SIZZLER RECOVERED":run.daily?(run.dailyFailed?"WEEKLY VAULT ATTEMPT ENDED":"WEEKLY VAULT COMPLETE"):"RUN EXTRACTED";
+  UI.endTitle.textContent=run.xpGameOver?"GAME OVER — XP DEPLETED":run.floor>=C.maxFloors&&!run.dailyFailed?"CITADEL CLEARED":run.daily?(run.dailyFailed?"WEEKLY VAULT ATTEMPT ENDED":"WEEKLY VAULT COMPLETE"):"RUN EXTRACTED";
   UI.endText.innerHTML=`${esc(reason)}.<br><br><strong>FINAL SCORE ${pad(score)}</strong><br>Deepest floor: ${run.deepest}/${C.maxFloors}<br>XP safely kept from cleared floors: ${run.bankedXP}<br>Kills: ${run.stats.kills}<br>Champions: ${run.stats.champions}<br>Secrets: ${run.stats.secrets}<br>Damage taken: ${run.stats.damageTaken}<br>Friendly fire: ${run.stats.friendlyFire}<br>Unique C64 titles permanently saved on this device: ${PGR.persistentCollection().length}<br><small>Duplicates count once. Clearing this website's browser data resets the saved collection.</small>${run.daily&&dailyBest?`<br><br><strong>WEEKLY RESULT</strong>: ${dailyBest.score} points • floor ${dailyBest.deepest} • level ${dailyBest.level}<br>Try again after the next Monday 00:00 UTC reset.`:""}`;
   UI.end.classList.remove("hidden");refreshCollection()
 }

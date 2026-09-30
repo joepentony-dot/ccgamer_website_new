@@ -30,7 +30,7 @@ window.CCG_CONFIG=Object.freeze({
   proceduralDungeon:{
     enabled:true,
     version:"V10.42",
-    name:"The Lost Sizzler — Five Depths",
+    name:"C64 Dungeon Carnage — Five Depths",
     targetRunMinutesMin:55,
     targetRunMinutesMax:75,
     gamePickupCount:26,

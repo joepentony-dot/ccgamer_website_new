@@ -66,8 +66,8 @@
   let voiceContext=null,voiceImpulse=null;
 
   const lines={
-    welcome:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:40,cooldown:10000},
-    welcomeRare:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:42,cooldown:10000},
+    welcome:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:40,cooldown:10000},
+    welcomeRare:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:42,cooldown:10000},
     weeklyWelcome:{text:"Weekly High Score Vault. One attempt. Make it count.",priority:55,cooldown:10000},
     hurt:{text:"Ow!",priority:8,cooldown:30000},
     lowHealth:{text:"I need to heal.",priority:35,cooldown:0},
