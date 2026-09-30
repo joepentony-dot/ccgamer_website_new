@@ -62,7 +62,7 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
   let voiceContext=null,voiceImpulse=null;
 
   const lines={
@@ -110,14 +110,14 @@
     bronzeKeyRequired:{text:"Bronze key required.",priority:48,cooldown:2500},
     bronzeDoorUnlocked:{text:"Bronze door unlocked.",priority:40,cooldown:2000},
     chestKeyRequired:{text:"You need a key to open this chest.",priority:48,cooldown:2500},
-    chestUnlocked:{text:"Chest unlocked.",priority:35,cooldown:2000},
+    chestUnlocked:{text:"Chest unlocked.",priority:28,cooldown:12000},
     doorSealed:{text:"The door is sealed.",priority:45,cooldown:3500},
     findSwitch:{text:"Find the switch.",priority:40,cooldown:5000},
     exitSealed:{text:"The exit is still sealed.",priority:52,cooldown:7000},
     exitOpen:{text:"The exit is open.",priority:58,cooldown:5000},
-    ammoCollected:{text:"Ammunition collected.",priority:16,cooldown:2500},
-    healthRestored:{text:"Health restored.",priority:18,cooldown:2500},
-    armourRestored:{text:"Armour restored.",priority:18,cooldown:2500},
+    ammoCollected:{text:"Ammunition collected.",priority:8,cooldown:120000},
+    healthRestored:{text:"Health restored.",priority:12,cooldown:60000},
+    armourRestored:{text:"Armour restored.",priority:12,cooldown:60000},
     bronzeKeyCollected:{text:"Bronze key collected.",priority:28,cooldown:2500},
     artefactCollected:{text:"Artefact collected.",priority:28,cooldown:2500},
     weaponUpgraded:{text:"Weapon upgraded.",priority:36,cooldown:2500},
@@ -142,27 +142,27 @@
     useBanishmentFlask:{text:"Use the Banishment Flask.",priority:72,cooldown:7000},
     notEnoughScore:{text:"Not enough score.",priority:38,cooldown:2500},
     notEnoughArtefacts:{text:"Not enough artefacts.",priority:38,cooldown:2500},
-    purchaseComplete:{text:"Purchase complete.",priority:28,cooldown:1800},
+    purchaseComplete:{text:"Purchase complete.",priority:20,cooldown:12000},
     inventoryFull:{text:"Your inventory is full.",priority:42,cooldown:2500},
     ambush:{text:"Ambush.",priority:66,cooldown:6000},
     descending:{text:"Descending.",priority:52,cooldown:2500},
     deathStalkerImmune:{text:"Weapons cannot kill the Death Stalker.",priority:82,cooldown:10000,interrupt:true},
-    hazardPain:{text:"Well, that looked painful.",priority:22,cooldown:18000},
+    hazardPain:{text:"Well, that looked painful.",priority:16,cooldown:45000},
     shopNoScore:{text:"No score, no sale.",priority:34,cooldown:2800},
     merchantPurchase:{text:"Pleasure doing business.",priority:28,cooldown:2400},
     adventurerHelp:{text:"Get me out of here.",priority:46,cooldown:9000},
     adventurerSafe:{text:"We made it.",priority:42,cooldown:9000},
     scoutLagging:{text:"Don’t leave me behind.",priority:42,cooldown:12000},
     scoutSanctuaryNear:{text:"Is that sanctuary?",priority:44,cooldown:12000},
-    artefactLore:{text:"Artefacts are worth more than they look.",priority:24,cooldown:30000},
+    artefactLore:{text:"Artefacts are worth more than they look.",priority:18,cooldown:90000},
     hazardWarning:{text:"Probably best not to stand on that.",priority:48,cooldown:10000},
-    dangerRoom:{text:"That doesn’t look safe.",priority:44,cooldown:10000},
+    dangerRoom:{text:"That doesn’t look safe.",priority:32,cooldown:30000},
     secretDoor:{text:"Secret door discovered.",priority:44,cooldown:6000},
-    movementNearby:{text:"Something is moving nearby.",priority:36,cooldown:18000},
-    stayAlert:{text:"Stay alert.",priority:32,cooldown:30000},
-    deepeningDungeon:{text:"This place is getting worse.",priority:34,cooldown:30000},
-    buriedWarning:{text:"There are things buried down here that should have stayed buried.",priority:45,cooldown:30000},
-    uneasySound:{text:"I don’t like the sound of that.",priority:38,cooldown:18000},
+    movementNearby:{text:"Something is moving nearby.",priority:22,cooldown:60000},
+    stayAlert:{text:"Stay alert.",priority:26,cooldown:60000},
+    deepeningDungeon:{text:"This place is getting worse.",priority:24,cooldown:90000},
+    buriedWarning:{text:"There are things buried down here that should have stayed buried.",priority:34,cooldown:90000},
+    uneasySound:{text:"I don’t like the sound of that.",priority:24,cooldown:60000},
     needThreeArtefacts:{text:"You need three artefacts.",priority:38,cooldown:3000},
     comeBackFunded:{text:"Come back when you have enough.",priority:30,cooldown:5000}
   };
@@ -271,7 +271,7 @@
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000),now=performance.now();if(!coolReady(key,cooldown,now))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
-    if(state.active){const mayInterrupt=Boolean(opts.interrupt??entry.interrupt);if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
+    if(state.active){const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
     const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(key):"";let started=false;
     if(src)started=playClip(src,priority,text,key);if(!started&&!forceTts)started=playSprite(key,priority,text);if(!started)started=speakText(text,priority,key);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
@@ -308,14 +308,23 @@
   function onRecordedPickupVoice(event){
     const detail=event?.detail||{},kind=String(detail.kind||""),lootKind=String(detail.lootKind||"");
     const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"artefactCollected":"";
-    if(key)try{sayKey(key)}catch(_){}
+    if(key==="ammoCollected"){
+      // R70 voice pacing: ammunition is a routine pickup. Say it once per run,
+      // and only mark it spoken when playback actually starts.
+      const currentRun=run&&typeof run==="object"?run:null;
+      const alreadySpoken=currentRun?state.ammoPickupRuns.has(currentRun):state.ammoPickupFallbackSpoken;
+      if(!alreadySpoken){
+        let started=false;try{started=Boolean(sayKey(key,{cooldown:0}))}catch(_){}
+        if(started){if(currentRun)state.ammoPickupRuns.add(currentRun);else state.ammoPickupFallbackSpoken=true}
+      }
+    }else if(key)try{sayKey(key)}catch(_){}
     if(kind==="loot"&&lootKind==="artefact"&&!state.artefactLorePlayed){
       state.artefactLorePlayed=true;
       setTimeout(()=>{try{sayKey("artefactLore",{cooldown:0})}catch(_){}},2300)
     }
   }
   function onHazardDamageVoice(){
-    setTimeout(()=>{try{sayKey("hazardPain",{cooldown:18000})}catch(_){}},420);
+    setTimeout(()=>{try{sayKey("hazardPain",{cooldown:45000})}catch(_){}},420);
   }
   function onShopFirearmUpgradeVoice(){try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
   window.addEventListener?.("ccg:item-collected",onRecordedPickupVoice);

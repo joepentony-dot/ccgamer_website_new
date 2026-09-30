@@ -16,7 +16,7 @@ assert.match(lake,/const releaseRev=String\(document\.querySelector\('meta\[name
 assert.match(lake,/load\("js\/v10-41-browser-stability-gameplay-hotfix\.js","data-ccg-v141-browser-stability-gameplay-hotfix"\)/,"the late V10.41 runtime chain must load the browser stability gameplay hotfix through the shared release token");
 assert.match(lake,/load\("js\/v10-41-tutorial-action-finalizer\.js","data-ccg-v141-tutorial-action-finalizer"\)/,"the late V10.41 runtime chain must load final tutorial action ownership through the shared release token");
 
-assert.match(render,/function loop\(t\)\{const dt=Math\.min\(45,t-last\|\|16\);last=t;.*update\(dt\);render\(\);requestAnimationFrame\(loop\)\}/s,"the inherited frame loop remains the unguarded baseline that the hotfix must contain");
+assert.match(render,/function loop\(t\)\{(?:sampleDungeonRenderPerformance\(t\);)?const dt=Math\.min\(45,t-last\|\|16\);last=t;.*update\(dt\);render\(\);requestAnimationFrame\(loop\)\}/s,"the inherited frame loop must remain an unguarded baseline apart from passive R70 frame sampling so the crash-containment hotfix can still wrap it");
 assert.match(hotfix,/function loopV141CrashContained\(timestamp\)/,"the hotfix must replace the frame callback with a crash-contained loop");
 assert.match(hotfix,/try\{if\(typeof update==="function"\)update\(dt\)\}catch\(error\)\{failed=true;noteFault\("update",error\)\}/,"update exceptions must be contained rather than killing requestAnimationFrame");
 assert.match(hotfix,/try\{if\(typeof render==="function"\)render\(\)\}catch\(error\)\{failed=true;noteFault\("render",error\)\}/,"render exceptions must be contained rather than killing requestAnimationFrame");

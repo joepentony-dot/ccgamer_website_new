@@ -97,6 +97,11 @@ window.CCGAI=(()=>{
 
   function nextStep(e,host,map,target,world=window.__CCG_WORLD){
     if(!target)return null;const startKey=`${e.x},${e.y}`,goal=`${target.x},${target.y}`;if(startKey===goal)return null;
+    // R70 severe-performance recovery: most enemies in an open room/corridor do
+    // not need a full A* search. Prefer a legal one-tile step that reduces
+    // Manhattan distance and reserve A* for actual obstacles/detours.
+    const startDistance=man(e,target),direct=DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy,score:Math.abs(e.x+dx-target.x)+Math.abs(e.y+dy-target.y)})).filter(q=>q.score<startDistance&&passable(e,host,map,q.x,q.y,world,q.x===target.x&&q.y===target.y&&occupiedByPlayer(q.x,q.y))).sort((a,b)=>a.score-b.score);
+    if(direct[0])return{x:direct[0].x,y:direct[0].y};
     const heap=[];
     const push=n=>{heap.push(n);let i=heap.length-1;while(i>0){const p=(i-1)>>1;if(heap[p].f<=n.f)break;heap[i]=heap[p];i=p}heap[i]=n};
     const pop=()=>{if(!heap.length)return null;const root=heap[0],last=heap.pop();if(heap.length){let i=0;while(true){let l=i*2+1,r=l+1;if(l>=heap.length)break;let c=r<heap.length&&heap[r].f<heap[l].f?r:l;if(heap[c].f>=last.f)break;heap[i]=heap[c];i=c}heap[i]=last}return root};
