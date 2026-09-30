@@ -39,8 +39,8 @@
     if(domain&&Number(domain.floor||n)===n&&row?.domainDiscovered&&!domain.cleansed&&domain.active!==false){
       const room=w.rooms?.[Number(domain.roomId)],q=centre(room);if(q)markers.push({kind:"corruption",...q,label:String(domain.profileName||"WARDEN CORRUPTION"),roomId:Number(domain.roomId)});
     }
-    const refuge=h.v142WardenCheckpoint;
-    if(refuge?.active&&Number(refuge.floor)===n&&Number.isFinite(Number(refuge.x))&&Number.isFinite(Number(refuge.y)))markers.push({kind:"refuge",x:Number(refuge.x),y:Number(refuge.y),label:"CLEANSED REFUGE",roomId:Number(refuge.roomId)});
+    const refuge=h.v142CleansedRefuge;
+    if(refuge?.active&&Number(refuge.floor)===n&&Number.isFinite(Number(refuge.x))&&Number.isFinite(Number(refuge.y)))markers.push({kind:"refuge",x:Number(refuge.x),y:Number(refuge.y),label:"WARDEN REFUGE",roomId:Number(refuge.roomId)});
     const cache=(h.chests||[]).find(chest=>chest?.active&&chest.v142WardenCache);
     if(cache)markers.push({kind:"cache",x:Number(cache.x),y:Number(cache.y),label:"WARDEN CACHE",roomId:Number(cache.roomId)});
     const target=brokenWarden(h);
@@ -59,7 +59,7 @@
     if(marker.kind==="corruption"){
       ctx.strokeStyle=`rgba(226,96,255,${.7+.25*pulse})`;ctx.fillStyle="rgba(128,38,160,.65)";ctx.beginPath();ctx.moveTo(x,y-6);ctx.lineTo(x+6,y);ctx.lineTo(x,y+6);ctx.lineTo(x-6,y);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.arc(x,y,8+2*pulse,0,Math.PI*2);ctx.stroke();
     }else if(marker.kind==="refuge"){
-      ctx.fillStyle="rgba(100,255,162,.9)";ctx.strokeStyle="rgba(235,255,243,.95)";ctx.fillRect(x-5,y-2,10,4);ctx.fillRect(x-2,y-5,4,10);ctx.strokeRect(x-5.5,y-2.5,11,5);ctx.strokeRect(x-2.5,y-5.5,5,11);
+      ctx.strokeStyle="rgba(141,238,255,.96)";ctx.fillStyle="rgba(23,52,58,.88)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,5.5,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="rgba(235,255,255,.95)";ctx.fillRect(x-1,y-3,2,6);ctx.fillRect(x-3,y-1,6,2);
     }else if(marker.kind==="cache"){
       ctx.fillStyle="rgba(255,205,86,.9)";ctx.strokeStyle="rgba(255,248,208,.98)";ctx.fillRect(x-5,y-4,10,8);ctx.strokeRect(x-5,y-4,10,8);ctx.fillStyle="rgba(89,48,18,.9)";ctx.fillRect(x-1,y-1,2,3);
     }else if(marker.kind==="broken-warden"){
