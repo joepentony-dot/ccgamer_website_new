@@ -324,7 +324,7 @@
     }
   }
   function onHazardDamageVoice(){
-    setTimeout(()=>{try{sayKey("hazardPain",{cooldown:18000})}catch(_){}},420);
+    setTimeout(()=>{try{sayKey("hazardPain",{cooldown:45000})}catch(_){}},420);
   }
   function onShopFirearmUpgradeVoice(){try{sayKey("weaponUpgraded",{cooldown:0})}catch(_){}}
   window.addEventListener?.("ccg:item-collected",onRecordedPickupVoice);
