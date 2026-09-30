@@ -12,8 +12,8 @@ const feedback=read("js/v10-42-r72-map-death-feedback.js");
 const css=read("css/v10-42-r72-map-death-feedback.css");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r82");
-assert.equal(version.cacheToken,"20260930r82");
+assert.equal(version.build,"V10.42 r83");
+assert.equal(version.cacheToken,"20260930r83");
 
 assert.match(gameplay,/let pendingDeathConfirmation=null;/,"death owner must keep an explicit pending confirmation transaction");
 assert.match(gameplay,/mode="respawning"/,"lethal damage must enter the non-playing respawn state");
