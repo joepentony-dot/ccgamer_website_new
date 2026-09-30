@@ -32,6 +32,8 @@ assert.match(gameplay,/mode="respawning"/,"normal Solo death must enter a short 
 assert.match(gameplay,/deathTransitionMs=1200/,"death transition must remain brief rather than feeling like a loading screen");
 assert.match(gameplay,/mode==="respawning"\)\{mode="playing"/,"normal play must resume after the death presentation");
 assert.match(gameplay,/p\.invuln=Math\.max\(2200/,"respawn must be protected while the death overlay clears");
+assert.match(gameplay,/p\.hitStunMs=0;p\.controlLocked=false;p\.controlsLocked=false;p\.invuln=Math\.max\(2200/,"R72 must clear stale stun and control locks before applying the temporary death-transition lock");
+assert.match(gameplay,/p\.invuln=Math\.max\(2200[^\n]*p\.controlLocked=true;p\.controlsLocked=true/,"R72 may only relock controls as the deliberate temporary YOU DIED transition owner");
 assert.match(wardenDomain,/\(M\(\)==="playing"\|\|M\(\)==="respawning"\)/,"cleansed Warden recovery anchor must remain eligible during the R72 respawn transition");
 assert.match(gameMain,/if\(mode==="respawning"\)return false;/,"header pause/quit control must not interrupt the timed respawn transition");
 
