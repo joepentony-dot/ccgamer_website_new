@@ -28,6 +28,8 @@ assert.match(source,/player\.moveMultiplier=Math\.max\(\.1,base\*next\)/,"Feet e
 assert.match(source,/preservePlayer=function r80PreserveWearables/,"equipped clothing must survive floor transitions");
 assert.match(source,/openChest=function r80OpenChestWearableBonus/,"chests must be capable of producing real wearable loot");
 assert.match(source,/WEARABLE GEAR — INVENTORY FULL/,"full inventory must drop the wearable beside the chest instead of deleting it");
+assert.match(source,/Boolean\(chest\.v142WardenCache\)/,"Warden Cache bonus gear must key off the real cache flag rather than ID wording alone");
+assert.doesNotMatch(source,/ZZAP! (?:VISOR|GAUNTLETS|BOOTS)/,"user-facing top-tier wearable names must use the reconciled LEGENDARY RPG terminology");
 assert.match(source,/item\?\.carriedItem\?\.kind==="wearable"/,"a dropped wearable must retain its real item identity when collected");
 assert.match(source,/return item\.carriedItem\.name\|\|"WEARABLE GEAR"/,"wearable floor pickup text must use the gear name rather than generic armour copy");
 assert.match(source,/data-r80-equip/,"carried wearables must expose an EQUIP action");
