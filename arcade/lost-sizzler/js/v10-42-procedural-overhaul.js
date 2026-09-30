@@ -255,7 +255,7 @@
   if(typeof renderShop==="function"){
     const baseRenderShop=renderShop;
     renderShop=function(){
-      const result=baseRenderShop();if(!activeShop?.v142Alchemist&&!activeShop?.title?.includes("ALCHEMIST"))return result;
+      const result=baseRenderShop();if(!activeShop?.v142Alchemist&&!activeShop?.title?.includes("ALCHEMIST")){for(const id of ["banishment","banishmentScore"])UI.shopItems?.querySelector?.(`[data-shop-buy="${id}"]`)?.closest("article")?.remove();return result}
       if(UI.shopTitle)UI.shopTitle.textContent="BANISHMENT ALCHEMIST";
       if(UI.shopCopy)UI.shopCopy.textContent=`Banishment Essence is stored in your Vessel and never uses an inventory slot. Distil ${essenceCost(currentPlayer())} Essence into one permanent Banishment Flask for this run.`;
       if(UI.shopArtefacts)UI.shopArtefacts.textContent=String(currentPlayer()?.banishmentEssence||0);
