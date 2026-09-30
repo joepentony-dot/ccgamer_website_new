@@ -41,6 +41,12 @@ try{
     await page.waitForTimeout(250);
   }
   await page.evaluate(()=>{
+    // Isolate the stale-state recovery assertion from a legitimate enemy hit
+    // landing in the same frame after FIRE succeeds. The earlier five live
+    // inventory/FIRE cycles already exercise combat conditions.
+    for(const enemy of host?.enemies||[])enemy.alive=false;
+    if(host?.stalker)host.stalker.awake=false;
+    p1.x=world.start.x;p1.y=world.start.y;p1.rx=p1.x;p1.ry=p1.y;
     p1.firearmUnlocked=true;
     p1.mana=Math.max(80,p1.mana||0);
     p1.hitStunMs=5000;
