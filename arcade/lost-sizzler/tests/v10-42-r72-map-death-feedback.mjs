@@ -16,6 +16,7 @@ const evolution=read("js/v10-42-r47-firearm-evolution.js");
 const voice=read("js/v10-16-voice-director.js");
 const r72=read("js/v10-42-r72-map-death-feedback.js");
 const css=read("css/v10-42-r72-map-death-feedback.css");
+const fullMapCss=read("css/v10-41-solo-full-map.css");
 const index=read("index.html");
 const alias=fs.readFileSync(path.resolve(root,"../c64-dungeon-carnage/index.html"),"utf8");
 
@@ -48,6 +49,9 @@ assert.match(fullMap,/function fullMapRoomType\(/,"full map must share room-type
 assert.match(fullMap,/room\?\.sanctuary&&visited\.has/,"full map sanctuary markers must also require discovery");
 assert.match(fullMap,/drawMarker\(context,q,"#64ffa2","plus"\)/,"full map sanctuary must use a green plus");
 assert.match(fullMap,/CCGLostSizzlerV142WardenNavigationCues\?\.markerState/,"full map must include current Warden navigation markers");
+assert.match(fullMap,/shape==="triangle"/,"full map marker renderer must support the player triangle");
+assert.match(fullMap,/drawMarker\(context,p1,"#6cecff","triangle","YOU"\)/,"full map player marker must not fall back to the legacy square");
+assert.match(fullMapCss,/ccg-map-player\{[^}]*clip-path:polygon\(50% 0,100% 100%,0 100%\)/,"full map legend must show the same triangle player symbol");
 assert.match(warden,/const refuge=h\.v142CleansedRefuge/,"Warden refuge marker must come from the real cleansed refuge state, not a legacy checkpoint");
 assert.doesNotMatch(warden,/rgba\(100,255,162/,"green cross styling is reserved for Sanctuary, not Warden refuge");
 
