@@ -91,6 +91,14 @@ assert.ok(["head","hands","feet"].includes(generated.slot));
 assert.ok(generated.name);
 assert.ok(api.effectText(generated).length>3);
 
+const lowLuck={rpgStats:{luck:5}};
+const highLuck={rpgStats:{luck:10}};
+const lowLuckGear=api.makeWearable({id:"luck-test-0",depth:1},lowLuck);
+const highLuckGear=api.makeWearable({id:"luck-test-0",depth:1},highLuck);
+assert.ok(context.window.CCGProgression.RARITY.indexOf(highLuckGear.rarity)>context.window.CCGProgression.RARITY.indexOf(lowLuckGear.rarity),"higher Luck must be able to promote the same deterministic wearable roll");
+assert.equal(api.qualifiesForDrop({id:"drop-luck-0",depth:1},lowLuck),false,"baseline Luck should not force the selected ordinary chest to drop gear");
+assert.equal(api.qualifiesForDrop({id:"drop-luck-0",depth:1},highLuck),true,"higher Luck must be able to turn the same deterministic ordinary chest roll into a wearable drop");
+
 const player={
   inventory:[{kind:"wearable",slot:"hands",name:"TEST GLOVES",rarity:"SIZZLER",scavengerBonus:.16}],
   scavenger:.2,
