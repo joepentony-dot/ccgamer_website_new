@@ -105,6 +105,7 @@
     else if(shape==="cross"){context.strokeStyle=colour;context.lineWidth=2.5;context.beginPath();context.moveTo(x-4,y-4);context.lineTo(x+4,y+4);context.moveTo(x+4,y-4);context.lineTo(x-4,y+4);context.stroke()}
     else if(shape==="plus"){context.fillRect(x-2,y-6,4,12);context.fillRect(x-6,y-2,12,4);context.strokeRect(x-2.5,y-6.5,5,13);context.strokeRect(x-6.5,y-2.5,13,5)}
     else if(shape==="ring"){context.beginPath();context.arc(x,y,5,0,Math.PI*2);context.fill();context.stroke();context.fillStyle="#fff";context.fillRect(x-1,y-3,2,6);context.fillRect(x-3,y-1,6,2)}
+    else if(shape==="triangle"){context.beginPath();context.moveTo(x,y-6);context.lineTo(x+5,y+5);context.lineTo(x-5,y+5);context.closePath();context.fill();context.stroke()}
     else{context.fillRect(x-size/2,y-size/2,size,size);context.strokeRect(x-size/2,y-size/2,size,size)}
     if(label){context.font='bold 9px Consolas, "Courier New", monospace';context.textAlign="center";context.textBaseline="bottom";context.fillStyle="#fff";context.fillText(label,x,y-7)}
     context.restore()
@@ -153,7 +154,7 @@
     }
 
     if(world.exit&&visibleKnowledge(ex,world.exit))drawMarker(context,world.exit,host?.exitOpen?"#b978ff":"#71637d","square");
-    drawMarker(context,p1,"#6cecff","square","YOU");
+    drawMarker(context,p1,"#6cecff","triangle","YOU");
 
     context.strokeStyle="rgba(108,236,255,.20)";context.lineWidth=2;context.strokeRect(1,1,width-2,height-2);
     state.renderedAt=performance.now();
