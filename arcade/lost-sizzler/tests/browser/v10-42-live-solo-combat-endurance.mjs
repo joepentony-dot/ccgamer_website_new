@@ -313,14 +313,19 @@ try{
   });
   assert.equal(sealedDeath.ok,true,`sealed-room death regression could not be staged: ${JSON.stringify(sealedDeath)}`);
   assert.equal(sealedDeath.deathsAfter,sealedDeath.deathsBefore+1,"sealed-room regression must execute a real normal death");
-  assert.equal(sealedDeath.mode,"playing","normal sealed-room death must respawn rather than end the run");
-  assert.equal(sealedDeath.atStart,true,"normal sealed-room death must respawn at the floor start");
-  assert.ok(sealedDeath.doors.length>0&&sealedDeath.doors.every(d=>!d.locked&&d.open),"all ordinary doors for the death room must reopen after respawn");
+  assert.equal(sealedDeath.mode,"respawning","normal sealed-room death must enter the visible R72 respawn transition rather than end the run");
+  assert.equal(sealedDeath.atStart,true,"normal sealed-room death must relocate to the floor start before the respawn presentation completes");
+  assert.ok(sealedDeath.doors.length>0&&sealedDeath.doors.every(d=>!d.locked&&d.open),"all ordinary doors for the death room must reopen as soon as death recovery begins");
   assert.equal(sealedDeath.cache?.active,true,"sealed-room death must leave an active death box");
   assert.equal(sealedDeath.cache?.roomId,sealedDeath.roomId,"death box must remain in the room where the player died");
-  assert.equal(sealedDeath.hitStun,0,"respawn must clear hit-stun");
-  assert.equal(sealedDeath.controlLocked,false,"respawn must clear controlLocked");
-  assert.equal(sealedDeath.controlsLocked,false,"respawn must clear controlsLocked");
+  assert.equal(sealedDeath.hitStun,0,"respawn transition must clear hit-stun immediately");
+  assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must temporarily lock controls while YOU DIED is visible");
+  assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must temporarily lock duplicate control ownership while YOU DIED is visible");
+  await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&p1&&!p1.controlLocked&&!p1.controlsLocked,null,{timeout:4000});
+  const respawnRecovered=await snap(page);
+  assert.equal(respawnRecovered.mode,"playing","normal sealed-room death must return to playing after the R72 presentation");
+  assert.equal(respawnRecovered.controlLocked,false,"respawn completion must release controlLocked");
+  assert.equal(respawnRecovered.controlsLocked,false,"respawn completion must release controlsLocked");
 
   await settleGameplayMode(page,"post-cycle");assert.equal(await armEnemy(page),true,"post-cycle enemy unavailable");
   await fireCycle(page,"Space",97);
