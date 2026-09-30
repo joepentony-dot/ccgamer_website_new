@@ -119,7 +119,7 @@
   }
 
   function unavailable(){
-    const error=new Error("Online multiplayer is not part of the zero-server-cost Lost Sizzler release.");
+    const error=new Error("Online multiplayer is not part of the C64 Dungeon Carnage browser release.");
     error.code="online_multiplayer_disabled";
     state.lastReason=error.code;
     try{showToast?.("RETIRED MODE","Solo and Tutorial are the supported game modes. Retired multiplayer and Weekly Vault entry points are unavailable.","cyan",7000)}catch(_){}
