@@ -9,6 +9,7 @@
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function progression(){return window.CCGProgression||null}
   function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
+  function currentRenderOwner(){try{return typeof renderShop==="function"?renderShop:null}catch(_){return null}}
   function alchemistOpen(){try{return Boolean(activeShop&&(activeShop.v142Alchemist||String(activeShop.title||"").includes("ALCHEMIST")))}catch(_){return false}}
   function chainOwnsArtefactBoundary(owner=currentShopOwner()){
     const seen=new Set();
@@ -21,6 +22,29 @@
     return false;
   }
   function ownsCurrentBoundary(){return chainOwnsArtefactBoundary()}
+  function chainOwnsRenderBoundary(owner=currentRenderOwner()){
+    const seen=new Set();let current=owner;
+    for(let depth=0;typeof current==="function"&&depth<24&&!seen.has(current);depth++){
+      if(current.__ccgR76BanishmentRenderBoundary)return true;
+      seen.add(current);current=current.__ccgOriginal;
+    }
+    return false;
+  }
+  function cleanFlaskCards(){
+    try{
+      const root=typeof UI!=="undefined"?UI?.shopItems:null;if(!root)return 0;
+      const ids=alchemistOpen()?["banishmentScore"]:["banishment","banishmentScore"];let removed=0;
+      for(const id of ids){const button=root.querySelector?.(`[data-shop-buy="${id}"]`),article=button?.closest?.("article");if(article){article.remove();removed++}}
+      return removed;
+    }catch(_){return 0}
+  }
+  function installRenderBoundary(){
+    const live=currentRenderOwner();if(!live)return false;
+    if(chainOwnsRenderBoundary(live))return true;
+    const wrapped=function(...args){const result=live.apply(this,args);cleanFlaskCards();return result};
+    wrapped.__ccgR76BanishmentRenderBoundary=true;wrapped.__ccgOriginal=live;
+    renderShop=wrapped;return true;
+  }
   const nonNegativeInt=value=>Math.max(0,Math.floor(Number(value)||0));
   const cloneItem=item=>item&&typeof item==="object"?{...item}:item;
 
@@ -105,9 +129,10 @@
     const foundation=window.CCGDungeonProgressionFoundation;
     if(!foundation?.ready){diagnostics.installWaits++;return false}
     try{
+      const renderReady=installRenderBoundary();
       const liveOwner=currentShopOwner();
       if(!liveOwner)return false;
-      if(chainOwnsArtefactBoundary(liveOwner)){installed=true;return true}
+      if(chainOwnsArtefactBoundary(liveOwner)){installed=Boolean(renderReady);return installed}
 
       /*
         Later ordered modules (notably R1 shop-counter stability) legitimately
@@ -127,8 +152,8 @@
       wrapped.__ccgOriginal=base;
       buyShopItem=wrapped;
       if(installed)diagnostics.rebinds++;
-      installed=true;diagnostics.installs++;
-      return true;
+      installed=Boolean(renderReady);diagnostics.installs++;
+      return installed;
     }catch(_){return false}
   }
 
@@ -145,6 +170,8 @@
     diagnostics,
     install,
     tradeArtefactsForFlask,
+    cleanFlaskCards,
+    installRenderBoundary,
     isInstalled:()=>installed&&ownsCurrentBoundary()
   });
 })();
