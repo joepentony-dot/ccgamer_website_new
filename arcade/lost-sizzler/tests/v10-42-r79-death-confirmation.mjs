@@ -8,6 +8,7 @@ const root=path.resolve(here,"..");
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 const gameplay=read("js/game-play.js");
+const main=read("js/game-main.js");
 const feedback=read("js/v10-42-r72-map-death-feedback.js");
 const css=read("css/v10-42-r72-map-death-feedback.css");
 const version=JSON.parse(read("version.json"));
@@ -23,6 +24,8 @@ assert.match(gameplay,/function finishPendingDeathRespawn/,"one gameplay owner m
 assert.match(gameplay,/new CustomEvent\("ccg:respawn-confirmed"/,"gameplay must acknowledge successful respawn completion");
 assert.doesNotMatch(gameplay,/deathTransitionMs=1200/,"the retired 1.2 second auto-respawn timer must not return");
 assert.doesNotMatch(gameplay,/setTimeout\(\(\)=>\{if\(mode==="respawning"\)\{mode="playing"/,"respawn must not resume unattended");
+assert.match(main,/pendingDeathConfirmation=null/,"abandoning a run must retire any pending death confirmation transaction");
+assert.match(main,/CCGLostSizzlerV142R72MapDeathFeedback\?\.hideDeath\?\.\(\)/,"abandoning a run must dismiss the death modal before returning to menu");
 
 assert.match(feedback,/aria-modal/,"YOU DIED presentation must be a modal interaction");
 assert.match(feedback,/id="ccg-r72-death-continue"/,"YOU DIED presentation must expose a CONTINUE button");
