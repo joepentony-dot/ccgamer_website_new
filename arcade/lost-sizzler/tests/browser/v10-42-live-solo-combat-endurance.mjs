@@ -131,21 +131,22 @@ try{
   await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
-  const pageErrors=[],consoleErrors=[],failedScripts=[],v142Requests=[];
+  const pageErrors=[],consoleErrors=[],failedScripts=[],http404s=[],v142Requests=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
   page.on("console",msg=>{if(msg.type()==="error")consoleErrors.push(msg.text())});
   page.on("request",request=>{try{const url=new URL(request.url());if(/\/arcade\/lost-sizzler\/js\/v10-42-/.test(url.pathname))v142Requests.push(`${url.pathname}${url.search}`)}catch(_){}});
   page.on("requestfailed",request=>{try{const url=new URL(request.url());if(url.origin===origin&&/\.js$/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}});
+  page.on("response",response=>{try{const url=new URL(response.url());if(url.origin===origin&&response.status()===404)http404s.push(`${url.pathname}${url.search}`)}catch(_){}});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?live-solo-combat-endurance=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r70");assert.equal(boot.cache,"20260930r70");assert.equal(boot.metaBuild,"V10.42 r70");assert.equal(boot.metaCache,"20260930r70");
+  assert.equal(boot.build,"V10.42 r71");assert.equal(boot.cache,"20260930r71");assert.equal(boot.metaBuild,"V10.42 r71");assert.equal(boot.metaCache,"20260930r71");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260930r70"),"every ordered V10.42 module must use the r70 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260930r70")),"expected r70 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260930r71"),"every ordered V10.42 module must use the r71 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260930r71")),"expected r71 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -335,7 +336,8 @@ try{
   assert.ok(final.particles<=900&&final.rings<=180&&final.floaters<=140,"visual effect collections were not bounded");
   assert.deepEqual(pageErrors,[],`uncaught page errors:\n${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`same-origin script failures:\n${failedScripts.join("\n")}`);
-  assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
+  assert.deepEqual(http404s,[],`same-origin 404 responses:\n${http404s.join("\n")}`);
+  assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}\n404 responses:\n${http404s.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
   console.log("Dungeon Carnage V10.42 r57 live Solo combat endurance regression passed.");
