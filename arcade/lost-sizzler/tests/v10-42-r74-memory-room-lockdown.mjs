@@ -32,5 +32,9 @@ assert.ok(play.includes("Correct sequence. The chamber doors reopen"),"solve fee
 
 assert.ok(render.includes("MEMORY VAULT LOCKED — ${mem.inputIndex||0}/5"),"room overlay must show live lockdown progress");
 assert.match(render,/mem\.lockdownActive\?P\.red:P\.cyan/,"locked room status must be visually distinct");
+assert.match(render,/function memoryPuzzleOverviewTarget\(mem,p,v\)/,"large Memory Vaults must own a camera visibility policy");
+assert.match(render,/screenY>=marginY&&screenY<=v\.h-marginY/,"Memory Vault overview must verify that the player remains inside the visible safe frame");
+assert.match(render,/return visible\?\{\.\.\.overview,followPlayer:false\}:\{x:p\.rx,y:p\.ry,followPlayer:true\}/,"camera must refocus on the player when they walk beyond the puzzle overview frame");
+assert.match(render,/if\(mem&&!mem\.solved&&roomId===mem\.roomId\)\{const target=memoryPuzzleOverviewTarget/,"the live memory-room camera must use the player-aware target");
 
 console.log("Dungeon R74 memory-pad reliability and chamber-lockdown contract passed.");
