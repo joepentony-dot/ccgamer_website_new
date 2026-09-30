@@ -15,12 +15,12 @@ const version=JSON.parse(read("version.json"));
 const canonical=read("index.html");
 const alias=fs.readFileSync(path.resolve(root,"../c64-dungeon-carnage/index.html"),"utf8");
 
-assert.equal(version.build,"V10.42 r70");
-assert.equal(version.cacheToken,"20260930r70");
+assert.equal(version.build,"V10.42 r71");
+assert.equal(version.cacheToken,"20260930r71");
 assert.match(canonical,/ccg-lost-sizzler-build" content="V10\.42 r70"/);
-assert.match(canonical,/ccg-lost-sizzler-cache" content="20260930r70"/);
+assert.match(canonical,/ccg-lost-sizzler-cache" content="20260930r71"/);
 assert.match(alias,/ccg-lost-sizzler-build" content="V10\.42 r70"/);
-assert.match(alias,/ccg-lost-sizzler-cache" content="20260930r70"/);
+assert.match(alias,/ccg-lost-sizzler-cache" content="20260930r71"/);
 
 assert.match(render,/CCGLostSizzlerV142R70RenderPerformance/,"R70 must expose renderer performance diagnostics");
 assert.match(render,/quality:"rich"/,"renderer must start at full quality");
@@ -53,4 +53,4 @@ assert.match(supabase,/ccgSupabaseDebug/,"Supabase debug logging must be opt-in"
 assert.match(supabase,/supabaseDebugSeen = new Set\(\)/,"duplicate debug payloads must be suppressed");
 assert.match(supabase,/if \(!supabaseDebugEnabled\(\)\) return;/,"normal production traffic must not emit debug logs");
 
-console.log("PASS V10.42 R70 severe performance recovery contract");
+console.log("PASS V10.42 R71 severe performance recovery contract");
