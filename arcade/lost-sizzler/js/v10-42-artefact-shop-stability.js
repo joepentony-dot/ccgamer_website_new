@@ -1,4 +1,4 @@
-/* C64 Dungeon Carnage V10.42 — Artefact shop exchange stability. */
+/* C64 Dungeon Carnage V10.42 — Banishment Essence / legacy Artefact exchange stability. */
 (()=>{
   "use strict";
   if(window.CCGLostSizzlerV142ArtefactShopStability)return;
@@ -54,7 +54,7 @@
     const have=physicalHave+essenceHave;
     if(have<need){
       diagnostics.insufficient++;
-      try{showToast("NOT ENOUGH ARTEFACTS",`The Flask costs ${need} artefacts. You have ${have}.`,"red",6000)}catch(_){}
+      try{showToast("NOT ENOUGH BANISHMENT ESSENCE",`The Alchemist requires ${need} Essence. Your Vessel and any legacy Artefacts currently provide ${have}.`,"red",6500)}catch(_){}
       return false;
     }
 
@@ -88,13 +88,13 @@
     const flask={kind:"banishment",name:"Banishment Flask",short:"BANISH"};
     if(!PGR.inventoryAdd(player,flask)){
       restorePaymentState(player,snapshot);diagnostics.rollbacks++;
-      try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Artefacts were not spent.","red",6000)}catch(_){}
+      try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Essence and any legacy Artefacts were restored.","red",6500)}catch(_){}
       return false;
     }
 
     diagnostics.trades++;
     try{S.sfx("shrine")}catch(_){}
-    try{showToast("BANISHMENT FLASK ACQUIRED",`${need} artefacts exchanged. The 10 Gold purchase remains available separately.`,"gold",8000)}catch(_){}
+    try{showToast("BANISHMENT FLASK DISTILLED",`${need} Essence consumed. Exactly one Banishment Flask has been added; Score and Gold are unchanged.`,"gold",8000)}catch(_){}
     try{if(host)host.revision++;broadcastWorld();renderShop();sync()}catch(_){}
     return true;
   }
@@ -118,6 +118,7 @@
       const base=liveOwner;
       const wrapped=function(id,...args){
         if(String(id)==="banishment")return tradeArtefactsForFlask();
+        if(String(id)==="banishmentScore")return false;
         return base.call(this,id,...args);
       };
       wrapped.__ccgArtefactShopStability=true;
