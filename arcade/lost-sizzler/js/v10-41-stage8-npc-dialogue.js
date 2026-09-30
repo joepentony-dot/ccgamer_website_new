@@ -94,7 +94,7 @@
     const visits=Math.max(0,Number(merchantVoiceVisits.get(shop)||0));
     let base;
     if(shop?.shopType==="hidden"){
-      let essence=0;try{essence=Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
+      let essence=0;try{essence=Math.max(0,Number(p1?.banishmentEssence||0))+Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
       const need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
       if(visits===0)base=lines.merchant.hidden;
       else if(essence>=need)base=lines.merchant.hiddenReady;
