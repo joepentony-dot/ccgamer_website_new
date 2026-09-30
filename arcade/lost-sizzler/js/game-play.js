@@ -77,8 +77,10 @@ function normalizeAttackState(p){
   }
   return changed
 }
+function releasePauseProjectileCadenceHold(){try{window.__CCG_PAUSE_PROJECTILE_CADENCE_HOLD_UNTIL__=0}catch(_){}}
 function attackNowUnbuffered(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
+  releasePauseProjectileCadenceHold();
   normalizeAttackState(p);
   const isP2=p===p2,cooldown=isP2?fire2:fire1;
   if(isP2)fireBuffer2=0;else fireBuffer1=0;
@@ -87,6 +89,7 @@ function attackNowUnbuffered(p,requestedDirection=null){
 }
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
+  releasePauseProjectileCadenceHold();
   p.__ccgFireSpawnFault=false;
   normalizeAttackState(p);
   const isP2=p===p2,direction=attackDirection(p,requestedDirection),now=performance.now();
@@ -702,7 +705,8 @@ function update(dt){
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
   if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=executeAuthoritativeFire(p1,d1(),"buffered");if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=executeAuthoritativeFire(p2,d2(),"buffered");if(fired)fireBuffer2=0;else fire2=0}
-  if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
+  const pauseProjectileCadenceHeld=performance.now()<Math.max(0,Number(window.__CCG_PAUSE_PROJECTILE_CADENCE_HOLD_UNTIL__)||0);
+  if(projectileCD<=0&&!pauseProjectileCadenceHeld){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
