@@ -1,4 +1,4 @@
-/* C64 Dungeon Carnage V10.42 — Artefact shop exchange stability. */
+/* C64 Dungeon Carnage V10.42 — Banishment Essence / legacy Artefact exchange stability. */
 (()=>{
   "use strict";
   if(window.CCGLostSizzlerV142ArtefactShopStability)return;
@@ -9,6 +9,8 @@
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function progression(){return window.CCGProgression||null}
   function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
+  function currentRenderOwner(){try{return typeof renderShop==="function"?renderShop:null}catch(_){return null}}
+  function alchemistOpen(){try{return Boolean(activeShop&&(activeShop.v142Alchemist||String(activeShop.title||"").includes("ALCHEMIST")))}catch(_){return false}}
   function chainOwnsArtefactBoundary(owner=currentShopOwner()){
     const seen=new Set();
     let current=owner;
@@ -20,6 +22,43 @@
     return false;
   }
   function ownsCurrentBoundary(){return chainOwnsArtefactBoundary()}
+  function chainOwnsRenderBoundary(owner=currentRenderOwner()){
+    const seen=new Set();let current=owner;
+    for(let depth=0;typeof current==="function"&&depth<24&&!seen.has(current);depth++){
+      if(current.__ccgR76BanishmentRenderBoundary)return true;
+      seen.add(current);current=current.__ccgOriginal;
+    }
+    return false;
+  }
+  function cleanFlaskCards(){
+    try{
+      const root=typeof UI!=="undefined"?UI?.shopItems:null;if(!root)return 0;
+      let removed=0;
+      const scoreButton=root.querySelector?.('[data-shop-buy="banishmentScore"]'),scoreArticle=scoreButton?.closest?.("article");
+      if(scoreArticle){scoreArticle.remove();removed++}
+      const trade=root.querySelector?.('[data-shop-buy="banishment"]'),article=trade?.closest?.("article");
+      if(!alchemistOpen()){
+        if(article){article.remove();removed++}
+        return removed;
+      }
+      if(trade&&article){
+        const player=currentPlayer(),need=Math.max(1,Math.floor(Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(player))||Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
+        trade.textContent="DISTIL FLASK";
+        const title=article.querySelector("h3"),price=article.querySelector(".price"),copy=article.querySelector("p");
+        if(title)title.textContent="DISTIL BANISHMENT FLASK";
+        if(price)price.textContent=`${need} ESSENCE`;
+        if(copy)copy.textContent="Consumes Banishment Essence from the Vessel and creates exactly one Banishment Flask. Score and Gold are unchanged.";
+      }
+      return removed;
+    }catch(_){return 0}
+  }
+  function installRenderBoundary(){
+    const live=currentRenderOwner();if(!live)return false;
+    if(chainOwnsRenderBoundary(live))return true;
+    const wrapped=function(...args){const result=live.apply(this,args);cleanFlaskCards();return result};
+    wrapped.__ccgR76BanishmentRenderBoundary=true;wrapped.__ccgOriginal=live;
+    renderShop=wrapped;return true;
+  }
   const nonNegativeInt=value=>Math.max(0,Math.floor(Number(value)||0));
   const cloneItem=item=>item&&typeof item==="object"?{...item}:item;
 
@@ -48,13 +87,14 @@
   function tradeArtefactsForFlask(){
     const PGR=progression(),player=currentPlayer();
     if(!PGR||!player)return false;
+    if(!alchemistOpen()){try{showToast("ALCHEMIST REQUIRED","Banishment Flasks can only be distilled at a Banishment Alchemist.","cyan",5200)}catch(_){}return false}
     const need=Math.max(1,Math.floor(Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
     const physicalHave=physicalArtefactCount(player);
     const essenceHave=nonNegativeInt(player.banishmentEssence);
     const have=physicalHave+essenceHave;
     if(have<need){
       diagnostics.insufficient++;
-      try{showToast("NOT ENOUGH ARTEFACTS",`The Flask costs ${need} artefacts. You have ${have}.`,"red",6000)}catch(_){}
+      try{showToast("NOT ENOUGH BANISHMENT ESSENCE",`The Alchemist requires ${need} Essence. Your Vessel and any legacy Artefacts currently provide ${have}.`,"red",6500)}catch(_){}
       return false;
     }
 
@@ -88,13 +128,13 @@
     const flask={kind:"banishment",name:"Banishment Flask",short:"BANISH"};
     if(!PGR.inventoryAdd(player,flask)){
       restorePaymentState(player,snapshot);diagnostics.rollbacks++;
-      try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Artefacts were not spent.","red",6000)}catch(_){}
+      try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Essence and any legacy Artefacts were restored.","red",6500)}catch(_){}
       return false;
     }
 
     diagnostics.trades++;
     try{S.sfx("shrine")}catch(_){}
-    try{showToast("BANISHMENT FLASK ACQUIRED",`${need} artefacts exchanged. The 10 Gold purchase remains available separately.`,"gold",8000)}catch(_){}
+    try{showToast("BANISHMENT FLASK DISTILLED",`${need} Essence consumed. Exactly one Banishment Flask has been added; Score and Gold are unchanged.`,"gold",8000)}catch(_){}
     try{if(host)host.revision++;broadcastWorld();renderShop();sync()}catch(_){}
     return true;
   }
@@ -103,9 +143,10 @@
     const foundation=window.CCGDungeonProgressionFoundation;
     if(!foundation?.ready){diagnostics.installWaits++;return false}
     try{
+      const renderReady=installRenderBoundary();
       const liveOwner=currentShopOwner();
       if(!liveOwner)return false;
-      if(chainOwnsArtefactBoundary(liveOwner)){installed=true;return true}
+      if(chainOwnsArtefactBoundary(liveOwner)){installed=Boolean(renderReady);return installed}
 
       /*
         Later ordered modules (notably R1 shop-counter stability) legitimately
@@ -118,14 +159,15 @@
       const base=liveOwner;
       const wrapped=function(id,...args){
         if(String(id)==="banishment")return tradeArtefactsForFlask();
+        if(String(id)==="banishmentScore")return false;
         return base.call(this,id,...args);
       };
       wrapped.__ccgArtefactShopStability=true;
       wrapped.__ccgOriginal=base;
       buyShopItem=wrapped;
       if(installed)diagnostics.rebinds++;
-      installed=true;diagnostics.installs++;
-      return true;
+      installed=Boolean(renderReady);diagnostics.installs++;
+      return installed;
     }catch(_){return false}
   }
 
@@ -142,6 +184,8 @@
     diagnostics,
     install,
     tradeArtefactsForFlask,
+    cleanFlaskCards,
+    installRenderBoundary,
     isInstalled:()=>installed&&ownsCurrentBoundary()
   });
 })();

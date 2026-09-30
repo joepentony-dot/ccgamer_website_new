@@ -120,6 +120,7 @@
     armourRestored:{text:"Armour restored.",priority:12,cooldown:60000},
     bronzeKeyCollected:{text:"Bronze key collected.",priority:28,cooldown:2500},
     artefactCollected:{text:"Artefact collected.",priority:28,cooldown:2500},
+    essenceCollected:{text:"Banishment Essence collected.",priority:28,cooldown:2500},
     weaponUpgraded:{text:"Weapon upgraded.",priority:36,cooldown:2500},
     upgradeAvailable:{text:"Upgrade available.",priority:44,cooldown:2500},
     exitSigilAcquired:{text:"Exit Sigil acquired.",priority:62,cooldown:2500},
@@ -142,6 +143,7 @@
     useBanishmentFlask:{text:"Use the Banishment Flask.",priority:72,cooldown:7000},
     notEnoughScore:{text:"Not enough score.",priority:38,cooldown:2500},
     notEnoughArtefacts:{text:"Not enough artefacts.",priority:38,cooldown:2500},
+    notEnoughEssence:{text:"Not enough Banishment Essence.",priority:38,cooldown:2500},
     purchaseComplete:{text:"Purchase complete.",priority:20,cooldown:12000},
     inventoryFull:{text:"Your inventory is full.",priority:42,cooldown:2500},
     ambush:{text:"Ambush.",priority:66,cooldown:6000},
@@ -155,6 +157,7 @@
     scoutLagging:{text:"Don’t leave me behind.",priority:42,cooldown:12000},
     scoutSanctuaryNear:{text:"Is that sanctuary?",priority:44,cooldown:12000},
     artefactLore:{text:"Artefacts are worth more than they look.",priority:18,cooldown:90000},
+    essenceLore:{text:"Banishment Essence is stored in your Vessel. An Alchemist can distil it into a Flask.",priority:18,cooldown:90000},
     hazardWarning:{text:"Probably best not to stand on that.",priority:48,cooldown:10000},
     dangerRoom:{text:"That doesn’t look safe.",priority:32,cooldown:30000},
     secretDoor:{text:"Secret door discovered.",priority:44,cooldown:6000},
@@ -307,7 +310,7 @@
   function unlock(){state.unlocked=true}
   function onRecordedPickupVoice(event){
     const detail=event?.detail||{},kind=String(detail.kind||""),lootKind=String(detail.lootKind||"");
-    const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"artefactCollected":"";
+    const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"essenceCollected":"";
     if(key==="ammoCollected"){
       // R70 voice pacing: ammunition is a routine pickup. Say it once per run,
       // and only mark it spoken when playback actually starts.
@@ -320,7 +323,7 @@
     }else if(key)try{sayKey(key)}catch(_){}
     if(kind==="loot"&&lootKind==="artefact"&&!state.artefactLorePlayed){
       state.artefactLorePlayed=true;
-      setTimeout(()=>{try{sayKey("artefactLore",{cooldown:0})}catch(_){}},2300)
+      setTimeout(()=>{try{sayKey("essenceLore",{cooldown:0})}catch(_){}},2300)
     }
   }
   function onHazardDamageVoice(){
@@ -384,9 +387,10 @@
     if(/SHOP PURCHASE/.test(s))return"merchantPurchase";
     if(/FLOOR EXIT SEALED/.test(s))return"exitSealed";
     if(/NOT ENOUGH SCORE/.test(s))return"shopNoScore";
+    if(/NOT ENOUGH BANISHMENT ESSENCE/.test(s))return"notEnoughEssence";
     if(/NOT ENOUGH ARTEFACTS/.test(s))return"notEnoughArtefacts";
     if(/INVENTORY FULL/.test(s))return"inventoryFull";
-    if(/BANISHMENT FLASK ACQUIRED/.test(s))return"banishmentFlaskAcquired";
+    if(/BANISHMENT FLASK (?:ACQUIRED|DISTILLED)/.test(s))return"banishmentFlaskAcquired";
     if(/EXIT SIGIL/.test(s)&&/ACQUIRED|FOUND|COLLECTED/.test(s))return"exitSigilAcquired";
     if(/BRONZE KEY/.test(s)&&/FOUND|COLLECTED|ACQUIRED/.test(s))return"bronzeKeyCollected";
     if(/WEAPON EVOLVED|FIREARM UPGRADE COMPLETE/.test(s))return"weaponUpgraded";

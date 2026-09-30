@@ -33,7 +33,7 @@
     {id:"hot-fire-button",name:"HOT FIRE BUTTON",desc:"+1 weapon damage, but maximum ammunition falls by 20.",apply:p=>{p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(60,p.maxMana-20);p.mana=Math.min(p.mana,p.maxMana)}},
     {id:"competition-pro-spring",name:"COMPETITION PRO SPRING",desc:"Movement becomes another 10% faster.",apply:p=>{p.moveMultiplier=(p.moveMultiplier||1)*.90}},
     {id:"scavenger-rom",name:"SCAVENGER ROM",desc:"Ammo packs become 35% more effective and potions heal one extra point.",apply:p=>{p.scavenger=(p.scavenger||0)+.35;p.potionBonus=(p.potionBonus||0)+1}},
-    {id:"alchemist-seal",name:"ALCHEMIST'S SEAL",desc:"Banishment Charges require one less Essence, to a minimum of two.",apply:p=>{p.banishmentEssenceCost=Math.max(2,essenceCost(p)-1)}},
+    {id:"alchemist-seal",name:"ALCHEMIST'S SEAL",desc:"Banishment Flasks require one less Essence, to a minimum of two.",apply:p=>{p.banishmentEssenceCost=Math.max(2,essenceCost(p)-1)}},
     {id:"cartographer-chip",name:"CARTOGRAPHER CHIP",desc:"Normal sight increases by one tile for the rest of the run.",apply:p=>{p.v142SightBonus=(p.v142SightBonus||0)+1}},
     {id:"blood-cartridge",name:"BLOOD CARTRIDGE",desc:"Every ten enemy kills restore one health.",apply:p=>{p.v142BloodCartridge=true;p.v142BloodHealAt=(Number(currentRun()?.stats?.kills)||0)+10}},
     {id:"ward-amplifier",name:"WARD AMPLIFIER",desc:"Once Ward awakens, it restores protective armour more frequently.",apply:p=>{p.v142WardCooldownMs=18000}}
@@ -185,7 +185,7 @@
 
   function awardEssence(player,amount,source){
     if(!player||amount<=0)return false;initRpg(player);player.banishmentEssence+=amount;const need=essenceCost(player),have=player.banishmentEssence;
-    announce("BANISHMENT ESSENCE",`${source}. Vessel ${have}/${need}${have>=need?" — a Banishment Charge can be distilled at an Alchemist.":"."}`,"purple",7600);return true;
+    announce("BANISHMENT ESSENCE",`${source}. Vessel ${have}/${need}${have>=need?" — a Banishment Flask can be distilled at an Alchemist.":"."}`,"purple",7600);return true;
   }
 
   function scanEssenceSources(){
@@ -230,10 +230,10 @@
   function guardianAliveFor(key,h){return key?.lockedByEnemyId&&h?.enemies?.some(enemy=>enemy.id===key.lockedByEnemyId&&enemy.alive)}
   function beginEscape(player){
     const r=currentRun(),h=currentHost();if(!r||!h||r.v142EscapePhase)return;r.v142EscapePhase=true;r.alert=Math.max(Number(r.alert)||0,Number(PD.escapeAlert)||78);player.sigilBanish=true;
-    if(PROG.inventoryCanAdd(player,{kind:"banishment"}))PROG.inventoryAdd(player,{kind:"banishment",name:"Sigil Banishment Charge",short:"BANISH"});
+    if(PROG.inventoryCanAdd(player,{kind:"banishment"}))PROG.inventoryAdd(player,{kind:"banishment",name:"Sigil Banishment Flask",short:"BANISH"});
     if(h.stalker){h.stalker.spawnTimer=0;h.stalker.v142EscapeAwakened=true}
     for(const enemy of h.enemies||[])if(enemy.alive&&enemy.deathStalker){enemy.aiState="chase";enemy.lastSeen={x:player.x,y:player.y};enemy.memoryMs=999999;enemy.searchMs=0;enemy.moveCooldown=Math.min(enemy.moveCooldown||650,320)}
-    announce("THE SIGIL IS COMPLETE — ESCAPE",`All three Keys are bound to the Sigil. The dungeon is now fully awake. The exit is your objective; a final Banishment Charge has been granted for the run out.`,"red",12000);broadcast();syncNow();
+    announce("THE SIGIL IS COMPLETE — ESCAPE",`All three Keys are bound to the Sigil. The dungeon is now fully awake. The exit is your objective; a final Banishment Flask has been granted for the run out.`,"red",12000);broadcast();syncNow();
   }
 
   if(typeof movementTriggers==="function"){
@@ -255,22 +255,22 @@
   if(typeof renderShop==="function"){
     const baseRenderShop=renderShop;
     renderShop=function(){
-      const result=baseRenderShop();if(!activeShop?.v142Alchemist&&!activeShop?.title?.includes("ALCHEMIST"))return result;
+      const result=baseRenderShop();if(!activeShop?.v142Alchemist&&!activeShop?.title?.includes("ALCHEMIST")){for(const id of ["banishment","banishmentScore"])UI.shopItems?.querySelector?.(`[data-shop-buy="${id}"]`)?.closest("article")?.remove();return result}
       if(UI.shopTitle)UI.shopTitle.textContent="BANISHMENT ALCHEMIST";
-      if(UI.shopCopy)UI.shopCopy.textContent=`Banishment Essence is stored in your Vessel and never uses an inventory slot. Distil ${essenceCost(currentPlayer())} Essence into one permanent Banishment Charge for this run.`;
+      if(UI.shopCopy)UI.shopCopy.textContent=`Banishment Essence is stored in your Vessel and never uses an inventory slot. Distil ${essenceCost(currentPlayer())} Essence into one permanent Banishment Flask for this run.`;
       if(UI.shopArtefacts)UI.shopArtefacts.textContent=String(currentPlayer()?.banishmentEssence||0);
-      const trade=UI.shopItems?.querySelector?.('[data-shop-buy="banishment"]');if(trade){trade.textContent="DISTIL CHARGE";const article=trade.closest("article");if(article){const title=article.querySelector("h3");if(title)title.textContent="DISTIL BANISHMENT CHARGE";const price=article.querySelector(".price");if(price)price.textContent=`${essenceCost(currentPlayer())} ESSENCE`;const copy=article.querySelector("p");if(copy)copy.textContent="Consumes Essence from the Vessel and creates one Banishment Charge."}}
+      const trade=UI.shopItems?.querySelector?.('[data-shop-buy="banishment"]');if(trade){trade.textContent="DISTIL FLASK";const article=trade.closest("article");if(article){const title=article.querySelector("h3");if(title)title.textContent="DISTIL BANISHMENT FLASK";const price=article.querySelector(".price");if(price)price.textContent=`${essenceCost(currentPlayer())} ESSENCE`;const copy=article.querySelector("p");if(copy)copy.textContent="Consumes Essence from the Vessel and creates one Banishment Flask."}}
       const scoreBuy=UI.shopItems?.querySelector?.('[data-shop-buy="banishmentScore"]');scoreBuy?.closest("article")?.remove();return result;
     };
   }
   if(typeof buyShopItem==="function"){
     const baseBuyShopItem=buyShopItem;
     buyShopItem=function(id){
-      if(id!=="banishment"&&id!=="banishmentScore")return baseBuyShopItem(id);
+      if(id==="banishmentScore"){announce("ESSENCE ONLY","Banishment Flasks are distilled from Essence. Score cannot buy them.","cyan",5200);return false}if(id!=="banishment")return baseBuyShopItem(id);
       const player=currentPlayer();if(!player)return false;initRpg(player);const need=essenceCost(player),have=player.banishmentEssence||0;
       if(have<need){announce("NOT ENOUGH BANISHMENT ESSENCE",`The Alchemist requires ${need} Essence. Your Vessel currently holds ${have}.`,"red",6500);return false}
       if(!PROG.inventoryCanAdd(player,{kind:"banishment"})){announce("INVENTORY FULL","Free a slot or make room in an existing Banishment stack before distilling a charge.","red",6500);return false}
-      player.banishmentEssence-=need;PROG.inventoryAdd(player,{kind:"banishment",name:"Banishment Charge",short:"BANISH"});announce("BANISHMENT CHARGE DISTILLED",`${need} Essence consumed. The Vessel now holds ${player.banishmentEssence} Essence.`,"gold",8000);try{S.sfx("shrine")}catch(_){}broadcast();try{renderShop()}catch(_){}syncNow();return true;
+      player.banishmentEssence-=need;PROG.inventoryAdd(player,{kind:"banishment",name:"Banishment Flask",short:"BANISH"});announce("BANISHMENT FLASK DISTILLED",`${need} Essence consumed. The Vessel now holds ${player.banishmentEssence} Essence.`,"gold",8000);try{S.sfx("shrine")}catch(_){}broadcast();try{renderShop()}catch(_){}syncNow();return true;
     };
   }
 
@@ -278,7 +278,7 @@
     const baseItemHelp=itemHelp;
     itemHelp=function(kind){
       if(kind==="artefact")return `Banishment Essence is harvested from major threats, corrupted anchors and cleansed events. It is stored in the Vessel and does not consume an inventory slot.`;
-      if(kind==="banishment")return `A distilled Banishment Charge. Use B when a Death Stalker or Count Loadula is within ${CFG.stalker.banishPromptDistance||8} tiles.`;
+      if(kind==="banishment")return `A distilled Banishment Flask. Use B when a Death Stalker or Count Loadula is within ${CFG.stalker.banishPromptDistance||8} tiles.`;
       if(kind==="key")return "One of the three domain Keys: Iron, Bone or Ash. Its guardian must die before it can be claimed, and each Key awakens another Sigil power.";
       if(kind==="exitSigil")return "The awakened Sigil. Claim it after recovering all three Keys and defeating its defenders to begin the final escape phase.";
       return baseItemHelp(kind);

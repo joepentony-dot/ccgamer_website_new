@@ -41,7 +41,7 @@ try{
 
   const hidden=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue;
-    const shop={active:true,x:p1.x,y:p1.y,shopType:"hidden",title:"SECRET ARTEFACT TRADER",scorePurchases:0,sold:{}};
+    const shop={active:true,x:p1.x,y:p1.y,shopType:"hidden",v142Alchemist:true,title:"BANISHMENT ALCHEMIST",scorePurchases:0,sold:{}};
     const before={presentations:api.state.presentations,score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
     const opened=window.openShop(shop,p1);
     const after={presentations:api.state.presentations,score,inventory:JSON.stringify(p1.inventory),revision:host.revision};
@@ -57,8 +57,8 @@ try{
   assert.equal(hidden.last.voiceKey,"npc.merchant.hidden","hidden trader text must carry a stable optional local-voice key");
   const hiddenNotificationTitles=[hidden.toastTitle,...hidden.queued.map(entry=>entry.title)].join(" | ");
   const hiddenNotificationText=[hidden.toastText,...hidden.queued.map(entry=>entry.text)].join(" | ");
-  assert.match(hiddenNotificationTitles,/SECRET ARTEFACT TRADER/i,"hidden trader dialogue must use the existing notification surface, immediately or through the established toast queue");
-  assert.match(hiddenNotificationText,/Banishment Flask/i,"hidden trader dialogue must describe the existing artefact trade");
+  assert.match(hiddenNotificationTitles,/BANISHMENT ALCHEMIST/i,"hidden Alchemist dialogue must use the existing notification surface, immediately or through the established toast queue");
+  assert.match(hiddenNotificationText,/Banishment Flask|Essence/i,"hidden Alchemist dialogue must describe the current Essence-to-Flask distillation");
   assert.equal(hidden.scoreUnchanged,true,"merchant dialogue must not alter player score");
   assert.equal(hidden.inventoryUnchanged,true,"merchant dialogue must not alter inventory");
   assert.equal(hidden.revisionUnchanged,true,"merchant dialogue must not alter canonical world revision");

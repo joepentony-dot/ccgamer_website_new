@@ -31,12 +31,12 @@
       entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Ammo, armour, whatever keeps you alive.",tone:"gold",duration:6200,voiceKey:"npc.merchant.entrance"}),
       entranceRepeat:Object.freeze({key:"merchant.entrance.repeat",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Need supplies?",tone:"gold",duration:5200,voiceKey:"npc.merchant.entrance.repeat"}),
       entranceLook:Object.freeze({key:"merchant.entrance.look",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Take a look.",tone:"gold",duration:5200,voiceKey:"npc.merchant.entrance.look"}),
-      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. That usually means you’ve been nosing around.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden"}),
-      hiddenEmpty:Object.freeze({key:"merchant.hidden.empty",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me something interesting.",tone:"purple",duration:5600,voiceKey:"npc.merchant.hidden.empty"}),
-      hiddenPartial:Object.freeze({key:"merchant.hidden.partial",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me three and I can help you deal with the Stalker.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.partial"}),
-      hiddenReady:Object.freeze({key:"merchant.hidden.ready",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I can trade those artefacts for a Banishment Flask.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.ready"}),
-      hiddenLore:Object.freeze({key:"merchant.hidden.lore",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I deal in things the other merchants won’t touch.",tone:"purple",duration:6200,voiceKey:"npc.merchant.hidden.lore"}),
-      hiddenComeBack:Object.freeze({key:"merchant.hidden.comeback",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Come back when you have enough.",tone:"purple",duration:5600,voiceKey:"comeBackFunded"})
+      hidden:Object.freeze({key:"merchant.hidden",title:"BANISHMENT ALCHEMIST",speaker:"Alchemist",text:"You found me. That usually means you’ve been nosing around.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden"}),
+      hiddenEmpty:Object.freeze({key:"merchant.hidden.empty",title:"BANISHMENT ALCHEMIST",speaker:"Alchemist",text:"Bring me Banishment Essence.",tone:"purple",duration:5600,voiceKey:"npc.alchemist.empty"}),
+      hiddenPartial:Object.freeze({key:"merchant.hidden.partial",title:"BANISHMENT ALCHEMIST",speaker:"Alchemist",text:"Bring me enough Essence and I can help you deal with the Stalker.",tone:"purple",duration:6500,voiceKey:"npc.alchemist.partial"}),
+      hiddenReady:Object.freeze({key:"merchant.hidden.ready",title:"BANISHMENT ALCHEMIST",speaker:"Alchemist",text:"I can distil that Essence into a Banishment Flask.",tone:"purple",duration:6500,voiceKey:"npc.alchemist.ready"}),
+      hiddenLore:Object.freeze({key:"merchant.hidden.lore",title:"BANISHMENT ALCHEMIST",speaker:"Alchemist",text:"I deal in things the other merchants won’t touch.",tone:"purple",duration:6200,voiceKey:"npc.merchant.hidden.lore"}),
+      hiddenComeBack:Object.freeze({key:"merchant.hidden.comeback",title:"BANISHMENT ALCHEMIST",speaker:"Alchemist",text:"Come back when you have enough.",tone:"purple",duration:5600,voiceKey:"comeBackFunded"})
     }),
     sanctuary:Object.freeze({
       keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"Hello, big boy.",tone:"green",duration:5200,voiceKey:"npc.sanctuary.keeper"})
@@ -44,7 +44,7 @@
     environment:Object.freeze({
       C64_ARCHIVE:Object.freeze({key:"environment.c64-archive",title:"ARCHIVE MAINTENANCE CARD",text:"The catalogue marks cracked masonry separately from ordinary doors. Hidden routes are optional, but their shelves usually hold better supplies.",tone:"cyan",duration:8200,voiceKey:"environment.c64-archive"}),
       "1541_WORKSHOP":Object.freeze({key:"environment.1541-workshop",title:"1541 SERVICE LOG",text:"A grease-stained note warns that illuminated generators can keep producing reinforcements. Breaking the machine stops them.",tone:"green",duration:8200,voiceKey:"environment.1541-workshop"}),
-      BUDGET_BIN:Object.freeze({key:"environment.budget-bin",title:"FADED PRICE CARD",text:"The old stock list mentions two currencies: score at the quartermaster, rare artefacts at the hidden trader.",tone:"gold",duration:8000,voiceKey:"environment.budget-bin"}),
+      BUDGET_BIN:Object.freeze({key:"environment.budget-bin",title:"FADED PRICE CARD",text:"The old stock list separates ordinary score purchases from Banishment Essence, which only an Alchemist can distil into a Flask.",tone:"gold",duration:8000,voiceKey:"environment.budget-bin"}),
       DEMO_LOUNGE:Object.freeze({key:"environment.demo-lounge",title:"SCENE NOTICE",text:"The raster display maps lit chambers in green. Permanent sanctuary light keeps monsters outside and restores health on the marked square.",tone:"purple",duration:8400,voiceKey:"environment.demo-lounge"}),
       SID_REACTOR:Object.freeze({key:"environment.sid-reactor",title:"REACTOR WARNING",text:"A low-frequency alarm repeats one instruction: watch the floor signal before crossing an active chamber.",tone:"red",duration:7800,voiceKey:"environment.sid-reactor"}),
       WARP_GALLERY:Object.freeze({key:"environment.warp-gallery",title:"TRANSIT PLAQUE",text:"Scratched arrows point toward explored rooms. Teleport spells need a known chamber to lock onto.",tone:"purple",duration:7600,voiceKey:"environment.warp-gallery"}),
@@ -94,10 +94,11 @@
     const visits=Math.max(0,Number(merchantVoiceVisits.get(shop)||0));
     let base;
     if(shop?.shopType==="hidden"){
-      let artefacts=0;try{artefacts=Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
+      let essence=0;try{essence=Math.max(0,Number(p1?.banishmentEssence||0))+Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
+      const need=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
       if(visits===0)base=lines.merchant.hidden;
-      else if(artefacts>=3)base=lines.merchant.hiddenReady;
-      else if(artefacts>0)base=lines.merchant.hiddenPartial;
+      else if(essence>=need)base=lines.merchant.hiddenReady;
+      else if(essence>0)base=lines.merchant.hiddenPartial;
       else base=visits%4===0?lines.merchant.hiddenLore:visits%4===3?lines.merchant.hiddenComeBack:lines.merchant.hiddenEmpty;
     }else{
       base=visits===0?lines.merchant.entrance:(visits%2?lines.merchant.entranceRepeat:lines.merchant.entranceLook);
@@ -105,7 +106,7 @@
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
-    const trade=shop?.shopType==="hidden"?" Trade 3 rare artefacts for a Banishment Flask.":"";
+    const essenceNeed=Math.max(2,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3)),trade=shop?.shopType==="hidden"?` Distil ${essenceNeed} Banishment Essence into one Banishment Flask.`:"";
     return{...base,text:`${base.text}${trade} ${briefing}`.trim()}
   }
   function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){

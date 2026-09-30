@@ -131,7 +131,7 @@ try{
       {kind:"torch",name:"Flaming Torch",short:"TORCH",qty:1}
     ];
     run.gold=10;score=10000;
-    activeShop={id:"artefact-regression-shop",active:true,shopType:"hidden",goldPurchases:0,sold:{},title:"ARTEFACT REGRESSION SHOP"};
+    activeShop={id:"artefact-regression-shop",active:true,shopType:"hidden",v142Alchemist:true,goldPurchases:0,sold:{},title:"BANISHMENT ALCHEMIST"};
     const result=buyShopItem("banishment");
     return{
       result,
@@ -163,7 +163,7 @@ try{
     ];
     p1.banishmentEssence=3;
     run.gold=10;score=10000;
-    activeShop={id:"artefact-essence-regression-shop",active:true,shopType:"hidden",goldPurchases:0,sold:{},title:"ARTEFACT ESSENCE REGRESSION SHOP"};
+    activeShop={id:"artefact-essence-regression-shop",active:true,shopType:"hidden",v142Alchemist:true,goldPurchases:0,sold:{},title:"BANISHMENT ALCHEMIST"};
     const result=buyShopItem("banishment");
     return{
       result,
@@ -177,17 +177,87 @@ try{
       trades:Number(window.CCGLostSizzlerV142ArtefactShopStability?.diagnostics?.trades||0)
     };
   });
-  assert.equal(essenceTrade.result,true,"three current V10.42 Artefact essence must be spendable for one Banishment Flask");
-  assert.equal(essenceTrade.essence,0,"the three traded Artefact essence points must be consumed exactly once");
+  assert.equal(essenceTrade.result,true,"three current V10.42 Banishment Essence must be spendable for one Banishment Flask");
+  assert.equal(essenceTrade.essence,0,"the three traded Banishment Essence points must be consumed exactly once");
   assert.equal(essenceTrade.artefacts,0,"the live Artefact counter must report zero after the essence exchange");
   assert.equal(essenceTrade.flasks,1,"the essence exchange must add exactly one Banishment Flask");
   assert.ok(essenceTrade.count<=essenceTrade.capacity,"the essence exchange must remain within inventory capacity");
-  assert.equal(essenceTrade.gold,10,"essence Artefact exchange must not spend Gold");
-  assert.equal(essenceTrade.score,10000,"essence Artefact exchange must not spend Score");
+  assert.equal(essenceTrade.gold,10,"Essence exchange must not spend Gold");
+  assert.equal(essenceTrade.score,10000,"Essence exchange must not spend Score");
   assert.ok(essenceTrade.trades>=2,"Artefact stability layer must record both successful compatibility and live-store trades");
 
+  const shopUi=await page.evaluate(()=>{
+    activeShop={id:"ordinary-supply",active:true,shopType:"entrance",sold:{},title:"FLOOR SUPPLY DESK",scorePurchases:0};
+    renderShop();
+    const ordinary={
+      flask:Boolean(document.querySelector('[data-shop-buy="banishment"]')),
+      scoreFlask:Boolean(document.querySelector('[data-shop-buy="banishmentScore"]'))
+    };
+    activeShop={id:"r76-alchemist",active:true,shopType:"hidden",v142Alchemist:true,sold:{},title:"BANISHMENT ALCHEMIST",scorePurchases:0};
+    p1.banishmentEssence=3;
+    renderShop();
+    const flask=document.querySelector('[data-shop-buy="banishment"]');
+    const alchemist={
+      flask:Boolean(flask),
+      scoreFlask:Boolean(document.querySelector('[data-shop-buy="banishmentScore"]')),
+      label:String(flask?.textContent||""),
+      article:String(flask?.closest("article")?.textContent||""),
+      wallet:String(document.querySelector("#shop-panel .shop-wallet")?.textContent||"")
+    };
+    return{ordinary,alchemist};
+  });
+  assert.deepEqual(shopUi.ordinary,{flask:false,scoreFlask:false},"ordinary supply desks must not expose any Banishment Flask purchase route");
+  assert.equal(shopUi.alchemist.flask,true,"Banishment Alchemist must expose the Essence distillation action");
+  assert.equal(shopUi.alchemist.scoreFlask,false,"Alchemist must not expose the retired score-purchase Flask route");
+  assert.match(shopUi.alchemist.article,/DISTIL BANISHMENT FLASK|ESSENCE/i,"Alchemist Flask card must explain Essence distillation");
+  assert.match(shopUi.alchemist.wallet,/ESSENCE/i,"shop wallet must label the live currency as Essence");
+
+  const legacyScoreRoute=await page.evaluate(()=>{
+    const PGR=window.CCGProgression;
+    p1.inventory=[];
+    p1.banishmentEssence=3;
+    run.gold=10;score=10000;
+    activeShop={id:"r76-score-route",active:true,shopType:"hidden",v142Alchemist:true,sold:{},title:"BANISHMENT ALCHEMIST",scorePurchases:0};
+    const before={score:Number(score),gold:Number(run.gold),essence:Number(p1.banishmentEssence),flasks:PGR.inventoryKindCount(p1,"banishment")};
+    const result=buyShopItem("banishmentScore");
+    return{result,before,after:{score:Number(score),gold:Number(run.gold),essence:Number(p1.banishmentEssence),flasks:PGR.inventoryKindCount(p1,"banishment")}};
+  });
+  assert.equal(legacyScoreRoute.result,false,"direct calls to the retired score Flask route must be rejected");
+  assert.deepEqual(legacyScoreRoute.after,legacyScoreRoute.before,"rejected score Flask route must change no currency, Essence or inventory");
+
+  const insufficient=await page.evaluate(()=>{
+    const PGR=window.CCGProgression;
+    p1.inventory=[];
+    p1.banishmentEssence=2;
+    run.gold=10;score=10000;
+    activeShop={id:"r76-insufficient",active:true,shopType:"hidden",v142Alchemist:true,sold:{},title:"BANISHMENT ALCHEMIST"};
+    const before={score:Number(score),gold:Number(run.gold),essence:Number(p1.banishmentEssence),flasks:PGR.inventoryKindCount(p1,"banishment")};
+    const result=buyShopItem("banishment");
+    return{result,before,after:{score:Number(score),gold:Number(run.gold),essence:Number(p1.banishmentEssence),flasks:PGR.inventoryKindCount(p1,"banishment")}};
+  });
+  assert.equal(insufficient.result,false,"insufficient Banishment Essence must refuse distillation");
+  assert.deepEqual(insufficient.after,insufficient.before,"insufficient-Essence refusal must spend nothing and create no Flask");
+
+  const rollback=await page.evaluate(()=>{
+    const PGR=window.CCGProgression;
+    p1.inventorySlots=3;
+    p1.inventory=[
+      {kind:"torch",name:"Torch A",short:"TORCH"},
+      {kind:"torch",name:"Torch B",short:"TORCH"},
+      {kind:"torch",name:"Torch C",short:"TORCH"}
+    ];
+    p1.banishmentEssence=3;
+    run.gold=10;score=10000;
+    activeShop={id:"r76-full-inventory",active:true,shopType:"hidden",v142Alchemist:true,sold:{},title:"BANISHMENT ALCHEMIST"};
+    const before={score:Number(score),gold:Number(run.gold),essence:Number(p1.banishmentEssence),flasks:PGR.inventoryKindCount(p1,"banishment"),inventory:JSON.stringify(p1.inventory)};
+    const result=buyShopItem("banishment");
+    return{result,before,after:{score:Number(score),gold:Number(run.gold),essence:Number(p1.banishmentEssence),flasks:PGR.inventoryKindCount(p1,"banishment"),inventory:JSON.stringify(p1.inventory)}};
+  });
+  assert.equal(rollback.result,false,"full inventory must refuse Flask distillation when no Banishment stack exists");
+  assert.deepEqual(rollback.after,rollback.before,"failed full-inventory distillation must restore Essence and inventory exactly");
+
   assert.deepEqual(errors,[],`live-defect regression must not produce uncaught page errors: ${errors.join("\n")}`);
-  console.log("Dungeon Carnage current-main firing hold, physical/essence Artefact exchange and runtime identity regression passed.");
+  console.log("Dungeon Carnage current-main firing hold, physical/Essence exchange and runtime identity regression passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

@@ -5,23 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <base href="/arcade/lost-sizzler/">
   <!-- Raw-main Pages fallback: keeps the public Dungeon Carnage URL live while assets remain canonical in arcade/lost-sizzler/. -->
-  <meta name="ccg-lost-sizzler-build" content="V10.42 r75">
-  <meta name="ccg-lost-sizzler-cache" content="20260930r75">
+  <meta name="ccg-lost-sizzler-build" content="V10.42 r76">
+  <meta name="ccg-lost-sizzler-cache" content="20260930r76">
   <meta name="theme-color" content="#09040f">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Play C64 Dungeon Carnage, a free retro Commodore 64-inspired browser dungeon crawler. Fight tactical enemies, collect loot and survive five floors.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">
   <title>C64 Dungeon Carnage | Free Retro C64 Dungeon Game</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20260930r75" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20260930r75" fetchpriority="high">
-  <link rel="stylesheet" href="css/game.css?v=20260930r75">
-  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260930r75">
-  <link rel="stylesheet" href="css/v10-41-r28.css?v=20260930r75">
-  <link rel="stylesheet" href="css/v10-41-r29.css?v=20260930r75">
-  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260930r75">
-  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260930r75">
-  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20260930r75">
+  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20260930r76" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20260930r76" fetchpriority="high">
+  <link rel="stylesheet" href="css/game.css?v=20260930r76">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260930r76">
+  <link rel="stylesheet" href="css/v10-41-r28.css?v=20260930r76">
+  <link rel="stylesheet" href="css/v10-41-r29.css?v=20260930r76">
+  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20260930r76">
+  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20260930r76">
+  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20260930r76">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -34,9 +34,9 @@
     <div class="ccg-release-loading-meta"><span id="ccg-release-loading-percent" class="ccg-release-loading-percent">0%</span><span>C64 DUNGEON CARNAGE · PREPARING RUNTIME</span></div>
   </div>
 </div>
-  <script src="/js/ccg-supabase-config.js?v=20260930r75"></script>
-  <script src="/js/ccg-supabase-client.js?v=20260930r75"></script>
-  <script src="/js/ccg-play-maintenance-owner-gate.js?v=20260930r75" data-ccg-play-maintenance-gate="owner-preview"></script>
+  <script src="/js/ccg-supabase-config.js?v=20260930r76"></script>
+  <script src="/js/ccg-supabase-client.js?v=20260930r76"></script>
+  <script src="/js/ccg-play-maintenance-owner-gate.js?v=20260930r76" data-ccg-play-maintenance-gate="owner-preview"></script>
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
@@ -74,7 +74,7 @@
     <section class="reference-card dossier-card">
       <div class="dossier-heading"><h3>NAMED ENEMY DOSSIER</h3><button id="named-dossier-btn" class="dossier-expand" type="button">OPEN FULL DOSSIER</button></div>
       <div id="named-enemy-guide" class="named-enemy-guide"></div>
-      <div class="reference-tip"><b>Death Stalker:</b> trade 3 artefacts or pay 10,000 score at a shop for a Flask, then press <b>B</b> in range to destroy it permanently.</div>
+      <div class="reference-tip"><b>Death Stalker:</b> collect Banishment Essence, distil a Flask at a Banishment Alchemist, then press <b>B</b> in range to destroy it permanently.</div>
     </section>
     <section class="shortcut-dock" aria-labelledby="shortcut-dock-title">
       <div class="shortcut-dock-head"><h3 id="shortcut-dock-title">COMMAND DECK</h3><span>LIVE KEYS</span></div>
@@ -107,7 +107,7 @@
         <div class="feature-strip">
           <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
           <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
-          <span><b>DEATH STALKERS</b>Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask. The contextual B prompt appears in range.</span>
+          <span><b>DEATH STALKERS</b>Collect Banishment Essence and distil a Banishment Flask at an Alchemist. The contextual B prompt appears in range.</span>
         </div>
         <div class="menu-config"><label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label><label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label></div>
         <div class="mode-select-label"><span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span></div>
@@ -116,10 +116,11 @@
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="release-note" class="note">C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial are the supported game modes. Starting a run requests fullscreen automatically. Sound begins when play starts.</p><p id="menu-note" hidden aria-hidden="true" style="display:none!important"></p>
         <details id="developer-changelog" class="menu-details developer-changelog" data-latest-build-only="true">
-          <summary>Latest Build Changes · V10.42 R75</summary>
+          <summary>Latest Build Changes · V10.42 R76</summary>
           <div class="developer-changelog-current">
-            <p><strong>ACTIVE BUILD: V10.42 R75</strong></p>
+            <p><strong>ACTIVE BUILD: V10.42 R76</strong></p>
             <ul>
+              <li>R76 unifies Banishment around one rule: collect Essence, distil exactly one Flask at a Banishment Alchemist, and use B near a supernatural threat. Ordinary shops no longer expose legacy Flask purchase routes, failed distillation rolls back exactly, and Score/Gold remain unchanged.</li>
               <li>R75 makes Might feed the same full canonical damage bonus into melee and firearms, so character-build damage scaling is consistent regardless of attack type.</li>
               <li>R74 makes the Memory Vault sequence register every fresh pad entry, reports 1/5 through 5/5 progress, seals the chamber on entry and only reopens the exits after the sequence is solved.</li>
               <li>R73 gives every dungeon floor its own colour identity, moving from neutral Threshold stone through Iron Blue, Crypt Moss and Ember Amber to the danger-red Crimson Sigil Sanctum.</li>
@@ -161,10 +162,10 @@
     <div id="shop-panel" class="overlay hidden"><div class="panel v10-info-panel shop-panel-card">
       <div class="shop-panel-head"><h2 id="shop-title">Dungeon Supply Shop</h2><button id="shop-close" class="primary shop-close-top" type="button">Leave Shop</button></div>
       <p id="shop-copy">Choose what you actually need. Normal score stock can be bought repeatedly, with the price doubling after every purchase at this shop.</p>
-      <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ARTEFACTS <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
+      <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ESSENCE <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
       <div id="shop-status" class="shop-status hidden" role="status" aria-live="assertive" aria-atomic="true"><b id="shop-status-title">SHOP READY</b><span id="shop-status-text">Purchase feedback will appear here.</span></div>
       <div id="shop-items" class="shop-grid"></div>
-      <p class="shop-note">Normal score items can be bought repeatedly at the same shop. The shared price ladder is 1,000, 2,000, 4,000, 8,000 and so on. Stock: Potion, Torch, Teleport Spell, Inventory Slot, Ammo, Armour and a floor-gated Firearm Upgrade. Inventory expansions stop only when all six slots are open. The Firearm Upgrade starts at 2,500 score (20 Gold Score Coins) and rises by 1,250 score per tier without affecting the normal shop price ladder. A Banishment Flask can be traded repeatedly for 3 artefacts or bought once per shop for a fixed 10,000 score.</p>
+      <p class="shop-note">Normal score items can be bought repeatedly at the same shop. The shared price ladder is 1,000, 2,000, 4,000, 8,000 and so on. Stock: Potion, Torch, Teleport Spell, Inventory Slot, Ammo, Armour and a floor-gated Firearm Upgrade. Inventory expansions stop only when all six slots are open. The Firearm Upgrade starts at 2,500 score (20 Gold Score Coins) and rises by 1,250 score per tier without affecting the normal shop price ladder. Banishment Flasks are not score purchases. Collect Banishment Essence and distil one Flask at a Banishment Alchemist; ordinary supply desks do not stock them.</p>
     </div></div>
 
     <div id="save-panel" class="overlay hidden"><div class="panel compact save-panel-card">
@@ -187,7 +188,7 @@
         <section><div class="rulebook-icon">◎</div><h3>1 · COMPLETE THE HUD GOAL</h3><p>Keys, generators, rescue, exploration or guardian. The five-minute reminder always shows what comes next.</p></section>
         <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL GREAT HALL</h3><p>Enter the opened reinforced gate. It locks behind you while the Sigil Warden, its Praetorian and their minions defend the great hall. Defeat every defender, then collect the Exit Sigil.</p></section>
         <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
-        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. A lit carried torch frightens it away and stops its pursuit until the flame expires or is extinguished. Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. A lit carried torch frightens it away and stops its pursuit until the flame expires or is extinguished. Collect Banishment Essence and distil a Banishment Flask at an Alchemist, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>DOORS, BRONZE KEYS &amp; SECRETS</h3><p>Bronze keys open optional bronze doors or standalone locked chests. If a chest is inside a room you already unlocked with a bronze key, that same key covers the room and the chest costs no second key. Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
         <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>You begin with the Archive Sword and no firearm. Pickups now name the thing you actually collected: weapon caches evolve your current firearm instead of advertising random gun names, armour and XP show the amount gained, health is identified as a potion, and ammunition shows the rounds added. Firearms are found or bought, and each floor receives ammunition based on the enemies actually generated. At zero ammo ATTACK automatically returns to melee.</p></section>
         <section><div class="rulebook-icon">£</div><h3>THE GAMBLER</h3><p>A rare one-use Gambler can appear during an ordinary dungeon run. Stand beside him and press G to stake 1,000 score on his animated reel. One position pays 2,000 score, two positions reduce your health to 2 HP, and three positions simply take the stake.</p></section>
@@ -247,36 +248,36 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
-<script src="js/v10-41-cache-guard.js?v=20260930r75"></script>
-<script src="js/v10-41-load-watchdog.js?v=20260930r75"></script>
-<script src="js/version-check.js?v=20260930r75"></script>
-<script src="js/v10-23-tutorial-guidance.js?v=20260930r75"></script>
-<script src="js/asset-overrides.js?v=20260930r75"></script>
-<script src="js/avatar-data.js?v=20260930r75"></script>
-<script src="js/config.js?v=20260930r75"></script>
-<script src="js/progression.js?v=20260930r75"></script>
-<script src="js/audio-assets.js?v=20260930r75"></script>
-<script src="js/audio.js?v=20260930r75"></script>
-<script src="js/world.js?v=20260930r75"></script>
-<script src="js/network.js?v=20260930r75"></script>
-<script src="js/ai.js?v=20260930r75"></script>
-<script src="js/systems.js?v=20260930r75"></script>
-<script src="js/game-core.js?v=20260930r75"></script>
-<script src="js/game-network.js?v=20260930r75"></script>
-<script src="js/game-local-runtime.js?v=20260930r75"></script>
-<script src="js/game-play.js?v=20260930r75"></script>
-<script src="js/game-render.js?v=20260930r75"></script>
-<script src="js/game-main.js?v=20260930r75"></script>
-<script src="js/v10-41-lake-item-safety.js?v=20260930r75"></script>
-<script src="js/v10-41-gambler-devroom.js?v=20260930r75"></script>
-<script src="js/v10-41-developer-vault-hardening.js?v=20260930r75"></script>
-<script src="js/v10-41-developer-asset-catalog.js?v=20260930r75"></script>
-<script src="js/v10-41-split-friendly-fire.js?v=20260930r75"></script>
-<script src="js/v10-41-landing-notification-polish.js?v=20260930r75"></script>
-<script src="js/v10-41-major-notification-hardening.js?v=20260930r75"></script>
-<script src="js/v10-41-active-enemy-fire.js?v=20260930r75"></script>
-<script src="js/v10-41-r29-runtime-repair.js?v=20260930r75"></script>
-  <script src="js/v10-41-r30-global-movement-guard.js?v=20260930r75"></script>
+<script src="js/v10-41-cache-guard.js?v=20260930r76"></script>
+<script src="js/v10-41-load-watchdog.js?v=20260930r76"></script>
+<script src="js/version-check.js?v=20260930r76"></script>
+<script src="js/v10-23-tutorial-guidance.js?v=20260930r76"></script>
+<script src="js/asset-overrides.js?v=20260930r76"></script>
+<script src="js/avatar-data.js?v=20260930r76"></script>
+<script src="js/config.js?v=20260930r76"></script>
+<script src="js/progression.js?v=20260930r76"></script>
+<script src="js/audio-assets.js?v=20260930r76"></script>
+<script src="js/audio.js?v=20260930r76"></script>
+<script src="js/world.js?v=20260930r76"></script>
+<script src="js/network.js?v=20260930r76"></script>
+<script src="js/ai.js?v=20260930r76"></script>
+<script src="js/systems.js?v=20260930r76"></script>
+<script src="js/game-core.js?v=20260930r76"></script>
+<script src="js/game-network.js?v=20260930r76"></script>
+<script src="js/game-local-runtime.js?v=20260930r76"></script>
+<script src="js/game-play.js?v=20260930r76"></script>
+<script src="js/game-render.js?v=20260930r76"></script>
+<script src="js/game-main.js?v=20260930r76"></script>
+<script src="js/v10-41-lake-item-safety.js?v=20260930r76"></script>
+<script src="js/v10-41-gambler-devroom.js?v=20260930r76"></script>
+<script src="js/v10-41-developer-vault-hardening.js?v=20260930r76"></script>
+<script src="js/v10-41-developer-asset-catalog.js?v=20260930r76"></script>
+<script src="js/v10-41-split-friendly-fire.js?v=20260930r76"></script>
+<script src="js/v10-41-landing-notification-polish.js?v=20260930r76"></script>
+<script src="js/v10-41-major-notification-hardening.js?v=20260930r76"></script>
+<script src="js/v10-41-active-enemy-fire.js?v=20260930r76"></script>
+<script src="js/v10-41-r29-runtime-repair.js?v=20260930r76"></script>
+  <script src="js/v10-41-r30-global-movement-guard.js?v=20260930r76"></script>
 <script>
 (()=>{const purgeLegacy=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>{if(node.dataset.latestBuildOnly!=="true")node.remove()});purgeLegacy();addEventListener("DOMContentLoaded",purgeLegacy,{once:true});addEventListener("load",purgeLegacy,{once:true});setTimeout(purgeLegacy,2000)})();
 </script>

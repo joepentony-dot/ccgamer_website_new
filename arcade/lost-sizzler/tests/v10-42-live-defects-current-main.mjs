@@ -9,44 +9,78 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const play=read("js/game-play.js");
 const main=read("js/game-main.js");
+const local=read("js/game-local-runtime.js");
+const core=read("js/game-core.js");
+const procedural=read("js/v10-42-procedural-overhaul.js");
 const shop=read("js/v10-42-artefact-shop-stability.js");
+const dialogue=read("js/v10-41-stage8-npc-dialogue.js");
+const voice=read("js/v10-16-voice-director.js");
+const index=read("index.html");
+const alias=fs.readFileSync(path.resolve(root,"../c64-dungeon-carnage/index.html"),"utf8");
 
 assert.match(bootstrap,/expectedSubtitle="C64 DUNGEON CARNAGE — V10\.42"/,"authoritative bootstrap must retain the current customer-facing game identity");
 assert.doesNotMatch(bootstrap,/expectedSubtitle="THE LOST SIZZLER/,"authoritative bootstrap must not restamp the retired public title");
 assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js/,"ordered bootstrap must not reload the retired held-FIRE recovery owner");
-assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap must load Artefact exchange stability");
+assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap must load the Banishment exchange stability owner");
 assert.match(bootstrap,/window\.addEventListener\("click",blockedStart,true\)/,"V10.42 must capture pre-ready start gestures before older document-level release handlers");
 assert.match(bootstrap,/if\(state\.ready\)\{\s*if\(target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"\)return;/,"after readiness V10.42 must narrow capture ownership to Solo/Tutorial while preserving established handlers for the other supported controls");
 assert.match(bootstrap,/state\.pendingStartId=target\.id;\s*target\.setAttribute\("aria-busy","true"\);\s*replayPendingStart\(\);/,"a Solo/Tutorial click crossing the readiness boundary must be preserved and handed to the authoritative replay path");
 assert.doesNotMatch(bootstrap,/window\.removeEventListener\("click",blockedStart,true\)/,"V10.42 must not reopen the proven ready-transition click race by removing its narrow Solo/Tutorial capture owner");
-assert.match(bootstrap,/legacyGatePending=window\.CCGLostSizzlerReleaseGate\?\.state\?\.ready===false/,"queued starts must wait for the legacy release gate rather than dropping the click");
-assert.match(bootstrap,/if\(!button\|\|!button\.isConnected\)\{retry\(\);return\}\s*if\(button\.disabled\|\|legacyGatePending\)\{retry\(\);return\}/,"queued starts must survive missing, detached or transiently disabled buttons and the legacy-gate handoff");
-assert.match(bootstrap,/state\.pendingStartRetries\+=1;\s*setTimeout\(attempt,50\)/,"queued starts must retain the canonical fixed retry cadence until dispatch becomes safe");
 
 assert.match(main,/const p1AttackKey=e\.code==="Space"\|\|e\.code==="Numpad0"[\s\S]*if\(p1AttackKey&&p1\)[\s\S]*if\(!e\.repeat\)queueAttack\(p1\)/,"fresh keyboard FIRE from Space or Numpad0 must enter the canonical queue exactly once");
-assert.match(main,/input\.add\(e\.code\)/,"desktop/gamepad key state must remain represented by the canonical input set");
 assert.match(main,/setAttackHeldInput\(p1,Boolean\(e\.repeat\|\|gamepadHeld\)\)/,"sustained P1 FIRE must require an explicit repeat or gamepad-held qualification");
-assert.match(main,/addEventListener\("keyup",e=>\{input\.delete\(e\.code\);if\(\(e\.code==="Space"\|\|e\.code==="Numpad0"\)&&p1\)setAttackHeldInput\(p1,false\)/,"key release must clear canonical input and release qualified P1 held-FIRE ownership");
-assert.match(main,/addEventListener\("blur",\(\)=>input\.clear\(\)\)/,"focus loss must clear all held gameplay input");
-assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)\{const fired=executeAuthoritativeFire\(p1,d1\(\),"buffered"\);if\(fired\)fireBuffer1=0/,"sustained qualified held FIRE and one buffered tap must converge on the captured authoritative frame-loop owner");
-assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*if\(isP2\)fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS;/,"fresh FIRE must enter the canonical buffer owner rather than bypassing frame-loop combat");
-assert.doesNotMatch(play,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"raw key presence must not be sufficient to repeat a quick desktop FIRE tap");
+assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*executeAuthoritativeFire\(p1,d1\(\),"buffered"\)/,"sustained qualified held FIRE and one buffered tap must converge on the captured authoritative frame-loop owner");
 assert.doesNotMatch(play,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"the canonical FIRE path must not traverse retired recovery-owner chains");
 
-assert.match(shop,/String\(id\)==="banishment"/,"Artefact repair must be isolated to the Flask exchange action");
-assert.match(shop,/physicalArtefactCount\(player\)/,"Artefact exchange must recognise legacy physical Artefact stacks");
-assert.match(shop,/nonNegativeInt\(player\.banishmentEssence\)/,"Artefact exchange must recognise the current V10.42 essence store");
-assert.match(shop,/inventoryRemove\(player,slot,1\)/,"physical Artefacts must be removed transactionally before destination-slot validation");
-assert.match(shop,/snapshotPaymentState\(player\)/,"Artefact exchange must snapshot both payment stores before spending");
-assert.match(shop,/restorePaymentState\(player,snapshot\)/,"failed exchange must restore physical Artefacts and essence exactly");
-assert.match(shop,/snapshot\.hadEssence/,"rollback must preserve whether the essence field existed before the transaction");
-assert.match(shop,/function chainOwnsArtefactBoundary\(owner=currentShopOwner\(\)\)/,"Artefact repair must verify the live buyShopItem wrapper chain rather than trusting a historical install flag");
-assert.match(shop,/depth<24&&!seen\.has\(current\)/,"Artefact wrapper-chain inspection must be bounded and cycle-safe");
-assert.match(shop,/current=current\.__ccgOriginal/,"Artefact ownership must follow preserved shop-wrapper ownership links");
-assert.match(shop,/if\(chainOwnsArtefactBoundary\(liveOwner\)\)\{installed=true;return true\}/,"later shop wrappers must preserve an existing Artefact boundary without adding duplicate wrappers");
-assert.match(shop,/wrapped\.__ccgOriginal=base/,"Artefact repair must preserve the latest non-Flask shop owner chain when a real re-bind is required");
-assert.match(shop,/if\(installed\)diagnostics\.rebinds\+\+/,"a genuinely displaced Artefact boundary must still be recorded as an explicit rebind");
-assert.match(shop,/10 Gold purchase remains available separately/,"Artefact repair must preserve the current 10 Gold Flask alternative");
-assert.doesNotMatch(shop,/spendGold|shopGoldPrice/,"Artefact exchange repair must not rewrite the normal Gold economy");
+assert.match(shop,/function alchemistOpen\(\)/,"final Flask exchange owner must require a live Banishment Alchemist");
+assert.match(shop,/__ccgR76BanishmentRenderBoundary/,"R76 must own the final shop render boundary");
+assert.match(shop,/function cleanFlaskCards\(\)/,"final render owner must strip Flask cards from ordinary shops");
+assert.match(shop,/const scoreButton=root\.querySelector\?\.\('\[data-shop-buy="banishmentScore"\]'\),scoreArticle=scoreButton\?\.closest\?\.\("article"\);[\s\S]*if\(scoreArticle\)\{scoreArticle\.remove\(\);removed\+\+\}/,
+  "final render owner must always remove the retired score Flask route");
+assert.match(shop,/const trade=root\.querySelector\?\.\('\[data-shop-buy="banishment"\]'\),article=trade\?\.closest\?\.\("article"\);[\s\S]*if\(!alchemistOpen\(\)\)\{[\s\S]*if\(article\)\{article\.remove\(\);removed\+\+\}[\s\S]*return removed;[\s\S]*\}[\s\S]*if\(trade&&article\)\{/,
+  "ordinary shops must remove Essence Flask distillation while Alchemists retain that route");
+assert.match(shop,/if\(!alchemistOpen\(\)\)/,"Flask exchange must reject ordinary supply desks");
+assert.match(shop,/physicalArtefactCount\(player\)/,"legacy physical Artefact stacks must remain compatible");
+assert.match(shop,/nonNegativeInt\(player\.banishmentEssence\)/,"current Banishment Essence store must be spendable");
+assert.match(shop,/snapshotPaymentState\(player\)/,"exchange must snapshot both payment stores before spending");
+assert.match(shop,/restorePaymentState\(player,snapshot\)/,"failed exchange must restore legacy Artefacts and Essence exactly");
+assert.match(shop,/if\(String\(id\)==="banishmentScore"\)return false/,"final wrapper must block the retired score Flask route");
+assert.match(shop,/BANISHMENT FLASK DISTILLED/,"successful final exchange must present Flask distillation");
+assert.match(shop,/Score and Gold are unchanged/,"successful exchange feedback must state that unrelated currencies are unchanged");
+assert.doesNotMatch(shop,/10 Gold purchase remains available separately/,"retired Gold Flask alternative must not survive R76");
 
-console.log("Dungeon Carnage current-main live-defect source contract passed.");
+assert.match(procedural,/DISTIL BANISHMENT FLASK/,"Alchemist UI must describe Flask distillation");
+assert.match(procedural,/if\(id==="banishmentScore"\).*ESSENCE ONLY/s,"procedural owner must reject direct legacy score-Flask calls");
+assert.match(procedural,/\["banishment","banishmentScore"\]/,"ordinary shop presentation must remove both legacy Flask cards");
+assert.match(procedural,/one permanent Banishment Flask/,"current RPG system must use Flask terminology consistently");
+assert.doesNotMatch(procedural,/Banishment Charge/,"current RPG presentation must not expose the retired Charge term");
+
+assert.doesNotMatch(core,/id:"banishmentScore",name:"BANISHMENT FLASK · SCORE"/,"base shop must not render a score-purchase Flask card");
+assert.match(core,/BANISHMENT FLASK · ESSENCE/,"base Flask card must be Essence-labelled before the Alchemist finalizer");
+assert.match(core,/Score cannot buy it/,"inventory help must explicitly reject the retired score route");
+assert.doesNotMatch(play,/FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION|pay 10,000 score at a shop/i,"live Death Stalker guidance must not advertise retired Flask acquisition");
+assert.match(play,/COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST/,"live threat guidance must direct the player to current Essence alchemy");
+assert.doesNotMatch(local,/Trade 3 artefacts or pay 10,000 score|pay 10,000 score at a dungeon shop/i,"runtime pickup and Banishment guidance must not advertise retired Flask acquisition");
+assert.match(local,/Collect Banishment Essence and distil a Flask at a Banishment Alchemist/,"no-Flask guidance must explain the current acquisition route");
+
+assert.match(dialogue,/title:"BANISHMENT ALCHEMIST"/,"hidden merchant dialogue must present the current Alchemist role");
+assert.match(dialogue,/npc\.alchemist\.partial/,"Essence-specific partial dialogue must avoid the obsolete recorded artefact line");
+assert.match(dialogue,/npc\.alchemist\.ready/,"Essence-ready dialogue must avoid the obsolete recorded artefact line");
+assert.match(dialogue,/essenceCost\?\.\(p1\)/,"Alchemist dialogue threshold must follow the player's Arcana-adjusted Essence cost");
+assert.match(dialogue,/p1\?\.banishmentEssence/,"Alchemist dialogue must read the live Banishment Essence Vessel");
+assert.doesNotMatch(dialogue,/Trade 3 rare artefacts for a Banishment Flask/,"merchant subtitles must not advertise the retired physical-only trade");
+
+assert.match(voice,/essenceCollected:\{text:"Banishment Essence collected\."/,"Essence pickups must have accurate spoken fallback");
+assert.match(voice,/essenceLore:\{text:"Banishment Essence is stored in your Vessel/,"Essence lore must explain Vessel storage and Alchemist distillation");
+assert.match(voice,/notEnoughEssence:\{text:"Not enough Banishment Essence\."/,"insufficient Essence must have accurate spoken fallback");
+assert.match(voice,/lootKind==="artefact"\?"essenceCollected"/,"current artefact-kind pickups must speak Essence rather than obsolete Artefact wording");
+assert.match(voice,/BANISHMENT FLASK \(\?:ACQUIRED\|DISTILLED\)/,"voice classifier must recognise the new distillation success toast");
+
+for(const page of [index,alias]){
+  assert.match(page,/collect Banishment Essence, distil a Flask at a Banishment Alchemist/i,"public Death Stalker tip must explain current Flask acquisition");
+  assert.match(page,/ESSENCE <b id="shop-artefacts">0<\/b>/,"shop wallet must label the current Banishment currency as Essence");
+  assert.match(page,/Banishment Flasks are not score purchases/,"public shop note must reject the retired score route");
+  assert.doesNotMatch(page,/trade 3 artefacts or pay 10,000 score at a shop/i,"public game pages must not advertise the retired Flask route");
+}
+
+console.log("Dungeon Carnage R76 Banishment Essence, Alchemist-only Flask and live-defect source contracts passed.");

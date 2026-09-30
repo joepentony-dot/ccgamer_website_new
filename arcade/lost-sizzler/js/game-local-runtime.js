@@ -30,7 +30,7 @@ function recordEnemyDefeat(e,attacker,displayName=""){
 }
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
-  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. Trade 3 artefacts or pay 10,000 score at a shop for the Flask that destroys it.","red",8500);return}
+  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range.","red",8500);return}
   power=elementalDamage(e,power,element);e.flash=160;e.hpBarMs=2800;e.hitStunMs=Math.max(e.hitStunMs||0,C.enemy.hitStunMs||1000);
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
@@ -93,7 +93,7 @@ function applyLoot(loot,p){
   else if(loot.kind==="banishment")storeConsumable(p,{kind:"banishment",name:loot.name||"Banishment Flask",short:"BANISH"},loot.name||"BANISHMENT FLASK","Stacked in inventory. A flashing B prompt appears when a Death Stalker or Count Loadula is within Banishment range.","purple");
   else if(loot.kind==="rapid"){p.rapidMs=14000;S.sfx("weapon");showToast(loot.name||"RAPID FIRE","Fire delay reduced temporarily.","gold")}
   else if(loot.kind==="bountyArtefact")offerBanishmentArtefact(p,loot);
-  else if(loot.kind==="artefact"){if(PGR.inventoryAdd(p,{kind:"artefact",name:loot.name,short:"ARTEFACT",rarity:loot.rarity})){showToast(loot.name,"Rare artefact stored. Three artefacts can be traded for a Banishment Flask.","gold")}else showToast("INVENTORY FULL","The artefact cannot be carried.","red")}
+  else if(loot.kind==="artefact"){if(PGR.inventoryAdd(p,{kind:"artefact",name:loot.name,short:"ARTEFACT",rarity:loot.rarity})){showToast(loot.name,"Banishment Essence collected. It is stored in your Vessel and can be distilled into a Banishment Flask at an Alchemist.","gold")}else showToast("INVENTORY FULL","The artefact cannot be carried.","red")}
 }
 function pickupXP(kind){return({carried:1,health:2,mana:3,ammo:3,game:5,credits:1,xpOrb:10,torch:2,teleport:4,banishment:5,armour:4,potion:2,weapon:5,rapid:4,inventorySlot:10,bronze:3,exitSigil:10,key:6,loot:10}[kind]||1)}
 function applyItem(i,p){
@@ -129,7 +129,7 @@ function permanentlyBanish(target,p){
   score+=15000;dropBanishmentArtefact(target,name);awardXP(p,250,`${name} permanently banished`);S.sfx("elite");burst(target.x,target.y,P.purple,30,1.8);ring(target.x,target.y,P.gold,46);floatText(target.x,target.y,"BANISHED! +15,000 SCORE",P.gold);showToast(`${name.toUpperCase()} DESTROYED`,`15,000 score and 250 XP awarded. Permanently removed from this floor. A Banishment Artefact has also dropped — collect it and choose 10,000 SCORE or 10 XP.`,"green",10500);host.revision++;broadcastWorld()
 }
 function activateBanishment(p){
-  const ix=PGR.firstInventory(p,"banishment");if(ix<0){S.sfx("empty");showToast("NO BANISHMENT FLASK","Trade 3 artefacts or pay 10,000 score at a dungeon shop to obtain one.","red",6000);return false}const state=banishmentState(p);if(!state.ready){showToast("BANISHMENT OUT OF RANGE",`Move within ${state.range} tiles of a Death Stalker or Count Loadula. The B prompt will flash when the potion can kill it.`,"cyan",5600);return false}
+  const ix=PGR.firstInventory(p,"banishment");if(ix<0){S.sfx("empty");showToast("NO BANISHMENT FLASK","Collect Banishment Essence and distil a Flask at a Banishment Alchemist.","red",6000);return false}const state=banishmentState(p);if(!state.ready){showToast("BANISHMENT OUT OF RANGE",`Move within ${state.range} tiles of a Death Stalker or Count Loadula. The B prompt will flash when the potion can kill it.`,"cyan",5600);return false}
   PGR.inventoryRemove(p,ix);S.sfx("shrine");shake=Math.max(shake,9);permanentlyBanish(state.nearest,p);sync();return true
 }
 function useUtility(p){const ix=PGR.firstInventory(p,"torch");if(ix>=0){const it=PGR.inventoryRemove(p,ix);p.torchMs=C.player.torchMs+(p.torchBonusMs||0);S.sfx("torch");run.alert=Math.min(100,run.alert+10);showToast(it.name||"FLAMING TORCH",`Visibility expands to ${C.player.torchRadius*2} tiles across for ${Math.ceil(p.torchMs/1000)} seconds. The flame increases dungeon alert.`,"gold");sync();return}S.sfx("empty");showToast("NO TORCH","Q is reserved for torches. Find a Flaming Torch or open TAB to check your stacks.","red",5200)}
