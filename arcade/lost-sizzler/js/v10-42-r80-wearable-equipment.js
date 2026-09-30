@@ -10,9 +10,9 @@
   const SLOT_ORDER=["head","hands","feet"];
   const SLOT_LABELS={head:"HEAD",hands:"HANDS",feet:"FEET"};
   const GEAR_NAMES={
-    head:["SCOUT HOOD","ARCHIVE HOOD","TORCHFINDER HELM","WARDEN CIRCLET","ZZAP! VISOR"],
-    hands:["UTILITY GLOVES","SCAVENGER GLOVES","VAULTGRIP GLOVES","WARDEN GAUNTLETS","ZZAP! GAUNTLETS"],
-    feet:["EXPLORER BOOTS","RUNNER BOOTS","VAULT RUNNER BOOTS","WARDEN BOOTS","ZZAP! BOOTS"]
+    head:["SCOUT HOOD","ARCHIVE HOOD","TORCHFINDER HELM","WARDEN CIRCLET","LEGENDARY VISOR"],
+    hands:["UTILITY GLOVES","SCAVENGER GLOVES","VAULTGRIP GLOVES","WARDEN GAUNTLETS","LEGENDARY GAUNTLETS"],
+    feet:["EXPLORER BOOTS","RUNNER BOOTS","VAULT RUNNER BOOTS","WARDEN BOOTS","LEGENDARY BOOTS"]
   };
   const state={drops:0,equips:0,unequips:0};
 
@@ -53,7 +53,7 @@
   function qualifiesForDrop(chest){
     if(!chest||chest.v142R80WearableProcessed)return false;
     const floor=Math.max(1,Number(run?.floor||1)),seed=hashText(`${chest.id||"chest"}|${floor}|${chest.depth||0}|wearable`);
-    const special=/arena-chest|warden-cache|memory/i.test(String(chest.id||""));
+    const special=Boolean(chest.v142WardenCache)||/arena-chest|warden-cache|memory/i.test(String(chest.id||""));
     return special||((seed>>>7)%100)<Math.min(24,14+floor*2)
   }
   function floorDrop(player,chest,item){
