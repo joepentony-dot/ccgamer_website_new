@@ -45,6 +45,7 @@ assert.match(voice,/state\.ammoPickupRuns\.has\(currentRun\)/,"subsequent ammo p
 assert.match(voice,/ammoCollected:\{text:"Ammunition collected\.",priority:8,cooldown:120000\}/,"ammo must remain a low-priority routine voice line");
 assert.match(voice,/healthRestored:\{text:"Health restored\.",priority:12,cooldown:60000\}/,"health pickup chatter must be sparse");
 assert.match(voice,/movementNearby:\{text:"Something is moving nearby\.",priority:22,cooldown:60000\}/,"ambient movement chatter must be sparse");
+assert.match(voice,/importantOverride=priority>=50&&state\.activePriority<30/,"major gameplay voice calls must be allowed to replace low-priority routine chatter");
 
 assert.match(supabase,/function supabaseDebugEnabled\(\)/,"Supabase debug logging must have an explicit production gate");
 assert.match(supabase,/ccgSupabaseDebug/,"Supabase debug logging must be opt-in");
