@@ -44,8 +44,8 @@ assert.match(release,/const ONLINE_BUTTON_IDS=\[[^\]]*"daily-btn"[^\]]*"split-bt
 assert.match(release,/#daily-btn,#split-btn,#weekly-vault,\.online-howto/);
 assert.doesNotMatch(release,/#developer-changelog|\.developer-changelog/,"current-build changelog must remain visible");
 assert.match(html,/id="developer-changelog"[^>]*data-latest-build-only="true"/,"one canonical latest-build changelog must remain");
-assert.match(html,/Latest Build Changes · V10\.42 R72/);
-assert.match(html,/ACTIVE BUILD: V10\.42 R72/);
+assert.match(html,/Latest Build Changes · V10\.42 R73/);
+assert.match(html,/ACTIVE BUILD: V10\.42 R73/);
 assert.doesNotMatch(html,/AUGUST|JULY|JUNE|MAY|APRIL|MARCH|FEBRUARY|JANUARY/i,"public changelog must not retain pre-September periodic history");
 assert.match(release,/getElementById\("release-note"\)/);
 assert.doesNotMatch(release,/Weekly High-Score Vault|2P Split Screen|Supabase remains available/i);
