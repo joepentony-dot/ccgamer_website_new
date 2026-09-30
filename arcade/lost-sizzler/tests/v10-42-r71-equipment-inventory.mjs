@@ -8,7 +8,7 @@ const moduleSource=fs.readFileSync(new URL("js/v10-42-r71-equipment-inventory.js
 const css=fs.readFileSync(new URL("css/v10-42-r71-equipment-inventory.css",root),"utf8");
 const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
 
-assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20260930r70"));
+assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20260930r71"));
 assert.ok(bootstrap.includes('v10-42-r71-equipment-inventory.js'));
 assert.ok(moduleSource.includes("Equipment & Inventory"));
 assert.ok(moduleSource.includes("r71-equipment-board"));
@@ -22,6 +22,8 @@ assert.ok(!moduleSource.includes("GLOVES"),"R71 must not invent a gloves equipme
 assert.ok(!moduleSource.includes("BOOTS"),"R71 must not invent a boots equipment slot before one exists in gameplay");
 assert.ok(moduleSource.includes("r71-stat-strip"));
 assert.ok(moduleSource.includes("DOMAIN KEYS"));
+assert.match(moduleSource,/v142ClaimedDomains/,"Domain Keys must use persistent campaign progress across floor transitions");
+assert.match(moduleSource,/new Set\(claimedDomains/,"campaign Domain Keys must count unique claimed domains rather than only the current floor");
 assert.ok(moduleSource.includes("player.relics"));
 assert.ok(moduleSource.includes("player?.rpgStats"));
 assert.ok(moduleSource.includes('guide.setAttribute("aria-hidden","true")'));
