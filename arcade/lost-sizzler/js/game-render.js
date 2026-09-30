@@ -806,29 +806,52 @@ function punyPlayerCell(pose,d,now){
   // separately by Dungeon Carnage. This avoids displaying Puny's bow/staff art.
   return{row,column:Math.floor(now/240)%2}
 }
+function playerEquipmentPresentation(p){
+  const armour=Math.max(0,Math.min(12,Number(p?.armor)||0)),tier=armour>=10?4:armour>=7?3:armour>=4?2:armour>0?1:0;
+  const sigil=Boolean(p?.sigilReveal||p?.sigilWard||p?.sigilBind||p?.sigilBanish);
+  const relics=Array.isArray(p?.relics)?p.relics.length:0;
+  return{armour,tier,sigil,relics}
+}
 function drawPlayerEquipmentOverlay(p,cx,cy,d){
-  const armour=Math.max(0,Math.min(12,Number(p?.armor)||0));if(armour<=0)return;
-  const tier=armour>=10?4:armour>=7?3:armour>=4?2:1,metal=tier>=3?"#9aa3ad":tier===2?"#77818b":"#5d6670",edge=tier>=4?P.cyan:"#c4ccd3",facingX=Math.sign(Number(d?.x)||0);
-  ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=tier>=4?"rgba(108,236,255,.45)":"rgba(120,160,190,.20)";ctx.shadowBlur=tier>=4?4:1;
-  // R71: armour is deliberately sprite-scale. It accents the existing CCG
-  // character instead of painting a second oversized body over the sprite.
-  ctx.fillStyle=metal;
-  ctx.fillRect(cx-8,cy-5,3,4);ctx.fillRect(cx+5,cy-5,3,4);
-  ctx.fillStyle=edge;ctx.fillRect(cx-7,cy-5,2,1);ctx.fillRect(cx+5,cy-5,2,1);
-  if(tier>=2){
-    ctx.fillStyle=metal;ctx.fillRect(cx-5,cy-3,10,5);
-    ctx.fillStyle="#313941";ctx.fillRect(cx-3,cy+1,6,2);
-    ctx.fillStyle=edge;ctx.fillRect(cx-3,cy-3,6,1)
+  const gear=playerEquipmentPresentation(p);if(!gear.tier&&!gear.sigil&&!gear.relics)return;
+  const metal=gear.tier>=3?"#9aa3ad":gear.tier===2?"#77818b":"#606a73",edge=gear.tier>=4?P.cyan:"#c7ced4",facingX=Math.sign(Number(d?.x)||0);
+  ctx.save();ctx.imageSmoothingEnabled=false;
+  // R71 equipment presentation: preserve the CCG sprite silhouette. Equipment
+  // adds fitted pixel accents only; higher tiers add detail, never body bulk.
+  if(gear.tier>=1){
+    ctx.fillStyle=metal;
+    ctx.fillRect(cx-10,cy-3,2,4);ctx.fillRect(cx+8,cy-3,2,4);
+    ctx.fillStyle=edge;ctx.fillRect(cx-10,cy-3,2,1);ctx.fillRect(cx+8,cy-3,2,1);
+    ctx.fillStyle="#3d444b";ctx.fillRect(cx-4,cy+4,8,1)
   }
-  if(tier>=3){
-    ctx.fillStyle=metal;ctx.fillRect(cx-5,cy-12,10,2);ctx.fillRect(cx-6,cy-10,2,3);ctx.fillRect(cx+4,cy-10,2,3);
-    ctx.fillStyle="#242b31";ctx.fillRect(cx-3,cy-10,6,1);
-    ctx.fillStyle=edge;ctx.fillRect(cx-2,cy-12,4,1)
+  if(gear.tier>=2){
+    ctx.fillStyle=metal;ctx.fillRect(cx-4,cy-2,8,2);
+    ctx.fillStyle=edge;ctx.fillRect(cx-3,cy-2,6,1);
+    ctx.fillStyle="#303840";ctx.fillRect(cx-1,cy,2,2)
   }
-  if(tier>=4){
-    ctx.fillStyle=P.cyan;ctx.globalAlpha=.72;
-    ctx.fillRect(cx-4,cy,1,2);ctx.fillRect(cx+3,cy,1,2);
-    if(facingX){ctx.fillRect(cx+(facingX>0?7:-8),cy-2,1,3)}
+  if(gear.tier>=3){
+    ctx.fillStyle=metal;ctx.fillRect(cx-4,cy-12,8,2);
+    ctx.fillRect(cx-8,cy-6,3,2);ctx.fillRect(cx+5,cy-6,3,2);
+    ctx.fillStyle="#252c32";ctx.fillRect(cx-2,cy-11,4,1);
+    ctx.fillStyle=edge;ctx.fillRect(cx-2,cy-12,4,1);
+    ctx.fillStyle=metal;ctx.fillRect(cx-7,cy+10,4,2);ctx.fillRect(cx+3,cy+10,4,2)
+  }
+  if(gear.tier>=4){
+    ctx.fillStyle=P.cyan;ctx.globalAlpha=.78;
+    ctx.fillRect(cx-3,cy+1,1,2);ctx.fillRect(cx+2,cy+1,1,2);
+    if(facingX)ctx.fillRect(cx+(facingX>0?8:-9),cy-2,1,2);
+    ctx.globalAlpha=1
+  }
+  if(gear.sigil){
+    ctx.fillStyle=P.purple;ctx.globalAlpha=.9;
+    ctx.fillRect(cx+4,cy+4,2,2);ctx.fillRect(cx+5,cy+3,1,4);
+    ctx.globalAlpha=1
+  }
+  if(gear.relics){
+    ctx.fillStyle=P.gold;ctx.globalAlpha=.82;
+    ctx.fillRect(cx-7,cy+5,2,2);
+    if(gear.relics>1)ctx.fillRect(cx-8,cy+4,1,1);
+    if(gear.relics>2)ctx.fillRect(cx-6,cy+7,1,1);
     ctx.globalAlpha=1
   }
   ctx.restore()
