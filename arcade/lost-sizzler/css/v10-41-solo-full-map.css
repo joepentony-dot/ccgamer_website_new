@@ -83,7 +83,7 @@
 #ccg-solo-full-map .ccg-full-map-legend{display:flex;flex-wrap:wrap;gap:9px 14px;align-items:center}
 #ccg-solo-full-map .ccg-full-map-legend span{display:inline-flex;align-items:center;gap:5px}
 #ccg-solo-full-map .ccg-map-dot{width:9px;height:9px;display:inline-block;border:1px solid rgba(255,255,255,.7);box-sizing:border-box}
-#ccg-solo-full-map .ccg-map-player{background:#6cecff}
+#ccg-solo-full-map .ccg-map-player{background:#6cecff;border:0;clip-path:polygon(50% 0,100% 100%,0 100%)}
 #ccg-solo-full-map .ccg-map-key{background:#ffd85a}
 #ccg-solo-full-map .ccg-map-sigil{background:#b978ff}
 #ccg-solo-full-map .ccg-map-cache{background:#ff6076}
