@@ -184,6 +184,7 @@ try{
     window.CCGLostSizzlerInventoryHudV106?.render?.();
     return{
       mana:Number(p1.mana),
+      swing:Number(p1._meleeSwingAt||0),
       hud:String(document.getElementById("hud-weapon")?.textContent||""),
       title:String(document.getElementById("hud-weapon")?.title||"")
     };
@@ -191,14 +192,17 @@ try{
   assert.equal(adjacentBefore.hud,"L2 FIELD PULSE","weapon HUD must show compact level plus readable weapon family");
   assert.match(adjacentBefore.title,/Weapon Level 2 · TIER 2 · Field Pulse II/,"weapon HUD title must retain full evolved weapon identity");
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?.mana||0)<before,adjacentBefore.mana,{timeout:3000});
+  await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
   const adjacentAfter=await page.evaluate(()=>({
     mana:Number(p1.mana),
+    swing:Number(p1._meleeSwingAt||0),
     shots:bullets.filter(b=>b&&b.ttl>0&&b.owner===p1.id).length,
-    propPresent:(host.blockingDecor||[]).some(d=>d.id==="r61-adjacent-firearm-prop")
+    prop:(host.blockingDecor||[]).find(d=>d.id==="r61-adjacent-firearm-prop")||null
   }));
-  assert.equal(adjacentBefore.mana-adjacentAfter.mana,1,"loaded firearm must fire even when blocking furniture is directly adjacent");
-  assert.equal(adjacentAfter.propPresent,true,"FIRE regression fixture must actually retain the adjacent blocking prop");
+  assert.equal(adjacentAfter.mana,adjacentBefore.mana,"adjacent breakable furniture must route ATTACK to melee without consuming firearm ammunition");
+  assert.ok(adjacentAfter.swing>adjacentBefore.swing,"adjacent breakable furniture must produce a melee swing");
+  assert.equal(adjacentAfter.shots,0,"contextual furniture melee must not spawn a firearm projectile");
+  assert.equal(Number(adjacentAfter.prop?.hp??0),1,"one starter-sword hit must damage the adjacent breakable fixture");
   await page.evaluate(()=>{host.blockingDecor=(host.blockingDecor||[]).filter(d=>d.id!=="r61-adjacent-firearm-prop")});
 
   const deathBefore=await page.evaluate(()=>{
