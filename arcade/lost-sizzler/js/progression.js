@@ -137,11 +137,11 @@ window.CCGProgression=(()=>{
   function applySkill(player,id){const s=skills.find(x=>x.id===id);if(!s)return null;s.apply(player);player.pendingLevels=Math.max(0,(player.pendingLevels||1)-1);player.skills=player.skills||[];player.skills.push(id);return s}
   function removeLastSkill(player){player.skills=player.skills||[];const id=player.skills.pop();if(!id)return null;const s=skills.find(x=>x.id===id);s?.undo?.(player);return s||null}
 
-  const stackableKinds=new Set(["potion","teleport","banishment","artefact"]);
+  const stackableKinds=new Set(["potion","torch","teleport","banishment","artefact"]);
   function itemQty(item){return Math.max(1,Math.floor(Number(item?.qty)||1))}
   function stackKey(item){if(!item||!stackableKinds.has(item.kind))return null;return item.kind}
   function inventoryCapacity(player){return Math.max(3,Math.min(C.player.inventorySlots,Math.floor(Number(player?.inventorySlots)||C.player.startingInventorySlots||3)))}
-  function stackLimit(item){return item?.kind==="potion"?3:Number.POSITIVE_INFINITY}
+  function stackLimit(item){return item?.kind==="artefact"?Number.POSITIVE_INFINITY:stackableKinds.has(item?.kind)?9:1}
   function inventoryCanAdd(player,item){const inv=player?.inventory||[],key=stackKey(item),limit=stackLimit(item);return Boolean(key&&inv.some(x=>stackKey(x)===key&&itemQty(x)<limit))||inv.length<inventoryCapacity(player)}
   function inventoryAdd(player,item){player.inventory=player.inventory||[];let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player))return false;const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}return true}
   function inventoryRemove(player,index,amount=1){player.inventory=player.inventory||[];if(index<0||index>=player.inventory.length)return null;const it=player.inventory[index],qty=itemQty(it),take=Math.max(1,Math.min(qty,Math.floor(Number(amount)||1)));if(qty>take){it.qty=qty-take;return{...it,qty:take}}return player.inventory.splice(index,1)[0]}
