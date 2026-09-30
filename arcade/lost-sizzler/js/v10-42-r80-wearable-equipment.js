@@ -27,6 +27,7 @@
   function escHtml(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
   function hashText(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h>>>0}
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
+  function luckPoints(player=currentPlayer()){return Math.max(0,Math.floor(Number(player?.rpgStats?.luck)||5)-5)}
   function wearables(player){if(!player)return{head:null,hands:null,feet:null};if(!player.wearables||typeof player.wearables!=="object"||Array.isArray(player.wearables))player.wearables={head:null,hands:null,feet:null};for(const slot of SLOT_ORDER)if(!(slot in player.wearables))player.wearables[slot]=null;return player.wearables}
   function effectValues(slot,rarity){
     const idx=rarityIndex(rarity);
@@ -42,19 +43,21 @@
     if(item.slot==="feet")return `${Math.round((1-Number(item.moveFactor||1))*100)}% FASTER MOVEMENT`;
     return"PASSIVE BONUS"
   }
-  function makeWearable(chest){
-    const floor=Math.max(1,Number(run?.floor||1)),depth=Math.max(0,Number(chest?.depth||0));
+  function makeWearable(chest,player=currentPlayer()){
+    const floor=Math.max(1,Number(run?.floor||1)),depth=Math.max(0,Number(chest?.depth||0)),luck=luckPoints(player);
     const seed=hashText(`${chest?.id||"chest"}|${floor}|${depth}`);
     const slot=SLOT_ORDER[(seed>>>5)%SLOT_ORDER.length];
-    const power=Math.min(4,Math.max(0,Math.floor((floor-1)/2)+(((seed>>>11)%100)<Math.min(45,8+depth*3)?1:0)));
+    const promotionChance=Math.min(70,8+depth*3+luck*4);
+    const power=Math.min(4,Math.max(0,Math.floor((floor-1)/2)+(((seed>>>11)%100)<promotionChance?1:0)));
     const rarity=PGR.RARITY[power]||"COMMON",values=effectValues(slot,rarity),name=GEAR_NAMES[slot][power]||`${rarity} ${SLOT_LABELS[slot]}`;
     return{kind:"wearable",slot,rarity,name,short:name,...values,desc:`${SLOT_LABELS[slot]} wearable. ${effectText({slot,...values})}. Equipped clothing is retained through normal deaths and floor transitions.`}
   }
-  function qualifiesForDrop(chest){
+  function qualifiesForDrop(chest,player=currentPlayer()){
     if(!chest||chest.v142R80WearableProcessed)return false;
-    const floor=Math.max(1,Number(run?.floor||1)),seed=hashText(`${chest.id||"chest"}|${floor}|${chest.depth||0}|wearable`);
+    const floor=Math.max(1,Number(run?.floor||1)),luck=luckPoints(player),seed=hashText(`${chest.id||"chest"}|${floor}|${chest.depth||0}|wearable`);
     const special=Boolean(chest.v142WardenCache)||/arena-chest|warden-cache|memory/i.test(String(chest.id||""));
-    return special||((seed>>>7)%100)<Math.min(24,14+floor*2)
+    const chance=Math.min(36,14+floor*2+luck*2);
+    return special||((seed>>>7)%100)<chance
   }
   function floorDrop(player,chest,item){
     try{
@@ -146,10 +149,10 @@
   if(typeof openChest==="function"){
     const baseOpenChest=openChest;
     openChest=function r80OpenChestWearableBonus(player,chest,...args){
-      const wasActive=Boolean(chest?.active),qualified=wasActive&&qualifiesForDrop(chest),result=baseOpenChest(player,chest,...args);
+      const wasActive=Boolean(chest?.active),qualified=wasActive&&qualifiesForDrop(chest,player),result=baseOpenChest(player,chest,...args);
       if(qualified&&chest?.active===false&&!chest.v142R80WearableProcessed){
         chest.v142R80WearableProcessed=true;
-        const item=makeWearable(chest);deliverWearable(player,chest,item)
+        const item=makeWearable(chest,player);deliverWearable(player,chest,item)
       }
       return result
     };
