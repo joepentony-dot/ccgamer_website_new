@@ -63,7 +63,7 @@ assert.match(voice,/wet\.gain\.value=\.12/,"dungeon ambience must remain subtle 
 assert.match(voice,/hurt:\{text:"Ow!",priority:8,cooldown:30000\}/,"Ow must have the requested 30-second gap");
 assert.match(voice,/painPlayed=after<before\?sayKey\("hurt"\):false/,"damage handling must request Ow only after real health or armour loss");
 assert.match(voice,/deathsAfter>deathsBefore\)setTimeout\(\(\)=>sayKey\("playerDeath"\),painPlayed\?800:0\)/,"the death line must wait for a played Ow cue and remain non-layered");
-assert.match(voice,/if\(state\.active\)\{const mayInterrupt=/,"a busy voice channel must make an immediate skip-or-interrupt decision");
+assert.match(voice,/if\(state\.active\)\{const importantOverride=.*mayInterrupt=/,"a busy voice channel must make an immediate skip-or-interrupt decision while allowing major calls to replace routine chatter");
 assert.doesNotMatch(voice,/queue\.push|function pump\(/,"voice events must never build a playback backlog");
 assert.match(voice,/speechSynthesis\.cancel\(\)/,"browser speech must flush any hidden browser queue before playback");
 assert.match(voice,/deathStalkerEncounterVisible\(\)/,"Death Stalker speech must require a live same-room encounter");
