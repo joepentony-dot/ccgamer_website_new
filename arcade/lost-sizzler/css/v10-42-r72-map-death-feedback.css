@@ -31,6 +31,7 @@
 .radar-legend .radar-sanctuary::before,.radar-legend .radar-sanctuary::after{content:"";position:absolute;background:#64ffa2;box-shadow:0 0 4px rgba(100,255,162,.55)}
 .radar-legend .radar-sanctuary::before{left:4px;top:0;width:3px;height:10px}
 .radar-legend .radar-sanctuary::after{left:0;top:4px;width:10px;height:3px}
+.radar-legend .radar-key{background:#ffd85a!important;border:1px solid #fff4bb!important;border-radius:50%!important}
 .radar-legend .radar-warden{border:1px solid #e260ff!important;background:#5b2269!important;transform:rotate(45deg)}
 .radar-legend .radar-refuge{border:1px solid #8deeff!important;border-radius:50%!important;background:#17343a!important}
 .radar-room-legend{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin-top:2px;color:#81758b;font-size:6.6px;line-height:1.1}
