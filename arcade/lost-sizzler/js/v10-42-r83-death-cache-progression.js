@@ -61,13 +61,13 @@
   PGR.applyDeathPenalty.__ccgV142R83DeathCacheProgression=true;
   PGR.applyDeathPenalty.__ccgOriginal=baseApplyDeathPenalty;
 
-  function restoreSpentRpgPoint(player,skillId){
+  function restoreSpentRpgPoint(player,skillId,pendingFloor=0){
     if(!player||!skillId||typeof PGR.applySkill!=="function")return null;
-    const pendingBefore=Math.max(0,Number(player.pendingLevels)||0);
-    player.pendingLevels=pendingBefore+1;
+    const pendingNow=Math.max(0,Number(player.pendingLevels)||0),hasRecoveredEntitlement=pendingNow>Math.max(0,Number(pendingFloor)||0);
+    if(!hasRecoveredEntitlement)player.pendingLevels=pendingNow+1;
     const restored=PGR.applySkill(player,skillId);
     if(!restored){
-      player.pendingLevels=pendingBefore;
+      if(!hasRecoveredEntitlement)player.pendingLevels=pendingNow;
       return null
     }
     state.statsRestored++;
@@ -92,7 +92,7 @@
 
     let restoredSkill=null,pendingLevelRestored=false;
     if(bundle.lostSkillId){
-      restoredSkill=restoreSpentRpgPoint(player,bundle.lostSkillId);
+      restoredSkill=restoreSpentRpgPoint(player,bundle.lostSkillId,pendingBefore);
     }else if(bundle.lostPendingLevel){
       const pendingAfter=Math.max(0,Number(player?.pendingLevels)||0);
       if(pendingAfter<=pendingBefore){
@@ -107,9 +107,9 @@
     state.last={type:"recovery",bundle:clone(bundle),restoredSkill:restoredSkill?.name||"",pendingLevelRestored,at:Date.now()};
     return{
       ...result,
-      restoredLevel:Boolean(bundle.levelBefore>bundle.levelAfter),
+      restoredLevel:Boolean(bundle.levelBefore>bundle.levelAfter&&Number(player?.level||0)>=bundle.levelBefore),
       restoredLevelFrom:bundle.levelAfter,
-      restoredLevelTo:Math.max(Number(player?.level)||bundle.levelBefore,bundle.levelBefore),
+      restoredLevelTo:Number(player?.level)||bundle.levelAfter,
       restoredSkill:restoredSkill?.name||bundle.lostSkillLabel||"",
       pendingLevelRestored,
       progressionRecovered:true
