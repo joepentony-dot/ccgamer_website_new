@@ -26,8 +26,8 @@ assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive t
 assert.match(gate,/showTesterGate\(\)/,"ordinary production visitors must receive the invited tester-code gate");
 assert.match(gate,/mark\("tester-code-required"\)/,"the tester gate must publish an explicit blocked state");
 assert.match(gate,/mark\("tester-preview"\)/,"successful tester access must publish an allowed state");
-assert.match(gate,/Promise\.race\(\[resolveProfile\(\), timeout\]\)/,"owner lookup must remain bounded before tester-code fallback");
+assert.match(gate,/Promise\.race\(\[resolveAccountAccess\(\), timeout\]\)/,"account access lookup must remain bounded before tester-code fallback");
 assert.match(smoke,/maintenanceExpected/,"production smoke must understand the intentional maintenance gate");
 assert.match(smoke,/ccg-tester-access-gate/,"anonymous production smoke must verify the invited tester-code gate");
 
-console.log("Dungeon Carnage retained owner + tester-code maintenance preview contract passed.");
+console.log("Dungeon Carnage retained owner + member-playtester + tester-code preview contract passed.");
