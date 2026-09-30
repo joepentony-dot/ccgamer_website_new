@@ -19,7 +19,8 @@ assert.doesNotMatch(collectible,/new \(window\.AudioContext\|\|window\.webkitAud
 assert.match(collectible,/\},250\);/,"collectible-effect maintenance is bounded to a low-frequency cadence");
 assert.match(collectible,/ccg:collectible-effect/,"Archive Wraith horror state remains observable for bug reports");
 
-assert.match(play,/onConsole=activator\?localPlayers\(\)\.find/,"Memory Console occupancy is checked from the simulation update");
+assert.match(play,/roomPlayers=localPlayers\(\)\.filter\(p=>p&&p\.health>0&&W\.roomAt\(world,p\.x,p\.y\)===z\.roomId\)/,"Memory Console occupancy must be scoped to living players inside the memory room");
+assert.match(play,/onConsole=activator\?roomPlayers\.find/,"Memory Console occupancy is checked from the simulation update using the room-scoped player set");
 assert.match(play,/occupant!==String\(z\.consoleOccupant\|\|""\)/,"Memory Console replay is edge-triggered rather than restarted every frame");
 assert.match(play,/startMemoryPuzzle\(onConsole\)/,"stepping onto the Memory Console reliably starts/replays the sequence");
 
