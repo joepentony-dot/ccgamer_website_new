@@ -1,0 +1,501 @@
+/* C64 Dungeon Carnage V10.42 R71 — compact RPG equipment/inventory presentation. */
+#inventory-panel .inventory-panel.r71-inventory-panel{
+  width:min(1120px,96vw)!important;
+  max-width:1120px!important;
+  height:min(760px,93dvh)!important;
+  max-height:93dvh!important;
+  overflow:hidden!important;
+  padding:14px 16px 12px!important;
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr) auto!important;
+  gap:8px!important;
+  border:2px solid #7b5b91!important;
+  background:
+    linear-gradient(rgba(14,8,19,.96),rgba(7,4,10,.985)),
+    radial-gradient(circle at 50% 35%,rgba(118,78,57,.16),transparent 50%)!important;
+  box-shadow:0 18px 70px #000,0 0 0 1px #24182d inset!important;
+}
+.r71-inventory-panel .mobile-panel-head{
+  min-height:40px!important;
+  border-bottom:1px solid #5d405c!important;
+  padding-bottom:7px!important;
+  margin:0!important;
+}
+.r71-inventory-panel .mobile-panel-head h2{
+  margin:0!important;
+  color:#e5c77a!important;
+  font-family:Georgia,"Palatino Linotype","Times New Roman",serif!important;
+  font-size:25px!important;
+  letter-spacing:1px!important;
+  text-transform:none!important;
+  text-shadow:0 2px 0 #000,0 0 14px rgba(229,199,122,.16)!important;
+}
+.r71-inventory-panel #inventory-mobile-notice{
+  margin:0!important;
+  min-height:24px!important;
+  padding:5px 8px!important;
+  font-size:9px!important;
+  letter-spacing:.35px!important;
+  color:#9a8ea3!important;
+  border-color:#322539!important;
+  background:#08050b!important;
+}
+.r71-inventory-panel>p:not(.inventory-mobile-notice),
+.r71-inventory-panel>h3,
+.r71-inventory-panel #inventory-guide,
+.r71-inventory-panel #v142-rpg-sheet{
+  display:none!important;
+}
+.r71-inventory-layout{
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1.38fr) minmax(330px,.82fr)!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  gap:9px 10px!important;
+  overflow:hidden!important;
+}
+.r71-inventory-layout #inventory-objective{
+  grid-column:1/-1!important;
+  margin:0!important;
+  min-height:62px!important;
+  padding:7px 9px!important;
+  display:grid!important;
+  grid-template-columns:minmax(280px,1fr) auto!important;
+  align-items:center!important;
+  gap:10px!important;
+  border:1px solid #4f3b59!important;
+  background:linear-gradient(90deg,#0b0710,#120b14)!important;
+}
+.r71-objective-copy{
+  min-width:0!important;
+  display:grid!important;
+  gap:3px!important;
+  text-align:left!important;
+}
+.r71-objective-copy small{
+  margin:0!important;
+  color:#9f7fb2!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:10px!important;
+  letter-spacing:1px!important;
+}
+.r71-objective-copy b{
+  color:#eee5d8!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.r71-quest-strip{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(78px,1fr))!important;
+  gap:5px!important;
+}
+.r71-quest-chip{
+  min-width:0!important;
+  height:45px!important;
+  padding:4px 6px!important;
+  display:grid!important;
+  grid-template-columns:26px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:5px!important;
+  border:1px solid #413246!important;
+  background:#09060c!important;
+}
+.r71-quest-icon,
+.r71-slot-icon{
+  width:24px!important;
+  height:24px!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.r71-quest-icon .item-svg-wrap,
+.r71-slot-icon .item-svg-wrap{
+  width:22px!important;
+  height:22px!important;
+}
+.r71-quest-chip span:last-child{
+  min-width:0!important;
+  display:grid!important;
+  gap:1px!important;
+}
+.r71-quest-chip small{
+  margin:0!important;
+  color:#82758a!important;
+  font-size:6.5px!important;
+  white-space:nowrap!important;
+}
+.r71-quest-chip b{
+  color:#d7c69b!important;
+  font-size:8.5px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.r71-inventory-layout #inventory-loadout{
+  min-height:0!important;
+  margin:0!important;
+  padding:9px!important;
+  overflow:hidden!important;
+  border:1px solid #594365!important;
+  background:linear-gradient(145deg,#100a14,#07050a)!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto auto!important;
+  gap:7px!important;
+}
+.r71-loadout-head{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:end!important;
+  gap:12px!important;
+  border-bottom:1px solid #34283b!important;
+  padding-bottom:5px!important;
+}
+.r71-loadout-head>div:first-child{
+  display:grid!important;
+  gap:2px!important;
+}
+.r71-loadout-head span,
+.r71-strip-title{
+  color:#9e809f!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:9px!important;
+  letter-spacing:1px!important;
+}
+.r71-loadout-head b{
+  color:#e7d5ab!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:16px!important;
+}
+.r71-loadout-head em{
+  color:#8f8197!important;
+  font-family:Consolas,"Courier New",monospace!important;
+  font-style:normal!important;
+  font-size:8px!important;
+}
+.r71-xp-mini{
+  display:grid!important;
+  justify-items:end!important;
+  gap:1px!important;
+}
+.r71-xp-mini span{font-size:7px!important;color:#6fbac7!important}
+.r71-xp-mini b{font-size:10px!important;color:#d9c471!important}
+.r71-equipment-board{
+  min-height:210px!important;
+  display:grid!important;
+  grid-template-columns:minmax(150px,1fr) 136px minmax(150px,1fr)!important;
+  grid-template-rows:1fr 1fr!important;
+  gap:8px 11px!important;
+  align-items:stretch!important;
+}
+.r71-equip-card{
+  position:relative!important;
+  min-width:0!important;
+  padding:8px 8px 6px!important;
+  display:grid!important;
+  grid-template-columns:30px minmax(0,1fr)!important;
+  grid-template-rows:auto auto 1fr!important;
+  column-gap:7px!important;
+  align-items:center!important;
+  border:1px solid #49374f!important;
+  background:linear-gradient(135deg,#0c080f,#151019)!important;
+  text-align:left!important;
+  overflow:hidden!important;
+}
+.r71-equip-card::before{
+  content:""!important;
+  position:absolute!important;
+  inset:3px!important;
+  border:1px solid rgba(192,154,100,.08)!important;
+  pointer-events:none!important;
+}
+.r71-slot-label{
+  grid-column:1/-1!important;
+  color:#9b7c8e!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:8px!important;
+  letter-spacing:.8px!important;
+}
+.r71-equip-card b{
+  min-width:0!important;
+  color:#e3d6bd!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.r71-equip-card small{
+  grid-column:2!important;
+  margin:1px 0 0!important;
+  color:#877c8b!important;
+  font-size:7px!important;
+  line-height:1.2!important;
+}
+.r71-equip-weapon{grid-column:1;grid-row:1}
+.r71-equip-armour{grid-column:3;grid-row:1}
+.r71-equip-sigil{grid-column:1;grid-row:2}
+.r71-equip-utility{grid-column:3;grid-row:2}
+.r71-slot-rune{
+  width:28px!important;
+  height:28px!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#c693db!important;
+  font-size:24px!important;
+  text-shadow:0 0 8px rgba(198,147,219,.35)!important;
+}
+.r71-paper-doll{
+  grid-column:2!important;
+  grid-row:1/3!important;
+  align-self:center!important;
+  justify-self:center!important;
+  position:relative!important;
+  width:110px!important;
+  height:196px!important;
+  border:1px solid #403044!important;
+  background:
+    radial-gradient(ellipse at center,rgba(136,105,92,.11),transparent 60%),
+    linear-gradient(#0a070c,#050306)!important;
+  box-shadow:0 0 0 3px #0a060d inset!important;
+}
+.r71-paper-doll::before,
+.r71-paper-doll::after{
+  content:""!important;
+  position:absolute!important;
+  left:10px!important;
+  right:10px!important;
+  height:1px!important;
+  background:#241a28!important;
+}
+.r71-paper-doll::before{top:34px!important}
+.r71-paper-doll::after{bottom:31px!important}
+.r71-paper-doll strong{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:8px!important;
+  color:#725e79!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:10px!important;
+  letter-spacing:2px!important;
+  text-align:center!important;
+}
+.r71-doll-head{
+  position:absolute!important;
+  left:42px!important;
+  top:29px!important;
+  width:26px!important;
+  height:31px!important;
+  border:2px solid #6a5369!important;
+  border-radius:48% 48% 42% 42%!important;
+  background:#241b26!important;
+}
+.r71-doll-torso{
+  position:absolute!important;
+  left:35px!important;
+  top:62px!important;
+  width:40px!important;
+  height:58px!important;
+  border:2px solid #634d64!important;
+  clip-path:polygon(12% 0,88% 0,100% 100%,0 100%)!important;
+  background:#1d151f!important;
+}
+.r71-doll-arm,
+.r71-doll-leg{
+  position:absolute!important;
+  display:block!important;
+  background:#1b141d!important;
+  border:2px solid #584459!important;
+}
+.r71-doll-arm{top:65px!important;width:14px!important;height:56px!important}
+.r71-doll-arm.left{left:20px!important;transform:rotate(5deg)!important}
+.r71-doll-arm.right{right:20px!important;transform:rotate(-5deg)!important}
+.r71-doll-leg{top:121px!important;width:16px!important;height:50px!important}
+.r71-doll-leg.left{left:36px!important}
+.r71-doll-leg.right{right:36px!important}
+.r71-doll-helm,
+.r71-doll-chest,
+.r71-doll-shoulder{
+  position:absolute!important;
+  display:none!important;
+  background:#59616a!important;
+  border:1px solid #a2aab1!important;
+  pointer-events:none!important;
+}
+.r71-paper-doll.armour-tier-1 .r71-doll-shoulder,
+.r71-paper-doll.armour-tier-2 .r71-doll-shoulder,
+.r71-paper-doll.armour-tier-3 .r71-doll-shoulder,
+.r71-paper-doll.armour-tier-4 .r71-doll-shoulder{display:block!important}
+.r71-doll-shoulder{top:63px!important;width:19px!important;height:9px!important}
+.r71-doll-shoulder.left{left:22px!important}
+.r71-doll-shoulder.right{right:22px!important}
+.r71-paper-doll.armour-tier-2 .r71-doll-chest,
+.r71-paper-doll.armour-tier-3 .r71-doll-chest,
+.r71-paper-doll.armour-tier-4 .r71-doll-chest{display:block!important}
+.r71-doll-chest{left:39px!important;top:68px!important;width:32px!important;height:34px!important;background:#4f5862!important}
+.r71-paper-doll.armour-tier-3 .r71-doll-helm,
+.r71-paper-doll.armour-tier-4 .r71-doll-helm{display:block!important}
+.r71-doll-helm{left:39px!important;top:26px!important;width:32px!important;height:17px!important;border-radius:45% 45% 0 0!important}
+.r71-paper-doll.armour-tier-4 .r71-doll-helm,
+.r71-paper-doll.armour-tier-4 .r71-doll-chest,
+.r71-paper-doll.armour-tier-4 .r71-doll-shoulder{border-color:#73c7cf!important;box-shadow:0 0 5px rgba(108,236,255,.18)!important}
+.r71-stat-strip{
+  display:grid!important;
+  grid-template-columns:repeat(6,1fr)!important;
+  gap:4px!important;
+}
+.r71-stat{
+  height:36px!important;
+  padding:4px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid #3c2f42!important;
+  background:#09060b!important;
+}
+.r71-stat span{font-size:6.5px!important;color:#8d7d93!important}
+.r71-stat b{font-family:Georgia,"Times New Roman",serif!important;font-size:13px!important;color:#d5bf83!important}
+.r71-relic-strip{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+.r71-relics{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:4px!important;
+}
+.r71-relic{
+  min-width:0!important;
+  height:30px!important;
+  padding:4px 6px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  border:1px solid #493a4e!important;
+  background:#0a070c!important;
+}
+.r71-relic i{color:#b88bc8!important;font-style:normal!important;font-size:9px!important}
+.r71-relic span{
+  min-width:0!important;
+  color:#b8abbc!important;
+  font-size:7px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.r71-inventory-layout #inventory-list{
+  min-height:0!important;
+  margin:0!important;
+  padding:9px!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-rows:minmax(78px,1fr)!important;
+  gap:7px!important;
+  align-content:stretch!important;
+  overflow:hidden!important;
+  border:1px solid #4d3958!important;
+  background:#08050b!important;
+}
+.r71-inventory-panel .inventory-slot{
+  position:relative!important;
+  min-height:0!important;
+  height:auto!important;
+  padding:6px!important;
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr)!important;
+  gap:7px!important;
+  align-items:center!important;
+  border:1px solid #3e3046!important;
+  background:linear-gradient(145deg,#0c080f,#08060a)!important;
+  overflow:hidden!important;
+}
+.r71-inventory-panel .inventory-slot.filled{border-color:#65516c!important}
+.r71-inventory-panel .inventory-slot.locked{opacity:.48!important}
+.r71-inventory-panel .inventory-slot-icon{
+  width:40px!important;
+  height:40px!important;
+  border:1px solid #45364b!important;
+  background:#050306!important;
+}
+.r71-inventory-panel .inventory-slot-icon .item-svg-wrap{width:32px!important;height:32px!important}
+.r71-inventory-panel .inventory-slot-copy{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:2px 5px!important;
+}
+.r71-inventory-panel .inventory-slot-copy>b{
+  grid-column:1/-1!important;
+  color:#9d7f9a!important;
+  font-size:7px!important;
+}
+.r71-inventory-panel .inventory-slot-copy>span{
+  min-width:0!important;
+  margin:0!important;
+  color:#e0d6e2!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:9px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.r71-inventory-panel .r71-long-copy{display:none!important}
+.r71-inventory-panel .slot-actions{
+  grid-column:1/-1!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:3px!important;
+  margin-top:2px!important;
+}
+.r71-inventory-panel .slot-actions button{
+  min-width:0!important;
+  padding:3px 5px!important;
+  border:1px solid #493b50!important;
+  background:#120d15!important;
+  color:#b9abbc!important;
+  font-size:6.5px!important;
+  line-height:1!important;
+}
+.r71-inventory-panel .slot-actions button[data-use]{border-color:#56765b!important;color:#a6d5a9!important}
+.r71-inventory-panel .slot-actions button[data-info]{border-color:#496373!important;color:#8dc6d4!important}
+.r71-inventory-panel .inventory-footer-actions{
+  margin:0!important;
+  padding-top:5px!important;
+  min-height:34px!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:6px!important;
+  border-top:1px solid #2e2334!important;
+}
+.r71-inventory-panel .inventory-footer-actions button{
+  padding:6px 9px!important;
+  font-size:8px!important;
+}
+@media(max-width:900px),(max-height:720px){
+  #inventory-panel .inventory-panel.r71-inventory-panel{
+    height:auto!important;
+    max-height:95dvh!important;
+    overflow:auto!important;
+  }
+  .r71-inventory-layout{
+    grid-template-columns:1fr!important;
+    overflow:visible!important;
+  }
+  .r71-inventory-layout #inventory-objective{grid-template-columns:1fr!important}
+  .r71-quest-strip{grid-template-columns:repeat(4,1fr)!important}
+  .r71-inventory-layout #inventory-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:78px!important}
+}
+@media(max-width:680px){
+  .r71-inventory-panel .mobile-panel-head h2{font-size:20px!important}
+  .r71-inventory-layout #inventory-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .r71-equipment-board{grid-template-columns:1fr 110px 1fr!important}
+  .r71-quest-strip{grid-template-columns:repeat(2,1fr)!important}
+  .r71-stat-strip{grid-template-columns:repeat(3,1fr)!important}
+  .r71-relic-strip{grid-template-columns:1fr!important}
+}
