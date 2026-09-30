@@ -8,7 +8,7 @@ const moduleSource=fs.readFileSync(new URL("js/v10-42-r71-equipment-inventory.js
 const css=fs.readFileSync(new URL("css/v10-42-r71-equipment-inventory.css",root),"utf8");
 const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
 
-assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20260930r79"));
+assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20260930r80"));
 assert.ok(bootstrap.includes('v10-42-r71-equipment-inventory.js'));
 assert.ok(moduleSource.includes("Equipment & Inventory"));
 assert.ok(moduleSource.includes("r71-equipment-board"));

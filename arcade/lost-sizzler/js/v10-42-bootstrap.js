@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r79";
-  const CACHE="20260930r79";
+  const BUILD="V10.42 r80";
+  const CACHE="20260930r80";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -69,6 +69,7 @@
     ["v10-42-r18-solo-playtest-stability.js","CCGLostSizzlerV142R18SoloPlaytestStability"],
     ["v10-42-r55-shop-feedback.js","CCGLostSizzlerV142R55ShopFeedback"],
     ["v10-42-r71-equipment-inventory.js","CCGLostSizzlerV142R71EquipmentInventory"],
+    ["v10-42-r80-wearable-equipment.js","CCGLostSizzlerV142R80WearableEquipment"],
     ["v10-42-r72-map-death-feedback.js","CCGLostSizzlerV142R72MapDeathFeedback"],
     ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
