@@ -22,14 +22,14 @@ assert.match(render,/const spin=active\?\(now\/54[\s\S]*warning\?\(Math\.sin/,
   "blade hardware must animate distinctly in warning and active phases");
 assert.match(render,/if\(active\)\{ctx\.save\(\);ctx\.globalCompositeOperation="lighter"[\s\S]*ctx\.fillRect/,
   "active blade hardware must add impact/spark motion without altering damage ownership");
-assert.match(render,/drawAmbientMotes\(\)[\s\S]*CCGLostSizzlerV141R37GlobalPerformance\?\.state\?\.lowFps/,
-  "ambient decoration must shed itself when the global performance owner reports low FPS");
-assert.match(render,/drawDynamicLighting\(\)[\s\S]*lowFps=Boolean\(window\.CCGLostSizzlerV141R37GlobalPerformance/,
-  "dynamic lighting must consult the established global performance owner");
-assert.match(render,/if\(!lowFps\)for\(const l of world\.wallLights/,
-  "nonessential wall-light gradients must be skipped during low-FPS recovery");
-assert.match(render,/if\(lowFps\)return;[\s\S]*Soft vignette|Soft vignette[\s\S]*if\(lowFps\)return;/,
-  "the vignette pass must be removable during low-FPS recovery");
+assert.match(render,/drawAmbientMotes\(\)[\s\S]*!dungeonRenderRichFx\(\)/,
+  "ambient decoration must shed itself outside the hysteretic R70 rich-quality state");
+assert.match(render,/drawDynamicLighting\(\)[\s\S]*quality=dungeonRenderQuality\(\),richFx=quality==="rich",severe=quality==="severe"/,
+  "dynamic lighting must use the hysteretic R70 renderer quality owner rather than a per-frame low-FPS toggle");
+assert.match(render,/function drawWallLights\(\)[\s\S]*const quality=dungeonRenderQuality\(\)[\s\S]*if\(richFx\)for\(let n=0;n<3;n\+\+\)/,
+  "wall torches must remain visible at every quality tier while only decorative sparks are shed");
+assert.match(render,/if\(!richFx\)return;[\s\S]*createRadialGradient/,
+  "the vignette pass must be limited to stable rich-quality rendering");
 
 assert.match(render,/function tileInRenderView\(x,y,pad=2\)/,
   "renderer must expose a cheap camera-bound culling predicate");
@@ -39,8 +39,8 @@ assert.match(render,/function drawItem\(i\)[\s\S]*!tileInRenderView\(i\.x,i\.y,2
   "item rendering must cull offscreen pickups before expensive visibility checks");
 assert.match(render,/for\(const d of world\.decor\|\|\[\]\)[\s\S]*!tileInRenderView\(d\.x,d\.y,2\)[\s\S]*!visibleTo/,
   "furniture rendering must cull offscreen decor before line-of-sight work");
-assert.match(render,/function drawFog\(\)[\s\S]*lowFps=Boolean[\s\S]*torchEnemies=\(host\.enemies\|\|\[\]\)\.filter\(e=>e\.alive&&e\.follower\)\.filter\(e=>!lowFps/,
-  "fog lighting must preserve follower discovery while removing secondary light-source comparisons when low FPS is active");
+assert.match(render,/function drawFog\(\)[\s\S]*quality=dungeonRenderQuality\(\),severe=quality==="severe"[\s\S]*torchEnemies=\(host\.enemies\|\|\[\]\)\.filter\(e=>e\.alive&&e\.follower\)\.filter\(e=>!severe/,
+  "fog lighting must preserve follower discovery while shedding follower-light comparisons only in the stable severe tier");
 
 assert.match(audio,/melee:\(\)=>\{noise\(/,
   "R69 must provide a dedicated procedural melee SFX fallback");
@@ -55,4 +55,4 @@ assert.match(play,/S\.sfx\("hazardwarn"\)[\s\S]*hazardWarning/,
 assert.match(play,/S\.sfx\(hazard\.type==="blade"\?"bladehit":"trap"\)/,
   "dedicated blade contact must use its impact SFX without changing hazard damage ownership");
 
-console.log("Dungeon R69 hazard presentation and low-FPS regression checks passed.");
+console.log("Dungeon R69 hazard presentation contract remains compatible with R70 hysteretic performance recovery.");
