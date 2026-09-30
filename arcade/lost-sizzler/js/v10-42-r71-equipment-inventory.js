@@ -17,7 +17,7 @@
   const statValue=(player,id)=>Math.max(5,Math.floor(Number(player?.rpgStats?.[id])||5));
   const armourTier=value=>value>=10?4:value>=7?3:value>=4?2:value>0?1:0;
   const armourName=tier=>["UNARMOURED","PATCHED ARMOUR","PLATED ARMOUR","REINFORCED PLATE","WARDEN PLATE"][Math.max(0,Math.min(4,tier))];
-  const playerSheetSource=()=>String(window.CCG_ASSET_OVERRIDES?.images?.visuals?.playerSheet||"assets/pixel/explorer-sheet-v10-34.png");
+  const playerSheetSource=()=>String(window.CCG_ASSET_OVERRIDES?.images?.visuals?.playerSheet||"../assets/pixel/explorer-sheet-v10-34.png");
 
   function ensureLayout(){
     const panel=document.querySelector("#inventory-panel .inventory-panel");if(!panel)return null;
