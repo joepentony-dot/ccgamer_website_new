@@ -186,6 +186,31 @@ try{
   assert.equal(essenceTrade.score,10000,"Essence exchange must not spend Score");
   assert.ok(essenceTrade.trades>=2,"Artefact stability layer must record both successful compatibility and live-store trades");
 
+  const reducedEssenceTrade=await page.evaluate(()=>{
+    const PGR=window.CCGProgression;
+    p1.inventorySlots=3;
+    p1.inventory=[];
+    p1.banishmentEssenceCost=2;
+    p1.banishmentEssence=2;
+    run.gold=10;score=10000;
+    activeShop={id:"r77-reduced-essence-cost",active:true,shopType:"hidden",v142Alchemist:true,goldPurchases:0,sold:{},title:"BANISHMENT ALCHEMIST"};
+    renderShop();
+    const card=String(document.querySelector('[data-shop-buy="banishment"]')?.closest("article")?.textContent||"");
+    const result=buyShopItem("banishment");
+    return{
+      result,card,
+      essence:Number(p1.banishmentEssence),
+      flasks:PGR.inventoryKindCount(p1,"banishment"),
+      gold:Number(run.gold),score:Number(score)
+    };
+  });
+  assert.match(reducedEssenceTrade.card,/2 ESSENCE/i,"Arcana-adjusted Alchemist card must advertise the reduced two-Essence cost");
+  assert.equal(reducedEssenceTrade.result,true,"a two-Essence Arcana-adjusted Flask must distil successfully");
+  assert.equal(reducedEssenceTrade.essence,0,"the reduced Flask route must consume exactly the displayed two Essence");
+  assert.equal(reducedEssenceTrade.flasks,1,"the reduced-cost route must create exactly one Flask");
+  assert.equal(reducedEssenceTrade.gold,10,"reduced-cost distillation must not spend Gold");
+  assert.equal(reducedEssenceTrade.score,10000,"reduced-cost distillation must not spend Score");
+
   const shopUi=await page.evaluate(()=>{
     activeShop={id:"ordinary-supply",active:true,shopType:"entrance",sold:{},title:"FLOOR SUPPLY DESK",scorePurchases:0};
     renderShop();
@@ -228,6 +253,7 @@ try{
   const insufficient=await page.evaluate(()=>{
     const PGR=window.CCGProgression;
     p1.inventory=[];
+    p1.banishmentEssenceCost=3;
     p1.banishmentEssence=2;
     run.gold=10;score=10000;
     activeShop={id:"r76-insufficient",active:true,shopType:"hidden",v142Alchemist:true,sold:{},title:"BANISHMENT ALCHEMIST"};
