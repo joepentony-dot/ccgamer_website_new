@@ -727,3 +727,170 @@ body[data-special-mode="sizzler-saboteurs"] .radar-card::after{content:"SPY VS S
   .shop-status b{font-size:11px}
   .shop-status span{font-size:10px}
 }
+
+
+/* R84 SHOP SINGLE-SCREEN RPG OVERHAUL */
+.shop-panel-card{
+  width:min(1240px,96vw)!important;
+  max-height:min(860px,94dvh)!important;
+  overflow:hidden!important;
+  display:grid;
+  grid-template-rows:auto auto auto auto minmax(0,1fr) auto;
+  gap:7px;
+  padding:14px 16px 12px!important;
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+}
+.shop-panel-head{
+  position:relative!important;
+  margin:0!important;
+  padding:0 0 8px!important;
+  background:transparent!important;
+}
+.shop-panel-head>div{min-width:0}
+.shop-kicker{
+  display:block;
+  margin-bottom:3px;
+  color:var(--cyan);
+  font:800 9px/1.1 Consolas,"Lucida Console",monospace;
+  letter-spacing:.16em;
+}
+.shop-panel-head h2{
+  font:900 clamp(22px,2.25vw,34px)/1.05 system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;
+  letter-spacing:.035em;
+}
+.shop-close-top{
+  min-width:150px!important;
+  min-height:44px;
+  font:900 12px/1 Consolas,"Lucida Console",monospace!important;
+}
+.shop-panel-card>#shop-copy{
+  max-width:none!important;
+  margin:0!important;
+  color:#d9cfdf!important;
+  font-size:11px!important;
+  line-height:1.35!important;
+  text-align:left!important;
+}
+.shop-controls{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:6px 8px;
+  border:1px solid rgba(108,236,255,.2);
+  background:rgba(108,236,255,.045);
+  color:#bcb0c8;
+  font:700 9px/1.2 Consolas,"Lucida Console",monospace;
+}
+.shop-controls span{display:flex;align-items:center;gap:5px}
+.shop-controls b{color:var(--cyan)}
+.shop-controls kbd{
+  padding:3px 5px;
+  border-color:var(--gold);
+  color:var(--gold);
+  font-size:8px;
+}
+.shop-wallet{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:7px!important;
+  margin:0!important;
+}
+.shop-wallet span{
+  padding:6px 9px!important;
+  border-color:rgba(166,108,255,.34)!important;
+  background:linear-gradient(180deg,#0b0711,#060309)!important;
+  font:800 8px/1.1 Consolas,"Lucida Console",monospace!important;
+  letter-spacing:.08em;
+}
+.shop-wallet b{
+  display:inline!important;
+  margin:0 0 0 7px!important;
+  font-size:13px!important;
+}
+.shop-status{
+  margin:0!important;
+  min-height:0!important;
+  padding:5px 8px!important;
+}
+.shop-grid{
+  min-height:0;
+  overflow:auto;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  align-content:start;
+  gap:7px!important;
+  margin:0!important;
+  padding:1px 2px 2px 1px;
+  scrollbar-width:thin;
+}
+.shop-item{
+  min-width:0;
+  min-height:126px;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  gap:8px!important;
+  align-items:start!important;
+  padding:8px!important;
+  border-color:rgba(166,108,255,.34)!important;
+  background:linear-gradient(180deg,rgba(17,9,26,.96),rgba(7,4,12,.98))!important;
+}
+.shop-item-icon{
+  width:42px!important;
+  height:42px!important;
+  border-radius:5px;
+  border-color:rgba(108,236,255,.24)!important;
+  background:#050309!important;
+}
+.shop-item-icon .item-svg-wrap,.shop-item-icon .item-art-wrap{
+  width:32px!important;
+  height:32px!important;
+}
+.shop-item h3{
+  margin:0 0 2px!important;
+  color:#fff!important;
+  font:850 11px/1.15 system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;
+  letter-spacing:.01em;
+}
+.shop-item .price{
+  color:var(--gold)!important;
+  font:900 9px/1.15 Consolas,"Lucida Console",monospace!important;
+}
+.shop-item p{
+  min-height:28px;
+  margin:4px 0!important;
+  color:#bfb3ca!important;
+  font:500 9px/1.25 system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;
+}
+.shop-item button{
+  min-height:31px;
+  margin-top:4px!important;
+  padding:6px 7px!important;
+  font:900 9px/1 Consolas,"Lucida Console",monospace!important;
+}
+.shop-note{
+  margin:0!important;
+  padding-top:5px;
+  border-top:1px solid rgba(166,108,255,.18);
+  font-size:8.5px!important;
+  line-height:1.25!important;
+}
+@media(max-width:1000px){
+  .shop-panel-card{max-height:96dvh!important}
+  .shop-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+  .shop-panel-card{
+    width:100%!important;
+    max-height:calc(100dvh - 12px)!important;
+    padding:10px!important;
+  }
+  .shop-panel-head h2{font-size:18px!important}
+  .shop-close-top{min-width:112px!important;min-height:40px}
+  .shop-controls{align-items:flex-start;flex-direction:column;gap:4px}
+  .shop-wallet{grid-template-columns:1fr!important}
+  .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .shop-note{display:none}
+}
+@media(max-width:520px){
+  .shop-grid{grid-template-columns:1fr!important}
+  .shop-item{min-height:0}
+}
