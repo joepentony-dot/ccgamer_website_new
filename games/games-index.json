@@ -1032,6 +1032,12 @@
     "thumbnail": "resources/images/thumbnails/all/dragon_s_lair_part_ii_escape_from_singe_s_castle.jpg"
   },
   {
+    "slug": "dragonstone",
+    "title": "Dragonstone",
+    "year": 1994,
+    "thumbnail": "resources/images/thumbnails/all/dragonstone.png"
+  },
+  {
     "slug": "dreamweb",
     "title": "Dreamweb",
     "year": 1994,

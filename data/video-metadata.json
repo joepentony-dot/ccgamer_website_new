@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-28T18:19:44.016Z",
+  "updatedAt": "2026-09-30T18:12:01.370Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -3825,6 +3825,15 @@
       "uploadDate": "2023-05-09T17:30:04Z",
       "duration": "PT4M40S",
       "thumbnailUrl": "https://i.ytimg.com/vi/NLbEhM1KyEk/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "nNikuNhBcic": {
+      "title": "Dragonstone Amiga – Core Design’s Zelda-Style Adventure Before Tomb Raider",
+      "description": "🕹️ Dragonstone (1994) – Commodore Amiga fantasy action adventure from Core Design\nDragonstone on the Amiga is a colourful overhead action adventure that began life as a follow-up to Darkmere before developing into something quite different. Core Design moved away from Darkmere’s gloomy isometric approach towards a brighter Zelda-style perspective, mixing sword combat, exploration, conversations, item puzzles and light RPG elements into a fantasy quest spread across seven worlds.\n\nIn this Dragonstone Amiga review and gameplay video, I revisit the forests, villages and stranger corners of the game while looking at that enormous dragon-shaped interface, the TALK, USE and EXAMINE system, and the unusual Psychic Charge combat. Hammering the fire button gives you weaker attacks; hold it down and you can build towards stronger sword strikes or launch a Psychic Bolt. That becomes fairly important once the wildlife starts fighting back.\n\nThen there’s actually finding your way around. Similar-looking forest paths, streams you inexplicably cannot cross, mushrooms capable of stopping an armed warrior, hidden passages concealed in the scenery and a projectile-spitting spider that quickly teaches you whether you’ve understood the combat system. Dragonstone can be frustrating, but it has plenty of visual character and some genuinely interesting ideas underneath it.\n\nI also look at Dragonstone’s connection to Darkmere, the work of Mark K. Jones and Simon Phipps on the visuals and design, Barry Irvine’s programming and Martin Iveson’s music and sound. It isn’t a huge, sprawling RPG; Dragonstone is better approached as a compact Amiga action adventure built around exploration, combat, puzzles and character progression.\n\nSo this is a look back at one of Core Design’s more unusual pre-Tomb Raider Amiga games: what it gets right, why I spent half the video wondering where the hell I was, and whether Dragonstone deserved a little more attention than it received at the time.\n\n💬 Did you play Dragonstone on the Amiga or CD32, and did you ever manage to finish it?  \n💬 If you played Darkmere as well, which approach did you prefer — its gloomy isometric world or Dragonstone’s brighter overhead style?\n\n🌐 Explore more Commodore Amiga games:\n👉 https://www.cheekycommodoregamer.co.uk/games/dragonstone\n\n▶️ RELATED PLAYLISTS\n👉 https://www.youtube.com/playlist?list=PL_TYjnCNYSeyH4cVcUQvRnjyo44ZLBLJA\n👉 https://www.youtube.com/playlist?list=PL_TYjnCNYSezJ93wsmbtRcAE6Gi3rpPDo\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer  \nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join  \nTwitter: https://twitter.com/CheekyC64Gamer  \nFacebook: https://facebook.com/cheekycommodoregamer  \nDiscord: https://discord.gg/83Xw9ktAn4  \nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#Dragonstone #Amiga #CommodoreAmiga #RetroGaming #CoreDesign",
+      "uploadDate": "2026-09-30T18:02:16Z",
+      "duration": "PT9M25S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/nNikuNhBcic/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },

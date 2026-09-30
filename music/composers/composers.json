@@ -2498,11 +2498,11 @@
   {
     "name": "Martin Iveson",
     "slug": "martin-iveson",
-    "count": 3,
+    "count": 4,
     "c64Count": 0,
-    "amigaCount": 3,
+    "amigaCount": 4,
     "firstYear": 1991,
-    "lastYear": 1992,
+    "lastYear": 1994,
     "existing": false,
     "generated": true,
     "credited": true,
@@ -2512,6 +2512,7 @@
     ],
     "games": [
       "agony",
+      "dragonstone",
       "heimdall",
       "premiere"
     ]

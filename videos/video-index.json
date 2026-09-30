@@ -1,13 +1,26 @@
 {
   "version": 1,
   "counts": {
-    "total": 699,
-    "gameVideos": 663,
+    "total": 700,
+    "gameVideos": 664,
     "retroVideos": 36,
     "c64GameVideos": 561,
-    "amigaGameVideos": 102
+    "amigaGameVideos": 103
   },
   "items": [
+    {
+      "id": "nNikuNhBcic",
+      "kind": "game",
+      "filter": "amiga",
+      "badge": "Amiga Game",
+      "title": "Dragonstone Amiga – Core Design’s Zelda-Style Adventure Before Tomb Raider",
+      "description": "Dragonstone is a colourful fantasy action adventure released for the Commodore Amiga by Core Design. Originally developed from ideas connected to Darkmere, it became a brighter overhead adv…",
+      "url": "/games/dragonstone/",
+      "thumbnail": "https://i.ytimg.com/vi/nNikuNhBcic/mqdefault.jpg",
+      "platform": "Amiga",
+      "year": 1994,
+      "publisher": "Core Design"
+    },
     {
       "id": "1oUrlC_BEos",
       "kind": "game",
