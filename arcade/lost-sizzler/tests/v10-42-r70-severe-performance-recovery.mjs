@@ -15,12 +15,12 @@ const version=JSON.parse(read("version.json"));
 const canonical=read("index.html");
 const alias=fs.readFileSync(path.resolve(root,"../c64-dungeon-carnage/index.html"),"utf8");
 
-assert.equal(version.build,"V10.42 r74");
-assert.equal(version.cacheToken,"20260930r74");
+assert.equal(version.build,"V10.42 r75");
+assert.equal(version.cacheToken,"20260930r75");
 assert.match(canonical,/ccg-lost-sizzler-build" content="V10\.42 r71"/);
-assert.match(canonical,/ccg-lost-sizzler-cache" content="20260930r74"/);
+assert.match(canonical,/ccg-lost-sizzler-cache" content="20260930r75"/);
 assert.match(alias,/ccg-lost-sizzler-build" content="V10\.42 r71"/);
-assert.match(alias,/ccg-lost-sizzler-cache" content="20260930r74"/);
+assert.match(alias,/ccg-lost-sizzler-cache" content="20260930r75"/);
 
 assert.match(render,/CCGLostSizzlerV142R70RenderPerformance/,"R70 must expose renderer performance diagnostics");
 assert.match(render,/quality:"rich"/,"renderer must start at full quality");
