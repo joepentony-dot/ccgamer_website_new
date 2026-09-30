@@ -94,8 +94,24 @@
     return globalState.loadPromise;
   }
 
-  function logSupabaseDebug(scope, payload) {
+  function supabaseDebugEnabled() {
     try {
+      const params = new URLSearchParams(window.location.search || '');
+      return params.get('ccgSupabaseDebug') === '1'
+        || params.get('ccgAuthDebug') === '1'
+        || /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  const supabaseDebugSeen = new Set();
+  function logSupabaseDebug(scope, payload) {
+    if (!supabaseDebugEnabled()) return;
+    try {
+      const key = String(scope || '') + '::' + JSON.stringify(payload || null);
+      if (supabaseDebugSeen.has(key)) return;
+      supabaseDebugSeen.add(key);
       console.info('[CCG-SUPABASE-DEBUG] ' + scope, payload);
     } catch (_error) {}
   }
