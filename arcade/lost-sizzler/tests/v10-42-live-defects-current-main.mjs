@@ -33,6 +33,9 @@ assert.match(play,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Sp
 assert.doesNotMatch(play,/recoverThroughDeepFireOwner|recoverThroughCapturedR1FireOwner/,"the canonical FIRE path must not traverse retired recovery-owner chains");
 
 assert.match(shop,/function alchemistOpen\(\)/,"final Flask exchange owner must require a live Banishment Alchemist");
+assert.match(shop,/__ccgR76BanishmentRenderBoundary/,"R76 must own the final shop render boundary");
+assert.match(shop,/function cleanFlaskCards\(\)/,"final render owner must strip Flask cards from ordinary shops");
+assert.match(shop,/alchemistOpen\(\)\?\["banishmentScore"\]:\["banishment","banishmentScore"\]/,"ordinary shops must remove both Flask routes while Alchemists retain only Essence distillation");
 assert.match(shop,/if\(!alchemistOpen\(\)\)/,"Flask exchange must reject ordinary supply desks");
 assert.match(shop,/physicalArtefactCount\(player\)/,"legacy physical Artefact stacks must remain compatible");
 assert.match(shop,/nonNegativeInt\(player\.banishmentEssence\)/,"current Banishment Essence store must be spendable");
@@ -61,6 +64,7 @@ assert.match(dialogue,/title:"BANISHMENT ALCHEMIST"/,"hidden merchant dialogue m
 assert.match(dialogue,/npc\.alchemist\.partial/,"Essence-specific partial dialogue must avoid the obsolete recorded artefact line");
 assert.match(dialogue,/npc\.alchemist\.ready/,"Essence-ready dialogue must avoid the obsolete recorded artefact line");
 assert.match(dialogue,/essenceCost\?\.\(p1\)/,"Alchemist dialogue threshold must follow the player's Arcana-adjusted Essence cost");
+assert.match(dialogue,/p1\?\.banishmentEssence/,"Alchemist dialogue must read the live Banishment Essence Vessel");
 assert.doesNotMatch(dialogue,/Trade 3 rare artefacts for a Banishment Flask/,"merchant subtitles must not advertise the retired physical-only trade");
 
 assert.match(voice,/essenceCollected:\{text:"Banishment Essence collected\."/,"Essence pickups must have accurate spoken fallback");
