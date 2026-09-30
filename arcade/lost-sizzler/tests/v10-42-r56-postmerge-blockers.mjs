@@ -12,10 +12,10 @@ const canonical=fs.readFileSync(new URL("index.html",root),"utf8");
 const publicAlias=fs.readFileSync(new URL("arcade/c64-dungeon-carnage/index.html",repoRoot),"utf8");
 
 for(const html of [canonical,publicAlias]){
-  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r68"/);
-  assert.match(html,/ccg-lost-sizzler-cache" content="20260929r68"/);
-  assert.match(html,/Latest Build Changes · V10\.42 R68/);
-  assert.match(html,/ACTIVE BUILD: V10\.42 R68/);
+  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r69"/);
+  assert.match(html,/ccg-lost-sizzler-cache" content="20260930r69"/);
+  assert.match(html,/Latest Build Changes · V10\.42 R69/);
+  assert.match(html,/ACTIVE BUILD: V10\.42 R69/);
 }
 
 assert.match(
@@ -100,4 +100,4 @@ assert.match(
 );
 assert.match(shop,/INVENTORY FULL/);
 
-console.log("Dungeon Carnage R68 post-merge blocker regression contract passed.");
+console.log("Dungeon Carnage R69 post-merge blocker regression contract passed.");
