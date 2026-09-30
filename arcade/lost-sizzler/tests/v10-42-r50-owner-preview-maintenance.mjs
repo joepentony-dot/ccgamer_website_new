@@ -21,6 +21,8 @@ assert.match(gate,/client\.auth\.getSession\(\)/);
 assert.match(gate,/client\.auth\.getUser\(\)/);
 assert.match(gate,/TESTER_CODE_SHA256/,"invited preview must validate a tester-code digest");
 assert.match(gate,/TESTER_SESSION_KEY/,"tester access must remain scoped to the browser session");
+assert.match(gate,/ccg_has_dungeon_carnage_playtest_access/,"assigned website members must resolve playtest access through the protected entitlement RPC");
+assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive the member-playtester access state");
 assert.match(gate,/showTesterGate\(\)/,"ordinary production visitors must receive the invited tester-code gate");
 assert.match(gate,/mark\("tester-code-required"\)/,"the tester gate must publish an explicit blocked state");
 assert.match(gate,/mark\("tester-preview"\)/,"successful tester access must publish an allowed state");
