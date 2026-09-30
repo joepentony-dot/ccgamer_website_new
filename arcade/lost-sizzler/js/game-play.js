@@ -155,14 +155,14 @@ function tryDoor(p,x,y){
   }
   if(d.type==="switch"){S.sfx("locked");showToast("MECHANICAL GATE","A pressure switch elsewhere on this floor controls this door.","red",8500);return false}
   if(d.type==="room"){S.sfx("locked");showToast("DOOR SEALED","This room is locked by the current challenge. Finish what you started in here first.","red",7500);return false}
-  if(p.bronzeKeys<=0){S.sfx("locked");showToast("LOCKED BRONZE DOOR","You need a bronze key. This is an optional branch, so leaving it cannot block the floor objective.","red",8500);return false}
+  if(p.bronzeKeys<=0){S.sfx("locked");floatText(p.x,p.y,"NO KEY",P.red);showToast("LOCKED BRONZE DOOR","You need a bronze key. This is an optional branch, so leaving it cannot block the floor objective.","red",8500);return false}
   p.bronzeKeys--;d.locked=false;stats.doors++;shake=5;
   showToast("BRONZE DOOR UNLOCKED","The lock releases. The door is opening now.","gold",8500);updateQuests();broadcastWorld();beginDoorOpening(d,1050);return false
 }
 function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
-  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
+  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");floatText(chest.x,chest.y,"NO KEY",P.red);showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
   const paidBronzeKey=Boolean(chest.locked&&!roomKeyPaid);if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;if(paidBronzeKey)try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
