@@ -1251,6 +1251,28 @@ function buildReferenceGuide(){
     }
   }
 }
+function radarRoomType(room,roomId){
+  if(!room)return"normal";
+  if(room.sanctuary)return"sanctuary";
+  if(room.sigilRoom)return"sigil";
+  if(room.traderRoom||room.shopRoom)return"shop";
+  if(room.dedicatedHazard||room.dangerous||room.spiderNest||room.skeletonHorde||room.boulderRoom)return"danger";
+  if(Number(roomId)===Number(world?.exitRoomId))return"exit";
+  if(Number(roomId)===Number(world?.startRoomId))return"start";
+  if(room.optional)return"optional";
+  return"normal"
+}
+function radarTileColour(x,y,wall){
+  const roomId=W.roomAt(world,x,y),room=roomId>=0?world.rooms?.[roomId]:null,type=radarRoomType(room,roomId);
+  const floors={normal:"#655879",sanctuary:"#3c8b67",sigil:"#7550a0",shop:"#9a8134",danger:"#9a4552",exit:"#5d4b79",start:"#4b7886",optional:"#426f79"};
+  const walls={normal:"#292233",sanctuary:"#213b31",sigil:"#342741",shop:"#403720",danger:"#43242b",exit:"#302943",start:"#26383d",optional:"#253b40"};
+  return wall?(walls[type]||walls.normal):(floors[type]||floors.normal)
+}
+function drawRadarCross(ctx,x,y,colour,size=6){
+  ctx.save();ctx.fillStyle=colour;ctx.strokeStyle="#f4fff8";ctx.lineWidth=1;
+  ctx.fillRect(x-2,y-size,4,size*2);ctx.fillRect(x-size,y-2,size*2,4);
+  ctx.strokeRect(x-2.5,y-size-.5,5,size*2+1);ctx.strokeRect(x-size-.5,y-2.5,size*2+1,5);ctx.restore()
+}
 function renderRadarPanel(p){
   if(!radarCtx||!radarCanvasEl||!world||!p)return;
   const r=radarCanvasEl.getBoundingClientRect(),rw=Math.max(260,Math.round(r.width)),rh=Math.max(140,Math.round(r.height));
@@ -1258,18 +1280,29 @@ function renderRadarPanel(p){
   try{radarCtx.setTransform(1,0,0,1,0,0);radarCtx.globalAlpha=1;radarCtx.globalCompositeOperation="source-over";radarCtx.filter="none";radarCtx.shadowBlur=0;radarCtx.shadowColor="rgba(0,0,0,0)"}catch(_){}
   radarCtx.clearRect(0,0,rw,rh);radarCtx.fillStyle="#030205";radarCtx.fillRect(0,0,rw,rh);
   const pad=9,cols=Math.min(C.worldWidth,Math.max(46,Math.floor(rw/6))),rows=Math.min(C.worldHeight,Math.max(24,Math.floor(rh/5.5))),minX=Math.max(0,Math.min(C.worldWidth-cols,Math.round(p.x-cols/2))),minY=Math.max(0,Math.min(C.worldHeight-rows,Math.round(p.y-rows/2))),maxX=minX+cols,maxY=minY+rows,sc=Math.min((rw-pad*2)/cols,(rh-pad*2)/rows),mw=cols*sc,mh=rows*sc,ox=(rw-mw)/2,oy=(rh-mh)/2,ex=explored.get(p.id)||new Set(),validPoint=q=>Boolean(q&&Number.isFinite(Number(q.x))&&Number.isFinite(Number(q.y))),inside=q=>validPoint(q)&&q.x>=minX&&q.x<maxX&&q.y>=minY&&q.y<maxY,px=q=>ox+(Number(q.x)-minX)*sc,py=q=>oy+(Number(q.y)-minY)*sc;
-  for(let y=minY;y<maxY;y++)for(let x=minX;x<maxX;x++){if(!ex.has(`${x},${y}`))continue;radarCtx.fillStyle=world.map[y][x]?"#292233":"#655879";radarCtx.fillRect(px({x,y}),py({x,y}),Math.max(1,sc+.15),Math.max(1,sc+.15))}
-  const trail=playerTrails.get(p.id)||[];radarCtx.fillStyle="rgba(108,236,255,.72)";for(let i=Math.max(0,trail.length-420);i<trail.length;i+=3){const q=trail[i];if(inside(q))radarCtx.fillRect(px(q),py(q),Math.max(1.5,sc),Math.max(1.5,sc))}
-  // Radar knowledge is earned, never globally revealed. Remember both the Exit Sigil and the reinforced Sigil Gate only after the player has actually seen their tiles.
+  // R72: explored ground remains the only map knowledge. Room colours make the
+  // radar read like a tiny version of the traversed dungeon instead of a flat grid.
+  for(let y=minY;y<maxY;y++)for(let x=minX;x<maxX;x++){
+    if(!ex.has(`${x},${y}`))continue;
+    const wall=Boolean(world.map[y][x]);radarCtx.fillStyle=radarTileColour(x,y,wall);radarCtx.fillRect(px({x,y}),py({x,y}),Math.max(1,sc+.15),Math.max(1,sc+.15));
+    if(!wall&&sc>=3.1){radarCtx.fillStyle="rgba(255,255,255,.035)";radarCtx.fillRect(px({x,y})+.5,py({x,y})+.5,Math.max(.5,sc-1),Math.max(.5,sc-1))}
+  }
+  const trail=playerTrails.get(p.id)||[];radarCtx.fillStyle="rgba(108,236,255,.5)";for(let i=Math.max(0,trail.length-420);i<trail.length;i+=3){const q=trail[i];if(inside(q)&&ex.has(`${Math.round(q.x)},${Math.round(q.y)}`))radarCtx.fillRect(px(q),py(q),Math.max(1.2,sc*.72),Math.max(1.2,sc*.72))}
+  const visited=new Set((host.enteredRoomIds||[]).map(Number));
+  for(const room of world.rooms||[]){
+    if(!room?.sanctuary||!visited.has(Number(room.id)))continue;
+    const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};if(inside(q))drawRadarCross(radarCtx,px(q),py(q),"#64ffa2",5)
+  }
+  // Radar knowledge is earned, never globally revealed.
+  const key=(host.items||[]).find(i=>i.active&&i.kind==="key");if(key&&ex.has(`${key.x},${key.y}`)&&inside(key)){const x=px(key),y=py(key);radarCtx.save();radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.arc(x,y,3.2,0,Math.PI*2);radarCtx.fill();radarCtx.stroke();radarCtx.restore()}
   const sigil=(host.items||[]).find(i=>i.active&&i.kind==="exitSigil");if(sigil&&(ex.has(`${sigil.x},${sigil.y}`)||visibleTo(p,sigil.x,sigil.y)))host.radarSigilSeen={x:sigil.x,y:sigil.y};
   const sigilGate=(host.doors||[]).find(d=>d.sigilGate);if(sigilGate&&(ex.has(`${sigilGate.x},${sigilGate.y}`)||visibleTo(p,sigilGate.x,sigilGate.y)))host.radarSigilGateSeen={x:sigilGate.x,y:sigilGate.y};
   const gateNav=Boolean(host.exitSigilCollected&&host.radarSigilGateSeen),marker=gateNav?host.radarSigilGateSeen:(!host.exitSigilCollected?host.radarSigilSeen:null),legend=document.getElementById("radar-sigil-label");if(legend)legend.textContent=gateNav?"SIGIL GATE":"SIGIL";
   if(marker&&inside(marker)){const q=marker;radarCtx.save();radarCtx.fillStyle=gateNav?P.purple:P.gold;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.moveTo(px(q),py(q)-5);radarCtx.lineTo(px(q)+5,py(q));radarCtx.lineTo(px(q),py(q)+5);radarCtx.lineTo(px(q)-5,py(q));radarCtx.closePath();radarCtx.fill();radarCtx.stroke();if(gateNav){radarCtx.fillStyle=P.white;radarCtx.fillRect(px(q)-1,py(q)-3,2,6)}radarCtx.restore()}
-  // A death cache is player knowledge: keep it marked until it has actually been recovered.
   for(const cache of host.deathCaches||[])if(cache.active&&inside(cache)){const cx=px(cache),cy=py(cache);radarCtx.save();radarCtx.strokeStyle="#ff6076";radarCtx.lineWidth=2;radarCtx.beginPath();radarCtx.moveTo(cx-3,cy-3);radarCtx.lineTo(cx+3,cy+3);radarCtx.moveTo(cx+3,cy-3);radarCtx.lineTo(cx-3,cy+3);radarCtx.stroke();radarCtx.restore()}
   for(const shop of host.shops||[])if(shop.active&&shop.discovered&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
-  radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.fillRect(px(p)-3,py(p)-3,7,7);radarCtx.strokeRect(px(p)-3,py(p)-3,7,7)
+  radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.moveTo(px(p),py(p)-5);radarCtx.lineTo(px(p)+4,py(p)+4);radarCtx.lineTo(px(p)-4,py(p)+4);radarCtx.closePath();radarCtx.fill();radarCtx.stroke()
 }
 function dungeonCameraZoom(v,p){
   if(p2)return 1;
