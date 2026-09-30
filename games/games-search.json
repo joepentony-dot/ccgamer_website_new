@@ -3204,6 +3204,24 @@
     "year": 1987
   },
   {
+    "title": "Dragonstone",
+    "slug": "dragonstone",
+    "publisher": [
+      "Core Design"
+    ],
+    "genre": [
+      "action-adventure"
+    ],
+    "genres": [
+      "action-adventure"
+    ],
+    "composer": [
+      "Martin Iveson"
+    ],
+    "music": [],
+    "year": 1994
+  },
+  {
     "title": "Dreamweb",
     "slug": "dreamweb",
     "publisher": [
