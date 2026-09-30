@@ -95,7 +95,7 @@
       gameCatalogueReady = true;
       if (note) note.textContent = oldNote;
     } catch (error) {
-      console.warn("Lost Sizzler V10.4: full game catalogue unavailable; retaining built-in collectible pool.", error);
+      console.warn("C64 Dungeon Carnage V10.4: full game catalogue unavailable; retaining built-in collectible pool.", error);
       gameCatalogueReady = false;
       if (note) note.textContent = `${oldNote} Full archive collectible loading failed, so the built-in collectible pool is being used for this session.`;
     } finally {
@@ -336,57 +336,10 @@
   }
 
   function patchFinalFloor() {
-    if (typeof damageEnemy === "function") {
-      const originalDamageEnemy = damageEnemy;
-      damageEnemy = function damageEnemyV104() {
-        const result = originalDamageEnemy.apply(this, arguments);
-        if (run?.floor === CONFIG.maxFloors && host?.sigilResolved) {
-          const finalItem = (host.items || []).find((item) => item?.active && item.kind === "exitSigil");
-          if (finalItem) {
-            finalItem.kind = "lostSizzler";
-            finalItem.title = "THE LOST SIZZLER";
-            host.radarSigilSeen = { x: finalItem.x, y: finalItem.y };
-            if (!host._v104SizzlerRevealShown) {
-              host._v104SizzlerRevealShown = true;
-              showToast("THE LOST SIZZLER REVEALED", "The final Sigil reward is the Lost Sizzler. Recover it to complete the conquest.", "gold", 11000);
-            }
-          }
-        }
-        return result;
-      };
-    }
-
-    if (typeof itemInfo === "function") {
-      const originalItemInfo = itemInfo;
-      itemInfo = function itemInfoV104(item) {
-        if (item?.kind === "lostSizzler") return ["★", P.gold];
-        return originalItemInfo(item);
-      };
-    }
-
-    if (typeof applyItem === "function") {
-      const originalApplyItem = applyItem;
-      applyItem = function applyItemV104(item, player) {
-        if (item?.kind !== "lostSizzler") return originalApplyItem(item, player);
-        host.lostSizzlerRecovered = true;
-        score += 5000;
-        S.sfx?.("win");
-        shake = Math.max(shake || 0, 14);
-        if (typeof burst === "function") burst(item.x, item.y, P.gold, 40, 2);
-        if (typeof ring === "function") ring(item.x, item.y, P.gold, 64);
-        if (typeof floatText === "function") floatText(player.x, player.y, "LOST SIZZLER RECOVERED!", P.gold);
-        showToast("CONGRATULATIONS — THE LOST SIZZLER IS YOURS", "Five floors conquered. The Lost Sizzler has finally been recovered.", "green", 12000);
-        if (!run.floorComplete) {
-          PROG.bankFloor(run);
-          run.floorComplete = true;
-        }
-        run.deepest = Math.max(run.deepest || 1, CONFIG.maxFloors);
-        setTimeout(() => {
-          if (run && typeof endRun === "function") endRun("The Lost Sizzler recovered — conquest complete");
-        }, 900);
-        return true;
-      };
-    }
+    // R78: the modern campaign owns final-floor completion through the normal
+    // Exit Sigil / Citadel flow. The V10.4 Lost Sizzler conversion is retired
+    // and must not wrap damageEnemy, itemInfo or applyItem anymore.
+    return false;
   }
 
   function patchEndReport() {
@@ -422,7 +375,7 @@
         this.syncMembers();
         if (this._v104OverCapacity) {
           await this.leave();
-          throw new Error(`Room is full. The Lost Sizzler supports a maximum of ${CONFIG.maxPlayers} online players.`);
+          throw new Error(`Room is full. C64 Dungeon Carnage supports a maximum of ${CONFIG.maxPlayers} online players.`);
         }
         if (this.members.size > 1 || attempt >= 3) break;
       }
@@ -577,7 +530,7 @@
     overlay.className = "overlay hidden";
     overlay.innerHTML = `<div class="panel compact v104-feedback-panel">
       <h2>Bug Report / Game Suggestions</h2>
-      <p>Send a Lost Sizzler bug report or suggestion directly to CCG. Email is optional.</p>
+      <p>Send a C64 Dungeon Carnage bug report or suggestion directly to CCG. Email is optional.</p>
       <form id="v104-feedback-form" class="v104-feedback-grid">
         <label><span>TYPE</span><select id="v104-feedback-type"><option value="bug">Bug report</option><option value="suggestion">Game suggestion</option></select></label>
         <label><span>MESSAGE</span><textarea id="v104-feedback-message" maxlength="3000" required placeholder="Tell me what happened, or what you would like changed."></textarea></label>
@@ -645,7 +598,7 @@
         }
       }
     } catch (error) {
-      console.warn("Lost Sizzler V10.4 UI refresh failed", error);
+      console.warn("C64 Dungeon Carnage V10.4 UI refresh failed", error);
     }
   }
 
@@ -657,7 +610,7 @@
       if (!/UPDATE AVAILABLE/i.test(node.textContent || "")) node.textContent = `BUILD ${BUILD}`;
     });
     const subtitle = document.querySelector(".brand p");
-    if (subtitle) subtitle.textContent = `THE LOST SIZZLER — ${BUILD}`;
+    if (subtitle) subtitle.textContent = `C64 DUNGEON CARNAGE — ${BUILD}`;
   }
 
   function init() {
