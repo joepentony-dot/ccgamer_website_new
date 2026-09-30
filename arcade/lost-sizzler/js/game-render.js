@@ -125,6 +125,17 @@ function tileInRenderView(x,y,pad=2){
   return sx>=-margin&&sy>=-margin&&sx<=view.w+margin&&sy<=view.h+margin
 }
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
+const FLOOR_TILE_PALETTES=Object.freeze({
+  1:Object.freeze({id:"threshold-stone",name:"THRESHOLD STONE",floor:"rgba(105,99,94,.085)",wall:"rgba(88,84,82,.105)",accent:"#a8a39c"}),
+  2:Object.freeze({id:"iron-blue",name:"IRON BLUE",floor:"rgba(55,88,122,.13)",wall:"rgba(40,70,102,.16)",accent:"#7fb3dd"}),
+  3:Object.freeze({id:"crypt-moss",name:"CRYPT MOSS",floor:"rgba(66,99,57,.15)",wall:"rgba(49,79,43,.18)",accent:"#99c27d"}),
+  4:Object.freeze({id:"ember-amber",name:"EMBER AMBER",floor:"rgba(139,70,32,.17)",wall:"rgba(116,49,28,.19)",accent:"#ea8848"}),
+  5:Object.freeze({id:"crimson-sigil",name:"CRIMSON SIGIL",floor:"rgba(145,29,48,.20)",wall:"rgba(112,18,36,.23)",accent:"#ff6076"})
+});
+function currentFloorTilePalette(){const floor=Math.max(1,Math.min(5,Number(run?.floor)||1));return FLOOR_TILE_PALETTES[floor]||FLOOR_TILE_PALETTES[1]}
+function applyFloorTilePalette(s,wall){
+  const palette=currentFloorTilePalette();ctx.save();ctx.fillStyle=wall?palette.wall:palette.floor;ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.restore()
+}
 function drawCorridorDetail(s,x,y,h,th){
   const floor=Math.max(1,Math.min(5,Number(run?.floor)||1)),open=(dx,dy)=>world.map[y+dy]?.[x+dx]===0,horizontal=open(-1,0)&&open(1,0),vertical=open(0,-1)&&open(0,1),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
   ctx.save();ctx.lineWidth=1;ctx.lineCap="square";
@@ -153,10 +164,10 @@ function drawCorridorDetail(s,x,y,h,th){
     if(h%8===0){ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=8;ctx.strokeStyle="rgba(255,107,62,.62)";ctx.beginPath();ctx.moveTo(s.x+5,s.y+C.tile-7);ctx.lineTo(cx-3,cy+2);ctx.lineTo(cx+4,cy-4);ctx.lineTo(s.x+C.tile-5,s.y+8);ctx.stroke();ctx.restore()}
     if(h%21===0){ctx.fillStyle="#8d6044";ctx.fillRect(s.x+6,s.y+6,5,5);ctx.fillRect(s.x+C.tile-11,s.y+C.tile-11,5,5)}
   }else{
-    // Sigil corridors: directional rune rails and occasional ritual nodes.
-    ctx.strokeStyle="rgba(132,104,199,.5)";ctx.lineWidth=2;if(horizontal){ctx.beginPath();ctx.moveTo(s.x+2,cy-6);ctx.lineTo(s.x+C.tile-2,cy-6);ctx.moveTo(s.x+2,cy+6);ctx.lineTo(s.x+C.tile-2,cy+6);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx-6,s.y+2);ctx.lineTo(cx-6,s.y+C.tile-2);ctx.moveTo(cx+6,s.y+2);ctx.lineTo(cx+6,s.y+C.tile-2);ctx.stroke()}
+    // Crimson Sigil corridors: danger-red rails with purple/cyan ritual accents.
+    ctx.strokeStyle="rgba(224,70,91,.58)";ctx.lineWidth=2;if(horizontal){ctx.beginPath();ctx.moveTo(s.x+2,cy-6);ctx.lineTo(s.x+C.tile-2,cy-6);ctx.moveTo(s.x+2,cy+6);ctx.lineTo(s.x+C.tile-2,cy+6);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx-6,s.y+2);ctx.lineTo(cx-6,s.y+C.tile-2);ctx.moveTo(cx+6,s.y+2);ctx.lineTo(cx+6,s.y+C.tile-2);ctx.stroke()}
     ctx.fillStyle="rgba(108,236,255,.34)";if(horizontal){ctx.fillRect(cx-3,cy-8,6,2);ctx.fillRect(cx-1,cy-3,2,6)}else{ctx.fillRect(cx-8,cy-3,2,6);ctx.fillRect(cx-3,cy-1,6,2)}
-    if(h%11===0){ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.strokeStyle="rgba(185,120,255,.62)";ctx.strokeRect(-7,-7,14,14);ctx.restore()}
+    if(h%11===0){ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.strokeStyle="rgba(205,105,255,.62)";ctx.strokeRect(-7,-7,14,14);ctx.restore()}
     if(h%29===0){ctx.save();ctx.shadowColor=P.cyan;ctx.shadowBlur=10;ctx.fillStyle="rgba(108,236,255,.58)";ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();ctx.restore()}
   }
   // Junctions receive a stronger deterministic landmark without adding blockers.
@@ -171,6 +182,7 @@ function drawTilePerformance(x,y){
     ctx.fillStyle=th.wall;ctx.fillRect(s.x+1,s.y+1,C.tile-2,C.tile-2);
     const wallArt=h%31===0?lostSizzlerPixelAssets.wallTiles?.hole2:h%23===0?lostSizzlerPixelAssets.wallTiles?.hole1:lostSizzlerPixelAssets.wallTiles?.mid;
     if(wallArt?.complete&&wallArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.76;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+    applyFloorTilePalette(s,true);
     ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-4,2);
     ctx.fillStyle="rgba(0,0,0,.24)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);
     return
@@ -178,6 +190,7 @@ function drawTilePerformance(x,y){
   ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
   const floorSet=lostSizzlerPixelAssets.floorTiles||[],floorArt=floorSet.length?floorSet[h%floorSet.length]:null;
   if(floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.82;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+  applyFloorTilePalette(s,false);
   if(room){
     const tint=room.sigilRoom?"rgba(185,120,255,.08)":room.voidRoom?"rgba(22,12,34,.16)":room.traderRoom?"rgba(255,216,90,.055)":room.sanctuary?"rgba(114,255,155,.05)":room.dangerous?"rgba(255,104,104,.045)":room.verminRoom?"rgba(155,97,52,.045)":null;
     if(tint){ctx.fillStyle=tint;ctx.fillRect(s.x,s.y,C.tile,C.tile)}
@@ -191,6 +204,7 @@ function drawTile(x,y){
     const h=tileHash(x,y,variant),course=(y+h%2)%2,theme=room?.theme||"WARP_GALLERY";ctx.fillStyle="#08060b";ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.fillStyle=th.wall;ctx.fillRect(s.x+1,s.y+1,C.tile-2,C.tile-2);
     const wallArt=h%31===0?lostSizzlerPixelAssets.wallTiles?.hole2:h%23===0?lostSizzlerPixelAssets.wallTiles?.hole1:lostSizzlerPixelAssets.wallTiles?.mid;
     if(wallArt?.complete&&wallArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.72;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+    applyFloorTilePalette(s,true);
     // Deep blockwork: inset courses, mortar, chipped corners and directional bevels.
     ctx.fillStyle="rgba(255,255,255,.075)";ctx.fillRect(s.x+2,s.y+2,C.tile-4,3);ctx.fillRect(s.x+2,s.y+5,2,C.tile-9);ctx.fillStyle="rgba(0,0,0,.34)";ctx.fillRect(s.x+C.tile-5,s.y+5,4,C.tile-6);ctx.fillRect(s.x+5,s.y+C.tile-5,C.tile-9,4);
     ctx.strokeStyle="rgba(8,5,12,.52)";ctx.lineWidth=2;for(let row=0;row<2;row++){const yy=s.y+9+row*16,offset=(row+course)%2?10:-6;ctx.beginPath();ctx.moveTo(s.x+2,yy);ctx.lineTo(s.x+C.tile-3,yy);ctx.stroke();for(let joint=offset;joint<C.tile;joint+=21){ctx.beginPath();ctx.moveTo(s.x+joint,yy);ctx.lineTo(s.x+joint,yy+15);ctx.stroke()}}
@@ -214,6 +228,7 @@ function drawTile(x,y){
   const h=tileHash(x,y,variant+roomId),theme=room?.theme||"WARP_GALLERY";ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
   const floorSet=lostSizzlerPixelAssets.floorTiles||[],floorArt=floorSet.length?floorSet[h%floorSet.length]:null;
   if(floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.78;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+  applyFloorTilePalette(s,false);
   // Layered flagstone: recessed seams, fine grain, scuffs and theme inlays.
   ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-5,2);ctx.fillRect(s.x+2,s.y+4,2,C.tile-7);ctx.fillStyle="rgba(0,0,0,.18)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);ctx.fillRect(s.x+C.tile-4,s.y,4,C.tile);ctx.strokeStyle="rgba(0,0,0,.22)";ctx.lineWidth=1;ctx.strokeRect(s.x+.5,s.y+.5,C.tile-1,C.tile-1);
   for(let grain=0;grain<3;grain++){const gx=4+((h>>>(grain*5))%(C.tile-9)),gy=5+((h>>>(grain*7+3))%(C.tile-10));ctx.fillStyle=grain===0?"rgba(255,255,255,.035)":"rgba(0,0,0,.07)";ctx.fillRect(s.x+gx,s.y+gy,1+(h>>grain)%3,1)}
