@@ -131,11 +131,12 @@ try{
   await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
-  const pageErrors=[],consoleErrors=[],failedScripts=[],v142Requests=[];
+  const pageErrors=[],consoleErrors=[],failedScripts=[],http404s=[],v142Requests=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
   page.on("console",msg=>{if(msg.type()==="error")consoleErrors.push(msg.text())});
   page.on("request",request=>{try{const url=new URL(request.url());if(/\/arcade\/lost-sizzler\/js\/v10-42-/.test(url.pathname))v142Requests.push(`${url.pathname}${url.search}`)}catch(_){}});
   page.on("requestfailed",request=>{try{const url=new URL(request.url());if(url.origin===origin&&/\.js$/i.test(url.pathname))failedScripts.push(`${url.pathname}: ${request.failure()?.errorText||"failed"}`)}catch(_){}});
+  page.on("response",response=>{try{const url=new URL(response.url());if(url.origin===origin&&response.status()===404)http404s.push(`${url.pathname}${url.search}`)}catch(_){}});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?live-solo-combat-endurance=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
@@ -335,7 +336,8 @@ try{
   assert.ok(final.particles<=900&&final.rings<=180&&final.floaters<=140,"visual effect collections were not bounded");
   assert.deepEqual(pageErrors,[],`uncaught page errors:\n${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`same-origin script failures:\n${failedScripts.join("\n")}`);
-  assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}`);
+  assert.deepEqual(http404s,[],`same-origin 404 responses:\n${http404s.join("\n")}`);
+  assert.deepEqual(consoleErrors,[],`console errors:\n${consoleErrors.join("\n")}\n404 responses:\n${http404s.join("\n")}`);
 
   console.log("DUNGEON_R30_SOLO_ENDURANCE",JSON.stringify({initial,final,requests:v142Requests.length}));
   console.log("Dungeon Carnage V10.42 r57 live Solo combat endurance regression passed.");
