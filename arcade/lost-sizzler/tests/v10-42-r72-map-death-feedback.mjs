@@ -12,6 +12,8 @@ const gameplay=read("js/game-play.js");
 const render=read("js/game-render.js");
 const fullMap=read("js/v10-41-solo-full-map.js");
 const warden=read("js/v10-42-warden-navigation-cues.js");
+const wardenDomain=read("js/v10-42-warden-domain-progression.js");
+const gameMain=read("js/game-main.js");
 const evolution=read("js/v10-42-r47-firearm-evolution.js");
 const voice=read("js/v10-16-voice-director.js");
 const r72=read("js/v10-42-r72-map-death-feedback.js");
@@ -30,6 +32,8 @@ assert.match(gameplay,/mode="respawning"/,"normal Solo death must enter a short 
 assert.match(gameplay,/deathTransitionMs=1200/,"death transition must remain brief rather than feeling like a loading screen");
 assert.match(gameplay,/mode==="respawning"\)\{mode="playing"/,"normal play must resume after the death presentation");
 assert.match(gameplay,/p\.invuln=Math\.max\(2200/,"respawn must be protected while the death overlay clears");
+assert.match(wardenDomain,/\(M\(\)==="playing"\|\|M\(\)==="respawning"\)/,"cleansed Warden recovery anchor must remain eligible during the R72 respawn transition");
+assert.match(gameMain,/if\(mode==="respawning"\)return false;/,"header pause/quit control must not interrupt the timed respawn transition");
 
 assert.match(evolution,/new CustomEvent\("ccg:firearm-evolved"/,"firearm owner must publish a real tier-change event");
 assert.match(voice,/ccg:firearm-evolved/,"voice director must use the real tier-change event");
