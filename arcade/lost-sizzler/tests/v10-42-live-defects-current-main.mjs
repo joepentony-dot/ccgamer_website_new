@@ -35,7 +35,10 @@ assert.doesNotMatch(play,/recoverThroughDeepFireOwner|recoverThroughCapturedR1Fi
 assert.match(shop,/function alchemistOpen\(\)/,"final Flask exchange owner must require a live Banishment Alchemist");
 assert.match(shop,/__ccgR76BanishmentRenderBoundary/,"R76 must own the final shop render boundary");
 assert.match(shop,/function cleanFlaskCards\(\)/,"final render owner must strip Flask cards from ordinary shops");
-assert.match(shop,/alchemistOpen\(\)\?\["banishmentScore"\]:\["banishment","banishmentScore"\]/,"ordinary shops must remove both Flask routes while Alchemists retain only Essence distillation");
+assert.match(shop,/const scoreButton=root\.querySelector\?\.\('\[data-shop-buy="banishmentScore"\]'\),scoreArticle=scoreButton\?\.closest\?\.\("article"\);[\s\S]*if\(scoreArticle\)\{scoreArticle\.remove\(\);removed\+\+\}/,
+  "final render owner must always remove the retired score Flask route");
+assert.match(shop,/const trade=root\.querySelector\?\.\('\[data-shop-buy="banishment"\]'\),article=trade\?\.closest\?\.\("article"\);[\s\S]*if\(!alchemistOpen\(\)\)\{[\s\S]*if\(article\)\{article\.remove\(\);removed\+\+\}[\s\S]*return removed;[\s\S]*\}[\s\S]*if\(trade&&article\)\{/,
+  "ordinary shops must remove Essence Flask distillation while Alchemists retain that route");
 assert.match(shop,/if\(!alchemistOpen\(\)\)/,"Flask exchange must reject ordinary supply desks");
 assert.match(shop,/physicalArtefactCount\(player\)/,"legacy physical Artefact stacks must remain compatible");
 assert.match(shop,/nonNegativeInt\(player\.banishmentEssence\)/,"current Banishment Essence store must be spendable");
