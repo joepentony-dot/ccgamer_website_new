@@ -40,7 +40,7 @@ try{
   const result=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue;
     const depth=(source,marker)=>{const seen=new Set();let current=source,count=0;while(typeof current==="function"&&!seen.has(current)){if(current[marker])count++;seen.add(current);current=current.__ccgOriginal}return count};
-    const room=world.rooms.find(candidate=>candidate?.sanctuary);
+    const room=world.rooms.find(candidate=>candidate?.sanctuary&&!candidate?.developerRoom);
     if(!room)return{missingSanctuary:true};
     let tile=null;
     for(let y=room.y;y<=room.y+room.h&&!tile;y++)for(let x=room.x;x<=room.x+room.w;x++)if(W.walkable(world.map,x,y,host)){tile={x,y};break}
