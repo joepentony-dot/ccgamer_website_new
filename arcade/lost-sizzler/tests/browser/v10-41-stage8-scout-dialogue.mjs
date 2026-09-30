@@ -97,7 +97,7 @@ try{
   const scoutNotificationTitles=[first.toastTitle,...first.queued.map(entry=>entry.title)].join(" | ");
   const scoutNotificationText=[first.toastText,...first.queued.map(entry=>entry.text)].join(" | ");
   assert.match(scoutNotificationTitles,/CCG SCOUT/i,"Scout dialogue must use the existing notification surface, immediately or through the established toast queue");
-  assert.match(scoutNotificationText,/There you are/i,"the first Scout line must remain available through the existing non-blocking notification queue");
+  assert.match(scoutNotificationText,/found me/i,"the supplied first Scout line must remain available through the existing non-blocking notification queue");
   assert.equal(first.voiceKey,"npc.scout.found","Scout text must carry a stable optional local-voice key for later expansion");
 
   const following=await page.evaluate(()=>{
