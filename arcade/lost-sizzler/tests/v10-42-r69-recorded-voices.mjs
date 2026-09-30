@@ -8,6 +8,9 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const map=read("js/v10-42-r69-recorded-voices.js");
+const voiceAsset=path.join(root,"assets/audio/voice/ccg-recorded-voices-r69.ogg");
+assert.ok(fs.existsSync(voiceAsset),"the owner-recorded R69 OGG sprite must be present in the public runtime");
+assert.ok(fs.statSync(voiceAsset).size>1_900_000,"the recorded voice sprite must contain the assembled 84-cue payload");
 const voice=read("js/v10-16-voice-director.js");
 const stage8=read("js/v10-41-stage8-npc-dialogue.js");
 const play=read("js/game-play.js");
