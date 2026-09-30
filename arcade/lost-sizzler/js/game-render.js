@@ -808,22 +808,28 @@ function punyPlayerCell(pose,d,now){
 }
 function drawPlayerEquipmentOverlay(p,cx,cy,d){
   const armour=Math.max(0,Math.min(12,Number(p?.armor)||0));if(armour<=0)return;
-  const tier=armour>=10?4:armour>=7?3:armour>=4?2:1,metal=tier>=3?"#aeb8c2":tier===2?"#87929d":"#66717c",edge=tier>=4?P.cyan:"#d8e0e7";
-  ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=tier>=4?P.cyan:"rgba(120,180,220,.35)";ctx.shadowBlur=tier>=4?9:3;
-  // Armour is presentation-only and mirrors the real p.armor owner.
-  // It never changes collision or damage calculations.
-  ctx.fillStyle=metal;ctx.fillRect(cx-11,cy-6,5,7);ctx.fillRect(cx+6,cy-6,5,7);
-  ctx.fillStyle=edge;ctx.fillRect(cx-10,cy-6,3,2);ctx.fillRect(cx+7,cy-6,3,2);
+  const tier=armour>=10?4:armour>=7?3:armour>=4?2:1,metal=tier>=3?"#9aa3ad":tier===2?"#77818b":"#5d6670",edge=tier>=4?P.cyan:"#c4ccd3",facingX=Math.sign(Number(d?.x)||0);
+  ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=tier>=4?"rgba(108,236,255,.45)":"rgba(120,160,190,.20)";ctx.shadowBlur=tier>=4?4:1;
+  // R71: armour is deliberately sprite-scale. It accents the existing CCG
+  // character instead of painting a second oversized body over the sprite.
+  ctx.fillStyle=metal;
+  ctx.fillRect(cx-8,cy-5,3,4);ctx.fillRect(cx+5,cy-5,3,4);
+  ctx.fillStyle=edge;ctx.fillRect(cx-7,cy-5,2,1);ctx.fillRect(cx+5,cy-5,2,1);
   if(tier>=2){
-    ctx.fillStyle="#46515d";ctx.fillRect(cx-6,cy-5,12,12);ctx.fillStyle=metal;ctx.fillRect(cx-5,cy-4,10,7);
-    ctx.fillStyle=edge;ctx.fillRect(cx-4,cy-3,8,1);ctx.fillStyle="#29323b";ctx.fillRect(cx-2,cy+3,4,4)
+    ctx.fillStyle=metal;ctx.fillRect(cx-5,cy-3,10,5);
+    ctx.fillStyle="#313941";ctx.fillRect(cx-3,cy+1,6,2);
+    ctx.fillStyle=edge;ctx.fillRect(cx-3,cy-3,6,1)
   }
   if(tier>=3){
-    ctx.fillStyle=metal;ctx.fillRect(cx-7,cy-16,14,4);ctx.fillRect(cx-8,cy-13,3,6);ctx.fillRect(cx+5,cy-13,3,6);
-    ctx.fillStyle="#222a32";ctx.fillRect(cx-5,cy-13,10,2);ctx.fillStyle=edge;ctx.fillRect(cx-4,cy-15,8,1)
+    ctx.fillStyle=metal;ctx.fillRect(cx-5,cy-12,10,2);ctx.fillRect(cx-6,cy-10,2,3);ctx.fillRect(cx+4,cy-10,2,3);
+    ctx.fillStyle="#242b31";ctx.fillRect(cx-3,cy-10,6,1);
+    ctx.fillStyle=edge;ctx.fillRect(cx-2,cy-12,4,1)
   }
   if(tier>=4){
-    ctx.globalAlpha=.65+.2*Math.sin(performance.now()/130);ctx.strokeStyle=P.cyan;ctx.lineWidth=1;ctx.strokeRect(cx-7,cy-17,14,27);ctx.globalAlpha=1
+    ctx.fillStyle=P.cyan;ctx.globalAlpha=.72;
+    ctx.fillRect(cx-4,cy,1,2);ctx.fillRect(cx+3,cy,1,2);
+    if(facingX){ctx.fillRect(cx+(facingX>0?7:-8),cy-2,1,3)}
+    ctx.globalAlpha=1
   }
   ctx.restore()
 }
