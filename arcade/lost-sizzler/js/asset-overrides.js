@@ -45,7 +45,9 @@ window.CCG_ASSET_OVERRIDES={
       doorLeafOpen:null,
       doorFrameLeft:null,
       doorFrameRight:null,
-      doorFrameTop:null
+      doorFrameTop:null,
+      bladeHazard:null,
+      hazardHole:null
     },
     namedEnemies:{"Peter Cortens":null,"Swanh8ter":null,"Syragar":null,"Parsnip Celery":null,"CPU":null,"Yoshi Yoshi":null,"CCG":null},
     items:{health:null,ammo:null,potion:null,torch:null,teleport:null,banishment:null,inventorySlot:null,credits:null,xpOrb:null,armour:null,key:null,bronze:null,exitSigil:null,weapon:null,rapid:null,game:null,loot:null}
@@ -294,6 +296,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"],
       [`js/v10-15-rare-events.js?v=${CCG_RARE_EVENTS_REV}`,"ccgLostSizzlerRareEventsV115"],
       [`js/v10-15-rare-events-balance.js?v=${CCG_RARE_EVENTS_BALANCE_REV}`,"ccgLostSizzlerRareEventsBalanceV115"],
+      [`js/v10-42-r69-recorded-voices.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerR69RecordedVoices"],
       [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"],
       [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"],
       [`js/v10-18-expansion-changelog.js?v=${CCG_EXPANSION_CHANGELOG_REV}`,"ccgLostSizzlerExpansionChangelogV118"],

@@ -77,8 +77,15 @@ function normalizeAttackState(p){
   }
   return changed
 }
+function releasePauseProjectileCadenceHold(){
+  try{
+    window.__CCG_PAUSE_PROJECTILE_CADENCE_HELD__=false;
+    window.__CCG_PAUSE_PROJECTILE_STEP_CD__=0
+  }catch(_){}
+}
 function attackNowUnbuffered(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
+  releasePauseProjectileCadenceHold();
   normalizeAttackState(p);
   const isP2=p===p2,cooldown=isP2?fire2:fire1;
   if(isP2)fireBuffer2=0;else fireBuffer1=0;
@@ -87,6 +94,7 @@ function attackNowUnbuffered(p,requestedDirection=null){
 }
 function queueAttack(p,requestedDirection=null){
   if(!p||mode!=="playing")return false;
+  releasePauseProjectileCadenceHold();
   p.__ccgFireSpawnFault=false;
   normalizeAttackState(p);
   const isP2=p===p2,direction=attackDirection(p,requestedDirection),now=performance.now();
@@ -155,7 +163,7 @@ function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(N
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
   if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
-  if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;chest.locked=false;
+  const paidBronzeKey=Boolean(chest.locked&&!roomKeyPaid);if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;if(paidBronzeKey)try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
@@ -326,15 +334,22 @@ function movePlayer(p,dx,dy,dash=false){
 function dashPlayer(p,d){if(!p||!d||mode!=="playing")return;if(p.mana<2){S.sfx("empty");showToast("NOT ENOUGH AMMO/ENERGY","Dash requires 2 reserve units.","red");return}p.mana-=2;movePlayer(p,d.x,d.y,true);sync()}
 function spreadDirections(d){const dirs=[d];if(d.x&&d.y){dirs.push({x:d.x,y:0},{x:0,y:d.y})}else if(d.x)dirs.push({x:d.x,y:1},{x:d.x,y:-1});else dirs.push({x:1,y:d.y},{x:-1,y:d.y});return dirs}
 function weaponDirections(p,d){const w=p.weapon||{};if(w.id==="shock")return[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1},{x:1,y:1},{x:1,y:-1},{x:-1,y:1},{x:-1,y:-1}];if(w.id==="spread"||w.shots>=3)return spreadDirections(d);return[d]}
+function breakableFurnitureAhead(p,d){
+  if(!p||!host?.blockingDecor)return false;
+  const dir=attackDirection(p,d),tx=Math.round(Number(p.x||0)+dir.x),ty=Math.round(Number(p.y||0)+dir.y);
+  return (host.blockingDecor||[]).some(row=>row&&row.x===tx&&row.y===ty&&!row.structural&&Number(row.hp??2)>0)
+}
 function canonicalMeleeAttackIfRequired(p,d){
   const melee=window.CCGLostSizzlerMeleeAmmoV125;
   if(!p||typeof melee?.meleeAttack!=="function")return null;
-  const hasGun=Boolean(p.firearmUnlocked&&p.weapon);
-  // A usable firearm always owns FIRE. Nearby furniture/enemies must never
-  // divert a valid gun shot into the melee helper and strand full ammo with
-  // zero projectiles. Melee is the fallback only when no usable firearm exists.
+  const hasGun=Boolean(p.firearmUnlocked&&p.weapon),dir=attackDirection(p,d);
+  // A breakable immediately in the facing/attack cell is a deliberate
+  // close-range interaction: use the equipped blade without consuming ammo.
+  // Enemies do not trigger this override, preserving firearm ownership in combat.
+  if(breakableFurnitureAhead(p,dir))return Boolean(melee.meleeAttack(p,dir));
+  // Otherwise a usable firearm continues to own FIRE. Melee remains the
+  // no-gun / zero-ammo fallback so the historical firing-lockout fix is preserved.
   if(hasGun&&Number(p.mana||0)>0)return null;
-  const dir=attackDirection(p,d);
   return Boolean(melee.meleeAttack(p,dir))
 }
 function firePlayer(p,d){
@@ -569,14 +584,15 @@ function updateRoomMessage(p,force){
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
   else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
-  else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500)}
+  else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500);try{window.CCGLostSizzlerVoice?.say?.("trapsNearby")}catch(_){}}
   else if(room?.dangerous)showToast(`DANGER — ${th.name}`,"This room contains an active hazard, challenge or major threat. Watch the floor before charging in.","red",8500);
   try{window.CCGLostSizzlerStage8NpcDialogue?.onRoomEntered?.(p,r,room,{force:false})}catch(_){}
 }
 
-function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;const contactX=Number(p.x),contactY=Number(p.y),damageBefore=Number(p.__ccgLastDamageAt||0);p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);authoritativeDamagePlayer(p,1,false,`${hazard.title||"hazard chamber"} trap`);const damageAfter=Number(p.__ccgLastDamageAt||0);if(damageAfter>damageBefore)try{dispatchEvent(new CustomEvent("ccg:hazard-damage",{detail:{playerId:String(p.id||p.name||"P1"),hazardId:String(hazard.id||""),type:String(hazard.type||"hazard"),x:contactX,y:contactY,at:damageAfter}}))}catch(_){}break}}}
+function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const elapsed=host.floorElapsed||run.elapsed,state=SYS.hazardCellState(hazard,p.x,p.y,elapsed),period=Math.max(1,Number(hazard.period||2300)),cycle=Math.floor((Math.max(0,Number(elapsed||0))+Number(hazard.phase||0))/period),warningKey=`${hazard.id}:${cycle}:${state.group}`;if(state.warning&&p._ccgHazardWarningKey!==warningKey){p._ccgHazardWarningKey=warningKey;try{S.sfx("hazardwarn")}catch(_){}try{window.CCGLostSizzlerVoice?.say?.("hazardWarning")}catch(_){}}if(!state.active)continue;const contactX=Number(p.x),contactY=Number(p.y),damageBefore=Number(p.__ccgLastDamageAt||0);p.hazardHitCooldown=1050;S.sfx(hazard.type==="blade"?"bladehit":"trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);authoritativeDamagePlayer(p,1,false,`${hazard.title||"hazard chamber"} trap`);const damageAfter=Number(p.__ccgLastDamageAt||0);if(damageAfter>damageBefore)try{dispatchEvent(new CustomEvent("ccg:hazard-damage",{detail:{playerId:String(p.id||p.name||"P1"),hazardId:String(hazard.id||""),type:String(hazard.type||"hazard"),x:contactX,y:contactY,at:damageAfter}}))}catch(_){}break}}}
 function surroundingsTick(){
   if(!p1)return;const room=W.roomAt(world,p1.x,p1.y),hidden=host.enemies.filter(e=>e.alive&&W.roomAt(world,e.x,e.y)===room&&!visibleTo(p1,e.x,e.y)).length;
+  if(hidden>0)try{window.CCGLostSizzlerVoice?.say?.("movementNearby")}catch(_){}
   let text;
   if(host.stalker?.awake&&md(host.stalker,p1)<C.stalker.nearDistance)text=`<strong>YOU HEAR SLOW FOOTSTEPS.</strong> ${C.stalker.name} is somewhere nearby.`;
   else if(hidden>0)text=`<strong>YOU HEAR MOVEMENT.</strong> ${hidden>1?"Several things are":"Something is"} moving beyond the light.`;
@@ -608,7 +624,25 @@ function updateGenerators(dt){
     g.spawnTotal=(g.spawnTotal||0)+1;host.enemies.push({id:`spawn-${Date.now()}-${Math.random()}`,...pos,kind:Math.random()<.3?"hunter":"scout",hp:2+run.floor,maxHp:2+run.floor,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,generatorId:g.id,generatorSpawnOrdinal:g.spawnTotal});S.sfx("generator");host.revision++
   }
 }
-function updateRescue(){const r=host.rescue;if(!r?.following||r.rescued)return;const target=localPlayers().sort((a,b)=>md(a,r)-md(b,r))[0];if(!target)return;if(md(target,r)>1){const next=SYS.pathStep(world,host,r,target,true);if(next){r.x=next.x;r.y=next.y}}if(SYS.inSanctuary(world,r.x,r.y)){r.rescued=true;r.following=false;showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green");SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(target.id)||new Set(),world)*100))}}
+function updateRescue(){
+  const r=host.rescue;if(!r?.following||r.rescued)return;
+  const target=localPlayers().sort((a,b)=>md(a,r)-md(b,r))[0];if(!target)return;
+  const distance=md(target,r),now=performance.now();
+  if(distance>=8&&now-Number(r._ccgLaggingVoiceAt||0)>=12000){
+    r._ccgLaggingVoiceAt=now;
+    try{window.CCGLostSizzlerVoice?.say?.("scoutLagging",{cooldown:0})}catch(_){}
+  }
+  if(SYS.inSanctuary(world,target.x,target.y)&&!SYS.inSanctuary(world,r.x,r.y)&&!r._ccgSanctuaryVoice){
+    r._ccgSanctuaryVoice=true;
+    try{window.CCGLostSizzlerVoice?.say?.("scoutSanctuaryNear",{cooldown:0})}catch(_){}
+  }
+  if(distance>1){const next=SYS.pathStep(world,host,r,target,true);if(next){r.x=next.x;r.y=next.y}}
+  if(SYS.inSanctuary(world,r.x,r.y)){
+    r.rescued=true;r.following=false;
+    showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green");
+    SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(target.id)||new Set(),world)*100))
+  }
+}
 function updateStalker(dt){
   const s=host.stalker;if(!s||s.permanentlyBanished||!C.stalker.enabled||run.floor<C.stalker.startFloor){S.setStalkerNear(Boolean(host.voidStalkerInSight));return}
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
@@ -635,14 +669,14 @@ function updateFloorObjective(){
 
 function updateRoomEvents(dt){
   if(!net.isHost)return;host.nextEvent=(host.nextEvent||30000)-dt;if(host.nextEvent>0)return;host.nextEvent=42000+Math.random()*28000;const r=Math.random();
-  if(r<.25){const live=(host.generators||[]).filter(g=>g.alive);if(live.length){live[Math.floor(Math.random()*live.length)].spawnCooldown=0;showToast("MONSTER NEST AWAKENS","A generator somewhere on the floor has accelerated its next spawn.","red",6500)}}
+  if(r<.25){const live=(host.generators||[]).filter(g=>g.alive);if(live.length){live[Math.floor(Math.random()*live.length)].spawnCooldown=0;showToast("MONSTER NEST AWAKENS","A generator somewhere on the floor has accelerated its next spawn.","red",6500);try{window.CCGLostSizzlerVoice?.say?.("uneasySound")}catch(_){ }}}
   else if(r<.5){run.alert=Math.min(100,run.alert+18);showToast("PATROL SHIFT","You hear several doors and hurried footsteps. Dungeon alert has increased.","red",6500);for(const e of host.enemies.filter(e=>e.alive&&e.aiState==="idle").slice(0,4)){e.aiState="search";e.searchMs=3500}}
   else if(r<.72){const room=world.rooms[Math.floor(Math.random()*world.rooms.length)];if(room&&!room.optional){const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};host.items.push({id:`supply-${Date.now()}`,...q,kind:"ammo",active:true,title:"Emergency Ammo Cache"});showToast("SUPPLY SIGNAL DETECTED","An ammunition cache has appeared somewhere in the explored dungeon.","cyan",6500)}}
   else{showToast("THE DUNGEON SHIFTS","Lights flicker, mechanisms turn and the patrol pattern changes. Nothing here intends to stay static.","gold",6500);run.alert=Math.min(100,run.alert+8)}host.revision++;
 }
 function processAchievements(){if(!run)return;PGR.checkAchievements(run,p1);const a=run.achievementQueue.shift();if(a)showToast("ACHIEVEMENT UNLOCKED",a.title,"gold",7600)}
 
-function updateAlert(dt){run.elapsed+=dt;host.floorElapsed+=dt;run.alert=Math.max(0,run.alert-dt*.0018);if(localPlayers().some(p=>p.torchMs>0))run.alert=Math.min(100,run.alert+dt*.0025);host.alertLevel=run.alert;host.objectiveReminderAt=host.objectiveReminderAt||300000;if(host.floorElapsed>=host.objectiveReminderAt){host.objectiveReminderAt+=300000;const explore=Math.round(PGR.roomCompletion(explored.get(p1.id)||new Set(),world)*100);showToast("OBJECTIVE REMINDER",SYS.objectiveText(host,run,explore),"cyan",11000)}if(run.alert>75&&Math.random()<dt/65000)lastAmbientMessage=""}
+function updateAlert(dt){run.elapsed+=dt;host.floorElapsed+=dt;run.alert=Math.max(0,run.alert-dt*.0018);if(localPlayers().some(p=>p.torchMs>0))run.alert=Math.min(100,run.alert+dt*.0025);host.alertLevel=run.alert;if(run.alert>=75&&!run._ccgStayAlertVoice){run._ccgStayAlertVoice=true;try{window.CCGLostSizzlerVoice?.say?.("stayAlert")}catch(_){}}else if(run.alert<55)run._ccgStayAlertVoice=false;host.objectiveReminderAt=host.objectiveReminderAt||300000;if(host.floorElapsed>=host.objectiveReminderAt){host.objectiveReminderAt+=300000;const explore=Math.round(PGR.roomCompletion(explored.get(p1.id)||new Set(),world)*100);showToast("OBJECTIVE REMINDER",SYS.objectiveText(host,run,explore),"cyan",11000)}if(run.alert>75&&Math.random()<dt/65000)lastAmbientMessage=""}
 function burst(tx,ty,col,n=10,power=1){for(let i=0;i<n;i++)particles.push({x:tx*C.tile+C.tile/2,y:ty*C.tile+C.tile/2,vx:(Math.random()-.5)*3.8*power,vy:(Math.random()-.5)*3.8*power,life:280+Math.random()*430,col,size:1.2+Math.random()*3.4*power,drag:.965,glow:4+power*5})}
 function ring(tx,ty,col,max=30){rings.push({x:tx*C.tile+C.tile/2,y:ty*C.tile+C.tile/2,r:3,max,life:340,col})}
 function floatText(tx,ty,text,col=P.white,opts={}){const life=opts.life||720;floaters.push({x:tx*C.tile+C.tile/2,y:ty*C.tile-3,text,life,maxLife:life,col,ownerId:opts.ownerId||null,pickup:Boolean(opts.pickup),startScale:opts.startScale||1,endScale:opts.endScale||1.15})}
@@ -664,7 +698,13 @@ function update(dt){
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
   for(const p of localPlayers())if(p&&Number(p.health)<=0)enforceCanonicalDeathState(p);
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
-  enemyCD-=dt;projectileCD=Math.max(0,projectileCD-dt);sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
+  enemyCD-=dt;
+  const pauseProjectileCadenceHeld=Boolean(window.__CCG_PAUSE_PROJECTILE_CADENCE_HELD__);
+  if(pauseProjectileCadenceHeld){
+    projectileCD=0;
+    window.__CCG_PAUSE_PROJECTILE_STEP_CD__=Math.max(0,(Number(window.__CCG_PAUSE_PROJECTILE_STEP_CD__)||0)-dt)
+  }else projectileCD=Math.max(0,projectileCD-dt);
+  sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
   for(const p of localPlayers()){
     if(p.invuln>0)p.invuln-=dt;if(p.hitStunMs>0)p.hitStunMs=Math.max(0,p.hitStunMs-dt);if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);if(p.torchMs>0)p.torchMs=Math.max(0,p.torchMs-dt);if(p.rapidMs>0)p.rapidMs=Math.max(0,p.rapidMs-dt);if(p.ammoFlashMs>0)p.ammoFlashMs=Math.max(0,p.ammoFlashMs-dt);
     updateEmergencyAmmo(p,dt);updateLastResortHealth(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
@@ -676,7 +716,15 @@ function update(dt){
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
   if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=executeAuthoritativeFire(p1,d1(),"buffered");if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=executeAuthoritativeFire(p2,d2(),"buffered");if(fired)fireBuffer2=0;else fire2=0}
-  if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
+  if(pauseProjectileCadenceHeld){
+    const resumeStepCD=Math.max(0,Number(window.__CCG_PAUSE_PROJECTILE_STEP_CD__)||0);
+    if(resumeStepCD<=0){
+      const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);
+      stepProjectiles();
+      window.__CCG_PAUSE_PROJECTILE_STEP_CD__=liveProjectileWork?70:0
+    }
+    projectileCD=0
+  }else if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
   updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.

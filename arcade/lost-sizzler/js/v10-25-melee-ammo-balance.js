@@ -93,7 +93,7 @@
     p._meleeSwingAt=performance.now();p._meleeSwingMs=Math.max(220,Math.min(320,Number(melee.cooldown||390)*.68));p._meleeSwingDir={...dir};p._meleeSwingColour=melee.colour||"#ffd85a";
     if(p===p2)fire2=Number(melee.cooldown||390);else fire1=Number(melee.cooldown||390);
     p.emergencyRechargeMs=0;
-    try{S.sfx("dash")}catch(_){}
+    try{S.sfx("melee")}catch(_){}
     slashFx(p,dir,melee);
     const tx=p.x+dir.x,ty=p.y+dir.y;
     const enemy=(host?.enemies||[]).find(e=>e?.alive&&e.x===tx&&e.y===ty);
@@ -121,9 +121,12 @@
     firePlayer=function firePlayerV125(p,d){
       if(!p)return false;
       const dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0});
-      /* A usable firearm owns FIRE regardless of an adjacent enemy/furniture
-       * cell. Contextual melee used to swallow valid gun shots here; melee is
-       * now strictly the no-gun / zero-ammo fallback. */
+      const tx=Math.round(Number(p.x||0)+dir.x),ty=Math.round(Number(p.y||0)+dir.y);
+      const breakable=(host?.blockingDecor||[]).some(row=>row&&row.x===tx&&row.y===ty&&!row.structural&&Number(row.hp??2)>0);
+      /* Adjacent breakable furniture is a sword interaction and must never
+       * spend firearm ammunition. Enemies remain firearm targets so the
+       * historical contextual-melee firing lockout cannot return. */
+      if(breakable)return meleeAttack(p,dir);
       if(!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
       return oldFire(p,d);
     };

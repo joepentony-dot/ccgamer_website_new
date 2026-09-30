@@ -70,3 +70,15 @@ All files below are unmodified 16x16 PNGs from the same CC0 DungeonTileset II so
 | frames/wall_mid.png | wall-mid.png | 7952b085902919cf3ee50b66575d6bb355dfe094 |
 | frames/wall_hole_1.png | wall-hole-1.png | 21ce2b22109daf06fcf2fbf06cb30337b8345c37 |
 | frames/wall_hole_2.png | wall-hole-2.png | 222d06ea4531faf132058c43e08f3a3fd7815583 |
+
+
+## Dedicated hazard imports — 29 September 2026
+
+These unmodified CC0 files are used by the R69 dedicated blade-hazard presentation layer. They do not own trap timing, collision or damage.
+
+| Original | Local | Git blob SHA | Modified |
+| --- | --- | --- | --- |
+| frames/weapon_saw_sword.png | blade-saw.png | 973e9203b4c515a14a2cc55f2f72f7308b504258 | no |
+| frames/hole.png | hole.png | c7b828f79cf4c411032e858004d66f73a60330f0 | no |
+
+The destination Git blob SHAs match the source Git blob SHAs exactly.

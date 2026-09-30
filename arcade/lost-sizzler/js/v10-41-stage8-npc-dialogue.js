@@ -9,6 +9,7 @@
   const EXPLORATION_INTERACTION_BUDGET=2;
   const SPECIAL_MODES=new Set(["horde-survivor","sizzler-saboteurs"]);
   const memory=new WeakMap();
+  const merchantVoiceVisits=new WeakMap();
   const environmentalSeen=new WeakSet();
   const environmentalFloors=new WeakMap();
   const explorationFloors=new WeakMap();
@@ -22,16 +23,23 @@
   const state={installed:false,merchantInstalled:false,sanctuaryInstalled:false,assignmentGate:false,reAdoptions:0,presentations:0,suppressed:0,merchantTaskBriefings:0,environmentalPresentations:0,environmentalBudgetSkips:0,explorationPresentations:0,explorationBudgetSkips:0,scoutEventObserver:false,levelDirectorEncounters:0,levelDirectorEnemies:0,levelDirectorSkips:0,lastLevelProfile:null,last:null,lastMerchantTask:null};
   const lines=Object.freeze({
     scout:Object.freeze({
-      trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"There you are. Get me to one of the permanently lit sanctuary rooms and I’ll stay close.",tone:"green",duration:7600,voiceKey:"npc.scout.found"}),
-      following:Object.freeze({key:"scout.following",title:"CCG SCOUT — FOLLOWING",speaker:"Scout",text:"Still here. Keep heading for the lights; I’m right behind you.",tone:"cyan",duration:6000,voiceKey:"npc.scout.following"}),
-      rescued:Object.freeze({key:"scout.rescued",title:"CCG SCOUT — SAFE",speaker:"Scout",text:"Made it. I’m staying with the lights. If you find anyone else down here, send them this way.",tone:"green",duration:7000,voiceKey:"npc.scout.safe"})
+      trapped:Object.freeze({key:"scout.trapped",title:"CCG SCOUT — FOUND",speaker:"Scout",text:"Thank God you found me.",tone:"green",duration:6200,voiceKey:"npc.scout.found"}),
+      following:Object.freeze({key:"scout.following",title:"CCG SCOUT — FOLLOWING",speaker:"Scout",text:"I’ll follow you.",tone:"cyan",duration:5200,voiceKey:"npc.scout.following"}),
+      rescued:Object.freeze({key:"scout.rescued",title:"CCG SCOUT — SAFE",speaker:"Scout",text:"We made it.",tone:"green",duration:5200,voiceKey:"npc.scout.safe"})
     }),
     merchant:Object.freeze({
-      entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Stock’s on the counter. Score buys supplies; rare artefacts buy the Flask. Take what you need and keep moving.",tone:"gold",duration:7200,voiceKey:"npc.merchant.entrance"}),
-      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. Bring enough rare artefacts and I’ll exchange them for a Banishment Flask. Score works too.",tone:"purple",duration:7600,voiceKey:"npc.merchant.hidden"})
+      entrance:Object.freeze({key:"merchant.entrance",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Ammo, armour, whatever keeps you alive.",tone:"gold",duration:6200,voiceKey:"npc.merchant.entrance"}),
+      entranceRepeat:Object.freeze({key:"merchant.entrance.repeat",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Need supplies?",tone:"gold",duration:5200,voiceKey:"npc.merchant.entrance.repeat"}),
+      entranceLook:Object.freeze({key:"merchant.entrance.look",title:"DUNGEON QUARTERMASTER",speaker:"Quartermaster",text:"Take a look.",tone:"gold",duration:5200,voiceKey:"npc.merchant.entrance.look"}),
+      hidden:Object.freeze({key:"merchant.hidden",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"You found me. That usually means you’ve been nosing around.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden"}),
+      hiddenEmpty:Object.freeze({key:"merchant.hidden.empty",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me something interesting.",tone:"purple",duration:5600,voiceKey:"npc.merchant.hidden.empty"}),
+      hiddenPartial:Object.freeze({key:"merchant.hidden.partial",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Bring me three and I can help you deal with the Stalker.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.partial"}),
+      hiddenReady:Object.freeze({key:"merchant.hidden.ready",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I can trade those artefacts for a Banishment Flask.",tone:"purple",duration:6500,voiceKey:"npc.merchant.hidden.ready"}),
+      hiddenLore:Object.freeze({key:"merchant.hidden.lore",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"I deal in things the other merchants won’t touch.",tone:"purple",duration:6200,voiceKey:"npc.merchant.hidden.lore"}),
+      hiddenComeBack:Object.freeze({key:"merchant.hidden.comeback",title:"SECRET ARTEFACT TRADER",speaker:"Trader",text:"Come back when you have enough.",tone:"purple",duration:5600,voiceKey:"comeBackFunded"})
     }),
     sanctuary:Object.freeze({
-      keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"You’re safe while you’re in here. Use the green square if you need patching up, then get back to it.",tone:"green",duration:9000,voiceKey:"npc.sanctuary.keeper"})
+      keeper:Object.freeze({key:"sanctuary.keeper",title:"SANCTUARY KEEPER",speaker:"Keeper",text:"Hello, big boy.",tone:"green",duration:5200,voiceKey:"npc.sanctuary.keeper"})
     }),
     environment:Object.freeze({
       C64_ARCHIVE:Object.freeze({key:"environment.c64-archive",title:"ARCHIVE MAINTENANCE CARD",text:"The catalogue marks cracked masonry separately from ordinary doors. Hidden routes are optional, but their shelves usually hold better supplies.",tone:"cyan",duration:8200,voiceKey:"environment.c64-archive"}),
@@ -83,11 +91,22 @@
     return tasks.find(task=>task.progress<task.target)||{id:"complete",label:"All field commissions complete",progress:3,target:3,complete:true}
   }
   function lineForMerchant(shop,task=fieldTaskSnapshot()){
-    const base=shop?.shopType==="hidden"?lines.merchant.hidden:lines.merchant.entrance;
+    const visits=Math.max(0,Number(merchantVoiceVisits.get(shop)||0));
+    let base;
+    if(shop?.shopType==="hidden"){
+      let artefacts=0;try{artefacts=Math.max(0,Number(PGR?.inventoryKindCount?.(p1,"artefact")||0))}catch(_){}
+      if(visits===0)base=lines.merchant.hidden;
+      else if(artefacts>=3)base=lines.merchant.hiddenReady;
+      else if(artefacts>0)base=lines.merchant.hiddenPartial;
+      else base=visits%4===0?lines.merchant.hiddenLore:visits%4===3?lines.merchant.hiddenComeBack:lines.merchant.hiddenEmpty;
+    }else{
+      base=visits===0?lines.merchant.entrance:(visits%2?lines.merchant.entranceRepeat:lines.merchant.entranceLook);
+    }
     const briefing=task.complete
       ?"Field board: all three commissions are complete; their normal +350 score reward path remains unchanged."
       :`Field commission: ${task.label} (${task.progress}/${task.target}). The existing +350 score reward is handled automatically.`;
-    return{...base,text:`${base.text} ${briefing}`}
+    const trade=shop?.shopType==="hidden"?" Trade 3 rare artefacts for a Banishment Flask.":"";
+    return{...base,text:`${base.text}${trade} ${briefing}`.trim()}
   }
   function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){
     if(!line?.voiceKey||!line?.text)return false;
@@ -126,8 +145,14 @@
   }
   function presentMerchant(shop,{force=false}={}){
     if(!shop?.active)return false;
+    const now=clockNow(),previous=memory.get(shop);
+    if(!force&&previous&&now-previous.at<REPEAT_MS){state.suppressed++;return false}
     const task=fieldTaskSnapshot(),shown=present(shop,lineForMerchant(shop,task),{force});
-    if(shown){state.merchantTaskBriefings++;state.lastMerchantTask={...task,at:clockNow()}}
+    if(shown){
+      merchantVoiceVisits.set(shop,Math.max(0,Number(merchantVoiceVisits.get(shop)||0))+1);
+      state.merchantTaskBriefings++;
+      state.lastMerchantTask={...task,at:clockNow()}
+    }
     return shown
   }
   function sanctuaryRoom(){

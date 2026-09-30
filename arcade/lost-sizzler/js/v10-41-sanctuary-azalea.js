@@ -198,7 +198,8 @@
     if(mode!=="playing")return;const now=Date.now();
     for(const player of typeof localPlayers==="function"?localPlayers():[p1].filter(Boolean))for(const scene of host?.sanctuaryScenes||[])for(const dancer of scene.dancers){
       if(player.x!==dancer.x||player.y!==dancer.y)continue;const key=`${player.id}|${dancer.id}`;if(now-Number(state.greetings.get(key)||0)<5500)continue;state.greetings.set(key,now);
-      try{showToast("SANCTUARY GREETING","Hello big boy","pink",2600)}catch(_){try{say("Hello big boy","pink")}catch(__){}}
+      let spoken=false;try{spoken=Boolean(window.CCGLostSizzlerVoice?.sayDialogue?.("npc.sanctuary.keeper","Hello, big boy.",{priority:43,cooldown:5500,interrupt:false}))}catch(_){}
+      try{showToast("SANCTUARY GREETING","Hello big boy","pink",2600,spoken?{ccgDialogueVoiceHandled:true}:undefined)}catch(_){if(!spoken)try{say("Hello big boy","pink")}catch(__){}}
     }
   }
 
