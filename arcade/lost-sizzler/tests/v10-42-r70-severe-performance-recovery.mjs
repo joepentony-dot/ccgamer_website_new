@@ -8,6 +8,7 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const render=read("js/game-render.js");
+const ai=read("js/ai.js");
 const supabase=fs.readFileSync(path.resolve(root,"../../js/ccg-supabase-client.js"),"utf8");
 const version=JSON.parse(read("version.json"));
 const canonical=read("index.html");
@@ -30,6 +31,9 @@ assert.match(render,/if\(richFx\)drawWallLights\(\)/,"expensive wall-light work 
 assert.match(render,/if\(richFx\)drawAmbientMotes\(\)/,"ambient motes must be shed outside rich quality");
 assert.match(render,/if\(!severe\)drawFog\(\)/,"fog must be skipped only during severe slowdown");
 assert.match(render,/sampleDungeonRenderPerformance\(t\)/,"the main render loop must sample real frame cadence");
+assert.match(ai,/R70 severe-performance recovery/,"R70 must document the cheap enemy-path fast path");
+assert.match(ai,/const startDistance=man\(e,target\),direct=DIRS/,"enemy pathing must attempt a cheap reducing step before A*");
+assert.match(ai,/if\(direct\[0\]\)return\{x:direct\[0\]\.x,y:direct\[0\]\.y\};/,"A* must be skipped when a direct legal reducing step exists");
 
 assert.match(supabase,/function supabaseDebugEnabled\(\)/,"Supabase debug logging must have an explicit production gate");
 assert.match(supabase,/ccgSupabaseDebug/,"Supabase debug logging must be opt-in");
