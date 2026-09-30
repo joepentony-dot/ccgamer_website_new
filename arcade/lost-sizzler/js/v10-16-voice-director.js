@@ -271,7 +271,7 @@
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000),now=performance.now();if(!coolReady(key,cooldown,now))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
-    if(state.active){const mayInterrupt=Boolean(opts.interrupt??entry.interrupt);if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
+    if(state.active){const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
     const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(key):"";let started=false;
     if(src)started=playClip(src,priority,text,key);if(!started&&!forceTts)started=playSprite(key,priority,text);if(!started)started=speakText(text,priority,key);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
