@@ -65,7 +65,11 @@ const lostSizzlerPixelAssets=(()=>{
     doorFrameRight:make(selected("doorFrameRight","assets/pixel/visual-overhaul/0x72/door-frame-right.png")),
     doorFrameTop:make(selected("doorFrameTop","assets/pixel/visual-overhaul/0x72/door-frame-top.png")),
     bladeHazard:make(selected("bladeHazard","assets/pixel/visual-overhaul/0x72/blade-saw.png")),
-    hazardHole:make(selected("hazardHole","assets/pixel/visual-overhaul/0x72/hole.png"))
+    hazardHole:make(selected("hazardHole","assets/pixel/visual-overhaul/0x72/hole.png")),
+    propCrate:make(selected("propCrate","assets/pixel/visual-overhaul/r85/prop-crate.svg")),
+    propBarrel:make(selected("propBarrel","assets/pixel/visual-overhaul/r85/prop-barrel.svg")),
+    propBookcase:make(selected("propBookcase","assets/pixel/visual-overhaul/r85/prop-bookcase.svg")),
+    propConsole:make(selected("propConsole","assets/pixel/visual-overhaul/r85/prop-console.svg"))
   }
 })();
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
@@ -945,7 +949,14 @@ function drawWallLights(){
 function drawFurniture(){
   for(const d of world.decor||[]){
     if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
-    if(d.type==="fireplace"){
+    const propArt=d.type==="crate"?lostSizzlerPixelAssets.propCrate
+      :d.type==="barrel"?lostSizzlerPixelAssets.propBarrel
+      :["bookcase","shelf"].includes(d.type)?lostSizzlerPixelAssets.propBookcase
+      :["terminal","console"].includes(d.type)?lostSizzlerPixelAssets.propConsole:null;
+    if(propArt?.complete&&propArt.naturalWidth){
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor="rgba(0,0,0,.52)";ctx.shadowBlur=5;
+      ctx.drawImage(propArt,Math.round(q.x+1),Math.round(q.y+1),C.tile-2,C.tile-2);ctx.restore();
+    }else if(d.type==="fireplace"){
       const now=performance.now(),flicker=Math.sin(now/67+d.x)*2,cx=q.x+C.tile/2;ctx.fillStyle="#2a2423";ctx.fillRect(q.x+2,q.y+3,C.tile-4,C.tile-4);ctx.fillStyle="#7f614b";ctx.fillRect(q.x+3,q.y+3,C.tile-6,6);ctx.fillRect(q.x+3,q.y+3,6,C.tile-6);ctx.fillRect(q.x+C.tile-9,q.y+3,6,C.tile-6);ctx.fillStyle="#0b0808";ctx.fillRect(q.x+9,q.y+12,C.tile-18,C.tile-12);ctx.fillStyle="#5c341d";ctx.fillRect(q.x+9,q.y+C.tile-10,C.tile-18,5);ctx.shadowColor=P.orange;ctx.shadowBlur=22;ctx.fillStyle="#d54b27";ctx.beginPath();ctx.moveTo(cx-10,q.y+C.tile-9);ctx.quadraticCurveTo(cx-12+flicker,q.y+13,cx-3,q.y+8);ctx.quadraticCurveTo(cx+2,q.y+16,cx+9,q.y+C.tile-9);ctx.fill();ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(cx-6,q.y+C.tile-9);ctx.quadraticCurveTo(cx-4-flicker,q.y+16,cx+1,q.y+12);ctx.quadraticCurveTo(cx+7,q.y+18,cx+6,q.y+C.tile-9);ctx.fill();ctx.fillStyle=P.gold;ctx.fillRect(cx-2,q.y+18,4,10);for(let n=0;n<5;n++){ctx.globalAlpha=.35+n*.1;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx-9+n*4+Math.sin(now/90+n)*3,q.y+10-((now/35+n*7)%18),2,2)}ctx.globalAlpha=1;ctx.shadowBlur=0
     }else if(["shelf","bookcase","tapeStack","slotRack","rack"].includes(d.type)){
       // Tall furniture gets a full silhouette with shelves and side depth so it
