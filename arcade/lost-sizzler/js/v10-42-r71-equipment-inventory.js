@@ -56,8 +56,10 @@
     ].filter(Boolean);
   }
 
-  function questSummary(player,hostState){
-    const keys=Math.max(0,Number(hostState?.keysCollected||0)),target=Math.max(1,Number(typeof C!=="undefined"?C.keyTarget:3)||3);
+  function questSummary(player,hostState,runState){
+    const claimedDomains=Array.isArray(runState?.v142ClaimedDomains)?runState.v142ClaimedDomains:[];
+    const campaignKeys=new Set(claimedDomains.map(id=>String(id||"").trim()).filter(Boolean)).size;
+    const keys=Math.max(campaignKeys,Math.max(0,Number(hostState?.keysCollected||0))),target=Math.max(1,Number(typeof C!=="undefined"?C.keyTarget:3)||3);
     return[
       ["DOMAIN KEYS",`${keys}/${target}`,"key"],
       ["BRONZE",`×${Math.max(0,Number(player?.bronzeKeys||0))}`,"bronze"],
@@ -106,7 +108,7 @@
   function renderObjective(player){
     const target=document.getElementById("inventory-objective"),hostState=currentHost(),runState=currentRun(),worldState=currentWorld();if(!target||!hostState||!runState)return;
     let explore=0,objective="CURRENT OBJECTIVE";try{explore=Math.round(PGR.roomCompletion(explored.get(player.id)||new Set(),worldState)*100);objective=SYS.objectiveText(hostState,runState,explore)}catch(_){}
-    const quest=questSummary(player,hostState).map(([name,value,kind])=>`<div class="r71-quest-chip"><span class="r71-quest-icon">${icon(kind,name)}</span><span><small>${escHtml(name)}</small><b>${escHtml(value)}</b></span></div>`).join("");
+    const quest=questSummary(player,hostState,runState).map(([name,value,kind])=>`<div class="r71-quest-chip"><span class="r71-quest-icon">${icon(kind,name)}</span><span><small>${escHtml(name)}</small><b>${escHtml(value)}</b></span></div>`).join("");
     target.innerHTML=`<div class="r71-objective-copy"><small>CURRENT OBJECTIVE</small><b>${escHtml(objective)}</b></div><div class="r71-quest-strip">${quest}</div>`;
   }
 
