@@ -71,6 +71,53 @@ const lostSizzlerPixelAssets=(()=>{
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
 const doorRenderDiagnostics=window.__CCG_DOOR_RENDER_DIAGNOSTICS__=window.__CCG_DOOR_RENDER_DIAGNOSTICS__||{assetFrames:0,fallbackFrames:0,lastMode:"",lastOrientation:"",lastState:"",lastAt:0};
 const switchRenderDiagnostics=window.__CCG_SWITCH_RENDER_DIAGNOSTICS__=window.__CCG_SWITCH_RENDER_DIAGNOSTICS__||{assetFrames:0,fallbackFrames:0,lastMode:"",lastState:"",lastSecret:false,lastAt:0};
+const dungeonRenderPerformance=window.__CCG_DUNGEON_RENDER_PERFORMANCE__=window.__CCG_DUNGEON_RENDER_PERFORMANCE__||{
+  quality:"rich",avgFrameMs:16.7,lastFrameAt:0,frames:0,severeFrames:0,recoveryFrames:0,
+  fastTileFrames:0,reducedFxFrames:0,richFrames:0,qualityChanges:0,lastQualityChangeAt:0
+};
+function sampleDungeonRenderPerformance(timestamp){
+  const tick=Number(timestamp)||performance.now();
+  if(dungeonRenderPerformance.lastFrameAt>0){
+    const delta=Math.max(1,Math.min(250,tick-dungeonRenderPerformance.lastFrameAt));
+    dungeonRenderPerformance.avgFrameMs=dungeonRenderPerformance.frames>1
+      ? dungeonRenderPerformance.avgFrameMs*.90+delta*.10
+      : delta;
+    const avg=dungeonRenderPerformance.avgFrameMs,current=dungeonRenderPerformance.quality;
+    let next=current;
+    if(avg>=42){
+      dungeonRenderPerformance.severeFrames++;
+      dungeonRenderPerformance.recoveryFrames=0;
+      if(dungeonRenderPerformance.severeFrames>=3)next="severe";
+    }else if(avg>=26){
+      dungeonRenderPerformance.severeFrames=0;
+      dungeonRenderPerformance.recoveryFrames=0;
+      if(current==="rich")next="reduced";
+    }else{
+      dungeonRenderPerformance.severeFrames=0;
+      dungeonRenderPerformance.recoveryFrames++;
+      if(current==="severe"&&avg<24&&dungeonRenderPerformance.recoveryFrames>=90)next="reduced";
+      else if(current==="reduced"&&avg<19&&dungeonRenderPerformance.recoveryFrames>=240)next="rich";
+    }
+    if(next!==current){
+      dungeonRenderPerformance.quality=next;
+      dungeonRenderPerformance.qualityChanges++;
+      dungeonRenderPerformance.lastQualityChangeAt=tick;
+      dungeonRenderPerformance.recoveryFrames=0;
+      try{document.body.dataset.dungeonRenderQuality=next}catch(_){}
+    }
+  }
+  dungeonRenderPerformance.lastFrameAt=tick;
+  dungeonRenderPerformance.frames++;
+  return dungeonRenderPerformance.quality
+}
+function dungeonRenderQuality(){return dungeonRenderPerformance.quality||"rich"}
+function dungeonRenderSevere(){return dungeonRenderQuality()==="severe"}
+function dungeonRenderRichFx(){return dungeonRenderQuality()==="rich"}
+window.CCGLostSizzlerV142R70RenderPerformance={
+  sampleFrame:sampleDungeonRenderPerformance,
+  quality:dungeonRenderQuality,
+  get state(){return dungeonRenderPerformance}
+};
 function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileInRenderView(x,y,pad=2){
@@ -116,6 +163,27 @@ function drawCorridorDetail(s,x,y,h,th){
   const exits=[open(-1,0),open(1,0),open(0,-1),open(0,1)].filter(Boolean).length;
   if(exits>=3&&h%3===0){ctx.strokeStyle=th.accent+"70";ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle=th.accent+"45";ctx.fillRect(cx-3,cy-3,6,6)}
   ctx.restore()
+}
+function drawTilePerformance(x,y){
+  const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0,h=tileHash(x,y,variant+roomId);
+  if(wall){
+    ctx.fillStyle="#08060b";ctx.fillRect(s.x,s.y,C.tile,C.tile);
+    ctx.fillStyle=th.wall;ctx.fillRect(s.x+1,s.y+1,C.tile-2,C.tile-2);
+    const wallArt=h%31===0?lostSizzlerPixelAssets.wallTiles?.hole2:h%23===0?lostSizzlerPixelAssets.wallTiles?.hole1:lostSizzlerPixelAssets.wallTiles?.mid;
+    if(wallArt?.complete&&wallArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.76;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+    ctx.fillStyle="rgba(255,255,255,.035)";ctx.fillRect(s.x+2,s.y+2,C.tile-4,2);
+    ctx.fillStyle="rgba(0,0,0,.24)";ctx.fillRect(s.x,s.y+C.tile-4,C.tile,4);
+    return
+  }
+  ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
+  const floorSet=lostSizzlerPixelAssets.floorTiles||[],floorArt=floorSet.length?floorSet[h%floorSet.length]:null;
+  if(floorArt?.complete&&floorArt.naturalWidth>=16){const alpha=ctx.globalAlpha;ctx.globalAlpha=.82;ctx.drawImage(floorArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=alpha}
+  if(room){
+    const tint=room.sigilRoom?"rgba(185,120,255,.08)":room.voidRoom?"rgba(22,12,34,.16)":room.traderRoom?"rgba(255,216,90,.055)":room.sanctuary?"rgba(114,255,155,.05)":room.dangerous?"rgba(255,104,104,.045)":room.verminRoom?"rgba(155,97,52,.045)":null;
+    if(tint){ctx.fillStyle=tint;ctx.fillRect(s.x,s.y,C.tile,C.tile)}
+    const edge=x<=room.x+1||x>=room.x+room.w-2||y<=room.y+1||y>=room.y+room.h-2;
+    if(edge){ctx.fillStyle="rgba(0,0,0,.10)";ctx.fillRect(s.x,s.y,C.tile,C.tile)}
+  }
 }
 function drawTile(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0;
@@ -1171,8 +1239,10 @@ function renderView(p,v){
   try{
     ctx.beginPath();ctx.rect(v.x,v.y,v.w,v.h);ctx.clip();ctx.fillStyle=P.black;ctx.fillRect(v.x,v.y,v.w,v.h);
     if(zoom>1){ctx.translate(v.x,v.y);ctx.scale(zoom,zoom);ctx.translate(-v.x,-v.y)}
-    const x0=Math.max(0,Math.floor(cam.x/C.tile)-1),x1=Math.min(C.worldWidth-1,Math.ceil((cam.x+logical.w)/C.tile)+1),y0=Math.max(0,Math.floor(cam.y/C.tile)-1),y1=Math.min(C.worldHeight-1,Math.ceil((cam.y+logical.h)/C.tile)+1);
-    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)drawTile(x,y);drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawEnemyDefeatVisuals();drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");drawAmbientMotes();drawFog();drawEffects();drawThreatEdgeIndicators(p)
+    const x0=Math.max(0,Math.floor(cam.x/C.tile)-1),x1=Math.min(C.worldWidth-1,Math.ceil((cam.x+logical.w)/C.tile)+1),y0=Math.max(0,Math.floor(cam.y/C.tile)-1),y1=Math.min(C.worldHeight-1,Math.ceil((cam.y+logical.h)/C.tile)+1),quality=dungeonRenderQuality(),severe=quality==="severe",richFx=quality==="rich";
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)(severe?drawTilePerformance:drawTile)(x,y);
+    if(severe)dungeonRenderPerformance.fastTileFrames++;else if(richFx)dungeonRenderPerformance.richFrames++;else dungeonRenderPerformance.reducedFxFrames++;
+    drawWindyCorridor();drawDedicatedHazards();drawFurniture();drawDoors();drawExit();if(richFx)drawWallLights();drawHazards();drawBoulderTrap();drawTraps();drawGenerators();drawShrinesSwitches();drawChests();drawSpecialObjects();host.items.forEach(drawItem);host.enemies.forEach(drawEnemy);drawEnemyDefeatVisuals();drawStalker();drawRescue();drawShots();for(const r of remote.values())if(performance.now()-r.lastSeen<2600&&visibleTo(p,r.x,r.y))drawPlayer(r,"remote");for(const lp of localPlayers())drawPlayer(lp,lp===p2?"p2":"p1");if(richFx)drawAmbientMotes();if(!severe)drawFog();drawEffects();drawThreatEdgeIndicators(p)
   }finally{ctx.restore()}
 }
 function resetFrameContext(){
@@ -1197,4 +1267,4 @@ function closePauseMenu(){
 function pause(){if(mode==="paused")return closePauseMenu();if(mode==="playing")return openPauseMenu();return false}
 async function toggleFullscreen(){const shell=document.querySelector(".ccg-game");try{if(!document.fullscreenElement)await shell.requestFullscreen();else await document.exitFullscreen()}catch(_){showToast("FULLSCREEN UNAVAILABLE","Your browser blocked fullscreen for this session.","red")}}
 function toggleSound(){S.toggle();sync()}
-function loop(t){const dt=Math.min(45,t-last||16);last=t;if(damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500);update(dt);render();requestAnimationFrame(loop)}
+function loop(t){sampleDungeonRenderPerformance(t);const dt=Math.min(45,t-last||16);last=t;if(damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500);update(dt);render();requestAnimationFrame(loop)}
