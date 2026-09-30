@@ -1,8 +1,9 @@
 /* CCG owner + tester-code preview gate for C64 Dungeon Carnage.
  *
  * Production remains closed to ordinary visitors while maintenance is active.
- * The signed-in Cheeky Commodore Gamer admin profile is allowed through, and
- * invited testers can unlock the browser build with the current tester code.
+ * The signed-in Cheeky Commodore Gamer admin profile is allowed through,
+ * assigned website-member playtesters are admitted from their normal account,
+ * and invited testers can unlock the browser build with the current tester code.
  */
 (function () {
   "use strict";
@@ -61,7 +62,7 @@
     }
   }
 
-  async function resolveProfile() {
+  async function resolveAccountAccess() {
     if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== "function") return null;
     const client = await window.ccgSupabase.getClient();
     if (!client?.auth) return null;
@@ -78,14 +79,19 @@
 
     if (!user?.id) return null;
 
-    const profileResult = await client
-      .from("profiles")
-      .select("username, display_name, role, is_admin, banned")
-      .eq("id", user.id)
-      .maybeSingle();
+    const [profileResult, playtestResult] = await Promise.all([
+      client
+        .from("profiles")
+        .select("username, display_name, role, is_admin, banned")
+        .eq("id", user.id)
+        .maybeSingle(),
+      client.rpc("ccg_has_dungeon_carnage_playtest_access")
+    ]);
 
-    if (profileResult?.error) return null;
-    return profileResult?.data || null;
+    return {
+      profile: profileResult?.error ? null : (profileResult?.data || null),
+      memberPlaytester: playtestResult?.error ? false : playtestResult?.data === true
+    };
   }
 
   function isOwnerProfile(profile) {
@@ -152,7 +158,7 @@
       '<div id="ccg-tester-access-card">',
       '<span class="ccg-kicker">CHEEKY COMMODORE GAMER</span>',
       '<h1 id="ccg-tester-access-title">C64 Dungeon Carnage</h1>',
-      '<p>This beta build is currently available to invited testers only. Enter your tester access code to continue.</p>',
+      '<p>This beta build is currently available to assigned CCG website members and invited testers. Signed-in playtesters are admitted automatically; otherwise enter your tester access code.</p>',
       '<form id="ccg-tester-access-form" autocomplete="off">',
       '<label for="ccg-tester-access-code">TESTER ACCESS CODE</label>',
       '<input id="ccg-tester-access-code" name="ccg-tester-access-code" type="password" inputmode="text" autocapitalize="none" spellcheck="false" autocomplete="off" required>',
@@ -218,9 +224,9 @@
       const timeout = new Promise((resolve) => {
         timeoutId = window.setTimeout(() => resolve(null), AUTH_TIMEOUT_MS);
       });
-      const profile = await Promise.race([resolveProfile(), timeout]);
+      const access = await Promise.race([resolveAccountAccess(), timeout]);
 
-      if (isOwnerProfile(profile)) {
+      if (isOwnerProfile(access?.profile)) {
         mark("owner-preview");
         window.dispatchEvent(new CustomEvent("ccg:play-maintenance-owner-preview", {
           detail: { allowed: true }
@@ -228,8 +234,14 @@
         dispatchAllowed("owner");
         return;
       }
+
+      if (access?.memberPlaytester === true) {
+        mark("member-playtester");
+        dispatchAllowed("member-playtester");
+        return;
+      }
     } catch (_error) {
-      // Owner resolution failed; invited testers can still use the code gate.
+      // Account resolution failed; invited testers can still use the code gate.
     } finally {
       if (timeoutId) window.clearTimeout(timeoutId);
     }
@@ -241,6 +253,7 @@
     check: checkAccess,
     isOwnerProfile: isOwnerProfile,
     isValidTesterCode: isValidTesterCode,
+    resolveAccountAccess: resolveAccountAccess,
     maintenanceDestination: MAINTENANCE_DESTINATION
   });
 
