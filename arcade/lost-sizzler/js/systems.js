@@ -425,7 +425,8 @@ window.CCGSystems=(()=>{
     carveSecretPassages(world,host,used,run);
 
     world.sanctuaryRooms=[];world.wallLights=[];
-    const sanctuaryPool=featureRooms.filter(r=>r.id!==world.exitRoomId).slice(-Math.min(10,featureRooms.length));
+    const occupiedEnemyRooms=new Set((host.enemies||[]).filter(enemy=>enemy?.alive!==false).map(enemy=>W.roomAt(world,enemy.x,enemy.y)).filter(id=>id>=0));
+    const sanctuaryPool=featureRooms.filter(r=>r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.optional&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!occupiedEnemyRooms.has(r.id)).slice(-Math.min(12,featureRooms.length));
     for(let i=0;i<Math.min(C.dungeon.sanctuaryRooms,sanctuaryPool.length);i++){
       const room=sanctuaryPool[(i*3+1)%sanctuaryPool.length];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
       for(const q of wallTorchPositions(room))world.wallLights.push({...q,roomId:room.id,radius:10,permanent:true,kind:"sanctuary"});
