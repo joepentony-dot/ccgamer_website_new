@@ -48,7 +48,11 @@ try{
     await page.waitForFunction(()=>mode==="paused");
     const before=await page.evaluate(()=>({r29:Number(window.CCGLostSizzlerV141R29?.state?.combatStallRecoveries||0),discarded:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pausedGapsDiscarded||0)}));
     await page.evaluate(()=>{const until=performance.now()+620;while(performance.now()<until){}});
-    await page.waitForTimeout(80);
+    await page.waitForFunction(
+      discarded=>mode==="paused"&&Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pausedGapsDiscarded||0)>Number(discarded),
+      before.discarded,
+      {timeout:1800}
+    );
     const paused=await page.evaluate(()=>({mode,r29:Number(window.CCGLostSizzlerV141R29?.state?.combatStallRecoveries||0),discarded:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.pausedGapsDiscarded||0)}));
     assert.equal(paused.mode,"paused",`cycle ${cycle+1}: blocking pause fixture must remain paused`);
     assert.equal(paused.r29,before.r29,`cycle ${cycle+1}: paused wall-clock gap must not enter R29 combat recovery`);
