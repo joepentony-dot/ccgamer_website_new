@@ -22,6 +22,8 @@ window.CCGWorld=(()=>{
     IRON_KEEP:{name:"Iron Joystick Keep",floor:"#211b18",alt:"#2a211c",wall:"#6f4d3d",hi:"#b37c5d",accent:"#ffb45e",message:"Iron rings hang from burgundy and ochre brickwork. Something armoured is dragging a sword nearby.",motif:"keep"},
     MOSS_CRYPT:{name:"Mossy Tape Crypt",floor:"#162019",alt:"#1d291e",wall:"#4d6144",hi:"#80916d",accent:"#a8d56b",message:"Green mortar and damp flagstones have swallowed the labels on the oldest tapes.",motif:"crypt"},
     EMBER_DUNGEON:{name:"Ember Disk Dungeon",floor:"#241712",alt:"#301d15",wall:"#743b2d",hi:"#b96345",accent:"#ff7848",message:"Rust-red bricks breathe furnace heat through their cracks. The floor plates do not look trustworthy.",motif:"dungeon"},
+    BLOOD_CITADEL:{name:"Blood Citadel",floor:"#1f090c",alt:"#2c0d12",wall:"#691923",hi:"#b83a48",accent:"#ff334b",message:"Dark red stone closes in around the final approach. The Citadel has stopped pretending you are welcome.",motif:"citadel"},
+    BLOOD_CITADEL:{name:"Blood Citadel",floor:"#24090d",alt:"#330c12",wall:"#741c28",hi:"#b73545",accent:"#ff4b57",message:"The final Citadel glows red through cracked masonry. Nothing here suggests the dungeon intends to let you leave quietly.",motif:"citadel"},
     SPIDER_NEST:{name:"Dustweb Nest",floor:"#0b090d",alt:"#151018",wall:"#362d3b",hi:"#6e5b72",accent:"#bfc7d8",message:"Webs pulse in the draught. Dozens of tiny feet are answering from the shelves.",motif:"webs"},
     TREASURE_VAULT:{name:"Locked Treasure Vault",floor:"#171b12",alt:"#222b18",wall:"#65712f",hi:"#a5bb50",accent:"#ffd85a",message:"A bonus chamber behind a bronze lock. The main quest never depends on what is inside.",motif:"vault"}
   };
@@ -421,7 +423,7 @@ window.CCGWorld=(()=>{
     const eliteRooms=[...openRooms].sort((a,b)=>b.depth-a.depth);
     const regularNamed=C.followerElites.filter(f=>!f.ccgBoss);
     regularNamed.forEach((f,i)=>{const room=eliteRooms[(i*4+2)%eliteRooms.length]||openRooms[i%openRooms.length],p=pickInRoom(w,room,used);enemies.push({id:`f${i}`,...p,kind:f.kind,hp:f.hp,maxHp:f.hp,armor:f.armor||0,maxArmor:f.armor||0,alive:true,follower:f,...aiFields(w)})});
-    const ccg=C.followerElites.find(f=>f.ccgBoss),floor=Math.max(1,Math.min(5,Number(w.floor)||1)),ccgChance=[0,.03,.15,.38,.72,1][floor];
+    const ccg=C.followerElites.find(f=>f.ccgBoss),floor=Math.max(1,Math.min(C.maxFloors||15,Number(w.floor)||1)),ccgChance=Math.min(1,Math.max(.03,.03+((floor-1)/Math.max(1,(C.maxFloors||15)-1))*.97));
     if(ccg&&w.random()<ccgChance){const room=eliteRooms[(floor*5+1)%eliteRooms.length]||openRooms[0],p=pickInRoom(w,room,used);enemies.push({id:`ccg-f${floor}`,...p,kind:ccg.kind,hp:18,maxHp:18,armor:4,maxArmor:4,alive:true,follower:ccg,ccgBoss:true,moveSpeedScale:1.35,namedDamageScale:2,...aiFields(w)})}
 
     const items=[];
