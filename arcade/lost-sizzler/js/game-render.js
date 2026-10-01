@@ -1336,7 +1336,7 @@ function buildReferenceGuide(){
 }
 function radarRoomType(room,roomId){
   if(!room)return"normal";
-  if(room.sanctuary)return"sanctuary";
+  if((world?.sanctuaryRooms||[]).map(Number).includes(Number(roomId))&&room.sanctuary===true)return"sanctuary";
   if(room.sigilRoom)return"sigil";
   if(room.traderRoom||room.shopRoom)return"shop";
   if(room.dedicatedHazard||room.dangerous||room.spiderNest||room.skeletonHorde||room.boulderRoom)return"danger";
@@ -1371,9 +1371,9 @@ function renderRadarPanel(p){
     if(!wall&&sc>=3.1){radarCtx.fillStyle="rgba(255,255,255,.035)";radarCtx.fillRect(px({x,y})+.5,py({x,y})+.5,Math.max(.5,sc-1),Math.max(.5,sc-1))}
   }
   const trail=playerTrails.get(p.id)||[];radarCtx.fillStyle="rgba(108,236,255,.5)";for(let i=Math.max(0,trail.length-420);i<trail.length;i+=3){const q=trail[i];if(inside(q)&&ex.has(`${Math.round(q.x)},${Math.round(q.y)}`))radarCtx.fillRect(px(q),py(q),Math.max(1.2,sc*.72),Math.max(1.2,sc*.72))}
-  const visited=new Set((host.enteredRoomIds||[]).map(Number));
+  const visited=new Set((host.enteredRoomIds||[]).map(Number)),sanctuaryIds=new Set((world.sanctuaryRooms||[]).map(Number));
   for(const room of world.rooms||[]){
-    if(!room?.sanctuary||!visited.has(Number(room.id)))continue;
+    if(!room?.sanctuary||!sanctuaryIds.has(Number(room.id))||!visited.has(Number(room.id)))continue;
     const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};if(inside(q))drawRadarCross(radarCtx,px(q),py(q),"#64ffa2",5)
   }
   // Radar knowledge is earned, never globally revealed.
