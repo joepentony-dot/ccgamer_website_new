@@ -115,6 +115,18 @@ function wireControls() {
   document.addEventListener('click', async (e) => {
     const btn = e.target;
     if (!(btn instanceof Element)) return;
+
+    if (btn.classList.contains('toggle-dungeon-playtester')) {
+      const userId = btn.dataset.userId;
+      const enabled = btn.dataset.enabled === 'true';
+      if (!userId) {
+        setInlineStatus('Missing member id for playtest access update.', 'error');
+        return;
+      }
+      await updateDungeonPlaytester(userId, !enabled);
+      return;
+    }
+
     if (!btn.classList.contains('save-role')) return;
 
     const row = btn.closest('tr');
@@ -194,7 +206,7 @@ function renderMembers(members) {
 
   if (!members.length) {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="8">No members found.</td>';
+    tr.innerHTML = '<td colspan="9">No members found.</td>';
     tbody.appendChild(tr);
     return;
   }
@@ -211,6 +223,7 @@ function renderMembers(members) {
       <td>${escapeHtml(formatDate(m.last_sign_in))}</td>
       <td>${escapeHtml(roleLabel)}</td>
       <td>${m.is_moderator_badge ? '<span class="badge badge-moderator">Moderator</span>' : ''}</td>
+      <td>${renderDungeonPlaytester(m)}</td>
       <td>${isProtected ? '<em>Protected</em>' : renderRoleControls(m)}</td>
       <td>${isProtected ? '<em>Protected</em>' : renderBanState(m)}</td>
     `;
@@ -231,6 +244,27 @@ function renderRoleControls(member) {
       ${options}
     </select>
     <button class="save-role" type="button">Save</button>
+  `;
+}
+
+function renderDungeonPlaytester(member) {
+  const enabled = member.dungeon_carnage_playtester === true;
+  const label = enabled ? 'Revoke' : 'Grant';
+  const state = enabled
+    ? '<span class="badge badge-moderator">Playtester</span>'
+    : '<span>Not assigned</span>';
+
+  return `
+    <div class="dungeon-playtester-control">
+      ${state}
+      <button
+        class="toggle-dungeon-playtester"
+        type="button"
+        data-user-id="${escapeHtml(member.user_id)}"
+        data-enabled="${enabled ? 'true' : 'false'}"
+        aria-label="${label} C64 Dungeon Carnage playtest access for ${escapeHtml(member.email)}"
+      >${label}</button>
+    </div>
   `;
 }
 
@@ -261,5 +295,28 @@ async function updateRole(userId, role) {
   }
 
   setInlineStatus('Role updated. Refreshing list…', 'success');
+  await loadMembers();
+}
+async function updateDungeonPlaytester(userId, enabled) {
+  if (!supabase || typeof supabase.rpc !== 'function') {
+    setInlineStatus('Supabase RPC is unavailable (client mismatch).', 'error');
+    return;
+  }
+
+  setInlineStatus(`${enabled ? 'Granting' : 'Revoking'} Dungeon Carnage playtest access…`, 'info');
+
+  const { error } = await supabase.rpc('admin_set_dungeon_carnage_playtester', {
+    p_user_id: userId,
+    p_enabled: enabled
+  });
+
+  if (error) {
+    console.error('[admin-members] admin_set_dungeon_carnage_playtester failed', error);
+    alert(`Failed to update Dungeon Carnage playtest access: ${error.message}`);
+    setInlineStatus(`Playtest access update failed: ${error.message}`, 'error');
+    return;
+  }
+
+  setInlineStatus(`Dungeon Carnage playtest access ${enabled ? 'granted' : 'revoked'}. Refreshing list…`, 'success');
   await loadMembers();
 }
