@@ -21,6 +21,8 @@
   const PROTECTED_RUNTIME_TYPE = "application/ccg-protected-runtime";
   let runtimeAccessGranted = false;
   let runtimeBoundaryReached = false;
+  let parserBoundaryEligible = false;
+  let runtimeParserResolve = null;
   let runtimeBootPromise = null;
 
   function normalise(value) {
@@ -76,8 +78,44 @@
 
   function runtimeBoundaryReady() {
     runtimeBoundaryReached = true;
+    parserBoundaryEligible = document.readyState === "loading"
+      && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
     startProtectedRuntimeWhenReady();
     return true;
+  }
+
+  function finishRuntimeBoot() {
+    mark("runtime-started");
+    window.dispatchEvent(new CustomEvent("ccg:protected-dungeon-runtime-started", {
+      detail: { allowed: true }
+    }));
+    const resolve = runtimeParserResolve;
+    runtimeParserResolve = null;
+    if (resolve) resolve(true);
+    return true;
+  }
+
+  function runtimeParserBootComplete() {
+    return finishRuntimeBoot();
+  }
+
+  function bootstrapProtectedRuntimeDuringParse(placeholders) {
+    const escapeAttribute = (value) => String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;");
+
+    const markup = placeholders.map((placeholder) => {
+      const attrs = Array.from(placeholder.attributes)
+        .filter((attribute) => attribute.name !== "type" && attribute.name !== "data-ccg-protected-runtime")
+        .map((attribute) => ` ${attribute.name}="${escapeAttribute(attribute.value)}"`)
+        .join("");
+      const inline = placeholder.getAttribute("src") ? "" : (placeholder.textContent || "");
+      return `<script${attrs}>${inline}<\\/script>`;
+    }).join("\n");
+
+    placeholders.forEach((placeholder) => placeholder.remove());
+    document.write(markup + "\n<script>window.CCGPlayMaintenanceOwnerGate?.runtimeParserBootComplete?.();<\\/script>");
   }
 
   function bootstrapProtectedRuntime() {
@@ -92,6 +130,19 @@
       const placeholders = Array.from(
         document.querySelectorAll('script[data-ccg-protected-runtime][type="' + PROTECTED_RUNTIME_TYPE + '"]')
       );
+
+      if (parserBoundaryEligible && document.readyState === "loading") {
+        runtimeBootPromise = new Promise((resolve, reject) => {
+          runtimeParserResolve = resolve;
+          try {
+            bootstrapProtectedRuntimeDuringParse(placeholders);
+          } catch (error) {
+            runtimeParserResolve = null;
+            reject(error);
+          }
+        });
+        return runtimeBootPromise;
+      }
       const sourceName = (node) => {
         const raw = String(node?.getAttribute?.("src") || "");
         return raw.split("?")[0].split("/").pop() || "";
@@ -145,11 +196,7 @@
         document.dispatchEvent(new Event("DOMContentLoaded"));
       }
 
-      mark("runtime-started");
-      window.dispatchEvent(new CustomEvent("ccg:protected-dungeon-runtime-started", {
-        detail: { allowed: true }
-      }));
-      return true;
+      return finishRuntimeBoot();
     })();
 
     return runtimeBootPromise;
@@ -389,7 +436,8 @@
     validateTesterCodeWithTimeout: validateTesterCodeWithTimeout,
     resolveAccountAccess: resolveAccountAccess,
     maintenanceDestination: MAINTENANCE_DESTINATION,
-    runtimeBoundaryReady: runtimeBoundaryReady
+    runtimeBoundaryReady: runtimeBoundaryReady,
+    runtimeParserBootComplete: runtimeParserBootComplete
   });
 
   void checkAccess();
