@@ -140,8 +140,25 @@ jobs:
             throw new Error(`Duplicate browser contracts in manifest: ${duplicateTests.join(', ')}`);
           }
           const shards=Array.from({length:shardCount},()=>[]);
-          for (const [index,test] of tests.entries()) {
-            shards[index%shardCount].push(test);
+          const heavyAssignments=new Map([
+            ['arcade/lost-sizzler/tests/support/v10-28-browser-stability-deterministic.mjs',0],
+            ['arcade/lost-sizzler/tests/browser/v10-42-live-solo-combat-endurance.mjs',1],
+            ['arcade/lost-sizzler/tests/browser/v10-42-r53-desktop-attack-tap-soak.mjs',2]
+          ]);
+          for (const [test,shard] of heavyAssignments) {
+            if (!tests.includes(test)) throw new Error(`Pinned heavy browser contract is missing: ${test}`);
+            shards[shard].push(test);
+          }
+          for (const test of tests) {
+            if (heavyAssignments.has(test)) continue;
+            const target=shards
+              .map((rows,index)=>({index,count:rows.length}))
+              .sort((a,b)=>a.count-b.count||a.index-b.index)[0].index;
+            shards[target].push(test);
+          }
+          const heavyShardIds=[...heavyAssignments].map(([test])=>shards.findIndex(rows=>rows.includes(test)));
+          if (new Set(heavyShardIds).size!==heavyAssignments.size) {
+            throw new Error('Long-running browser soak contracts must remain on separate Chromium shards.');
           }
           const shardedTests=shards.flat();
           if (shardedTests.length!==tests.length || new Set(shardedTests).size!==tests.length) {
