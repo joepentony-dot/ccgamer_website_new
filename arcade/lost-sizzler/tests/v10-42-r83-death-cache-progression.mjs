@@ -166,6 +166,6 @@ function contextFor({lostSkill=true,lostPending=false}={}){
   assert.equal(recovered.pendingLevelRestored,false);
 }
 
-assert.equal(version.build,"V10.42 r83");
-assert.equal(version.cacheToken,"20260930r83");
+assert.equal(version.build,"V10.42 r84");
+assert.equal(version.cacheToken,"20261001r84");
 console.log("Dungeon R83 recoverable XP/level/stat death-cache contract passed.");

@@ -254,7 +254,12 @@
 
   function atlasEnemy(e,cx,cy){
     if(e.follower||e.deathStalker||e.treasureGoblin)return false;
-    const kind=e.hordeWarden?"warden":e.exitWarden?"warden":e.kind,row=enemyRows[kind];
+    // R84: the standard dungeon now owns bespoke, identity-specific renderers
+    // (Tape Scout cassette body, 1541 Guard drive torso, Dustweb Spider, etc.).
+    // Keep this old atlas path only for the dedicated Horde Warden fallback so
+    // it cannot flatten the main campaign back into generic sprite families.
+    if(!e.hordeWarden)return false;
+    const kind="warden",row=enemyRows[kind];
     if(!row)return false;
     const image=assets[row[0]];
     if(!image.complete||!image.naturalWidth)return false;

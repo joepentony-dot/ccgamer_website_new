@@ -1,7 +1,7 @@
 window.CCGAI=(()=>{
   "use strict";
   const C=window.CCG_CONFIG,W=window.CCGWorld,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
-  let activePlayers=[],enemyOccupancy=null,lastSimulationDiagnostics={total:0,active:0,sleeping:0,activeRooms:[]};
+  let activePlayers=[],enemyOccupancy=null,crowdStepSerial=0,lastSimulationDiagnostics={total:0,active:0,sleeping:0,throttled:0,crowdStride:1,crowded:false,activeRooms:[]};
   const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y),man=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
   const kind=e=>e.follower?.kind||e.kind;
   const memory=e=>C.enemy.alertMemory[kind(e)]||C.enemy.alertMemory.scout;
@@ -64,6 +64,23 @@ window.CCGAI=(()=>{
     const wakeRange=Math.max(8,Number(C.enemy?.lineOfSightRange||14)+2);if(nearest<=wakeRange)return true;
     if((e.aiState==="chase"||e.aiState==="search")&&nearest<=Math.max(24,Number(C.enemy?.torchSightRange||20)+4))return true;
     return false;
+  }
+  function crowdPriority(e){
+    if(!e?.alive)return true;
+    if(e.deathStalker||e.timedHunter||e.hunting||e.follower||e.guardian||e.keyGuardian||e.exitWarden||e.sigilDefender||e.champion||e.championName||e.ccgBoss||e.arenaId)return true;
+    let nearest=Infinity;for(const p of activePlayers)nearest=Math.min(nearest,dist(e,p));
+    if(nearest<=7)return true;
+    return e.aiState==="chase"&&nearest<=11;
+  }
+  function crowdHash(e){
+    let h=2166136261;for(const ch of String(e?.id||e?.kind||"enemy")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0;
+  }
+  function crowdPlan(eligible){
+    const count=eligible.length,lowFps=Boolean(window.CCGLostSizzlerV141R37GlobalPerformance?.state?.lowFps||window.CCGLostSizzlerV142R70RenderPerformance?.state?.quality==="severe");
+    const stride=count>=28||lowFps&&count>=18?3:count>=16?2:1;
+    if(stride===1)return{stride,selected:eligible,throttled:0};
+    const phase=crowdStepSerial++%stride,selected=eligible.filter(e=>crowdPriority(e)||((crowdHash(e)+phase)%stride===0));
+    return{stride,selected,throttled:Math.max(0,count-selected.length)};
   }
   function occupiedByPlayer(x,y){return activePlayers.some(player=>player&&Number(player.health||0)>0&&player.x===x&&player.y===y)}
   function roomEntered(host,roomId){return roomId<0||(host?.enteredRoomIds||[]).includes(roomId)}
@@ -267,12 +284,13 @@ window.CCGAI=(()=>{
 
   function stepEnemies(host,map,players,dt,hooks={},world=window.__CCG_WORLD){
     if(!host?.enemies||!world)return;activePlayers=(players||[]).filter(player=>player&&Number(player.health||0)>0);host.enteredRoomIds=host.enteredRoomIds||[];for(const p of activePlayers){const roomId=W.roomAt(world,p.x,p.y);if(roomId>=0&&!host.enteredRoomIds.includes(roomId))host.enteredRoomIds.push(roomId)}
-    const activeRooms=simulationRoomsForPlayers(world,activePlayers),eligible=host.enemies.filter(e=>simulationEligible(e,world,activePlayers,activeRooms));let changed=false;
-    lastSimulationDiagnostics={total:host.enemies.filter(e=>e?.alive).length,active:eligible.length,sleeping:Math.max(0,host.enemies.filter(e=>e?.alive).length-eligible.length),activeRooms:[...activeRooms]};
+    const activeRooms=simulationRoomsForPlayers(world,activePlayers),eligible=host.enemies.filter(e=>simulationEligible(e,world,activePlayers,activeRooms)),plan=crowdPlan(eligible),simulationSet=plan.selected;let changed=false;
+    const aliveCount=host.enemies.filter(e=>e?.alive).length;
+    lastSimulationDiagnostics={total:aliveCount,active:eligible.length,sleeping:Math.max(0,aliveCount-eligible.length),throttled:plan.throttled,crowdStride:plan.stride,crowded:plan.stride>1,activeRooms:[...activeRooms]};
     enemyOccupancy=buildEnemyOccupancy(host);
     try{
-      for(const e of eligible){
-        const before={x:e.x,y:e.y,alive:e.alive},didChange=stepOne(e,host,map,activePlayers,dt,hooks,world);changed=didChange||changed;
+      for(const e of simulationSet){
+        const before={x:e.x,y:e.y,alive:e.alive},effectiveDt=crowdPriority(e)?dt:dt*plan.stride,didChange=stepOne(e,host,map,activePlayers,effectiveDt,hooks,world);changed=didChange||changed;
         if(e?.alive&&occupiedByPlayer(e.x,e.y)){
           const fallback=!occupiedByPlayer(before.x,before.y)&&!occupied(host,before.x,before.y,e)&&W.walkable(map,before.x,before.y,host)?before:DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy})).find(cell=>W.walkable(map,cell.x,cell.y,host)&&!occupied(host,cell.x,cell.y,e)&&!occupiedByPlayer(cell.x,cell.y));
           if(fallback){e.x=fallback.x;e.y=fallback.y}changed=true;

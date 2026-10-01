@@ -16,7 +16,8 @@ for(const kind of ["skeleton","spider","ghost","ambusher","root","cook","firebre
   assert.doesNotMatch(family,new RegExp(`\\b${kind}\\s*:`),`${kind} must retain bespoke/procedural art until a matching sprite is sourced`);
 }
 for(const kind of ["knight","scout","hunter","guard","charger","ranger"]){
-  assert.match(family,new RegExp(`\\b${kind}\\s*:`),`${kind} should retain a compatible humanoid family mapping`);
+  assert.doesNotMatch(family,new RegExp(`\\b${kind}\\s*:`),`${kind} must not be remapped to a generic humanoid family`);
+  assert.match(renderer,new RegExp(`else if\\(k===["']${kind}["']\\)\\{`),`${kind} must retain its bespoke procedural silhouette`);
 }
 
 assert.match(workstream,/playable hero must remain recognisably the \*\*Cheeky Commodore Gamer\*\*/);

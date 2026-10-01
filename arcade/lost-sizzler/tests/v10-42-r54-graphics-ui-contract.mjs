@@ -56,7 +56,7 @@ assert.match(render,/if\(i\.kind==="game"\)return i\.title\|\|"C64 GAME"/,"groun
 assert.match(render,/health:"HEALTH POTION"/,"ground health label must be literal");
 assert.match(render,/xpOrb:"\+10 XP"/,"ground XP label must expose its value");
 assert.match(render,/armour:"\+2 ARMOUR"/,"ground armour label must expose its value");
-assert.match(render,/weapon:"WEAPON CACHE"/,"unresolved ground weapons must be identified as a weapon cache");
+assert.match(render,/weapon:"FIREARM UPGRADE CACHE"/,"ground weapon caches must identify the evolving firearm upgrade explicitly");
 assert.match(render,/frameArtReady&&!\(customSheet\?\.complete&&customSheet\.naturalWidth>=160\)/,"the Stage-1 CC0 chest frames must own the normal upgraded chest presentation");
 assert.match(render,/chests:make\("assets\/pixel\/chest-sheet-v10-34\.png"\)/,"the authored V10.34 chest sheet must remain explicitly loaded as a compatibility fallback");
 assert.match(render,/pixelSheet=customSheet\?\.complete&&customSheet\.naturalWidth>=160\?customSheet:lostSizzlerPixelAssets\.chests/,"custom or legacy chest-sheet ownership must remain available beneath the CC0 frame path");
@@ -64,7 +64,7 @@ assert.match(render,/V10\.34 and canvas art remain safe/,"loading presentation m
 assert.doesNotMatch(render,/chunky traditional wooden chest body/,"the old inferior wooden chest fallback must not be the normal renderer");
 
 assert.match(render,/function drawPickupGlyph\(i,col\)/,"R54 must keep one renderer-owned pickup illustration boundary");
-for(const token of ["HEALTH POTION","AMMUNITION","BANISHMENT FLASK","BRONZE KEY","WEAPON CACHE","+10 XP"]){
+for(const token of ["HEALTH POTION","AMMUNITION","BANISHMENT FLASK","BRONZE KEY","FIREARM UPGRADE CACHE","+10 XP"]){
   assert.ok(render.includes(token),`pickup renderer/labels must retain ${token}`);
 }
 assert.match(render,/function drawCorridorDetail\(s,x,y,h,th\)/,"corridor detail must be renderer-owned");
