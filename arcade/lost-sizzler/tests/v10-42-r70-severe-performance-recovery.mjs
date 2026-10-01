@@ -17,9 +17,9 @@ const alias=fs.readFileSync(path.resolve(root,"../c64-dungeon-carnage/index.html
 
 assert.equal(version.build,"V10.42 r82");
 assert.equal(version.cacheToken,"20260930r82");
-assert.match(canonical,/ccg-lost-sizzler-build" content="V10\.42 r81"/);
+assert.match(canonical,/ccg-lost-sizzler-build" content="V10\.42 r82"/);
 assert.match(canonical,/ccg-lost-sizzler-cache" content="20260930r82"/);
-assert.match(alias,/ccg-lost-sizzler-build" content="V10\.42 r81"/);
+assert.match(alias,/ccg-lost-sizzler-build" content="V10\.42 r82"/);
 assert.match(alias,/ccg-lost-sizzler-cache" content="20260930r82"/);
 
 assert.match(render,/CCGLostSizzlerV142R70RenderPerformance/,"R70 must expose renderer performance diagnostics");
