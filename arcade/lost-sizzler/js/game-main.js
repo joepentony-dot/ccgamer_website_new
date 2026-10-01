@@ -132,9 +132,9 @@ function returnToGameFromPanel(){
   }
 }
 async function shareQuest(){
-  const data={title:"Cheeky's Commodore Quest",text:"Cheeky's Commodore Quest — a CCG dungeon crawl.",url:location.href};
-  try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);showToast("LINK COPIED","Cheeky's Commodore Quest link copied to the clipboard.","green");return}}catch(_){}
-  showToast("SHARE LINK",String(location.href||"Cheeky's Commodore Quest"),"cyan")
+  const data={title:"C64 Dungeon Carnage",text:"C64 Dungeon Carnage — the browser RPG dungeon crawl from the Cheeky Commodore Gamer channel.",url:location.href};
+  try{if(navigator.share){await navigator.share(data);return}if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(location.href);showToast("LINK COPIED","C64 Dungeon Carnage link copied to the clipboard.","green");return}}catch(_){}
+  showToast("SHARE LINK",String(location.href||"C64 Dungeon Carnage"),"cyan")
 }
 
 function handleHeaderQuit(){
