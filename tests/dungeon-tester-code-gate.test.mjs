@@ -48,9 +48,9 @@ assert(migration.includes("grant execute on function public.ccg_validate_dungeon
 assert(!migration.includes("ccg_tester"), "repository migration must never contain the live tester code");
 assert(canonicalEntry.includes(cacheToken), "canonical Dungeon Carnage entry must load the server-validated tester-gate cache token");
 assert(canonicalEntry.includes('type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js'), "canonical runtime must remain inert until validated access");
-assert(canonicalEntry.includes("data-ccg-protected-runtime-boundary"), "canonical entry must signal the end of the protected runtime while the parser is still active");
+assert(canonicalEntry.includes("data-ccg-runtime-boundary"), "canonical entry must signal the end of the protected runtime while the parser is still active");
 assert(legacyEntry.includes(cacheToken), "legacy Dungeon Carnage entry must load the server-validated tester-gate cache token");
 assert(legacyEntry.includes('type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js'), "legacy runtime must remain inert until validated access");
-assert(legacyEntry.includes("data-ccg-protected-runtime-boundary"), "legacy entry must signal the same protected-runtime parser boundary");
+assert(legacyEntry.includes("data-ccg-runtime-boundary"), "legacy entry must signal the same protected-runtime parser boundary");
 
 console.log("Dungeon Carnage server-validated tester-code gate guard passed.");
