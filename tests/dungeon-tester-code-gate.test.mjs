@@ -13,7 +13,9 @@ const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261001-tester-gat
 assert(!gate.includes("TESTER_CODE_SHA256"), "tester gate must not ship a client-side code digest");
 assert(!gate.includes('sessionStorage.getItem(TESTER_SESSION_KEY) === "allowed"'), "writable sessionStorage must never be treated as authorization");
 assert(gate.includes("ccg_validate_dungeon_carnage_tester_code"), "tester code must be server-validated through Supabase");
-assert(gate.includes("await isValidTesterCode(storedTesterCode)"), "restored tester sessions must be revalidated by the server");
+assert(gate.includes("await validateTesterCodeWithTimeout(storedTesterCode)"), "restored tester sessions must be revalidated with a bounded server check");
+assert(gate.includes("Promise.race([isValidTesterCode(value), timeout])"), "tester-code validation must fail closed after the shared auth timeout");
+assert(gate.includes("const valid = await validateTesterCodeWithTimeout(candidate)"), "new tester-code submissions must also use bounded server validation");
 assert(gate.includes("TESTER_SESSION_KEY"), "tester access may remain browser-session scoped only when revalidated");
 assert(gate.includes("ccg_has_dungeon_carnage_playtest_access"), "signed-in assigned members must be checked through the protected playtest-access RPC");
 assert(gate.includes('mark("member-playtester")'), "assigned website members must receive an explicit member-playtester access state");
