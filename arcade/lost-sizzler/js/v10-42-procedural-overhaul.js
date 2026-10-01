@@ -255,11 +255,11 @@
   if(typeof renderShop==="function"){
     const baseRenderShop=renderShop;
     renderShop=function(){
-      const result=baseRenderShop(),player=currentPlayer(),isAlchemist=Boolean(activeShop?.v142Alchemist||activeShop?.title?.includes("ALCHEMIST"));
-      if(isAlchemist&&UI.shopTitle)UI.shopTitle.textContent="BANISHMENT ALCHEMIST";
-      if(isAlchemist&&UI.shopCopy)UI.shopCopy.textContent=`Banishment Essence is stored in your Vessel and never uses an inventory slot. Exchange ${essenceCost(player)} Essence for one Banishment Flask here or at any other dungeon shop.`;
-      if(UI.shopArtefacts)UI.shopArtefacts.textContent=String(player?.banishmentEssence||0);
-      const trade=UI.shopItems?.querySelector?.('[data-shop-buy="banishment"]');if(trade){trade.textContent="EXCHANGE ESSENCE";const article=trade.closest("article");if(article){const title=article.querySelector("h3");if(title)title.textContent="BANISHMENT FLASK · ESSENCE";const price=article.querySelector(".price");if(price)price.textContent=`${essenceCost(player)} ESSENCE`;const copy=article.querySelector("p");if(copy)copy.textContent="Exchange Essence from the Vessel for one Banishment Flask. Available at every dungeon shop."}}
+      const result=baseRenderShop();if(!activeShop?.v142Alchemist&&!activeShop?.title?.includes("ALCHEMIST")){for(const id of ["banishment","banishmentScore"])UI.shopItems?.querySelector?.(`[data-shop-buy="${id}"]`)?.closest("article")?.remove();return result}
+      if(UI.shopTitle)UI.shopTitle.textContent="BANISHMENT ALCHEMIST";
+      if(UI.shopCopy)UI.shopCopy.textContent=`Banishment Essence is stored in your Vessel and never uses an inventory slot. Distil ${essenceCost(currentPlayer())} Essence into one permanent Banishment Flask for this run.`;
+      if(UI.shopArtefacts)UI.shopArtefacts.textContent=String(currentPlayer()?.banishmentEssence||0);
+      const trade=UI.shopItems?.querySelector?.('[data-shop-buy="banishment"]');if(trade){trade.textContent="DISTIL FLASK";const article=trade.closest("article");if(article){const title=article.querySelector("h3");if(title)title.textContent="DISTIL BANISHMENT FLASK";const price=article.querySelector(".price");if(price)price.textContent=`${essenceCost(currentPlayer())} ESSENCE`;const copy=article.querySelector("p");if(copy)copy.textContent="Consumes Essence from the Vessel and creates one Banishment Flask."}}
       const scoreBuy=UI.shopItems?.querySelector?.('[data-shop-buy="banishmentScore"]');scoreBuy?.closest("article")?.remove();return result;
     };
   }
@@ -270,14 +270,14 @@
       const player=currentPlayer();if(!player)return false;initRpg(player);const need=essenceCost(player),have=player.banishmentEssence||0;
       if(have<need){announce("NOT ENOUGH BANISHMENT ESSENCE",`The Alchemist requires ${need} Essence. Your Vessel currently holds ${have}.`,"red",6500);return false}
       if(!PROG.inventoryCanAdd(player,{kind:"banishment"})){announce("INVENTORY FULL","Free a slot or make room in an existing Banishment stack before distilling a charge.","red",6500);return false}
-      player.banishmentEssence-=need;PROG.inventoryAdd(player,{kind:"banishment",name:"Banishment Flask",short:"BANISH"});announce("BANISHMENT FLASK ACQUIRED",`${need} Essence exchanged. The Vessel now holds ${player.banishmentEssence} Essence.`,"gold",8000);try{S.sfx("shrine")}catch(_){}broadcast();try{renderShop()}catch(_){}syncNow();return true;
+      player.banishmentEssence-=need;PROG.inventoryAdd(player,{kind:"banishment",name:"Banishment Flask",short:"BANISH"});announce("BANISHMENT FLASK DISTILLED",`${need} Essence consumed. The Vessel now holds ${player.banishmentEssence} Essence.`,"gold",8000);try{S.sfx("shrine")}catch(_){}broadcast();try{renderShop()}catch(_){}syncNow();return true;
     };
   }
 
   if(typeof itemHelp==="function"){
     const baseItemHelp=itemHelp;
     itemHelp=function(kind){
-      if(kind==="artefact")return `Banishment Essence is harvested from major threats, corrupted anchors and cleansed events. It is stored in the Vessel, does not consume an inventory slot, and can be exchanged for a Flask at any dungeon shop.`;
+      if(kind==="artefact")return `Banishment Essence is harvested from major threats, corrupted anchors and cleansed events. It is stored in the Vessel and does not consume an inventory slot.`;
       if(kind==="banishment")return `A distilled Banishment Flask. Use B when a Death Stalker or Count Loadula is within ${CFG.stalker.banishPromptDistance||8} tiles.`;
       if(kind==="key")return "One of the three domain Keys: Iron, Bone or Ash. Its guardian must die before it can be claimed, and each Key awakens another Sigil power.";
       if(kind==="exitSigil")return "The awakened Sigil. Claim it after recovering all three Keys and defeating its defenders to begin the final escape phase.";
