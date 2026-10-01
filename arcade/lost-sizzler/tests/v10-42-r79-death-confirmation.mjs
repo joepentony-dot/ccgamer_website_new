@@ -10,6 +10,7 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const gameplay=read("js/game-play.js");
 const feedback=read("js/v10-42-r72-map-death-feedback.js");
 const css=read("css/v10-42-r72-map-death-feedback.css");
+const gamepad=read("js/v10-41-r49-gamepad-input-polish.js");
 const version=JSON.parse(read("version.json"));
 
 assert.equal(version.build,"V10.42 r79");
@@ -32,6 +33,8 @@ assert.doesNotMatch(feedback,/AUTO_CONFIRM_MS|autoConfirmTimer|setTimeout\([^\n]
 assert.match(feedback,/ENTER \/ SPACE CONFIRMS/,"death copy must advertise the explicit keyboard confirmation");
 assert.match(feedback,/ccg:death-confirmed/,"manual continuation must publish one confirmation event");
 assert.match(feedback,/ccg:respawn-confirmed/,"presentation must only dismiss after the gameplay owner confirms respawn");
+assert.match(gamepad,/deathConfirmArmed:\[false,false\]/,"gamepad owner must track a fresh death-confirm press separately from gameplay attack state");
+assert.match(gamepad,/if\(deathActive\)\{\s*if\(!primary\)state\.deathConfirmArmed\[slot\]=true;\s*else if\(state\.deathConfirmArmed\[slot\]\)/s,"held gamepad attack must be released before it can confirm the death modal");
 
 assert.match(css,/pointer-events:auto!important/,"active death presentation must block pointer interaction with gameplay");
 assert.match(css,/\.ccg-r72-death-card>button/,"CONTINUE must have an explicit visible control style");
