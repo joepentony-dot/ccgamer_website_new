@@ -30,9 +30,9 @@ assert.ok(metaBuild,"game HTML must publish its loaded Dungeon Carnage build num
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.42","current semantic release must be V10.42");
-const revision=Number(String(manifest.build||"").match(/^V10\\.42 r(\\d+)$/)?.[1]||0);
+const revision=Number(String(manifest.build||"").match(/^V10\.42 r(\d+)$/)?.[1]||0);
 assert.ok(revision>0,"published build must use the V10.42 rNN release format");
-const changelogRevision=Number(index.match(/Latest Build Changes · V10\\.42 R(\\d+)/)?.[1]||0);
+const changelogRevision=Number(index.match(/Latest Build Changes · V10\.42 R(\d+)/)?.[1]||0);
 assert.equal(changelogRevision,revision,"developer changelog revision must match the live manifest build");
 const releasedToken=String(manifest.released||"").replaceAll("-","");
 assert.equal(manifest.cacheToken,`${releasedToken}r${revision}`,"cache token must match the published release date and revision");
