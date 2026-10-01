@@ -136,6 +136,20 @@
     }
   }
 
+  async function validateTesterCodeWithTimeout(value) {
+    let timeoutId = 0;
+    try {
+      const timeout = new Promise((resolve) => {
+        timeoutId = window.setTimeout(() => resolve(false), AUTH_TIMEOUT_MS);
+      });
+      return await Promise.race([isValidTesterCode(value), timeout]);
+    } catch (_error) {
+      return false;
+    } finally {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
+  }
+
   function removeTesterGate() {
     const gate = document.getElementById("ccg-tester-access-gate");
     if (gate) gate.remove();
@@ -204,7 +218,7 @@
       error.textContent = "";
 
       const candidate = input.value;
-      const valid = await isValidTesterCode(candidate);
+      const valid = await validateTesterCodeWithTimeout(candidate);
       if (!valid) {
         mark("tester-code-rejected");
         error.textContent = "That tester code is not recognised.";
@@ -232,7 +246,7 @@
     const storedTesterCode = readTesterSessionCode();
     if (storedTesterCode) {
       mark("checking-tester");
-      if (await isValidTesterCode(storedTesterCode)) {
+      if (await validateTesterCodeWithTimeout(storedTesterCode)) {
         mark("tester-preview");
         dispatchAllowed("tester");
         return;
@@ -276,6 +290,7 @@
     check: checkAccess,
     isOwnerProfile: isOwnerProfile,
     isValidTesterCode: isValidTesterCode,
+    validateTesterCodeWithTimeout: validateTesterCodeWithTimeout,
     resolveAccountAccess: resolveAccountAccess,
     maintenanceDestination: MAINTENANCE_DESTINATION
   });
