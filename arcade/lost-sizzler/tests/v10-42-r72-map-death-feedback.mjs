@@ -53,7 +53,7 @@ assert.doesNotMatch(voice,/WEAPON\.\*UPGRADE\|WEAPON CACHE/,"generic Weapon Cach
 assert.match(voice,/WEAPON EVOLVED\|FIREARM UPGRADE COMPLETE/,"toast fallback may only recognise explicit successful upgrade copy");
 
 assert.match(render,/function radarRoomType\(/,"radar must classify discovered room types");
-assert.match(render,/room\.sanctuary\)return"sanctuary"/,"sanctuary must have its own map room type");
+assert.match(render,/world\?\.sanctuaryRooms[\s\S]*room\.sanctuary===true[\s\S]*return"sanctuary"/,"sanctuary map classification must require the authoritative sanctuary-room registry");
 assert.match(render,/room\.dedicatedHazard\|\|room\.dangerous/,"danger rooms must receive their own map colour");
 assert.match(render,/host\.enteredRoomIds/,"sanctuary icon must be gated by actual room discovery");
 assert.match(render,/drawRadarCross\(radarCtx,px\(q\),py\(q\),"#64ffa2"/,"discovered sanctuary must use the green first-aid cross");
