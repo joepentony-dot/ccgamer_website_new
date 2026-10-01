@@ -50,9 +50,11 @@ assert.match(read("arcade/lost-sizzler/js/v10-41-r48-character-animation-polish.
 assert.match(render,/theme=room\?\.theme\|\|"WARP_GALLERY"/,"corridors must receive an explicit material/render theme");
 assert.match(render,/function drawCorridorDetail\(s,x,y,h,th\)/,"R54 must retain the floor-specific corridor treatment recovered from the superseded graphics branch");
 assert.match(render,/if\(roomId<0\)drawCorridorDetail\(s,x,y,h,th\)/,"corridor treatment must remain presentation-only outside generated rooms");
-for(const phrase of ["Threshold corridors","Iron Keep corridors","Bone/Moss corridors","Ember corridors","Sigil corridors"]){
-  assert.ok(render.includes(phrase),`corridor presentation must retain ${phrase}`);
-}
+assert.ok(render.includes("const max=Math.max(1,Number(C.maxFloors)||15)"),"corridor presentation must follow the fifteen-floor campaign cap");
+assert.ok(render.includes("palette=currentFloorTilePalette()"),"corridor presentation must derive its accent from the current floor palette");
+assert.ok(render.includes("if(floor===1){"),"corridor presentation must retain the dedicated Threshold corridor treatment");
+assert.ok(render.includes('const alpha=floor===max?"88":"52"'),"corridor presentation must scale across intermediate and final floors");
+assert.ok(render.includes("if(floor===max&&h%5===0)"),"corridor presentation must retain the explicit Floor 15 Blood Citadel treatment");
 assert.match(render,/quartermaster_bex/,"Bex Harrow must retain a distinct merchant visual");
 assert.match(render,/collector_nix/,"Nix Calder must retain a distinct merchant visual");
 assert.match(render,/archivist_orin/,"Orin Vale must retain a distinct merchant visual");
