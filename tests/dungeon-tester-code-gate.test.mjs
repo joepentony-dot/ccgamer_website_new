@@ -15,8 +15,8 @@ assert(!gate.includes("TESTER_CODE_SHA256"), "tester gate must not ship a client
 assert(!gate.includes('sessionStorage.getItem(TESTER_SESSION_KEY) === "allowed"'), "writable sessionStorage must never be treated as authorization");
 assert(gate.includes("ccg_validate_dungeon_carnage_tester_code"), "tester code must be server-validated through Supabase");
 assert(gate.includes("bootstrapProtectedRuntime"), "validated access must own Dungeon runtime startup");
-assert(gameCore.includes("window.UI={"), "protected runtime must expose the shared UI surface explicitly across delayed classic scripts");
-assert(gameCore.includes("window.net=null;"), "protected runtime must expose one shared mutable net binding across delayed classic scripts");
+assert(gameCore.includes("var UI=window.UI={"), "protected runtime must preserve a classic global UI binding while mirroring it onto window");
+assert(gameCore.includes("var net=window.net=null;"), "protected runtime must preserve one classic mutable net binding while mirroring it onto window");
 assert(gate.includes("runtimeAccessGranted = true"), "runtime startup must require an internal validated-access grant");
 assert(gate.includes("data-ccg-protected-runtime"), "runtime loader must consume only protected script placeholders");
 assert(gate.includes('const deferredUntilCore = ["version-check.js","v10-41-cache-guard.js","v10-41-load-watchdog.js","v10-23-tutorial-guidance.js"]'), "late protected bootstrap must defer readiness-sensitive loaders until the canonical core exists");
