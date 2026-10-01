@@ -90,6 +90,7 @@
 
     runtimeBootPromise = (async () => {
       mark("runtime-loading");
+      const domReadyAlreadyFired = document.readyState !== "loading";
       const placeholders = Array.from(
         document.querySelectorAll('script[data-ccg-protected-runtime][type="' + PROTECTED_RUNTIME_TYPE + '"]')
       );
@@ -115,6 +116,16 @@
           script.textContent = placeholder.textContent || "";
           placeholder.replaceWith(script);
         }
+      }
+
+      // The protected runtime is intentionally materialised only after access
+      // has been validated. When that happens after the parser's real
+      // DOMContentLoaded event, legacy Dungeon modules that correctly register
+      // DOM-ready initialisers still need one deterministic post-bootstrap
+      // readiness pass. This preserves their original startup contract without
+      // starting any runtime code before authorization.
+      if (domReadyAlreadyFired) {
+        document.dispatchEvent(new Event("DOMContentLoaded"));
       }
 
       mark("runtime-started");
