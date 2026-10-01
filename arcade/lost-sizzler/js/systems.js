@@ -17,7 +17,10 @@ window.CCGSystems=(()=>{
         const dx=point.x-lastInside.x,dy=point.y-lastInside.y;
         const side=dx>0?"east":dx<0?"west":dy>0?"south":"north";
         const orientation=dx!==0?"vertical":"horizontal";
-        return{...lastInside,roomId:room.id,side,orientation};
+        // Place the doorway on the first corridor cell outside the room rather than
+        // on the room's own floor tile. This keeps doors embedded in the separating
+        // wall line instead of floating one tile inside generated chambers.
+        return{...point,roomId:room.id,side,orientation};
       }
     }
     return null;
@@ -39,16 +42,28 @@ window.CCGSystems=(()=>{
     else{d.orientation="horizontal";d.side="wall"}
     return d;
   }
+  function doorwayTopologyValid(world,d){
+    if(!d||world.map[d.y]?.[d.x]!==0)return false;
+    const vertical=d.orientation==="vertical";
+    const through=vertical?[[ -1,0],[1,0]]:[[0,-1],[0,1]];
+    const jambs=vertical?[[0,-1],[0,1]]:[[-1,0],[1,0]];
+    return through.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]===0)
+      &&jambs.every(([dx,dy])=>world.map[d.y+dy]?.[d.x+dx]===1);
+  }
   function roomDoorSet(world){
     const doors=[];
     for(const room of world.rooms.filter(r=>!r.optional)){
       const edges=world.edges.filter(e=>e.a===room.id||e.b===room.id);
       for(const e of edges){
         const d=edgeDoorForRoom(e,room);
-        if(d){const span=thresholdCells(world,room,d),group=`room-${room.id}-${e.a}-${e.b}-${d.side}`;for(const [leaf,q] of span.entries())uniquePush(doors,{id:`${group}-${leaf}`,groupId:group,leaf,span:span.length,x:q.x,y:q.y,roomId:room.id,locked:false,type:"room",hidden:false,orientation:d.orientation,side:d.side,open:false,opening:false,openingStart:0,openAt:0})}
+        if(!d||!doorwayTopologyValid(world,d))continue;
+        // Generated dungeon thresholds are intentionally single doors. Multi-leaf
+        // doors looked like detached props and made narrow procedural corridors
+        // harder to read.
+        const group=`room-${room.id}-${e.a}-${e.b}-${d.side}`;
+        uniquePush(doors,{id:`${group}-0`,groupId:group,leaf:0,span:1,x:d.x,y:d.y,roomId:room.id,locked:false,type:"room",hidden:false,orientation:d.orientation,side:d.side,open:false,opening:false,openingStart:0,openAt:0});
       }
     }
-    const groups=new Map();for(const d of doors){if(!groups.has(d.groupId))groups.set(d.groupId,[]);groups.get(d.groupId).push(d)}for(const leaves of groups.values())for(const d of leaves)d.span=leaves.length;
     return doors;
   }
   function openRooms(world){return world.rooms.filter(r=>!r.optional&&r.id!==world.startRoomId)}
@@ -106,7 +121,12 @@ window.CCGSystems=(()=>{
         else{for(let xx=end.x-1;xx<=end.x+1;xx++)for(let yy=end.y;yy<=end.y+side.dy*2;yy+=side.dy)pocket.push({x:xx,y:yy})}
         const carve=[...path,...pocket].filter((q,i,a)=>a.findIndex(z=>z.x===q.x&&z.y===q.y)===i);if(!allWalls(carve))continue;
         for(const q of carve)world.map[q.y][q.x]=0;
-        const id=`secret-passage-${made.length}`,door={id,x:side.door.x,y:side.door.y,roomId:room.id,locked:true,type:"secret",hidden:true,cracked:true,open:false,opening:false,openingStart:0,openAt:0,orientation:side.orientation,side:side.name,secretPassage:true,nestedSecret:secretRoomIds.has(room.id)};host.doors.push(door);used.add(cell(door.x,door.y));
+        const id=`secret-passage-${made.length}`,door={id,x:side.door.x,y:side.door.y,roomId:room.id,locked:true,type:"secret",hidden:true,cracked:true,open:false,opening:false,openingStart:0,openAt:0,orientation:side.orientation,side:side.name,secretPassage:true,nestedSecret:secretRoomIds.has(room.id)};
+        // Hidden passages must occupy a real wall boundary too. If later topology
+        // assumptions ever produce a floating secret tile, roll the attempted
+        // pocket back to solid masonry instead of publishing an impossible wall.
+        if(!doorwayTopologyValid(world,door)){for(const q of carve)world.map[q.y][q.x]=1;continue}
+        host.doors.push(door);used.add(cell(door.x,door.y));
         const chestPos={x:end.x+side.dx,y:end.y+side.dy};host.chests.push({id:`${id}-chest`,...chestPos,locked:false,active:true,depth:(room.depth||0)+5,roomId:room.id,secretPassage:true});used.add(cell(chestPos.x,chestPos.y));made.push(door);built=true;break;
       }
       if(built&&made.length>=desired)break;
