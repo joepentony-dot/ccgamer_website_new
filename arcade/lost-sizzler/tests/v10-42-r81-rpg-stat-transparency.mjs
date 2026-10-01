@@ -19,7 +19,9 @@ assert.match(source,/max health from Vitality/,"Vitality must explain its real m
 assert.match(source,/lower movement delay/,"Agility must describe the real reduction in movement cadence delay rather than the inverse speed percentage");
 assert.match(source,/max ammo from Endurance/,"Endurance must explain its real ammunition contribution");
 assert.match(source,/wearable rolls up to/,"Luck must explain its real chest and wearable influence");
-assert.match(source,/Flask cost .* Essence .* Ward .* Permanent .* sight .* Reveal/s,"Arcana must explain Flask/Ward plus permanent specialisation sight and conditional Reveal sight");
+assert.match(source,/permanentSight=specialised\?1:0/,"Arcana transparency must derive the permanent sight contribution from the active ARC 10 specialisation");
+assert.match(source,/Permanent \+\$\{permanentSight\} sight/,"Arcana transparency must label the permanent specialisation sight separately");
+assert.match(source,/Reveal \+\$\{reveal\} sight/,"Arcana transparency must label conditional Reveal sight separately");
 assert.match(source,/class="v142-rpg-effect"/,"the RPG sheet must render the calculated effect under each stat");
 
 const start=source.indexOf("function attributeEffect(player,id)");
