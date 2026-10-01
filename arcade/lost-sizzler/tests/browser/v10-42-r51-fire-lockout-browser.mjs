@@ -98,6 +98,25 @@ try{
   // through the captured authoritative core and complete projectile/ammo commit.
   await page.waitForTimeout(450);
   const lateOwnerBefore=await page.evaluate(()=>{
+    // Keep this ownership regression independent of procedural furniture. A
+    // breakable immediately in the attack cell deliberately routes ATTACK to
+    // melee, so stage a genuine walkable three-cell northbound lane while still
+    // using the real ArrowUp + Space input path below.
+    const occupied=(x,y)=>(host.blockingDecor||[]).some(row=>row&&row.x===x&&row.y===y&&Number(row.hp??2)>0)
+      ||(host.doors||[]).some(row=>row&&row.x===x&&row.y===y&&!row.open)
+      ||(host.enemies||[]).some(row=>row?.alive&&row.x===x&&row.y===y);
+    let lane=null;
+    for(let y=3;y<world.map.length-2&&!lane;y++)for(let x=2;x<(world.map[y]?.length||0)-2;x++){
+      if(
+        W.walkable(world.map,x,y,host)
+        &&W.walkable(world.map,x,y-1,host)
+        &&W.walkable(world.map,x,y-2,host)
+        &&!occupied(x,y)&&!occupied(x,y-1)&&!occupied(x,y-2)
+      ){lane={x,y};break}
+    }
+    if(!lane)throw new Error("late-owner FIRE regression could not stage a clear three-cell firing lane");
+    p1.x=lane.x;p1.y=lane.y;p1.rx=lane.x;p1.ry=lane.y;p1.dir={x:0,y:-1};
+
     p1.firearmUnlocked=true;
     p1.weapon={...baseWeapon(),name:"TIER 2 · Field Pulse II",displayName:"TIER 2 · Field Pulse II",rating:3};
     p1.weaponLevel=2;p1.mana=113;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);p1.hitStunMs=0;
@@ -108,6 +127,7 @@ try{
     firePlayer=function firePlayerR62PoisonedLateOwner(){window.__ccgR62PoisonedFireCalls++;return false};
     return{
       mana:Number(p1.mana),
+      lane,
       r29UpdateFaults:Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0),
       r59FaultBridges:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.faultBridges||0)
     };
