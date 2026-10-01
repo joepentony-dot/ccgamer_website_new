@@ -1,7 +1,7 @@
 "use strict";
 const C=window.CCG_CONFIG,W=window.CCGWorld,A=window.CCGAI,S=window.CCGSound,PGR=window.CCGProgression,SYS=window.CCGSystems,$=id=>document.getElementById(id);
 const canvas=$("game"),ctx=canvas.getContext("2d");ctx.imageSmoothingEnabled=false;
-const UI={
+var UI={
   health:$("hud-health"),p2:$("hud-p2"),mana:$("hud-mana"),keys:$("hud-keys"),bronze:$("hud-bronze"),bronzeHub:$("hud-bronze-hub"),weapon:$("hud-weapon"),score:$("hud-score"),room:$("hud-room"),
   mission:$("mission-text"),net:$("net-status"),sound:$("sound-btn"),message:$("message"),list:$("player-list"),quests:$("quest-list"),loadout:$("loadout"),surroundings:$("surroundings"),
   menu:$("menu"),pause:$("pause"),end:$("end"),endTitle:$("end-title"),endText:$("end-text"),name:$("player-name"),roomCode:$("room-code"),note:$("menu-note"),difficulty:$("difficulty"),collection:$("collection-summary"),
@@ -37,7 +37,7 @@ let mode="menu",playMode="solo",world=null,host=null,p1=null,p2=null,run=null,sc
 let view={x:0,y:0,w:canvas.width,h:canvas.height},focus=null,cam={x:0,y:0};
 let activeShop=null,floorEntryCheckpoint=null,savePromptReason="",pendingBanishmentReward=null;
 const stats={games:0,elites:0,doors:0,weapons:0,secrets:0,generators:0},questDone=new Set();
-let net=null;
+var net=null;
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const pad=n=>String(Math.max(0,Math.floor(n))).padStart(6,"0"),md=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 const localPlayers=()=>[p1,p2].filter(Boolean),findLocal=id=>localPlayers().find(p=>p.id===id)||null;
