@@ -1,3 +1,14 @@
+## R83 exact death-cache progression recovery — 1 October 2026
+
+- **Stack/base:** R83 is rebuilt directly on the current R82 candidate rather than the stale historical stack. Preserve all R82 inventory, FIRE diagnostics, HUD, attack-owner de-duplication and RPG rollback fixes.
+- **Death-cache ownership:** a new death destroys/replaces any previous active death cache. The new cache owns dropped loot, score, XP and a cloned progression-recovery transaction. The player is explicitly told when an older unrecovered cache has been destroyed.
+- **Exact progression recovery:** cached XP is returned through the canonical XP owner. The original floor-vs-banked XP accounting is restored, and a lost RPG stat or unused level-up entitlement is restored only when the cached XP itself recreates the missing level.
+- **Duplicate-entitlement guard:** if the player re-earns the lost level before returning to the cache, the cache may still return its XP/accounting but cannot create another stat point, duplicate skill or extra pending level-up.
+- **Feedback ownership:** the active death-cache trigger reports restored level/stat progress after successful recovery. Abandoning a run clears pending death confirmation and hides the death overlay.
+- **Sanctuary regression boundary:** Stage 8 Sanctuary dialogue qualification selects a real Sanctuary and excludes the special developer room.
+- R83 remains **draft/unmerged** until R82 is merged/current, R83 is current with that merged base and its exact head passes all Node/static, focused Chromium, six-shard Chromium and triggered site/package/cache qualification.
+- Preserve save compatibility, exact-once death/cache ownership, authoritative FIRE/trap/death ownership, the CCG hero identity, and retired online/Horde/Spy scope.
+
 ## R82 RPG death rollback clean restack — 1 October 2026
 
 - **Public/live acceptance baseline remains V10.42 R78.** The owner's direct live-page screenshot on 1 October 2026 is still the last confirmed production identity. Repository releases R79-R82 must not be treated as owner-accepted until production is directly verified at the corresponding deployed build.
