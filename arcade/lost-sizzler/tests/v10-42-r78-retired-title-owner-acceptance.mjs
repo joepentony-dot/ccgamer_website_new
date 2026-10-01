@@ -48,8 +48,8 @@ assert.match(zero,/Online multiplayer is not part of the C64 Dungeon Carnage bro
 assert.doesNotMatch(zero,/zero-server-cost Lost Sizzler release/,
   "retired game name must not surface through the multiplayer rejection");
 
-for(const id of ["threshold-stone","iron-blue","crypt-moss","ember-amber","crimson-sigil"]){
-  assert.ok(render.includes(`id:"${id}"`),`five-floor owner acceptance must retain palette ${id}`);
+for(const id of ["threshold-stone","drive-steel","iron-keep","budget-amber","cartridge-green","tape-violet","crypt-moss","demo-magenta","modem-cyan","sid-red","ember-orange","foundry-copper","score-gold","crt-green","blood-citadel"]){
+  assert.ok(render.includes(`id:"${id}"`),`fifteen-floor owner acceptance must retain palette ${id}`);
 }
 assert.ok(play.includes("MEMORY VAULT LOCKDOWN"),
   "owner acceptance must retain Memory Vault chamber lockdown");
