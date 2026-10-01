@@ -30,7 +30,7 @@
     node.setAttribute("aria-labelledby","ccg-r72-death-title");
     node.setAttribute("aria-live","assertive");
     node.setAttribute("aria-hidden","true");
-    node.innerHTML='<div class="ccg-r72-death-card"><span class="ccg-r72-death-kicker">C64 DUNGEON CARNAGE</span><strong id="ccg-r72-death-title">YOU DIED</strong><b id="ccg-r72-death-source">DEFEATED</b><span id="ccg-r72-death-loss"></span><small>CONFIRM WHEN YOU ARE READY TO RESPAWN</small><button id="ccg-r72-death-continue" type="button">CONTINUE</button><em>ENTER / SPACE ALSO CONFIRMS</em></div>';
+    node.innerHTML='<div class="ccg-r72-death-card"><span class="ccg-r72-death-kicker">C64 DUNGEON CARNAGE</span><strong id="ccg-r72-death-title">YOU DIED</strong><b id="ccg-r72-death-source">DEFEATED</b><span id="ccg-r72-death-loss"></span><small>PRESS CONTINUE TO RESPAWN</small><button id="ccg-r72-death-continue" type="button">CONTINUE</button><em>ENTER / SPACE CONFIRMS</em></div>';
     host.appendChild(node);
     node.querySelector("#ccg-r72-death-continue")?.addEventListener("click",confirmDeath);
     return node

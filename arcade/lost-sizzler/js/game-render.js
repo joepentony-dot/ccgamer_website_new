@@ -118,7 +118,25 @@ window.CCGLostSizzlerV142R70RenderPerformance={
   quality:dungeonRenderQuality,
   get state(){return dungeonRenderPerformance}
 };
-function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
+function cameraClampFor(targetX,targetY,v){
+  return{
+    x:Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),
+    y:Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2))
+  }
+}
+function memoryPuzzleOverviewTarget(mem,p,v){
+  const points=[...(mem?.tiles||[]),mem?.activator].filter(Boolean);if(!points.length)return{x:p.rx,y:p.ry,followPlayer:true};
+  const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y)),overview={x:(minX+maxX)/2,y:(minY+maxY)/2};
+  const framed=cameraClampFor(overview.x,overview.y,v),screenX=Number(p.rx)*C.tile+C.tile/2-framed.x,screenY=Number(p.ry)*C.tile+C.tile/2-framed.y;
+  const marginX=Math.min(v.w*.22,C.tile*4),marginY=Math.min(v.h*.22,C.tile*3.5),visible=screenX>=marginX&&screenX<=v.w-marginX&&screenY>=marginY&&screenY<=v.h-marginY;
+  return visible?{...overview,followPlayer:false}:{x:p.rx,y:p.ry,followPlayer:true}
+}
+function camFor(p,v){
+  let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;
+  if(mem&&!mem.solved&&roomId===mem.roomId){const target=memoryPuzzleOverviewTarget(mem,p,v);targetX=target.x;targetY=target.y}
+  else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}
+  const next=cameraClampFor(targetX,targetY,v);c.x=next.x;c.y=next.y;cameras.set(p.id,c);return c
+}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileInRenderView(x,y,pad=2){
   const margin=Math.max(0,Number(pad)||0)*C.tile,sx=Number(x||0)*C.tile-cam.x,sy=Number(y||0)*C.tile-cam.y;

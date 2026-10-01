@@ -319,8 +319,17 @@ try{
   assert.equal(sealedDeath.cache?.active,true,"sealed-room death must leave an active death box");
   assert.equal(sealedDeath.cache?.roomId,sealedDeath.roomId,"death box must remain in the room where the player died");
   assert.equal(sealedDeath.hitStun,0,"respawn transition must clear hit-stun immediately");
-  assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must temporarily lock controls while YOU DIED is visible");
-  assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must temporarily lock duplicate control ownership while YOU DIED is visible");
+  assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must lock controls while YOU DIED is visible");
+  assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must lock duplicate control ownership while YOU DIED is visible");
+  const deathPrompt=await page.evaluate(()=>({
+    active:document.getElementById("ccg-r72-death-feedback")?.classList.contains("active")===true,
+    hidden:document.getElementById("ccg-r72-death-feedback")?.getAttribute("aria-hidden")||"",
+    button:Boolean(document.getElementById("ccg-r72-death-continue"))
+  }));
+  assert.equal(deathPrompt.active,true,"sealed-room death must expose the persistent YOU DIED acknowledgement");
+  assert.equal(deathPrompt.hidden,"false","YOU DIED must remain visible before explicit confirmation");
+  assert.equal(deathPrompt.button,true,"YOU DIED must provide a CONTINUE acknowledgement");
+  await page.click("#ccg-r72-death-continue");
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&p1&&!p1.controlLocked&&!p1.controlsLocked,null,{timeout:4000});
   const respawnRecovered=await snap(page);
   assert.equal(respawnRecovered.mode,"playing","normal sealed-room death must return to playing after the R72 presentation");

@@ -24,7 +24,8 @@ assert.match(play,/onConsole=activator\?roomPlayers\.find/,"Memory Console occup
 assert.match(play,/occupant!==String\(z\.consoleOccupant\|\|""\)/,"Memory Console replay is edge-triggered rather than restarted every frame");
 assert.match(play,/startMemoryPuzzle\(onConsole\)/,"stepping onto the Memory Console reliably starts/replays the sequence");
 
-assert.match(render,/targetX=\(minX\+maxX\)\/2;targetY=\(minY\+maxY\)\/2/,"camera centres the unresolved memory puzzle footprint");
+assert.match(render,/overview=\{x:\(minX\+maxX\)\/2,y:\(minY\+maxY\)\/2\}/,"camera derives the unresolved memory puzzle overview from the full puzzle footprint");
+assert.match(render,/if\(mem&&!mem\.solved&&roomId===mem\.roomId\)\{const target=memoryPuzzleOverviewTarget\(mem,p,v\);targetX=target\.x;targetY=target\.y\}/,"live unresolved-memory camera uses the player-aware puzzle overview target");
 assert.match(render,/viewportWidth=Number\(window\.innerWidth\|\|0\)/,"mobile zoom is based on the browser viewport rather than the sidebar-reduced canvas width");
 assert.match(render,/memoryRoomVisible=W\.roomAt\(world,focus\.x,focus\.y\)===mem\.roomId/,"all Memory Pads remain readable while the player is in the puzzle room");
 

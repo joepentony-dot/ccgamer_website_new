@@ -10,7 +10,7 @@
   window.__CCG_LOST_SIZZLER_V141_R49_GAMEPAD_INPUT_POLISH__=true;
 
   const DEADZONE=.28,NAV_REPEAT_MS=210;
-  const state={raf:0,connected:0,lastNavAt:0,held:[new Set(),new Set()],buttonLatch:[new Map(),new Map()],statusNode:null,frames:0,syntheticDown:0,syntheticUp:0,menuMoves:0,menuClicks:0};
+  const state={raf:0,connected:0,lastNavAt:0,held:[new Set(),new Set()],buttonLatch:[new Map(),new Map()],deathConfirmArmed:[false,false],statusNode:null,frames:0,syntheticDown:0,syntheticUp:0,menuMoves:0,menuClicks:0};
   const gameplay=()=>{try{return document.body?.dataset?.runActive==="true"&&String(mode||"")==="playing"}catch(_){return false}};
   const split=()=>{try{return Boolean(p2)&&String(playMode||"")==="split"}catch(_){return false}};
   const editable=()=>{const el=document.activeElement;return Boolean(el?.matches?.("input,textarea,select,[contenteditable='true'],[contenteditable='']"))};
@@ -72,7 +72,14 @@
     releaseSlot(slot);const b=pad.buttons||[],y=axis(pad.axes?.[1]);
     const navUp=y<-.55||pressed(b[12]),navDown=y>.55||pressed(b[13]);
     if((navUp||navDown)&&now-state.lastNavAt>=NAV_REPEAT_MS){state.lastNavAt=now;moveFocus(navDown?1:-1)}
-    if(edge(slot,0,pressed(b[0])))clickFocused();
+    const deathActive=document.getElementById("ccg-r72-death-feedback")?.classList.contains("active")===true,primary=pressed(b[0]);
+    if(deathActive){
+      if(!primary)state.deathConfirmArmed[slot]=true;
+      else if(state.deathConfirmArmed[slot]){state.deathConfirmArmed[slot]=false;clickFocused()}
+    }else{
+      state.deathConfirmArmed[slot]=false;
+      if(edge(slot,0,primary))clickFocused()
+    }
     if(edge(slot,1,pressed(b[1])))emit("Escape",true),emit("Escape",false);
     if(edge(slot,9,pressed(b[9])))emit("KeyP",true),emit("KeyP",false)
   }

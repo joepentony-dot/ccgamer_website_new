@@ -461,13 +461,24 @@ function projectilePathClear(b,nx,ny){
 const FURNITURE_ITEM_CHANCE=.12;
 const FURNITURE_ENEMY_CHANCE=.035;
 const FURNITURE_ITEM_LIMIT=3;
+function furnitureAmbushCell(blocker,attacker){
+  if(!blocker)return null;
+  const cells=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:Number(blocker.x)+dx,y:Number(blocker.y)+dy}));
+  const open=cells.filter(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y)&&!localPlayers().some(p=>p&&p.x===q.x&&p.y===q.y));
+  if(!open.length)return null;
+  if(attacker)open.sort((a,b)=>md(b,attacker)-md(a,attacker));
+  return open[0];
+}
 function furnitureAmbush(blocker,attacker){
   if(!["barrel","bookcase"].includes(blocker?.type)||host.v131FurnitureEnemyReleased||Math.random()>=FURNITURE_ENEMY_CHANCE)return false;
+  const spawn=furnitureAmbushCell(blocker,attacker);if(!spawn)return false;
   const kind=blocker.type==="bookcase"?"ambusher":"scout",floor=Math.max(1,Number(run?.floor||1)),hp=2+floor;
-  const enemy={id:`furniture-ambush-${Date.now()}-${Math.random()}`,x:blocker.x,y:blocker.y,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:attacker?{x:attacker.x,y:attacker.y}:null,memoryMs:6000,searchMs:0,moveCooldown:520,attackCooldown:850,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,furnitureEnemy:true};
+  const enemy={id:`furniture-ambush-${Date.now()}-${Math.random()}`,x:spawn.x,y:spawn.y,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:Math.sign(Number(attacker?.x??spawn.x)-spawn.x)||1,y:Math.sign(Number(attacker?.y??spawn.y)-spawn.y)},lastSeen:attacker?{x:attacker.x,y:attacker.y}:null,memoryMs:6000,searchMs:0,moveCooldown:520,attackCooldown:850,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,furnitureEnemy:true};
   host.enemies.push(enemy);host.v131FurnitureEnemyReleased=true;
   const bounty=window.CCGLostSizzlerRareEvents?.state?.bounty;if(bounty&&!bounty.complete&&Number(bounty.target||0)<50){bounty.target++;bounty.type=`KILL ${bounty.target} ENEMIES`}
-  floatText(blocker.x,blocker.y,"AMBUSH!",P.red);showToast("FURNITURE AMBUSH",`Something was hiding inside the ${blocker.type}.`,"red",5200);return true;
+  const enemyName=kind==="ambusher"?"RASTER AMBUSHER":"ARCHIVE SCOUT";
+  burst(spawn.x,spawn.y,P.red,14,1.25);ring(spawn.x,spawn.y,P.red,24);floatText(spawn.x,spawn.y,"AMBUSH!",P.red);
+  showToast(`FURNITURE AMBUSH — ${enemyName}`,`A ${enemyName.toLowerCase()} was hiding behind the ${blocker.type} and has jumped into the room.`,"red",6200);return true;
 }
 function furnitureItem(blocker){
   host.v131FurnitureItems=Number(host.v131FurnitureItems||0);if(host.v131FurnitureItems>=FURNITURE_ITEM_LIMIT||Math.random()>=FURNITURE_ITEM_CHANCE)return false;
