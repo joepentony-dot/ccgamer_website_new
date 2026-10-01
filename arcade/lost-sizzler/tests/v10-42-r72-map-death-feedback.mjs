@@ -25,12 +25,21 @@ const alias=fs.readFileSync(path.resolve(root,"../c64-dungeon-carnage/index.html
 assert.match(bootstrap,/v10-42-r72-map-death-feedback\.js/,"ordered bootstrap must load the R72 feedback owner after R71");
 assert.match(r72,/ccg:player-death/,"R72 feedback owner must listen for explicit death events");
 assert.match(r72,/YOU DIED/,"death feedback must be unmistakable before respawn");
+assert.match(r72,/id="ccg-r72-death-continue"/,"death feedback must provide an explicit CONTINUE control");
+assert.match(r72,/ccg:death-confirmed/,"death feedback must publish the player's explicit confirmation");
+assert.match(r72,/ccg:respawn-confirmed/,"death feedback must remain present until gameplay confirms the respawn");
 assert.match(css,/\.ccg-r72-death-feedback/,"R72 must style a blocking visual death announcement");
+assert.match(css,/pointer-events:auto!important/,"death feedback must block and own pointer interaction while active");
 
 assert.match(gameplay,/new CustomEvent\("ccg:player-death"/,"canonical death path must emit a death transition event");
-assert.match(gameplay,/mode="respawning"/,"normal Solo death must enter a short non-playing transition");
-assert.match(gameplay,/deathTransitionMs=1200/,"death transition must remain brief rather than feeling like a loading screen");
-assert.match(gameplay,/mode==="respawning"\)\{mode="playing"/,"normal play must resume after the death presentation");
+assert.match(gameplay,/requiresConfirmation:true/,"normal death must declare that explicit confirmation is required");
+assert.match(gameplay,/mode="respawning"/,"normal Solo death must stay in a non-playing respawn state until confirmed");
+assert.match(gameplay,/pendingDeathConfirmation=/,"canonical death owner must retain the pending respawn transaction");
+assert.match(gameplay,/addEventListener\("ccg:death-confirmed"/,"canonical gameplay must listen for the player's confirmation");
+assert.match(gameplay,/function finishPendingDeathRespawn/,"confirmation must have one authoritative route back into play");
+assert.doesNotMatch(gameplay,/deathTransitionMs=1200/,"normal death must no longer auto-resume on the old 1.2 second timer");
+assert.doesNotMatch(gameplay,/setTimeout\(\(\)=>\{if\(mode==="respawning"\)\{mode="playing"/,"normal death must never resume through an unattended timer");
+assert.match(gameplay,/mode="playing";p\.hitStunMs=0;p\.controlLocked=false;p\.controlsLocked=false/,"play may resume only inside the explicit confirmation owner");
 assert.match(gameplay,/p\.invuln=Math\.max\(2200/,"respawn must be protected while the death overlay clears");
 assert.match(gameplay,/p\.hitStunMs=0;p\.controlLocked=false;p\.controlsLocked=false;p\.invuln=Math\.max\(2200/,"R72 must clear stale stun and control locks before applying the temporary death-transition lock");
 assert.match(gameplay,/p\.invuln=Math\.max\(2200[^\n]*p\.controlLocked=true;p\.controlsLocked=true/,"R72 may only relock controls as the deliberate temporary YOU DIED transition owner");
@@ -72,4 +81,4 @@ for(const page of [index,alias]){
 assert.match(css,/\.radar-room-sanctuary\{background:#3c8b67\}/,"room-colour legend must identify Sanctuary");
 assert.match(css,/\.radar-room-danger\{background:#9a4552\}/,"room-colour legend must identify dangerous rooms");
 
-console.log("Dungeon R72 tactical map, truthful weapon feedback and death transition contracts passed.");
+console.log("Dungeon R72/R79 tactical map, truthful weapon feedback and confirmed death transition contracts passed.");

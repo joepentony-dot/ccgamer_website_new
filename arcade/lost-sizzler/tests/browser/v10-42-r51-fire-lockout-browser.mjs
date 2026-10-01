@@ -217,8 +217,19 @@ try{
     deaths:Number(run?.stats?.deaths||0),
     armor:Number(p1?.armor||0)
   }));
-  assert.ok(deathAfter.mode!=="playing"||deathAfter.deaths>deathBefore.deaths||deathAfter.health>0,"health <= 0 may not remain as an unprocessed live-play state");
+  assert.equal(deathAfter.mode,"respawning","a processed normal death must remain in the explicit acknowledgement state");
+  assert.equal(deathAfter.deaths,deathBefore.deaths+1,"the staged normal death must be owned exactly once");
   assert.equal(deathAfter.armor,deathBefore.armor,"runtime death recovery must not invent an extra armour penalty");
+  const deathPrompt=await page.evaluate(()=>({
+    active:document.getElementById("ccg-r72-death-feedback")?.classList.contains("active")===true,
+    hidden:document.getElementById("ccg-r72-death-feedback")?.getAttribute("aria-hidden")||"",
+    button:Boolean(document.getElementById("ccg-r72-death-continue"))
+  }));
+  assert.equal(deathPrompt.active,true,"normal death must expose the persistent YOU DIED acknowledgement");
+  assert.equal(deathPrompt.hidden,"false","persistent YOU DIED acknowledgement must remain visible until confirmed");
+  assert.equal(deathPrompt.button,true,"persistent YOU DIED acknowledgement must offer CONTINUE");
+  await page.click("#ccg-r72-death-continue");
+  await page.waitForFunction(()=>mode==="playing"&&p1&&!p1.controlLocked&&!p1.controlsLocked,null,{timeout:4000});
 
   const keyHud=await page.evaluate(()=>{
     p1.bronzeKeys=2;

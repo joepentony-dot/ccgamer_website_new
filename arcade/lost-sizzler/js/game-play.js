@@ -461,13 +461,24 @@ function projectilePathClear(b,nx,ny){
 const FURNITURE_ITEM_CHANCE=.12;
 const FURNITURE_ENEMY_CHANCE=.035;
 const FURNITURE_ITEM_LIMIT=3;
+function furnitureAmbushCell(blocker,attacker){
+  if(!blocker)return null;
+  const cells=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:Number(blocker.x)+dx,y:Number(blocker.y)+dy}));
+  const open=cells.filter(q=>W.walkable(world.map,q.x,q.y,host)&&!(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y)&&!localPlayers().some(p=>p&&p.x===q.x&&p.y===q.y));
+  if(!open.length)return null;
+  if(attacker)open.sort((a,b)=>md(b,attacker)-md(a,attacker));
+  return open[0];
+}
 function furnitureAmbush(blocker,attacker){
   if(!["barrel","bookcase"].includes(blocker?.type)||host.v131FurnitureEnemyReleased||Math.random()>=FURNITURE_ENEMY_CHANCE)return false;
+  const spawn=furnitureAmbushCell(blocker,attacker);if(!spawn)return false;
   const kind=blocker.type==="bookcase"?"ambusher":"scout",floor=Math.max(1,Number(run?.floor||1)),hp=2+floor;
-  const enemy={id:`furniture-ambush-${Date.now()}-${Math.random()}`,x:blocker.x,y:blocker.y,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:attacker?{x:attacker.x,y:attacker.y}:null,memoryMs:6000,searchMs:0,moveCooldown:520,attackCooldown:850,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,furnitureEnemy:true};
+  const enemy={id:`furniture-ambush-${Date.now()}-${Math.random()}`,x:spawn.x,y:spawn.y,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:Math.sign(Number(attacker?.x??spawn.x)-spawn.x)||1,y:Math.sign(Number(attacker?.y??spawn.y)-spawn.y)},lastSeen:attacker?{x:attacker.x,y:attacker.y}:null,memoryMs:6000,searchMs:0,moveCooldown:520,attackCooldown:850,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,furnitureEnemy:true};
   host.enemies.push(enemy);host.v131FurnitureEnemyReleased=true;
   const bounty=window.CCGLostSizzlerRareEvents?.state?.bounty;if(bounty&&!bounty.complete&&Number(bounty.target||0)<50){bounty.target++;bounty.type=`KILL ${bounty.target} ENEMIES`}
-  floatText(blocker.x,blocker.y,"AMBUSH!",P.red);showToast("FURNITURE AMBUSH",`Something was hiding inside the ${blocker.type}.`,"red",5200);return true;
+  const enemyName=kind==="ambusher"?"RASTER AMBUSHER":"ARCHIVE SCOUT";
+  burst(spawn.x,spawn.y,P.red,14,1.25);ring(spawn.x,spawn.y,P.red,24);floatText(spawn.x,spawn.y,"AMBUSH!",P.red);
+  showToast(`FURNITURE AMBUSH — ${enemyName}`,`A ${enemyName.toLowerCase()} was hiding behind the ${blocker.type} and has jumped into the room.`,"red",6200);return true;
 }
 function furnitureItem(blocker){
   host.v131FurnitureItems=Number(host.v131FurnitureItems||0);if(host.v131FurnitureItems>=FURNITURE_ITEM_LIMIT||Math.random()>=FURNITURE_ITEM_CHANCE)return false;
@@ -508,6 +519,25 @@ function releaseSealedDeathRoom(roomId){
   return true
 }
 let authoritativeTrapDamageDepth=0;
+let pendingDeathConfirmation=null;
+function finishPendingDeathRespawn(detail={}){
+  const pending=pendingDeathConfirmation;
+  if(!pending||mode!=="respawning")return false;
+  const requested=String(detail?.playerId||"");
+  if(requested&&requested!==pending.playerId)return false;
+  pendingDeathConfirmation=null;
+  const p=pending.player;
+  if(!p)return false;
+  mode="playing";p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;input.clear();
+  try{focusGameplayKeyboard()}catch(_){}
+  try{sync()}catch(_){}
+  if(S.isEnabled())S.sfx("respawn");
+  showToast(pending.toastTitle,pending.toastText,"red",pending.toastDuration);
+  if(pending.offerFloorSave)setTimeout(()=>{if(mode==="playing")offerFloorSave(true)},1500);
+  try{dispatchEvent(new CustomEvent("ccg:respawn-confirmed",{detail:{playerId:pending.playerId,floor:Number(run?.floor||1)}}))}catch(_){}
+  return true
+}
+addEventListener("ccg:death-confirmed",event=>finishPendingDeathRespawn(event?.detail||{}));
 function hurtPlayer(p,n,friendly=false,source="enemy"){
   if(p){const inv=Number(p.invuln);if(!Number.isFinite(inv)||inv<0||(mode==="playing"&&inv>5000))p.invuln=0}
   const damageSource=String(source||"enemy"),trapDamage=/trap/i.test(damageSource),environmentDamage=trapDamage||/anti[- ]loitering blast/i.test(damageSource);
@@ -536,10 +566,12 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;host.deathCaches=[];PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED — GAME OVER","This is the second death that left your XP reserve at zero. Your final XP warning was already used, so the run is over.","red",12000);endRun("Game over: XP reached zero for the second time after the final warning");return}
     releaseSealedDeathRoom(W.roomAt(world,deathX,deathY));
     if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
-    const deathTransitionMs=1200;try{dispatchEvent(new CustomEvent("ccg:player-death",{detail:{playerId:String(p.id||p.name||"P1"),playerName:String(p.name||"Player"),source:String(source||"enemy"),floor:Number(run.floor||1),deathX:Number(deathX),deathY:Number(deathY),cacheActive:Boolean(cache.active),scoreLost:Number(penalty.scoreLost||0),xpLost:Number(penalty.xpLost||0),levelLost:Boolean(penalty.levelLost),zeroWarning:Boolean(penalty.zeroWarning),duration:deathTransitionMs}}))}catch(_){}
-    mode="respawning";p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;p.invuln=Math.max(2200,Number(p.invuln)||0);p.controlLocked=true;p.controlsLocked=true;if(p===p1){fire1=0;fireBuffer1=0;input.delete("Space");input.delete("KeyF");input.delete("Numpad0")}else if(p===p2){fire2=0;fireBuffer2=0;input.delete("Enter")}p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;setTimeout(()=>{if(mode==="respawning"){mode="playing";p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;input.clear();try{focusGameplayKeyboard()}catch(_){}try{sync()}catch(_){}}if(S.isEnabled())S.sfx("respawn")},deathTransitionMs);
+    const playerId=String(p.id||p.name||"P1");
+    mode="respawning";p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;p.invuln=Math.max(2200,Number(p.invuln)||0);p.controlLocked=true;p.controlsLocked=true;if(p===p1){fire1=0;fireBuffer1=0;input.delete("Space");input.delete("KeyF");input.delete("Numpad0")}else if(p===p2){fire2=0;fireBuffer2=0;input.delete("Enter")}p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;
     const explore=Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),cacheText=cache.active?` Your death box holds ${Number(cache.score||0).toLocaleString()} score, ${Number(cache.xp||0).toLocaleString()} XP and dropped loot. Recover it before another death.`:" You had nothing to cache.",xpText=penalty.xpLost?` ${penalty.xpLost} XP moved to the death box.${penalty.levelLost?` Level ${penalty.levelBefore} fell to ${penalty.levelAfter}; ${penalty.lostSkill||"the latest upgrade"} was lost until you earn the level again.`:" Your current level was retained."}`:" No XP was available to lose.",zeroText=penalty.zeroWarning?" FINAL XP WARNING: your XP reserve has reached zero once. Recover this death cache or earn more XP. If a later death leaves XP at zero again, the run ends.":"";
-    showToast(penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,`OBJECTIVE: ${objective}.${xpText}${cacheText}${zeroText}`,"red",penalty.zeroWarning?13000:10000);host.revision++;broadcastWorld();if(run.consecutiveDeaths>=5)setTimeout(()=>{if(mode==="playing")offerFloorSave(true)},1500)
+    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${zeroText}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
+    host.revision++;broadcastWorld();
+    try{dispatchEvent(new CustomEvent("ccg:player-death",{detail:{playerId,playerName:String(p.name||"Player"),source:String(source||"enemy"),floor:Number(run.floor||1),deathX:Number(deathX),deathY:Number(deathY),cacheActive:Boolean(cache.active),scoreLost:Number(penalty.scoreLost||0),xpLost:Number(penalty.xpLost||0),levelLost:Boolean(penalty.levelLost),zeroWarning:Boolean(penalty.zeroWarning),requiresConfirmation:true}}))}catch(_){}
   }sync()
 }
 const canonicalPlayerDamage=hurtPlayer;

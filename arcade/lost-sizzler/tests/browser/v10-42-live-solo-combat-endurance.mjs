@@ -143,10 +143,10 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
   assert.equal(boot.failed,false,`r47 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r47 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r78");assert.equal(boot.cache,"20260930r78");assert.equal(boot.metaBuild,"V10.42 r78");assert.equal(boot.metaCache,"20260930r78");
+  assert.equal(boot.build,"V10.42 r79");assert.equal(boot.cache,"20260930r79");assert.equal(boot.metaBuild,"V10.42 r79");assert.equal(boot.metaCache,"20260930r79");
   assert.ok(boot.ordered.length>=30,"r47 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260930r78"),"every ordered V10.42 module must use the r71 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260930r78")),"expected r71 projectile lifecycle asset was not requested");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20260930r79"),"every ordered V10.42 module must use the r71 cache token");
+  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20260930r79")),"expected r71 projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
@@ -319,8 +319,17 @@ try{
   assert.equal(sealedDeath.cache?.active,true,"sealed-room death must leave an active death box");
   assert.equal(sealedDeath.cache?.roomId,sealedDeath.roomId,"death box must remain in the room where the player died");
   assert.equal(sealedDeath.hitStun,0,"respawn transition must clear hit-stun immediately");
-  assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must temporarily lock controls while YOU DIED is visible");
-  assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must temporarily lock duplicate control ownership while YOU DIED is visible");
+  assert.equal(sealedDeath.controlLocked,true,"R72 death presentation must lock controls while YOU DIED is visible");
+  assert.equal(sealedDeath.controlsLocked,true,"R72 death presentation must lock duplicate control ownership while YOU DIED is visible");
+  const deathPrompt=await page.evaluate(()=>({
+    active:document.getElementById("ccg-r72-death-feedback")?.classList.contains("active")===true,
+    hidden:document.getElementById("ccg-r72-death-feedback")?.getAttribute("aria-hidden")||"",
+    button:Boolean(document.getElementById("ccg-r72-death-continue"))
+  }));
+  assert.equal(deathPrompt.active,true,"sealed-room death must expose the persistent YOU DIED acknowledgement");
+  assert.equal(deathPrompt.hidden,"false","YOU DIED must remain visible before explicit confirmation");
+  assert.equal(deathPrompt.button,true,"YOU DIED must provide a CONTINUE acknowledgement");
+  await page.click("#ccg-r72-death-continue");
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&p1&&!p1.controlLocked&&!p1.controlsLocked,null,{timeout:4000});
   const respawnRecovered=await snap(page);
   assert.equal(respawnRecovered.mode,"playing","normal sealed-room death must return to playing after the R72 presentation");
