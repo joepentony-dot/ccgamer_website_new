@@ -19,6 +19,9 @@ assert(gameCore.includes("window.UI={"), "protected runtime must expose the shar
 assert(gameCore.includes("window.net=null;"), "protected runtime must expose one shared mutable net binding across delayed classic scripts");
 assert(gate.includes("runtimeAccessGranted = true"), "runtime startup must require an internal validated-access grant");
 assert(gate.includes("data-ccg-protected-runtime"), "runtime loader must consume only protected script placeholders");
+assert(gate.includes('const deferredUntilCore = ["version-check.js","v10-41-cache-guard.js","v10-41-load-watchdog.js","v10-23-tutorial-guidance.js"]'), "late protected bootstrap must defer readiness-sensitive loaders until the canonical core exists");
+assert(gate.includes('const gameMainIndex = placeholders.findIndex((node) => sourceName(node) === "game-main.js")'), "protected bootstrap must establish an explicit game-main phase boundary");
+assert(gate.includes('orderedPlaceholders = [...throughGameMain, ...deferredNodes, ...afterGameMain]'), "readiness-sensitive loaders must execute only after the canonical game core/main phase");
 assert(gate.includes("await validateTesterCodeWithTimeout(storedTesterCode)"), "restored tester sessions must be revalidated with a bounded server check");
 assert(gate.includes("Promise.race([isValidTesterCode(value), timeout])"), "tester-code validation must fail closed after the shared auth timeout");
 assert(gate.includes("const valid = await validateTesterCodeWithTimeout(candidate)"), "new tester-code submissions must also use bounded server validation");
