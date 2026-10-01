@@ -87,6 +87,24 @@
   border-color:rgba(108,236,255,.5)!important;
   color:#9ef5ff!important;
 }
+
+.r71-inventory-panel .r80-wearable-strip{
+  margin:0!important;
+  min-height:0!important;
+  align-self:start!important;
+}
+.r71-inventory-panel .r80-wearable-card{
+  min-height:68px!important;
+  padding:7px 8px!important;
+  gap:3px!important;
+}
+.r71-inventory-panel .r80-wearable-card>small{
+  min-height:22px!important;
+}
+.r71-inventory-panel .r80-wearable-card>button{
+  margin-top:4px!important;
+}
+
 @media(max-width:820px){
   .r80-wearable-strip{grid-template-columns:1fr}
   .r80-wearable-card{min-height:68px}
