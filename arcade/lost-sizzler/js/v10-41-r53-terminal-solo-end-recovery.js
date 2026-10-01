@@ -35,8 +35,7 @@
     const champions=Math.max(0,Math.floor(safeNumber(currentRun?.stats?.champions,0)));
     const secrets=Math.max(0,Math.floor(safeNumber(currentRun?.stats?.secrets,0)));
     const damage=Math.max(0,Math.floor(safeNumber(currentRun?.stats?.damageTaken,0)));
-    const friendly=Math.max(0,Math.floor(safeNumber(currentRun?.stats?.friendlyFire,0)));
-    return `${esc(reason||"Game over: XP reached zero for the second time after the final warning")}.<br><br><strong>FINAL SCORE ${pad(currentScore)}</strong><br>Deepest floor: ${deepest}/${maxFloors}<br>XP safely kept from cleared floors: ${banked}<br>Kills: ${kills}<br>Champions: ${champions}<br>Secrets: ${secrets}<br>Damage taken: ${damage}<br>Friendly fire: ${friendly}`
+    return `${esc(reason||"Game over: XP reached zero for the second time after the final warning")}.<br><br><strong>FINAL SCORE ${pad(currentScore)}</strong><br>Deepest floor: ${deepest}/${maxFloors}<br>XP safely kept from cleared floors: ${banked}<br>Kills: ${kills}<br>Champions: ${champions}<br>Secrets: ${secrets}<br>Damage taken: ${damage}`
   }
 
   function hideConflictingPanels(){
