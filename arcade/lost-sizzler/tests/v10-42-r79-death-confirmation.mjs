@@ -26,12 +26,11 @@ assert.doesNotMatch(gameplay,/setTimeout\(\(\)=>\{if\(mode==="respawning"\)\{mod
 
 assert.match(feedback,/aria-modal/,"YOU DIED presentation must be a modal interaction");
 assert.match(feedback,/id="ccg-r72-death-continue"/,"YOU DIED presentation must expose a CONTINUE button");
-assert.match(feedback,/RESPAWNING IN A MOMENT/,"death copy must explain the short automatic respawn delay");
+assert.match(feedback,/PRESS CONTINUE TO RESPAWN/,"death copy must tell the player that acknowledgement is required");
 assert.match(feedback,/event\.code!=="Enter".*event\.code!=="NumpadEnter".*event\.code!=="Space"/s,"Enter and Space must be supported confirmation keys");
-assert.match(feedback,/const AUTO_CONFIRM_MS=6200/,"YOU DIED must remain visible for 5 seconds longer than the retired 1.2 second delay");
-assert.match(feedback,/setTimeout\(\(\)=>\{state\.autoConfirmTimer=0;confirmDeath\(\)\},AUTO_CONFIRM_MS\)/,"death presentation must automatically continue after the extended delay");
-assert.match(feedback,/ENTER \/ SPACE SKIPS THE WAIT/,"death copy must advertise keyboard skip");
-assert.match(feedback,/ccg:death-confirmed/,"manual or timed continuation must publish one confirmation event");
+assert.doesNotMatch(feedback,/AUTO_CONFIRM_MS|autoConfirmTimer|setTimeout\([^\n]*confirmDeath/,"YOU DIED must never auto-confirm on a timer");
+assert.match(feedback,/ENTER \/ SPACE CONFIRMS/,"death copy must advertise the explicit keyboard confirmation");
+assert.match(feedback,/ccg:death-confirmed/,"manual continuation must publish one confirmation event");
 assert.match(feedback,/ccg:respawn-confirmed/,"presentation must only dismiss after the gameplay owner confirms respawn");
 
 assert.match(css,/pointer-events:auto!important/,"active death presentation must block pointer interaction with gameplay");
