@@ -26,7 +26,7 @@ assert.match(gate,/ccg_has_dungeon_carnage_playtest_access/,"assigned website me
 assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive the member-playtester access state");
 assert.match(gate,/showTesterGate\(\)/,"ordinary production visitors must receive the invited tester-code gate");
 assert.match(gate,/bootstrapProtectedRuntime/,"validated access must control runtime startup");
-assert.match(index,/type="application\\/ccg-protected-runtime" data-ccg-protected-runtime src="js\\/game-main\\.js/,"game-main must remain inert until access is granted");
+assert.match(index,/type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/,"game-main must remain inert until access is granted");
 assert.match(gate,/mark\("tester-code-required"\)/,"the tester gate must publish an explicit blocked state");
 assert.match(gate,/mark\("tester-preview"\)/,"successful tester access must publish an allowed state");
 assert.match(gate,/Promise\.race\(\[resolveAccountAccess\(\), timeout\]\)/,"account access lookup must remain bounded before tester-code fallback");
