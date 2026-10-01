@@ -20,6 +20,9 @@ assert(gate.includes("ccg_validate_dungeon_carnage_tester_code"), "tester code m
 assert(gate.includes("bootstrapProtectedRuntime"), "validated access must own Dungeon runtime startup");
 assert(gate.includes("runtimeBoundaryReached"), "protected runtime startup must wait until the parser has reached the complete runtime block");
 assert(gate.includes("runtimeBoundaryReady"), "the gate must expose an explicit parser-boundary handshake");
+assert(gate.includes("bootstrapProtectedRuntimeDuringParse"), "parser-boundary startup must use a dedicated parser-blocking path");
+assert(gate.includes("document.write(markup"), "parser-boundary startup must keep protected scripts ahead of the real DOM-ready event");
+assert(gate.includes("runtimeParserBootComplete"), "parser-blocking startup must signal completion only after the protected script block has executed");
 assert(gameCore.includes("var UI=window.UI={"), "protected runtime must preserve a classic global UI binding while mirroring it onto window");
 assert(gameCore.includes("var net=window.net=null;"), "protected runtime must preserve one classic mutable net binding while mirroring it onto window");
 assert(retiredLobby.includes("const UI=window.UI||null,net=window.net||null;"), "retired V10.6 online lobby must bind only to the canonical delayed-runtime surfaces");
