@@ -25,7 +25,8 @@
     if(on&&!held.has(code)){held.add(code);emit(code,true)}
     else if(!on&&held.has(code)){held.delete(code);emit(code,false)}
   }
-  function releaseSlot(slot){for(const code of [...state.held[slot]])setHeld(slot,code,false);state.buttonLatch[slot].clear()}
+  function releaseHeld(slot){for(const code of [...state.held[slot]])setHeld(slot,code,false)}
+  function releaseSlot(slot){releaseHeld(slot);state.buttonLatch[slot].clear()}
   function releaseAll(){releaseSlot(0);releaseSlot(1)}
   function axis(v){const n=Number(v)||0;return Math.abs(n)>=DEADZONE?n:0}
   function pressed(button){return Boolean(button&&(button.pressed||Number(button.value)>.55))}
@@ -39,7 +40,16 @@
   }
   function renderStatus(count){const node=ensureStatus();if(!node)return;node.hidden=count<1;node.textContent=count>1?`GAMEPADS · ${count}`:"GAMEPAD · READY"}
 
-  function focusables(){return [...document.querySelectorAll("button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])")].filter(el=>{const r=el.getBoundingClientRect();const s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=="none"&&s.visibility!=="hidden"&&!el.closest(".hidden")})}
+  function activeFocusRoot(){
+    try{
+      if(String(mode||"")==="shop"){
+        const panel=document.getElementById("shop-panel");
+        if(panel&&!panel.classList.contains("hidden"))return panel
+      }
+    }catch(_){}
+    return document
+  }
+  function focusables(){const root=activeFocusRoot();return [...root.querySelectorAll("button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])")].filter(el=>{const r=el.getBoundingClientRect();const s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=="none"&&s.visibility!=="hidden"&&!el.closest(".hidden")})}
   function moveFocus(direction){
     const list=focusables();if(!list.length)return false;const current=document.activeElement,idx=list.indexOf(current);const next=idx<0?(direction>0?0:list.length-1):(idx+direction+list.length)%list.length;list[next]?.focus?.({preventScroll:true});state.menuMoves++;return true
   }
@@ -69,9 +79,9 @@
   }
 
   function processMenuPad(slot,pad,now=performance.now()){
-    releaseSlot(slot);const b=pad.buttons||[],y=axis(pad.axes?.[1]);
-    const navUp=y<-.55||pressed(b[12]),navDown=y>.55||pressed(b[13]);
-    if((navUp||navDown)&&now-state.lastNavAt>=NAV_REPEAT_MS){state.lastNavAt=now;moveFocus(navDown?1:-1)}
+    releaseHeld(slot);const b=pad.buttons||[],x=axis(pad.axes?.[0]),y=axis(pad.axes?.[1]);
+    const navUp=y<-.55||pressed(b[12]),navDown=y>.55||pressed(b[13]),navLeft=x<-.55||pressed(b[14]),navRight=x>.55||pressed(b[15]);
+    if((navUp||navDown||navLeft||navRight)&&now-state.lastNavAt>=NAV_REPEAT_MS){state.lastNavAt=now;moveFocus(navDown||navRight?1:-1)}
     const deathActive=document.getElementById("ccg-r72-death-feedback")?.classList.contains("active")===true,primary=pressed(b[0]);
     if(deathActive){
       if(!primary)state.deathConfirmArmed[slot]=true;
@@ -81,7 +91,10 @@
       if(edge(slot,0,primary))clickFocused()
     }
     if(edge(slot,1,pressed(b[1])))emit("Escape",true),emit("Escape",false);
-    if(edge(slot,9,pressed(b[9])))emit("KeyP",true),emit("KeyP",false)
+    if(edge(slot,9,pressed(b[9]))){
+      let shopOpen=false;try{shopOpen=String(mode||"")==="shop"}catch(_){}
+      emit(shopOpen?"Escape":"KeyP",true);emit(shopOpen?"Escape":"KeyP",false)
+    }
   }
 
   function processSnapshot(index,pad,now=performance.now()){

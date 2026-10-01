@@ -445,8 +445,22 @@ window.CCGSystems=(()=>{
     carveSecretPassages(world,host,used,run);
 
     world.sanctuaryRooms=[];world.wallLights=[];
-    const sanctuaryPool=featureRooms.filter(r=>r.id!==world.exitRoomId).slice(-Math.min(10,featureRooms.length));
-    for(let i=0;i<Math.min(C.dungeon.sanctuaryRooms,sanctuaryPool.length);i++){
+    const occupiedEnemyRooms=new Set((host.enemies||[]).filter(enemy=>enemy?.alive!==false).map(enemy=>W.roomAt(world,enemy.x,enemy.y)).filter(id=>id>=0));
+    const sanctuaryEligible=r=>r&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!occupiedEnemyRooms.has(r.id);
+    const sanctuaryPreferred=featureRooms.filter(r=>sanctuaryEligible(r)&&!r.optional);
+    const sanctuaryFallback=(world.rooms||[]).filter(r=>r?.optional&&sanctuaryEligible(r));
+    const sanctuaryCandidates=[...sanctuaryPreferred,...sanctuaryFallback];
+    const sanctuaryPool=sanctuaryCandidates.slice(-Math.min(12,sanctuaryCandidates.length));
+    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,Math.max(0,(world.rooms||[]).length-1)));
+    if(sanctuaryPool.length<sanctuaryTarget){
+      const exitRoom=world.rooms?.[world.exitRoomId]||world.rooms?.find?.(room=>room?.id===world.exitRoomId);
+      const startRoom=world.rooms?.[world.startRoomId]||world.rooms?.find?.(room=>room?.id===world.startRoomId);
+      for(const fallbackRoom of [exitRoom,startRoom]){
+        if(sanctuaryPool.length>=sanctuaryTarget)break;
+        if(fallbackRoom&&!fallbackRoom.sigilRoom&&!fallbackRoom.dedicatedHazardReserved&&!occupiedEnemyRooms.has(fallbackRoom.id)&&!sanctuaryPool.some(room=>room.id===fallbackRoom.id))sanctuaryPool.push(fallbackRoom);
+      }
+    }
+    for(let i=0;i<Math.min(sanctuaryTarget,sanctuaryPool.length);i++){
       const room=sanctuaryPool[(i*3+1)%sanctuaryPool.length];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
       for(const q of wallTorchPositions(room))world.wallLights.push({...q,roomId:room.id,radius:10,permanent:true,kind:"sanctuary"});
     }

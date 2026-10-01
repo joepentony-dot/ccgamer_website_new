@@ -15,7 +15,7 @@ const css=read("css/game.css");
 const render=read("js/game-render.js");
 
 assert.equal((html.match(/id="shop-close"/g)||[]).length,1,"Leave Shop control must remain singular");
-assert.match(html,/class="shop-panel-head"[\s\S]*id="shop-close"[^>]*>Leave Shop</,"Leave Shop must be in the shop header");
+assert.match(html,/class="shop-panel-head"[\s\S]*id="shop-close"[^>]*>LEAVE SHOP</i,"Leave Shop must be in the shop header");
 assert.doesNotMatch(html,/class="shop-note"[\s\S]*id="shop-close"/,"Leave Shop must not remain below the long shop note");
 
 assert.ok(main.includes('$("solo-btn").addEventListener("click",()=>{void requestPlayFullscreen();startSolo()})'),"Solo launch must request fullscreen from the click gesture");
