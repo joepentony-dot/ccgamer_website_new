@@ -10,7 +10,7 @@ const index=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const gate=fs.readFileSync(path.join(repoRoot,"js/ccg-play-maintenance-owner-gate.js"),"utf8");
 const smoke=fs.readFileSync(path.join(root,"tests/production/v10-41-r47-production-smoke.mjs"),"utf8");
 
-assert.match(index,/ccg-play-maintenance-owner-gate\.js\?v=20261001-tester-gate-v2/,"Dungeon page must load the shared invited-preview gate under the current cache token");
+assert.match(index,/ccg-play-maintenance-owner-gate\.js\?v=20261001-tester-gate-v3/,"Dungeon page must load the shared invited-preview gate under the current cache token");
 assert.match(index,/data-ccg-play-maintenance-gate="owner-preview"/,"Dungeon page must retain the maintenance-preview ownership marker");
 assert.match(gate,/OWNER_USERNAME = "cheekycommodoregamer"/);
 assert.match(gate,/OWNER_DISPLAY_NAME = "cheeky commodore gamer"/);
@@ -25,6 +25,8 @@ assert.match(gate,/Promise\.race\(\[isValidTesterCode\(value\), timeout\]\)/,"te
 assert.match(gate,/ccg_has_dungeon_carnage_playtest_access/,"assigned website members must resolve playtest access through the protected entitlement RPC");
 assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive the member-playtester access state");
 assert.match(gate,/showTesterGate\(\)/,"ordinary production visitors must receive the invited tester-code gate");
+assert.match(gate,/bootstrapProtectedRuntime/,"validated access must control runtime startup");
+assert.match(index,/type="application\\/ccg-protected-runtime" data-ccg-protected-runtime src="js\\/game-main\\.js/,"game-main must remain inert until access is granted");
 assert.match(gate,/mark\("tester-code-required"\)/,"the tester gate must publish an explicit blocked state");
 assert.match(gate,/mark\("tester-preview"\)/,"successful tester access must publish an allowed state");
 assert.match(gate,/Promise\.race\(\[resolveAccountAccess\(\), timeout\]\)/,"account access lookup must remain bounded before tester-code fallback");
