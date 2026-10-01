@@ -1,8 +1,12 @@
-/* CCG owner-only maintenance preview gate for C64 Dungeon Carnage.
+/* CCG owner + tester-code preview gate for C64 Dungeon Carnage.
  *
  * Production remains closed to ordinary visitors while maintenance is active.
- * The signed-in Cheeky Commodore Gamer admin profile is allowed through so the
- * live build can be acceptance-tested without reopening the game publicly.
+ * The signed-in Cheeky Commodore Gamer admin profile is allowed through,
+ * assigned website-member playtesters are admitted from their normal account,
+ * and invited testers can unlock the browser build with the current tester code.
+ *
+ * Tester-code authorization is server-verifiable: sessionStorage may retain the
+ * entered code for this tab, but every restore is revalidated by Supabase.
  */
 (function () {
   "use strict";
@@ -13,6 +17,13 @@
   const OWNER_DISPLAY_NAME = "cheeky commodore gamer";
   const OWNER_ROLE = "admin";
   const AUTH_TIMEOUT_MS = 5000;
+  const TESTER_SESSION_KEY = "ccg_dungeon_carnage_tester_code_v2";
+  const PROTECTED_RUNTIME_TYPE = "application/ccg-protected-runtime";
+  let runtimeAccessGranted = false;
+  let runtimeBoundaryReached = false;
+  let parserBoundaryEligible = false;
+  let runtimeParserResolve = null;
+  let runtimeBootPromise = null;
 
   function normalise(value) {
     return String(value || "").trim().toLowerCase();
@@ -28,10 +39,167 @@
     if (document.body) document.body.dataset.ccgPlayMaintenanceGate = state;
   }
 
-  function redirectToMaintenance() {
-    mark("blocked");
-    if (window.location.pathname === MAINTENANCE_DESTINATION) return;
-    window.location.replace(MAINTENANCE_DESTINATION);
+  function readTesterSessionCode() {
+    try {
+      return String(sessionStorage.getItem(TESTER_SESSION_KEY) || "");
+    } catch (_error) {
+      return "";
+    }
+  }
+
+  function rememberTesterSessionCode(value) {
+    try {
+      sessionStorage.setItem(TESTER_SESSION_KEY, normalise(value));
+    } catch (_error) {}
+  }
+
+  function clearTesterSessionCode() {
+    try {
+      sessionStorage.removeItem(TESTER_SESSION_KEY);
+    } catch (_error) {}
+  }
+
+  function dispatchAllowed(access) {
+    runtimeAccessGranted = true;
+    window.dispatchEvent(new CustomEvent("ccg:play-maintenance-access-granted", {
+      detail: { allowed: true, access: access }
+    }));
+    startProtectedRuntimeWhenReady();
+  }
+
+  function startProtectedRuntimeWhenReady() {
+    if (!runtimeAccessGranted || !runtimeBoundaryReached) return;
+
+    void bootstrapProtectedRuntime().catch((error) => {
+      mark("runtime-load-failed");
+      try { console.error("[CCG] Dungeon protected runtime failed to start.", error); } catch (_error) {}
+    });
+  }
+
+  function runtimeBoundaryReady() {
+    runtimeBoundaryReached = true;
+    parserBoundaryEligible = document.readyState === "loading"
+      && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
+    startProtectedRuntimeWhenReady();
+    return true;
+  }
+
+  function finishRuntimeBoot() {
+    mark("runtime-started");
+    window.dispatchEvent(new CustomEvent("ccg:protected-dungeon-runtime-started", {
+      detail: { allowed: true }
+    }));
+    const resolve = runtimeParserResolve;
+    runtimeParserResolve = null;
+    if (resolve) resolve(true);
+    return true;
+  }
+
+  function runtimeParserBootComplete() {
+    return finishRuntimeBoot();
+  }
+
+  function bootstrapProtectedRuntimeDuringParse(placeholders) {
+    const escapeAttribute = (value) => String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;");
+
+    const markup = placeholders.map((placeholder) => {
+      const attrs = Array.from(placeholder.attributes)
+        .filter((attribute) => attribute.name !== "type" && attribute.name !== "data-ccg-protected-runtime")
+        .map((attribute) => ` ${attribute.name}="${escapeAttribute(attribute.value)}"`)
+        .join("");
+      const inline = placeholder.getAttribute("src") ? "" : (placeholder.textContent || "");
+      return `<script${attrs}>${inline}<\\/script>`;
+    }).join("\n");
+
+    placeholders.forEach((placeholder) => placeholder.remove());
+    document.write(markup + "\n<script>window.CCGPlayMaintenanceOwnerGate?.runtimeParserBootComplete?.();<\\/script>");
+  }
+
+  function bootstrapProtectedRuntime() {
+    if (!runtimeAccessGranted) {
+      return Promise.reject(new Error("Dungeon runtime access has not been validated."));
+    }
+    if (runtimeBootPromise) return runtimeBootPromise;
+
+    runtimeBootPromise = (async () => {
+      mark("runtime-loading");
+      const domReadyAlreadyFired = document.readyState !== "loading";
+      const placeholders = Array.from(
+        document.querySelectorAll('script[data-ccg-protected-runtime][type="' + PROTECTED_RUNTIME_TYPE + '"]')
+      );
+
+      if (parserBoundaryEligible && document.readyState === "loading") {
+        runtimeBootPromise = new Promise((resolve, reject) => {
+          runtimeParserResolve = resolve;
+          try {
+            bootstrapProtectedRuntimeDuringParse(placeholders);
+          } catch (error) {
+            runtimeParserResolve = null;
+            reject(error);
+          }
+        });
+        return runtimeBootPromise;
+      }
+      const sourceName = (node) => {
+        const raw = String(node?.getAttribute?.("src") || "");
+        return raw.split("?")[0].split("/").pop() || "";
+      };
+      // These scripts were historically parser-loaded before DOMContentLoaded.
+      // When the protected runtime starts after access has been validated, they
+      // must not observe an already-ready document until the canonical game
+      // core has been materialised. Otherwise version/bootstrap/watchdog work
+      // can race ahead of game-core.js and execute modules before UI/net exist.
+      const deferredUntilCore = ["version-check.js","v10-41-cache-guard.js","v10-41-load-watchdog.js","v10-23-tutorial-guidance.js"];
+      const gameMainIndex = placeholders.findIndex((node) => sourceName(node) === "game-main.js");
+      let orderedPlaceholders = placeholders;
+      if (domReadyAlreadyFired && gameMainIndex >= 0) {
+        const deferredSet = new Set(deferredUntilCore);
+        const throughGameMain = placeholders.slice(0, gameMainIndex + 1).filter((node) => !deferredSet.has(sourceName(node)));
+        const deferredNodes = deferredUntilCore.map((name) => placeholders.find((node) => sourceName(node) === name)).filter(Boolean);
+        const afterGameMain = placeholders.slice(gameMainIndex + 1);
+        orderedPlaceholders = [...throughGameMain, ...deferredNodes, ...afterGameMain];
+      }
+
+      for (const placeholder of orderedPlaceholders) {
+        const script = document.createElement("script");
+        for (const attribute of Array.from(placeholder.attributes)) {
+          if (attribute.name === "type" || attribute.name === "data-ccg-protected-runtime") continue;
+          script.setAttribute(attribute.name, attribute.value);
+        }
+
+        if (placeholder.src || placeholder.getAttribute("src")) {
+          script.async = false;
+          const loaded = new Promise((resolve, reject) => {
+            script.addEventListener("load", resolve, { once: true });
+            script.addEventListener("error", () => reject(new Error(
+              "Failed to load protected Dungeon runtime script: " + (placeholder.getAttribute("src") || "")
+            )), { once: true });
+          });
+          placeholder.replaceWith(script);
+          await loaded;
+        } else {
+          script.textContent = placeholder.textContent || "";
+          placeholder.replaceWith(script);
+        }
+      }
+
+      // The protected runtime is intentionally materialised only after access
+      // has been validated. When that happens after the parser's real
+      // DOMContentLoaded event, legacy Dungeon modules that correctly register
+      // DOM-ready initialisers still need one deterministic post-bootstrap
+      // readiness pass. This preserves their original startup contract without
+      // starting any runtime code before authorization.
+      if (domReadyAlreadyFired) {
+        document.dispatchEvent(new Event("DOMContentLoaded"));
+      }
+
+      return finishRuntimeBoot();
+    })();
+
+    return runtimeBootPromise;
   }
 
   function snapshotOwnerHint() {
@@ -45,9 +213,17 @@
     }
   }
 
-  async function resolveProfile() {
+  async function getSupabaseClient() {
     if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== "function") return null;
-    const client = await window.ccgSupabase.getClient();
+    try {
+      return await window.ccgSupabase.getClient();
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async function resolveAccountAccess() {
+    const client = await getSupabaseClient();
     if (!client?.auth) return null;
 
     const sessionResult = await client.auth.getSession();
@@ -62,14 +238,19 @@
 
     if (!user?.id) return null;
 
-    const profileResult = await client
-      .from("profiles")
-      .select("username, display_name, role, is_admin, banned")
-      .eq("id", user.id)
-      .maybeSingle();
+    const [profileResult, playtestResult] = await Promise.all([
+      client
+        .from("profiles")
+        .select("username, display_name, role, is_admin, banned")
+        .eq("id", user.id)
+        .maybeSingle(),
+      client.rpc("ccg_has_dungeon_carnage_playtest_access")
+    ]);
 
-    if (profileResult?.error) return null;
-    return profileResult?.data || null;
+    return {
+      profile: profileResult?.error ? null : (profileResult?.data || null),
+      memberPlaytester: playtestResult?.error ? false : playtestResult?.data === true
+    };
   }
 
   function isOwnerProfile(profile) {
@@ -81,10 +262,139 @@
       && profile.banned !== true;
   }
 
-  async function checkOwner() {
+  async function isValidTesterCode(value) {
+    const candidate = String(value || "").trim();
+    if (candidate.length < 4 || candidate.length > 128) return false;
+
+    const client = await getSupabaseClient();
+    if (!client || typeof client.rpc !== "function") return false;
+
+    try {
+      const result = await client.rpc("ccg_validate_dungeon_carnage_tester_code", {
+        p_code: candidate
+      });
+      return !result?.error && result?.data === true;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  async function validateTesterCodeWithTimeout(value) {
+    let timeoutId = 0;
+    try {
+      const timeout = new Promise((resolve) => {
+        timeoutId = window.setTimeout(() => resolve(false), AUTH_TIMEOUT_MS);
+      });
+      return await Promise.race([isValidTesterCode(value), timeout]);
+    } catch (_error) {
+      return false;
+    } finally {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
+  }
+
+  function removeTesterGate() {
+    const gate = document.getElementById("ccg-tester-access-gate");
+    if (gate) gate.remove();
+    if (document.documentElement.dataset.ccgTesterOverflowLock === "1") {
+      document.documentElement.style.overflow = "";
+      delete document.documentElement.dataset.ccgTesterOverflowLock;
+    }
+  }
+
+  function showTesterGate() {
+    mark("tester-code-required");
+    if (document.getElementById("ccg-tester-access-gate")) return;
+
+    const gate = document.createElement("div");
+    gate.id = "ccg-tester-access-gate";
+    gate.setAttribute("role", "dialog");
+    gate.setAttribute("aria-modal", "true");
+    gate.setAttribute("aria-labelledby", "ccg-tester-access-title");
+    gate.innerHTML = [
+      '<style>',
+      '#ccg-tester-access-gate{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 18%,rgba(64,35,95,.48),rgba(4,3,10,.97) 58%);font-family:Arial,sans-serif;color:#fff;}',
+      '#ccg-tester-access-gate *{box-sizing:border-box;}',
+      '#ccg-tester-access-card{width:min(520px,100%);border:1px solid rgba(193,132,255,.68);border-radius:16px;padding:28px;background:linear-gradient(180deg,rgba(22,12,35,.98),rgba(8,5,15,.99));box-shadow:0 28px 80px rgba(0,0,0,.58),0 0 42px rgba(149,74,219,.16);text-align:center;}',
+      '#ccg-tester-access-card .ccg-kicker{display:block;margin-bottom:8px;color:#d7a8ff;font-size:12px;font-weight:800;letter-spacing:.18em;}',
+      '#ccg-tester-access-card h1{margin:0 0 10px;font-size:clamp(26px,6vw,38px);line-height:1.02;text-transform:uppercase;}',
+      '#ccg-tester-access-card p{margin:0 0 20px;color:#d4cee0;line-height:1.55;}',
+      '#ccg-tester-access-form{display:grid;gap:12px;text-align:left;}',
+      '#ccg-tester-access-form label{font-size:12px;font-weight:800;letter-spacing:.12em;color:#cbb7dc;}',
+      '#ccg-tester-access-code{width:100%;border:1px solid #69448a;border-radius:9px;padding:14px 15px;background:#09060f;color:#fff;font:700 17px/1.2 monospace;outline:none;}',
+      '#ccg-tester-access-code:focus{border-color:#c389f0;box-shadow:0 0 0 3px rgba(195,137,240,.14);}',
+      '#ccg-tester-access-submit{border:0;border-radius:9px;padding:14px 18px;background:#9c5ed0;color:#fff;font-weight:900;letter-spacing:.06em;cursor:pointer;}',
+      '#ccg-tester-access-submit:disabled{opacity:.55;cursor:wait;}',
+      '#ccg-tester-access-error{min-height:20px;margin:0;color:#ff9f9f;font-size:13px;font-weight:700;text-align:center;}',
+      '#ccg-tester-access-exit{display:inline-block;margin-top:14px;color:#bcaacb;font-size:13px;text-decoration:none;}',
+      '#ccg-tester-access-exit:hover{text-decoration:underline;}',
+      '</style>',
+      '<div id="ccg-tester-access-card">',
+      '<span class="ccg-kicker">CHEEKY COMMODORE GAMER</span>',
+      '<h1 id="ccg-tester-access-title">C64 Dungeon Carnage</h1>',
+      '<p>This beta build is currently available to assigned CCG website members and invited testers. Signed-in playtesters are admitted automatically; otherwise enter your tester access code.</p>',
+      '<form id="ccg-tester-access-form" autocomplete="off">',
+      '<label for="ccg-tester-access-code">TESTER ACCESS CODE</label>',
+      '<input id="ccg-tester-access-code" name="ccg-tester-access-code" type="password" inputmode="text" autocapitalize="none" spellcheck="false" autocomplete="off" required>',
+      '<button id="ccg-tester-access-submit" type="submit">ENTER DUNGEON</button>',
+      '<p id="ccg-tester-access-error" role="alert" aria-live="polite"></p>',
+      '</form>',
+      '<a id="ccg-tester-access-exit" href="' + MAINTENANCE_DESTINATION + '">Return to CCG Games</a>',
+      '</div>'
+    ].join("");
+
+    document.documentElement.dataset.ccgTesterOverflowLock = "1";
+    document.documentElement.style.overflow = "hidden";
+    (document.body || document.documentElement).appendChild(gate);
+
+    const form = gate.querySelector("#ccg-tester-access-form");
+    const input = gate.querySelector("#ccg-tester-access-code");
+    const submit = gate.querySelector("#ccg-tester-access-submit");
+    const error = gate.querySelector("#ccg-tester-access-error");
+
+    gate.addEventListener("keydown", (event) => event.stopPropagation());
+    gate.addEventListener("keyup", (event) => event.stopPropagation());
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submit.disabled = true;
+      error.textContent = "";
+
+      const candidate = input.value;
+      const valid = await validateTesterCodeWithTimeout(candidate);
+      if (!valid) {
+        mark("tester-code-rejected");
+        error.textContent = "That tester code is not recognised.";
+        input.select();
+        submit.disabled = false;
+        return;
+      }
+
+      rememberTesterSessionCode(candidate);
+      removeTesterGate();
+      mark("tester-preview");
+      dispatchAllowed("tester");
+    });
+
+    window.setTimeout(() => input.focus(), 0);
+  }
+
+  async function checkAccess() {
     if (!isProduction()) {
       mark("development");
+      dispatchAllowed("development");
       return;
+    }
+
+    const storedTesterCode = readTesterSessionCode();
+    if (storedTesterCode) {
+      mark("checking-tester");
+      if (await validateTesterCodeWithTimeout(storedTesterCode)) {
+        mark("tester-preview");
+        dispatchAllowed("tester");
+        return;
+      }
+      clearTesterSessionCode();
     }
 
     mark(snapshotOwnerHint() ? "checking-owner" : "checking");
@@ -94,29 +404,41 @@
       const timeout = new Promise((resolve) => {
         timeoutId = window.setTimeout(() => resolve(null), AUTH_TIMEOUT_MS);
       });
-      const profile = await Promise.race([resolveProfile(), timeout]);
+      const access = await Promise.race([resolveAccountAccess(), timeout]);
 
-      if (isOwnerProfile(profile)) {
+      if (isOwnerProfile(access?.profile)) {
         mark("owner-preview");
         window.dispatchEvent(new CustomEvent("ccg:play-maintenance-owner-preview", {
           detail: { allowed: true }
         }));
+        dispatchAllowed("owner");
+        return;
+      }
+
+      if (access?.memberPlaytester === true) {
+        mark("member-playtester");
+        dispatchAllowed("member-playtester");
         return;
       }
     } catch (_error) {
-      // Fail closed: maintenance stays in force for every unresolved visitor.
+      // Account resolution failed; invited testers can still use the code gate.
     } finally {
       if (timeoutId) window.clearTimeout(timeoutId);
     }
 
-    redirectToMaintenance();
+    showTesterGate();
   }
 
   window.CCGPlayMaintenanceOwnerGate = Object.freeze({
-    check: checkOwner,
+    check: checkAccess,
     isOwnerProfile: isOwnerProfile,
-    maintenanceDestination: MAINTENANCE_DESTINATION
+    isValidTesterCode: isValidTesterCode,
+    validateTesterCodeWithTimeout: validateTesterCodeWithTimeout,
+    resolveAccountAccess: resolveAccountAccess,
+    maintenanceDestination: MAINTENANCE_DESTINATION,
+    runtimeBoundaryReady: runtimeBoundaryReady,
+    runtimeParserBootComplete: runtimeParserBootComplete
   });
 
-  void checkOwner();
+  void checkAccess();
 })();
