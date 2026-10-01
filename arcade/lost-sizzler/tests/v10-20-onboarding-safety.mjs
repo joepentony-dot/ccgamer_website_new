@@ -34,7 +34,7 @@ assert.match(source,/!state\.choiceAccepted&&!daily&&!online&&!split&&!readFlag\
 assert.match(source,/if\(!tutorial\)writeFlag\(SEEN,true\)/,"entering training must not mark the player seen until training is completed or skipped");
 assert.match(source,/isTutorialSeen:\(\)=>readFlag\(SEEN\)/,"onboarding must expose first-run seen state to the primary launcher");
 
-for(const phrase of ["MOVE AROUND","SWING YOUR SWORD","DASH","OPEN AND CLOSE THE INVENTORY","OBJECTIVES, RADAR & HINTS","HEALTH, ARMOUR & QUICK ITEMS","KEYS, DOORS & CHESTS","ENEMIES, NAMED ENEMIES & THE STALKER","RARE EVENTS, SHOPS, HAZARDS & SCORE","TUTORIAL COMPLETE"]){
+for(const phrase of ["MOVE AROUND","ATTACK & THE EVOLVING FIREARM","DASH","EQUIPMENT & INVENTORY","OBJECTIVES, MAP & DISCOVERY","SURVIVAL, DEATH & RECOVERY","DOORS, CHESTS, CACHES & SOLID SCENERY","NAMED THREATS, WARDENS & THE STALKER","SHOPS, SANCTUARY & SPECIAL OPPORTUNITIES","TUTORIAL COMPLETE"]){
   assert.ok(source.includes(phrase),`tutorial is missing section: ${phrase}`);
 }
 
