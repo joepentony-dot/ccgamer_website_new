@@ -743,7 +743,7 @@ function update(dt){
     projectileCD=0;
     window.__CCG_PAUSE_PROJECTILE_STEP_CD__=Math.max(0,(Number(window.__CCG_PAUSE_PROJECTILE_STEP_CD__)||0)-dt)
   }else projectileCD=Math.max(0,projectileCD-dt);
-  sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
+  const p1BufferedAtFrameStart=fireBuffer1>0,p2BufferedAtFrameStart=fireBuffer2>0;\n  sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1=Math.max(0,fire1-dt);fire2=Math.max(0,fire2-dt);fireBuffer1=Math.max(0,fireBuffer1-dt);fireBuffer2=Math.max(0,fireBuffer2-dt);lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
   for(const p of localPlayers()){
     if(p.invuln>0)p.invuln-=dt;if(p.hitStunMs>0)p.hitStunMs=Math.max(0,p.hitStunMs-dt);if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);if(p.torchMs>0)p.torchMs=Math.max(0,p.torchMs-dt);if(p.rapidMs>0)p.rapidMs=Math.max(0,p.rapidMs-dt);if(p.ammoFlashMs>0)p.ammoFlashMs=Math.max(0,p.ammoFlashMs-dt);
     updateEmergencyAmmo(p,dt);updateLastResortHealth(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
@@ -754,7 +754,7 @@ function update(dt){
   // combat path must never stop an already-held movement command being serviced.
   if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   const p1HeldAttack=isAttackHeldInput(p1)&&(input.has("Space")||input.has("Numpad0")),p2HeldAttack=Boolean(p2&&isAttackHeldInput(p2)&&input.has("Enter"));
-  if((p1HeldAttack||fireBuffer1>0)&&fire1<=0){const fired=executeAuthoritativeFire(p1,d1(),"buffered");if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||fireBuffer2>0)&&fire2<=0){const fired=executeAuthoritativeFire(p2,d2(),"buffered");if(fired)fireBuffer2=0;else fire2=0}
+  if((p1HeldAttack||p1BufferedAtFrameStart||fireBuffer1>0)&&fire1<=0){const fired=executeAuthoritativeFire(p1,d1(),"buffered");if(fired)fireBuffer1=0;else fire1=0}if(p2&&(p2HeldAttack||p2BufferedAtFrameStart||fireBuffer2>0)&&fire2<=0){const fired=executeAuthoritativeFire(p2,d2(),"buffered");if(fired)fireBuffer2=0;else fire2=0}
   if(pauseProjectileCadenceHeld){
     const resumeStepCD=Math.max(0,Number(window.__CCG_PAUSE_PROJECTILE_STEP_CD__)||0);
     if(resumeStepCD<=0){
