@@ -47,10 +47,26 @@ window.CCG_ASSET_OVERRIDES={
       doorFrameRight:null,
       doorFrameTop:null,
       bladeHazard:null,
-      hazardHole:null
+      hazardHole:null,
+      propCrate:null,
+      propBarrel:null,
+      propBookcase:null,
+      propConsole:null
     },
     namedEnemies:{"Peter Cortens":null,"Swanh8ter":null,"Syragar":null,"Parsnip Celery":null,"CPU":null,"Yoshi Yoshi":null,"CCG":null},
-    items:{health:null,ammo:null,potion:null,torch:null,teleport:null,banishment:null,inventorySlot:null,credits:null,xpOrb:null,armour:null,key:null,bronze:null,exitSigil:null,weapon:null,rapid:null,game:null,loot:null}
+    items:{
+      health:"assets/pixel/visual-overhaul/r85/pickup-health.svg",
+      ammo:"assets/pixel/visual-overhaul/r85/pickup-ammo.svg",
+      mana:"assets/pixel/visual-overhaul/r85/pickup-ammo.svg",
+      potion:"assets/pixel/visual-overhaul/r85/pickup-health.svg",
+      torch:null,teleport:null,banishment:null,inventorySlot:null,
+      credits:"assets/pixel/visual-overhaul/r85/pickup-gold.svg",
+      xpOrb:"assets/pixel/visual-overhaul/r85/pickup-xp.svg",
+      armour:"assets/pixel/visual-overhaul/r85/pickup-armour.svg",
+      key:null,bronze:null,exitSigil:null,
+      weapon:"assets/pixel/visual-overhaul/r85/pickup-firearm-upgrade.svg",
+      rapid:null,game:null,loot:null
+    }
   },
   audio:{
     music:{
