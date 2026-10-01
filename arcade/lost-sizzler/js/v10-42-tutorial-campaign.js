@@ -32,7 +32,7 @@
     }],
     ["TUTORIAL COMPLETE",{
       title:"FOUNDATION COMPLETE",
-      copy:"You have learned the controls and the dungeon's core language without being given the whole game in advance.",
+      copy:"You Are Ready To Take On The Adventure! You have learned the controls and the dungeon's core language without being given the whole game in advance.",
       detail:"The full campaign introduces weapon evolution, equipment, shops, Sanctuary, death recovery, Wardens and deeper RPG choices in context. Replay Tutorial at any time if you want a refresher."
     }]
   ]);
