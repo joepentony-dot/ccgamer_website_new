@@ -8,8 +8,9 @@ const root=path.resolve(here,"..");
 const ai=fs.readFileSync(path.join(root,"js/ai.js"),"utf8");
 
 assert.match(ai,/function crowdPriority\(e\)/,"R84 must define crowd priority");
-assert.match(ai,/e\.deathStalker\|\|e\.timedHunter\|\|e\.hunting\|\|e\.follower\|\|e\.guardian\|\|e\.exitWarden\|\|e\.sigilDefender\|\|e\.arenaId/,
-  "bosses, named enemies and encounter owners must never be deferred by crowd throttling");
+assert.match(ai,/e\.deathStalker\|\|e\.timedHunter\|\|e\.hunting\|\|e\.follower\|\|e\.guardian\|\|e\.keyGuardian\|\|e\.exitWarden\|\|e\.sigilDefender\|\|e\.champion\|\|e\.championName\|\|e\.ccgBoss\|\|e\.arenaId/,
+  "active bosses, named champions, domain guardians and encounter owners must never be deferred by crowd throttling");
+assert.doesNotMatch(ai,/hordeWarden/,"crowd-performance hardening must not revive retired Horde-specific ownership");
 assert.match(ai,/nearest<=7/,"nearby enemies must always update at full cadence");
 assert.match(ai,/e\.aiState==="chase"&&nearest<=11/,"nearby chasing enemies must remain responsive");
 assert.match(ai,/const stride=count>=28\|\|lowFps&&count>=18\?3:count>=16\?2:1/,
