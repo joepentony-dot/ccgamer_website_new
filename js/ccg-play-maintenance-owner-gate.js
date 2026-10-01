@@ -4,6 +4,9 @@
  * The signed-in Cheeky Commodore Gamer admin profile is allowed through,
  * assigned website-member playtesters are admitted from their normal account,
  * and invited testers can unlock the browser build with the current tester code.
+ *
+ * Tester-code authorization is server-verifiable: sessionStorage may retain the
+ * entered code for this tab, but every restore is revalidated by Supabase.
  */
 (function () {
   "use strict";
@@ -14,8 +17,7 @@
   const OWNER_DISPLAY_NAME = "cheeky commodore gamer";
   const OWNER_ROLE = "admin";
   const AUTH_TIMEOUT_MS = 5000;
-  const TESTER_SESSION_KEY = "ccg_dungeon_carnage_tester_access_v1";
-  const TESTER_CODE_SHA256 = "6ae3a54376666b176371fe98ec4ae42b9cf93e0f8cfaf51c48a7634daa1eea24";
+  const TESTER_SESSION_KEY = "ccg_dungeon_carnage_tester_code_v2";
 
   function normalise(value) {
     return String(value || "").trim().toLowerCase();
@@ -31,17 +33,23 @@
     if (document.body) document.body.dataset.ccgPlayMaintenanceGate = state;
   }
 
-  function hasTesterSession() {
+  function readTesterSessionCode() {
     try {
-      return sessionStorage.getItem(TESTER_SESSION_KEY) === "allowed";
+      return String(sessionStorage.getItem(TESTER_SESSION_KEY) || "");
     } catch (_error) {
-      return false;
+      return "";
     }
   }
 
-  function rememberTesterSession() {
+  function rememberTesterSessionCode(value) {
     try {
-      sessionStorage.setItem(TESTER_SESSION_KEY, "allowed");
+      sessionStorage.setItem(TESTER_SESSION_KEY, normalise(value));
+    } catch (_error) {}
+  }
+
+  function clearTesterSessionCode() {
+    try {
+      sessionStorage.removeItem(TESTER_SESSION_KEY);
     } catch (_error) {}
   }
 
@@ -62,9 +70,17 @@
     }
   }
 
-  async function resolveAccountAccess() {
+  async function getSupabaseClient() {
     if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== "function") return null;
-    const client = await window.ccgSupabase.getClient();
+    try {
+      return await window.ccgSupabase.getClient();
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  async function resolveAccountAccess() {
+    const client = await getSupabaseClient();
     if (!client?.auth) return null;
 
     const sessionResult = await client.auth.getSession();
@@ -103,17 +119,18 @@
       && profile.banned !== true;
   }
 
-  async function sha256(value) {
-    if (!window.crypto?.subtle || typeof TextEncoder !== "function") return "";
-    const data = new TextEncoder().encode(normalise(value));
-    const digest = await window.crypto.subtle.digest("SHA-256", data);
-    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-  }
-
   async function isValidTesterCode(value) {
-    if (!value) return false;
+    const candidate = String(value || "").trim();
+    if (candidate.length < 4 || candidate.length > 128) return false;
+
+    const client = await getSupabaseClient();
+    if (!client || typeof client.rpc !== "function") return false;
+
     try {
-      return await sha256(value) === TESTER_CODE_SHA256;
+      const result = await client.rpc("ccg_validate_dungeon_carnage_tester_code", {
+        p_code: candidate
+      });
+      return !result?.error && result?.data === true;
     } catch (_error) {
       return false;
     }
@@ -186,7 +203,8 @@
       submit.disabled = true;
       error.textContent = "";
 
-      const valid = await isValidTesterCode(input.value);
+      const candidate = input.value;
+      const valid = await isValidTesterCode(candidate);
       if (!valid) {
         mark("tester-code-rejected");
         error.textContent = "That tester code is not recognised.";
@@ -195,7 +213,7 @@
         return;
       }
 
-      rememberTesterSession();
+      rememberTesterSessionCode(candidate);
       removeTesterGate();
       mark("tester-preview");
       dispatchAllowed("tester");
@@ -211,10 +229,15 @@
       return;
     }
 
-    if (hasTesterSession()) {
-      mark("tester-preview");
-      dispatchAllowed("tester");
-      return;
+    const storedTesterCode = readTesterSessionCode();
+    if (storedTesterCode) {
+      mark("checking-tester");
+      if (await isValidTesterCode(storedTesterCode)) {
+        mark("tester-preview");
+        dispatchAllowed("tester");
+        return;
+      }
+      clearTesterSessionCode();
     }
 
     mark(snapshotOwnerHint() ? "checking-owner" : "checking");
