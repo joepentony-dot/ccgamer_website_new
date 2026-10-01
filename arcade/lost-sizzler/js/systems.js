@@ -153,6 +153,7 @@ window.CCGSystems=(()=>{
     IRON_KEEP:["shield","rack","bench","pillar","candleSconce"],
     MOSS_CRYPT:["statue","pedestal","pillar","bench","candleSconce"],
     EMBER_DUNGEON:["anvil","rack","barrel","pillar","candleSconce"],
+    BLOOD_CITADEL:["shield","rack","barrel","pillar","candleSconce"],
     SPIDER_NEST:["bookcase","tapeStack","crate","candleSconce"],
     TREASURE_VAULT:["pedestal","barrel","statue","chestPile","pillar"]
   };
