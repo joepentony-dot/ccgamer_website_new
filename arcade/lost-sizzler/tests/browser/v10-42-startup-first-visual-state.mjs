@@ -130,7 +130,7 @@ try{
   assert.notEqual(legacyReadyMid.bodyReleaseReady,"true","authoritative release readiness must remain false while V10.42 is unfinished");
   assert.equal(legacyReadyMid.loaderHidden,false,"legacy readiness alone must not reveal the pre-V10.42 menu");
   assert.equal(legacyReadyMid.loaderDisplay,"grid","loader must continue covering the old/intermediate menu while V10.42 is unfinished");
-  assert.ok(!legacyReadyMid.feature.some(text=>text.startsWith("5 PROCEDURAL DEPTHS")),"held five-depth owner must prove the final campaign copy has not landed yet");
+  assert.ok(!legacyReadyMid.feature.some(text=>text.startsWith("15 PROCEDURAL FLOORS")),"held campaign owner must prove the final fifteen-floor copy has not landed yet");
 
   const heldModuleFrames=await page.evaluate(()=>new Promise(resolve=>{
     const samples=[],started=performance.now();
@@ -238,7 +238,7 @@ try{
 
   assert.equal(settled.loaderHidden,true,"loader must be removed atomically only after the release is ready");
   assert.equal(settled.loaderDisplay,"none","settled release loader must not intercept the ready menu");
-  assert.equal(settled.feature[0]?.startsWith("5 PROCEDURAL DEPTHS"),true,"menu must reveal only after final five-depth campaign copy is installed");
+  assert.equal(settled.feature[0]?.startsWith("15 PROCEDURAL FLOORS"),true,"menu must reveal only after final fifteen-floor campaign copy is installed");
   assert.equal(settled.feature[1]?.startsWith("RPG CHARACTER BUILD"),true,"RPG campaign copy must be settled before reveal");
   assert.equal(settled.feature[2]?.startsWith("THREE GLOBAL KEYS"),true,"global-key campaign copy must be settled before reveal");
   for(const id of Object.keys(first.buttons)){
