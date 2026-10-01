@@ -18,6 +18,9 @@
   const OWNER_ROLE = "admin";
   const AUTH_TIMEOUT_MS = 5000;
   const TESTER_SESSION_KEY = "ccg_dungeon_carnage_tester_code_v2";
+  const PROTECTED_RUNTIME_TYPE = "application/ccg-protected-runtime";
+  let runtimeAccessGranted = false;
+  let runtimeBootPromise = null;
 
   function normalise(value) {
     return String(value || "").trim().toLowerCase();
@@ -54,9 +57,74 @@
   }
 
   function dispatchAllowed(access) {
+    runtimeAccessGranted = true;
     window.dispatchEvent(new CustomEvent("ccg:play-maintenance-access-granted", {
       detail: { allowed: true, access: access }
     }));
+    startProtectedRuntimeWhenReady();
+  }
+
+  function startProtectedRuntimeWhenReady() {
+    if (!runtimeAccessGranted) return;
+
+    const start = () => {
+      void bootstrapProtectedRuntime().catch((error) => {
+        mark("runtime-load-failed");
+        try { console.error("[CCG] Dungeon protected runtime failed to start.", error); } catch (_error) {}
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", start, { once: true });
+      return;
+    }
+
+    start();
+  }
+
+  function bootstrapProtectedRuntime() {
+    if (!runtimeAccessGranted) {
+      return Promise.reject(new Error("Dungeon runtime access has not been validated."));
+    }
+    if (runtimeBootPromise) return runtimeBootPromise;
+
+    runtimeBootPromise = (async () => {
+      mark("runtime-loading");
+      const placeholders = Array.from(
+        document.querySelectorAll('script[data-ccg-protected-runtime][type="' + PROTECTED_RUNTIME_TYPE + '"]')
+      );
+
+      for (const placeholder of placeholders) {
+        const script = document.createElement("script");
+        for (const attribute of Array.from(placeholder.attributes)) {
+          if (attribute.name === "type" || attribute.name === "data-ccg-protected-runtime") continue;
+          script.setAttribute(attribute.name, attribute.value);
+        }
+
+        if (placeholder.src || placeholder.getAttribute("src")) {
+          script.async = false;
+          const loaded = new Promise((resolve, reject) => {
+            script.addEventListener("load", resolve, { once: true });
+            script.addEventListener("error", () => reject(new Error(
+              "Failed to load protected Dungeon runtime script: " + (placeholder.getAttribute("src") || "")
+            )), { once: true });
+          });
+          placeholder.replaceWith(script);
+          await loaded;
+        } else {
+          script.textContent = placeholder.textContent || "";
+          placeholder.replaceWith(script);
+        }
+      }
+
+      mark("runtime-started");
+      window.dispatchEvent(new CustomEvent("ccg:protected-dungeon-runtime-started", {
+        detail: { allowed: true }
+      }));
+      return true;
+    })();
+
+    return runtimeBootPromise;
   }
 
   function snapshotOwnerHint() {
