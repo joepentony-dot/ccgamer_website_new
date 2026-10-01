@@ -149,52 +149,46 @@ function tileInRenderView(x,y,pad=2){
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
 const FLOOR_TILE_PALETTES=Object.freeze({
   1:Object.freeze({id:"threshold-stone",name:"THRESHOLD STONE",floor:"rgba(105,99,94,.085)",wall:"rgba(88,84,82,.105)",accent:"#a8a39c"}),
-  2:Object.freeze({id:"iron-blue",name:"IRON BLUE",floor:"rgba(55,88,122,.13)",wall:"rgba(40,70,102,.16)",accent:"#7fb3dd"}),
-  3:Object.freeze({id:"crypt-moss",name:"CRYPT MOSS",floor:"rgba(66,99,57,.15)",wall:"rgba(49,79,43,.18)",accent:"#99c27d"}),
-  4:Object.freeze({id:"ember-amber",name:"EMBER AMBER",floor:"rgba(139,70,32,.17)",wall:"rgba(116,49,28,.19)",accent:"#ea8848"}),
-  5:Object.freeze({id:"crimson-sigil",name:"CRIMSON SIGIL",floor:"rgba(145,29,48,.20)",wall:"rgba(112,18,36,.23)",accent:"#ff6076"})
+  2:Object.freeze({id:"drive-steel",name:"1541 DRIVE STEEL",floor:"rgba(48,78,96,.11)",wall:"rgba(37,63,82,.14)",accent:"#72d7ff"}),
+  3:Object.freeze({id:"iron-keep",name:"IRON KEEP",floor:"rgba(92,65,49,.12)",wall:"rgba(72,48,39,.15)",accent:"#d6a46c"}),
+  4:Object.freeze({id:"budget-amber",name:"BUDGET VAULTS",floor:"rgba(128,86,34,.12)",wall:"rgba(94,61,24,.15)",accent:"#ffd85a"}),
+  5:Object.freeze({id:"cartridge-green",name:"CARTRIDGE CATACOMBS",floor:"rgba(44,101,78,.13)",wall:"rgba(29,72,57,.16)",accent:"#72ff9b"}),
+  6:Object.freeze({id:"tape-violet",name:"TAPE LABYRINTH",floor:"rgba(85,67,108,.13)",wall:"rgba(62,48,82,.16)",accent:"#d7b8ff"}),
+  7:Object.freeze({id:"crypt-moss",name:"MOSS CRYPT",floor:"rgba(66,99,57,.15)",wall:"rgba(49,79,43,.18)",accent:"#99c27d"}),
+  8:Object.freeze({id:"demo-magenta",name:"DEMO UNDERCROFT",floor:"rgba(105,42,120,.14)",wall:"rgba(76,28,94,.17)",accent:"#ff5bae"}),
+  9:Object.freeze({id:"modem-cyan",name:"MODEM WARRENS",floor:"rgba(35,94,108,.14)",wall:"rgba(25,68,82,.17)",accent:"#6cecff"}),
+  10:Object.freeze({id:"sid-red",name:"SID FURNACE",floor:"rgba(122,48,57,.15)",wall:"rgba(91,34,42,.18)",accent:"#ff6868"}),
+  11:Object.freeze({id:"ember-orange",name:"EMBER DEPTHS",floor:"rgba(139,70,32,.17)",wall:"rgba(116,49,28,.19)",accent:"#ff7848"}),
+  12:Object.freeze({id:"foundry-copper",name:"PIXEL FOUNDRY",floor:"rgba(125,61,32,.17)",wall:"rgba(91,42,25,.20)",accent:"#ff9950"}),
+  13:Object.freeze({id:"score-gold",name:"HIGH SCORE CRYPT",floor:"rgba(112,91,30,.17)",wall:"rgba(78,64,22,.20)",accent:"#ffd85a"}),
+  14:Object.freeze({id:"crt-green",name:"CRT MAZE",floor:"rgba(42,101,79,.18)",wall:"rgba(28,73,57,.21)",accent:"#72ff9b"}),
+  15:Object.freeze({id:"blood-citadel",name:"BLOOD CITADEL",floor:"rgba(145,29,48,.22)",wall:"rgba(112,18,36,.25)",accent:"#ff4b57"})
 });
-function currentFloorTilePalette(){const floor=Math.max(1,Math.min(5,Number(run?.floor)||1));return FLOOR_TILE_PALETTES[floor]||FLOOR_TILE_PALETTES[1]}
+function currentFloorTilePalette(){
+  const max=Math.max(1,Number(C.maxFloors)||15),floor=Math.max(1,Math.min(max,Number(run?.floor)||1));
+  return FLOOR_TILE_PALETTES[floor]||FLOOR_TILE_PALETTES[Math.min(15,floor)]||FLOOR_TILE_PALETTES[1]
+}
 function applyFloorTilePalette(s,wall){
   const palette=currentFloorTilePalette();ctx.save();ctx.fillStyle=wall?palette.wall:palette.floor;ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.restore()
 }
 function drawCorridorDetail(s,x,y,h,th){
-  const floor=Math.max(1,Math.min(5,Number(run?.floor)||1)),open=(dx,dy)=>world.map[y+dy]?.[x+dx]===0,horizontal=open(-1,0)&&open(1,0),vertical=open(0,-1)&&open(0,1),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
+  const max=Math.max(1,Number(C.maxFloors)||15),floor=Math.max(1,Math.min(max,Number(run?.floor)||1)),palette=currentFloorTilePalette(),open=(dx,dy)=>world.map[y+dy]?.[x+dx]===0,horizontal=open(-1,0)&&open(1,0),vertical=open(0,-1)&&open(0,1),cx=s.x+C.tile/2,cy=s.y+C.tile/2,accent=palette.accent||th.accent||P.cyan;
   ctx.save();ctx.lineWidth=1;ctx.lineCap="square";
   if(floor===1){
-    // Threshold corridors: rain-dark drainage lanes, chipped guide stones and puddles.
     ctx.fillStyle="rgba(37,55,61,.22)";if(horizontal)ctx.fillRect(s.x+3,cy-4,C.tile-6,8);else if(vertical)ctx.fillRect(cx-4,s.y+3,8,C.tile-6);
     ctx.strokeStyle="rgba(121,164,171,.28)";if(horizontal){ctx.beginPath();ctx.moveTo(s.x+3,cy);ctx.lineTo(s.x+C.tile-3,cy);ctx.stroke()}else if(vertical){ctx.beginPath();ctx.moveTo(cx,s.y+3);ctx.lineTo(cx,s.y+C.tile-3);ctx.stroke()}
     if(h%7===0){ctx.fillStyle="rgba(103,151,166,.18)";ctx.beginPath();ctx.ellipse(cx+((h>>>5)%9)-4,cy+((h>>>9)%7)-3,8,3,.2,0,Math.PI*2);ctx.fill()}
-    if(h%19===0){ctx.fillStyle="#66745b";ctx.fillRect(s.x+5,s.y+5,5,3);ctx.fillRect(s.x+C.tile-11,s.y+C.tile-8,6,3)}
-  }else if(floor===2){
-    // Iron Keep corridors: worn steel runners, rivets and occasional guard-lane plates.
-    ctx.fillStyle="rgba(48,54,59,.42)";if(horizontal)ctx.fillRect(s.x,cy-5,C.tile,10);else if(vertical)ctx.fillRect(cx-5,s.y,10,C.tile);
-    ctx.strokeStyle="rgba(184,161,112,.32)";if(horizontal){ctx.beginPath();ctx.moveTo(s.x,cy-5);ctx.lineTo(s.x+C.tile,cy-5);ctx.moveTo(s.x,cy+5);ctx.lineTo(s.x+C.tile,cy+5);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx-5,s.y);ctx.lineTo(cx-5,s.y+C.tile);ctx.moveTo(cx+5,s.y);ctx.lineTo(cx+5,s.y+C.tile);ctx.stroke()}
-    ctx.fillStyle="#93866b";for(const [rx,ry] of [[6,6],[C.tile-8,6],[6,C.tile-8],[C.tile-8,C.tile-8]])if((h+rx+ry)%3)ctx.fillRect(s.x+rx,s.y+ry,2,2);
-    if(h%17===0){ctx.strokeStyle="rgba(225,183,92,.42)";ctx.strokeRect(s.x+7,s.y+7,C.tile-14,C.tile-14)}
-  }else if(floor===3){
-    // Bone/Moss corridors: root veins, inset burial stones and pale bone markers.
-    ctx.strokeStyle="rgba(83,112,65,.45)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+4,s.y+7+((h>>>3)%6));ctx.quadraticCurveTo(cx,cy+((h>>>8)%9)-4,s.x+C.tile-4,s.y+C.tile-8);ctx.stroke();
-    ctx.strokeStyle="rgba(146,153,112,.25)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-2,cy);ctx.lineTo(cx-10,cy-8);ctx.moveTo(cx+2,cy+2);ctx.lineTo(cx+11,cy+9);ctx.stroke();
-    if(h%13===0){ctx.fillStyle="rgba(185,178,142,.28)";ctx.fillRect(s.x+8,s.y+8,C.tile-16,C.tile-16);ctx.fillStyle="rgba(52,72,44,.42)";ctx.fillRect(s.x+11,s.y+11,C.tile-22,3)}
-    if(h%23===0){ctx.fillStyle="#c7c09d";ctx.fillRect(cx-7,cy-1,14,2);ctx.fillRect(cx-5,cy-4,3,8);ctx.fillRect(cx+3,cy-4,3,8)}
-  }else if(floor===4){
-    // Ember corridors: copper service grates and heat seams.
-    ctx.fillStyle="rgba(61,33,25,.55)";if(horizontal)ctx.fillRect(s.x+2,cy-6,C.tile-4,12);else if(vertical)ctx.fillRect(cx-6,s.y+2,12,C.tile-4);
-    ctx.strokeStyle="rgba(192,103,61,.48)";for(let n=-1;n<=1;n++){if(horizontal){ctx.beginPath();ctx.moveTo(s.x+4,cy+n*4);ctx.lineTo(s.x+C.tile-4,cy+n*4);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx+n*4,s.y+4);ctx.lineTo(cx+n*4,s.y+C.tile-4);ctx.stroke()}}
-    if(h%8===0){ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=8;ctx.strokeStyle="rgba(255,107,62,.62)";ctx.beginPath();ctx.moveTo(s.x+5,s.y+C.tile-7);ctx.lineTo(cx-3,cy+2);ctx.lineTo(cx+4,cy-4);ctx.lineTo(s.x+C.tile-5,s.y+8);ctx.stroke();ctx.restore()}
-    if(h%21===0){ctx.fillStyle="#8d6044";ctx.fillRect(s.x+6,s.y+6,5,5);ctx.fillRect(s.x+C.tile-11,s.y+C.tile-11,5,5)}
   }else{
-    // Crimson Sigil corridors: danger-red rails with purple/cyan ritual accents.
-    ctx.strokeStyle="rgba(224,70,91,.58)";ctx.lineWidth=2;if(horizontal){ctx.beginPath();ctx.moveTo(s.x+2,cy-6);ctx.lineTo(s.x+C.tile-2,cy-6);ctx.moveTo(s.x+2,cy+6);ctx.lineTo(s.x+C.tile-2,cy+6);ctx.stroke()}else{ctx.beginPath();ctx.moveTo(cx-6,s.y+2);ctx.lineTo(cx-6,s.y+C.tile-2);ctx.moveTo(cx+6,s.y+2);ctx.lineTo(cx+6,s.y+C.tile-2);ctx.stroke()}
-    ctx.fillStyle="rgba(108,236,255,.34)";if(horizontal){ctx.fillRect(cx-3,cy-8,6,2);ctx.fillRect(cx-1,cy-3,2,6)}else{ctx.fillRect(cx-8,cy-3,2,6);ctx.fillRect(cx-3,cy-1,6,2)}
-    if(h%11===0){ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.PI/4);ctx.strokeStyle="rgba(205,105,255,.62)";ctx.strokeRect(-7,-7,14,14);ctx.restore()}
-    if(h%29===0){ctx.save();ctx.shadowColor=P.cyan;ctx.shadowBlur=10;ctx.fillStyle="rgba(108,236,255,.58)";ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();ctx.restore()}
+    const alpha=floor===max?"88":"52",soft=floor===max?"38":"24";
+    ctx.strokeStyle=accent+alpha;ctx.lineWidth=floor===max?2:1.35;
+    if(horizontal){ctx.beginPath();ctx.moveTo(s.x+3,cy-5);ctx.lineTo(s.x+C.tile-3,cy-5);ctx.moveTo(s.x+3,cy+5);ctx.lineTo(s.x+C.tile-3,cy+5);ctx.stroke()}
+    else if(vertical){ctx.beginPath();ctx.moveTo(cx-5,s.y+3);ctx.lineTo(cx-5,s.y+C.tile-3);ctx.moveTo(cx+5,s.y+3);ctx.lineTo(cx+5,s.y+C.tile-3);ctx.stroke()}
+    if(h%(6+(floor%5))===0){ctx.fillStyle=accent+soft;ctx.fillRect(cx-3,cy-3,6,6)}
+    if(h%(13+(floor%7))===0){ctx.save();ctx.translate(cx,cy);ctx.rotate(((floor%4)+1)*Math.PI/8);ctx.strokeStyle=accent+"66";ctx.strokeRect(-6,-6,12,12);ctx.restore()}
+    if(floor===max&&h%5===0){ctx.strokeStyle="rgba(255,75,87,.62)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+6,s.y+6);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-6);ctx.moveTo(s.x+C.tile-6,s.y+6);ctx.lineTo(s.x+6,s.y+C.tile-6);ctx.stroke()}
   }
-  // Junctions receive a stronger deterministic landmark without adding blockers.
   const exits=[open(-1,0),open(1,0),open(0,-1),open(0,1)].filter(Boolean).length;
-  if(exits>=3&&h%3===0){ctx.strokeStyle=th.accent+"70";ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle=th.accent+"45";ctx.fillRect(cx-3,cy-3,6,6)}
+  if(exits>=3&&h%3===0){ctx.strokeStyle=accent+"70";ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle=accent+"45";ctx.fillRect(cx-3,cy-3,6,6)}
   ctx.restore()
 }
 function drawTilePerformance(x,y){
@@ -233,7 +227,7 @@ function drawTile(x,y){
     // Individual brick staining breaks the old single-colour wall read. The
     // medieval rooms favour warm ochre, burgundy, moss and soot while the C64
     // rooms retain their neon accents underneath the masonry treatment.
-    const medieval=["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","SPIDER_NEST"].includes(theme),brickPalette=theme==="MOSS_CRYPT"?["#7f8152","#51613f","#8b7048","#394b37"]:theme==="EMBER_DUNGEON"?["#9a4732","#723124","#b16038","#4e2722"]:theme==="IRON_KEEP"?["#8a5a3f","#6f3e35","#a6784e","#4c3430"]:theme==="SPIDER_NEST"?["#554758","#382f3e","#70626f","#29242e"]:[th.hi,th.wall,"#6c475d","#3d4f58"];
+    const medieval=["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL","SPIDER_NEST"].includes(theme),brickPalette=theme==="MOSS_CRYPT"?["#7f8152","#51613f","#8b7048","#394b37"]:theme==="EMBER_DUNGEON"?["#9a4732","#723124","#b16038","#4e2722"]:theme==="BLOOD_CITADEL"?["#8f2632","#651923","#b33a45","#451219"]:theme==="IRON_KEEP"?["#8a5a3f","#6f3e35","#a6784e","#4c3430"]:theme==="SPIDER_NEST"?["#554758","#382f3e","#70626f","#29242e"]:[th.hi,th.wall,"#6c475d","#3d4f58"];
     ctx.save();ctx.globalAlpha=medieval?.28:.11;for(let row=0;row<2;row++){const yy=s.y+10+row*16,offset=(row+course)%2?-6:10;for(let joint=offset;joint<C.tile;joint+=21){ctx.fillStyle=brickPalette[(h+row+joint)%brickPalette.length];ctx.fillRect(s.x+Math.max(3,joint+2),yy+2,Math.min(17,C.tile-joint-6),11)}}ctx.restore();
     ctx.strokeStyle="rgba(255,255,255,.035)";ctx.lineWidth=1;ctx.strokeRect(s.x+5,s.y+6,C.tile-10,C.tile-11);
     if(h%5===0){ctx.fillStyle="rgba(0,0,0,.28)";ctx.fillRect(s.x+5+(h%23),s.y+7+((h>>>4)%24),3+(h%5),2);ctx.fillStyle=th.hi+"45";ctx.fillRect(s.x+6+(h%23),s.y+7+((h>>>4)%24),2,1)}
@@ -243,7 +237,7 @@ function drawTile(x,y){
     else if(theme==="C64_ARCHIVE"||theme==="TAPE_STORE"){ctx.fillStyle="rgba(11,8,16,.5)";ctx.fillRect(s.x+8,s.y+12,C.tile-16,14);ctx.strokeStyle=th.accent+"62";ctx.strokeRect(s.x+9,s.y+13,C.tile-18,12);ctx.fillStyle=th.accent+"75";ctx.fillRect(s.x+13,s.y+17,5,4);ctx.fillRect(s.x+C.tile-18,s.y+17,5,4)}
     else if(theme==="ZZAP_LIBRARY"){for(let bx=7;bx<C.tile-6;bx+=6){ctx.fillStyle=["#6c2f3d","#345e78","#8a6930","#4e7041"][(bx+h)%4];ctx.fillRect(s.x+bx,s.y+11,4,18-(bx%3)*2)}ctx.fillStyle="#a47736";ctx.fillRect(s.x+5,s.y+28,C.tile-10,3)}
     else if(theme==="WARP_GALLERY"||theme==="MODEM_EXCHANGE"){ctx.strokeStyle=th.accent+"72";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+7,s.y+31);ctx.lineTo(s.x+14,s.y+20);ctx.lineTo(s.x+22,s.y+25);ctx.lineTo(s.x+34,s.y+9);ctx.stroke();for(const [nx,ny] of [[7,31],[14,20],[22,25],[34,9]]){ctx.fillStyle=th.accent;ctx.fillRect(s.x+nx-1,s.y+ny-1,3,3)}}
-    else if(["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON"].includes(theme)){ctx.strokeStyle="rgba(20,12,10,.72)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x+6,s.y+8);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-8);ctx.stroke();ctx.fillStyle="#332821";ctx.fillRect(s.x+5,s.y+5,5,5);ctx.fillRect(s.x+C.tile-10,s.y+C.tile-10,5,5);ctx.fillStyle=th.accent+"70";ctx.fillRect(s.x+7,s.y+7,2,2);ctx.fillRect(s.x+C.tile-9,s.y+C.tile-9,2,2)}
+    else if(["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL"].includes(theme)){ctx.strokeStyle="rgba(20,12,10,.72)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x+6,s.y+8);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-8);ctx.stroke();ctx.fillStyle="#332821";ctx.fillRect(s.x+5,s.y+5,5,5);ctx.fillRect(s.x+C.tile-10,s.y+C.tile-10,5,5);ctx.fillStyle=th.accent+"70";ctx.fillRect(s.x+7,s.y+7,2,2);ctx.fillRect(s.x+C.tile-9,s.y+C.tile-9,2,2)}
     else if(theme==="SPIDER_NEST"){ctx.strokeStyle="rgba(225,232,244,.34)";ctx.lineWidth=1;const cx=s.x+C.tile/2,cy=s.y+C.tile/2;for(let n=0;n<5;n++){const a=n*Math.PI/4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*22,cy+Math.sin(a)*22);ctx.stroke()}ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.arc(cx,cy,15,0,Math.PI*2);ctx.stroke()}
     return;
   }
