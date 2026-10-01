@@ -72,7 +72,7 @@ assert.ok(guidance.includes('[data-action="inventory"],[data-action="items"]'),"
 assert.match(guidance,/ccgTutorialControlFlash/,"highlighted controls must visibly pulse");
 assert.match(guidance,/INFO_HIGHLIGHTS=new Map/,"tutorial information sections must define contextual interface highlights");
 for(const label of ["1 · CURRENT OBJECTIVE","2 · TACTICAL RADAR","3 · CONTEXTUAL HINTS","1 · HEALTH","2 · ARMOUR","3 · POTION · E","4 · TORCH · Q","5 · QUICK ITEMS","1 · KEYRING","2 · DOORS & CHESTS","3 · INTERACTION REPORTS","1 · LIVE ENEMIES","2 · NAMED ENEMY DOSSIER","3 · STALKER BANISH PROMPT","1 · EVENTS & HAZARDS","2 · DISCOVERED SHOPS","3 · SCORE","4 · EVENT REPORTS"])assert.ok(guidance.includes(label),`tutorial is missing highlight: ${label}`);
-for(const title of ["FOLLOW THE FLOOR OBJECTIVE","READ YOUR SURVIVAL HUD","UNDERSTAND LOCKS AND REWARDS","KNOW THE DUNGEON THREATS","SPOT SPECIAL OPPORTUNITIES"])assert.ok(guidance.includes(title),`tutorial is missing visual tour: ${title}`);
+for(const title of ["READ THE MAP, NOT A SPOILER SHEET","SURVIVE, THEN RECOVER","READ SOLIDITY, LOOT & UPGRADES","READ THE THREAT, NOT JUST THE HEALTH BAR","USE SERVICES WHEN YOU FIND THEM"])assert.ok(guidance.includes(title),`tutorial is missing visual tour: ${title}`);
 assert.match(guidance,/if\(INFO_SHOWCASES\.has\(step\)\)\{[\s\S]*?showInformationTour\(step\)/,"information Continue must open a visual tour rather than advancing immediately");
 assert.match(guidance,/data-tour-continue/,"each visual tour must have its own explicit Continue action");
 assert.doesNotMatch(guidance,/SECRET ROUTE|SECRET WALL|SECRET DOOR/,"tutorial interface highlights must not reveal secret routes");
