@@ -4,59 +4,64 @@
   if(window.__CCG_LOST_SIZZLER_V142_TUTORIAL_CAMPAIGN__)return;
   window.__CCG_LOST_SIZZLER_V142_TUTORIAL_CAMPAIGN__=true;
 
+  const configuredFloors=Array.isArray(window.CCG_CONFIG?.proceduralDungeon?.campaignFloors)
+    ?window.CCG_CONFIG.proceduralDungeon.campaignFloors:[];
+  const campaignDepth=Math.max(1,Number(window.CCG_CONFIG?.maxFloors||configuredFloors.length||5));
+  const finalFloorLabel=`F${campaignDepth}`;
+
   const STEP_COPY=new Map([
     ["OBJECTIVES, RADAR & HINTS",{
-      title:"THE FIVE-DEPTH CAMPAIGN",
-      copy:"The full adventure spans five procedural depths. The Threshold teaches exploration, Iron Keep, Moss Crypt and Ember Depths each guard one permanent Key, and the Sigil Sanctum is the final descent.",
-      detail:"Iron, Bone and Ash are global run Keys. Once recovered they remain with you between floors, alongside RPG attributes, relics, Banishment Essence and rescued C64 games."
+      title:`THE ${campaignDepth}-FLOOR CAMPAIGN`,
+      copy:`The adventure spans ${campaignDepth} procedural floors. Objectives change as you descend, so read the mission, use the map and build for the next floor instead of treating each level as a fresh run.`,
+      detail:"RPG attributes, wearable equipment, relics, major Keys, Banishment Essence and rescued C64 games persist through the campaign. Floor themes and threat pressure become more dangerous as you go."
     }],
     ["HEALTH, ARMOUR & QUICK ITEMS",{
-      title:"SURVIVAL & RPG GROWTH",
-      copy:"Health and armour still keep you alive, but the full campaign also develops Might, Vitality, Agility, Endurance, Luck and Arcana as you descend.",
-      detail:"Those attributes affect combat, durability, movement, ammunition, loot and Banishment alchemy. The later floors are balanced around the character you have built, not a fresh hero every depth."
+      title:"SURVIVAL, DEATH & RPG GROWTH",
+      copy:"Health and armour keep you alive, while Might, Vitality, Agility, Endurance, Luck and Arcana change how the character performs. Your equipment and current weapon tier are part of that build.",
+      detail:"A normal death pauses on YOU DIED until you confirm it, then leaves recoverable XP/items behind. If lost XP drops a level, the matching stat benefit is lost too; recover that death cache before dying again to reclaim what the cache still owns."
     }],
     ["KEYS, DOORS & CHESTS",{
-      title:"IRON, BONE & ASH",
-      copy:"The full campaign has three major Keys rather than three fresh objective keys on every floor. Iron, Bone and Ash are guarded by domain champions and remain bound to the run once recovered.",
-      detail:"Optional locks and chests still reward exploration. The three major Keys awaken the Sigil on the fifth depth and are never discarded during normal floor descent."
+      title:"LOCKS, LOOT & THE EVOLVING FIREARM",
+      copy:"Bronze keys and objective locks gate optional routes and rewards. Chests, weapon caches and equipment pickups should tell you exactly what they contain instead of pretending every reward is a separate gun.",
+      detail:"Your firearm evolves as one weapon. WEAPON UPGRADED means its real tier/stats improve; once a floor cap is reached, later weapon-cache rewards fall back to useful ammunition, XP or score instead of creating obsolete standalone weapons."
     }],
     ["ENEMIES, NAMED ENEMIES & THE STALKER",{
-      title:"THREATS & BANISHMENT",
-      copy:"Ordinary enemies, named threats and the Death Stalker become more dangerous as the campaign descends. Floor 1 gives you more reaction time; Floor 5 expects a developed character and better decisions.",
-      detail:"The old artefact-for-Flask loop is replaced in V10.42. Banishment Essence is collected into a persistent Vessel, and Alchemists distil that Essence into the power needed to permanently banish major supernatural threats."
+      title:"THREATS, WARDENS & BANISHMENT",
+      copy:`Ordinary enemies, named champions, Wardens and supernatural threats become more demanding as you descend toward Floor ${campaignDepth}. Their name, sprite and special rules should always agree.`,
+      detail:"Warden Corruption is called out on the map legend when discovered. Death Stalker/Count-style threats use their own warnings and Banishment rules; ordinary weapon fire is not the permanent solution."
     }],
     ["RARE EVENTS, SHOPS, HAZARDS & SCORE",{
-      title:"RELICS, RESCUES & RARE EVENTS",
-      copy:"Each campaign also builds one shuffled A–Z rescue deck, selecting one C64 title for every available letter and distributing those rescues across all five depths.",
-      detail:"Key-domain clears can offer relic choices, while shops, hazards and rare events remain part of the dungeon. Score still matters, but artefact trading is no longer the route to Banishment power."
+      title:"SHOPS, SANCTUARY & DISCOVERY",
+      copy:"Explore for shops, Sanctuary rooms, rare events, secrets and equipment rather than sprinting straight to the exit. The minimap reveals useful information only as the dungeon is actually discovered.",
+      detail:"Sanctuary appears as a green cross only after discovery. Shops are where supplies, capacity and other services belong; contextual first-encounter prompts explain new services when you meet them instead of front-loading a manual."
     }],
     ["TUTORIAL COMPLETE",{
-      title:"FREE INTRODUCTION COMPLETE",
-      copy:"You Are Ready To Take On The Adventure! You have completed the free introduction and learned the controls and core dungeon language.",
-      detail:"The full game continues across five procedural depths with persistent RPG growth, Iron, Bone and Ash, the awakened Sigil, A–Z C64 rescues and the final escape."
+      title:"TRAINING COMPLETE",
+      copy:"You have the controls and the dungeon language. The main run will introduce deeper systems when they become relevant rather than asking you to memorise everything before Floor 1.",
+      detail:`The campaign currently reads ${campaignDepth} floors from the live game configuration. The Tutorial remains available from the main menu whenever you want another practice run.`
     }]
   ]);
 
   const TOUR_COPY=new Map([
     ["FOLLOW THE FLOOR OBJECTIVE",{
-      title:"FOLLOW THE CAMPAIGN OBJECTIVE",
-      copy:"Objectives change by depth: explore and survive the Threshold, defeat the three Key guardians across the middle campaign, then awaken the Sigil and escape the Sanctum.",
-      items:[["F1","THRESHOLD","Explore, learn and clear the opening guardian"],["F2–4","KEY DOMAINS","Recover Iron, Bone and Ash from their champions"],["F5","SIGIL SANCTUM","Bring all three Keys, awaken the Sigil and escape"]]
+      title:"READ THE OBJECTIVE, MAP & FLOOR",
+      copy:`The mission tells you what matters now, while the explored map shows where you have actually been. The campaign runs to Floor ${campaignDepth}; deeper floors change colour, pressure and encounter mix instead of resetting your character.`,
+      items:[["F1","FOUNDATION","Learn the dungeon language and establish your build"],["MAP","EXPLORED ROUTES","Only discovered rooms and services belong on your tactical map"],[finalFloorLabel,"FINAL DESCENT","The last floor is a substantial finale, not a plain stats screen"]]
     }],
     ["UNDERSTAND LOCKS AND REWARDS",{
-      title:"UNDERSTAND GLOBAL KEYS",
-      copy:"Optional locks reward exploration, but the major campaign progression is global. Iron, Bone and Ash persist between depths and are required together at the Sigil Sanctum.",
-      items:[["IRON","KEY OF IRON","Recovered in Iron Keep"],["BONE","KEY OF BONE","Recovered in Moss Crypt"],["ASH","KEY OF ASH","Recovered in Ember Depths"],["SIG","AWAKENED SIGIL","Final-depth objective after all three Keys"]]
+      title:"UNDERSTAND LOOT & WEAPON PROGRESSION",
+      copy:"Keys open the right locks; chests and caches reward exploration. The firearm is one evolving weapon, while wearable equipment and carried items build around it.",
+      items:[["KEY","LOCKS","Objective and Bronze keys have different jobs"],["UP","WEAPON UPGRADE","Raises the existing firearm tier/stats"],["GEAR","EQUIPMENT","Wearable items alter the build"],["CACHE","FALLBACK REWARD","Ammo, XP or score when the weapon cannot evolve here"]]
     }],
     ["KNOW THE DUNGEON THREATS",{
-      title:"UNDERSTAND THREAT & BANISHMENT",
-      copy:"Enemy health, damage and decision tempo rise by floor. The Death Stalker cannot be solved by normal weapons; V10.42 uses a persistent Banishment Vessel and Essence economy instead of artefact-traded Flasks.",
-      items:[["♟","STANDARD THREATS","Progressively stronger by depth"],["★","NAMED THREATS","Tougher enemies with controlled elite scaling"],["S","DEATH STALKER","Supernatural threat requiring Banishment"],["V","VESSEL + ESSENCE","Persistent Banishment resource distilled by Alchemists"]]
+      title:"READ THREAT IDENTITY",
+      copy:"Standard enemies, named champions, Wardens and supernatural threats use distinct names, sprites and rules. Warden Corruption is a map state; Banishment is reserved for threats that explicitly require it.",
+      items:[["♟","STANDARD THREAT","Ordinary enemy rules"],["★","NAMED CHAMPION","Stronger identity and reward"],["W","WARDEN","Corruption/domain encounter"],["B","BANISHMENT","Special solution for supernatural threats"]]
     }],
     ["SPOT SPECIAL OPPORTUNITIES",{
-      title:"BUILD YOUR RUN",
-      copy:"The dungeon now feeds a longer RPG run. Rescue C64 games from the campaign-wide A–Z deck, choose relics after major clears and use discovered services to strengthen the character you carry into later depths.",
-      items:[["A–Z","C64 RESCUES","One selected title per available letter across the campaign"],["R","RELICS","Build-defining rewards after Key-domain clears"],["$","SHOPS","Supplies and discovered services"],["▲","HAZARDS","Environmental threats that remain dangerous on every floor"]]
+      title:"USE SERVICES & SAFE ROOMS",
+      copy:"Shops, Sanctuary, rare events and secrets are discovered in the dungeon rather than granted from the start. First-encounter guidance explains a new service when it becomes useful.",
+      items:[["$","SHOP","Supplies, upgrades and discovered services"],["+","SANCTUARY","Green cross only after discovery"],["?","SECRET","Exploration can reveal hidden routes and rooms"],["▲","HAZARD","Environmental threats remain dangerous on every floor"]]
     }]
   ]);
 
@@ -99,7 +104,7 @@
     const title=String(banner.querySelector("b")?.textContent||"").trim().toUpperCase();if(title!=="TUTORIAL COMPLETE")return false;
     if(banner.dataset.v142CampaignCopy==="true")return true;
     const copy=banner.querySelector("span");
-    if(copy)copy.textContent="You have finished the free Tutorial. The full five-depth campaign continues with RPG progression, global Keys, relics, Banishment Essence, A–Z C64 rescues and the final Sigil escape.";
+    if(copy)copy.textContent="You have finished the Tutorial. The ${campaignDepth}-floor campaign continues with persistent RPG growth, equipment, the evolving firearm, discovered services and deeper dungeon objectives.";
     banner.dataset.v142CampaignCopy="true";return true;
   }
   function patchAll(){patchStageModal();patchRail();patchTour();patchCompletionBanner()}
