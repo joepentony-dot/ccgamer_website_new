@@ -20,7 +20,8 @@ for(const stale of [
   'The full adventure spans five procedural depths',
   'Floor 5 expects a developed character',
   'across all five depths',
-  'final-depth objective after all three Keys'
+  'final-depth objective after all three Keys',
+  'full five-depth campaign'
 ])assert(!source.includes(stale),`Tutorial must not revive retired five-floor campaign teaching: ${stale}`);
 
 assert(onboarding.includes('ATTACK & THE EVOLVING FIREARM'),'Interactive attack lesson must introduce the evolving firearm model.');
