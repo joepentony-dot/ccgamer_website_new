@@ -450,7 +450,12 @@ window.CCGSystems=(()=>{
     const sanctuaryPreferred=featureRooms.filter(r=>sanctuaryEligible(r)&&!r.optional);
     const sanctuaryFallback=featureRooms.filter(r=>sanctuaryEligible(r)&&r.optional);
     const sanctuaryPool=[...sanctuaryPreferred,...sanctuaryFallback].slice(-Math.min(12,featureRooms.length));
-    for(let i=0;i<Math.min(C.dungeon.sanctuaryRooms,sanctuaryPool.length);i++){
+    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,featureRooms.length+1));
+    if(sanctuaryPool.length<sanctuaryTarget){
+      const startRoom=world.rooms?.[world.startRoomId]||world.rooms?.find?.(room=>room?.id===world.startRoomId);
+      if(startRoom&&!startRoom.sigilRoom&&!startRoom.dedicatedHazardReserved&&!occupiedEnemyRooms.has(startRoom.id)&&!sanctuaryPool.some(room=>room.id===startRoom.id))sanctuaryPool.push(startRoom);
+    }
+    for(let i=0;i<Math.min(sanctuaryTarget,sanctuaryPool.length);i++){
       const room=sanctuaryPool[(i*3+1)%sanctuaryPool.length];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
       for(const q of wallTorchPositions(room))world.wallLights.push({...q,roomId:room.id,radius:10,permanent:true,kind:"sanctuary"});
     }
