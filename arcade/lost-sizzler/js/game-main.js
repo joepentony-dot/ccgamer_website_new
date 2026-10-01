@@ -105,6 +105,8 @@ installFloorCheckpointContinuity();
 function hideStaticPanels(){UI.rulebook?.classList.add("hidden");UI.support?.classList.add("hidden");UI.shop?.classList.add("hidden");UI.savePanel?.classList.add("hidden");UI.artefactChoice?.classList.add("hidden");pendingBanishmentReward=null;activeShop=null;hideItemInfo();hideNamedDossier()}
 function closeInventoryForMenu(){if(UI.inventory&&!UI.inventory.classList.contains("hidden"))UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing"}
 function clearAbandonedRun(){
+  try{if(typeof pendingDeathConfirmation!=="undefined")pendingDeathConfirmation=null}catch(_){}
+  try{window.CCGLostSizzlerV142R72MapDeathFeedback?.hideDeath?.()}catch(_){}
   world=null;host=null;p1=null;p2=null;run=null;window.__CCG_WORLD=null;score=0;won=false;floorEntryCheckpoint=null;savePromptReason="";pendingBanishmentReward=null;activeShop=null;
   for(const list of [bullets,enemyBullets,particles,rings,floaters,hazards,levelQueue,toastQueue])list.length=0;
   for(const collection of [pendingItems,questDone,remote,enemyVisuals,cameras,explored,campStates,roomVisits,playerTrails])collection.clear();
