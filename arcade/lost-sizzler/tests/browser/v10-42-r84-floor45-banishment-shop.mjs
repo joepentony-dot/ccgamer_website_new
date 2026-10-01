@@ -55,14 +55,14 @@ try{
 
   for(const row of result){
     assert.notEqual(row.missingShop,true,`Floor ${row.floor} must retain its entrance shop`);
-    assert.equal(row.card,true,`Floor ${row.floor} entrance shop must expose the Banishment Flask Essence exchange`);
-    assert.equal(row.bought,true,`Floor ${row.floor} must allow the Essence-for-Flask exchange`);
-    assert.equal(row.afterFlasks,row.beforeFlasks+1,`Floor ${row.floor} exchange must add exactly one Flask`);
-    assert.equal(row.afterEssence,0,`Floor ${row.floor} exchange must consume exactly the required Essence`);
-    assert.equal(row.afterScore,row.beforeScore,`Floor ${row.floor} Essence exchange must not spend Score`);
+    assert.equal(row.card,false,`Floor ${row.floor} ordinary entrance shop must not expose the Alchemist-only Banishment Flask distillation`);
+    assert.equal(row.bought,false,`Floor ${row.floor} ordinary entrance shop must reject direct Banishment Flask distillation`);
+    assert.equal(row.afterFlasks,row.beforeFlasks,`Floor ${row.floor} ordinary shop must not add a Flask`);
+    assert.equal(row.afterEssence,row.need,`Floor ${row.floor} rejected ordinary-shop attempt must preserve Banishment Essence`);
+    assert.equal(row.afterScore,row.beforeScore,`Floor ${row.floor} rejected ordinary-shop attempt must not spend Score`);
   }
   assert.deepEqual(errors,[],`Floor 4/5 Banishment exchange regression raised page errors: ${errors.join("\n")}`);
-  console.log(`R84 Floor 4/5 Banishment exchange qualification passed: ${JSON.stringify(result)}`);
+  console.log(`R86 Floor 4/5 Alchemist-only Banishment qualification passed: ${JSON.stringify(result)}`);
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
