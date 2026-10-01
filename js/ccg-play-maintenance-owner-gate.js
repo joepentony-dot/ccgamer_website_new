@@ -94,8 +94,27 @@
       const placeholders = Array.from(
         document.querySelectorAll('script[data-ccg-protected-runtime][type="' + PROTECTED_RUNTIME_TYPE + '"]')
       );
+      const sourceName = (node) => {
+        const raw = String(node?.getAttribute?.("src") || "");
+        return raw.split("?")[0].split("/").pop() || "";
+      };
+      // These scripts were historically parser-loaded before DOMContentLoaded.
+      // When the protected runtime starts after access has been validated, they
+      // must not observe an already-ready document until the canonical game
+      // core has been materialised. Otherwise version/bootstrap/watchdog work
+      // can race ahead of game-core.js and execute modules before UI/net exist.
+      const deferredUntilCore = ["version-check.js","v10-41-cache-guard.js","v10-41-load-watchdog.js","v10-23-tutorial-guidance.js"];
+      const gameMainIndex = placeholders.findIndex((node) => sourceName(node) === "game-main.js");
+      let orderedPlaceholders = placeholders;
+      if (domReadyAlreadyFired && gameMainIndex >= 0) {
+        const deferredSet = new Set(deferredUntilCore);
+        const throughGameMain = placeholders.slice(0, gameMainIndex + 1).filter((node) => !deferredSet.has(sourceName(node)));
+        const deferredNodes = deferredUntilCore.map((name) => placeholders.find((node) => sourceName(node) === name)).filter(Boolean);
+        const afterGameMain = placeholders.slice(gameMainIndex + 1);
+        orderedPlaceholders = [...throughGameMain, ...deferredNodes, ...afterGameMain];
+      }
 
-      for (const placeholder of placeholders) {
+      for (const placeholder of orderedPlaceholders) {
         const script = document.createElement("script");
         for (const attribute of Array.from(placeholder.attributes)) {
           if (attribute.name === "type" || attribute.name === "data-ccg-protected-runtime") continue;
