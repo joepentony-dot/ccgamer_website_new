@@ -10,6 +10,9 @@ const legacyEntry = fs.readFileSync("arcade/lost-sizzler/index.html", "utf8");
 const migration = fs.readFileSync("supabase/migrations/20260930235811_dungeon_carnage_tester_code_server_validation.sql", "utf8");
 const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261001-tester-gate-v3";
 const gameCore = fs.readFileSync("arcade/lost-sizzler/js/game-core.js", "utf8");
+const retiredLobby = fs.readFileSync("arcade/lost-sizzler/js/v10-6-runtime.js", "utf8");
+const retiredMultiplayerSync = fs.readFileSync("arcade/lost-sizzler/js/v10-31-multiplayer-sync.js", "utf8");
+const stalkerShop = fs.readFileSync("arcade/lost-sizzler/js/v10-6-stalker-shop-balance.js", "utf8");
 
 assert(!gate.includes("TESTER_CODE_SHA256"), "tester gate must not ship a client-side code digest");
 assert(!gate.includes('sessionStorage.getItem(TESTER_SESSION_KEY) === "allowed"'), "writable sessionStorage must never be treated as authorization");
@@ -17,6 +20,11 @@ assert(gate.includes("ccg_validate_dungeon_carnage_tester_code"), "tester code m
 assert(gate.includes("bootstrapProtectedRuntime"), "validated access must own Dungeon runtime startup");
 assert(gameCore.includes("var UI=window.UI={"), "protected runtime must preserve a classic global UI binding while mirroring it onto window");
 assert(gameCore.includes("var net=window.net=null;"), "protected runtime must preserve one classic mutable net binding while mirroring it onto window");
+assert(retiredLobby.includes("const UI=window.UI||null,net=window.net||null;"), "retired V10.6 online lobby must bind only to the canonical delayed-runtime surfaces");
+assert(retiredLobby.includes("retired-online-runtime-unavailable"), "retired V10.6 online lobby must fail closed when the network shell is unavailable");
+assert(retiredMultiplayerSync.includes("const net=window.net||null;"), "retired multiplayer sync must use the canonical delayed-runtime network surface");
+assert(retiredMultiplayerSync.includes("retired-online-runtime-unavailable"), "retired multiplayer sync must fail closed rather than revive online scope");
+assert(stalkerShop.includes("const UI=window.UI||null;"), "active Stalker/shop balance layer must bind explicitly to the canonical UI surface");
 assert(gate.includes("runtimeAccessGranted = true"), "runtime startup must require an internal validated-access grant");
 assert(gate.includes("data-ccg-protected-runtime"), "runtime loader must consume only protected script placeholders");
 assert(gate.includes('const deferredUntilCore = ["version-check.js","v10-41-cache-guard.js","v10-41-load-watchdog.js","v10-23-tutorial-guidance.js"]'), "late protected bootstrap must defer readiness-sensitive loaders until the canonical core exists");
