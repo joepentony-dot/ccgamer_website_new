@@ -100,7 +100,12 @@ try{
 
   await page.keyboard.press(fixture.backKey,{delay:24});
   await page.waitForFunction(entry=>Number(p1.x)===entry.x&&Number(p1.y)===entry.y,fixture.entry,{timeout:3000,polling:16});
-  await page.waitForTimeout(1150);
+  // The hazard cooldown is owned by simulation time, not wall time. After a
+  // stressed/low-FPS predecessor contract, 1.15 seconds of wall time can elapse
+  // before the canonical 1050 ms simulation cooldown has actually drained.
+  // Wait for the authoritative cooldown itself so this remains a true
+  // leave-and-re-enter-after-cooldown regression rather than a scheduler race.
+  await page.waitForFunction(()=>Number(p1?.hazardHitCooldown||0)<=0,null,{timeout:5000,polling:16});
   await page.evaluate(()=>{p1.hitStunMs=0;move1=0;});
   await page.keyboard.press(fixture.key,{delay:24});
   await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
