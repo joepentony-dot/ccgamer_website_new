@@ -72,17 +72,17 @@ try{
   })()`));
 
   assert.equal(result.horizontal.rendered,true,JSON.stringify(result));
-  assert.equal(result.horizontal.mode,"cc0-door",JSON.stringify(result));
+  assert.equal(result.horizontal.mode,"r84-framed-door",JSON.stringify(result));
   assert.equal(result.horizontal.orientation,"horizontal",JSON.stringify(result));
   assert.equal(result.horizontal.state,"closed",JSON.stringify(result));
   assert.ok(result.horizontal.assetFrames>result.before,JSON.stringify(result));
   assert.equal(result.verticalOpen.rendered,true,JSON.stringify(result));
-  assert.equal(result.verticalOpen.mode,"cc0-door",JSON.stringify(result));
+  assert.equal(result.verticalOpen.mode,"r84-framed-door",JSON.stringify(result));
   assert.equal(result.verticalOpen.orientation,"vertical",JSON.stringify(result));
   assert.equal(result.verticalOpen.state,"open",JSON.stringify(result));
   assert.ok(result.verticalOpen.assetFrames>result.horizontal.assetFrames,JSON.stringify(result));
   assert.equal(result.opening.rendered,true,JSON.stringify(result));
-  assert.equal(result.opening.mode,"cc0-door",JSON.stringify(result));
+  assert.equal(result.opening.mode,"r84-framed-door",JSON.stringify(result));
   assert.equal(result.opening.orientation,"vertical",JSON.stringify(result));
   assert.equal(result.opening.state,"opening",JSON.stringify(result));
   assert.ok(result.opening.assetFrames>result.verticalOpen.assetFrames,JSON.stringify(result));
@@ -95,4 +95,4 @@ try{
   await new Promise(resolve=>server.close(resolve));
   for(const socket of sockets)socket.destroy();
 }
-console.log("PASS Dungeon CC0 door authored renderer states, orientation and fallback handoff");
+console.log("PASS Dungeon R84 framed door renderer states, orientation and fallback handoff");
