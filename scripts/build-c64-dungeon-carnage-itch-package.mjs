@@ -90,6 +90,12 @@ function packageDemoPaywallRuntime(){
 function transformIndex(source,cacheToken){
   let html=source;
   html=html.replace("<head>","<head>\n<script>window.CCGDungeonCarnageItchPackage=true;</script>");
+  // The website keeps Dungeon runtime scripts inert until server-validated access.
+  // The paid itch package is a self-contained authorised distribution, so restore
+  // those placeholders to ordinary script tags before applying offline transforms.
+  html=html
+    .split('<script type="application/ccg-protected-runtime" data-ccg-protected-runtime')
+    .join('<script');
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js(?:\?v=[^"]+)?"[^>]*><\/script>\s*$/m,"");
@@ -181,6 +187,7 @@ async function verify(output){
   if(!html.includes('ccg-lost-sizzler-cache" content="'+version.cacheToken+'"'))fail("Staged index cache identity mismatch");
   if(!html.includes("js/itch-release-runtime.js"))fail("Itch offline gate missing");
   if(/ccg-supabase-config|ccg-supabase-client|js\/weekly-challenge\.js/.test(html))fail("Website account bootstrap leaked into itch package");
+  if(html.includes("data-ccg-protected-runtime"))fail("Website protected-runtime placeholders leaked into authorised itch package");
   if(/(?:href|src)="\/(?!\/)/.test(html))fail("Root-relative URL remains in itch package");
   if(!html.includes("https://www.cheekycommodoregamer.co.uk/games/ccg-games/"))fail("Website exit handoff missing");
   if(/Weekly High-Score Vault|Weekly Dungeon|2P Split Screen|P2:|#weekly-vault/i.test(html))fail("Retired public mode copy leaked into itch package");
