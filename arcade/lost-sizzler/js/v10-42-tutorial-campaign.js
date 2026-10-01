@@ -99,7 +99,7 @@
     const title=String(banner.querySelector("b")?.textContent||"").trim().toUpperCase();if(title!=="TUTORIAL COMPLETE")return false;
     if(banner.dataset.v142CampaignCopy==="true")return true;
     const copy=banner.querySelector("span");
-    if(copy)copy.textContent="You have finished the free Tutorial. The full five-depth campaign continues with RPG progression, global Keys, relics, Banishment Essence, A–Z C64 rescues and the final Sigil escape.";
+    if(copy)copy.textContent="You have finished the free Tutorial. The full campaign continues with evolving weapons, RPG progression, equipment, discovered services, Sanctuary, Wardens, death recovery and deeper dungeon objectives.";
     banner.dataset.v142CampaignCopy="true";return true;
   }
   function patchAll(){patchStageModal();patchRail();patchTour();patchCompletionBanner()}
