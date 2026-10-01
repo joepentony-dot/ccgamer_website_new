@@ -118,25 +118,7 @@ window.CCGLostSizzlerV142R70RenderPerformance={
   quality:dungeonRenderQuality,
   get state(){return dungeonRenderPerformance}
 };
-function cameraClampFor(targetX,targetY,v){
-  return{
-    x:Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),
-    y:Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2))
-  }
-}
-function memoryPuzzleOverviewTarget(mem,p,v){
-  const points=[...(mem?.tiles||[]),mem?.activator].filter(Boolean);if(!points.length)return{x:p.rx,y:p.ry,followPlayer:true};
-  const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y)),overview={x:(minX+maxX)/2,y:(minY+maxY)/2};
-  const framed=cameraClampFor(overview.x,overview.y,v),screenX=Number(p.rx)*C.tile+C.tile/2-framed.x,screenY=Number(p.ry)*C.tile+C.tile/2-framed.y;
-  const marginX=Math.min(v.w*.22,C.tile*4),marginY=Math.min(v.h*.22,C.tile*3.5),visible=screenX>=marginX&&screenX<=v.w-marginX&&screenY>=marginY&&screenY<=v.h-marginY;
-  return visible?{...overview,followPlayer:false}:{x:p.rx,y:p.ry,followPlayer:true}
-}
-function camFor(p,v){
-  let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;
-  if(mem&&!mem.solved&&roomId===mem.roomId){const target=memoryPuzzleOverviewTarget(mem,p,v);targetX=target.x;targetY=target.y}
-  else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}
-  const next=cameraClampFor(targetX,targetY,v);c.x=next.x;c.y=next.y;cameras.set(p.id,c);return c
-}
+function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0},targetX=p.rx,targetY=p.ry;const roomId=W.roomAt(world,p.x,p.y),room=world.rooms?.[roomId],mem=host.memoryPuzzle;if(mem&&!mem.solved&&roomId===mem.roomId){const points=[...(mem.tiles||[]),mem.activator].filter(Boolean);if(points.length){const minX=Math.min(...points.map(q=>q.x)),maxX=Math.max(...points.map(q=>q.x)),minY=Math.min(...points.map(q=>q.y)),maxY=Math.max(...points.map(q=>q.y));targetX=(minX+maxX)/2;targetY=(minY+maxY)/2}}else if(document.fullscreenElement&&room){const roomPixelW=(room.w+2)*C.tile,roomPixelH=(room.h+2)*C.tile;if(roomPixelW<=v.w&&roomPixelH<=v.h){targetX=room.x+room.w/2;targetY=room.y+room.h/2}}const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,targetX*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,targetY*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileInRenderView(x,y,pad=2){
   const margin=Math.max(0,Number(pad)||0)*C.tile,sx=Number(x||0)*C.tile-cam.x,sy=Number(y||0)*C.tile-cam.y;
@@ -296,40 +278,77 @@ function secretWallTheme(d){
   candidates.sort((a,b)=>a.score-b.score);const q=candidates[0];return q?W.themeAt(world,q.x,q.y):W.themes.WARP_GALLERY
 }
 function drawSecretWall(d,s){
-  const th=secretWallTheme(d);ctx.fillStyle=th.wall;ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.fillStyle=th.hi;ctx.fillRect(s.x+2,s.y+2,C.tile-4,4);ctx.fillStyle="rgba(0,0,0,.27)";ctx.fillRect(s.x+C.tile-4,s.y+5,4,C.tile-5);ctx.fillRect(s.x+5,s.y+C.tile-4,C.tile-5,4);
-  // Secret masonry uses the exact neighbouring wall palette. Only these hairline cracks betray it.
-  ctx.save();ctx.globalAlpha=.52;ctx.strokeStyle="rgba(12,8,16,.9)";ctx.lineWidth=1.35;ctx.lineCap="round";ctx.shadowColor="rgba(220,184,255,.32)";ctx.shadowBlur=2;ctx.beginPath();const cx=s.x+C.tile/2,cy=s.y+C.tile/2;
-  if(d.orientation==="horizontal"){ctx.moveTo(s.x+8,cy-3);ctx.lineTo(cx-7,cy);ctx.lineTo(cx-3,cy-4);ctx.moveTo(cx+2,cy+3);ctx.lineTo(cx+6,cy-1);ctx.lineTo(s.x+C.tile-8,cy+1)}
-  else{ctx.moveTo(cx-3,s.y+8);ctx.lineTo(cx,cy-7);ctx.lineTo(cx-4,cy-3);ctx.moveTo(cx+3,cy+2);ctx.lineTo(cx-1,cy+6);ctx.lineTo(cx+1,s.y+C.tile-8)}
-  ctx.stroke();ctx.restore()
+  const th=secretWallTheme(d),h=tileHash(d.x,d.y,Number(d.roomId||0));
+  ctx.save();ctx.imageSmoothingEnabled=false;
+  ctx.fillStyle="#08060b";ctx.fillRect(s.x,s.y,C.tile,C.tile);
+  ctx.fillStyle=th.wall;ctx.fillRect(s.x+1,s.y+1,C.tile-2,C.tile-2);
+  const wallArt=lostSizzlerPixelAssets.wallTiles?.mid;
+  if(wallArt?.complete&&wallArt.naturalWidth>=16){ctx.globalAlpha=.76;ctx.drawImage(wallArt,Math.round(s.x),Math.round(s.y),C.tile,C.tile);ctx.globalAlpha=1}
+  applyFloorTilePalette(s,true);
+  // Build the same block rhythm as surrounding masonry so a hidden passage
+  // cannot read as a painted square sitting in the room.
+  const rows=4,brickH=Math.max(5,Math.floor((C.tile-4)/rows));
+  for(let row=0;row<rows;row++){
+    const y=s.y+2+row*brickH,offset=(row+h)%2?Math.floor(C.tile*.18):0;
+    ctx.strokeStyle="rgba(8,5,11,.48)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(s.x+2,y);ctx.lineTo(s.x+C.tile-2,y);ctx.stroke();
+    for(let x=s.x+5-offset;x<s.x+C.tile-3;x+=Math.max(10,Math.floor(C.tile*.42))){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,Math.min(s.y+C.tile-2,y+brickH));ctx.stroke()}
+  }
+  ctx.fillStyle="rgba(255,255,255,.08)";ctx.fillRect(s.x+3,s.y+3,C.tile-6,1);
+  // While truly hidden the wall is visually identical to ordinary masonry.
+  // Once discovered but not yet open, restrained cracks give the player useful
+  // feedback without turning the secret into an obvious purple door.
+  if(!d.hidden||d.discovered){
+    ctx.globalAlpha=.42;ctx.strokeStyle="rgba(18,11,22,.95)";ctx.lineWidth=1.2;ctx.lineCap="round";ctx.beginPath();const cx=s.x+C.tile/2,cy=s.y+C.tile/2;
+    if(d.orientation==="horizontal"){ctx.moveTo(s.x+8,cy-3);ctx.lineTo(cx-7,cy);ctx.lineTo(cx-3,cy-4);ctx.moveTo(cx+2,cy+3);ctx.lineTo(cx+6,cy-1);ctx.lineTo(s.x+C.tile-8,cy+1)}
+    else{ctx.moveTo(cx-3,s.y+8);ctx.lineTo(cx,cy-7);ctx.lineTo(cx-4,cy-3);ctx.moveTo(cx+3,cy+2);ctx.lineTo(cx-1,cy+6);ctx.lineTo(cx+1,s.y+C.tile-8)}
+    ctx.stroke();ctx.globalAlpha=1
+  }
+  ctx.restore()
 }
 function drawDoorAsset(d,s,eased,lockedCol,now){
   const closed=lostSizzlerPixelAssets.doorLeafClosed,open=lostSizzlerPixelAssets.doorLeafOpen;
-  const ready=closed?.complete&&closed.naturalWidth>=32&&closed.naturalHeight>=32&&open?.complete&&open.naturalWidth>=32&&open.naturalHeight>=32;
+  const ready=closed?.complete&&closed.naturalWidth>=16&&closed.naturalHeight>=16&&open?.complete&&open.naturalWidth>=16&&open.naturalHeight>=16;
   if(!ready)return false;
-  const horizontal=d.orientation==="horizontal",state=d.open?"open":d.opening?"opening":"closed",cx=s.x+C.tile/2,cy=s.y+C.tile/2,size=C.tile;
+  const horizontal=d.orientation==="horizontal",state=d.open?"open":d.opening?"opening":"closed",cx=s.x+C.tile/2,cy=s.y+C.tile/2,size=C.tile,th=secretWallTheme(d);
   ctx.save();ctx.imageSmoothingEnabled=false;ctx.translate(Math.round(cx),Math.round(cy));
-  // The authored 0x72 doorway faces a horizontal wall. Rotate the complete
-  // doorway state by 90 degrees only when the generated door occupies a
-  // vertical wall; gameplay coordinates and collision remain untouched.
+  // Normalise every doorway to the same local orientation, then rotate the
+  // complete masonry/leaf assembly for east-west walls.
   if(!horizontal)ctx.rotate(Math.PI/2);
-  ctx.shadowColor=d.locked?lockedCol:"rgba(214,157,82,.34)";ctx.shadowBlur=d.locked?10:5;
+  const half=size/2,jamb=Math.max(5,Math.round(size*.14)),lintel=Math.max(6,Math.round(size*.16));
+  // Deep threshold and recess: even an open door remains visibly cut through a wall.
+  ctx.fillStyle="#050408";ctx.fillRect(-half+2,-half+3,size-4,size-6);
+  ctx.fillStyle="rgba(0,0,0,.62)";ctx.fillRect(-half+jamb,-half+lintel,size-jamb*2,size-lintel-3);
+  ctx.shadowColor=d.locked?lockedCol:"rgba(214,157,82,.38)";ctx.shadowBlur=d.locked?11:6;
   if(state==="open"){
-    ctx.drawImage(open,-size/2,-size/2,size,size);
+    ctx.drawImage(open,-half,-half,size,size);
   }else if(state==="opening"){
-    ctx.globalAlpha=Math.min(1,.18+eased*1.05);ctx.drawImage(open,-size/2,-size/2,size,size);
-    ctx.globalAlpha=Math.max(0,1-eased);ctx.drawImage(closed,-size/2,-size/2,size,size);
+    ctx.globalAlpha=Math.min(1,.2+eased);ctx.drawImage(open,-half,-half,size,size);
+    ctx.globalAlpha=Math.max(0,1-eased);ctx.drawImage(closed,-half,-half,size,size);
   }else{
-    ctx.drawImage(closed,-size/2,-size/2,size,size);
+    ctx.drawImage(closed,-half,-half,size,size);
   }
-  ctx.globalAlpha=1;
+  ctx.globalAlpha=1;ctx.shadowBlur=0;
+  // Masonry jambs and lintel make the sprite read as architecture rather than
+  // an object placed on the floor. Their palette is sampled from the adjoining wall.
+  ctx.fillStyle=th.wall;ctx.fillRect(-half,-half,jamb,size);ctx.fillRect(half-jamb,-half,jamb,size);ctx.fillRect(-half,-half,size,lintel);
+  ctx.fillStyle=th.hi;ctx.fillRect(-half+jamb-2,-half+2,2,size-5);ctx.fillRect(half-jamb,-half+2,2,size-5);ctx.fillRect(-half+2,-half+lintel-2,size-4,2);
+  ctx.fillStyle="rgba(0,0,0,.34)";ctx.fillRect(-half+jamb,-half+lintel,3,size-lintel-3);ctx.fillRect(half-jamb-3,-half+lintel,3,size-lintel-3);
+  ctx.fillStyle="rgba(210,185,145,.34)";
+  for(const y of [-half+5,-4,half-10]){ctx.fillRect(-half+2,y,jamb-4,2);ctx.fillRect(half-jamb+2,y,jamb-4,2)}
+  ctx.fillStyle="#171219";ctx.fillRect(-half+jamb,half-4,size-jamb*2,4);
+  ctx.fillStyle=th.hi;ctx.globalAlpha=.48;ctx.fillRect(-half+jamb+2,half-5,size-jamb*2-4,1);ctx.globalAlpha=1;
   if(d.locked){
-    ctx.strokeStyle=lockedCol;ctx.lineWidth=2;ctx.globalAlpha=.72;
-    ctx.strokeRect(-size/2+2,-size/2+2,size-4,size-4);
-    ctx.globalAlpha=1;
+    ctx.strokeStyle=lockedCol;ctx.lineWidth=2;ctx.globalAlpha=.82;ctx.strokeRect(-half+jamb+2,-half+lintel+2,size-jamb*2-4,size-lintel-8);ctx.globalAlpha=1;
+    ctx.fillStyle=lockedCol;ctx.fillRect(-3,-2,6,8);ctx.fillStyle="#21171d";ctx.fillRect(-1,1,2,4);
+  }
+  if(state==="opening"&&dungeonRenderRichFx()){
+    ctx.globalAlpha=.34*(1-eased);ctx.fillStyle=th.hi;
+    for(let n=0;n<5;n++){const px=-half+jamb+4+((n*11+d.x*3)%Math.max(6,size-jamb*2-8)),py=half-7-Math.round(eased*(5+n%3)*5);ctx.fillRect(px,py,2,2)}
+    ctx.globalAlpha=1
   }
   ctx.restore();
-  doorRenderDiagnostics.assetFrames++;doorRenderDiagnostics.lastMode="cc0-door";doorRenderDiagnostics.lastOrientation=horizontal?"horizontal":"vertical";doorRenderDiagnostics.lastState=state;doorRenderDiagnostics.lastAt=now;
+  doorRenderDiagnostics.assetFrames++;doorRenderDiagnostics.lastMode="r84-framed-door";doorRenderDiagnostics.lastOrientation=horizontal?"horizontal":"vertical";doorRenderDiagnostics.lastState=state;doorRenderDiagnostics.lastAt=now;
   return true
 }
 function drawDoors(){
@@ -438,14 +457,17 @@ function drawPickupGlyph(i,col){
     const keyCol=k==="bronze"?"#d69a43":P.gold;ctx.strokeStyle=keyCol;ctx.fillStyle=keyCol;ctx.lineWidth=3;ctx.beginPath();ctx.arc(-6,-3,6,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(-6,-3,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(0,-3);ctx.lineTo(13,-3);ctx.lineTo(13,2);ctx.moveTo(8,-3);ctx.lineTo(8,3);ctx.stroke();
     if(k==="exitSigil"){ctx.strokeStyle="#fff0a8";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(-6,-3,10,0,Math.PI*2);ctx.stroke();for(let n=0;n<4;n++){const a=n*Math.PI/2;ctx.fillRect(-6+Math.cos(a)*12-1,-3+Math.sin(a)*12-1,3,3)}}
   }else if(k==="weapon"){
-    ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=10;
-    ctx.fillStyle="#171d25";ctx.fillRect(-14,-10,28,20);ctx.strokeStyle="#d8dee7";ctx.lineWidth=1.5;ctx.strokeRect(-14,-10,28,20);
-    ctx.fillStyle="#4d5967";ctx.fillRect(-12,-8,24,16);ctx.fillStyle="#252d37";ctx.fillRect(-10,-6,20,12);
-    ctx.fillStyle=P.orange;ctx.fillRect(-13,-9,5,3);ctx.fillRect(8,-9,5,3);ctx.fillRect(-13,6,5,3);ctx.fillRect(8,6,5,3);
-    ctx.fillStyle="#0d1218";ctx.fillRect(-5,-12,10,3);ctx.fillStyle="#bfc8d2";ctx.fillRect(-3,-11,6,2);
-    ctx.fillStyle="#e7edf3";ctx.fillRect(-8,-3,13,4);ctx.fillRect(3,-2,7,2);ctx.fillStyle="#778391";ctx.fillRect(-2,1,5,6);ctx.fillRect(6,-1,3,4);
-    ctx.fillStyle=P.cyan;ctx.fillRect(-8,-2,3,2);ctx.fillRect(8,-4,2,2);
-    ctx.strokeStyle=P.orange;ctx.beginPath();ctx.moveTo(-7,6);ctx.lineTo(0,3);ctx.lineTo(7,6);ctx.stroke();ctx.restore()
+    // The run owns one evolving firearm, so this pickup is an upgrade module,
+    // not a second gun lying in a box.
+    ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=12;
+    ctx.fillStyle="#141a22";ctx.fillRect(-14,-11,28,22);ctx.strokeStyle="#d8dee7";ctx.lineWidth=1.5;ctx.strokeRect(-14,-11,28,22);
+    ctx.fillStyle="#45515f";ctx.fillRect(-12,-9,24,18);ctx.fillStyle="#202833";ctx.fillRect(-9,-6,18,12);
+    ctx.fillStyle=P.orange;for(const [x,y] of [[-12,-9],[8,-9],[-12,6],[8,6]])ctx.fillRect(x,y,4,3);
+    ctx.fillStyle="#0b1118";ctx.fillRect(-5,-13,10,3);ctx.fillStyle="#bfc8d2";ctx.fillRect(-3,-12,6,2);
+    ctx.strokeStyle=P.cyan;ctx.lineWidth=2;ctx.strokeRect(-5,-5,10,10);ctx.beginPath();ctx.moveTo(-8,0);ctx.lineTo(-5,0);ctx.moveTo(5,0);ctx.lineTo(8,0);ctx.moveTo(0,-8);ctx.lineTo(0,-5);ctx.moveTo(0,5);ctx.lineTo(0,8);ctx.stroke();
+    ctx.fillStyle=P.orange;ctx.fillRect(-2,-2,4,4);ctx.fillStyle="#fff1bb";ctx.fillRect(-1,-1,2,2);
+    ctx.fillStyle="#7e8a96";for(const x of [-7,5]){ctx.fillRect(x,-5,2,10)}
+    ctx.restore()
   }else if(k==="rapid"){
     ctx.save();ctx.shadowColor=P.orange;ctx.shadowBlur=9;ctx.beginPath();ctx.moveTo(3,-14);ctx.lineTo(-8,1);ctx.lineTo(-2,1);ctx.lineTo(-5,14);ctx.lineTo(9,-4);ctx.lineTo(2,-4);ctx.closePath();ctx.fillStyle=P.orange;ctx.fill();ctx.strokeStyle="#ffe2a3";ctx.stroke();ctx.restore()
   }else if(k==="game"){
@@ -472,7 +494,7 @@ function drawPickupGlyph(i,col){
 function groundItemLabel(i){
   if(i.kind==="loot")return i.loot?.weapon?.displayName||i.loot?.name||"LOOT";
   if(i.kind==="game")return i.title||"C64 GAME";
-  return({health:"HEALTH POTION",mana:"AMMUNITION",ammo:"AMMUNITION",exitSigil:"EXIT SIGIL",key:"MAIN KEY",credits:"GOLD SCORE COIN",xpOrb:"+10 XP",torch:"TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",inventorySlot:"INVENTORY SLOT",armour:"+2 ARMOUR",potion:"POTION",bronze:"BRONZE KEY",weapon:"WEAPON CACHE",rapid:"RAPID FIRE"}[i.kind]||String(i.kind||"ITEM").toUpperCase())
+  return({health:"HEALTH POTION",mana:"AMMUNITION",ammo:"AMMUNITION",exitSigil:"EXIT SIGIL",key:"MAIN KEY",credits:"GOLD SCORE COIN",xpOrb:"+10 XP",torch:"TORCH",teleport:"TELEPORT SPELL",banishment:"BANISHMENT FLASK",inventorySlot:"INVENTORY SLOT",armour:"+2 ARMOUR",potion:"POTION",bronze:"BRONZE KEY",weapon:"FIREARM UPGRADE CACHE",rapid:"RAPID FIRE"}[i.kind]||String(i.kind||"ITEM").toUpperCase())
 }
 function drawItem(i){
   if(!i.active||!tileInRenderView(i.x,i.y,2)||!visibleTo(focus,i.x,i.y))return;const s=ws(i.x,i.y),[txt,col]=itemInfo(i),pulse=1+Math.sin(performance.now()/155+i.x)*.08;
@@ -696,11 +718,10 @@ const PUNY_ENEMY_ATTACK_COLUMNS=Object.freeze([4,5,6,7]);
 const PUNY_ENEMY_HURT_COLUMNS=Object.freeze([18,19,20]);
 const PUNY_ENEMY_DEATH_COLUMNS=Object.freeze([21,22,23]);
 const PUNY_ENEMY_FAMILY=Object.freeze({
-  // Only use the generic humanoid CC0 sheets where the visual role fits the
-  // enemy identity. Distinct creatures retain their bespoke/procedural art
-  // until a licence-safe sprite matching the name is sourced.
-  knight:"soldier",scout:"archer",hunter:"archer",
-  guard:"soldier",charger:"warrior",ranger:"archer"
+  // R84 deliberately leaves the generic humanoid replacement map empty for the
+  // main dungeon. Tape Scouts, Joystick Hunters, 1541 Guards, Chargers, Rangers
+  // and Archive Knights all have bespoke silhouettes below; using a generic
+  // warrior/archer sheet made different enemy identities look interchangeable.
 });
 const punyEnemyDiagnostics=window.__CCG_PUNY_ENEMY_DIAGNOSTICS__=window.__CCG_PUNY_ENEMY_DIAGNOSTICS__||{draws:0,fallbacks:0,states:{idle:0,move:0,attack:0,hurt:0,death:0},last:null};
 function punyEnemySheet(e){
