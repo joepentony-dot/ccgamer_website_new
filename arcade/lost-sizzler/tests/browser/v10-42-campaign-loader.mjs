@@ -38,7 +38,8 @@ try{
     const progression=window.CCGProgression;
     const config=window.CCG_CONFIG?.proceduralDungeon;
     const seed="V10.42-BROWSER-CAMPAIGN-CONTRACT";
-    const slices=[1,2,3,4,5].map(floor=>campaign.floorPickupSlice(seed,floor));
+    const campaignFloors=Array.from({length:15},(_,index)=>index+1);
+    const slices=campaignFloors.map(floor=>campaign.floorPickupSlice(seed,floor));
     const combined=slices.flat();
     const letters=combined.map(row=>row.letter);
     const player={};
@@ -104,8 +105,8 @@ try{
       overhaulVersion:overhaul.version,
       campaignVersion:campaign.version,
       floorCount:Array.isArray(config?.campaignFloors)?config.campaignFloors.length:0,
-      floorNames:[1,2,3,4,5].map(floor=>campaign.floorConfig({floor})?.name||""),
-      domains:[2,3,4].map(floor=>campaign.domainForFloor({floor})?.id||""),
+      floorNames:campaignFloors.map(floor=>campaign.floorConfig({floor})?.name||""),
+      domains:[3,7,11].map(floor=>campaign.domainForFloor({floor})?.id||""),
       sliceLengths:slices.map(rows=>rows.length),
       pickupCount:combined.length,
       uniqueLetterCount:new Set(letters).size,
@@ -137,11 +138,11 @@ try{
   });
 
   assert.equal(audit.overhaulVersion,"V10.42","Canonical page must install the V10.42 RPG/procedural overhaul.");
-  assert.equal(audit.campaignVersion,"V10.42","Canonical page must install the V10.42 five-depth campaign layer.");
-  assert.equal(audit.floorCount,5,"Canonical V10.42 config must expose exactly five campaign depths.");
-  assert.deepEqual(audit.floorNames,["THE THRESHOLD","IRON KEEP","MOSS CRYPT","EMBER DEPTHS","SIGIL SANCTUM"],"Canonical browser runtime must expose the intended five-depth order.");
-  assert.deepEqual(audit.domains,["iron","bone","ash"],"Floors 2–4 must own the Iron, Bone and Ash Key domains.");
-  assert.deepEqual(audit.sliceLengths,[6,5,5,5,5],"The browser runtime must distribute the campaign A–Z deck as 6/5/5/5/5.");
+  assert.equal(audit.campaignVersion,"V10.42","Canonical page must install the V10.42 fifteen-floor campaign layer.");
+  assert.equal(audit.floorCount,15,"Canonical V10.42 config must expose exactly fifteen campaign floors.");
+  assert.deepEqual(audit.floorNames,["THE THRESHOLD","1541 DRIVEWORKS","IRON KEEP","BUDGET VAULTS","CARTRIDGE CATACOMBS","TAPE LABYRINTH","MOSS CRYPT","DEMO UNDERCROFT","MODEM WARRENS","SID FURNACE","EMBER DEPTHS","PIXEL FOUNDRY","HIGH SCORE CRYPT","CRT MAZE","BLOOD CITADEL"],"Canonical browser runtime must expose the intended fifteen-floor order.");
+  assert.deepEqual(audit.domains,["iron","bone","ash"],"Floors 3, 7 and 11 must own the Iron, Bone and Ash Key domains.");
+  assert.deepEqual(audit.sliceLengths,[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],"The browser runtime must distribute the campaign A–Z deck across all fifteen floors.");
   assert.equal(audit.pickupCount,26,"The live campaign deck must contain 26 C64 rescues.");
   assert.equal(audit.uniqueLetterCount,26,"The live campaign deck must contain one unique slot for every letter.");
   assert.equal(audit.sortedLetters,"ABCDEFGHIJKLMNOPQRSTUVWXYZ","The live campaign deck must cover A through Z exactly once.");
@@ -170,7 +171,7 @@ try{
   assert.deepEqual(audit.floorGamesAfterBank,[],"Floor banking must empty the current-depth rescued-game buffer after committing it.");
   assert.deepEqual(audit.persistentCollection,["Boulder Dash","Archon","Bruce Lee","Commando"],"Floor banking must mirror campaign rescues into the persistent local C64 collection without dropping prior games.");
 
-  assert.match(audit.menuNote,/five new dungeon floors/i,"Canonical menu copy must describe the five-floor campaign.");
+  assert.match(audit.menuNote,/fifteen dungeon floors/i,"Canonical menu copy must describe the fifteen-floor campaign.");
   assert.match(audit.menuNote,/persist/i,"Canonical menu copy must tell players that campaign progression persists between depths.");
   assert.deepEqual(pageErrors,[],`Canonical V10.42 campaign startup must not raise page errors: ${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`Canonical V10.42 campaign scripts must load without same-origin request failures: ${failedScripts.join("\n")}`);

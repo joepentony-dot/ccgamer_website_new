@@ -68,9 +68,11 @@ for(const token of ["HEALTH POTION","AMMUNITION","BANISHMENT FLASK","BRONZE KEY"
   assert.ok(render.includes(token),`pickup renderer/labels must retain ${token}`);
 }
 assert.match(render,/function drawCorridorDetail\(s,x,y,h,th\)/,"corridor detail must be renderer-owned");
-for(const phrase of ["Threshold corridors","Iron Keep corridors","Bone\/Moss corridors","Ember corridors","Sigil corridors"]){
-  assert.ok(render.includes(phrase.replace("\\/","/")),`corridor presentation must cover ${phrase}`);
-}
+assert.ok(render.includes("const max=Math.max(1,Number(C.maxFloors)||15)"),"corridor presentation must follow the fifteen-floor campaign cap");
+assert.ok(render.includes("palette=currentFloorTilePalette()"),"corridor presentation must derive its accent from the current floor palette");
+assert.ok(render.includes("if(floor===1){"),"corridor presentation must retain the dedicated Threshold corridor treatment");
+assert.ok(render.includes('const alpha=floor===max?"88":"52"'),"intermediate and final-floor corridors must share the scalable palette-driven renderer");
+assert.ok(render.includes("if(floor===max&&h%5===0)"),"Floor 15 corridors must retain the explicit Blood Citadel danger treatment");
 assert.match(render,/if\(roomId<0\)drawCorridorDetail\(s,x,y,h,th\)/,"corridor detail must apply only outside generated rooms and remain presentation-only");
 assert.match(render,/function drawMerchantNpc\(t,s,col\)/,"shops must render merchant characters");
 assert.match(render,/quartermaster_bex/,"Bex Harrow must receive a distinct merchant visual");

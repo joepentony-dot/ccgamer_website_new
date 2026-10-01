@@ -19,10 +19,10 @@ const procedural=read("js/v10-42-procedural-overhaul.js");
 const rpgExpansion=read("js/v10-42-r23-rpg-build-expansion.js");
 const index=read("index.html");
 
-assert.match(config,/name:"C64 Dungeon Carnage — Five Depths"/,
-  "campaign config must expose the current C64 Dungeon Carnage name");
-assert.doesNotMatch(config,/name:"The Lost Sizzler — Five Depths"/,
-  "retired campaign name must not remain player-facing");
+assert.match(config,/name:"C64 Dungeon Carnage — Fifteen Floors"/,
+  "campaign config must expose the current fifteen-floor C64 Dungeon Carnage name");
+assert.doesNotMatch(config,/name:"(?:The Lost Sizzler — Five Depths|C64 Dungeon Carnage — Five Depths)"/,
+  "retired five-floor campaign names must not remain player-facing");
 
 assert.match(core,/run\.floor>=C\.maxFloors&&!run\.dailyFailed\?"CITADEL CLEARED"/,
   "full-run completion must use the current Citadel completion banner");
@@ -48,8 +48,8 @@ assert.match(zero,/Online multiplayer is not part of the C64 Dungeon Carnage bro
 assert.doesNotMatch(zero,/zero-server-cost Lost Sizzler release/,
   "retired game name must not surface through the multiplayer rejection");
 
-for(const id of ["threshold-stone","iron-blue","crypt-moss","ember-amber","crimson-sigil"]){
-  assert.ok(render.includes(`id:"${id}"`),`five-floor owner acceptance must retain palette ${id}`);
+for(const id of ["threshold-stone","drive-steel","iron-keep","budget-amber","cartridge-green","tape-violet","crypt-moss","demo-magenta","modem-cyan","sid-red","ember-orange","foundry-copper","score-gold","crt-green","blood-citadel"]){
+  assert.ok(render.includes(`id:"${id}"`),`fifteen-floor owner acceptance must retain palette ${id}`);
 }
 assert.ok(play.includes("MEMORY VAULT LOCKDOWN"),
   "owner acceptance must retain Memory Vault chamber lockdown");
@@ -94,4 +94,4 @@ assert.match(rpgExpansion,/endurance:Object\.freeze[\s\S]*player\.maxMana=Math\.
 assert.match(rpgExpansion,/arcana:Object\.freeze[\s\S]*player\.v142SightBonus=Math\.max\(0,Number\(player\.v142SightBonus\)\|\|0\)\+1/,
   "ARC 10 specialisation must add permanent sight");
 
-console.log("Dungeon R78 retired-title cleanup and owner-acceptance contract passed.");
+console.log("Dungeon R87 fifteen-floor retired-title cleanup and owner-acceptance contract passed.");

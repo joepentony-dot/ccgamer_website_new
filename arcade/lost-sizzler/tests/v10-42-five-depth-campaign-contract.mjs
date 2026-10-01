@@ -43,10 +43,10 @@ const sandbox={
 vm.runInNewContext(source,sandbox,{filename:'v10-42-five-depth-campaign.js'});
 const api=windowObject.CCGLostSizzlerV142FiveDepthCampaign;
 assert(api,'Campaign runtime must install once its dependencies are available.');
-assert(source.includes('hostState.exitSigilCollected=false;hostState.exitOpen=true'),'Floors 1–4 must open stairs without pretending the final Sigil has been collected.');
+assert(source.includes('hostState.exitSigilCollected=false;hostState.exitOpen=true'),'Floors 1–14 must open stairs without pretending the final Sigil has been collected.');
 
-const expected=[6,5,5,5,5],seen=[];
-for(let floor=1;floor<=5;floor++){
+const expected=[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],seen=[];
+for(let floor=1;floor<=15;floor++){
   const slice=api.floorPickupSlice('TEST-SEED',floor);
   assert(slice.length===expected[floor-1],`Floor ${floor} must receive ${expected[floor-1]} A-Z game pickups.`);
   seen.push(...slice.map(row=>row.letter));
@@ -57,10 +57,10 @@ assert(seen.sort().join('')===letters.join(''),'Full campaign must cover A throu
 
 assert(api.globalKeyCount({v142ClaimedDomains:['iron','bone','ash','iron']})===3,'Global Key count must deduplicate domain IDs.');
 assert(api.domainForFloor({floor:1})===null,'Floor 1 must not consume one of the three global Keys.');
-assert(api.domainForFloor({floor:2})?.id==='iron','Floor 2 must own the Iron Key domain.');
-assert(api.domainForFloor({floor:3})?.id==='bone','Floor 3 must own the Bone Key domain.');
-assert(api.domainForFloor({floor:4})?.id==='ash','Floor 4 must own the Ash Key domain.');
-assert(api.domainForFloor({floor:5})===null,'Floor 5 must be reserved for the completed Sigil rather than a fourth Key.');
+assert(api.domainForFloor({floor:3})?.id==='iron','Floor 3 must own the Iron Key domain.');
+assert(api.domainForFloor({floor:7})?.id==='bone','Floor 7 must own the Bone Key domain.');
+assert(api.domainForFloor({floor:11})?.id==='ash','Floor 11 must own the Ash Key domain.');
+assert(api.domainForFloor({floor:15})===null,'Floor 15 must be reserved for the completed Sigil rather than a fourth Key.');
 
 const balanceHost={
   items:Array.from({length:12},(_,i)=>({id:`ammo-${i}`,kind:'ammo',active:true,x:i,y:1})),
@@ -71,15 +71,15 @@ const balanceHost={
   ],
   doors:[],voidStalkers:['stalker'],deathStalkerId:'stalker',stalker:{spawnTimer:1},shops:[]
 };
-api.applyFloorBalance(balanceHost,{floor:5});
-assert(balanceHost.enemies.find(e=>e.id==='ordinary').maxHp===12,'Floor 5 must increase ordinary enemy durability above baseline.');
-assert(balanceHost.enemies.find(e=>e.id==='stalker').moveSpeedScale===0.82,'Floor 5 Death Stalker must use the fastest campaign pursuit scale.');
-assert(balanceHost.items.filter(item=>item.kind==='ammo').length===8,'Floor 5 must trim spare ammunition to its configured pressure target.');
-assert(balanceHost.stalker.spawnTimer===45000,'Floor 5 Count Loadula pressure must begin substantially earlier than mid-campaign.');
+api.applyFloorBalance(balanceHost,{floor:15});
+assert(balanceHost.enemies.find(e=>e.id==='ordinary').maxHp===15,'Floor 15 must increase ordinary enemy durability above baseline.');
+assert(balanceHost.enemies.find(e=>e.id==='stalker').moveSpeedScale===0.66,'Floor 15 Death Stalker must use the fastest campaign pursuit scale.');
+assert(balanceHost.items.filter(item=>item.kind==='ammo').length===7,'Floor 15 must trim spare ammunition to its configured pressure target.');
+assert(balanceHost.stalker.spawnTimer===40000,'Floor 15 Count Loadula pressure must begin substantially earlier than mid-campaign.');
 
 const introHost={items:[],enemies:[{id:'intro-stalker',kind:'ghost',hp:8,maxHp:8,alive:true,deathStalker:true,voidStalker:true}],doors:[],voidStalkers:['intro-stalker'],deathStalkerId:'intro-stalker',stalker:{spawnTimer:1},shops:[]};
 api.applyFloorBalance(introHost,{floor:1});
 assert(!introHost.enemies.some(enemy=>enemy.deathStalker),'Floor 1 must not immediately pressure a new character with the Death Stalker.');
 assert(introHost.stalker.spawnTimer>=900000,'Floor 1 Count Loadula grace period must remain effectively dormant for the intended opening pace.');
 
-console.log('Lost Sizzler V10.42 five-depth campaign runtime contract passed.');
+console.log('Dungeon Carnage V10.42 fifteen-floor campaign runtime contract passed.');

@@ -1,11 +1,11 @@
-/* The Lost Sizzler V10.42 — progressive five-floor combat balance finalizer. */
+/* C64 Dungeon Carnage V10.42 — progressive fifteen-floor combat balance finalizer. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_FLOOR_BALANCE__)return;
   window.__CCG_LOST_SIZZLER_V142_FLOOR_BALANCE__=true;
 
-  const DAMAGE_SCALE=Object.freeze({1:.80,2:.90,3:1.00,4:1.10,5:1.20});
-  const ELITE_SCALE=Object.freeze({1:.90,2:.96,3:1.00,4:1.08,5:1.16});
+  const DAMAGE_SCALE=Object.freeze({1:.80,2:.84,3:.88,4:.92,5:.96,6:1.00,7:1.04,8:1.08,9:1.12,10:1.16,11:1.20,12:1.23,13:1.26,14:1.29,15:1.32});
+  const ELITE_SCALE=Object.freeze({1:.90,2:.92,3:.94,4:.96,5:.98,6:1.00,7:1.03,8:1.06,9:1.09,10:1.12,11:1.15,12:1.18,13:1.21,14:1.24,15:1.26});
   let timer=0,attempts=0;
 
   function install(){
@@ -34,9 +34,9 @@
           enemy.attackCooldown=Math.max(Number(enemy.attackCooldown)||0,700);
           if(enemy.kind==="charger")enemy.chargeCooldown=Math.max(Number(enemy.chargeCooldown)||0,1200);
         }
-        if(floor===5&&named){
-          // Named threats on the final depth should remain significant after the
-          // player's four floors of stat and relic growth without becoming a HP sponge.
+        if(floor===C.maxFloors&&named){
+          // Named threats on the final floor should remain significant after the
+          // player's full campaign growth without becoming extreme HP sponges.
           const oldMax=Math.max(1,Number(enemy.maxHp||enemy.hp)||1),bonus=Math.max(1,Math.round(oldMax*.10));
           enemy.maxHp=oldMax+bonus;enemy.hp=Math.min(enemy.maxHp,Math.max(1,Number(enemy.hp||oldMax)+bonus));
           if(enemy.maxArmor!=null||enemy.armor!=null){enemy.maxArmor=Math.min(14,Math.max(0,Number(enemy.maxArmor||enemy.armor||0)+1));enemy.armor=Math.min(enemy.maxArmor,Math.max(0,Number(enemy.armor||0)+1))}

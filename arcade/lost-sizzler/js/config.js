@@ -4,8 +4,8 @@ window.CCG_CONFIG=Object.freeze({
   worldHeight:84,
   keyTarget:3,
   maxPlayers:4,
-  maxFloors:5,
-  levelCaps:[5,10,15,20,25],
+  maxFloors:15,
+  levelCaps:[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75],
   logoAsset:"assets/ccgamer-logo-fallback.svg",
   logoFallback:"assets/ccgamer-logo-fallback.svg",
   player:{
@@ -30,24 +30,34 @@ window.CCG_CONFIG=Object.freeze({
   proceduralDungeon:{
     enabled:true,
     version:"V10.42",
-    name:"C64 Dungeon Carnage — Five Depths",
-    targetRunMinutesMin:55,
-    targetRunMinutesMax:75,
+    name:"C64 Dungeon Carnage — Fifteen Floors",
+    targetRunMinutesMin:135,
+    targetRunMinutesMax:190,
     gamePickupCount:26,
-    pickupDistribution:[6,5,5,5,5],
+    pickupDistribution:[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],
     essenceRequired:3,
     escapeAlert:82,
     campaignFloors:[
-      {floor:1,id:"threshold",name:"THE THRESHOLD",objective:"explore_guardian",targetMinutes:9,hpScale:.82,tempo:.88,ammoTarget:12,stalkerDelayMs:999999,deathStalkerSpeed:1.25,domain:null},
-      {floor:2,id:"iron",name:"IRON KEEP",objective:"keys",targetMinutes:11,hpScale:.94,tempo:.96,ammoTarget:11,stalkerDelayMs:90000,deathStalkerSpeed:1.12,domain:"iron"},
-      {floor:3,id:"bone",name:"MOSS CRYPT",objective:"keys",targetMinutes:12,hpScale:1.00,tempo:1.02,ammoTarget:10,stalkerDelayMs:75000,deathStalkerSpeed:1.00,domain:"bone"},
-      {floor:4,id:"ash",name:"EMBER DEPTHS",objective:"keys",targetMinutes:13,hpScale:1.08,tempo:1.09,ammoTarget:9,stalkerDelayMs:60000,deathStalkerSpeed:.90,domain:"ash"},
-      {floor:5,id:"sigil",name:"SIGIL SANCTUM",objective:"guardian",targetMinutes:15,hpScale:1.18,tempo:1.16,ammoTarget:8,stalkerDelayMs:45000,deathStalkerSpeed:.82,domain:null}
+      {floor:1,id:"threshold",name:"THE THRESHOLD",objective:"explore_guardian",targetMinutes:8,hpScale:.82,tempo:.88,ammoTarget:12,stalkerDelayMs:999999,deathStalkerSpeed:1.25,theme:"C64_ARCHIVE",domain:null},
+      {floor:2,id:"driveworks",name:"1541 DRIVEWORKS",objective:"generators",targetMinutes:9,hpScale:.86,tempo:.91,ammoTarget:12,stalkerDelayMs:120000,deathStalkerSpeed:1.20,theme:"1541_WORKSHOP",domain:null},
+      {floor:3,id:"iron",name:"IRON KEEP",objective:"keys",targetMinutes:9,hpScale:.90,tempo:.94,ammoTarget:11,stalkerDelayMs:110000,deathStalkerSpeed:1.15,theme:"IRON_KEEP",domain:"iron"},
+      {floor:4,id:"budget",name:"BUDGET VAULTS",objective:"rescue",targetMinutes:9,hpScale:.94,tempo:.97,ammoTarget:11,stalkerDelayMs:100000,deathStalkerSpeed:1.10,theme:"BUDGET_BIN",domain:null},
+      {floor:5,id:"cartridge",name:"CARTRIDGE CATACOMBS",objective:"generators",targetMinutes:10,hpScale:.98,tempo:1.00,ammoTarget:10,stalkerDelayMs:90000,deathStalkerSpeed:1.05,theme:"CARTRIDGE_BAY",domain:null},
+      {floor:6,id:"tapes",name:"TAPE LABYRINTH",objective:"explore_guardian",targetMinutes:10,hpScale:1.02,tempo:1.03,ammoTarget:10,stalkerDelayMs:85000,deathStalkerSpeed:1.00,theme:"TAPE_STORE",domain:null},
+      {floor:7,id:"bone",name:"MOSS CRYPT",objective:"keys",targetMinutes:10,hpScale:1.06,tempo:1.06,ammoTarget:10,stalkerDelayMs:80000,deathStalkerSpeed:.96,theme:"MOSS_CRYPT",domain:"bone"},
+      {floor:8,id:"demo",name:"DEMO UNDERCROFT",objective:"rescue",targetMinutes:10,hpScale:1.10,tempo:1.09,ammoTarget:9,stalkerDelayMs:75000,deathStalkerSpeed:.92,theme:"DEMO_LOUNGE",domain:null},
+      {floor:9,id:"modem",name:"MODEM WARRENS",objective:"generators",targetMinutes:11,hpScale:1.14,tempo:1.12,ammoTarget:9,stalkerDelayMs:70000,deathStalkerSpeed:.88,theme:"MODEM_EXCHANGE",domain:null},
+      {floor:10,id:"sid",name:"SID FURNACE",objective:"explore_guardian",targetMinutes:11,hpScale:1.18,tempo:1.15,ammoTarget:9,stalkerDelayMs:65000,deathStalkerSpeed:.84,theme:"SID_REACTOR",domain:null},
+      {floor:11,id:"ash",name:"EMBER DEPTHS",objective:"keys",targetMinutes:11,hpScale:1.22,tempo:1.18,ammoTarget:8,stalkerDelayMs:60000,deathStalkerSpeed:.80,theme:"EMBER_DUNGEON",domain:"ash"},
+      {floor:12,id:"foundry",name:"PIXEL FOUNDRY",objective:"generators",targetMinutes:12,hpScale:1.28,tempo:1.20,ammoTarget:8,stalkerDelayMs:55000,deathStalkerSpeed:.76,theme:"PIXEL_FOUNDRY",domain:null},
+      {floor:13,id:"scores",name:"HIGH SCORE CRYPT",objective:"rescue",targetMinutes:12,hpScale:1.34,tempo:1.22,ammoTarget:8,stalkerDelayMs:50000,deathStalkerSpeed:.72,theme:"HIGH_SCORE_CRYPT",domain:null},
+      {floor:14,id:"crt",name:"CRT MAZE",objective:"explore_guardian",targetMinutes:13,hpScale:1.42,tempo:1.24,ammoTarget:7,stalkerDelayMs:45000,deathStalkerSpeed:.69,theme:"CRT_MAZE",domain:null},
+      {floor:15,id:"citadel",name:"BLOOD CITADEL",objective:"guardian",targetMinutes:14,hpScale:1.50,tempo:1.25,ammoTarget:7,stalkerDelayMs:40000,deathStalkerSpeed:.66,theme:"BLOOD_CITADEL",domain:null}
     ],
     keyDomains:[
-      {id:"iron",floor:2,name:"KEY OF IRON",guardian:"Iron Warden",theme:"IRON_KEEP",weakness:"shock",sigilPower:"REVEAL"},
-      {id:"bone",floor:3,name:"KEY OF BONE",guardian:"Bone Keeper",theme:"MOSS_CRYPT",weakness:"fire",sigilPower:"WARD"},
-      {id:"ash",floor:4,name:"KEY OF ASH",guardian:"Ash Castellan",theme:"EMBER_DUNGEON",weakness:"energy",sigilPower:"BIND"}
+      {id:"iron",floor:3,name:"KEY OF IRON",guardian:"Iron Warden",theme:"IRON_KEEP",weakness:"shock",sigilPower:"REVEAL"},
+      {id:"bone",floor:7,name:"KEY OF BONE",guardian:"Bone Keeper",theme:"MOSS_CRYPT",weakness:"fire",sigilPower:"WARD"},
+      {id:"ash",floor:11,name:"KEY OF ASH",guardian:"Ash Castellan",theme:"EMBER_DUNGEON",weakness:"energy",sigilPower:"BIND"}
     ],
     sigilPowers:[
       {id:"reveal",name:"REVEAL",desc:"The Sigil extends normal sight and exposes more of the dungeon around you."},
@@ -56,7 +66,7 @@ window.CCG_CONFIG=Object.freeze({
       {id:"banish",name:"BANISH",desc:"Completing the Sigil grants one final Banishment charge for the escape."}
     ],
     relicChoices:3,
-    developmentCopy:"Descend through five generated depths. Build your character, recover the Keys of Iron, Bone and Ash, complete the Sigil and survive the final escape."
+    developmentCopy:"Descend through fifteen generated floors. Build your character, recover the Keys of Iron, Bone and Ash across the campaign, complete the Sigil and survive the final Blood Citadel escape."
   },
   loot:{rarities:["COMMON","UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]},
   difficulty:{
@@ -67,10 +77,20 @@ window.CCG_CONFIG=Object.freeze({
   },
   floors:[
     {name:"The Threshold",objective:"explore_guardian",theme:"C64_ARCHIVE"},
+    {name:"1541 Driveworks",objective:"generators",theme:"1541_WORKSHOP"},
     {name:"Iron Keep",objective:"keys",theme:"IRON_KEEP"},
+    {name:"Budget Vaults",objective:"rescue",theme:"BUDGET_BIN"},
+    {name:"Cartridge Catacombs",objective:"generators",theme:"CARTRIDGE_BAY"},
+    {name:"Tape Labyrinth",objective:"explore_guardian",theme:"TAPE_STORE"},
     {name:"Moss Crypt",objective:"keys",theme:"MOSS_CRYPT"},
+    {name:"Demo Undercroft",objective:"rescue",theme:"DEMO_LOUNGE"},
+    {name:"Modem Warrens",objective:"generators",theme:"MODEM_EXCHANGE"},
+    {name:"SID Furnace",objective:"explore_guardian",theme:"SID_REACTOR"},
     {name:"Ember Depths",objective:"keys",theme:"EMBER_DUNGEON"},
-    {name:"Sigil Sanctum",objective:"guardian",theme:"ZZAP_LIBRARY"}
+    {name:"Pixel Foundry",objective:"generators",theme:"PIXEL_FOUNDRY"},
+    {name:"High Score Crypt",objective:"rescue",theme:"HIGH_SCORE_CRYPT"},
+    {name:"CRT Maze",objective:"explore_guardian",theme:"CRT_MAZE"},
+    {name:"Blood Citadel",objective:"guardian",theme:"BLOOD_CITADEL"}
   ],
   followerElites:[
     {name:"Peter Cortens",initials:"PC",kind:"hunter",hp:8,armor:4,avatar:"assets/peter-cortens.png",musicKey:"peter-cortens",strength:"Relentless close-range pressure and flanking.",weakness:"Short reach — kite him through cover and fire from range."},
@@ -120,6 +140,6 @@ window.CCG_CONFIG=Object.freeze({
     "Vendetta","Vigilante","Volfied","Winter Games","Wizball","World Games","Wonder Boy","X-Out","Xenon","Xenon Ranger","Yie Ar Kung-Fu","Yie Ar Kung-Fu II","Yogi's Great Escape",
     "Zak McKracken and the Alien Mindbenders","Zamzara","Zaxxon","Zynaps"
   ],
-  roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE","IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON"],
+  roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE","IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL"],
   adminAudio:{stalker:null,dangerRoom:null,sanctuary:null,namedEnemies:{}}
 });
