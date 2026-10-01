@@ -31,8 +31,8 @@
   function wearables(player){if(!player)return{head:null,hands:null,feet:null};if(!player.wearables||typeof player.wearables!=="object"||Array.isArray(player.wearables))player.wearables={head:null,hands:null,feet:null};for(const slot of SLOT_ORDER)if(!(slot in player.wearables))player.wearables[slot]=null;return player.wearables}
   function effectValues(slot,rarity){
     const idx=rarityIndex(rarity);
-    if(slot==="head")return{sight:idx>=3?2:1};
-    if(slot==="hands")return{scavenger:Number((.08+idx*.04).toFixed(2))};
+    if(slot==="head")return{sightBonus:idx>=3?2:1};
+    if(slot==="hands")return{scavengerBonus:Number((.08+idx*.04).toFixed(2))};
     if(slot==="feet")return{moveFactor:Number((.97-idx*.01).toFixed(2))};
     return{}
   }
