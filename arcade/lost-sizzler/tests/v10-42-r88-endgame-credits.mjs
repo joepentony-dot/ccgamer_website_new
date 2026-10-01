@@ -19,7 +19,8 @@ assert.match(main,/title:"C64 Dungeon Carnage"/,"share metadata must use the cur
 assert.match(main,/C64 Dungeon Carnage link copied/,"clipboard feedback must use the current game title");
 assert.doesNotMatch(main,/Cheeky's Commodore Quest/,"retired game title must not remain in the active share path");
 
-assert.match(finalUi,/run\?\.runComplete/,"completion credits must require the authoritative successful-run completion latch");\nassert.match(finalUi,/!run\.xpGameOver/,"Floor 15 XP game-over must never receive victory credits");
+assert.match(finalUi,/run\?\.runComplete/,"completion credits must require the authoritative successful-run completion latch");
+assert.match(finalUi,/!run\.xpGameOver/,"Floor 15 XP game-over must never receive victory credits");
 assert.match(finalUi,/Number\(run\.floor\|\|0\)>=Number\(window\.CCG_CONFIG\?\.maxFloors\|\|15\)/,"victory credits must remain gated to the configured final floor");\nassert.match(finalUi,/CAMPAIGN COMPLETE — BLOOD CITADEL CLEARED/,"full campaign completion must receive a distinct credits finale");
 assert.match(finalUi,/AZALEA and CPU/,"special acknowledgements must include long-term supporters AZALEA and CPU");
 assert.match(finalUi,/info@cheekycommodoregamer\.co\.uk/,"completion credits must expose the requested feedback email");
