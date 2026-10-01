@@ -20,6 +20,7 @@
   const TESTER_SESSION_KEY = "ccg_dungeon_carnage_tester_code_v2";
   const PROTECTED_RUNTIME_TYPE = "application/ccg-protected-runtime";
   let runtimeAccessGranted = false;
+  let runtimeBoundaryReached = false;
   let runtimeBootPromise = null;
 
   function normalise(value) {
@@ -65,21 +66,18 @@
   }
 
   function startProtectedRuntimeWhenReady() {
-    if (!runtimeAccessGranted) return;
+    if (!runtimeAccessGranted || !runtimeBoundaryReached) return;
 
-    const start = () => {
-      void bootstrapProtectedRuntime().catch((error) => {
-        mark("runtime-load-failed");
-        try { console.error("[CCG] Dungeon protected runtime failed to start.", error); } catch (_error) {}
-      });
-    };
+    void bootstrapProtectedRuntime().catch((error) => {
+      mark("runtime-load-failed");
+      try { console.error("[CCG] Dungeon protected runtime failed to start.", error); } catch (_error) {}
+    });
+  }
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", start, { once: true });
-      return;
-    }
-
-    start();
+  function runtimeBoundaryReady() {
+    runtimeBoundaryReached = true;
+    startProtectedRuntimeWhenReady();
+    return true;
   }
 
   function bootstrapProtectedRuntime() {
@@ -390,7 +388,8 @@
     isValidTesterCode: isValidTesterCode,
     validateTesterCodeWithTimeout: validateTesterCodeWithTimeout,
     resolveAccountAccess: resolveAccountAccess,
-    maintenanceDestination: MAINTENANCE_DESTINATION
+    maintenanceDestination: MAINTENANCE_DESTINATION,
+    runtimeBoundaryReady: runtimeBoundaryReady
   });
 
   void checkAccess();
