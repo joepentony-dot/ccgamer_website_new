@@ -16,10 +16,10 @@ assert.equal(version.cacheToken,"20260930r81");
 assert.match(source,/function attributeEffect\(player,id\)/,"R81 must expose one live-effect formatter for RPG attributes");
 assert.match(source,/canonical melee\/firearm damage/,"Might must explain its real canonical damage contribution");
 assert.match(source,/max health from Vitality/,"Vitality must explain its real maximum-health contribution");
-assert.match(source,/faster movement/,"Agility must explain its real movement contribution");
+assert.match(source,/lower movement delay/,"Agility must describe the real reduction in movement cadence delay rather than the inverse speed percentage");
 assert.match(source,/max ammo from Endurance/,"Endurance must explain its real ammunition contribution");
 assert.match(source,/wearable rolls up to/,"Luck must explain its real chest and wearable influence");
-assert.match(source,/Flask cost .* Essence .* Ward .* Reveal/s,"Arcana must explain current Flask/Ward/Reveal values");
+assert.match(source,/Flask cost .* Essence .* Ward .* Permanent .* sight .* Reveal/s,"Arcana must explain Flask/Ward plus permanent specialisation sight and conditional Reveal sight");
 assert.match(source,/class="v142-rpg-effect"/,"the RPG sheet must render the calculated effect under each stat");
 
 const start=source.indexOf("function attributeEffect(player,id)");
@@ -48,8 +48,9 @@ const player={
 assert.match(context.attributeEffect(player,"might"),/\+2 canonical melee\/firearm damage/);
 assert.match(context.attributeEffect(player,"vitality"),/\+7 max health/);
 assert.match(context.attributeEffect(player,"agility"),/dash contact damage/);
+assert.match(context.attributeEffect(player,"agility"),/about 18% lower movement delay/);
 assert.match(context.attributeEffect(player,"endurance"),/\+110 max ammo/);
 assert.match(context.attributeEffect(player,"luck"),/\+6\.75/);
-assert.match(context.attributeEffect(player,"arcana"),/Flask cost 2 Essence · Ward 18s · Reveal \+3 sight/);
+assert.match(context.attributeEffect(player,"arcana"),/Flask cost 2 Essence · Ward 18s · Permanent \+1 sight · Reveal \+3 sight/);
 
 console.log("Dungeon R81 RPG stat transparency contract passed.");

@@ -31,8 +31,8 @@
   function wearables(player){if(!player)return{head:null,hands:null,feet:null};if(!player.wearables||typeof player.wearables!=="object"||Array.isArray(player.wearables))player.wearables={head:null,hands:null,feet:null};for(const slot of SLOT_ORDER)if(!(slot in player.wearables))player.wearables[slot]=null;return player.wearables}
   function effectValues(slot,rarity){
     const idx=rarityIndex(rarity);
-    if(slot==="head")return{sight:idx>=3?2:1};
-    if(slot==="hands")return{scavenger:Number((.08+idx*.04).toFixed(2))};
+    if(slot==="head")return{sightBonus:idx>=3?2:1};
+    if(slot==="hands")return{scavengerBonus:Number((.08+idx*.04).toFixed(2))};
     if(slot==="feet")return{moveFactor:Number((.97-idx*.01).toFixed(2))};
     return{}
   }
@@ -86,8 +86,18 @@
   }
   function setFeetFactor(player,value){
     const old=Math.min(1,Math.max(.5,Number(player?.v142R80FeetFactor)||1)),next=Math.min(1,Math.max(.5,Number(value)||1));
-    const base=Math.max(.1,Number(player.moveMultiplier||1)/old);
-    player.moveMultiplier=Math.max(.1,base*next);player.v142R80FeetFactor=next
+    const current=Math.max(.1,Number(player?.moveMultiplier||1));
+    const activeBase=Number(player?._v105Base?.moveMultiplier);
+    if(Number.isFinite(activeBase)&&activeBase>0){
+      const baseWithoutFeet=Math.max(.1,activeBase/old),nextBase=Math.max(.1,baseWithoutFeet*next);
+      const activeScale=Math.max(.05,current/activeBase);
+      player._v105Base.moveMultiplier=nextBase;
+      player.moveMultiplier=Math.max(.1,nextBase*activeScale)
+    }else{
+      const base=Math.max(.1,current/old);
+      player.moveMultiplier=Math.max(.1,base*next)
+    }
+    player.v142R80FeetFactor=next
   }
   function applySlotEffect(player,slot,item){
     if(slot==="hands")setHandsBonus(player,Number(item?.scavengerBonus)||0);
@@ -221,6 +231,17 @@
     const baseRender=renderInventoryPanel;
     renderInventoryPanel=function r80RenderInventory(...args){const result=baseRender.apply(this,args);renderLoadout();decorateInventory();return result};
     renderInventoryPanel.__ccgV142R80Wearables=true;renderInventoryPanel.__ccgOriginal=baseRender;
+  }
+  if(typeof MutationObserver==="function"){
+    const inventoryPanel=document.getElementById("inventory-panel");
+    if(inventoryPanel){
+      const visibilityObserver=new MutationObserver(()=>{
+        if(inventoryPanel.classList.contains("hidden"))return;
+        const refresh=()=>{try{renderLoadout();decorateInventory()}catch(_){}};
+        if(typeof queueMicrotask==="function")queueMicrotask(refresh);else Promise.resolve().then(refresh)
+      });
+      visibilityObserver.observe(inventoryPanel,{attributes:true,attributeFilter:["class"]})
+    }
   }
 
   function wearableColour(item){

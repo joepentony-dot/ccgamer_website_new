@@ -22,9 +22,15 @@ assert.match(source,/function equipWearable/,"wearables must have one equip tran
 assert.match(source,/function unequipWearable/,"wearables must support explicit unequip");
 assert.match(source,/PGR\.inventoryRemove\(player,index\)/,"equipping must remove the carried item from inventory");
 assert.match(source,/PGR\.inventoryAdd\(player,old\)/,"swapping must return the old equipped item to inventory");
+assert.match(source,/if\(slot==="head"\)return\{sightBonus:/,"generated Head wearables must emit the sightBonus field consumed by sight/equipment UI");
+assert.match(source,/if\(slot==="hands"\)return\{scavengerBonus:/,"generated Hands wearables must emit the scavengerBonus field consumed by ammo/equipment logic");
 assert.match(source,/PGR\.effectiveSight=function r80WearableSight/,"Head equipment must affect the canonical sight calculation");
 assert.match(source,/player\.scavenger=Math\.max\(0,Number\(player\.scavenger\|\|0\)-old\+next\)/,"Hands equipment must compose with existing Scavenger progression rather than replacing it");
-assert.match(source,/player\.moveMultiplier=Math\.max\(\.1,base\*next\)/,"Feet equipment must compose with existing movement upgrades");
+assert.match(source,/player\._v105Base\.moveMultiplier=nextBase/,"Feet equipment must update the V10.5 temporary-effect base when boots change during an active movement effect");
+assert.match(source,/player\.moveMultiplier=Math\.max\(\.1,nextBase\*activeScale\)/,"Feet equipment must preserve the currently active temporary movement scale while updating its base");
+assert.match(source,/const visibilityObserver=new MutationObserver/,"R80 must observe inventory visibility because R71 re-renders the loadout from its own MutationObserver");
+assert.match(source,/if\(inventoryPanel\.classList\.contains\("hidden"\)\)return/,"the R80 inventory observer must only redecorate an opened inventory");
+assert.match(source,/queueMicrotask\(refresh\)[\s\S]*Promise\.resolve\(\)\.then\(refresh\)/,"R80 must redecorate after R71's observer-driven render completes");
 assert.match(source,/preservePlayer=function r80PreserveWearables/,"equipped clothing must survive floor transitions");
 assert.match(source,/openChest=function r80OpenChestWearableBonus/,"chests must be capable of producing real wearable loot");
 assert.match(source,/WEARABLE GEAR — INVENTORY FULL/,"full inventory must drop the wearable beside the chest instead of deleting it");
@@ -119,6 +125,19 @@ assert.equal(player.inventory[0].name,"TEST GLOVES");
 player.inventory.push({kind:"wearable",slot:"feet",name:"RUNNER BOOTS",rarity:"SIZZLER",moveFactor:.95});
 assert.equal(api.equipWearable(player,1),true);
 assert.equal(Number(player.moveMultiplier.toFixed(4)),.9025,"boots must multiply the existing Quick Feet-style movement bonus");
+
+const tempPlayer={
+  inventory:[{kind:"wearable",slot:"feet",name:"TURBO RUNNER BOOTS",rarity:"SIZZLER",moveFactor:.95}],
+  moveMultiplier:.76,
+  _v105Base:{moveMultiplier:1,dashDamage:0},
+  v142R80FeetFactor:1
+};
+assert.equal(api.equipWearable(tempPlayer,0),true);
+assert.equal(Number(tempPlayer._v105Base.moveMultiplier.toFixed(4)),.95,"equipping boots during a V10.5 movement effect must move the effect owner's baseline to the equipped value");
+assert.equal(Number(tempPlayer.moveMultiplier.toFixed(4)),.722,"equipping boots during a V10.5 movement effect must preserve the active temporary movement scale");
+assert.equal(api.unequipWearable(tempPlayer,"feet"),true);
+assert.equal(Number(tempPlayer._v105Base.moveMultiplier.toFixed(4)),1,"unequipping boots during a V10.5 movement effect must restore the effect owner's pre-gear baseline");
+assert.equal(Number(tempPlayer.moveMultiplier.toFixed(4)),.76,"unequipping boots during a V10.5 movement effect must preserve the active temporary movement scale without permanent slowdown");
 
 player.inventory.push({kind:"wearable",slot:"head",name:"TORCHFINDER",rarity:"SIZZLER",sightBonus:1});
 assert.equal(api.equipWearable(player,1),true);
