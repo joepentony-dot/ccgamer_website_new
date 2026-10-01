@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import vm from "node:vm";
 
 const root=new URL("../",import.meta.url);
 const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8");
@@ -26,7 +27,45 @@ assert.match(reporter,/row\?\.stage==="ammo-committed"/,"committed authoritative
 assert.match(reporter,/row\?\.stage==="executor-result"&&row\?\.fired===true/,"successful authoritative executor results must count as successful FIRE evidence");
 assert.match(reporter,/const cooldownAccepted=Number\(after\.game\.fire1\)>Number\(before\.game\.fire1\)/,"a newly accepted FIRE cooldown must prevent a false failure when projectiles expire or ammo is picked up during the probe window");
 assert.match(reporter,/fireSfxObserved/,"FIRE probes must retain named sound evidence for incident review");
-assert.match(reporter,/const fired=ammoSpent\|\|projectileAdded\|\|meleeAdvanced\|\|traceShot\|\|cooldownAccepted\|\|fireSfxObserved/,"canonical FIRE sound evidence must prevent false failure classification when ammo pickups or projectile expiry mask count deltas");
+assert.match(reporter,/function classifyAttackEvidence\(evidence=\{\}\)/,"FIRE evidence classification must remain independently testable");
+assert.match(reporter,/const fired=classifyAttackEvidence\(evidence\)/,"FIRE probes must route anomaly classification through the bounded evidence classifier");
+
+{
+  const start=reporter.indexOf("function classifyAttackEvidence(evidence={})");
+  const end=reporter.indexOf("\n  function fireProbe",start);
+  assert.ok(start>=0&&end>start,"FIRE evidence classifier must remain extractable for regression testing");
+  const context=vm.createContext({});
+  vm.runInContext(reporter.slice(start,end),context,{filename:"bug-reporter-fire-evidence.js"});
+  const classify=context.classifyAttackEvidence;
+  assert.equal(typeof classify,"function");
+
+  assert.equal(classify({
+    ammoSpent:false,
+    projectileAdded:false,
+    meleeAdvanced:false,
+    traceShot:false,
+    cooldownAccepted:true,
+    fireSfxObserved:false
+  }),true,"accepted FIRE cooldown must count as success even if a projectile expires before the delayed probe");
+
+  assert.equal(classify({
+    ammoSpent:false,
+    projectileAdded:false,
+    meleeAdvanced:false,
+    traceShot:false,
+    cooldownAccepted:false,
+    fireSfxObserved:true
+  }),true,"observed FIRE sound must prevent a false failure when ammo pickup/projectile expiry masks count deltas");
+
+  assert.equal(classify({
+    ammoSpent:false,
+    projectileAdded:false,
+    meleeAdvanced:false,
+    traceShot:false,
+    cooldownAccepted:false,
+    fireSfxObserved:false
+  }),false,"no positive FIRE/melee evidence should remain reportable as a possible attack failure");
+}
 assert.match(reporter,/const anomalyDetail=\{\s*code,evidence,ammo:/,"saved anomaly records must carry the same bounded FIRE evidence used for classification");
 assert.match(reporter,/traceStages:traceRows\.slice\(-12\)/,"FIRE probes must report the authoritative stages that justified the classification");
 assert.match(reporter,/addEventListener\("ccg:sfx"/,"reporter must retain named SFX evidence");

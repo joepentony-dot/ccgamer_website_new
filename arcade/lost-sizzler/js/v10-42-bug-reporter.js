@@ -471,6 +471,17 @@
     return s;
   }
 
+  function classifyAttackEvidence(evidence={}){
+    return Boolean(
+      evidence.ammoSpent||
+      evidence.projectileAdded||
+      evidence.meleeAdvanced||
+      evidence.traceShot||
+      evidence.cooldownAccepted||
+      evidence.fireSfxObserved
+    )
+  }
+
   function fireProbe(code,before){
     if(!before?.player1||before.game.mode!=="playing"||!before.game.runActive)return;
     const probeAt=performance.now();
@@ -494,7 +505,7 @@
         Number(event?.ms||0)>=probeAt-1&&event?.type==="sfx"&&String(event?.detail?.name||"")==="fire"
       );
       const evidence={ammoSpent,projectileAdded,meleeAdvanced,traceShot,cooldownAccepted,fireSfxObserved,traceStages:traceRows.slice(-12).map(row=>String(row?.stage||""))};
-      const fired=ammoSpent||projectileAdded||meleeAdvanced||traceShot||cooldownAccepted||fireSfxObserved;
+      const fired=classifyAttackEvidence(evidence);
       push("attack-probe",{code,fired,evidence,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
@@ -782,7 +793,7 @@
     get state(){return state},get events(){return [...events]},
     recordTrapDamage(detail={}){return recordEnvironmentDamageSignal("trap",{detail})},
     recordHazardDamage(detail={}){return recordEnvironmentDamageSignal("hazard",{detail})},
-    snapshot:currentSnapshot,trapProbe,trapSnapshot,observeMovementBoundary,createReport,formatReport,open:openReporter,close:closeReporter,
+    snapshot:currentSnapshot,trapProbe,trapSnapshot,observeMovementBoundary,classifyAttackEvidence,createReport,formatReport,open:openReporter,close:closeReporter,
     enable(){try{localStorage.setItem("ccg-dungeon-bug-reporter","1")}catch(_){}ensureUi();const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=false},
     disable(){try{localStorage.removeItem("ccg-dungeon-bug-reporter")}catch(_){}const b=document.getElementById("ccg-bug-report-btn");if(b)b.hidden=true;closeReporter()}
   });

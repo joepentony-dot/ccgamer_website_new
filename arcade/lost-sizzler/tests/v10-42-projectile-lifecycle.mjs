@@ -16,7 +16,7 @@ assert.match(bootstrap,/v10-42-projectile-lifecycle\.js/,"ordered V10.42 bootstr
 assert.match(source,/finally\s*\{\s*sweepExpired\(bullets,"player"\);\s*sweepExpired\(enemyBullets,"enemy"\)/s,"projectile cleanup must run from a finally boundary even when hit/death callbacks fault");
 assert.match(source,/consumeImpact\(b\);\s*const owner=findLocal\(b\.owner\)/s,"enemy impacts must retire or consume piercing state before the enemy damage/death callback");
 assert.doesNotMatch(source,/fireDelay|maxProjectiles|rapidMs|firePlayer\s*=|function\s+firePlayer/,"projectile lifecycle repair must not change fire cadence, projectile allowance or the held-fire owner");
-assert.match(gamePlay,/const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|fireBuffer1>0\)&&fire1<=0\)/,"canonical frame loop must retain qualified sustained desktop firing while keeping quick taps on the one-shot buffer");
+assert.match(gamePlay,/const p1BufferedAtFrameStart=fireBuffer1>0,p2BufferedAtFrameStart=fireBuffer2>0[\s\S]*const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|p1BufferedAtFrameStart\|\|fireBuffer1>0\)&&fire1<=0\)/,"canonical frame loop must retain qualified sustained desktop firing while preserving quick taps across one long frame");
 assert.doesNotMatch(gamePlay,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"projectile lifecycle must not rely on raw key presence to repeat a quick FIRE tap");
 assert.match(heldFireBrowser,/await sustainedFire\(page,"Space"\)/,"retained Chromium contract must continue exercising sustained held-Space firing on the release runtime");
 

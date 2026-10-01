@@ -1,3 +1,12 @@
+## Live R81 acceptance defects guarded after R82 merge — 1 October 2026
+
+- Owner-supplied live R81 diagnostics exposed two acceptance defects that must remain guarded even though current `main` is R82.
+- **FIRE reporter false positives:** the live R81 reporter could flag a possible FIRE failure when ammo count was unchanged and active projectiles fell during the delayed probe, even though the shot had actually been accepted and FIRE sound/projectile activity continued. Current reporter classification now has an explicit `classifyAttackEvidence()` helper and regression coverage requiring accepted cooldown, authoritative trace, projectile creation, ammo spend, melee advance or observed FIRE SFX to suppress a false anomaly. This specifically protects ammo-pickup/projectile-expiry timing.
+- **Persistent death acknowledgement:** the live R81 session entered `respawning` and later resumed without owner confirmation. A new Chromium regression now kills the player, waits seven seconds (longer than the retired timed path), requires YOU DIED to remain active with `mode==="respawning"`, then proves exactly one Enter confirmation resumes gameplay.
+- These are isolated acceptance guards on branch `codex/dungeon-r83-live-r81-defects` based on merged R82 `main` `7b2d43de283bc83199dab05bc705cf6b7a2a0256`. They must qualify and merge independently before the larger R83 death-cache stack is rebuilt.
+- The Equipment & Inventory overlap defect has already been fixed and merged with R82, including desktop Chromium non-overlap coverage.
+- Tutorial refresh remains a dedicated later slice: preserve the safe Training Archive, but replace stale five-floor/currently obsolete teaching with concise contextual onboarding for the 15-floor campaign, evolving firearm, Sanctuary, shops/economy, equipment, death-cache recovery, current map language and live RPG-stat effects.
+
 ## R82 RPG death rollback clean restack — 1 October 2026
 
 - **Public/live acceptance baseline remains V10.42 R78.** The owner's direct live-page screenshot on 1 October 2026 is still the last confirmed production identity. Repository releases R79-R82 must not be treated as owner-accepted until production is directly verified at the corresponding deployed build.
