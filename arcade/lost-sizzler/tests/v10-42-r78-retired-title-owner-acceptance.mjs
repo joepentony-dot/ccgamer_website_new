@@ -19,10 +19,10 @@ const procedural=read("js/v10-42-procedural-overhaul.js");
 const rpgExpansion=read("js/v10-42-r23-rpg-build-expansion.js");
 const index=read("index.html");
 
-assert.match(config,/name:"C64 Dungeon Carnage — Five Depths"/,
-  "campaign config must expose the current C64 Dungeon Carnage name");
-assert.doesNotMatch(config,/name:"The Lost Sizzler — Five Depths"/,
-  "retired campaign name must not remain player-facing");
+assert.match(config,/name:"C64 Dungeon Carnage — Fifteen Floors"/,
+  "campaign config must expose the current fifteen-floor C64 Dungeon Carnage name");
+assert.doesNotMatch(config,/name:"(?:The Lost Sizzler — Five Depths|C64 Dungeon Carnage — Five Depths)"/,
+  "retired five-floor campaign names must not remain player-facing");
 
 assert.match(core,/run\.floor>=C\.maxFloors&&!run\.dailyFailed\?"CITADEL CLEARED"/,
   "full-run completion must use the current Citadel completion banner");
