@@ -56,6 +56,33 @@
     document.querySelectorAll("#v106-enemy-credits [data-enemy-avatar-index]").forEach(canvas=>{const row=rows[Number(canvas.dataset.enemyAvatarIndex)];try{window.CCGRenderEnemyCreditAvatar?.(canvas,row)}catch(error){console.warn("Enemy credit avatar render failed",error)}})
   }
 
+  function campaignComplete(){
+    return Boolean(run?.runComplete&&!run.dailyFailed&&!run.xpGameOver&&Number(run.floor||0)>=Number(window.CCG_CONFIG?.maxFloors||15));
+  }
+
+  function renderCompletionCredits(){
+    if(!UI?.endText)return;
+    document.getElementById("v108-completion-credits")?.remove();
+    if(!campaignComplete())return;
+    UI.endText.insertAdjacentHTML("beforeend",`<section id="v108-completion-credits" class="v104-retro-credits v108-completion-credits">
+      <h3>CAMPAIGN COMPLETE — BLOOD CITADEL CLEARED</h3>
+      <p>You made it through all ${Number(window.CCG_CONFIG?.maxFloors||15)} floors, completed the Sigil and escaped the dungeon.</p>
+      <div class="v108-special-thanks"><b>SPECIAL THANKS</b><span>Patreon and long-term supporters, including AZALEA and CPU, for supporting C64 Dungeon Carnage and the Cheeky Commodore Gamer channel.</span></div>
+      <div class="v108-end-actions">
+        <button id="v108-end-share" type="button" class="primary">Share Completion</button>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer">Donate / Buy Joe a Beer</a>
+        <a href="mailto:info@cheekycommodoregamer.co.uk?subject=C64%20Dungeon%20Carnage%20Feedback">Send Feedback</a>
+        <a href="https://www.cheekycommodoregamer.co.uk/support.html" target="_blank" rel="noopener noreferrer">CCG Support Page</a>
+      </div>
+      <small>Completion sharing uses the current game-page URL so the final public address can change without hardcoding a purchase link here.</small>
+    </section>`);
+    document.getElementById("v108-end-share")?.addEventListener("click",()=>{try{shareQuest()}catch(_){try{document.getElementById("share-btn")?.click()}catch(__){}}});
+    if(!run.v108CreditsMusicStarted){
+      run.v108CreditsMusicStarted=true;
+      try{window.CCGEndCreditsMusic?.play?.({reason:"campaign-complete",run})}catch(_){}
+    }
+  }
+
   function renderRetroCredits(){
     if(!UI?.endText)return;
     renderEnemyCredits();
@@ -70,6 +97,7 @@
     const old=document.getElementById("v104-retro-credits");
     if(old)old.remove();
     UI.endText.insertAdjacentHTML("beforeend",`<section id="v104-retro-credits" class="v104-retro-credits"><h3>C64 GAME PICKUPS COLLECTED THIS RUN — ${history.length}</h3>${block}${note}</section>`);
+    renderCompletionCredits();
   }
 
   if(typeof endRun==="function"){
@@ -88,7 +116,7 @@
     .v104-retro-credits{margin-top:18px;padding:14px;border:1px solid rgba(255,216,90,.5);background:rgba(15,9,20,.72);text-align:left}
     .v104-retro-credits h3{margin:0 0 10px;color:#ffd85a;font-size:13px;letter-spacing:.6px}
     .v104-credit-game{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px dotted rgba(255,255,255,.12);color:#faf4ff;font-size:11px;line-height:1.35}
-    .v104-credit-actions{display:flex;align-items:center;gap:10px}.v104-credit-game b{color:#6cecff}.v104-credit-game a{color:#ffd85a;text-decoration:underline;text-underline-offset:2px}.v104-credit-empty{color:#b9aec8;font-size:11px}.v104-retro-credits small{display:block;margin-top:10px;color:#9f93ad;font-size:9px;line-height:1.45}
+    .v104-credit-actions{display:flex;align-items:center;gap:10px}.v104-credit-game b{color:#6cecff}.v104-credit-game a{color:#ffd85a;text-decoration:underline;text-underline-offset:2px}.v104-credit-empty{color:#b9aec8;font-size:11px}.v104-retro-credits small{display:block;margin-top:10px;color:#9f93ad;font-size:9px;line-height:1.45}.v108-completion-credits p{margin:0 0 12px;color:#faf4ff;font-size:11px;line-height:1.5}.v108-special-thanks{display:grid;gap:5px;padding:10px;border:1px solid rgba(255,216,90,.28);background:rgba(255,216,90,.06);font-size:10px;line-height:1.45}.v108-special-thanks b{color:#ffd85a}.v108-end-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.v108-end-actions a,.v108-end-actions button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 10px;border:1px solid rgba(108,236,255,.42);background:rgba(108,236,255,.08);color:#faf4ff;text-decoration:none;font-size:10px}.v108-end-actions .primary{border-color:rgba(255,216,90,.55);background:rgba(255,216,90,.12);color:#ffd85a}
     #end>.panel{width:min(900px,96%)!important;max-height:min(92vh,880px);overflow:auto}
     .v106-enemy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:8px}.v106-enemy-credit{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center;padding:8px;border:1px solid rgba(108,236,255,.18);background:rgba(3,2,5,.42)}.v106-enemy-credit.named{border-color:rgba(255,216,90,.38)}.v106-enemy-avatar{position:relative;display:grid;place-items:center;width:54px;height:54px;border:1px solid rgba(108,236,255,.45);background:#120c1b;overflow:hidden}.v106-enemy-credit.named .v106-enemy-avatar{border-color:#ffd85a}.v106-enemy-avatar img,.v106-enemy-avatar-fallback,.v106-enemy-avatar-canvas{position:absolute;inset:0;width:100%;height:100%}.v106-enemy-avatar img{z-index:1;object-fit:cover;image-rendering:pixelated}.v106-enemy-avatar-fallback{z-index:1;display:grid;place-items:center;color:#6cecff;font-weight:bold;font-size:12px;background:radial-gradient(circle at 50% 35%,#2f2550,#090611 72%)}.v106-enemy-avatar-canvas{z-index:2;image-rendering:pixelated}.v106-enemy-credit h4{margin:0;color:#faf4ff;font-size:11px}.v106-enemy-credit h4 b{color:#ffd85a}.v106-enemy-credit p{margin:3px 0 0;color:#9f93ad;font-size:9px}.v106-enemy-credit small{margin-top:3px;color:#6cecff;font-size:9px}
   `;
