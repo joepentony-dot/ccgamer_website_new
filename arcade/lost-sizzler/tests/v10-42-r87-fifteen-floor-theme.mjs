@@ -28,7 +28,7 @@ vm.runInNewContext(worldSource,sandbox,{filename:"world.js"});
 const blood=sandbox.window.CCGWorld?.themes?.BLOOD_CITADEL;
 assert.ok(blood,"world palette must define BLOOD_CITADEL");
 assert.match(String(blood.floor),/^#(?:1f090c|[0-9a-f]{6})$/i,"Blood Citadel must expose a concrete floor colour");
-assert.match(String(blood.accent),/^#ff334b$/i,"Blood Citadel must retain its high-danger red accent");
+assert.match(String(blood.accent),/^#ff4b57$/i,"Blood Citadel must retain its high-danger red accent");
 
 assert.match(campaignSource,/function applyFloorTheme\(/,"campaign owner must apply the configured floor theme to ordinary rooms");
 assert.match(campaignSource,/floor===CFG\.maxFloors/,"final Sigil logic must follow maxFloors rather than a hard-coded fifth floor");
