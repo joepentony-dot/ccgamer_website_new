@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 — five-depth campaign, global Keys and floor balance. */
+/* C64 Dungeon Carnage V10.42 — fifteen-floor campaign, global Keys and floor balance. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_FIVE_DEPTH_CAMPAIGN__)return;
@@ -22,7 +22,7 @@
     const announce=(title,text,tone="gold",duration=8500)=>{try{showToast(title,text,tone,duration)}catch(_){} };
 
     function floorPickupSlice(seed,floor){
-      const deck=API.gameDeck(seed),distribution=Array.isArray(PD.pickupDistribution)?PD.pickupDistribution:[6,5,5,5,5];
+      const deck=API.gameDeck(seed),distribution=Array.isArray(PD.pickupDistribution)?PD.pickupDistribution:[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1];
       let start=0;for(let i=0;i<floor-1;i++)start+=Math.max(0,Number(distribution[i])||0);
       const count=Math.max(0,Number(distribution[floor-1])||0);
       return deck.slice(start,start+count);
@@ -79,7 +79,7 @@
 
     function tuneGuardian(hostState,runState){
       const floor=floorNumber(runState),domain=domainForFloor(runState),guardian=(hostState.enemies||[]).find(enemy=>enemy.keyGuardian&&(!domain||enemy.domainId===domain.id));if(!guardian)return;
-      const stats={2:{hp:20,armor:7},3:{hp:24,armor:8},4:{hp:29,armor:9}}[floor];if(!stats)return;
+      const stats={3:{hp:22,armor:7},7:{hp:32,armor:10},11:{hp:44,armor:13}}[floor];if(!stats)return;
       guardian.maxHp=stats.hp;guardian.hp=stats.hp;guardian.maxArmor=stats.armor;guardian.armor=stats.armor;guardian.v142BalancedGuardian=true;
     }
     function trimAmmo(hostState,target){
@@ -104,7 +104,7 @@
         if(enemy.keyGuardian)continue;
         if(enemy.ccgBoss&&floor<5)continue;
         const oldMax=Math.max(1,Number(enemy.maxHp||enemy.hp)||1),next=Math.max(1,Math.round(oldMax*hpScale));enemy.maxHp=next;enemy.hp=Math.min(next,Math.max(1,Math.round(Number(enemy.hp||oldMax)*hpScale)));
-        if(floor>=4&&enemy.follower){enemy.maxArmor=Math.max(1,Number(enemy.maxArmor||enemy.armor||1)+(floor===5?2:1));enemy.armor=enemy.maxArmor}
+        if(floor>=4&&enemy.follower){enemy.maxArmor=Math.max(1,Number(enemy.maxArmor||enemy.armor||1)+(floor===CFG.maxFloors?2:1));enemy.armor=enemy.maxArmor}
       }
       tuneGuardian(hostState,runState);trimAmmo(hostState,Math.max(6,Number(cfg.ammoTarget)||12));
       if(hostState.stalker)hostState.stalker.spawnTimer=Math.max(15000,Number(cfg.stalkerDelayMs)||CFG.stalker.spawnDelayMs);
@@ -113,8 +113,19 @@
       hostState.v142Balance={floor,hpScale,tempo:Number(cfg.tempo)||1,ammoTarget:Number(cfg.ammoTarget)||12,stalkerDelayMs:Number(cfg.stalkerDelayMs)||CFG.stalker.spawnDelayMs};
     }
 
+    function applyFloorTheme(worldState,hostState,runState){
+      const cfg=floorConfig(runState),theme=String(cfg?.theme||"");if(!theme||!WORLD.themes?.[theme]||!Array.isArray(worldState?.rooms))return;
+      for(const room of worldState.rooms){
+        if(!room)continue;
+        room.v142FloorTheme=theme;
+        const preserve=Boolean(room.optional||room.sanctuary||room.sigilRoom||room.spiderNest||room.skeletonHorde||room.dedicatedHazard||room.jackpotRoom||room.verminRoom);
+        if(!preserve)room.theme=theme;
+      }
+      worldState.v142FloorTheme=theme;hostState.v142FloorTheme=theme;
+    }
+
     const baseDecorate=SYSTEMS.decorate.bind(SYSTEMS);
-    SYSTEMS.decorate=function(worldState,hostState,runState){const result=baseDecorate(worldState,hostState,runState);applyFloorBalance(hostState,runState);return result};
+    SYSTEMS.decorate=function(worldState,hostState,runState){const result=baseDecorate(worldState,hostState,runState);applyFloorTheme(worldState,hostState,runState);applyFloorBalance(hostState,runState);return result};
 
     const baseEnemyStep=AI.stepEnemies.bind(AI);
     AI.stepEnemies=function(hostState,map,players,dt,hooks={},worldState=window.__CCG_WORLD){
@@ -137,9 +148,9 @@
     };
     SYSTEMS.objectiveText=function(hostState,runState,explorePct=0){
       const floor=floorNumber(runState),cfg=floorConfig(runState),domain=domainForFloor(runState),keys=globalKeyCount(runState);
-      if(floor===1)return hostState.objective?.complete?"The Threshold is cleared — reach the stairs to Iron Keep":`Explore the Threshold ${Math.floor(explorePct)}% / 70% and defeat its guardian`;
+      if(floor===1)return hostState.objective?.complete?`The Threshold is cleared — reach the stairs to ${PD.campaignFloors?.[1]?.name||"Floor 2"}`:`Explore the Threshold ${Math.floor(explorePct)}% / 70% and defeat its guardian`;
       if(domain){const got=claimedDomains(runState).includes(domain.id)||(Number(hostState.keysCollected)||0)>=1;return got?`${domain.name} SECURED — global Keys ${Math.min(CFG.keyTarget,keys||1)}/${CFG.keyTarget}; reach the stairs`:`Defeat ${domain.guardian} and recover ${domain.name} — global Keys ${keys}/${CFG.keyTarget}`}
-      if(floor===CFG.maxFloors&&keys<CFG.keyTarget)return `The Sigil Sanctum rejects you — recover all three Keys (${keys}/${CFG.keyTarget})`;
+      if(floor===CFG.maxFloors&&keys<CFG.keyTarget)return `${cfg?.name||"The final Citadel"} rejects you — recover all three Keys (${keys}/${CFG.keyTarget})`;
       if(floor===CFG.maxFloors){const base=baseObjectiveText(hostState,runState,explorePct);return base.replace(/floor exit/gi,"final escape").replace(/EXIT SIGIL/g,"AWAKENED SIGIL")}
       return `${cfg?.name||`FLOOR ${floor}`} — ${baseObjectiveText(hostState,runState,explorePct)}`;
     };
@@ -153,7 +164,7 @@
         }
         const after=globalKeyCount(runState);if(after>before){
           announce(`${domain?.name||"DUNGEON KEY"} RECOVERED`,`The Key is bound to your run. Global Key progress ${after}/${CFG.keyTarget}. Your RPG stats, relics, Vessel and rescued games carry into the next depth.`,"gold",9500);
-          if(after>=CFG.keyTarget&&!runState.v142AllKeysAnnounced){runState.v142AllKeysAnnounced=true;announce("THREE KEYS COMPLETE","Iron, Bone and Ash are yours. Descend to the Sigil Sanctum and finish the ritual.","gold",11000)}
+          if(after>=CFG.keyTarget&&!runState.v142AllKeysAnnounced){runState.v142AllKeysAnnounced=true;announce("THREE KEYS COMPLETE","Iron, Bone and Ash are bound to the run. Keep descending — the Blood Citadel will accept the completed set on Floor 15.","gold",11000)}
         }
         return result;
       };
@@ -176,14 +187,14 @@
     }
 
     function updateMenuCopy(){
-      const blurb=document.querySelector("#menu .menu-blurb");if(blurb)blurb.textContent="A five-depth procedural RPG dungeon crawl designed for roughly a one-hour successful run. Build your character, recover the Keys of Iron, Bone and Ash, complete the Sigil and escape.";
-      const features=[...document.querySelectorAll("#menu .feature-strip span")];if(features[0])features[0].innerHTML="<b>5 PROCEDURAL DEPTHS</b>About 55–75 minutes for a successful full run";if(features[1])features[1].innerHTML="<b>RPG CHARACTER BUILD</b>Level Might, Vitality, Agility, Endurance, Luck and Arcana across the campaign";if(features[2])features[2].innerHTML="<b>THREE GLOBAL KEYS</b>Iron, Bone and Ash persist between floors before the final Sigil escape";
-      const note=document.getElementById("menu-note");if(note)note.textContent="Every campaign generates five new dungeon floors and one shuffled A–Z C64 collectible deck distributed across the whole run. Character stats, relics, Banishment Essence and Key progress persist as you descend.";
+      const blurb=document.querySelector("#menu .menu-blurb");if(blurb)blurb.textContent="A fifteen-floor procedural RPG dungeon crawl with persistent character growth, changing objectives and a distinct visual identity on every floor. Recover the Keys of Iron, Bone and Ash across the campaign, complete the Sigil and escape the Blood Citadel.";
+      const features=[...document.querySelectorAll("#menu .feature-strip span")];if(features[0])features[0].innerHTML="<b>15 PROCEDURAL FLOORS</b>A full campaign now continues all the way to the Blood Citadel";if(features[1])features[1].innerHTML="<b>RPG CHARACTER BUILD</b>Level Might, Vitality, Agility, Endurance, Luck and Arcana across the campaign";if(features[2])features[2].innerHTML="<b>THREE GLOBAL KEYS</b>Iron, Bone and Ash persist between floors before the final Sigil escape";
+      const note=document.getElementById("menu-note");if(note)note.textContent="Every campaign generates fifteen dungeon floors and one shuffled A–Z C64 collectible deck distributed across the whole run. Character stats, equipment, relics, Banishment Essence, death-cache recovery and Key progress persist as you descend.";
       const floorLabel=document.querySelector('.run-stat #hud-room')?.parentElement?.querySelector("span");if(floorLabel)floorLabel.textContent="FLOOR";
     }
     updateMenuCopy();
 
-    window.CCGLostSizzlerV142FiveDepthCampaign={version:"V10.42",floorConfig,domainForFloor,floorPickupSlice,globalKeyCount,applyFloorBalance};
+    window.CCGLostSizzlerV142FiveDepthCampaign={version:"V10.42",floorConfig,domainForFloor,floorPickupSlice,globalKeyCount,applyFloorTheme,applyFloorBalance};
     return true;
   }
 
