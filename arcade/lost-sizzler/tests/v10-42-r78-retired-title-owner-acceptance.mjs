@@ -94,4 +94,4 @@ assert.match(rpgExpansion,/endurance:Object\.freeze[\s\S]*player\.maxMana=Math\.
 assert.match(rpgExpansion,/arcana:Object\.freeze[\s\S]*player\.v142SightBonus=Math\.max\(0,Number\(player\.v142SightBonus\)\|\|0\)\+1/,
   "ARC 10 specialisation must add permanent sight");
 
-console.log("Dungeon R78 retired-title cleanup and owner-acceptance contract passed.");
+console.log("Dungeon R87 fifteen-floor retired-title cleanup and owner-acceptance contract passed.");
