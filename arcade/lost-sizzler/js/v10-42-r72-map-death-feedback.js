@@ -4,8 +4,7 @@
   if(window.CCGLostSizzlerV142R72MapDeathFeedback)return;
 
   const STYLE="css/v10-42-r72-map-death-feedback.css";
-  const AUTO_CONFIRM_MS=6200;
-  const state={deathShows:0,lastDeath:null,active:false,confirming:false,shownAt:0,confirmations:0,autoConfirmTimer:0};
+  const state={deathShows:0,lastDeath:null,active:false,confirming:false,shownAt:0,confirmations:0};
 
   function ensureStyle(){
     if(document.querySelector('link[data-ccg-r72-map-death="true"]'))return;
@@ -31,7 +30,7 @@
     node.setAttribute("aria-labelledby","ccg-r72-death-title");
     node.setAttribute("aria-live","assertive");
     node.setAttribute("aria-hidden","true");
-    node.innerHTML='<div class="ccg-r72-death-card"><span class="ccg-r72-death-kicker">C64 DUNGEON CARNAGE</span><strong id="ccg-r72-death-title">YOU DIED</strong><b id="ccg-r72-death-source">DEFEATED</b><span id="ccg-r72-death-loss"></span><small>RESPAWNING IN A MOMENT</small><button id="ccg-r72-death-continue" type="button">CONTINUE</button><em>ENTER / SPACE SKIPS THE WAIT</em></div>';
+    node.innerHTML='<div class="ccg-r72-death-card"><span class="ccg-r72-death-kicker">C64 DUNGEON CARNAGE</span><strong id="ccg-r72-death-title">YOU DIED</strong><b id="ccg-r72-death-source">DEFEATED</b><span id="ccg-r72-death-loss"></span><small>PRESS CONTINUE TO RESPAWN</small><button id="ccg-r72-death-continue" type="button">CONTINUE</button><em>ENTER / SPACE CONFIRMS</em></div>';
     host.appendChild(node);
     node.querySelector("#ccg-r72-death-continue")?.addEventListener("click",confirmDeath);
     return node
@@ -44,16 +43,13 @@
     const bits=[];if(Number(detail.scoreLost)>0)bits.push(`${Number(detail.scoreLost).toLocaleString()} SCORE LOST`);if(Number(detail.xpLost)>0)bits.push(`${Number(detail.xpLost).toLocaleString()} XP MOVED TO DEATH CACHE`);if(detail.cacheActive)bits.push("DEATH CACHE MARKED ON MAP");
     if(loss)loss.textContent=bits.join(" · ")||"NO SCORE OR XP LOST";
     node.classList.add("active");node.setAttribute("aria-hidden","false");
-    if(state.autoConfirmTimer)clearTimeout(state.autoConfirmTimer);
     state.deathShows++;state.lastDeath={...detail,at:Date.now()};state.active=true;state.confirming=false;state.shownAt=performance.now();
-    state.autoConfirmTimer=setTimeout(()=>{state.autoConfirmTimer=0;confirmDeath()},AUTO_CONFIRM_MS);
     requestAnimationFrame(()=>node.querySelector("#ccg-r72-death-continue")?.focus?.({preventScroll:true}))
   }
 
   function hideDeath(){
     const node=document.getElementById("ccg-r72-death-feedback");
     if(node){node.classList.remove("active");node.setAttribute("aria-hidden","true")}
-    if(state.autoConfirmTimer){clearTimeout(state.autoConfirmTimer);state.autoConfirmTimer=0}
     state.active=false;state.confirming=false
   }
 
@@ -74,5 +70,5 @@
   window.addEventListener("ccg:player-death",showDeath);
   window.addEventListener("ccg:respawn-confirmed",hideDeath);
   window.addEventListener("keydown",onDeathKey,true);
-  window.CCGLostSizzlerV142R72MapDeathFeedback=Object.freeze({version:"V10.42-r79-timed-death-feedback",AUTO_CONFIRM_MS,state,showDeath,confirmDeath,hideDeath});
+  window.CCGLostSizzlerV142R72MapDeathFeedback=Object.freeze({version:"V10.42-r79-confirmed-death-feedback",state,showDeath,confirmDeath,hideDeath});
 })();
