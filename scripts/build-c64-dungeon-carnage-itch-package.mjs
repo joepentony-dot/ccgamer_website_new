@@ -90,6 +90,13 @@ function packageDemoPaywallRuntime(){
 function transformIndex(source,cacheToken){
   let html=source;
   html=html.replace("<head>","<head>\n<script>window.CCGDungeonCarnageItchPackage=true;</script>");
+  // The website keeps Dungeon runtime scripts inert until server-validated access.
+  // The paid itch package is a self-contained authorised distribution, so restore
+  // those placeholders to ordinary script tags before applying offline transforms.
+  html=html.replace(
+    /<script type="application\\/ccg-protected-runtime" data-ccg-protected-runtime([^>]*)>/g,
+    "<script$1>"
+  );
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-config\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-supabase-client\.js(?:\?v=[^"]+)?"><\/script>\s*$/m,"");
   html=html.replace(/^\s*<script src="\/js\/ccg-play-maintenance-owner-gate\.js(?:\?v=[^"]+)?"[^>]*><\/script>\s*$/m,"");
