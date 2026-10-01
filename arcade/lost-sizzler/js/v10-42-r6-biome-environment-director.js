@@ -12,10 +12,20 @@
 
   const BIOMES={
     threshold:{id:"threshold",name:"RUINED THRESHOLD",material:"weathered flagstone",weather:"rain",accent:"168,163,156",shadow:.18,motes:"rain"},
-    iron:{id:"iron",name:"IRON KEEP",material:"blue-steel keepstone",weather:"draft",accent:"127,179,221",shadow:.26,motes:"sparks"},
-    bone:{id:"bone",name:"MOSS CRYPT",material:"crypt limestone",weather:"crypt-mist",accent:"122,176,105",shadow:.31,motes:"mist"},
-    ash:{id:"ash",name:"EMBER DEPTHS",material:"scorched basalt",weather:"ashfall",accent:"255,103,52",shadow:.25,motes:"embers"},
-    sigil:{id:"sigil",name:"CRIMSON SIGIL SANCTUM",material:"blood-rune obsidian",weather:"arcane-dust",accent:"255,96,118",shadow:.29,motes:"sigils"}
+    driveworks:{id:"driveworks",name:"1541 DRIVEWORKS",material:"blue-grey drive steel",weather:"draft",accent:"114,215,255",shadow:.22,motes:"drive-dust"},
+    iron:{id:"iron",name:"IRON KEEP",material:"riveted keepstone",weather:"draft",accent:"214,164,108",shadow:.26,motes:"sparks"},
+    budget:{id:"budget",name:"BUDGET VAULTS",material:"ochre stockroom stone",weather:"arcane-dust",accent:"255,216,90",shadow:.23,motes:"paper-dust"},
+    cartridge:{id:"cartridge",name:"CARTRIDGE CATACOMBS",material:"green slotstone",weather:"draft",accent:"114,255,155",shadow:.25,motes:"slot-dust"},
+    tapes:{id:"tapes",name:"TAPE LABYRINTH",material:"violet archive stone",weather:"arcane-dust",accent:"215,184,255",shadow:.27,motes:"tape-dust"},
+    bone:{id:"bone",name:"MOSS CRYPT",material:"crypt limestone",weather:"crypt-mist",accent:"153,194,125",shadow:.31,motes:"mist"},
+    demo:{id:"demo",name:"DEMO UNDERCROFT",material:"raster-lit stone",weather:"arcane-dust",accent:"255,91,174",shadow:.25,motes:"raster-dust"},
+    modem:{id:"modem",name:"MODEM WARRENS",material:"cyan exchange stone",weather:"draft",accent:"108,236,255",shadow:.27,motes:"carrier-dust"},
+    sid:{id:"sid",name:"SID FURNACE",material:"resonant red basalt",weather:"ashfall",accent:"255,104,104",shadow:.28,motes:"hot-dust"},
+    ash:{id:"ash",name:"EMBER DEPTHS",material:"scorched basalt",weather:"ashfall",accent:"255,120,72",shadow:.29,motes:"embers"},
+    foundry:{id:"foundry",name:"PIXEL FOUNDRY",material:"copper pressstone",weather:"ashfall",accent:"255,153,80",shadow:.30,motes:"forge-sparks"},
+    scores:{id:"scores",name:"HIGH SCORE CRYPT",material:"gilded scorestone",weather:"arcane-dust",accent:"255,216,90",shadow:.31,motes:"score-dust"},
+    crt:{id:"crt",name:"CRT MAZE",material:"phosphor glassstone",weather:"crypt-mist",accent:"114,255,155",shadow:.32,motes:"phosphor-haze"},
+    citadel:{id:"citadel",name:"BLOOD CITADEL",material:"blood-rune obsidian",weather:"ashfall",accent:"255,75,87",shadow:.36,motes:"blood-embers"}
   };
   const state={profiles:0,tileFrames:0,atmosphereFrames:0,lastFloor:0,lastBiome:"",installed:{host:false,tile:false,view:false}};
   const num=(v,f=0)=>{const n=Number(v);return Number.isFinite(n)?n:f};
@@ -31,7 +41,7 @@
 
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return h>>>0}
   const unit=value=>hash32(value)/4294967296;
-  const floorId=floor=>C.proceduralDungeon?.campaignFloors?.find(row=>Number(row.floor)===floor)?.id||["threshold","iron","bone","ash","sigil"][floor-1]||"threshold";
+  const floorId=floor=>C.proceduralDungeon?.campaignFloors?.find(row=>Number(row.floor)===floor)?.id||"threshold";
   const floorBiome=floor=>BIOMES[floorId(floor)]||BIOMES.threshold;
 
   function roomRole(room,worldState,hostState){
@@ -67,9 +77,10 @@
       iron:["chain-gallery","riveted-barracks","forge-annex","armour-vault"],
       bone:["moss-ossuary","sunken-crypt","bone-aisle","rooted-tomb"],
       ash:["ember-foundry","charred-vault","lava-drain","smoke-gallery"],
-      sigil:["rune-vault","violet-sanctum","archive-apse","astral-gallery"]
+      citadel:["blood-rune-vault","red-bastion","scarlet-apse","last-stand-gallery"]
     };
-    let variant=(variants[biome.id]||variants.threshold)[hash32(seedKey)%4];
+    const biomeVariants=variants[biome.id]||[biome.id+"-hall",biome.id+"-vault",biome.id+"-gallery",biome.id+"-annex"];
+    let variant=biomeVariants[hash32(seedKey)%biomeVariants.length];
     if(role==="web-nest")variant="web-choked-nest";
     if(role==="ossuary")variant="bone-ossuary";
     if(role==="sanctuary")variant=`${biome.id}-sanctuary`;
@@ -100,7 +111,7 @@
       if(profile.biome==="iron"&&h%7===0){ctx.strokeStyle="rgba(216,166,100,.30)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+8,s.y+5);ctx.lineTo(s.x+8,s.y+tile-6);ctx.moveTo(s.x+tile-9,s.y+5);ctx.lineTo(s.x+tile-9,s.y+tile-6);ctx.stroke();ctx.fillStyle="rgba(230,190,120,.38)";ctx.fillRect(s.x+6,s.y+8,4,4);ctx.fillRect(s.x+tile-11,s.y+tile-12,4,4)}
       else if(profile.biome==="bone"&&h%6===0){ctx.strokeStyle="rgba(172,196,143,.24)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+4,s.y+tile-4);ctx.quadraticCurveTo(s.x+tile*.35,s.y+tile*.35,s.x+tile-5,s.y+7);ctx.stroke()}
       else if(profile.biome==="ash"&&h%5===0){ctx.fillStyle="rgba(255,91,38,.18)";ctx.fillRect(s.x+5+(h%11),s.y+tile-7,8+(h%9),2);if(!constrained()){ctx.shadowColor="rgba(255,91,38,.65)";ctx.shadowBlur=7;ctx.fillStyle="rgba(255,165,74,.35)";ctx.fillRect(s.x+9+(h%17),s.y+tile-8,2,2)}}
-      else if(profile.biome==="sigil"&&h%8===0){ctx.strokeStyle="rgba(196,125,255,.28)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+tile/2,s.y+7);ctx.lineTo(s.x+tile-8,s.y+tile/2);ctx.lineTo(s.x+tile/2,s.y+tile-7);ctx.lineTo(s.x+8,s.y+tile/2);ctx.closePath();ctx.stroke()}
+      else if(profile.biome==="citadel"&&h%8===0){ctx.strokeStyle="rgba(196,125,255,.28)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+tile/2,s.y+7);ctx.lineTo(s.x+tile-8,s.y+tile/2);ctx.lineTo(s.x+tile/2,s.y+tile-7);ctx.lineTo(s.x+8,s.y+tile/2);ctx.closePath();ctx.stroke()}
       if(profile.role==="web-nest"&&h%3===0){ctx.strokeStyle="rgba(232,237,246,.38)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+2,s.y+3);ctx.quadraticCurveTo(s.x+tile*.5,s.y+tile*.2,s.x+tile-3,s.y+tile*.55);ctx.moveTo(s.x+3,s.y+tile-3);ctx.quadraticCurveTo(s.x+tile*.6,s.y+tile*.55,s.x+tile-4,s.y+5);ctx.stroke()}
       ctx.restore();return;
     }
@@ -114,7 +125,7 @@
       if((profile.role==="ossuary"||h%13===0)){ctx.strokeStyle="rgba(231,220,178,.25)";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+9,s.y+tile*.5);ctx.lineTo(s.x+tile-9,s.y+tile*.5);ctx.stroke();ctx.fillStyle="rgba(231,220,178,.28)";ctx.beginPath();ctx.arc(s.x+9,s.y+tile*.5,3,0,Math.PI*2);ctx.arc(s.x+tile-9,s.y+tile*.5,3,0,Math.PI*2);ctx.fill()}
     }else if(profile.biome==="ash"){
       if(h%4===0){ctx.strokeStyle=`rgba(255,86,35,${.12+.06*Math.sin(t+h)})`;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(s.x+5,s.y+10+(h%8));ctx.lineTo(s.x+tile*.45,s.y+tile*.55);ctx.lineTo(s.x+tile-6,s.y+tile-9);ctx.stroke()}
-    }else if(profile.biome==="sigil"){
+    }else if(profile.biome==="citadel"){
       if(h%5===0){ctx.strokeStyle="rgba(187,114,255,.19)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(s.x+tile/2,s.y+tile/2,9+(h%5),0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(s.x+tile/2,s.y+7);ctx.lineTo(s.x+tile-8,s.y+tile-9);ctx.lineTo(s.x+8,s.y+tile-9);ctx.closePath();ctx.stroke()}
     }
     if(profile.role==="web-nest"&&h%2===0){ctx.strokeStyle="rgba(235,239,247,.28)";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+2,s.y+3);ctx.quadraticCurveTo(s.x+tile*.45,s.y+tile*.55,s.x+tile-3,s.y+8);ctx.moveTo(s.x+4,s.y+tile-3);ctx.quadraticCurveTo(s.x+tile*.55,s.y+tile*.35,s.x+tile-5,s.y+5);ctx.stroke()}

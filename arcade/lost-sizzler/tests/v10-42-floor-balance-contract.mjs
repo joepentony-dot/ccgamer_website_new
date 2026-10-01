@@ -13,7 +13,7 @@ const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 const systems={decorate(_world,host){return host}};
 const sandbox={
   window:{
-    CCG_CONFIG:{maxFloors:5},
+    CCG_CONFIG:{maxFloors:15},
     CCGSystems:systems,
     CCGLostSizzlerV142FiveDepthCampaign:{version:'V10.42'}
   },
@@ -32,11 +32,11 @@ assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-tu
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-zero-server-release.js'),'Floor combat balance must install before the production release-policy guard.');
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-r1-stability.js'),'Floor combat balance must install before final V10.42 stability protection.');
 
-const expectedDamage=[.80,.90,1,1.10,1.20];
-for(let floor=1;floor<=5;floor++){
+const expectedDamage=[.80,.84,.88,.92,.96,1.00,1.04,1.08,1.12,1.16,1.20,1.23,1.26,1.29,1.32];
+for(let floor=1;floor<=15;floor++){
   assert(Math.abs(api.damageFor({floor})-expectedDamage[floor-1])<1e-9,`Floor ${floor} damage scale changed unexpectedly.`);
 }
-for(let floor=2;floor<=5;floor++){
+for(let floor=2;floor<=15;floor++){
   assert(api.damageFor({floor})>=api.damageFor({floor:floor-1}),`Enemy damage must not decrease from Floor ${floor-1} to Floor ${floor}.`);
   assert(api.eliteFor({floor})>=api.eliteFor({floor:floor-1}),`Elite pressure must not decrease from Floor ${floor-1} to Floor ${floor}.`);
 }
@@ -50,15 +50,15 @@ assert(opening.enemies[0].attackCooldown>=700,'Floor 1 attacks need a minimum re
 assert(opening.enemies[0].chargeCooldown>=1200,'Floor 1 charger attacks need a longer telegraph window.');
 
 const midpoint={enemies:[makeEnemy({id:'mid'})]};
-api.applyCombatBalance(midpoint,{floor:3});
-assert(midpoint.enemies[0].damageScale===1,'Floor 3 must be the stabilized baseline combat damage point.');
+api.applyCombatBalance(midpoint,{floor:6});
+assert(midpoint.enemies[0].damageScale===1,'Floor 6 must be the stabilized baseline combat damage point.');
 
 const finalNamed={enemies:[makeEnemy({id:'boss',kind:'champion',hp:20,maxHp:20,armor:4,maxArmor:4,champion:true})]};
-api.applyCombatBalance(finalNamed,{floor:5});
+api.applyCombatBalance(finalNamed,{floor:15});
 const boss=finalNamed.enemies[0];
-assert(boss.damageScale>1.2,'Named Floor 5 threats must gain a modest extra damage multiplier beyond ordinary enemies.');
-assert(boss.maxHp===22,'Named Floor 5 threats should gain only a controlled 10% HP finalizer, not turn into extreme HP sponges.');
-assert(boss.maxArmor===5,'Named Floor 5 threats should receive one additional armour point.');
-assert(finalNamed.v142CombatBalance.floor===5,'Runtime diagnostics must expose the active combat-balance floor.');
+assert(boss.damageScale>1.6,'Named Floor 15 threats must gain a controlled extra damage multiplier beyond ordinary enemies.');
+assert(boss.maxHp===22,'Named Floor 15 threats should gain only a controlled 10% HP finalizer, not turn into extreme HP sponges.');
+assert(boss.maxArmor===5,'Named Floor 15 threats should receive one additional armour point.');
+assert(finalNamed.v142CombatBalance.floor===15,'Runtime diagnostics must expose the active combat-balance floor.');
 
 console.log('Lost Sizzler V10.42 progressive floor combat balance contract passed through the ordered bootstrap.');
