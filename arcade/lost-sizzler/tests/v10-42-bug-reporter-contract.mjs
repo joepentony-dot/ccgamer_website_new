@@ -20,6 +20,13 @@ for(const owner of ["firePlayer","queueAttack","movePlayer","toggleInventory","r
 assert.match(reporter,/const MAX_EVENTS=240/,"diagnostic history must remain bounded");
 assert.match(reporter,/events\.length>MAX_EVENTS/,"old diagnostics must be discarded instead of growing indefinitely");
 assert.match(reporter,/ANOMALY_POSSIBLE_FIRE_FAILURE/,"reporter must flag a failed valid fire attempt");
+assert.match(reporter,/CCGLostSizzlerV142R58AuthoritativeFireCore\?\.trace/,"FIRE diagnostics must consult the authoritative core trace instead of relying only on net ammo/projectile counts");
+assert.match(reporter,/row\?\.stage==="shot-complete"/,"completed authoritative shots must count as successful FIRE evidence");
+assert.match(reporter,/row\?\.stage==="ammo-committed"/,"committed authoritative ammo must count as successful FIRE evidence");
+assert.match(reporter,/row\?\.stage==="executor-result"&&row\?\.fired===true/,"successful authoritative executor results must count as successful FIRE evidence");
+assert.match(reporter,/const cooldownAccepted=Number\(after\.game\.fire1\)>Number\(before\.game\.fire1\)/,"a newly accepted FIRE cooldown must prevent a false failure when projectiles expire or ammo is picked up during the probe window");
+assert.match(reporter,/fireSfxObserved/,"FIRE probes must retain named sound evidence for incident review");
+assert.match(reporter,/traceStages:traceRows\.slice\(-12\)/,"FIRE probes must report the authoritative stages that justified the classification");
 assert.match(reporter,/addEventListener\("ccg:sfx"/,"reporter must retain named SFX evidence");
 assert.match(reporter,/ccg:shop-firearm-upgrade/,"reporter must retain firearm shop transaction evidence");
 assert.match(reporter,/const TRAP_PROBE_MS=40/,"trap contact observation must sample faster than the tile movement cadence");
