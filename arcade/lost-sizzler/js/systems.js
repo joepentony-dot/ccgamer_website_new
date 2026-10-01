@@ -448,9 +448,10 @@ window.CCGSystems=(()=>{
     const occupiedEnemyRooms=new Set((host.enemies||[]).filter(enemy=>enemy?.alive!==false).map(enemy=>W.roomAt(world,enemy.x,enemy.y)).filter(id=>id>=0));
     const sanctuaryEligible=r=>r&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!occupiedEnemyRooms.has(r.id);
     const sanctuaryPreferred=featureRooms.filter(r=>sanctuaryEligible(r)&&!r.optional);
-    const sanctuaryFallback=featureRooms.filter(r=>sanctuaryEligible(r)&&r.optional);
-    const sanctuaryPool=[...sanctuaryPreferred,...sanctuaryFallback].slice(-Math.min(12,featureRooms.length));
-    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,featureRooms.length+2));
+    const sanctuaryFallback=(world.rooms||[]).filter(r=>r?.optional&&sanctuaryEligible(r));
+    const sanctuaryCandidates=[...sanctuaryPreferred,...sanctuaryFallback];
+    const sanctuaryPool=sanctuaryCandidates.slice(-Math.min(12,sanctuaryCandidates.length));
+    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,Math.max(0,(world.rooms||[]).length-1)));
     if(sanctuaryPool.length<sanctuaryTarget){
       const exitRoom=world.rooms?.[world.exitRoomId]||world.rooms?.find?.(room=>room?.id===world.exitRoomId);
       const startRoom=world.rooms?.[world.startRoomId]||world.rooms?.find?.(room=>room?.id===world.startRoomId);
