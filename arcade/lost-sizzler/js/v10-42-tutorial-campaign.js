@@ -8,7 +8,7 @@
     ["OBJECTIVES, MAP & DISCOVERY",{
       title:"READ THE DUNGEON AS YOU DISCOVER IT",
       copy:"The campaign is built around exploration rather than a fully revealed map. Follow the current objective, learn each floor's colour and room language, and let discovered markers build a useful picture of where you have actually been.",
-      detail:"Sanctuary, shops, Warden Corruption and other important symbols belong in the legend once they are relevant. The campaign is expanding beyond the old five-floor prototype, so the tutorial teaches systems rather than memorising a fixed route."
+      detail:"Sanctuary, shops, Warden Corruption and other important symbols belong in the legend once they are relevant. The full campaign now spans fifteen floors, so the tutorial teaches the systems you carry through the entire run rather than asking you to memorise a fixed route."
     }],
     ["SURVIVAL, DEATH & RECOVERY",{
       title:"SURVIVAL & RPG GROWTH",
