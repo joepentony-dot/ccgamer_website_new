@@ -20,7 +20,8 @@ assert.match(gate,/profile\.banned !== true/,"a banned profile must never pass t
 assert.match(gate,/client\.auth\.getSession\(\)/);
 assert.match(gate,/client\.auth\.getUser\(\)/);
 assert.match(gate,/ccg_validate_dungeon_carnage_tester_code/,"invited preview must validate tester codes through the server RPC");
-assert.match(gate,/await isValidTesterCode\(storedTesterCode\)/,"restored tester sessions must be revalidated by the server");
+assert.match(gate,/await validateTesterCodeWithTimeout\(storedTesterCode\)/,"restored tester sessions must be revalidated through a bounded server check");
+assert.match(gate,/Promise\.race\(\[isValidTesterCode\(value\), timeout\]\)/,"tester-code validation must fail closed on timeout");
 assert.match(gate,/ccg_has_dungeon_carnage_playtest_access/,"assigned website members must resolve playtest access through the protected entitlement RPC");
 assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive the member-playtester access state");
 assert.match(gate,/showTesterGate\(\)/,"ordinary production visitors must receive the invited tester-code gate");
