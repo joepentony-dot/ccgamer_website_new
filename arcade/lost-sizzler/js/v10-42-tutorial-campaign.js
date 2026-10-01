@@ -10,27 +10,27 @@
   const finalFloorLabel=`F${campaignDepth}`;
 
   const STEP_COPY=new Map([
-    ["OBJECTIVES, RADAR & HINTS",{
+    ["OBJECTIVE, MAP & SANCTUARY",{
       title:`THE ${campaignDepth}-FLOOR CAMPAIGN`,
       copy:`The adventure spans ${campaignDepth} procedural floors. Objectives change as you descend, so read the mission, use the map and build for the next floor instead of treating each level as a fresh run.`,
       detail:"RPG attributes, wearable equipment, relics, major Keys, Banishment Essence and rescued C64 games persist through the campaign. Floor themes and threat pressure become more dangerous as you go."
     }],
-    ["HEALTH, ARMOUR & QUICK ITEMS",{
+    ["HEALTH, ARMOUR, DEATH & RECOVERY",{
       title:"SURVIVAL, DEATH & RPG GROWTH",
       copy:"Health and armour keep you alive, while Might, Vitality, Agility, Endurance, Luck and Arcana change how the character performs. Your equipment and current weapon tier are part of that build.",
       detail:"A normal death pauses on YOU DIED until you confirm it, then leaves recoverable XP/items behind. If lost XP drops a level, the matching stat benefit is lost too; recover that death cache before dying again to reclaim what the cache still owns."
     }],
-    ["KEYS, DOORS & CHESTS",{
+    ["DOORS, CHESTS & WEAPON CACHES",{
       title:"LOCKS, LOOT & THE EVOLVING FIREARM",
       copy:"Bronze keys and objective locks gate optional routes and rewards. Chests, weapon caches and equipment pickups should tell you exactly what they contain instead of pretending every reward is a separate gun.",
       detail:"Your firearm evolves as one weapon. WEAPON UPGRADED means its real tier/stats improve; once a floor cap is reached, later weapon-cache rewards fall back to useful ammunition, XP or score instead of creating obsolete standalone weapons."
     }],
-    ["ENEMIES, NAMED ENEMIES & THE STALKER",{
+    ["ENEMIES, WARDENS & SPECIAL THREATS",{
       title:"THREATS, WARDENS & BANISHMENT",
       copy:`Ordinary enemies, named champions, Wardens and supernatural threats become more demanding as you descend toward Floor ${campaignDepth}. Their name, sprite and special rules should always agree.`,
       detail:"Warden Corruption is called out on the map legend when discovered. Death Stalker/Count-style threats use their own warnings and Banishment rules; ordinary weapon fire is not the permanent solution."
     }],
-    ["RARE EVENTS, SHOPS, HAZARDS & SCORE",{
+    ["SHOPS, SANCTUARY, SECRETS & EVENTS",{
       title:"SHOPS, SANCTUARY & DISCOVERY",
       copy:"Explore for shops, Sanctuary rooms, rare events, secrets and equipment rather than sprinting straight to the exit. The minimap reveals useful information only as the dungeon is actually discovered.",
       detail:"Sanctuary appears as a green cross only after discovery. Shops are where supplies, capacity and other services belong; contextual first-encounter prompts explain new services when you meet them instead of front-loading a manual."
