@@ -3,6 +3,8 @@
   "use strict";
   if(window.__CCG_LOST_SIZZLER_MULTIPLAYER_SYNC_V131__)return;
   window.__CCG_LOST_SIZZLER_MULTIPLAYER_SYNC_V131__=true;
+  const net=window.net||null;
+  if(!net){window.CCGLostSizzlerV131RetiredOffline=Object.freeze({active:false,reason:"retired-online-runtime-unavailable"});return}
 
   const requested=new Map();
   const canRequest=key=>{const now=performance.now(),last=Number(requested.get(key)||0);if(now-last<260)return false;requested.set(key,now);return true};
