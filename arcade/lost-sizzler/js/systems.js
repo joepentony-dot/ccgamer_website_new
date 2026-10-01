@@ -450,10 +450,14 @@ window.CCGSystems=(()=>{
     const sanctuaryPreferred=featureRooms.filter(r=>sanctuaryEligible(r)&&!r.optional);
     const sanctuaryFallback=featureRooms.filter(r=>sanctuaryEligible(r)&&r.optional);
     const sanctuaryPool=[...sanctuaryPreferred,...sanctuaryFallback].slice(-Math.min(12,featureRooms.length));
-    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,featureRooms.length+1));
+    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,featureRooms.length+2));
     if(sanctuaryPool.length<sanctuaryTarget){
+      const exitRoom=world.rooms?.[world.exitRoomId]||world.rooms?.find?.(room=>room?.id===world.exitRoomId);
       const startRoom=world.rooms?.[world.startRoomId]||world.rooms?.find?.(room=>room?.id===world.startRoomId);
-      if(startRoom&&!startRoom.sigilRoom&&!startRoom.dedicatedHazardReserved&&!occupiedEnemyRooms.has(startRoom.id)&&!sanctuaryPool.some(room=>room.id===startRoom.id))sanctuaryPool.push(startRoom);
+      for(const fallbackRoom of [exitRoom,startRoom]){
+        if(sanctuaryPool.length>=sanctuaryTarget)break;
+        if(fallbackRoom&&!fallbackRoom.sigilRoom&&!fallbackRoom.dedicatedHazardReserved&&!occupiedEnemyRooms.has(fallbackRoom.id)&&!sanctuaryPool.some(room=>room.id===fallbackRoom.id))sanctuaryPool.push(fallbackRoom);
+      }
     }
     for(let i=0;i<Math.min(sanctuaryTarget,sanctuaryPool.length);i++){
       const room=sanctuaryPool[(i*3+1)%sanctuaryPool.length];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
