@@ -493,7 +493,7 @@
       const fireSfxObserved=events.some(event=>
         Number(event?.ms||0)>=probeAt-1&&event?.type==="sfx"&&String(event?.detail?.name||"")==="fire"
       );
-      const fired=ammoSpent||projectileAdded||meleeAdvanced||traceShot||cooldownAccepted;
+      const fired=ammoSpent||projectileAdded||meleeAdvanced||traceShot||cooldownAccepted||fireSfxObserved;
       push("attack-probe",{code,fired,evidence:{ammoSpent,projectileAdded,meleeAdvanced,traceShot,cooldownAccepted,fireSfxObserved,traceStages:traceRows.slice(-12).map(row=>String(row?.stage||""))},before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
