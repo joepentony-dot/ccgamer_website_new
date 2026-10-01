@@ -21,7 +21,8 @@ assert.doesNotMatch(main,/Cheeky's Commodore Quest/,"retired game title must not
 
 assert.match(finalUi,/run\?\.runComplete/,"completion credits must require the authoritative successful-run completion latch");
 assert.match(finalUi,/!run\.xpGameOver/,"Floor 15 XP game-over must never receive victory credits");
-assert.match(finalUi,/Number\(run\.floor\|\|0\)>=Number\(window\.CCG_CONFIG\?\.maxFloors\|\|15\)/,"victory credits must remain gated to the configured final floor");\nassert.match(finalUi,/CAMPAIGN COMPLETE — BLOOD CITADEL CLEARED/,"full campaign completion must receive a distinct credits finale");
+assert.match(finalUi,/Number\(run\.floor\|\|0\)>=Number\(window\.CCG_CONFIG\?\.maxFloors\|\|15\)/,"victory credits must remain gated to the configured final floor");
+assert.match(finalUi,/CAMPAIGN COMPLETE — BLOOD CITADEL CLEARED/,"full campaign completion must receive a distinct credits finale");
 assert.match(finalUi,/AZALEA and CPU/,"special acknowledgements must include long-term supporters AZALEA and CPU");
 assert.match(finalUi,/info@cheekycommodoregamer\.co\.uk/,"completion credits must expose the requested feedback email");
 assert.match(finalUi,/paypal\.com\/donate/,"completion credits must expose the existing donation destination");
