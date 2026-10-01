@@ -473,12 +473,28 @@
 
   function fireProbe(code,before){
     if(!before?.player1||before.game.mode!=="playing"||!before.game.runActive)return;
+    const probeAt=performance.now();
     setTimeout(()=>{
       const after=currentSnapshot("attack-probe");
-      const fired=Number(after.player1?.mana)<Number(before.player1?.mana)||
-        Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles)||
-        Number(after.player1?.meleeSwingAt||0)>Number(before.player1?.meleeSwingAt||0);
-      push("attack-probe",{code,fired,before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
+      const traceRows=safe(()=>{
+        const trace=window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace;
+        return Array.isArray(trace)?trace.filter(row=>Number(row?.at||0)>=probeAt-1):[]
+      },[]);
+      const traceShot=traceRows.some(row=>
+        row?.stage==="shot-complete"||
+        row?.stage==="ammo-committed"||
+        (row?.stage==="executor-result"&&row?.fired===true)
+      );
+      const ammoSpent=Number(after.player1?.mana)<Number(before.player1?.mana);
+      const projectileAdded=Number(after.game.activeProjectiles)>Number(before.game.activeProjectiles);
+      const meleeAdvanced=Number(after.player1?.meleeSwingAt||0)>Number(before.player1?.meleeSwingAt||0);
+      const cooldownAccepted=Number(after.game.fire1)>Number(before.game.fire1)||
+        Number(after.game.fireBuffer1)>Number(before.game.fireBuffer1);
+      const fireSfxObserved=events.some(event=>
+        Number(event?.ms||0)>=probeAt-1&&event?.type==="sfx"&&String(event?.detail?.name||"")==="fire"
+      );
+      const fired=ammoSpent||projectileAdded||meleeAdvanced||traceShot||cooldownAccepted;
+      push("attack-probe",{code,fired,evidence:{ammoSpent,projectileAdded,meleeAdvanced,traceShot,cooldownAccepted,fireSfxObserved,traceStages:traceRows.slice(-12).map(row=>String(row?.stage||""))},before:{mana:before.player1?.mana,hitStunMs:before.player1?.hitStunMs,meleeSwingAt:before.player1?.meleeSwingAt,fire1:before.game.fire1,buffer:before.game.fireBuffer1,projectiles:before.game.activeProjectiles,mode:before.game.mode},after:{mana:after.player1?.mana,hitStunMs:after.player1?.hitStunMs,meleeSwingAt:after.player1?.meleeSwingAt,fire1:after.game.fire1,buffer:after.game.fireBuffer1,projectiles:after.game.activeProjectiles,mode:after.game.mode}});
       if(!fired&&after.game.mode==="playing"&&after.game.runActive&&after.browser.visibility==="visible"){
         state.anomalies++;
         const anomalyDetail={
