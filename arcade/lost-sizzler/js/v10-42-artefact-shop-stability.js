@@ -10,7 +10,7 @@
   function progression(){return window.CCGProgression||null}
   function currentShopOwner(){try{return typeof buyShopItem==="function"?buyShopItem:null}catch(_){return null}}
   function currentRenderOwner(){try{return typeof renderShop==="function"?renderShop:null}catch(_){return null}}
-  function alchemistOpen(){try{return Boolean(activeShop&&(activeShop.v142Alchemist||String(activeShop.title||"").includes("ALCHEMIST")))}catch(_){return false}}
+  function exchangeShopOpen(){try{return Boolean(activeShop&&activeShop.active!==false)}catch(_){return false}}
   function chainOwnsArtefactBoundary(owner=currentShopOwner()){
     const seen=new Set();
     let current=owner;
@@ -37,7 +37,7 @@
       const scoreButton=root.querySelector?.('[data-shop-buy="banishmentScore"]'),scoreArticle=scoreButton?.closest?.("article");
       if(scoreArticle){scoreArticle.remove();removed++}
       const trade=root.querySelector?.('[data-shop-buy="banishment"]'),article=trade?.closest?.("article");
-      if(!alchemistOpen()){
+      if(!exchangeShopOpen()){
         if(article){article.remove();removed++}
         return removed;
       }
@@ -45,9 +45,9 @@
         const player=currentPlayer(),need=Math.max(1,Math.floor(Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(player))||Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
         trade.textContent="DISTIL FLASK";
         const title=article.querySelector("h3"),price=article.querySelector(".price"),copy=article.querySelector("p");
-        if(title)title.textContent="DISTIL BANISHMENT FLASK";
+        if(title)title.textContent="EXCHANGE FOR BANISHMENT FLASK";
         if(price)price.textContent=`${need} ESSENCE`;
-        if(copy)copy.textContent="Consumes Banishment Essence from the Vessel and creates exactly one Banishment Flask. Score and Gold are unchanged.";
+        if(copy)copy.textContent="Exchange Banishment Essence from the Vessel for exactly one Banishment Flask. Available at every dungeon shop; Score and Gold are unchanged.";
       }
       return removed;
     }catch(_){return 0}
@@ -87,7 +87,7 @@
   function tradeArtefactsForFlask(){
     const PGR=progression(),player=currentPlayer();
     if(!PGR||!player)return false;
-    if(!alchemistOpen()){try{showToast("ALCHEMIST REQUIRED","Banishment Flasks can only be distilled at a Banishment Alchemist.","cyan",5200)}catch(_){}return false}
+    if(!exchangeShopOpen()){try{showToast("ALCHEMIST REQUIRED","Banishment Flasks can only be distilled at a Banishment Alchemist.","cyan",5200)}catch(_){}return false}
     const need=Math.max(1,Math.floor(Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(player))||Number(window.CCG_CONFIG?.stalker?.flaskArtefacts)||3));
     const physicalHave=physicalArtefactCount(player);
     const essenceHave=nonNegativeInt(player.banishmentEssence);

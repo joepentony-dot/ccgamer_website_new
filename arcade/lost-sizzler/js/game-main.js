@@ -216,6 +216,7 @@ addEventListener("keydown",e=>{
   // emails, player names and any future editable admin/game field.
   if(isEditableKeyboardTarget(e.target))return;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
+  if(mode==="shop"&&(e.code==="Backspace"||e.code==="KeyX")){e.preventDefault();closeShop();return}
   if(e.code==="Escape"){
     if(mode==="levelup"){deferLevelChoice();return}
     if(mode==="paused"){resumePausedRun();return}
