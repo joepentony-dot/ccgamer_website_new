@@ -98,12 +98,17 @@ function queueAttack(p,requestedDirection=null){
   p.__ccgFireSpawnFault=false;
   normalizeAttackState(p);
   const isP2=p===p2,direction=attackDirection(p,requestedDirection),now=performance.now();
-  const previousIntent=Number(attackIntentTimes.get(p)||0),duplicateIntent=previousIntent>0&&now-previousIntent<ATTACK_INTENT_DEDUPE_MS;
-  attackIntentTimes.set(p,now);
+  const hasUsableFirearm=Boolean(p.firearmUnlocked&&p.weapon&&Number(p.mana||0)>0&&!breakableFurnitureAhead(p,direction));
+  const intentOwner=hasUsableFirearm?"firearm":"melee";
+  const previousIntent=attackIntentTimes.get(p);
+  const previousAt=Number(previousIntent?.at??previousIntent??0);
+  const previousOwner=typeof previousIntent==="object"?String(previousIntent.owner||""):intentOwner;
+  const duplicateIntent=previousAt>0&&previousOwner===intentOwner&&now-previousAt<ATTACK_INTENT_DEDUPE_MS;
+  attackIntentTimes.set(p,{at:now,owner:intentOwner});
   if(requestedDirection&&(requestedDirection.x||requestedDirection.y))p.dir=direction;
-  if(duplicateIntent){traceAuthoritativeFire("queue-deduped",p,{source:"input"});return true}
+  if(duplicateIntent){traceAuthoritativeFire("queue-deduped",p,{source:"input",owner:intentOwner});return true}
   p.__ccgFireIntentId=++authoritativeFireIntentSerial;
-  traceAuthoritativeFire("queue",p,{source:"input",direction:{...direction},ammo:Number(p.mana||0)});
+  traceAuthoritativeFire("queue",p,{source:"input",owner:intentOwner,direction:{...direction},ammo:Number(p.mana||0)});
   try{dispatchEvent(new CustomEvent("ccg:attack-intent",{detail:{playerId:String(p.id||p.name||"P1"),p2:isP2,at:now,intentId:p.__ccgFireIntentId}}))}catch(_){}
   // Input records intent only. The simulation loop is the sole buffered FIRE
   // executor, preventing one physical keyboard press from racing an immediate
