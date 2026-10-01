@@ -53,7 +53,7 @@ const sandbox={
 vm.runInNewContext(source,sandbox,{filename:'v10-42-r6-biome-environment-director.js'});
 const api=windowObject.CCGLostSizzlerV142R6BiomeEnvironmentDirector;
 assert(api,'R6 biome environment director must export its runtime API.');
-assert(Object.keys(api.BIOMES).join(',')==='threshold,iron,bone,ash,sigil','R6 must provide one authored visual biome for each five-depth campaign floor.');
+assert(Object.keys(api.BIOMES).join(',')==='threshold,driveworks,iron,budget,cartridge,tapes,bone,demo,modem,sid,ash,foundry,scores,crt,citadel','R6 must provide one authored visual biome for each fifteen-floor campaign stage.');
 assert(bootstrapSource.includes('["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"]'),'Authoritative V10.42 bootstrap must load the R6 environment director.');
 assert(bootstrapSource.indexOf('v10-42-r6-biome-environment-director.js')<bootstrapSource.indexOf('v10-42-r1-stability.js'),'Presentation evolution must load before the final V10.42 stability owner.');
 
@@ -69,18 +69,26 @@ const snapshot=JSON.stringify(first.v142Environment.roomProfiles);
 const second=windowObject.CCGWorld.createHostState(worldState);
 assert(JSON.stringify(second.v142Environment.roomProfiles)===snapshot,'Same seed, floor and room graph must produce identical room dressing metadata.');
 
-runState.floor=3;
-const crypt=windowObject.CCGWorld.createHostState(worldState);
-assert(crypt.v142Environment.biome==='bone','Floor 3 must resolve to the Moss Crypt biome.');
-assert(crypt.v142Environment.weather==='crypt-mist','Moss Crypt must expose its crypt-mist ambience to the renderer.');
-assert(crypt.v142Environment.roomProfiles.every(row=>row.dressingSeed!==undefined),'Every room profile must expose a stable dressing seed.');
+runState.floor=2;
+const driveworks=windowObject.CCGWorld.createHostState(worldState);
+assert(driveworks.v142Environment.biome==='driveworks'&&driveworks.v142Environment.weather==='draft','Floor 2 must resolve to the 1541 Driveworks biome.');
 
-runState.floor=4;
+runState.floor=3;
+const iron=windowObject.CCGWorld.createHostState(worldState);
+assert(iron.v142Environment.biome==='iron','Floor 3 must resolve to the Iron Keep biome.');
+assert(iron.v142Environment.roomProfiles.every(row=>row.dressingSeed!==undefined),'Every room profile must expose a stable dressing seed.');
+
+runState.floor=7;
+const crypt=windowObject.CCGWorld.createHostState(worldState);
+assert(crypt.v142Environment.biome==='bone'&&crypt.v142Environment.weather==='crypt-mist','Floor 7 must resolve to Moss Crypt with crypt-mist ambience.');
+
+runState.floor=11;
 const ember=windowObject.CCGWorld.createHostState(worldState);
-assert(ember.v142Environment.biome==='ash'&&ember.v142Environment.weather==='ashfall','Floor 4 must resolve to Ember Depths with ashfall ambience.');
-runState.floor=5;
-const sigil=windowObject.CCGWorld.createHostState(worldState);
-assert(sigil.v142Environment.biome==='sigil'&&sigil.v142Environment.weather==='arcane-dust','Floor 5 must resolve to Sigil Sanctum with arcane atmospheric dressing.');
+assert(ember.v142Environment.biome==='ash'&&ember.v142Environment.weather==='ashfall','Floor 11 must resolve to Ember Depths with ashfall ambience.');
+
+runState.floor=15;
+const citadel=windowObject.CCGWorld.createHostState(worldState);
+assert(citadel.v142Environment.biome==='citadel'&&citadel.v142Environment.weather==='ashfall','Floor 15 must resolve to the Blood Citadel danger biome.');
 
 for(const forbidden of ['fetch(','WebSocket','EventSource','supabase.from','render.com'])assert(!source.includes(forbidden),`R6 environment runtime must stay local/browser-native and must not introduce ${forbidden}.`);
 assert(!source.includes('Math.random'),'Environment identity and room dressing must not consume nondeterministic gameplay RNG.');
