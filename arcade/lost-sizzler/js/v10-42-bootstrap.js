@@ -45,6 +45,7 @@
     ["v10-42-r46-final-visual-polish.js","CCGLostSizzlerV142R46FinalVisualPolish"],
     ["v10-42-r48-elemental-portal-presentation.js","CCGLostSizzlerV142R48ElementalPortalPresentation"],
     ["v10-42-tutorial-campaign.js","CCGLostSizzlerV142TutorialCampaign"],
+    ["v10-42-r89-endgame-credits.js","CCGDungeonEndgameCredits"],
     ["v10-42-demo-paywall.js","CCGLostSizzlerV142DemoPaywall"],
     ["v10-42-zero-server-release.js","CCGLostSizzlerV142ZeroServerRelease"],
     ["v10-42-r2-controller-owner-seal.js","CCGLostSizzlerV142R2ControllerOwnerSeal"],

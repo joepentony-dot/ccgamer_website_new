@@ -141,5 +141,5 @@ window.CCG_CONFIG=Object.freeze({
     "Zak McKracken and the Alien Mindbenders","Zamzara","Zaxxon","Zynaps"
   ],
   roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE","IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL"],
-  adminAudio:{stalker:null,dangerRoom:null,sanctuary:null,namedEnemies:{}}
+  adminAudio:{stalker:null,dangerRoom:null,sanctuary:null,endgame:null,namedEnemies:{}}
 });

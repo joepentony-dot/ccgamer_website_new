@@ -335,7 +335,21 @@ async function submitWeeklyResultOnce(){if(!run?.daily||run.weeklySubmitted)retu
 function endRun(reason){
   if(!run)return;mode="ended";run.runComplete=!run.dailyFailed&&!run.xpGameOver;S.setStalkerNear(false);S.setNamedEnemy?.(null);S.stopMusic();if(!run.daily)PGR.clearCheckpoint();updateSavedRunButton();
   const dailyBest=run.daily?PGR.recordDailyResult(run,score,p1):null;if(run.daily)submitWeeklyResultOnce();
-  UI.endTitle.textContent=run.xpGameOver?"GAME OVER — XP DEPLETED":run.floor>=C.maxFloors&&!run.dailyFailed?"CITADEL CLEARED":run.daily?(run.dailyFailed?"WEEKLY VAULT ATTEMPT ENDED":"WEEKLY VAULT COMPLETE"):"RUN EXTRACTED";
-  UI.endText.innerHTML=`${esc(reason)}.<br><br><strong>FINAL SCORE ${pad(score)}</strong><br>Deepest floor: ${run.deepest}/${C.maxFloors}<br>XP safely kept from cleared floors: ${run.bankedXP}<br>Kills: ${run.stats.kills}<br>Champions: ${run.stats.champions}<br>Secrets: ${run.stats.secrets}<br>Damage taken: ${run.stats.damageTaken}<br>Friendly fire: ${run.stats.friendlyFire}<br>Unique C64 titles permanently saved on this device: ${PGR.persistentCollection().length}<br><small>Duplicates count once. Clearing this website's browser data resets the saved collection.</small>${run.daily&&dailyBest?`<br><br><strong>WEEKLY RESULT</strong>: ${dailyBest.score} points • floor ${dailyBest.deepest} • level ${dailyBest.level}<br>Try again after the next Monday 00:00 UTC reset.`:""}`;
-  UI.end.classList.remove("hidden");refreshCollection()
+  const collectionCount=PGR.persistentCollection().length,completed=Boolean(run.floor>=C.maxFloors&&!run.dailyFailed&&!run.xpGameOver);
+  const snapshot=Object.freeze({
+    reason:String(reason||"Run ended"),completed,daily:Boolean(run.daily),dailyFailed:Boolean(run.dailyFailed),xpGameOver:Boolean(run.xpGameOver),
+    score:Math.floor(score),deepest:Math.max(1,Number(run.deepest||run.floor)||1),maxFloors:C.maxFloors,bankedXP:Math.max(0,Number(run.bankedXP)||0),
+    kills:Math.max(0,Number(run.stats?.kills)||0),champions:Math.max(0,Number(run.stats?.champions)||0),secrets:Math.max(0,Number(run.stats?.secrets)||0),
+    damageTaken:Math.max(0,Number(run.stats?.damageTaken)||0),chests:Math.max(0,Number(run.stats?.chests)||0),elapsed:Math.max(0,Number(run.elapsed)||0),
+    level:Math.max(1,Number(p1?.level)||1),player:String(p1?.name||playerName?.()||"Player"),weapon:String(p1?.weapon?.displayName||p1?.weapon?.name||"Field Pulse"),
+    collectionCount,enemyDefeats:Array.isArray(run.enemyDefeats)?run.enemyDefeats.map(row=>({...row,killers:Array.isArray(row.killers)?row.killers.map(x=>({...x})):[],floors:Array.isArray(row.floors)?row.floors.map(x=>({...x})):[]})):[],
+    dailyBest
+  });
+  let rendered=false;try{rendered=window.CCGDungeonEndgameCredits?.render?.(snapshot)===true}catch(error){console.warn("[C64 Dungeon Carnage R89] Endgame credits fell back safely",error)}
+  if(!rendered){
+    UI.endTitle.textContent=run.xpGameOver?"GAME OVER — XP DEPLETED":completed?"C64 DUNGEON CARNAGE COMPLETE":run.daily?(run.dailyFailed?"WEEKLY VAULT ATTEMPT ENDED":"WEEKLY VAULT COMPLETE"):"RUN EXTRACTED";
+    UI.endText.innerHTML=`${esc(reason)}.<br><br><strong>FINAL SCORE ${pad(score)}</strong><br>Deepest floor: ${run.deepest}/${C.maxFloors}<br>XP safely kept from cleared floors: ${run.bankedXP}<br>Kills: ${run.stats.kills}<br>Champions: ${run.stats.champions}<br>Secrets: ${run.stats.secrets}<br>Damage taken: ${run.stats.damageTaken}<br>Unique C64 titles permanently saved on this device: ${collectionCount}<br><small>Duplicates count once. Clearing this website's browser data resets the saved collection.</small>${run.daily&&dailyBest?`<br><br><strong>WEEKLY RESULT</strong>: ${dailyBest.score} points • floor ${dailyBest.deepest} • level ${dailyBest.level}<br>Try again after the next Monday 00:00 UTC reset.`:""}`;
+    UI.end.classList.remove("hidden")
+  }
+  refreshCollection()
 }
