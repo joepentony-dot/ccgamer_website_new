@@ -47,6 +47,7 @@ assert(source.includes('Warden Corruption'),'Tutorial must teach Warden Corrupti
 assert(source.includes('single Field Pulse weapon'),'Campaign copy must preserve the evolving-firearm model.');
 assert(source.includes('death cache'),'Campaign copy must retain death/recovery language.');
 assert(source.includes('Sanctuary is challenge-free'),'Campaign copy must explain current Sanctuary semantics.');
+assert(source.includes('full campaign now spans fifteen floors'),'Tutorial must identify the current fifteen-floor campaign scope.');
 
 assert(source.includes('if(banner.dataset.v142CampaignCopy==="true")return true'),'Completion banner patch must be idempotent to avoid MutationObserver feedback loops.');
 assert(!source.includes('label.textContent="FREE INTRODUCTION COMPLETE"'),'Campaign copy must preserve the established TUTORIAL COMPLETE banner signal used by the paywall handoff.');
