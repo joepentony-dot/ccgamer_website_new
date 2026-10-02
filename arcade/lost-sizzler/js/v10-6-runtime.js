@@ -2,7 +2,7 @@
 (function(){
   "use strict";
   if(window.__CCG_LOST_SIZZLER_RUNTIME_V106__)return;
-  window.__CCG_LOST_SIZZLER_RUNTIME_V106__=true;
+  window.__CCG_LOST_SIZZLER_RUNTIME_V106__=true;\n  const UI=window.UI||null,net=window.net||null;\n  if(!UI||!net){window.CCGLostSizzlerV106RetiredOffline=Object.freeze({active:false,reason:"retired-online-runtime-unavailable"});return}
 
   const lobby=document.getElementById("online-lobby"),roomLabel=document.getElementById("lobby-room-code"),status=document.getElementById("lobby-status"),invite=document.getElementById("lobby-invite-url"),list=document.getElementById("lobby-player-list"),startButton=document.getElementById("lobby-start-btn"),capacityCopy=document.getElementById("lobby-capacity-copy");
   let lobbyOpen=false,startHandled=false,joinAttempt=0;
