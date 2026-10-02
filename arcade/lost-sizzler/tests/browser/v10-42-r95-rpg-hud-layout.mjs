@@ -89,15 +89,14 @@ try{
 
   const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1});
   await mobile.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
+  await mobile.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const mobilePage=await mobile.newPage();
   const mobileErrors=[];
   mobilePage.on("pageerror",error=>mobileErrors.push(String(error?.stack||error)));
   await mobilePage.goto(`${origin}/arcade/lost-sizzler/?r95-rpg-hud-mobile=1`,{waitUntil:"domcontentloaded"});
-  await mobilePage.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
-  await mobilePage.evaluate(()=>{
-    document.body.dataset.runActive="true";
-    document.getElementById("menu")?.classList.add("hidden");
-  });
+  await mobilePage.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true"&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
+  await mobilePage.click("#solo-btn");
+  await mobilePage.waitForFunction(()=>document.body?.dataset?.runActive==="true"&&window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
   await mobilePage.waitForTimeout(120);
 
   const mobileState=await mobilePage.evaluate(()=>{
