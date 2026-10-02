@@ -37,9 +37,9 @@ assert.match(bootstrap,/Promise\.resolve\(launched\)\.then\(\(\)=>\{[\s\S]*?data
 
 assert.ok(localAssets.length>=30,`expected the canonical page to expose its local script/style cache tokens, found ${localAssets.length}`);
 for(const asset of localAssets)assert.equal(asset.token,CACHE,`${asset.url} is not pinned to the current r93 cache token`);
-assert.match(html,/game-local-runtime\.js\?v=20261001r85/,"the extracted current local runtime must not remain under the obsolete September 10 cache key");
-assert.match(html,/game-main\.js\?v=20261001r85/,"the current input/frame owner must not remain under the obsolete September 10 cache key");
-assert.match(html,/v10-41-cache-guard\.js\?v=20261001r85/,"the cache guard itself must be fetched under the current release token");
+assert.ok(html.includes(`game-local-runtime.js?v=${CACHE}`),"the extracted current local runtime must use the current release cache key");
+assert.ok(html.includes(`game-main.js?v=${CACHE}`),"the current input/frame owner must use the current release cache key");
+assert.ok(html.includes(`v10-41-cache-guard.js?v=${CACHE}`),"the cache guard itself must be fetched under the current release token");
 
 assert.match(bootstrap,/v10-42-stage6-zone-gameplay\.js/,"r52 must load the Stage 6 zone gameplay owner through the ordered bootstrap");
 
