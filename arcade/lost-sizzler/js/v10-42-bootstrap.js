@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r93";
-  const CACHE="20261002r93";
+  const BUILD="V10.42 r94";
+  const CACHE="20261002r94";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -73,6 +73,7 @@
     ["v10-42-r82-rpg-death-rollback.js","CCGLostSizzlerV142R82RpgDeathRollback"],
     ["v10-42-r83-death-cache-progression.js","CCGLostSizzlerV142R83DeathCacheProgression"],
     ["v10-42-r72-map-death-feedback.js","CCGLostSizzlerV142R72MapDeathFeedback"],
+    ["v10-42-r94-enemy-identity.js","CCGLostSizzlerV142R94EnemyIdentity"],
     ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],totalModules:modules.length,currentModule:"",currentIndex:0,pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
