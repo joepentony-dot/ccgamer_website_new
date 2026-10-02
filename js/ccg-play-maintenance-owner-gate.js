@@ -76,18 +76,22 @@
     });
   }
 
-  function runtimeBoundaryReady(parserBoundaryHint) {
+  function runtimeBoundaryReady() {
     runtimeBoundaryReached = true;
     parserBoundaryEligible = document.readyState === "loading"
-      && (parserBoundaryHint === true || Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary")));
+      && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
 
-    // Development and local qualification are admitted immediately. When the
-    // parser reaches the protected-runtime boundary, materialise the exact same
-    // protected script list synchronously so local/test startup preserves the
-    // historical parser order. Production never uses this bypass: it still
-    // requires validated owner/member/tester access before any runtime starts.
+    // Development and local qualification do not need an auth wait, but they
+    // still use the exact protected script list. Let the real parser finish,
+    // then use the ordered loader so readiness-sensitive modules see one
+    // deterministic post-bootstrap DOMContentLoaded pass.
     if (!isProduction() && runtimeAccessGranted) {
-      startProtectedRuntimeWhenReady();
+      parserBoundaryEligible = false;
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startProtectedRuntimeWhenReady, { once: true });
+      } else {
+        startProtectedRuntimeWhenReady();
+      }
       return true;
     }
 
