@@ -707,7 +707,10 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
 .ccg-release-loading-card{
   position:relative!important;
   width:min(940px,96vw)!important;
-  min-height:500px!important;
+  height:min(520px,calc(100dvh - 40px))!important;
+  min-height:min(500px,calc(100dvh - 40px))!important;
+  max-height:520px!important;
+  contain:layout paint!important;
   display:grid!important;
   grid-template-columns:minmax(300px,.95fr) minmax(360px,1.05fr)!important;
   gap:0!important;
@@ -721,7 +724,8 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
 }
 .ccg-release-loading-art-frame{
   position:relative!important;
-  min-height:500px!important;
+  height:100%!important;
+  min-height:0!important;
   overflow:hidden!important;
   border-right:1px solid #4d3d54!important;
   background:#060407!important;
@@ -787,6 +791,8 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
   max-height:36px!important;
   margin:0!important;
   overflow:hidden!important;
+  overflow-wrap:anywhere!important;
+  word-break:normal!important;
   color:#d3c6d8!important;
   font:700 10px/1.45 var(--r95-data-font)!important;
 }
@@ -816,7 +822,9 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
 
 @media(max-width:720px){
   .ccg-release-loading-card{
+    height:min(690px,94dvh)!important;
     min-height:min(690px,94dvh)!important;
+    max-height:min(690px,94dvh)!important;
     grid-template-columns:1fr!important;
     grid-template-rows:minmax(190px,34dvh) minmax(0,1fr)!important;
   }
