@@ -14,14 +14,21 @@ for (const path of [
   assert.match(html, /window\.location\.replace\("\/games\/ccg-games\/"\)/);
 }
 
-const dungeon = read("arcade/lost-sizzler/index.html");
 const ownerGate = read("js/ccg-play-maintenance-owner-gate.js");
-
-assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, "Dungeon Carnage must use the owner-only maintenance preview gate");
-assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js"/);
-assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js"/);
-assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js"/);
-assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must cache-bust the supplied WebP");
+for (const path of [
+  "arcade/c64-dungeon-carnage/index.html",
+  "arcade/lost-sizzler/index.html"
+]) {
+  const dungeon = read(path);
+  assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, path + " must load the protected Dungeon access gate");
+  assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js"/);
+  assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js"/);
+  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261002-tester-gate-v4"/);
+  assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must retain supplied WebP");
+  assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/, path + " must keep game-main inert until access is validated");
+  assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-core\.js/, path + " must protect the core runtime");
+  assert.doesNotMatch(dungeon, /<script src="js\/game-main\.js/, path + " must not boot game-main unconditionally");
+}
 
 const home = read("home.html");
 const homeCtaCss = read("resources/css/home-lost-sizzler-cta.css");
@@ -43,12 +50,17 @@ assert.match(ownerGate, /OWNER_ROLE = "admin"/);
 assert.match(ownerGate, /sessionStorage\.getItem\("ccg_header_auth_snapshot"\)/);
 assert.match(ownerGate, /client\.auth\.getSession\(\)/);
 assert.match(ownerGate, /client\.auth\.getUser\(\)/);
-assert.match(ownerGate, /\.from\("profiles"\)/);
-assert.match(ownerGate, /\.select\("username, display_name, role, is_admin, banned"\)/);
-assert.match(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/);
+assert.match(ownerGate, /ccg_has_dungeon_carnage_playtest_access/);
+assert.match(ownerGate, /ccg_validate_dungeon_carnage_tester_code/);
+assert.match(ownerGate, /validateTesterCodeWithTimeout/);
+assert.match(ownerGate, /bootstrapProtectedRuntime/);
+assert.match(ownerGate, /data-ccg-protected-runtime/);
+assert.match(ownerGate, /runtimeAccessGranted = true/);
+assert.match(ownerGate, /showTesterGate\(\)/);
+assert.match(ownerGate, /mark\("member-playtester"\)/);
+assert.match(ownerGate, /mark\("tester-preview"\)/);
 assert.match(ownerGate, /mark\("owner-preview"\)/);
-assert.match(ownerGate, /Fail closed/);
-
+assert.doesNotMatch(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/, "Dungeon access denial must use the tester gate rather than the retired redirect");
 
 const hub = read("games/ccg-games/index.html");
 assert.match(hub, /CCG originals — maintenance/);
@@ -57,4 +69,4 @@ assert.match(hub, /href="\/quiz\/pack-6\.html"/);
 assert.doesNotMatch(hub, /href="\/games\/commodore-quest\/"/);
 assert.doesNotMatch(hub, /href="\/games\/ccg-games\/cheeky-commodore-quest\/"/);
 
-console.log("Temporary play-games maintenance contract passed with Dungeon Carnage owner preview.");
+console.log("Temporary play-games maintenance contract passed with server-validated Dungeon runtime access.");
