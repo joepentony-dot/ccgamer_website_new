@@ -9,6 +9,7 @@ const r55=read("js/v10-41-r55-final-playtest-cleanup.js");
 const landing=read("js/v10-41-landing-notification-polish.js");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const firstVisual=read("css/v10-42-startup-first-visual.css");
+const gameCss=read("css/game.css");
 
 assert.match(core,/function renderInventoryHudIfChanged\(player,useKeys\)/,"R93 must own quick inventory rendering behind a state-change boundary");
 assert.match(core,/quickSlotsRenderSignature!==inventorySignature/,"quick slots must not rebuild on every sync tick");
@@ -29,6 +30,12 @@ assert.ok(!bootstrap.includes("R55FinalPlaytestCleanup?.markMenu"),"ordered boot
 
 assert.ok(landing.includes('body[data-ccg-legacy-menu-polish="true"][data-run-active="false"] #menu'),"legacy landing CSS must be dormant behind an unset compatibility flag");
 assert.ok(!/state\.modeObserver=new MutationObserver/.test(landing),"legacy landing module must not observe/rebuild menu tiers");
+assert.doesNotMatch(gameCss,/\.mode-solo\{[^}]*background:#ffd85a!important/,"legacy solid Solo fill must not remain in base CSS");
+assert.doesNotMatch(gameCss,/#tutorial-zone-btn\{[^}]*background:#103542!important/,"legacy solid Tutorial fill must not remain in base CSS");
+assert.doesNotMatch(gameCss,/\.save-resume\{[^}]*background:#241336!important/,"Continue must not fall back to the generic solid button fill");
+assert.match(gameCss,/\.mode-solo\{[^}]*background:linear-gradient/,"base CSS must paint the final Solo blend immediately");
+assert.match(gameCss,/#tutorial-zone-btn\{[^}]*background:linear-gradient/,"base CSS must paint the final Tutorial blend immediately");
+assert.match(gameCss,/\.save-resume\{[^}]*background:linear-gradient/,"base CSS must paint the final Continue blend immediately");
 
 for(const id of ["solo-btn","tutorial-zone-btn","continue-save-btn"]){
   const re=new RegExp(`html body\\[data-run-active="false"\\] #menu #${id}\\{[\\s\\S]*?background:linear-gradient`);
