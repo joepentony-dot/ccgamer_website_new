@@ -12,13 +12,14 @@ assert.equal(manifest.images.visualOverhaul.playerSheet,"assets/pixel/explorer-s
 assert.equal(manifest.images.visualOverhaul.playerAnimationReference,"assets/pixel/visual-overhaul/shade-puny/warrior-blue.png");
 
 const family=renderer.match(/const PUNY_ENEMY_FAMILY=Object\.freeze\(\{([\s\S]*?)\}\);/)?.[1]||"";
-for(const kind of ["skeleton","spider","ghost","ambusher","root","cook","firebreather"]){
-  assert.doesNotMatch(family,new RegExp(`\\b${kind}\\s*:`),`${kind} must retain bespoke/procedural art until a matching sprite is sourced`);
+for(const kind of ["skeleton","spider","ghost","ambusher","root","firebreather"]){
+  assert.doesNotMatch(family,new RegExp(`\\b${kind}\\s*:`),`${kind} must use matching creature/role art rather than a generic humanoid`);
 }
-for(const kind of ["knight","scout","hunter","guard","charger","ranger"]){
-  assert.doesNotMatch(family,new RegExp(`\\b${kind}\\s*:`),`${kind} must not be remapped to a generic humanoid family`);
-  assert.match(renderer,new RegExp(`else if\\(k===["']${kind}["']\\)\\{`),`${kind} must retain its bespoke procedural silhouette`);
+for(const [kind,art] of Object.entries({scout:"archer",guard:"soldier",charger:"orcGrunt",cook:"orcPeon"})){
+  assert.ok(family.includes(`${kind}:"${art}"`),`${kind} must use its matching authored RPG sheet`);
 }
+assert.match(renderer,/const DUNGEON_ENEMY_ART=Object\.freeze/,"matching creature atlas ownership is required");
+assert.match(renderer,/e\?\.follower\|\|e\?\.treasureGoblin\|\|e\?\.deathStalker\|\|e\?\.voidStalker/,"named identities must retain their dedicated renderers");
 
 assert.match(workstream,/playable hero must remain recognisably the \*\*Cheeky Commodore Gamer\*\*/);
 assert.match(workstream,/Every enemy name and sprite must agree semantically/);

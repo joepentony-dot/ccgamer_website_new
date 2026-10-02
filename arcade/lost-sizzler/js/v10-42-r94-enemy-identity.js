@@ -6,28 +6,28 @@
   const BANDS=Object.freeze([
     Object.freeze({maxFloor:5,labels:Object.freeze({
       spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Vault Scout",
-      hunter:"Relic Hunter",ambusher:"Shadow Ambusher",guard:"Iron Guard",charger:"Bone Charger",
-      ranger:"Rune Ranger",root:"Thorn Caster",cook:"Dungeon Cook",firebreather:"Ember Fiend",
+      hunter:"Relic Hunter",ambusher:"Shadow Ambusher",guard:"Iron Guard",charger:"Orc Reaver",
+      ranger:"Rune Ranger",root:"Thorn Caster",cook:"Orc Scavenger",firebreather:"Ember Fiend",
       ghost:"Archive Wraith",treasure:"Treasure Goblin"
     })}),
     Object.freeze({maxFloor:10,labels:Object.freeze({
       spider:"Gloomweb Spider",skeleton:"Mossbound Skeleton",knight:"Crypt Knight",scout:"Catacomb Scout",
-      hunter:"Gloom Hunter",ambusher:"Nightblade",guard:"Runebound Guard",charger:"Grave Charger",
-      ranger:"Deep Ranger",root:"Briar Hexer",cook:"Cauldron Cook",firebreather:"Cinder Fiend",
+      hunter:"Gloom Hunter",ambusher:"Nightblade",guard:"Runebound Guard",charger:"Crypt Orc Reaver",
+      ranger:"Deep Ranger",root:"Briar Hexer",cook:"Crypt Orc Scavenger",firebreather:"Cinder Fiend",
       ghost:"Memory Wraith",treasure:"Treasure Goblin"
     })}),
     Object.freeze({maxFloor:15,labels:Object.freeze({
       spider:"Bloodweb Spider",skeleton:"Ashen Boneguard",knight:"Blood Knight",scout:"Citadel Scout",
-      hunter:"Blood Hunter",ambusher:"Duskblade",guard:"Citadel Guard",charger:"Dread Charger",
-      ranger:"Ash Ranger",root:"Ashen Hexer",cook:"Citadel Cook",firebreather:"Infernal Maw",
+      hunter:"Blood Hunter",ambusher:"Duskblade",guard:"Citadel Guard",charger:"Citadel Orc Reaver",
+      ranger:"Ash Ranger",root:"Ashen Hexer",cook:"Citadel Orc Scavenger",firebreather:"Infernal Maw",
       ghost:"Blood Wraith",treasure:"Treasure Goblin"
     })})
   ]);
 
   const FALLBACK=Object.freeze({
     spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Dungeon Scout",
-    hunter:"Dungeon Hunter",ambusher:"Shadow Ambusher",guard:"Dungeon Guard",charger:"Dungeon Charger",
-    ranger:"Dungeon Ranger",root:"Root Caster",cook:"Dungeon Cook",firebreather:"Firebreather",
+    hunter:"Dungeon Hunter",ambusher:"Shadow Ambusher",guard:"Dungeon Guard",charger:"Orc Reaver",
+    ranger:"Dungeon Ranger",root:"Root Caster",cook:"Orc Scavenger",firebreather:"Firebreather",
     ghost:"Dungeon Wraith",champion:"Citadel Champion",treasure:"Treasure Goblin"
   });
 

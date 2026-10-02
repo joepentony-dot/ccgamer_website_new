@@ -34,3 +34,14 @@ The renderer uses 32x32 cells and maps Dungeon enemy state onto authored animati
 - directions: down/right/up/left use rows 0/2/4/6.
 
 Warrior, Soldier, Archer and Mage sheets are assigned by enemy family. Spider, Ghost, Death Stalker, followers and unsupported/malformed sheets retain the established procedural art as fallbacks.
+
+## R97 matching orc sheets — 2 October 2026
+
+Two further unmodified CC0 sheets from the same source commit above:
+
+| Source path | Local path | Git blob SHA | Modified |
+| --- | --- | --- | --- |
+| assets/npcs/Orc-Grunt.png | orc-grunt.png | b8cc7bf1a45951e172684be3339066467517ab3e | no |
+| assets/npcs/Orc-Peon-Red.png | orc-peon-red.png | 874ef26516cf07d1ce818c1cfab771994a450d43 | no |
+
+Scouts use the archer/bow sheet, Iron Guards use soldiers, Orc Reavers use Orc Grunts and Orc Scavengers use Orc Peons. Existing matching authored atlases supply spiders, skeletons, knights, assassins, armoured hunters, wraiths, rangers, thorn creatures and flame-breathing fiends. Cassette and drive robot rows are excluded. The CCG explorer and named supporter identities remain authoritative. Malformed/undecoded images retain procedural fallbacks. No enemy AI, stats or combat rules change.
