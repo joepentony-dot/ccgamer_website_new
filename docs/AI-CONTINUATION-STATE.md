@@ -1,3 +1,16 @@
+## R93 UI single-owner flicker repair — 2 October 2026
+
+- **Active defect branch:** `codex/dungeon-r93-ui-flicker-single-owner`, created directly from consolidated `main` `76d33533eb848f4c088014f538dc7a136f65b2ea`.
+- Live playtesting reported two repeatable presentation defects in both Tutorial and Solo: the right-side usable-item shortcuts and bottom Quick Inventory visibly flicker, and the main-menu Continue / Solo / Tutorial cards first appear with legacy solid fills before settling into the newer blended presentation.
+- Root cause confirmed: core `sync()` replaced both inventory DOM surfaces on every gameplay update; R71 and R80 also owned duplicate inventory visibility observers; R55 still had a 50 ms menu restyle/reorder loop; the ordered bootstrap replayed R55 menu repair; and the V10.41 landing module still injected/observed a historical menu hierarchy after blocking CSS had painted.
+- R93 makes the inventory HUD state-driven: Quick Inventory and usable-item shortcuts rebuild only when their inventory signature changes. R71/R80 visibility observers are removed while their canonical `renderInventoryPanel` composition remains.
+- R55 menu presentation is retired to a compatibility no-op and its periodic tick now retains only Horde authority compatibility. Bootstrap no longer replays R55 menu presentation. The V10.41 landing module's old menu CSS is dormant behind an unset compatibility flag and its mode-tier observer is removed; notification/version compatibility remains.
+- Final Solo, Tutorial and Continue blended colours now live in blocking `v10-42-startup-first-visual.css`, so the first visible menu frame and settled menu use the same owner.
+- Release identity advances to **V10.42 r93 / 20261002r93** so browsers cannot retain the old flickering JS/CSS under the prior cache token.
+- Added `v10-42-r93-ui-single-owner.mjs` and updated startup/release identity regressions. R93 remains **unmerged** until exact-head qualification is green.
+- **Hands-on acceptance after deployment:** leave Tutorial running for several minutes and watch both inventory surfaces for flicker; repeat in Solo while moving/firing and picking up or using items; reload the title screen several times and confirm Continue (when present), Solo and Tutorial appear immediately in their final blended colours with no solid-colour flash.
+- R92 enemy-identity work remains a separate draft and must be restacked against whatever `main` results after R93; do not merge stale R92 over this defect repair.
+
 ## C64 Dungeon Carnage qualified-main checkpoint — 2 October 2026
 
 - **Authoritative qualified Dungeon runtime baseline:** `f9aa2044beed9a292b24f1bc74463f84fdfa591d`, the merge commit for PR #2475 / R91 clean tester and member playtest access. Later documentation-only checkpoint commits may sit above this runtime tree without changing the qualified Dungeon code.
