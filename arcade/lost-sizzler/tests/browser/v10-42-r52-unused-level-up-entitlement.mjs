@@ -59,6 +59,31 @@ try{
   assert.equal(deferred.buttonHidden,false,"the XP panel must expose the stored level-up");
   assert.equal(deferred.buttonText,"LEVEL-UP AVAILABLE","one stored entitlement must have a singular HUD label");
 
+  // The R95 progression cells must never cover the deferred upgrade action.
+  // Inspect real hit-testing before the existing real click/entitlement checks.
+  for(const width of [1600,1440]){
+    await page.setViewportSize({width,height:900});
+    const layout=await page.evaluate(()=>{
+      const button=document.getElementById("quick-level-up"),xp=button.closest(".priority-xp");
+      const r=button.getBoundingClientRect(),box=xp.getBoundingClientRect();
+      const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+      const stats=Array.from(xp.parentElement.querySelectorAll(".run-stat")).map(node=>{
+        const s=node.getBoundingClientRect();
+        return {left:s.left,right:s.right,top:s.top,bottom:s.bottom};
+      });
+      return {button:{left:r.left,right:r.right,top:r.top,bottom:r.bottom},
+        xp:{left:box.left,right:box.right,top:box.top,bottom:box.bottom},
+        stats,receivesPointer:hit===button||button.contains(hit)};
+    });
+    assert.ok(layout.receivesPointer,`deferred upgrade must receive real pointer input at ${width}px: ${JSON.stringify(layout)}`);
+    assert.ok(layout.button.left>=layout.xp.left&&layout.button.right<=layout.xp.right&&
+      layout.button.top>=layout.xp.top&&layout.button.bottom<=layout.xp.bottom,
+      `deferred upgrade must remain inside its XP cell at ${width}px: ${JSON.stringify(layout)}`);
+    for(const stat of layout.stats)assert.ok(layout.xp.right<=stat.left+1||
+      stat.right<=layout.xp.left+1||layout.xp.bottom<=stat.top+1||stat.bottom<=layout.xp.top+1,
+      `XP and run statistics must not overlap at ${width}px: ${JSON.stringify(layout)}`);
+  }
+
   await page.click("#quick-level-up");
   await page.waitForFunction(()=>mode==="levelup"&&!document.getElementById("level-up").classList.contains("hidden"));
   await page.locator("#level-up-choices button").first().click();
