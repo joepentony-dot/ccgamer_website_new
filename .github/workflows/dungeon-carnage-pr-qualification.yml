@@ -9,6 +9,13 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/index.html'
       - 'games/the-lost-sizzler/index.html'
       - 'js/ccg-home-community.js'
+      - 'js/ccg-play-maintenance-owner-gate.js'
+      - 'admin/members.html'
+      - 'admin/js/admin-members.js'
+      - 'tests/dungeon-member-playtester-admin.test.mjs'
+      - 'tests/dungeon-tester-code-gate.test.mjs'
+      - 'tests/play-games-maintenance.test.mjs'
+      - 'supabase/migrations/20261002203000_dungeon_carnage_beta_round2_closed_cohort.sql'
       - 'resources/css/home-lost-sizzler-cta.css'
       - 'service-worker.js'
       - 'js/ccg-pwa.js'
@@ -56,6 +63,9 @@ jobs:
           grep -q '/arcade/c64-dungeon-carnage/' games/ccg-games/cheeky-commodore-quest/index.html
           grep -q '/arcade/c64-dungeon-carnage/' games/the-lost-sizzler/index.html
           node tests/dungeon-carnage-public-route.test.mjs
+          node tests/dungeon-member-playtester-admin.test.mjs
+          node tests/dungeon-tester-code-gate.test.mjs
+          node tests/play-games-maintenance.test.mjs
           grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
           if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
             echo 'Stale legacy self-reference found inside canonical Dungeon Carnage runtime.' >&2
@@ -68,6 +78,8 @@ jobs:
           set -euo pipefail
           node --check service-worker.js
           node --check js/ccg-pwa.js
+          node --check js/ccg-play-maintenance-owner-gate.js
+          node --check admin/js/admin-members.js
           find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
           find arcade/lost-sizzler/tests -type f -name '*.mjs' -print0 | sort -z | xargs -0 -n1 node --check
 

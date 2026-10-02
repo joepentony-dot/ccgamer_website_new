@@ -1,3 +1,26 @@
+## R96 frozen-cohort replay repair — 2 October 2026, 20:44 UTC
+
+- Continue only the authorised closed-member Beta Round 2 on existing PR #2483 / `codex/dungeon-r96-closed-member-beta-round2`, reviewed parent `6c52aa038f1064ddcec2866e5dec03ac04c4d9a1`. Qualified main remains `8bfd208d2e95d429e62ff3683a1f0a7c9f2ea6c2` / R95.
+- Review reproduced a cohort-lock defect: the independent snapshot INSERT could admit later sign-ups or newly confirmed accounts on migration replay. Per-member ON CONFLICT only prevented duplicates, not expansion.
+- Repair ties the cohort INSERT to the round INSERT's RETURNING rows in one data-modifying CTE. An existing round returns no row, so replay cannot add anyone or alter its original seven-day window. No live migration replay, production cohort mutation, gameplay change or additional PR was performed.
+- PostgreSQL verification through Supabase execute_sql used temporary fixture tables inside BEGIN/ROLLBACK: the original snapshot admitted both a later registration and a later email confirmation; the repaired snapshot retained exactly the two original members on replay, with the seven-day interval unchanged. The static admin/access contract now checks the actual round-to-snapshot boundary.
+- Production readback: 30 assigned cohort members, zero later sign-ups, zero unconfirmed email addresses, zero notifications. Existing expiry remains **9 October 2026 19:39:51 UTC / 20:39:51 UK**.
+- This repair advances the candidate head. Previous-head green checks do not qualify it. Require fresh exact-head PR Qualification, all six Full Qualification Chromium shards and every triggered site/package/cache check before merge; then verify deployment and production smoke before notifying only the frozen, unrevoked cohort and recording successful sends.
+- R95 hands-on acceptance remains outstanding. Hourly development stays paused; do not add gameplay/features or expand the beta audience.
+
+## R96 closed website-member Beta Round 2 — 2 October 2026
+
+- **Owner request:** run a second Dungeon Carnage beta only for the website members already present when the round opened, give that cohort one week of access, prevent later sign-ups / further invited testers from entering, notify the assigned cohort, and ask for feedback only after the updated build is ready.
+- **Authoritative base main:** `8bfd208d2e95d429e62ff3683a1f0a7c9f2ea6c2` (qualified R95 checkpoint). R96 branch: `codex/dungeon-r96-closed-member-beta-round2`; current branch head while recording this checkpoint: `b0ed97182faea65cfd8d6d4f9a0c7380d29186bf`.
+- **Production cohort frozen:** Supabase migration `dungeon_carnage_beta_round2_closed_cohort` was applied at **2026-10-02 19:39:51 UTC**. It snapshotted **30** non-admin, non-banned current members with confirmed email. Access expires automatically at **2026-10-09 19:39:51 UTC**. No member has been notified yet.
+- **Closed access boundary:** Round 2 uses dedicated round/cohort tables. `ccg_has_dungeon_carnage_playtest_access()` now requires current membership in the frozen Round 2 cohort and the live seven-day window. Later sign-ups are absent from the snapshot and cannot be added by the admin grant RPC. Existing cohort members may only be revoked/restored.
+- **Old tester-code route retired:** the compatibility tester-code RPC now returns `false`; production verification confirmed the old `ccg_tester` value no longer grants access. The R96 browser gate removes the tester-code form/session path and shows a current-members-only sign-in gate instead. Owner access remains separate.
+- **Admin presentation:** Members admin labels Round 2 explicitly, shows the cohort/expiry state, disables Grant for accounts outside the frozen cohort, and retains revoke/restore for cohort members.
+- **Release identity:** candidate **V10.42 r96 / 20261002r96**. Gameplay ownership remains the qualified R95 set; R96 is an access/release-boundary change, not a gameplay rewrite.
+- **Qualification requirement:** exact-head PR Qualification, Full Qualification including all six Chromium shards, package/cache/site/deployment checks, and production smoke must be green before the cohort email is sent. The Round 2 notice must not be sent from a preview or red head.
+- **Notification gate:** after verified production deployment, notify only the 30 frozen members that this is Beta Round 2, their pass ends 9 October 2026, and feedback is requested. Mark notified timestamps after successful send. Do not expand the cohort.
+- **Hands-on test scope after notice:** retain all R95 acceptance gates: menu first paint, Tutorial/Solo inventory flicker, RPG HUD/deferred level-up, mobile controls including MAP, fixed loader geometry, sustained Solo combat/pause/inventory, and the 3 Essence/Artefact -> exactly 1 Banishment Flask acceptance with Gold and Score unchanged.
+
 ## R95 qualified-main and live checkpoint — 2 October 2026
 
 - **Authoritative main:** `716584e5792cbe229de5014473683cdb34b8e7c3`, the merge commit for PR #2481. Exact qualified R95 head: `71c0b82ea484e937cc0bad740cf6573b00b3023c`. R93 / #2479 and R94 / #2480 are also merged; R92 / #2478 remains closed and superseded.

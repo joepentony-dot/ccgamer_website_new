@@ -21,9 +21,9 @@ for (const path of [
 ]) {
   const dungeon = read(path);
   assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, path + " must load the protected Dungeon access gate");
-  assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js"/);
-  assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js"/);
-  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261002-tester-gate-v4"/);
+  assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js\?v=20261002r96"/, path + " must load the R96 Supabase config cache identity");
+  assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js\?v=20261002r96"/, path + " must load the R96 Supabase client cache identity");
+  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261002-round2-v1"/);
   assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must retain supplied WebP");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/, path + " must keep game-main inert until access is validated");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-core\.js/, path + " must protect the core runtime");
@@ -34,7 +34,7 @@ const home = read("home.html");
 const homeCtaCss = read("resources/css/home-lost-sizzler-cta.css");
 const homeArtwork = new URL("../resources/images/hero/c64-dungeon-carnage-home-feature.webp", import.meta.url);
 
-assert.match(home, /href="\/arcade\/lost-sizzler\/"[\s\S]*class="ccg-btn home-hero__beta-cta"/, "Home must keep a direct Dungeon Carnage link");
+assert.match(home, /href="\/arcade\/c64-dungeon-carnage\/"[\s\S]*class="ccg-btn home-hero__beta-cta"/, "Home must keep the canonical direct Dungeon Carnage link");
 assert.match(home, /c64-dungeon-carnage-home-feature\.webp/, "Home must use the dedicated compact Dungeon Carnage artwork");
 assert.match(home, /home-lost-sizzler-cta\.css\?v=20260922-carnage-feature/, "Home must cache-bust the compact CTA CSS");
 assert.doesNotMatch(home, /<span>C64 DUNGEON CARNAGE<\/span>/, "Home CTA must not repeat the game title as a yellow text banner");
@@ -51,16 +51,16 @@ assert.match(ownerGate, /sessionStorage\.getItem\("ccg_header_auth_snapshot"\)/)
 assert.match(ownerGate, /client\.auth\.getSession\(\)/);
 assert.match(ownerGate, /client\.auth\.getUser\(\)/);
 assert.match(ownerGate, /ccg_has_dungeon_carnage_playtest_access/);
-assert.match(ownerGate, /ccg_validate_dungeon_carnage_tester_code/);
-assert.match(ownerGate, /validateTesterCodeWithTimeout/);
 assert.match(ownerGate, /bootstrapProtectedRuntime/);
 assert.match(ownerGate, /data-ccg-protected-runtime/);
 assert.match(ownerGate, /runtimeAccessGranted = true/);
-assert.match(ownerGate, /showTesterGate\(\)/);
+assert.match(ownerGate, /showMemberGate\(\)/);
 assert.match(ownerGate, /mark\("member-playtester"\)/);
-assert.match(ownerGate, /mark\("tester-preview"\)/);
+assert.match(ownerGate, /mark\("round2-member-required"\)/);
 assert.match(ownerGate, /mark\("owner-preview"\)/);
-assert.doesNotMatch(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/, "Dungeon access denial must use the tester gate rather than the retired redirect");
+assert.doesNotMatch(ownerGate, /ccg_validate_dungeon_carnage_tester_code/, "Round 2 must not use the retired tester-code path");
+assert.match(ownerGate, /Current Members Only/, "Round 2 denial must explain the closed current-member cohort");
+assert.doesNotMatch(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/, "Dungeon access denial must use the member gate rather than the retired redirect");
 
 const hub = read("games/ccg-games/index.html");
 assert.match(hub, /CCG originals — maintenance/);
@@ -69,4 +69,4 @@ assert.match(hub, /href="\/quiz\/pack-6\.html"/);
 assert.doesNotMatch(hub, /href="\/games\/commodore-quest\/"/);
 assert.doesNotMatch(hub, /href="\/games\/ccg-games\/cheeky-commodore-quest\/"/);
 
-console.log("Temporary play-games maintenance contract passed with server-validated Dungeon runtime access.");
+console.log("Temporary play-games maintenance contract passed with closed Round 2 member runtime access.");
