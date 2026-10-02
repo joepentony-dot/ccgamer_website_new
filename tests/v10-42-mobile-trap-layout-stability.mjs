@@ -20,6 +20,8 @@ assert.match(bootstrap,/CCGLostSizzlerV142R19MobileLayoutCompatibility/,"ordered
 assert.match(bootstrap,/v10-42-r95-mobile-controls\.js/,"ordered V10.42 bootstrap must load the current touch-control owner");
 assert.doesNotMatch(assetOverrides,/v10-4-patch\.js/,"current enhancement queue must not reload the retired V10.4 patch");
 assert.doesNotMatch(assetOverrides,/data-ccg-lost-sizzler-v104/,"current enhancement startup must not depend on the retired V10.4 owner marker");
+assert.doesNotMatch(assetOverrides,/v10-11-mobile-focus\.css/,"R95 must not late-load the retired V10.11 mobile layout owner");
+assert.doesNotMatch(assetOverrides,/v10-24-mobile-ergonomics\.css/,"R95 must not late-load the retired V10.24 mobile layout owner");
 const mobileOwnerIndex=bootstrap.indexOf("v10-42-r95-mobile-controls.js");
 const r19Index=bootstrap.indexOf("v10-42-r19-mobile-trap-layout-stability.js");
 assert.ok(mobileOwnerIndex>=0&&mobileOwnerIndex<r19Index,"current touch-control owner must load before portrait compatibility");
