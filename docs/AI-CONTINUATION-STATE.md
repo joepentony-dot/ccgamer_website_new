@@ -1,3 +1,13 @@
+## R96 frozen-cohort replay repair — 2 October 2026, 20:44 UTC
+
+- Continue only the authorised closed-member Beta Round 2 on existing PR #2483 / `codex/dungeon-r96-closed-member-beta-round2`, reviewed parent `6c52aa038f1064ddcec2866e5dec03ac04c4d9a1`. Qualified main remains `8bfd208d2e95d429e62ff3683a1f0a7c9f2ea6c2` / R95.
+- Review reproduced a cohort-lock defect: the independent snapshot INSERT could admit later sign-ups or newly confirmed accounts on migration replay. Per-member ON CONFLICT only prevented duplicates, not expansion.
+- Repair ties the cohort INSERT to the round INSERT's RETURNING rows in one data-modifying CTE. An existing round returns no row, so replay cannot add anyone or alter its original seven-day window. No live migration replay, production cohort mutation, gameplay change or additional PR was performed.
+- PostgreSQL verification through Supabase execute_sql used temporary fixture tables inside BEGIN/ROLLBACK: the original snapshot admitted both a later registration and a later email confirmation; the repaired snapshot retained exactly the two original members on replay, with the seven-day interval unchanged. The static admin/access contract now checks the actual round-to-snapshot boundary.
+- Production readback: 30 assigned cohort members, zero later sign-ups, zero unconfirmed email addresses, zero notifications. Existing expiry remains **9 October 2026 19:39:51 UTC / 20:39:51 UK**.
+- This repair advances the candidate head. Previous-head green checks do not qualify it. Require fresh exact-head PR Qualification, all six Full Qualification Chromium shards and every triggered site/package/cache check before merge; then verify deployment and production smoke before notifying only the frozen, unrevoked cohort and recording successful sends.
+- R95 hands-on acceptance remains outstanding. Hourly development stays paused; do not add gameplay/features or expand the beta audience.
+
 ## R96 closed website-member Beta Round 2 — 2 October 2026
 
 - **Owner request:** run a second Dungeon Carnage beta only for the website members already present when the round opened, give that cohort one week of access, prevent later sign-ups / further invited testers from entering, notify the assigned cohort, and ask for feedback only after the updated build is ready.

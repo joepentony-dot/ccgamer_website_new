@@ -33,6 +33,7 @@ alter table public.ccg_dungeon_carnage_beta_round_members enable row level secur
 revoke all on public.ccg_dungeon_carnage_beta_rounds from anon, authenticated;
 revoke all on public.ccg_dungeon_carnage_beta_round_members from anon, authenticated;
 
+with opened_round as (
 insert into public.ccg_dungeon_carnage_beta_rounds (
   round_key,
   label,
@@ -49,20 +50,23 @@ values (
   now(),
   false
 )
-on conflict (round_key) do nothing;
+on conflict (round_key) do nothing
+returning round_key
+)
 
--- Freeze the cohort at migration time. Only current non-admin, non-banned members
--- with a confirmed email are assigned. Later signups are intentionally excluded.
+-- Snapshot only the round created by this statement. Replays return no opened_round
+-- rows, so later registrations or newly eligible accounts cannot expand the cohort.
 insert into public.ccg_dungeon_carnage_beta_round_members (
   round_key,
   user_id,
   assigned_at
 )
 select
-  'round-2-current-members-2026-10-02',
+  opened_round.round_key,
   u.id,
   now()
-from auth.users u
+from opened_round
+cross join auth.users u
 left join public.user_roles ur on ur.user_id = u.id
 left join public.profiles p on p.id = u.id
 where u.email is not null

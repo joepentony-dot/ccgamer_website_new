@@ -33,7 +33,13 @@ assert(round2Migration.includes("create table if not exists public.ccg_dungeon_c
 assert(round2Migration.includes("now() + interval '7 days'"), "Round 2 passes must expire after exactly seven days");
 assert(round2Migration.includes("u.email_confirmed_at is not null"), "Round 2 cohort must contain contactable current members only");
 assert(round2Migration.includes("not in ('admin', 'superadmin')"), "owner/admin accounts must stay outside the member cohort snapshot");
-assert(round2Migration.includes("on conflict (round_key, user_id) do nothing"), "re-running the migration must never expand the frozen cohort");
+const snapshotSql = round2Migration.slice(
+  round2Migration.indexOf("with opened_round as ("),
+  round2Migration.indexOf("create or replace function public.ccg_has_dungeon_carnage_playtest_access()")
+);
+assert(/with opened_round as \([\s\S]*on conflict \(round_key\) do nothing\s+returning round_key\s*\)/.test(snapshotSql), "only a newly created round may provide a cohort snapshot");
+assert(/from opened_round\s+cross join auth\.users u/.test(snapshotSql), "replays of an existing round must provide no users to the cohort insert");
+assert(round2Migration.includes("on conflict (round_key, user_id) do nothing"), "initial snapshot must also suppress duplicate cohort rows");
 assert(round2Migration.includes("m.round_key = 'round-2-current-members-2026-10-02'"), "member access must be bound to the named frozen Round 2 cohort");
 assert(round2Migration.includes("pg_catalog.now() < r.ends_at"), "member access must fail automatically after the Round 2 expiry");
 assert(round2Migration.includes("raise exception 'round_two_cohort_locked'"), "admin RPC must reject later accounts that were not in the frozen cohort");
