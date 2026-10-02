@@ -631,6 +631,9 @@
     updateV104Ui();
   }
 
+  const ensureRuntimeUi = () => { injectTouchControls(); updateV104Ui(); };
   if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
+  window.addEventListener("load", ensureRuntimeUi, { once: true });
+  window.addEventListener("ccg:v142-ready", ensureRuntimeUi, { once: true });
 })();
