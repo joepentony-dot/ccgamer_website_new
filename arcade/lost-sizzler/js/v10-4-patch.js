@@ -631,6 +631,6 @@
     updateV104Ui();
   }
 
-  if (document.readyState === "complete") init();
-  else window.addEventListener("load", init, { once: true });
+  if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", init, { once: true });
+  else init();
 })();
