@@ -37,14 +37,14 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?r95-mobile-controls-owner=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV142R95MobileControls)&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
   await page.click("#solo-btn");
+  await page.waitForFunction(()=>document.body?.dataset?.runActive==="true"&&document.getElementById("menu")?.classList.contains("hidden")===true,null,{timeout:30000});
   const notice=page.locator("#ccg-mobile-pc-notice");
   if(await notice.isVisible().catch(()=>false)){
     const accept=page.locator("#ccg-mobile-pc-accept");
     if(await accept.isVisible().catch(()=>false))await accept.click({noWaitAfter:true});
     await page.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none",null,{timeout:10000});
-    await page.click("#solo-btn");
   }
-  await page.waitForFunction(()=>document.body?.dataset?.runActive==="true"&&window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
+  await page.waitForFunction(()=>window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
   await page.waitForFunction(()=>document.getElementById("v104-touch-controls")?.classList.contains("active")===true,null,{timeout:10000});
 
   const initial=await page.evaluate(()=>{
