@@ -1,0 +1,551 @@
+/* C64 Dungeon Carnage V10.42 R95 — RPG gameplay HUD presentation owner.
+ * Presentation only: no runtime observers, timers or DOM replacement. */
+:root{
+  --r95-rpg-font:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+  --r95-data-font:Consolas,"Lucida Console","Courier New",monospace;
+  --r95-gold:#e6c46f;
+  --r95-gold-soft:#9f7d3f;
+  --r95-bronze:#9b6235;
+  --r95-stone:#100c13;
+  --r95-stone-deep:#070509;
+  --r95-panel:#17111b;
+  --r95-line:#5f4a69;
+  --r95-line-soft:#302638;
+  --r95-ink:#f2edf4;
+  --r95-muted:#a99dae;
+  --r95-health:#6ee39a;
+  --r95-armour:#7db8ef;
+  --r95-ammo:#63dce8;
+  --r95-weapon:#f0a667;
+}
+
+body[data-run-active="true"] .ccg-game{
+  background:
+    linear-gradient(180deg,rgba(22,15,26,.98),rgba(7,5,9,.995));
+  border-color:#5f476c;
+  box-shadow:0 0 0 2px #211727,0 18px 52px rgba(0,0,0,.72);
+}
+
+/* System bar: quiet metal frame, not another gameplay panel. */
+body[data-run-active="true"] .v102-topbar{
+  min-height:38px!important;
+  padding:4px 8px!important;
+  border-bottom:1px solid #6f563d!important;
+  background:
+    linear-gradient(180deg,#17121a 0%,#0b080d 100%)!important;
+  box-shadow:inset 0 -1px 0 #251b29!important;
+}
+body[data-run-active="true"] .v102-brand h1{
+  color:var(--r95-gold)!important;
+  font-family:var(--r95-rpg-font)!important;
+  font-size:17px!important;
+  font-weight:700!important;
+  letter-spacing:.45px!important;
+  text-transform:none!important;
+}
+body[data-run-active="true"] .v102-brand p{
+  color:#807487!important;
+  font-family:var(--r95-data-font)!important;
+  font-size:7px!important;
+  letter-spacing:.7px!important;
+}
+body[data-run-active="true"] .system-buttons{
+  gap:6px!important;
+}
+body[data-run-active="true"] .system-buttons>*{
+  min-height:25px!important;
+  padding:4px 8px!important;
+  border:1px solid #46394d!important;
+  background:linear-gradient(#151019,#0b080e)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  color:#b8acbd!important;
+  font:700 8px/1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .system-buttons .build-badge{
+  color:#82788a!important;
+}
+body[data-run-active="true"] .system-buttons .status{
+  color:#c9b774!important;
+}
+body[data-run-active="true"] .system-buttons .danger-toggle{
+  border-color:#69404a!important;
+  color:#da8d9c!important;
+}
+
+/* Critical strip: compact adventurer hotbar. */
+body[data-run-active="true"] .critical-strip{
+  gap:6px!important;
+  padding:5px 8px!important;
+  border-bottom:1px solid #4f3c43!important;
+  background:linear-gradient(180deg,#100c12,#09070b)!important;
+}
+body[data-run-active="true"] .critical-card{
+  min-height:43px!important;
+  padding:5px 8px!important;
+  border:1px solid #3f3347!important;
+  border-left:3px solid #6a536f!important;
+  background:linear-gradient(135deg,#17111a,#0b080d)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+}
+body[data-run-active="true"] .critical-card b{
+  color:#9b8ba2!important;
+  font:700 7px/1 var(--r95-data-font)!important;
+  letter-spacing:.8px!important;
+}
+body[data-run-active="true"] .critical-card strong{
+  margin-top:3px!important;
+  color:var(--r95-ink)!important;
+  font:700 12px/1.05 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .critical-card span{
+  color:#766c7d!important;
+  font:700 6.5px/1.1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .critical-card kbd{
+  min-width:30px!important;
+  border-color:#7e663c!important;
+  background:#0b080c!important;
+  color:var(--r95-gold)!important;
+  box-shadow:inset 0 -2px 0 #3a2c18!important;
+}
+body[data-run-active="true"] .potion-card{border-left-color:var(--r95-health)!important}
+body[data-run-active="true"] .torch-card{border-left-color:var(--r95-gold)!important}
+body[data-run-active="true"] .keys-card{border-left-color:#c88b48!important}
+body[data-run-active="true"] .inventory-card{border-left-color:#8d79b8!important}
+
+/* Mission becomes the current quest banner. */
+body[data-run-active="true"] .v102-mission{
+  min-height:34px!important;
+  padding:5px 10px!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  border-top:1px solid #211823!important;
+  border-bottom:1px solid #6a5137!important;
+  background:
+    linear-gradient(90deg,rgba(98,68,34,.28),rgba(21,15,20,.96) 17%,rgba(8,6,10,.98))!important;
+  box-shadow:inset 0 1px 0 rgba(229,196,111,.06)!important;
+}
+body[data-run-active="true"] .v102-mission>strong{
+  color:var(--r95-gold)!important;
+  font:700 13px/1 var(--r95-rpg-font)!important;
+  letter-spacing:1px!important;
+}
+body[data-run-active="true"] .v102-mission #mission-text{
+  color:#ddd4df!important;
+  font:700 10px/1.25 var(--r95-data-font)!important;
+}
+
+/* Main battlefield frame. */
+body[data-run-active="true"] .v102-game-area{
+  background:#050406!important;
+  border-top:1px solid #2f2633!important;
+}
+body[data-run-active="true"] .canvas-wrap{
+  position:relative!important;
+  border-right:1px solid #4a394f!important;
+  box-shadow:inset 0 0 0 1px rgba(230,196,111,.025)!important;
+}
+body[data-run-active="true"] .canvas-wrap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  box-shadow:inset 0 0 30px rgba(0,0,0,.42);
+}
+
+/* Tactical intelligence column. */
+body[data-run-active="true"] .tactical-zone{
+  padding:7px!important;
+  gap:7px!important;
+  border-left:1px solid #4e3d53!important;
+  background:
+    linear-gradient(180deg,#120d15,#08060a)!important;
+}
+body[data-run-active="true"] .tactical-zone .radar-card,
+body[data-run-active="true"] .tactical-zone .shortcut-dock{
+  border:1px solid #54435d!important;
+  border-top:2px solid #8d7043!important;
+  background:
+    linear-gradient(180deg,rgba(25,18,28,.97),rgba(9,7,11,.98))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 4px 12px rgba(0,0,0,.22)!important;
+}
+body[data-run-active="true"] .tactical-zone .radar-card h3,
+body[data-run-active="true"] .shortcut-dock-head h3{
+  margin:0 0 6px!important;
+  color:var(--r95-gold)!important;
+  font:700 12px/1.05 var(--r95-rpg-font)!important;
+  letter-spacing:.5px!important;
+  text-transform:none!important;
+}
+body[data-run-active="true"] .shortcut-dock-head span{
+  color:#7e7385!important;
+  font:700 6.5px/1 var(--r95-data-font)!important;
+  letter-spacing:.8px!important;
+}
+body[data-run-active="true"] .v102-radar-card canvas{
+  border:1px solid #3f3345!important;
+  background:#040305!important;
+  box-shadow:inset 0 0 18px #000!important;
+}
+body[data-run-active="true"] .radar-legend,
+body[data-run-active="true"] .radar-room-legend{
+  color:#918594!important;
+  font:700 6.5px/1.2 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .command-grid{
+  gap:5px!important;
+}
+body[data-run-active="true"] .command-grid>span,
+body[data-run-active="true"] .item-command{
+  min-height:32px!important;
+  border:1px solid #3d3144!important;
+  background:linear-gradient(180deg,#110d14,#09070b)!important;
+}
+body[data-run-active="true"] .command-grid kbd,
+body[data-run-active="true"] .item-command kbd{
+  border-color:#6b5b76!important;
+  background:#08060a!important;
+  color:#d8c8e0!important;
+  font:700 8px/1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .command-grid b,
+body[data-run-active="true"] .item-command b{
+  color:#d8d0db!important;
+  font:700 7.5px/1.1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .item-command{
+  border-left:3px solid #6f5c7b!important;
+}
+body[data-run-active="true"] .item-command-potion{border-left-color:var(--r95-health)!important}
+body[data-run-active="true"] .item-command-torch{border-left-color:var(--r95-gold)!important}
+body[data-run-active="true"] .item-command-teleport,
+body[data-run-active="true"] .item-command-banishment{border-left-color:#b287df!important}
+
+/* Event rail: parchment-like dungeon journal rather than a debug panel. */
+body[data-run-active="true"] .game-message-rail{
+  padding:7px!important;
+  gap:6px!important;
+  border-left:1px solid #49384e!important;
+  background:linear-gradient(180deg,#100c12,#070609)!important;
+}
+body[data-run-active="true"] .game-message-context{
+  border:1px solid #3f3344!important;
+  border-left:3px solid #806646!important;
+  background:#0c090e!important;
+}
+body[data-run-active="true"] .game-message-context b{
+  color:var(--r95-gold)!important;
+  font:700 8px/1 var(--r95-rpg-font)!important;
+}
+body[data-run-active="true"] .game-message-context span{
+  color:#a99cae!important;
+  font:700 7.5px/1.25 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .game-message-rail .pickup-toast{
+  border:1px solid #6b5434!important;
+  border-left:3px solid var(--r95-gold)!important;
+  background:linear-gradient(135deg,#1b141a,#0b080c)!important;
+  box-shadow:inset 0 0 18px rgba(229,196,111,.035)!important;
+}
+body[data-run-active="true"] .game-message-rail .pickup-toast b{
+  color:var(--r95-gold)!important;
+  font:700 13px/1.05 var(--r95-rpg-font)!important;
+  letter-spacing:.2px!important;
+  text-transform:none!important;
+}
+body[data-run-active="true"] .game-message-rail .pickup-toast span,
+body[data-run-active="true"] .game-message-line,
+body[data-run-active="true"] .game-quest-list{
+  font-family:var(--r95-data-font)!important;
+}
+
+/* Player HUD: three strong RPG blocks rather than a row of equal telemetry boxes. */
+body[data-run-active="true"] .player-hub{
+  height:112px!important;
+  min-height:112px!important;
+  max-height:112px!important;
+  padding:8px 9px!important;
+  gap:8px!important;
+  grid-template-columns:minmax(360px,1.08fr) minmax(330px,.96fr) minmax(390px,1.16fr)!important;
+  border-top:2px solid #8a6a3e!important;
+  background:
+    linear-gradient(180deg,#171119 0%,#0b080d 58%,#070509 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(230,196,111,.08),0 -8px 20px rgba(0,0,0,.32)!important;
+  overflow:hidden!important;
+}
+body[data-run-active="true"] .player-hub .core-stats{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+body[data-run-active="true"] .player-hub .hub-stat{
+  position:relative!important;
+  min-height:0!important;
+  padding:8px 8px 18px!important;
+  border:1px solid #493b50!important;
+  border-top:2px solid #76617f!important;
+  background:
+    linear-gradient(180deg,#19131d,#0d0a10)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+  text-align:left!important;
+  overflow:hidden!important;
+}
+body[data-run-active="true"] .player-hub .hub-stat span{
+  margin:0!important;
+  color:#94889a!important;
+  font:700 7px/1 var(--r95-data-font)!important;
+  letter-spacing:.8px!important;
+}
+body[data-run-active="true"] .player-hub .hub-stat b{
+  display:block!important;
+  margin-top:7px!important;
+  overflow:hidden!important;
+  color:var(--r95-ink)!important;
+  font:700 clamp(15px,1.45vw,21px)/1 var(--r95-data-font)!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+body[data-run-active="true"] .player-hub .hub-stat::after{
+  content:""!important;
+  position:absolute!important;
+  left:8px!important;
+  right:8px!important;
+  bottom:7px!important;
+  width:auto!important;
+  height:6px!important;
+  border:1px solid #2e2633!important;
+  border-radius:0!important;
+  background:#050407!important;
+  box-shadow:inset 0 1px 2px #000!important;
+}
+body[data-run-active="true"] .player-hub .hub-stat::before{
+  content:""!important;
+  position:absolute!important;
+  left:9px!important;
+  bottom:8px!important;
+  z-index:2!important;
+  height:4px!important;
+  max-width:calc(100% - 18px)!important;
+  border-radius:0!important;
+  box-shadow:0 0 9px currentColor!important;
+}
+body[data-run-active="true"] .health-stat{border-top-color:#4d8d63!important}
+body[data-run-active="true"] .health-stat b{color:var(--r95-health)!important}
+body[data-run-active="true"] .health-stat::before{width:var(--health-pct,100%)!important;background:var(--r95-health)!important;color:var(--r95-health)!important}
+body[data-run-active="true"] .armour-stat{border-top-color:#507699!important}
+body[data-run-active="true"] .armour-stat b{color:var(--r95-armour)!important}
+body[data-run-active="true"] .armour-stat::before{width:var(--armour-pct,0%)!important;background:var(--r95-armour)!important;color:var(--r95-armour)!important}
+body[data-run-active="true"] .ammo-stat{border-top-color:#40808a!important}
+body[data-run-active="true"] .ammo-stat b{color:var(--r95-ammo)!important}
+body[data-run-active="true"] .ammo-stat::before{width:var(--ammo-pct,0%)!important;background:var(--r95-ammo)!important;color:var(--r95-ammo)!important}
+body[data-run-active="true"] .weapon-stat{border-top-color:#9a6843!important}
+body[data-run-active="true"] .weapon-stat b{color:var(--r95-weapon)!important;font-size:clamp(11px,1.08vw,16px)!important;line-height:1.08!important}
+body[data-run-active="true"] .weapon-stat::before,
+body[data-run-active="true"] .weapon-stat::after{display:none!important}
+
+/* Quick item belt. */
+body[data-run-active="true"] .player-hub .hub-inventory{
+  min-width:0!important;
+  padding:7px!important;
+  border:1px solid #4f3d55!important;
+  border-top:2px solid #8a6a3e!important;
+  background:linear-gradient(180deg,#151018,#0b080d)!important;
+}
+body[data-run-active="true"] .player-hub .hub-inventory-head{
+  min-height:18px!important;
+  margin:0 0 5px!important;
+}
+body[data-run-active="true"] .player-hub .hub-inventory-head>b{
+  color:var(--r95-gold)!important;
+  font:700 10px/1 var(--r95-rpg-font)!important;
+  letter-spacing:.45px!important;
+}
+body[data-run-active="true"] .player-hub .hub-inventory-flags{
+  color:#8f8395!important;
+  font:700 6.5px/1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .player-hub .hub-bronze-key{
+  border-color:#765333!important;
+  background:#1b110b!important;
+  color:#d59852!important;
+}
+body[data-run-active="true"] .player-hub .quick-slots{
+  gap:5px!important;
+}
+body[data-run-active="true"] .player-hub .quick-slot{
+  height:59px!important;
+  border:1px solid #4c3e52!important;
+  border-bottom:2px solid #6e5876!important;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(116,87,130,.10),transparent 58%),
+    linear-gradient(180deg,#110d14,#070509)!important;
+  box-shadow:inset 0 0 10px rgba(0,0,0,.55)!important;
+}
+body[data-run-active="true"] .player-hub .quick-slot.filled{
+  border-color:#806b88!important;
+  box-shadow:inset 0 0 12px rgba(196,163,214,.06),0 0 0 1px rgba(230,196,111,.03)!important;
+}
+body[data-run-active="true"] .quick-slot>b{
+  color:#675b6d!important;
+  font:700 7px/1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .quick-slot-key{
+  border-color:#806646!important;
+  background:#0b080c!important;
+  color:var(--r95-gold)!important;
+}
+body[data-run-active="true"] .quick-slot .stack-name{
+  background:rgba(5,4,7,.92)!important;
+  color:#c1b0c7!important;
+  font:700 6.5px/1.1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .stack-count{
+  border-color:#816b42!important;
+  background:#0a070a!important;
+  color:var(--r95-gold)!important;
+  font-family:var(--r95-data-font)!important;
+}
+
+/* Progression / objective block. */
+body[data-run-active="true"] .player-hub .hub-progress{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.65fr) repeat(3,minmax(62px,.58fr))!important;
+  gap:6px!important;
+}
+body[data-run-active="true"] .player-hub .priority-xp{
+  min-height:0!important;
+  padding:8px!important;
+  border:1px solid #57445e!important;
+  border-top:2px solid #8d7043!important;
+  background:linear-gradient(180deg,#18121b,#0b080e)!important;
+}
+body[data-run-active="true"] .priority-xp-head b{
+  color:var(--r95-gold)!important;
+  font:700 13px/1 var(--r95-rpg-font)!important;
+}
+body[data-run-active="true"] .priority-xp-head strong{
+  color:#c2b4c8!important;
+  font:700 7px/1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .xp-track{
+  height:9px!important;
+  margin:8px 0 5px!important;
+  border:1px solid #392d3d!important;
+  background:#050407!important;
+}
+body[data-run-active="true"] .xp-track i{
+  background:linear-gradient(90deg,#8161a2,#c39bd5,#e0bf72)!important;
+  box-shadow:0 0 8px rgba(195,155,213,.32)!important;
+}
+body[data-run-active="true"] .priority-xp small{
+  color:#857a8b!important;
+  font:700 6.5px/1.2 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .player-hub .run-stat{
+  min-height:0!important;
+  padding:7px 5px!important;
+  border:1px solid #433648!important;
+  background:linear-gradient(180deg,#141017,#0b080d)!important;
+  text-align:center!important;
+}
+body[data-run-active="true"] .player-hub .run-stat span{
+  color:#817686!important;
+  font:700 6.5px/1 var(--r95-data-font)!important;
+  letter-spacing:.6px!important;
+}
+body[data-run-active="true"] .player-hub .run-stat b{
+  margin-top:8px!important;
+  color:#e2d5e5!important;
+  font:700 13px/1 var(--r95-data-font)!important;
+}
+body[data-run-active="true"] .player-hub .run-stat:nth-child(3) b{color:var(--r95-gold)!important}
+body[data-run-active="true"] .pending-level-up{
+  margin-top:4px!important;
+  border-color:#a17f48!important;
+  background:#20170c!important;
+  color:#f1ce79!important;
+  font-family:var(--r95-data-font)!important;
+}
+
+/* Existing secondary telemetry remains deliberately demoted. */
+body[data-run-active="true"] .hub-telemetry{display:none!important}
+
+/* Panels opened during play should belong to the same RPG visual family. */
+body[data-run-active="true"] .overlay .panel:not(#menu .panel){
+  border-color:#6d566f!important;
+  background:
+    linear-gradient(180deg,rgba(25,18,29,.985),rgba(8,6,10,.99))!important;
+  box-shadow:0 18px 70px #000,0 0 0 1px rgba(230,196,111,.05) inset!important;
+}
+body[data-run-active="true"] .overlay .panel h2{
+  color:var(--r95-gold)!important;
+  font-family:var(--r95-rpg-font)!important;
+  letter-spacing:.6px!important;
+  text-transform:none!important;
+}
+body[data-run-active="true"] .overlay .panel h3{
+  font-family:var(--r95-rpg-font)!important;
+}
+
+/* Desktop compression without returning to unreadable micro-text. */
+@media(max-width:1180px) and (min-width:821px){
+  body[data-run-active="true"] .player-hub{
+    height:150px!important;
+    min-height:150px!important;
+    max-height:150px!important;
+    grid-template-columns:1fr 1fr!important;
+    grid-template-rows:72px 62px!important;
+  }
+  body[data-run-active="true"] .player-hub .hub-progress{
+    grid-column:1/-1!important;
+  }
+  body[data-run-active="true"] .player-hub .quick-slot{height:48px!important}
+}
+
+/* Mobile keeps combat essentials large and discards secondary ornament. */
+@media(max-width:820px){
+  body[data-run-active="true"] .critical-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    padding:4px!important;
+  }
+  body[data-run-active="true"] .v102-mission{
+    min-height:30px!important;
+    padding:4px 7px!important;
+  }
+  body[data-run-active="true"] .v102-mission>strong{font-size:11px!important}
+  body[data-run-active="true"] .v102-mission #mission-text{font-size:8.5px!important}
+  body[data-run-active="true"] .player-hub{
+    height:84px!important;
+    min-height:84px!important;
+    max-height:84px!important;
+    grid-template-columns:1fr!important;
+    padding:5px!important;
+  }
+  body[data-run-active="true"] .player-hub .core-stats{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+  body[data-run-active="true"] .player-hub .hub-stat{
+    padding:6px 5px 14px!important;
+  }
+  body[data-run-active="true"] .player-hub .hub-stat b{
+    margin-top:5px!important;
+    font-size:12px!important;
+  }
+  body[data-run-active="true"] .player-hub .hub-stat span{font-size:5.8px!important}
+  body[data-run-active="true"] .player-hub .hub-inventory,
+  body[data-run-active="true"] .player-hub .hub-progress{display:none!important}
+  body[data-run-active="true"] .tactical-zone{
+    padding:4px!important;
+    background:rgba(7,5,9,.94)!important;
+  }
+}
+
+@media(max-height:760px) and (min-width:821px){
+  body[data-run-active="true"] .player-hub{
+    height:98px!important;
+    min-height:98px!important;
+    max-height:98px!important;
+    padding:6px 7px!important;
+  }
+  body[data-run-active="true"] .player-hub .hub-stat{padding:6px 6px 15px!important}
+  body[data-run-active="true"] .player-hub .quick-slot{height:50px!important}
+}
