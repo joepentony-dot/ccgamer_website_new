@@ -196,11 +196,10 @@ async function runViewport(viewport){
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
-  // V10.4 owns the touch UI from its window-load init. Qualify that real
-  // production owner before starting Solo instead of waiting for controls that
-  // cannot exist yet while the document is only at DOMContentLoaded.
+  // R95 owns the current touch UI directly. Qualify that current production
+  // owner before starting Solo; the retired V10.4 patch must not be required.
   await page.waitForLoadState("load");
-  await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R95MobileControls)&&document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
@@ -210,7 +209,7 @@ async function runViewport(viewport){
   await acceptMobilePlayNotice(page);
   // The acceptance assertions below already require the real dock and every
   // directional target to have usable geometry. Give the production 220ms
-  // V10.4 UI refresh one bounded cycle, then report the measured layout rather
+  // current touch owner one bounded settle cycle, then report the measured layout rather
   // than hiding a geometry failure behind a generic wait timeout.
   await page.waitForTimeout(320);
 
@@ -235,6 +234,13 @@ async function runViewport(viewport){
       canvasWrap:box(".ccg-game>.game-area>.canvas-wrap"),
       playerHub:box(".ccg-game>.player-hub"),
       touch:box("#v104-touch-controls"),
+      touchPosition:getComputedStyle(document.getElementById("v104-touch-controls")).position,
+      legacyPatchLoaded:[...document.scripts].some(script=>/v10-4-patch\.js/i.test(String(script.src||""))),
+      legacyFeedback:Boolean(document.getElementById("v104-feedback-panel")),
+      legacyMobileCss:{
+        v111:Boolean(document.querySelector('link[data-ccg-v111-mobile-focus="true"]')),
+        v124:Boolean(document.querySelector('link[data-ccg-v124-mobile-ergonomics="true"]'))
+      },
       movement,
       hiddenRows:{
         topbar:getComputedStyle(document.querySelector(".ccg-game>.v102-topbar")).display,
@@ -254,12 +260,16 @@ async function runViewport(viewport){
   assert.ok(layout.bodyScrollWidth<=layout.viewport.width+2,`portrait layout must not create horizontal page overflow: ${JSON.stringify(layout)}`);
   assert.ok(layout.shell.width<=layout.viewport.width+2,`game shell must fit the portrait viewport: ${JSON.stringify(layout)}`);
   assert.ok(layout.shell.height<=layout.viewport.height+2,`game shell must fit the portrait viewport height: ${JSON.stringify(layout)}`);
-  assert.ok(layout.mission.height<=30,`portrait mission strip should remain compact: ${JSON.stringify(layout)}`);
-  assert.ok(layout.playerHub.height<=78,`portrait player HUD should remain compact: ${JSON.stringify(layout)}`);
+  assert.ok(layout.mission.height<=32,`portrait mission strip should remain compact: ${JSON.stringify(layout)}`);
+  assert.ok(layout.playerHub.height>=80&&layout.playerHub.height<=90,`portrait RPG player HUD should remain compact and readable: ${JSON.stringify(layout)}`);
   assert.ok(layout.gameArea.height>layout.viewport.height*.55,`dungeon playfield must own most active portrait height: ${JSON.stringify(layout)}`);
   assert.ok(layout.gameArea.height>layout.mission.height+layout.playerHub.height,`gameplay area must retain the majority of active vertical space: ${JSON.stringify(layout)}`);
   assert.ok(layout.canvasWrap.width>0&&layout.canvasWrap.height>0,`portrait canvas must have usable geometry: ${JSON.stringify(layout)}`);
   assert.ok(layout.touch.width>0&&layout.touch.height>0,`touch dock must have rendered portrait geometry: ${JSON.stringify(layout)}`);
+  assert.equal(layout.touchPosition,"absolute",`current touch dock must overlay the gameplay area instead of creating a legacy grid row: ${JSON.stringify(layout)}`);
+  assert.equal(layout.legacyPatchLoaded,false,"retired v10-4-patch.js must not execute in the current V10.42 runtime");
+  assert.equal(layout.legacyFeedback,false,"retired V10.4 feedback overlay must not be recreated by the current runtime");
+  assert.deepEqual(layout.legacyMobileCss,{v111:false,v124:false},"retired mobile layout stylesheets must not be reintroduced after R95");
   assert.ok(Math.abs(layout.cssAspect-layout.backingAspect)<=0.01,`canvas backing aspect must match displayed portrait aspect: ${JSON.stringify(layout)}`);
   assert.ok(layout.backing.width>=640&&layout.backing.height>=360,`portrait backing store must retain canonical minimum dimensions: ${JSON.stringify(layout)}`);
   assert.ok(layout.repairs>=1,`portrait runtime should repair the initial landscape backing store when required: ${JSON.stringify(layout)}`);

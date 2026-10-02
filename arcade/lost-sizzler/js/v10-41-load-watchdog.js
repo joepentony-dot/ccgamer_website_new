@@ -78,12 +78,24 @@
     return Math.min(24,Math.max(1,Math.round((ready/total)*24)))
   }
 
+  function syncLoaderChrome(value){
+    const stageLabel=document.getElementById("ccg-release-loading-stage");
+    const label=value>=100?"DUNGEON READY":value>=88?"FINALISING ADVENTURE":value>=55?"BUILDING DUNGEON SYSTEMS":value>=25?"STARTING GAME SYSTEMS":"CHECKING DUNGEON FILES";
+    if(stageLabel&&stageLabel.textContent!==label)stageLabel.textContent=label;
+    document.querySelectorAll(".ccg-release-loading-stages [data-loader-threshold]").forEach(node=>{
+      const threshold=Math.max(0,Number(node.dataset.loaderThreshold)||0),complete=value>=threshold+(threshold===88?12:24),active=value>=threshold&&!complete;
+      node.classList.toggle("is-complete",complete);
+      node.classList.toggle("is-active",active)
+    })
+  }
+
   function writeLoadingStage(stage){
     const next=Math.max(0,Math.min(100,Math.round(Number(stage)||0)));
     const value=next===100?100:Math.max(state.loadingStage,next);
     const progress=document.getElementById("ccg-release-loading-progress"),percent=document.getElementById("ccg-release-loading-percent");
     if(progress&&Number(progress.value)!==value)progress.value=value;
     if(percent&&percent.textContent!==`${value}%`)percent.textContent=`${value}%`;
+    syncLoaderChrome(value);
     const v136=window.CCGLostSizzlerV136?.state;if(v136&&Number(v136.progress)!==value)v136.progress=value;
     if(value!==state.loadingStage){state.loadingStage=value;if(state.loadingStages.at(-1)!==value)state.loadingStages.push(value)}
   }

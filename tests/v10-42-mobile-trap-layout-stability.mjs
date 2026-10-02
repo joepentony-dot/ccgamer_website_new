@@ -4,16 +4,30 @@ import vm from "node:vm";
 
 const modulePath="arcade/lost-sizzler/js/v10-42-r19-mobile-trap-layout-stability.js";
 const bootstrapPath="arcade/lost-sizzler/js/v10-42-bootstrap.js";
-const touchPath="arcade/lost-sizzler/js/v10-4-patch.js";
+const touchPath="arcade/lost-sizzler/js/v10-42-r95-mobile-controls.js";
+const hudCssPath="arcade/lost-sizzler/css/v10-42-r95-rpg-hud.css";
 const gameplayPath="arcade/lost-sizzler/js/game-play.js";
+const assetOverridesPath="arcade/lost-sizzler/js/asset-overrides.js";
+const legacyRegressionPath="arcade/lost-sizzler/js/v10-4-regression-fixes.js";
 const source=fs.readFileSync(modulePath,"utf8");
 const bootstrap=fs.readFileSync(bootstrapPath,"utf8");
 const touchSource=fs.readFileSync(touchPath,"utf8");
+const hudCss=fs.readFileSync(hudCssPath,"utf8");
 const gameplaySource=fs.readFileSync(gameplayPath,"utf8");
+const assetOverrides=fs.readFileSync(assetOverridesPath,"utf8");
+const legacyRegression=fs.readFileSync(legacyRegressionPath,"utf8");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js/,"ordered V10.42 bootstrap must load the portrait mobile layout adapter");
 assert.match(bootstrap,/CCGLostSizzlerV142R19MobileLayoutCompatibility/,"ordered bootstrap must wait for the non-gameplay layout marker");
+assert.match(bootstrap,/v10-42-r95-mobile-controls\.js/,"ordered V10.42 bootstrap must load the current touch-control owner");
+assert.doesNotMatch(assetOverrides,/v10-4-patch\.js/,"current enhancement queue must not reload the retired V10.4 patch");
+assert.doesNotMatch(assetOverrides,/data-ccg-lost-sizzler-v104/,"current enhancement startup must not depend on the retired V10.4 owner marker");
+assert.doesNotMatch(assetOverrides,/v10-11-mobile-focus\.css/,"R95 must not late-load the retired V10.11 mobile layout owner");
+assert.doesNotMatch(assetOverrides,/v10-24-mobile-ergonomics\.css/,"R95 must not late-load the retired V10.24 mobile layout owner");
+assert.doesNotMatch(legacyRegression,/addTouchAction|completeTouchControls|querySelector\("#v104-touch-controls \.v104-touch-actions"\)/,"retained V10.4 regression support must not append buttons into the R95 touch dock");
+const mobileOwnerIndex=bootstrap.indexOf("v10-42-r95-mobile-controls.js");
 const r19Index=bootstrap.indexOf("v10-42-r19-mobile-trap-layout-stability.js");
+assert.ok(mobileOwnerIndex>=0&&mobileOwnerIndex<r19Index,"current touch-control owner must load before portrait compatibility");
 const r1Index=bootstrap.indexOf("v10-42-r1-stability.js");
 const r18Index=bootstrap.indexOf("v10-42-r18-solo-playtest-stability.js");
 assert.ok(r19Index>=0&&r19Index<r1Index,"portrait layout must load before the final R1/R18 guarded stability pair");
@@ -27,10 +41,12 @@ assert.doesNotMatch(source,/hurtPlayer\([^)]*trap/,"layout compatibility must no
 assert.match(source,/CCGLostSizzlerV142R58AuthoritativeTrapCore/,"layout compatibility must delegate trap API calls to the canonical R58 owner");
 assert.match(source,/function syncPortraitCanvasAspect\(\)/,"portrait compatibility must own bounded backing-store aspect repair");
 assert.match(source,/Math\.max\(1,640\/cssW,360\/cssH\)/,"portrait backing store must scale both axes together from canonical minimums");
-assert.match(source,/grid-template-rows:28px minmax\(0,1fr\) 74px!important/,"portrait mission, dungeon and HUD must own the active phone shell rows");
+assert.doesNotMatch(source,/grid-template-rows:28px minmax\(0,1fr\) 74px!important/,"R19 must not own the mobile shell height after R95");
+assert.doesNotMatch(source,/v104-touch-controls/,"R19 must not style or own the current touch dock");
 assert.match(source,/aspect-ratio:auto!important/,"portrait playfield must use live viewport geometry instead of forcing desktop 16:9");
-assert.match(source,/min-width:44px!important/,"portrait movement controls must retain a 44px touch target");
-assert.match(source,/min-height:44px!important/,"portrait controls must retain a 44px touch target");
+assert.match(hudCss,/grid-template-rows:28px minmax\(0,1fr\) 84px!important/,"R95 must own the active portrait shell rows");
+assert.match(hudCss,/\.v104-touch-controls\{/,"R95 must own touch-dock presentation");
+assert.match(hudCss,/min-height:44px!important/,"R95 touch controls must retain a 44px touch target");
 
 assert.match(gameplaySource,/const canonicalPlayerDamage=hurtPlayer;[\s\S]*function authoritativeDamagePlayer\(p,n,friendly=false,source="enemy"\)[\s\S]*authoritativeTrapDamageDepth\+\+[\s\S]*canonicalPlayerDamage\(p,n,friendly,source\)[\s\S]*authoritativeTrapDamageDepth=Math\.max\(0,authoritativeTrapDamageDepth-1\)/,"canonical gameplay must reach the captured raw player-damage primitive only through the guarded R58 internal boundary");
 assert.match(gameplaySource,/function applyActiveTrapContact\(p,t,now=performance\.now\(\)\)/,"canonical gameplay must own active floor-trap contacts");
@@ -41,7 +57,8 @@ assert.match(gameplaySource,/trapCycleHits\.set\(key,cycle\)/,"verified trap con
 assert.match(gameplaySource,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi/,"canonical R58 trap API must be exported");
 
 for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(touchSource,new RegExp(`data-key=["']${key}["']`),`touch pad must retain ${key} movement mapping`);
-assert.match(touchSource,/querySelectorAll\("\[data-key\]"\)[\s\S]*?addEventListener\("pointerdown"[\s\S]*?input\.add\(button\.dataset\.key\)/,"touch pointerdown must feed movement into the canonical input Set");
+assert.match(touchSource,/root\.addEventListener\("pointerdown"[\s\S]*?const key=button\.dataset\.key;[\s\S]*?input\.add\(key\)/,"root-delegated touch pointerdown must feed movement into the canonical input Set even when child buttons are replaced");
+assert.match(touchSource,/data-action=["\']map["\']/,"R95 must own the mobile MAP action alongside the rest of the dock");
 assert.match(gameplaySource,/function movementTriggers\(p,deliberate=false\)[\s\S]*?const trapBoundaryAt=performance\.now\(\),trapBoundary=activeTrapAtPlayer\(p,trapBoundaryAt\)[\s\S]*?if\(trapBoundary\)applyActiveTrapContact\(p,trapBoundary,trapBoundaryAt\)/,"movement boundary must snapshot and commit the authoritative lexical floor-trap contact against one exact entry timestamp");
 
 const canvas={width:640,height:360};
@@ -84,8 +101,9 @@ vm.createContext(context);
 vm.runInContext(source,context,{filename:modulePath});
 
 assert.equal(typeof intervalHandler,"function","portrait layout adapter must retain its bounded layout/aspect timer");
-assert.match(insertedStyle,/grid-template-rows:28px minmax\(0,1fr\) 74px!important/,"runtime style must install compact portrait shell rows");
-assert.match(insertedStyle,/grid-template-columns:repeat\(3,44px\)!important/,"runtime style must retain usable movement controls");
+assert.doesNotMatch(insertedStyle,/grid-template-rows:/,"runtime R19 style must no longer install shell rows");
+assert.doesNotMatch(insertedStyle,/v104-touch-controls/,"runtime R19 style must no longer own touch controls");
+assert.match(insertedStyle,/aspect-ratio:auto!important/,"runtime R19 style must retain canvas aspect ownership only");
 const cssAspect=360/520,canvasAspect=canvas.width/canvas.height;
 assert.ok(Math.abs(canvasAspect-cssAspect)<=0.004,`portrait canvas backing aspect ${canvasAspect} must match displayed aspect ${cssAspect}`);
 assert.ok(canvas.width>=640&&canvas.height>=360,"portrait repair must retain canonical minimum backing-store dimensions");
@@ -99,4 +117,4 @@ assert.equal(context.CCGLostSizzlerV142R19MobileTrapLayoutStability.syncPortrait
 assert.equal(canvas.width,repairedWidth);
 assert.equal(canvas.height,repairedHeight);
 
-console.log("v10-42 mobile layout + canonical trap ownership contract passed");
+console.log("v10-42 R95 mobile controls + canonical trap ownership contract passed");
