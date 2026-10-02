@@ -167,6 +167,11 @@ try{
     assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"non-fullscreen desktop Solo must retain the full logical viewport width");
     assert.equal(desktopCamera.logicalHeight,desktopCamera.viewportHeight,"non-fullscreen desktop Solo must retain the full logical viewport height");
   }
+  await page.waitForFunction(()=>{
+    const seal=window.CCGLostSizzlerV142R2ControllerOwnerSeal;
+    const boundary=seal?.authoritativeBoundary?.();
+    return Boolean(seal?.gateActive?.()||seal?.state?.unsupported||(boundary&&window.update===boundary));
+  },null,{timeout:3000});
   const initial=await snap(page);
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
