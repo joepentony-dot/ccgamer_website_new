@@ -83,8 +83,8 @@ assert.match(index,/<button id="solo-btn" class="[^"]*primary[^"]*"[^>]*>Play So
 assert.match(index,/<button id="tutorial-zone-btn" type="button" class="tutorial-primary-option"[^>]*>Tutorial<\/button>/,"Tutorial must be present in the shipped HTML as a static supported action");
 assert.match(index,/<button id="solo-btn"[\s\S]*?<button id="split-btn"[^>]*hidden[\s\S]*?<button id="tutorial-zone-btn"/,"static menu order must preserve the hidden Split anchor between Solo and Tutorial without runtime reordering");
 assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must preserve the permanent Tutorial button if another runtime removes it");
-assert.match(guidance,/if\\(!button\\)\\{[\\s\\S]*?restorePosition\\(button\\)/,"a missing Tutorial button must still be restored into the supported static menu slot");
-assert.match(guidance,/if\\(button\\.parentElement!==row\\)restorePosition\\(button\\)/,"a detached Tutorial button must be restored to the supported menu slot");
+assert.match(guidance,/if\(!button\)\{[\s\S]*?restorePosition\(button\)/,"a missing Tutorial button must still be restored into the supported static menu slot");
+assert.match(guidance,/if\(button\.parentElement!==row\)restorePosition\(button\)/,"a detached Tutorial button must be restored to the supported menu slot");
 assert.doesNotMatch(guidance,/button\.previousElementSibling!==solo/,"tutorial guidance must not fight the Stage 2 runtime owner by repeatedly forcing an existing Tutorial button beside Solo");
 assert.match(guidance,/button\.textContent="Tutorial"/,"permanent tutorial option must be labelled Tutorial");
 assert.match(guidance,/function bindSoloDirect\(\)/,"Play Solo must retain the single primary launch path");
