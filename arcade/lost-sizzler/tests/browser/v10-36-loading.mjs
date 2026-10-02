@@ -75,7 +75,9 @@ try{
         stage:Number(watchdog?.state?.loadingStage||0),
         expected:Number(watchdog?.expectedModules||0),
         total:Number(watchdog?.totalModules?.()||0),
-        status:String(document.getElementById("ccg-release-loading-status")?.textContent||"")
+        status:String(document.getElementById("ccg-release-loading-status")?.textContent||""),
+        cardHeight:Number(document.querySelector(".ccg-release-loading-card")?.getBoundingClientRect?.().height||0),
+        statusHeight:Number(document.querySelector(".ccg-release-loading-status-frame")?.getBoundingClientRect?.().height||0)
       });
     };
     sample();
@@ -127,6 +129,11 @@ try{
   }
   assert.ok(new Set(ordered.map(sample=>sample.value)).size>=3,`ordered module loading should expose multiple intermediate percentages: ${JSON.stringify(ordered)}`);
   assert.ok(ordered.some(sample=>sample.currentModule&&/Loading .*systems ready\./.test(sample.status)),`loader status must identify the current ordered module while reporting completion counts: ${JSON.stringify(ordered)}`);
+  const visibleHeights=preReady.map(sample=>sample.cardHeight).filter(height=>height>0);
+  assert.ok(visibleHeights.length>=2,`loader geometry must be sampled while visible: ${JSON.stringify(preReady)}`);
+  assert.ok(Math.max(...visibleHeights)-Math.min(...visibleHeights)<=1,`loader card must not bounce when status text changes line count: ${JSON.stringify(visibleHeights)}`);
+  const statusHeights=preReady.map(sample=>sample.statusHeight).filter(height=>height>0);
+  assert.ok(statusHeights.length>=2&&Math.max(...statusHeights)-Math.min(...statusHeights)<=1,`loader status frame must keep fixed geometry: ${JSON.stringify(statusHeights)}`);
 
   /* Retained here as historic source context only: the former field-kit
    * assertions exercised retired Spy UI and must not execute in active CI. */
