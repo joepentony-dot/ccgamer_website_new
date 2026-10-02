@@ -61,7 +61,10 @@ try{
   assert.equal(initial.display,"grid","mobile control dock must be visible during a real Solo run");
   assert.ok(initial.root?.height>=120&&initial.root.width>300,`mobile control dock must have visible geometry: ${JSON.stringify(initial.root)}`);
   assert.equal(initial.dirs.length,4,"mobile D-pad must expose four directions");
-  assert.equal(initial.actions.length,6,"mobile action dock must expose DASH, POTION, TORCH, FIRE, BANISH and ITEMS");
+  const requiredActions=["dash","potion","torch","fire","banish","inventory"];
+  for(const action of requiredActions){
+    assert.equal(initial.actions.filter(row=>row.action===action).length,1,`mobile action dock must expose ${action.toUpperCase()} exactly once`);
+  }
   assert.ok([...initial.dirs,...initial.actions].every(row=>row.rect?.width>0&&row.rect?.height>0&&row.display!=="none"),"every mobile control must retain visible hit geometry");
 
   const before=await page.evaluate(()=>({actions:window.CCGLostSizzlerV142R95MobileControls.state.actions,movements:window.CCGLostSizzlerV142R95MobileControls.state.movements}));
