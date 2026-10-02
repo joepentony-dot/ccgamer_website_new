@@ -9,7 +9,16 @@
 
   const state={installed:false,active:false,actions:0,movements:0,visibilitySyncs:0};
   const touchCapable=()=>Boolean((navigator.maxTouchPoints||0)>0||window.matchMedia?.("(pointer: coarse)")?.matches);
-  const playing=()=>document.body?.dataset?.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing";
+  const playing=()=>{
+    let live=false;
+    try{live=typeof mode!=="undefined"&&mode==="playing"&&typeof p1!=="undefined"&&Boolean(p1)}catch(_){live=false}
+    if(!live)return false;
+    if(document.body?.dataset?.runActive!=="true"){
+      try{window.CCGLostSizzlerV142R20LiveRegressionStability?.restoreLivePresentationNow?.("mobile-control")}catch(_){}
+      try{if(document.body)document.body.dataset.runActive="true"}catch(_){}
+    }
+    return document.body?.dataset?.runActive==="true";
+  };
 
   function releaseMovement(button){
     const key=button?.dataset?.key;
@@ -117,23 +126,30 @@
       </div>`;
     area.appendChild(root);
 
-    root.querySelectorAll("[data-key]").forEach(button=>{
-      button.addEventListener("pointerdown",event=>{
-        if(!playing())return;
+    /* One delegated touch owner lives on the stable control root. Child buttons may
+     * be replaced by presentation/runtime repairs without losing gameplay input. */
+    root.addEventListener("pointerdown",event=>{
+      const button=event.target?.closest?.(".v104-touch-btn");
+      if(!button||!root.contains(button)||!playing())return;
+      const key=button.dataset.key;
+      if(key){
         event.preventDefault();
         try{button.setPointerCapture?.(event.pointerId)}catch(_){}
-        try{if(typeof input!=="undefined")input.add(button.dataset.key)}catch(_){}
+        try{if(typeof input!=="undefined")input.add(key)}catch(_){}
         button.classList.add("held");
         state.movements++;
-      });
-      for(const type of ["pointerup","pointercancel","lostpointercapture"])button.addEventListener(type,()=>releaseMovement(button));
+        return
+      }
+      if(button.dataset.action)runAction(button,event)
     });
 
-    root.querySelectorAll("[data-action]").forEach(button=>{
-      const action=button.dataset.action;
-      button.addEventListener("pointerdown",event=>runAction(button,event));
-      for(const type of ["pointerup","pointercancel","lostpointercapture"])button.addEventListener(type,()=>{if(action==="fire")stopFire(button)});
-    });
+    const release=event=>{
+      const button=event.target?.closest?.(".v104-touch-btn");
+      if(!button||!root.contains(button))return;
+      if(button.dataset.key)releaseMovement(button);
+      if(button.dataset.action==="fire")stopFire(button)
+    };
+    for(const type of ["pointerup","pointercancel","lostpointercapture"])root.addEventListener(type,release);
 
     const observer=new MutationObserver(sync);
     observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active","data-tutorial-active"]});
