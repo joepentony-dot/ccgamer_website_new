@@ -55,3 +55,26 @@ body[data-run-active="false"] #menu .game-mode-buttons button::after{
   transform:none!important;
   filter:none!important;
 }
+
+
+/* R93 single-owner menu colour contract.
+ * These are the settled card colours and must exist before any runtime code.
+ * No script is allowed to replace a solid legacy fill after first paint. */
+html body[data-run-active="false"] #menu #solo-btn{
+  border-color:#ffe477!important;
+  background:linear-gradient(135deg,#6d4a12 0%,#39230b 48%,#7e4717 100%)!important;
+  color:#fff4c1!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.11),inset 0 0 22px rgba(255,216,90,.08),4px 4px 0 rgba(0,0,0,.72)!important;
+}
+html body[data-run-active="false"] #menu #tutorial-zone-btn{
+  border-color:#51d7e9!important;
+  background:linear-gradient(135deg,#123b49 0%,#091a22 52%,#17354a 100%)!important;
+  color:#c9fbff!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),inset 0 0 20px rgba(108,236,255,.07),4px 4px 0 rgba(0,0,0,.72)!important;
+}
+html body[data-run-active="false"] #menu #continue-save-btn{
+  border-color:#61d88a!important;
+  background:linear-gradient(135deg,#17442b 0%,#091a11 52%,#20553a 100%)!important;
+  color:#caffd9!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.08),inset 0 0 20px rgba(114,255,155,.07),4px 4px 0 rgba(0,0,0,.72)!important;
+}
