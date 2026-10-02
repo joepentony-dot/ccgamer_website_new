@@ -73,6 +73,7 @@
     ["v10-42-r82-rpg-death-rollback.js","CCGLostSizzlerV142R82RpgDeathRollback"],
     ["v10-42-r83-death-cache-progression.js","CCGLostSizzlerV142R83DeathCacheProgression"],
     ["v10-42-r72-map-death-feedback.js","CCGLostSizzlerV142R72MapDeathFeedback"],
+    ["v10-42-r92-enemy-identity.js","CCGLostSizzlerV142R92EnemyIdentity"],
     ["v10-42-bug-reporter.js","CCGLostSizzlerBugReporter"]
   ];
   const state={build:BUILD,cache:CACHE,ready:false,failed:false,loaded:[],totalModules:modules.length,currentModule:"",currentIndex:0,pendingStartId:"",pendingStartRetries:0,identityRestamps:0,identityTimers:[],controllerSealReady:false,controllerSealAttempts:0,r1ChestOwner:null,r1ChestOwnerRestores:0};
