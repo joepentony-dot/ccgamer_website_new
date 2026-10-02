@@ -62,10 +62,7 @@
   function restoreLivePresentationNow(reason="resume"){
     if(currentMode()!=="playing"||!liveSession())return false;
     const repaired=activeRun();
-    try{
-      const menu=document.getElementById("menu"),touch=document.getElementById("v104-touch-controls");
-      if(touch&&menu?.classList.contains("hidden"))touch.classList.add("active")
-    }catch(_){}
+    try{window.CCGLostSizzlerV142R95MobileControls?.sync?.()}catch(_){}
     if(repaired)try{document.body.dataset.v142R20PresentationResume=String(reason)}catch(_){}
     return repaired
   }
