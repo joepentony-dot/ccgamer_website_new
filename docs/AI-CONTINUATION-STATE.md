@@ -1,6 +1,6 @@
 ## C64 Dungeon Carnage qualified-main checkpoint — 2 October 2026
 
-- **Authoritative repository baseline:** `main` is `f9aa2044beed9a292b24f1bc74463f84fdfa591d`, the merge commit for PR #2475 / R91 clean tester and member playtest access.
+- **Authoritative qualified Dungeon runtime baseline:** `f9aa2044beed9a292b24f1bc74463f84fdfa591d`, the merge commit for PR #2475 / R91 clean tester and member playtest access. Later documentation-only checkpoint commits may sit above this runtime tree without changing the qualified Dungeon code.
 - **Consolidated accepted chain:** R83 death-cache XP/level/stat recovery -> R84 integrated performance + visual/topology overhaul -> R85 authored pickup/environment sprites -> R86 RPG shops/rewards/quests/themed rooms -> R87 fifteen-floor campaign -> R88 endgame/credits overhaul -> R89 current-system tutorial -> R90 Chromium qualification rebalance -> R91 tester/member access.
 - **Superseded preservation:** older stacked/verification/tutorial/endgame/access PRs were closed without merge where appropriate and remain historical evidence only. Do not resurrect them as active merge candidates.
 - **Post-merge qualification:** current `main` passed C64 Dungeon Carnage Full Qualification with Chromium shards 1-6 green, CCG Site Safety, Production Smoke, itch.io packaging, Pages deployment, live navigation verification, and the site-wide Lighthouse aggregate.
