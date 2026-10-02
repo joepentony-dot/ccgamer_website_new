@@ -348,6 +348,8 @@
       const modeRuntime=window.CCGLostSizzlerModeRuntime;
       if(!prerequisiteReady("CCGLostSizzlerModeRuntime"))throw new Error("Authoritative dungeon mode runtime is incomplete");
       try{modeRuntime.sync("V10.42 ordered bootstrap finalisation")}catch(error){throw new Error(`Authoritative dungeon mode runtime could not synchronise: ${String(error?.message||error)}`)}
+      try{modeRuntime.installSharedFrameBoundary?.()}catch(error){throw new Error(`Authoritative dungeon frame boundary could not finalise: ${String(error?.message||error)}`)}
+      try{window.CCGLostSizzlerV142R2ControllerOwnerSeal?.install?.()}catch(error){throw new Error(`Controller owner seal could not finalise: ${String(error?.message||error)}`)}
       observeControllerSeal();
       try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
       state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
