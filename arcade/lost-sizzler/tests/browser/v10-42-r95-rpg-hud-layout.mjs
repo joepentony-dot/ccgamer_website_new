@@ -103,7 +103,7 @@ try{
     if(await accept.isVisible().catch(()=>false))await accept.click({noWaitAfter:true});
     await mobilePage.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none",null,{timeout:10000});
   }
-  await mobilePage.waitForFunction(()=>window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
+  await mobilePage.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing"&&typeof playMode!=="undefined"&&playMode==="solo",null,{timeout:30000});
   await mobilePage.waitForTimeout(120);
 
   const mobileState=await mobilePage.evaluate(()=>{
