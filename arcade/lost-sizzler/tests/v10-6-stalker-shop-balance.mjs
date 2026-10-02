@@ -20,7 +20,7 @@ const ui={
 
 const context={
   console,
-  window:{},
+  window:{UI:ui},
   document:{body:{},createTreeWalker(){return{nextNode(){return null}}},querySelector(){return null}},
   NodeFilter:{SHOW_TEXT:4},
   UI:ui,
