@@ -196,11 +196,10 @@ async function runViewport(viewport){
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.gameReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R19MobileTrapLayoutStability));
-  // V10.4 owns the touch UI from its window-load init. Qualify that real
-  // production owner before starting Solo instead of waiting for controls that
-  // cannot exist yet while the document is only at DOMContentLoaded.
+  // R95 owns the current touch UI directly. Qualify that current production
+  // owner before starting Solo; the retired V10.4 patch must not be required.
   await page.waitForLoadState("load");
-  await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142R95MobileControls)&&document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);
@@ -210,7 +209,7 @@ async function runViewport(viewport){
   await acceptMobilePlayNotice(page);
   // The acceptance assertions below already require the real dock and every
   // directional target to have usable geometry. Give the production 220ms
-  // V10.4 UI refresh one bounded cycle, then report the measured layout rather
+  // current touch owner one bounded settle cycle, then report the measured layout rather
   // than hiding a geometry failure behind a generic wait timeout.
   await page.waitForTimeout(320);
 
