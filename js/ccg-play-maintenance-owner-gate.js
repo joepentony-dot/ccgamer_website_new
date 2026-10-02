@@ -81,20 +81,16 @@
     parserBoundaryEligible = document.readyState === "loading"
       && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
 
-    // Local/dev access is granted synchronously before the parser reaches the
-    // protected runtime block. Materialise that block synchronously at the
-    // boundary so legacy parser-loaded startup semantics are preserved exactly.
-    // Production never uses this shortcut: owner/member/tester access remains
-    // server-verifiable and boots through the validated post-boundary path.
-    if (!isProduction() && runtimeAccessGranted && parserBoundaryEligible) {
-      const placeholders = Array.from(
-        document.querySelectorAll('script[data-ccg-protected-runtime][type="' + PROTECTED_RUNTIME_TYPE + '"]')
-      );
-      try {
-        bootstrapProtectedRuntimeDuringParse(placeholders);
-      } catch (error) {
-        mark("runtime-load-failed");
-        try { console.error("[CCG] Dungeon development runtime failed to start.", error); } catch (_error) {}
+    // Development and local qualification do not need an auth wait, but they
+    // still use the exact protected script list. Let the real parser finish,
+    // then use the ordered loader so readiness-sensitive modules see one
+    // deterministic post-bootstrap DOMContentLoaded pass.
+    if (!isProduction() && runtimeAccessGranted) {
+      parserBoundaryEligible = false;
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startProtectedRuntimeWhenReady, { once: true });
+      } else {
+        startProtectedRuntimeWhenReady();
       }
       return true;
     }
