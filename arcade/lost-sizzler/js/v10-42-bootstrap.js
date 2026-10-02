@@ -349,7 +349,7 @@
       if(!prerequisiteReady("CCGLostSizzlerModeRuntime"))throw new Error("Authoritative dungeon mode runtime is incomplete");
       try{modeRuntime.sync("V10.42 ordered bootstrap finalisation")}catch(error){throw new Error(`Authoritative dungeon mode runtime could not synchronise: ${String(error?.message||error)}`)}
       observeControllerSeal();
-      try{window.CCGLostSizzlerV141R55FinalPlaytestCleanup?.markMenu?.()}catch(_){}
+      /* R93: current blocking CSS owns the menu; do not replay legacy R55 presentation. */
       state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
       const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Solo and Tutorial are the supported local modes; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
