@@ -60,21 +60,8 @@
     };
   }
 
-  /* Add the remaining mobile/tablet actions needed to play without a keyboard. */
-  function addTouchAction(label,action,handler){
-    const actions=document.querySelector("#v104-touch-controls .v104-touch-actions");
-    if(!actions||actions.querySelector(`[data-action="${action}"]`))return;
-    const button=document.createElement("button");
-    button.className="v104-touch-btn";button.type="button";button.dataset.action=action;button.textContent=label;
-    button.addEventListener("pointerdown",event=>{event.preventDefault();if(typeof mode==="undefined"||!p1)return;handler()});
-    actions.appendChild(button);
-  }
-  function completeTouchControls(){
-    addTouchAction("WARP","warp",()=>{if(mode==="playing")useTeleport(p1)});
-    addTouchAction("DOOR","door",()=>{if(mode==="playing")closeNearbyDoor(p1)});
-    addTouchAction("PAUSE","pause",()=>{if(mode==="playing"||mode==="paused")pause()});
-  }
-  completeTouchControls();setTimeout(completeTouchControls,250);
+  /* R95 owns the complete mobile action dock. Retain this V10.4 module only
+   * for its unrelated regression fixes; it must not append touch controls. */
 
   /* The richer death/victory credits supersede the earlier plain-text game list. */
   if(typeof endRun==="function"){
