@@ -116,11 +116,11 @@
         .map((attribute) => ` ${attribute.name}="${escapeAttribute(attribute.value)}"`)
         .join("");
       const inline = placeholder.getAttribute("src") ? "" : (placeholder.textContent || "");
-      return `<script${attrs}>${inline}<\\/script>`;
+      return `<script${attrs}>${inline}</script>`;
     }).join("\n");
 
     placeholders.forEach((placeholder) => placeholder.remove());
-    document.write(markup + "\n<script>window.CCGPlayMaintenanceOwnerGate?.runtimeParserBootComplete?.();<\\/script>");
+    document.write(markup + "\n<script>window.CCGPlayMaintenanceOwnerGate?.runtimeParserBootComplete?.();</script>");
   }
 
   function bootstrapProtectedRuntime() {
