@@ -93,7 +93,7 @@ try{
         height:Math.round(rect?.height||0)
       },
       viewport:{width:innerWidth,height:innerHeight},
-      buttons:Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>[id,sample(id)]))
+      buttons:Object.fromEntries(["continue-save-btn","solo-btn","tutorial-zone-btn"].map(id=>[id,sample(id)]))
     };
   });
 
@@ -235,7 +235,7 @@ try{
       loaderHidden:Boolean(loader?.hidden),
       loaderDisplay:loader?getComputedStyle(loader).display:"",
       feature:[...document.querySelectorAll("#menu .feature-strip span")].map(node=>String(node.textContent||"").trim()),
-      buttons:Object.fromEntries(["solo-btn","split-btn","tutorial-zone-btn","daily-btn"].map(id=>[id,sample(id)]))
+      buttons:Object.fromEntries(["continue-save-btn","solo-btn","tutorial-zone-btn"].map(id=>[id,sample(id)]))
     };
   });
 
