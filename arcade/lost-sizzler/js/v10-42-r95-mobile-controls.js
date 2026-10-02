@@ -50,9 +50,15 @@
   }
 
   function runAction(button,event){
-    if(!playing()||typeof p1==="undefined"||!p1)return false;
     const action=String(button?.dataset?.action||"");
     if(!action)return false;
+    if(action==="pause"){
+      let pausable=false;
+      try{pausable=document.body?.dataset?.runActive==="true"&&typeof mode!=="undefined"&&(mode==="playing"||mode==="paused")}catch(_){pausable=false}
+      if(!pausable||typeof pause!=="function")return false;
+      event?.preventDefault?.();pause();state.actions++;return true
+    }
+    if(!playing()||typeof p1==="undefined"||!p1)return false;
     event?.preventDefault?.();
     if(action==="fire")return fire(button,event);
     if(action==="dash"&&typeof dashPlayer==="function")dashPlayer(p1,(typeof d1==="function"?d1():null)||p1.dir);
@@ -60,6 +66,8 @@
     else if(action==="torch"&&typeof useUtility==="function")useUtility(p1);
     else if(action==="banish"&&typeof useBanishment==="function")useBanishment(p1);
     else if(action==="inventory"&&typeof toggleInventory==="function")toggleInventory();
+    else if(action==="warp"&&typeof useTeleport==="function")useTeleport(p1);
+    else if(action==="door"&&typeof closeNearbyDoor==="function")closeNearbyDoor(p1);
     state.actions++;
     return true
   }
@@ -123,6 +131,9 @@
         <button class="v104-touch-btn v104-touch-fire" data-action="fire"><span>FIRE</span></button>
         <button class="v104-touch-btn v104-touch-banish" data-action="banish"><span>BANISH</span><small>NONE</small></button>
         <button class="v104-touch-btn" data-action="inventory"><span>ITEMS</span></button>
+        <button class="v104-touch-btn" data-action="warp"><span>WARP</span></button>
+        <button class="v104-touch-btn" data-action="door"><span>DOOR</span></button>
+        <button class="v104-touch-btn" data-action="pause"><span>PAUSE</span></button>
       </div>`;
     area.appendChild(root);
 
