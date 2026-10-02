@@ -237,6 +237,10 @@ async function runViewport(viewport){
       touchPosition:getComputedStyle(document.getElementById("v104-touch-controls")).position,
       legacyPatchLoaded:[...document.scripts].some(script=>/v10-4-patch\.js/i.test(String(script.src||""))),
       legacyFeedback:Boolean(document.getElementById("v104-feedback-panel")),
+      legacyMobileCss:{
+        v111:Boolean(document.querySelector('link[data-ccg-v111-mobile-focus="true"]')),
+        v124:Boolean(document.querySelector('link[data-ccg-v124-mobile-ergonomics="true"]'))
+      },
       movement,
       hiddenRows:{
         topbar:getComputedStyle(document.querySelector(".ccg-game>.v102-topbar")).display,
@@ -265,6 +269,7 @@ async function runViewport(viewport){
   assert.equal(layout.touchPosition,"absolute",`current touch dock must overlay the gameplay area instead of creating a legacy grid row: ${JSON.stringify(layout)}`);
   assert.equal(layout.legacyPatchLoaded,false,"retired v10-4-patch.js must not execute in the current V10.42 runtime");
   assert.equal(layout.legacyFeedback,false,"retired V10.4 feedback overlay must not be recreated by the current runtime");
+  assert.deepEqual(layout.legacyMobileCss,{v111:false,v124:false},"retired mobile layout stylesheets must not be reintroduced after R95");
   assert.ok(Math.abs(layout.cssAspect-layout.backingAspect)<=0.01,`canvas backing aspect must match displayed portrait aspect: ${JSON.stringify(layout)}`);
   assert.ok(layout.backing.width>=640&&layout.backing.height>=360,`portrait backing store must retain canonical minimum dimensions: ${JSON.stringify(layout)}`);
   assert.ok(layout.repairs>=1,`portrait runtime should repair the initial landscape backing store when required: ${JSON.stringify(layout)}`);
