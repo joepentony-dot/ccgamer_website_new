@@ -57,7 +57,7 @@
 
   function updateItemAvailability(root){
     const inventoryCount=kind=>{
-      try{return Number(window.CCGProgression?.inventoryKindCount?.(globalThis.p1,kind)||0)}catch(_){return 0}
+      try{return Number(window.CCGProgression?.inventoryKindCount?.((typeof p1!=="undefined"?p1:null),kind)||0)}catch(_){return 0}
     };
     const items={
       potion:["POTION","potion"],
