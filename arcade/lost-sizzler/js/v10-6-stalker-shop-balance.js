@@ -11,7 +11,8 @@
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_STALKER_SHOP_BALANCE_V106__)return;
-  window.__CCG_LOST_SIZZLER_STALKER_SHOP_BALANCE_V106__=true;\n  const UI=window.UI||null;
+  window.__CCG_LOST_SIZZLER_STALKER_SHOP_BALANCE_V106__=true;
+  const UI=window.UI||null;
 
   const FLASK_SCORE_PRICE=8000;
   const BANISH_SCORE_REWARD=10000;
