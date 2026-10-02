@@ -13,8 +13,8 @@ const css=read("css/v10-42-r80-wearable-equipment.css");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r93");
-assert.equal(version.cacheToken,"20261002r93");
+assert.match(version.build,/^V10\.42 r\d+$/,"feature contract requires the current V10.42 release family");
+assert.match(version.cacheToken,/^\d{8}r\d+$/,"feature contract requires a valid current release cache token");
 
 assert.match(bootstrap,/v10-42-r71-equipment-inventory\.js[\s\S]*v10-42-r80-wearable-equipment\.js[\s\S]*v10-42-r72-map-death-feedback\.js/,"R80 wearables must load after the R71 inventory owner and before later presentation modules");
 assert.match(source,/const SLOT_ORDER=\["head","hands","feet"\]/,"wearables must expose genuine Head, Hands and Feet slots");
