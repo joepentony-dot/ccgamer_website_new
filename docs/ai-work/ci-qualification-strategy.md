@@ -1,3 +1,9 @@
+## R97 release blocker investigation — 2 October 2026, 22:20 UTC
+
+- Candidate #2485 / `codex/dungeon-r97-rpg-sprites-soundtrack` has not merged; main remains R96 `f38b84f0985d642f5daf7259cba633018a01814d`. Exact candidate `60bf03a56d3a012aa94a96f468d8243f5837febb` passed all non-Full-Qualification checks and the actual-PNG desktop/mobile plus delayed admin-soundtrack integration.
+- Full Qualification run 37069421288 initially failed R53's sword target HP difference (3 vs expected 1) and R51's sword-start wait. One unchanged failed-job retry passed R53 but reproduced the R51 timeout at line 171. No further unchanged retry is justified. The release remains blocked.
+- Add R51 to the focused PR browser smoke and log actual mode/player/input/FIRE trace when its unchanged sword-start assertion fails. This diagnoses the blocker earlier; no timeout, attack assertion, runtime combat or six-shard coverage is weakened. Actual signed-in and anonymous RLS verification both read all 16 enabled uploaded music tracks; no access/storage mutation was made.
+
 # CCG CI Qualification Strategy
 
 This document records the intended CI split for C64 Dungeon Carnage and shared-site regression checks.

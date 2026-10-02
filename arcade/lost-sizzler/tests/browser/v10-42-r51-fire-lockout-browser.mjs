@@ -168,7 +168,19 @@ try{
     return Number(p1._meleeSwingAt||0);
   });
   await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before,swordBefore,{timeout:3000});
+  try{
+    await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before,swordBefore,{timeout:3000});
+  }catch(error){
+    console.error("R97_SWORD_START_BLOCKER",JSON.stringify(await page.evaluate(()=>({
+      mode:String(mode),active:document.body.dataset.runActive,health:p1?.health,hitStun:p1?.hitStunMs,
+      controlLocked:p1?.controlLocked,controlsLocked:p1?.controlsLocked,firearmUnlocked:p1?.firearmUnlocked,
+      weapon:p1?.weapon,mana:p1?.mana,meleeWeapon:p1?.meleeWeapon,weaponLevel:p1?.weaponLevel,
+      fire1,fireBuffer1,projectileCD,space:input.has("Space"),swing:p1?._meleeSwingAt,
+      trace:window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace,
+      updateFaults:window.CCGLostSizzlerV141R29?.state?.updateFaults,renderFaults:window.CCGLostSizzlerV141R29?.state?.renderFaults
+    }))));
+    throw error;
+  }
   const firstSwordSwing=await page.evaluate(()=>Number(p1._meleeSwingAt||0));
   await page.waitForTimeout(1200);
   const swordAfter=await page.evaluate(()=>({

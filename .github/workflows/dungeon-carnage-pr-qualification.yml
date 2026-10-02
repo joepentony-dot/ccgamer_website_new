@@ -143,6 +143,7 @@ jobs:
         run: |
           set -uo pipefail
           tests=(
+            "arcade/lost-sizzler/tests/browser/v10-42-r51-fire-lockout-browser.mjs"
             "arcade/lost-sizzler/tests/v10-6-browser.mjs"
             "arcade/lost-sizzler/tests/browser/v10-41-load-safety.mjs"
             "arcade/lost-sizzler/tests/browser/v10-42-campaign-loader.mjs"
