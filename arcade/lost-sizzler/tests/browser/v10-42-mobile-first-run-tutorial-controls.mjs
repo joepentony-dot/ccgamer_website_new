@@ -87,7 +87,7 @@ try{
   page.on("pageerror",error=>errors.push(String(error?.stack||error)));
 
   await page.goto(`${origin}/arcade/lost-sizzler/?mobile-first-run-tutorial=1`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerTutorialGuidanceV123)&&Boolean(window.CCGLostSizzlerOnboardingV120));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerTutorialGuidanceV123)&&Boolean(window.CCGLostSizzlerOnboardingV120)&&Boolean(window.CCGLostSizzlerV142R95MobileControls));
   await page.waitForLoadState("load");
 
   const initial=await page.evaluate(()=>({
