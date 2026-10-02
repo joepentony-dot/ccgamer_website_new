@@ -1,3 +1,14 @@
+## C64 Dungeon Carnage qualified-main checkpoint — 2 October 2026
+
+- **Authoritative repository baseline:** `main` is `f9aa2044beed9a292b24f1bc74463f84fdfa591d`, the merge commit for PR #2475 / R91 clean tester and member playtest access.
+- **Consolidated accepted chain:** R83 death-cache XP/level/stat recovery -> R84 integrated performance + visual/topology overhaul -> R85 authored pickup/environment sprites -> R86 RPG shops/rewards/quests/themed rooms -> R87 fifteen-floor campaign -> R88 endgame/credits overhaul -> R89 current-system tutorial -> R90 Chromium qualification rebalance -> R91 tester/member access.
+- **Superseded preservation:** older stacked/verification/tutorial/endgame/access PRs were closed without merge where appropriate and remain historical evidence only. Do not resurrect them as active merge candidates.
+- **Post-merge qualification:** current `main` passed C64 Dungeon Carnage Full Qualification with Chromium shards 1-6 green, CCG Site Safety, Production Smoke, itch.io packaging, Pages deployment, live navigation verification, and the site-wide Lighthouse aggregate.
+- **Open PR state at checkpoint:** no open pull requests remain. There is no R92 successor branch or active Dungeon feature PR.
+- **Remaining product gates are hands-on acceptance, not an automatic coding queue:** verify the deployed/current build for sustained Solo movement/firing/combat/pause-resume and inventory-transition stability; complete the 3 Artefacts/Essences -> exactly 1 Banishment Flask exchange without first buying a Gold Flask while Gold and Score remain unchanged; then verify the qualified itch.io package/handoff before publication.
+- **Do not infer manual acceptance from repository green.** Existing automated Banishment/Alchemist contracts remain regression protection, but they do not substitute for the deployed hands-on exchange.
+- **Next repository action:** only open a new Dungeon code PR if a hands-on gate exposes a reproducible defect or the owner explicitly requests a new feature. Any such successor must branch from this qualified `main` and must pass the complete applicable browser gates before merge.
+
 ## Live R81 acceptance defects guarded after R82 merge — 1 October 2026
 
 - Owner-supplied live R81 diagnostics exposed two acceptance defects that must remain guarded even though current `main` is R82.
