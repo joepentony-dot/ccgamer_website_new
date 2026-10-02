@@ -58,6 +58,7 @@ assert.match(gameplaySource,/window\.CCGLostSizzlerV142R58AuthoritativeTrapCore=
 
 for(const key of ["KeyW","KeyA","KeyD","KeyS"])assert.match(touchSource,new RegExp(`data-key=["']${key}["']`),`touch pad must retain ${key} movement mapping`);
 assert.match(touchSource,/root\.addEventListener\("pointerdown"[\s\S]*?const key=button\.dataset\.key;[\s\S]*?input\.add\(key\)/,"root-delegated touch pointerdown must feed movement into the canonical input Set even when child buttons are replaced");
+assert.match(touchSource,/data-action=["\']map["\']/,"R95 must own the mobile MAP action alongside the rest of the dock");
 assert.match(gameplaySource,/function movementTriggers\(p,deliberate=false\)[\s\S]*?const trapBoundaryAt=performance\.now\(\),trapBoundary=activeTrapAtPlayer\(p,trapBoundaryAt\)[\s\S]*?if\(trapBoundary\)applyActiveTrapContact\(p,trapBoundary,trapBoundaryAt\)/,"movement boundary must snapshot and commit the authoritative lexical floor-trap contact against one exact entry timestamp");
 
 const canvas={width:640,height:360};
