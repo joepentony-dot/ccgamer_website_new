@@ -81,17 +81,14 @@
     parserBoundaryEligible = document.readyState === "loading"
       && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
 
-    // Development and local qualification do not need an auth wait, but they
-    // still use the exact protected script list. Let the real parser finish,
-    // then use the ordered loader so readiness-sensitive modules see one
-    // deterministic post-bootstrap DOMContentLoaded pass.
+    // Development and local qualification are admitted immediately. Start the
+    // existing ordered loader as soon as the parser reaches the protected
+    // runtime boundary instead of waiting until after DOMContentLoaded. This
+    // keeps local/browser qualification close to the historical startup order
+    // without changing production authorization.
     if (!isProduction() && runtimeAccessGranted) {
       parserBoundaryEligible = false;
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", startProtectedRuntimeWhenReady, { once: true });
-      } else {
-        startProtectedRuntimeWhenReady();
-      }
+      startProtectedRuntimeWhenReady();
       return true;
     }
 
@@ -207,7 +204,7 @@
       // DOM-ready initialisers still need one deterministic post-bootstrap
       // readiness pass. This preserves their original startup contract without
       // starting any runtime code before authorization.
-      if (domReadyAlreadyFired) {
+      if (domReadyAlreadyFired || document.readyState !== "loading") {
         document.dispatchEvent(new Event("DOMContentLoaded"));
       }
 
