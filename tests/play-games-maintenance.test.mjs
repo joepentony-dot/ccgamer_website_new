@@ -23,7 +23,7 @@ for (const path of [
   assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, path + " must load the protected Dungeon access gate");
   assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js"/);
   assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js"/);
-  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261001-tester-gate-v3"/);
+  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261002-tester-gate-v4"/);
   assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must retain supplied WebP");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/, path + " must keep game-main inert until access is validated");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-core\.js/, path + " must protect the core runtime");
