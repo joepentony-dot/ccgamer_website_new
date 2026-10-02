@@ -1,3 +1,15 @@
+## R92 floor-aware enemy identity — 2 October 2026
+
+- **Feature development resumed by owner instruction** after the post-R91 consolidation checkpoint. New work starts from current consolidated `main` `76d33533eb848f4c088014f538dc7a136f65b2ea`; no historical R-series branch is being revived.
+- **Active successor branch:** `codex/dungeon-r92-enemy-identity-current-main`. This is the only R92 owner.
+- R92 introduces one shared, floor-aware ordinary-enemy identity owner for the fifteen-floor campaign. Generic enemy kinds now progress through early (Floors 1-5), middle (6-10) and late (11-15) RPG identities while retaining their existing AI kind and mechanics.
+- Named supporters and special enemies remain protected: AZALEA, CPU and other named followers keep their configured names; Death Stalker, Sigil Warden, champions, guardians and Treasure Goblin retain their established special identity paths.
+- The renderer, ordinary combat/death-source text and defeated-enemy ledger now consume the same shared identity owner, with existing local fallbacks retained if the module is unavailable.
+- **No combat ownership change:** R92 does not alter enemy HP, armour, damage, AI cadence, spawning, movement, projectiles, death-cache logic, player stats, shops, saves or progression.
+- Added `v10-42-r92-enemy-identity.mjs` to execute the identity owner and guard floor progression, supporter/special-name preservation, bootstrap wiring and the no-combat/no-AI ownership boundary.
+- R92 is **unmerged** until its exact head is current with `main`, mergeable and the complete applicable Dungeon qualification matrix is green.
+- Existing hands-on gates remain useful while R92 qualifies: sustained Solo combat/pause/inventory stability, persistent death acknowledgement/death-cache recovery, natural trap HEALTH damage with armour unchanged, and the 3 Essences -> exactly 1 Banishment Flask exchange with Gold/Score unchanged.
+
 ## R54 graphics/UI implementation — 23 September 2026
 
 - **Active branch:** `codex/dungeon-r54-graphics-ui-current-main-20260923`, rebuilt from current `main` after #2298 and generated-output #2301 merged. The older R54 scoping PR #2299 is closed and must not be revived.
