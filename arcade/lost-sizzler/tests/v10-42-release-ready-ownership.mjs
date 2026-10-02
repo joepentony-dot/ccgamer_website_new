@@ -29,10 +29,11 @@ assert(source.includes('function stopReleaseReadyGuard()')&&source.includes('rel
 assert(!source.includes('setInterval('),'Release-ready ownership must not introduce a polling interval.');
 assert(!source.includes('requestAnimationFrame('),'Release-ready ownership must not introduce another frame owner.');
 
-const cacheGuardTag=indexSource.indexOf('<script src="js/v10-41-cache-guard.js');
-const gameMainTag=indexSource.indexOf('<script src="js/game-main.js');
-const versionCheckTag=indexSource.indexOf('<script src="js/version-check.js');
+const cacheGuardTag=indexSource.indexOf('src="js/v10-41-cache-guard.js');
+const gameMainTag=indexSource.indexOf('src="js/game-main.js');
+const versionCheckTag=indexSource.indexOf('src="js/version-check.js');
 assert(cacheGuardTag>=0&&gameMainTag>=0&&versionCheckTag>=0&&cacheGuardTag<gameMainTag&&cacheGuardTag<versionCheckTag,'The startup cache guard must remain the first release-readiness owner ahead of game-main and version-check.');
+assert(indexSource.includes('type="application/ccg-protected-runtime" data-ccg-protected-runtime'),'Website release-ready scripts must remain inert until the validated access bootstrap starts them.');
 assert(earlySource.includes('function startV142ReleaseGuard()')&&earlySource.includes('startV142ReleaseGuard();'),'The first static startup guard must install the V10.42 release hold synchronously.');
 assert(earlySource.includes('if(document.body?.dataset?.releaseReady==="true")setV142ReleaseReady(false);'),'The first static guard must reject legacy releaseReady=true writes before the ordered V10.42 bootstrap exists.');
 assert(earlySource.includes('v142ReleaseObserver.observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:["data-release-ready"]})'),'The early release hold must use a bounded MutationObserver rather than polling.');
