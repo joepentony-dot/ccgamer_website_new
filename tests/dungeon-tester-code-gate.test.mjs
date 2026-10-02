@@ -30,7 +30,8 @@ assert(gate.includes("isOwnerProfile(profile)"), "signed-in owner bypass must re
 assert(gameCore.includes("var UI=window.UI={"), "protected runtime must preserve the canonical global UI binding");
 
 assert(migration.includes("select false;"), "server-side historical tester-code RPC must fail closed during Round 2");
-assert(migration.includes("grant execute on function public.ccg_validate_dungeon_carnage_tester_code(text) to anon, authenticated"), "compatibility RPC may remain callable only to return false");
+assert(migration.includes("revoke all on function public.ccg_validate_dungeon_carnage_tester_code(text) from anon"), "Round 2 must revoke anonymous execution of the retired code RPC");
+assert(migration.includes("revoke all on function public.ccg_validate_dungeon_carnage_tester_code(text) from authenticated"), "Round 2 must revoke signed-in execution of the retired code RPC");
 assert(canonicalEntry.includes(cacheToken), "canonical Dungeon Carnage entry must load the closed Round 2 gate cache token");
 assert(canonicalEntry.includes('type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js'), "canonical runtime must remain inert until member access is validated");
 assert(canonicalEntry.includes("data-ccg-runtime-boundary"), "canonical entry must retain the protected-runtime parser boundary");
