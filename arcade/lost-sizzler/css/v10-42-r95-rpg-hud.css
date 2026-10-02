@@ -594,3 +594,236 @@ body[data-run-active="true"] .overlay .panel h3{
   body[data-run-active="true"] .player-hub .hub-stat{padding:6px 6px 15px!important}
   body[data-run-active="true"] .player-hub .quick-slot{height:50px!important}
 }
+
+
+/* R95 — authoritative portrait shell and touch controls. */
+.v104-touch-controls{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  z-index:32!important;
+  display:none!important;
+  grid-template-columns:136px minmax(0,1fr)!important;
+  align-items:end!important;
+  gap:8px!important;
+  padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;
+  pointer-events:none!important;
+  background:linear-gradient(180deg,transparent 0%,rgba(5,3,8,.42) 24%,rgba(5,3,8,.90) 100%)!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+}
+body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{display:grid!important}
+.v104-touch-pad,.v104-touch-actions{pointer-events:auto!important}
+.v104-touch-pad{
+  display:grid!important;
+  grid-template-columns:repeat(3,44px)!important;
+  grid-template-rows:repeat(3,44px)!important;
+  gap:2px!important;
+  width:136px!important;
+  height:136px!important;
+}
+.v104-touch-actions{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:5px!important;
+  height:136px!important;
+  align-content:end!important;
+}
+.v104-touch-btn{
+  min-width:0!important;
+  min-height:44px!important;
+  padding:4px 3px!important;
+  border:1px solid #745b80!important;
+  border-bottom:2px solid #9a7a4c!important;
+  border-radius:7px!important;
+  background:linear-gradient(180deg,rgba(32,24,37,.94),rgba(10,7,13,.96))!important;
+  color:#f1e7f3!important;
+  box-shadow:inset 0 0 12px rgba(0,0,0,.48),0 2px 8px rgba(0,0,0,.42)!important;
+  font:700 9px/1.05 var(--r95-data-font)!important;
+  letter-spacing:.3px!important;
+  text-shadow:none!important;
+  touch-action:none!important;
+}
+.v104-touch-btn small{display:block;margin-top:3px;color:#9d91a4;font-size:6px!important;line-height:1!important}
+.v104-touch-btn.held,.v104-touch-btn:active{border-color:var(--r95-gold)!important;background:linear-gradient(180deg,#4a3651,#211524)!important;transform:translateY(1px)!important}
+.v104-touch-fire{border-color:#a85b42!important;color:#ffd0b2!important;font-size:11px!important}
+.v104-touch-banish{border-color:#75558d!important;color:#d7b9e8!important}
+.v104-touch-btn.touch-item-unavailable{opacity:.58!important}
+.v104-touch-pad [data-dir="up"]{grid-column:2;grid-row:1}
+.v104-touch-pad [data-dir="left"]{grid-column:1;grid-row:2}
+.v104-touch-pad [data-dir="right"]{grid-column:3;grid-row:2}
+.v104-touch-pad [data-dir="down"]{grid-column:2;grid-row:3}
+
+@media (orientation:portrait) and (max-width:900px), (orientation:portrait) and (pointer:coarse){
+  body[data-run-active="true"] .ccg-game,
+  body[data-run-active="true"] .ccg-game:fullscreen,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:28px minmax(0,1fr) 84px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.v102-topbar,
+  body[data-run-active="true"] .ccg-game>.critical-strip,
+  body[data-run-active="true"] .ccg-game>.fullscreen-hint,
+  body[data-run-active="true"] .ccg-game>.tactical-zone{display:none!important}
+  body[data-run-active="true"] .ccg-game>.mission{
+    grid-row:1!important;
+    height:28px!important;
+    min-height:28px!important;
+    padding:3px 7px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.game-area{
+    grid-row:2!important;
+    position:relative!important;
+    min-height:0!important;
+    height:100%!important;
+  }
+  body[data-run-active="true"] .ccg-game>.player-hub{
+    grid-row:3!important;
+    align-self:stretch!important;
+    block-size:84px!important;
+    height:84px!important;
+    min-height:84px!important;
+    max-height:84px!important;
+  }
+}
+
+/* R95 — fixed-geometry RPG loading console. */
+.ccg-release-loading{
+  padding:clamp(12px,3vw,30px)!important;
+  background:
+    radial-gradient(circle at 18% 16%,rgba(185,120,255,.12),transparent 34%),
+    radial-gradient(circle at 82% 70%,rgba(108,236,255,.08),transparent 38%),
+    linear-gradient(180deg,#050308,#0b0710 58%,#030205)!important;
+}
+.ccg-release-loading::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  pointer-events:none!important;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.018) 0,rgba(255,255,255,.018) 1px,transparent 1px,transparent 4px)!important;
+  opacity:.34!important;
+}
+.ccg-release-loading-card{
+  position:relative!important;
+  width:min(940px,96vw)!important;
+  min-height:500px!important;
+  display:grid!important;
+  grid-template-columns:minmax(300px,.95fr) minmax(360px,1.05fr)!important;
+  gap:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:1px solid #6e5878!important;
+  border-top:2px solid #b28a4f!important;
+  border-radius:8px!important;
+  background:#09060c!important;
+  box-shadow:0 24px 80px rgba(0,0,0,.68),0 0 0 1px rgba(230,196,111,.045) inset!important;
+}
+.ccg-release-loading-art-frame{
+  position:relative!important;
+  min-height:500px!important;
+  overflow:hidden!important;
+  border-right:1px solid #4d3d54!important;
+  background:#060407!important;
+}
+.ccg-release-loading-art{
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  margin:0!important;
+  border-radius:0!important;
+  object-fit:cover!important;
+  opacity:.78!important;
+  filter:saturate(.84) contrast(1.08) brightness(.72)!important;
+  box-shadow:none!important;
+}
+.ccg-release-loading-art-frame::after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  background:linear-gradient(180deg,rgba(5,3,8,.06),rgba(5,3,8,.12) 48%,rgba(5,3,8,.78))!important;
+  pointer-events:none!important;
+}
+.ccg-release-loading-art-copy{
+  position:absolute!important;
+  left:20px!important;
+  right:20px!important;
+  bottom:20px!important;
+  z-index:2!important;
+  display:grid!important;
+  gap:5px!important;
+}
+.ccg-release-loading-art-copy b{color:#e0bf72!important;font:700 17px/1.1 var(--r95-rpg-font)!important}
+.ccg-release-loading-art-copy span{color:#c9bdce!important;font:700 8px/1.4 var(--r95-data-font)!important;letter-spacing:.5px!important}
+.ccg-release-loading-console{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-rows:auto auto 82px auto auto auto!important;
+  align-content:center!important;
+  gap:12px!important;
+  padding:34px 34px 30px!important;
+  background:
+    radial-gradient(circle at 85% 8%,rgba(185,120,255,.08),transparent 30%),
+    linear-gradient(180deg,#171019,#0b080d 58%,#070509)!important;
+}
+.ccg-release-loading-kicker{margin:0!important;color:#c7a4da!important;font:700 8px/1 var(--r95-data-font)!important;letter-spacing:1.8px!important}
+.ccg-release-loading h2{margin:0!important;color:#e4c477!important;font:700 clamp(24px,3.6vw,38px)/1 var(--r95-rpg-font)!important;letter-spacing:.4px!important;text-transform:none!important}
+.ccg-release-loading-status-frame{
+  box-sizing:border-box!important;
+  block-size:82px!important;
+  min-height:82px!important;
+  max-height:82px!important;
+  overflow:hidden!important;
+  padding:12px 14px!important;
+  border:1px solid #4d3d54!important;
+  border-left:3px solid #8d7043!important;
+  background:#08060a!important;
+}
+.ccg-release-loading-stage{display:block!important;margin-bottom:7px!important;color:#8adfed!important;font:700 7px/1 var(--r95-data-font)!important;letter-spacing:1px!important}
+.ccg-release-loading p{
+  display:block!important;
+  height:36px!important;
+  min-height:36px!important;
+  max-height:36px!important;
+  margin:0!important;
+  overflow:hidden!important;
+  color:#d3c6d8!important;
+  font:700 10px/1.45 var(--r95-data-font)!important;
+}
+.ccg-release-loading progress{
+  height:14px!important;
+  border:1px solid #4d3d54!important;
+  border-radius:0!important;
+  background:#050407!important;
+}
+.ccg-release-loading progress::-webkit-progress-bar{border-radius:0!important;background:#050407!important}
+.ccg-release-loading progress::-webkit-progress-value{border-radius:0!important;background:linear-gradient(90deg,#6c4f87,#9e76ad,#d8b566)!important;box-shadow:0 0 14px rgba(216,181,102,.22)!important}
+.ccg-release-loading progress::-moz-progress-bar{border-radius:0!important;background:linear-gradient(90deg,#6c4f87,#9e76ad,#d8b566)!important}
+.ccg-release-loading-meta{margin:0!important;color:#817787!important;font:700 7px/1.3 var(--r95-data-font)!important}
+.ccg-release-loading-percent{color:#e0bf72!important;font-size:11px!important}
+.ccg-release-loading-stages{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+.ccg-release-loading-stages span{
+  padding:7px 5px!important;
+  border:1px solid #352b3a!important;
+  background:#070509!important;
+  color:#655d6a!important;
+  font:700 6.5px/1 var(--r95-data-font)!important;
+  text-align:center!important;
+  letter-spacing:.45px!important;
+}
+.ccg-release-loading-stages span.is-active{border-color:#806649!important;color:#e0bf72!important;background:#171009!important}
+.ccg-release-loading-stages span.is-complete{border-color:#3d6f61!important;color:#91c9b6!important;background:#07110e!important}
+
+@media(max-width:720px){
+  .ccg-release-loading-card{
+    min-height:min(690px,94dvh)!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:minmax(190px,34dvh) minmax(0,1fr)!important;
+  }
+  .ccg-release-loading-art-frame{min-height:190px!important;border-right:0!important;border-bottom:1px solid #4d3d54!important}
+  .ccg-release-loading-art-copy{left:14px!important;right:14px!important;bottom:12px!important}
+  .ccg-release-loading-console{grid-template-rows:auto auto 76px auto auto auto!important;padding:20px 18px 18px!important;gap:9px!important}
+  .ccg-release-loading-status-frame{block-size:76px!important;min-height:76px!important;max-height:76px!important;padding:10px 11px!important}
+  .ccg-release-loading p{height:34px!important;min-height:34px!important;max-height:34px!important;font-size:9px!important}
+  .ccg-release-loading-stages span{padding:6px 2px!important;font-size:5.6px!important}
+}
