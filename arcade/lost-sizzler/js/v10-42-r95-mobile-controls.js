@@ -68,6 +68,13 @@
     else if(action==="inventory"&&typeof toggleInventory==="function")toggleInventory();
     else if(action==="warp"&&typeof useTeleport==="function")useTeleport(p1);
     else if(action==="door"&&typeof closeNearbyDoor==="function")closeNearbyDoor(p1);
+    else if(action==="map"){
+      const map=window.CCGLostSizzlerMobileCombatMap;
+      if(map?.toggleMap)map.toggleMap(event);
+      else if(typeof KeyboardEvent==="function"){
+        try{window.dispatchEvent(new KeyboardEvent("keydown",{code:"KeyM",key:"m",bubbles:true}))}catch(_){}
+      }
+    }
     state.actions++;
     return true
   }
@@ -134,6 +141,7 @@
         <button class="v104-touch-btn" data-action="warp"><span>WARP</span></button>
         <button class="v104-touch-btn" data-action="door"><span>DOOR</span></button>
         <button class="v104-touch-btn" data-action="pause"><span>PAUSE</span></button>
+        <button class="v104-touch-btn ccg-mobile-map-btn" data-action="map" aria-label="Toggle dungeon minimap" aria-pressed="false"><span>MAP</span></button>
       </div>`;
     area.appendChild(root);
 
