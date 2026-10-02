@@ -100,6 +100,8 @@ try{
   if(await mobileNotice.isVisible().catch(()=>false)){
     const accept=mobilePage.locator("#ccg-mobile-pc-accept");
     if(await accept.isVisible().catch(()=>false))await accept.click({noWaitAfter:true});
+    await mobilePage.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none",null,{timeout:10000});
+    await mobilePage.click("#solo-btn");
   }
   await mobilePage.waitForFunction(()=>document.body?.dataset?.runActive==="true"&&window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
   await mobilePage.waitForTimeout(120);
