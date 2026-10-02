@@ -81,17 +81,10 @@
     parserBoundaryEligible = document.readyState === "loading"
       && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
 
-    // Development and local qualification are admitted immediately. Start the
-    // existing ordered loader as soon as the parser reaches the protected
-    // runtime boundary instead of waiting until after DOMContentLoaded. This
-    // keeps local/browser qualification close to the historical startup order
-    // without changing production authorization.
-    if (!isProduction() && runtimeAccessGranted) {
-      parserBoundaryEligible = false;
-      startProtectedRuntimeWhenReady();
-      return true;
-    }
-
+    // When access was already granted before the parser reaches this boundary
+    // (the normal local/qualification path), preserve the historical parser
+    // execution order exactly. Production visitors who authenticate later still
+    // use the guarded late bootstrap path.
     startProtectedRuntimeWhenReady();
     return true;
   }
