@@ -113,7 +113,8 @@ as $function$
 $function$;
 
 revoke all on function public.ccg_validate_dungeon_carnage_tester_code(text) from public;
-grant execute on function public.ccg_validate_dungeon_carnage_tester_code(text) to anon, authenticated;
+revoke all on function public.ccg_validate_dungeon_carnage_tester_code(text) from anon;
+revoke all on function public.ccg_validate_dungeon_carnage_tester_code(text) from authenticated;
 
 drop function if exists public.admin_list_members(boolean, integer, integer, text, text);
 
