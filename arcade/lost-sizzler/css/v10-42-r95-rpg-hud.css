@@ -556,6 +556,19 @@ body[data-run-active="true"] .overlay .panel h3{
   }
 }
 
+@media(max-width:620px){
+  body[data-run-active="true"] .ccg-game,
+  body[data-run-active="true"] .ccg-game:fullscreen,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen{
+    grid-template-rows:28px minmax(0,1fr) 84px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.player-hub{
+    height:84px!important;
+    min-height:84px!important;
+    max-height:84px!important;
+  }
+}
+
 @media(max-height:760px) and (min-width:821px){
   body[data-run-active="true"] .player-hub{
     height:98px!important;
