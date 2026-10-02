@@ -8,7 +8,7 @@ const gate = fs.readFileSync("js/ccg-play-maintenance-owner-gate.js", "utf8");
 const canonicalEntry = fs.readFileSync("arcade/c64-dungeon-carnage/index.html", "utf8");
 const legacyEntry = fs.readFileSync("arcade/lost-sizzler/index.html", "utf8");
 const migration = fs.readFileSync("supabase/migrations/20260930235811_dungeon_carnage_tester_code_server_validation.sql", "utf8");
-const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261001-tester-gate-v3";
+const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261002-tester-gate-v4";
 const gameCore = fs.readFileSync("arcade/lost-sizzler/js/game-core.js", "utf8");
 const retiredLobby = fs.readFileSync("arcade/lost-sizzler/js/v10-6-runtime.js", "utf8");
 const retiredMultiplayerSync = fs.readFileSync("arcade/lost-sizzler/js/v10-31-multiplayer-sync.js", "utf8");
