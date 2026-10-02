@@ -20,6 +20,9 @@ const lostSizzlerPixelAssets=(()=>{
     enemySoldier:make(selected("enemySoldierSheet","assets/pixel/visual-overhaul/shade-puny-enemies/soldier-red.png")),
     enemyArcher:make(selected("enemyArcherSheet","assets/pixel/visual-overhaul/shade-puny-enemies/archer-green.png")),
     enemyMage:make(selected("enemyMageSheet","assets/pixel/visual-overhaul/shade-puny-enemies/mage-red.png")),
+    enemyOrcGrunt:make("assets/pixel/visual-overhaul/shade-puny-enemies/orc-grunt.png"),
+    enemyOrcPeon:make("assets/pixel/visual-overhaul/shade-puny-enemies/orc-peon-red.png"),
+    enemyCreatureAtlas:make("assets/pixel/enemy-atlas-horde-v10-35.png"),
     chestReplacement:make(selected("chestSheet")),
     chestFrames:[
       make(selected("chestFrame0","assets/pixel/visual-overhaul/0x72/chest-full-f0.png")),
@@ -705,7 +708,7 @@ function drawCountLoadulaCreditSprite(cx,cy){
 function renderEnemyCreditAvatar(target,row){
   if(!target?.getContext||!row)return false;const out=target.getContext("2d");if(!out)return false;const size=64;
   target.width=size;target.height=size;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,size,size);const glow=ctx.createRadialGradient(32,27,3,32,32,38);glow.addColorStop(0,row.named?"#342347":"#202a42");glow.addColorStop(1,"#06040a");ctx.fillStyle=glow;ctx.fillRect(0,0,size,size);ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(32,54,18,5,0,0,Math.PI*2);ctx.fill();
-  if(String(row.key||"")==="count-loadula")drawCountLoadulaCreditSprite(32,35);else drawPixelEnemySprite(enemyCreditPreviewEntity(row),32,34);
+  if(String(row.key||"")==="count-loadula")drawCountLoadulaCreditSprite(32,35);else{const preview=enemyCreditPreviewEntity(row);if(!drawPunyEnemySprite(preview,32,34)&&!drawAuthoredDungeonEnemySprite(preview,32,34))drawPixelEnemySprite(preview,32,34);}
   out.clearRect(0,0,size,size);out.imageSmoothingEnabled=false;out.drawImage(canvas,0,0,size,size,0,0,size,size);ctx.restore();return true
 }
 window.CCGRenderEnemyCreditAvatar=renderEnemyCreditAvatar;
@@ -722,7 +725,7 @@ function drawEnemyDefeatVisuals(){
     const q=enemyDefeatVisuals[i],age=now-Number(q.startedAt||now);if(age>=duration){enemyDefeatVisuals.splice(i,1);continue}
     if(age<0||!visibleTo(focus,q.x,q.y))continue;
     const progress=Math.max(0,Math.min(.999999,age/duration)),frame=Math.min(5,Math.floor(progress*6)),s=ws(q.x,q.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2,lean=[0,.12,.28,.48,.72,.9][frame]*(q.facing?.x<0?-1:1),scaleY=[1,.98,.9,.72,.48,.2][frame],scaleX=[1,1.03,1.08,1.12,1.16,1.2][frame],alpha=[1,.94,.8,.62,.4,.16][frame],ghost={id:`defeat-${i}`,kind:q.kind||"guardian",follower:q.followerKind?{kind:q.followerKind}:null,champion:Boolean(q.champion),guardian:Boolean(q.guardian),exitWarden:Boolean(q.exitWarden),deathStalker:Boolean(q.deathStalker),voidStalker:Boolean(q.voidStalker),facing:q.facing||{x:1,y:0},aiState:"idle",hitStunMs:0,flash:0,armor:0};
-    ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy+12*progress);ctx.rotate(lean);ctx.scale(scaleX,scaleY);ctx.translate(-cx,-cy);ghost.__defeatProgress=progress;if(!drawPunyEnemySprite(ghost,cx,cy))drawPixelEnemySprite(ghost,cx,cy);ctx.restore();
+    ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy+12*progress);ctx.rotate(lean);ctx.scale(scaleX,scaleY);ctx.translate(-cx,-cy);ghost.__defeatProgress=progress;if(!drawPunyEnemySprite(ghost,cx,cy)&&!drawAuthoredDungeonEnemySprite(ghost,cx,cy))drawPixelEnemySprite(ghost,cx,cy);ctx.restore();
     if(frame>=3){ctx.save();ctx.globalAlpha=(1-progress)*.7;ctx.fillStyle=q.color||P.pink;for(let n=0;n<4;n++){const a=n*Math.PI/2+now/130,r=8+progress*12;ctx.fillRect(cx+Math.cos(a)*r-1,cy+Math.sin(a)*r-1,3,3)}ctx.restore()}
   }
 }
@@ -734,10 +737,7 @@ const PUNY_ENEMY_ATTACK_COLUMNS=Object.freeze([4,5,6,7]);
 const PUNY_ENEMY_HURT_COLUMNS=Object.freeze([18,19,20]);
 const PUNY_ENEMY_DEATH_COLUMNS=Object.freeze([21,22,23]);
 const PUNY_ENEMY_FAMILY=Object.freeze({
-  // R84 deliberately leaves the generic humanoid replacement map empty for the
-  // main dungeon. Tape Scouts, Joystick Hunters, 1541 Guards, Chargers, Rangers
-  // and Archive Knights all have bespoke silhouettes below; using a generic
-  // warrior/archer sheet made different enemy identities look interchangeable.
+  scout:"archer",guard:"soldier",charger:"orcGrunt",cook:"orcPeon"
 });
 const punyEnemyDiagnostics=window.__CCG_PUNY_ENEMY_DIAGNOSTICS__=window.__CCG_PUNY_ENEMY_DIAGNOSTICS__||{draws:0,fallbacks:0,states:{idle:0,move:0,attack:0,hurt:0,death:0},last:null};
 function punyEnemySheet(e){
@@ -747,6 +747,8 @@ function punyEnemySheet(e){
   if(family==="soldier")return lostSizzlerPixelAssets.enemySoldier;
   if(family==="archer")return lostSizzlerPixelAssets.enemyArcher;
   if(family==="mage")return lostSizzlerPixelAssets.enemyMage;
+  if(family==="orcGrunt")return lostSizzlerPixelAssets.enemyOrcGrunt;
+  if(family==="orcPeon")return lostSizzlerPixelAssets.enemyOrcPeon;
   return null
 }
 function punyEnemyDirectionRow(e){
@@ -768,7 +770,7 @@ function punyEnemyAnimationFrame(e,now=performance.now()){
   const attackMs=Math.max(180,Number(e?._attackAnimMs||360)),attackAge=now-Number(e?._attackAnimAt||-Infinity);
   if(attackAge>=0&&attackAge<attackMs){
     const progress=Math.max(0,Math.min(.999999,attackAge/attackMs)),index=Math.min(PUNY_ENEMY_ATTACK_COLUMNS.length-1,Math.floor(progress*PUNY_ENEMY_ATTACK_COLUMNS.length));
-    return{state:"attack",column:PUNY_ENEMY_ATTACK_COLUMNS[index],frame:index}
+    return{state:"attack",column:(PUNY_ENEMY_FAMILY[e?.kind]==="archer"?8:PUNY_ENEMY_FAMILY[e?.kind]==="mage"?12:4)+index,frame:index}
   }
   if(e?.aiState==="chase"||e?.aiState==="search"){
     const index=(Math.floor(now/110)+(enemySpriteSeed(e)%PUNY_ENEMY_WALK_COLUMNS.length))%PUNY_ENEMY_WALK_COLUMNS.length;
@@ -782,7 +784,7 @@ function drawPunyEnemySprite(e,cx,cy){
   if(!sheet?.complete||sheet.naturalWidth<PUNY_ENEMY_CELL||sheet.naturalHeight<PUNY_ENEMY_CELL||sheet.naturalWidth%PUNY_ENEMY_CELL!==0||sheet.naturalHeight%PUNY_ENEMY_CELL!==0){punyEnemyDiagnostics.fallbacks++;return false}
   const pose=punyEnemyAnimationFrame(e),row=punyEnemyDirectionRow(e),cols=sheet.naturalWidth/PUNY_ENEMY_CELL,rows=sheet.naturalHeight/PUNY_ENEMY_CELL;
   if(pose.column>=cols||row>=rows){punyEnemyDiagnostics.fallbacks++;return false}
-  const elite=Boolean(e?.champion||e?.guardian||e?.exitWarden),size=Math.round((elite?52:44)*(e?.kind==="charger"?1.08:1)),dx=Math.round(cx-size/2),dy=Math.round(cy-size*.61);
+  const elite=Boolean(e?.champion||e?.guardian||e?.exitWarden),size=Math.round((elite?72:64)*(e?.kind==="charger"?1.08:1)),dx=Math.round(cx-size/2),dy=Math.round(cy-size*.61);
   ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=e?.guardian?P.red:e?.champion?P.cyan:"rgba(0,0,0,.72)";ctx.shadowBlur=elite?12:5;
   if((e?.flash||0)>0){ctx.globalAlpha=.72;ctx.filter="brightness(1.8)"}
   ctx.drawImage(sheet,pose.column*PUNY_ENEMY_CELL,row*PUNY_ENEMY_CELL,PUNY_ENEMY_CELL,PUNY_ENEMY_CELL,dx,dy,size,size);
@@ -792,10 +794,35 @@ function drawPunyEnemySprite(e,cx,cy){
 }
 window.CCGPunyEnemyVisuals={PUNY_ENEMY_CELL,PUNY_ENEMY_IDLE_COLUMNS,PUNY_ENEMY_WALK_COLUMNS,PUNY_ENEMY_ATTACK_COLUMNS,PUNY_ENEMY_HURT_COLUMNS,PUNY_ENEMY_DEATH_COLUMNS,PUNY_ENEMY_FAMILY,punyEnemyDirectionRow,punyEnemyAnimationFrame,drawPunyEnemySprite,diagnostics:punyEnemyDiagnostics};
 
+// R97 semantic routes reuse matching authored creatures, never the cassette/drive rows.
+// The historical atlas filename is asset provenance only; no retired mode is enabled.
+const DUNGEON_ENEMY_ART=Object.freeze({
+  spider:{sheet:"enemyCreatureAtlas",row:0},skeleton:{sheet:"enemyCreatureAtlas",row:1},
+  knight:{sheet:"enemyCreatureAtlas",row:2},ambusher:{sheet:"enemyAtlasA",row:1},
+  hunter:{sheet:"enemyAtlasA",row:2},ghost:{sheet:"enemyAtlasA",row:4},
+  ranger:{sheet:"enemyAtlasB",row:0},root:{sheet:"enemyAtlasB",row:2},
+  firebreather:{sheet:"enemyAtlasB",row:4}
+});
+function drawAuthoredDungeonEnemySprite(e,cx,cy){
+  if(e?.follower||e?.treasureGoblin||e?.deathStalker||e?.voidStalker)return false;
+  const art=DUNGEON_ENEMY_ART[e?.kind],sheet=art&&lostSizzlerPixelAssets[art.sheet];
+  if(!sheet?.complete||sheet.naturalWidth!==320||sheet.naturalHeight!==320)return false;
+  const now=performance.now(),moving=e?.aiState==="chase"||e?.aiState==="search";
+  const attackAge=now-Number(e?._attackAnimAt||-Infinity);
+  const column=Number.isFinite(Number(e?.__defeatProgress))?0:attackAge>=0&&attackAge<Math.max(180,Number(e?._attackAnimMs||360))?4:(moving?2:0)+(Math.floor(now/(moving?150:280))%2);
+  const size=e?.champion||e?.guardian?60:52;
+  ctx.save();ctx.imageSmoothingEnabled=false;
+  if((e?.flash||0)>0){ctx.globalAlpha*=.72;ctx.filter="brightness(1.8)"}
+  if(Number(e?.facing?.x)<0){ctx.translate(cx,cy);ctx.scale(-1,1);cx=0;cy=0}
+  ctx.drawImage(sheet,column*64+1,art.row*64+1,62,62,Math.round(cx-size/2),Math.round(cy-size*.61),size,size);
+  ctx.restore();return true
+}
+window.CCGDungeonEnemyArt={mapping:DUNGEON_ENEMY_ART,draw:drawAuthoredDungeonEnemySprite};
+
 function drawEnemy(e){
   if(!e.alive||!tileInRenderView(e.x,e.y,3)||!visibleTo(focus,e.x,e.y))return;const s=enemyScreen(e),f=e.follower,isDeathStalker=Boolean(e.deathStalker&&e.voidStalker),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
   if(f){const r=(C.enemy.followerLightRadius||5)*C.tile,g=ctx.createRadialGradient(cx,cy,8,cx,cy,r);g.addColorStop(0,"rgba(255,213,112,.13)");g.addColorStop(.45,"rgba(255,160,70,.05)");g.addColorStop(1,"rgba(255,140,50,0)");ctx.fillStyle=g;ctx.fillRect(s.x-r,s.y-r,r*2,r*2)}
-  if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawPunyEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);
+  if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawPunyEnemySprite(e,cx,cy)&&!drawAuthoredDungeonEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);
   const identityName=window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1),guardianName:"FLOOR GUARDIAN"});const name=identityName||(e.exitWarden?"SIGIL WARDEN":e.guardian?"FLOOR GUARDIAN":isDeathStalker?"DEATH STALKER":e.champion?e.championName:e.treasureGoblin?"TREASURE GOBLIN":f?.name||({spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Tape Scout",hunter:"Joystick Hunter",ambusher:"Raster Ambusher",guard:"1541 Guard",ghost:"Ghost Byte",charger:"Charger",ranger:"Ranger",root:"Root Crawler",cook:"CPU Cook",firebreather:"Firebreather"}[e.kind]||"Enemy"));
   label(isDeathStalker?`${name} — INDESTRUCTIBLE`:name,s,isDeathStalker?P.red:e.exitWarden?P.gold:e.guardian?P.red:e.champion?P.cyan:f?P.gold:P.white);if(!isDeathStalker)drawTransientHealth(e,s,f?P.gold:P.white);
   if((e.hitStunMs||0)>0){ctx.font='bold 9px "Courier New"';ctx.textAlign="center";ctx.fillStyle=P.cyan;ctx.fillText("STUNNED",cx,s.y-25)}else if(e.aiState==="chase"||e.aiState==="search"){ctx.font='bold 14px "Courier New"';ctx.textAlign="center";ctx.fillStyle=e.aiState==="chase"?P.red:P.gold;ctx.fillText(e.aiState==="chase"?"!":"?",cx,s.y-25)}

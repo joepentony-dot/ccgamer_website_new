@@ -1,3 +1,31 @@
+## R97 character and uploaded-soundtrack regression repair — 2 October 2026
+
+- Owner reported the beta had reverted to basic sprites and bundled music, and reiterated the prior licensed RPG enemy-art/name directive. Current main refreshed as `f38b84f0985d642f5daf7259cba633018a01814d` (R96); no open PR existed before this bounded repair. Candidate branch: `codex/dungeon-r97-rpg-sprites-soundtrack`.
+- Confirmed graphics cause: R84 emptied the Puny campaign map and restricted the legacy atlas renderer to the Warden. R94 changed ordinary labels without restoring matching authored bodies. Prior completion was incomplete; do not ask the owner to choose/repeat the already-recorded instruction.
+- Confirmed audio cause: starting before admin readiness creates a persistent bundled slot; readiness previously reused it even when the authoritative uploaded playlist changed. An actual-module Node VM reproduction failed before the fix and the repaired behaviour passes. Both current and parked slots now validate their URL against the current category list; unchanged tracks preserve Audio object/time and remote local looping.
+- Production read-only verification found all 16 enabled uploaded music rows and non-empty stored objects: Exploration 5, Danger 3, Sanctuary 2, Named 3, Stalker 3. Anonymous RLS reads returned all 16. No music was deleted or replaced in storage. Automation intentionally skips remote media, explaining why older green browser checks did not establish soundtrack acceptance.
+- Candidate R97 restores authored art through explicit semantic routes, includes two unmodified Shade CC0 orc sheets with exact source/blob provenance, and renames only generic charger/cook display labels to Orc Reaver/Orc Scavenger variants. Established CCG explorer, followers, Count Loadula, Death Stalker, Sigil Warden and champion labels retain their authority. Cassette and drive robot atlas rows are excluded.
+- Performance controls remain: crowd scheduling and quality tiers are unchanged; decoded authored sprites remain available at every quality tier. Gameplay, AI, collision, damage, stats, progression, saves, inventory and the frozen beta cohort/expiry are unchanged. Actual owner-device performance and hands-on acceptance remain unverified.
+- Local focused checks passed: `v10-42-r97-rpg-sprite-routes.mjs`, `v10-7-audio-playlists.mjs`, `v10-42-ccg-player-enemy-identity.mjs`, `v10-42-r84-visual-topology.mjs`, `v10-42-visual-overhaul-foundation.mjs`. New behaviour coverage includes late uploaded source replacement, lazy parked category refresh, no overlap/no repeated recreation, saved playback position, matching sprite frames/directions and named/decode fallbacks.
+
+| Ordinary name (early / mid / late floors) | Gameplay kind | Authored art |
+| --- | --- | --- |
+| Dustweb / Gloomweb / Bloodweb Spider | spider | purple spider, existing atlas creature row 0 |
+| Crypt / Mossbound Skeleton / Ashen Boneguard | skeleton | skeletal sword/shield fighter, creature row 1 |
+| Archive / Crypt / Blood Knight | knight | armoured knight, creature row 2 |
+| Vault / Catacomb / Citadel Scout | scout | Shade CC0 Archer Green, bow animation |
+| Relic / Gloom / Blood Hunter | hunter | armoured hunter, standard A row 2 |
+| Shadow Ambusher / Nightblade / Duskblade | ambusher | hooded assassin, standard A row 1 |
+| Iron / Runebound / Citadel Guard | guard | Shade CC0 Human Soldier Red |
+| Orc / Crypt Orc / Citadel Orc Reaver | charger | Shade CC0 Orc Grunt; rename generic enemy to match |
+| Rune / Deep / Ash Ranger | ranger | hooded bow ranger, standard B row 0 |
+| Thorn Caster / Briar Hexer / Ashen Hexer | root | thorn creature, standard B row 2 |
+| Orc / Crypt Orc / Citadel Orc Scavenger | cook | Shade CC0 Orc Peon Red; rename generic enemy to match |
+| Ember Fiend / Cinder Fiend / Infernal Maw | firebreather | flame-breathing horned creature, standard B row 4 |
+| Archive / Memory / Blood Wraith | ghost | blue spectral wraith, standard A row 4 |
+
+- Candidate release is `V10.42 r97 / 20261002r97`; service worker code cache advances v48 to v49. Exact-head PR Qualification, Full Qualification including all six Chromium shards and every applicable site/package/cache check remain mandatory before merge. Live remains R96 until deployment is verified. Hourly development stays paused; no further notifications, access changes or new features.
+
 # C64 Dungeon Carnage — Visual Overhaul Workstream
 
 Status: **ACTIVE / ONGOING**

@@ -32,8 +32,8 @@ assert(
 const familyBlock=render.match(/const PUNY_ENEMY_FAMILY=Object\.freeze\(\{([\s\S]*?)\}\);/);
 assert(familyBlock,"Enemy-family ownership block is missing.");
 assert(
-  !/(knight|scout|hunter|guard|charger|ranger)\s*:/.test(familyBlock[1]),
-  "Campaign enemies must not be remapped to generic humanoid sheets."
+  /(scout:"archer")/.test(familyBlock[1])&&!/(spider|skeleton|ghost|firebreather)\s*:/.test(familyBlock[1]),
+  "RPG humanoids must use matching authored sheets while creatures retain matching creature routes."
 );
 assert(
   legacy.includes("if(!e.hordeWarden)return false;"),

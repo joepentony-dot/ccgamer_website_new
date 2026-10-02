@@ -225,7 +225,7 @@
   function ensureStateSlot(state,advance=false){
     if(!advance){
       const existing=stateSlots.get(state);
-      if(existing&&!existing.destroyed)return{slot:existing,replaced:null,created:false};
+      if(existing&&!existing.destroyed&&categorySources(state).includes(existing.url))return{slot:existing,replaced:null,created:false};
     }
     const replaced=stateSlots.get(state)||null;
     const url=pickTrack(state);
@@ -260,7 +260,7 @@
     if(!enabled||!started)return;
     const state=desiredState();
 
-    if(current?.state===state&&!advance&&!current.destroyed){
+    if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
       current.advancing=false;
       if(current.audio.paused){
         try{Promise.resolve(current.audio.play()).then(()=>{clearFailure(current.url);stopFallback()}).catch(()=>{recordFailure(current.url);scheduleRetry(state)})}catch(_){recordFailure(current.url);scheduleRetry(state)}

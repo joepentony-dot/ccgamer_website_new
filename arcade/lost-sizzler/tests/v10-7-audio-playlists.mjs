@@ -117,6 +117,7 @@ const fakeWindow={
 const sandbox={
   window:fakeWindow,
   Audio:FakeAudio,
+  URL,location:{href:"https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/"},
   performance:{now:()=>0},
   setInterval:()=>1,
   clearInterval:()=>{},
@@ -218,4 +219,23 @@ await Promise.resolve();
 assert(FakeAudio.instances.length===6,'Natural Exploration completion must advance to another track.');
 assert(FakeAudio.instances[5].url!==exploration.url,'Natural advance should avoid an immediate Exploration repeat.');
 
-console.log('Lost Sizzler multi-track playlist contract passed.');
+
+const uploadedNormal="https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/arcade-assets/music/exploration-01.mp3";
+const uploadedDanger=uploadedNormal.replace("exploration-01","combat-01");
+const beforeReady=FakeAudio.instances.length,oldNormal=FakeAudio.instances.at(-1);
+fakeWindow.CCG_ASSET_OVERRIDES.audio.music.playlists.normal=[uploadedNormal];
+fakeWindow.CCG_ASSET_OVERRIDES.audio.music.playlists.danger=[uploadedDanger];
+const ready=()=>fakeWindow.dispatchEvent({type:"ccg:admin-audio-ready",stopImmediatePropagation(){this.__stopped=true}});
+ready();await Promise.resolve();
+const customNormal=FakeAudio.instances.at(-1);
+assert(customNormal.url===uploadedNormal,"Late admin readiness must immediately replace the bundled exploration track.");
+assert(oldNormal.paused&&playingCount()===1,"Replacing late music must stop the old track without overlap.");
+assert(customNormal.loop===true,"Uploaded Supabase tracks must retain local looping to avoid repeated downloads.");
+customNormal.currentTime=23.75;ready();await Promise.resolve();
+assert(FakeAudio.instances.length===beforeReady+1&&customNormal.currentTime===23.75,"Repeated readiness for unchanged uploaded sources must preserve Audio object and position.");
+fakeWindow.CCGSound.setRoomMood("danger");await Promise.resolve();
+assert(FakeAudio.instances.at(-1).url===uploadedDanger&&danger.paused&&playingCount()===1,"A parked bundled category must refresh lazily when uploaded sources arrive.");
+fakeWindow.CCGSound.setRoomMood("normal");await Promise.resolve();
+assert(!customNormal.paused&&customNormal.currentTime===23.75&&playingCount()===1,"Uploaded exploration must resume from its saved time after combat.");
+console.log('Lost Sizzler multi-track playlist and late uploaded soundtrack contracts passed.');
+
