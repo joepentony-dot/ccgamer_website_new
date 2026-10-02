@@ -166,26 +166,17 @@
   }
 
   function ensureTouchMapButton(){
-    if(!mobile())return;
-    const actions=document.querySelector("#v104-touch-controls .v104-touch-actions");
-    if(!actions||mobileMapToggle())return;
-    const button=document.createElement("button");
-    button.className="v104-touch-btn ccg-mobile-map-btn";
-    button.type="button";
-    button.dataset.action="map";
-    button.textContent="MAP";
-    button.setAttribute("aria-label","Toggle dungeon minimap");
-    button.setAttribute("aria-pressed","false");
-    button.addEventListener("pointerdown",toggleMap,{passive:false});
-    actions.appendChild(button);
+    /* R95 owns all touch controls, including MAP. V10.13 owns only the
+     * minimap panel/rendering state and updates the existing R95 button. */
     syncToggle();
+    return Boolean(mobileMapToggle())
   }
 
   function ensureMobileMap(){ensureMapPanel();ensureTouchMapButton();ensureScorePanel()}
 
   const retry=setInterval(()=>{
     ensureMobileMap();
-    if(mobileMapPanel()&&mobileMapToggle()&&mobileScorePanel())clearInterval(retry);
+    if(mobileMapPanel()&&mobileScorePanel())clearInterval(retry);
   },250);
   setTimeout(()=>clearInterval(retry),5000);
   ensureMobileMap();
@@ -209,6 +200,7 @@
     isMobile:mobile,
     cardinaliseEnemyShot,
     setMapOpen,
+    toggleMap,
     copyRadar,
     soloDungeonActive,
     syncScore
