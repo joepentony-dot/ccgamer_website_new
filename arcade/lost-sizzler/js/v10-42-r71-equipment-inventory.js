@@ -135,8 +135,9 @@
     return result;
   };
 
-  const observer=new MutationObserver(()=>{const panel=document.getElementById("inventory-panel");if(panel&&!panel.classList.contains("hidden"))renderR71()});
-  const inventory=document.getElementById("inventory-panel");if(inventory)observer.observe(inventory,{attributes:true,attributeFilter:["class"]});
+  /* R93: renderInventoryPanel is the single presentation boundary.
+   * The old visibility observer ran a second render immediately after the
+   * panel class changed, rebuilding the same loadout twice on every open. */
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",renderR71,{once:true});else renderR71();
 
   window.CCGLostSizzlerV142R71EquipmentInventory=Object.freeze({version:"V10.42-r71",render:renderR71,armourTier,armourName});

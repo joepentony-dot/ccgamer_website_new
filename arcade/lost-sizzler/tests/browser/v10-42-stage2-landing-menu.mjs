@@ -37,8 +37,6 @@ try{
 
   await page.goto(`${origin}/arcade/lost-sizzler/?stage2-landing-menu=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
-  await page.waitForFunction(()=>document.querySelectorAll("#menu .ccg-mode-tier-label").length>=3,null,{timeout:10000});
-  await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:10000});
 
   const state=await page.evaluate(()=>{
     const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
@@ -56,8 +54,10 @@ try{
         left:Math.round(rect.left),
         width:Math.round(rect.width),
         height:Math.round(rect.height),
-        inlineMinHeight:element.style.getPropertyValue("min-height"),
-        inlinePadding:element.style.getPropertyValue("padding")
+        computedMinHeight:style.minHeight,
+        computedPadding:style.padding,
+        kicker:getComputedStyle(element,"::before").content,
+        copy:getComputedStyle(element,"::after").content
       }:{exists:false}];
     }));
     const tiers=[...document.querySelectorAll("#menu .ccg-mode-tier-label")].map(element=>({
@@ -95,14 +95,13 @@ try{
 
   const settledHeights={"continue-save-btn":"78px","solo-btn":"82px","tutorial-zone-btn":"70px"};
   for(const [id,height] of Object.entries(settledHeights)){
-    assert.equal(state.controls[id].inlineMinHeight,height,`${id} late R55 min-height must agree with Stage 2 blocking geometry`);
-    assert.equal(state.controls[id].inlinePadding,"28px 12px 24px",`${id} late R55 padding must agree with Stage 2 blocking geometry`);
+    assert.equal(state.controls[id].computedMinHeight,height,`${id} blocking min-height must own the settled card geometry`);
+    assert.equal(state.controls[id].computedPadding,"28px 12px 24px",`${id} blocking padding must reserve the kicker/title/description rows`);
   }
   assert.ok(state.controls["solo-btn"].height>=82,"Solo must retain its settled primary-card height");
   assert.ok(state.controls["tutorial-zone-btn"].height>=70,"Tutorial must retain its settled supported-card height");
 
-  assert.ok(state.tiers.length>=3,"historical compatibility layer should still be allowed to create its tier nodes");
-  assert.ok(state.tiers.every(tier=>tier.display==="none"),`runtime-injected historical tier labels must remain visually retired: ${JSON.stringify(state.tiers)}`);
+  assert.deepEqual(state.tiers,[],"retired runtime tier labels must not be recreated after release");
   assert.deepEqual(errors,[],`Stage 2 landing menu must have no uncaught browser errors: ${errors.join("\n")}`);
 
   console.log("DUNGEON_STAGE2_LANDING",JSON.stringify(state));
@@ -120,7 +119,6 @@ try{
   mobilePage.on("pageerror",error=>mobileErrors.push(String(error?.stack||error)));
   await mobilePage.goto(`${origin}/arcade/lost-sizzler/?stage2-mobile-landing=1`,{waitUntil:"domcontentloaded"});
   await mobilePage.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
-  await mobilePage.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:10000});
 
   const mobileState=await mobilePage.evaluate(()=>{
     const grid=document.querySelector("#menu .game-mode-buttons");

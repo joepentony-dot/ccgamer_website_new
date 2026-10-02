@@ -10,12 +10,16 @@ const reporter=fs.readFileSync(new URL("js/v10-42-bug-reporter.js",root),"utf8")
 const shop=fs.readFileSync(new URL("js/v10-42-r55-shop-feedback.js",root),"utf8");
 const canonical=fs.readFileSync(new URL("index.html",root),"utf8");
 const publicAlias=fs.readFileSync(new URL("arcade/c64-dungeon-carnage/index.html",repoRoot),"utf8");
+const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
+assert.match(version.build,/^V10\.42 r\d+$/);
+assert.match(version.cacheToken,/^\d{8}r\d+$/);
+const buildUpper=version.build.toUpperCase();
 
 for(const html of [canonical,publicAlias]){
-  assert.match(html,/ccg-lost-sizzler-build" content="V10\.42 r85"/);
-  assert.match(html,/ccg-lost-sizzler-cache" content="20261001r85"/);
-  assert.match(html,/Latest Build Changes · V10\.42 R85/);
-  assert.match(html,/ACTIVE BUILD: V10\.42 R85/);
+  assert.ok(html.includes(`ccg-lost-sizzler-build" content="${version.build}"`));
+  assert.ok(html.includes(`ccg-lost-sizzler-cache" content="${version.cacheToken}"`));
+  assert.ok(html.includes(`Latest Build Changes · ${buildUpper}`));
+  assert.ok(html.includes(`ACTIVE BUILD: ${buildUpper}`));
 }
 
 assert.match(

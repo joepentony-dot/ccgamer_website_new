@@ -13,8 +13,8 @@ const css=read("css/v10-42-r80-wearable-equipment.css");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r85");
-assert.equal(version.cacheToken,"20261001r85");
+assert.match(version.build,/^V10\.42 r\d+$/,"feature contract requires the current V10.42 release family");
+assert.match(version.cacheToken,/^\d{8}r\d+$/,"feature contract requires a valid current release cache token");
 
 assert.match(bootstrap,/v10-42-r71-equipment-inventory\.js[\s\S]*v10-42-r80-wearable-equipment\.js[\s\S]*v10-42-r72-map-death-feedback\.js/,"R80 wearables must load after the R71 inventory owner and before later presentation modules");
 assert.match(source,/const SLOT_ORDER=\["head","hands","feet"\]/,"wearables must expose genuine Head, Hands and Feet slots");
@@ -28,9 +28,9 @@ assert.match(source,/PGR\.effectiveSight=function r80WearableSight/,"Head equipm
 assert.match(source,/player\.scavenger=Math\.max\(0,Number\(player\.scavenger\|\|0\)-old\+next\)/,"Hands equipment must compose with existing Scavenger progression rather than replacing it");
 assert.match(source,/player\._v105Base\.moveMultiplier=nextBase/,"Feet equipment must update the V10.5 temporary-effect base when boots change during an active movement effect");
 assert.match(source,/player\.moveMultiplier=Math\.max\(\.1,nextBase\*activeScale\)/,"Feet equipment must preserve the currently active temporary movement scale while updating its base");
-assert.match(source,/const visibilityObserver=new MutationObserver/,"R80 must observe inventory visibility because R71 re-renders the loadout from its own MutationObserver");
-assert.match(source,/if\(inventoryPanel\.classList\.contains\("hidden"\)\)return/,"the R80 inventory observer must only redecorate an opened inventory");
-assert.match(source,/queueMicrotask\(refresh\)[\s\S]*Promise\.resolve\(\)\.then\(refresh\)/,"R80 must redecorate after R71's observer-driven render completes");
+assert.match(source,/renderInventoryPanel=function r80RenderInventory/,"R80 wearable decoration must compose through the canonical inventory render boundary");
+assert.doesNotMatch(source,/visibilityObserver|new MutationObserver/,"R80 must not restore a second inventory visibility observer");
+assert.match(source,/wrapped renderInventoryPanel call above is the only wearable[\s\S]*duplicate loadout rebuild/,"R80 must document the single-owner inventory boundary that prevents duplicate open-time redraws");
 assert.match(source,/preservePlayer=function r80PreserveWearables/,"equipped clothing must survive floor transitions");
 assert.match(source,/openChest=function r80OpenChestWearableBonus/,"chests must be capable of producing real wearable loot");
 assert.match(source,/WEARABLE GEAR — INVENTORY FULL/,"full inventory must drop the wearable beside the chest instead of deleting it");

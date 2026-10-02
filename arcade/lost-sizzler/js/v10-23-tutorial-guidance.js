@@ -181,11 +181,16 @@
     const row=solo?.closest?.(".menu-buttons");
     if(!solo||!row)return false;
     let button=document.getElementById("tutorial-zone-btn");
+    const split=document.getElementById("split-btn");
+    const restorePosition=node=>{
+      if(split?.parentElement===row)split.insertAdjacentElement("afterend",node);
+      else solo.insertAdjacentElement("afterend",node);
+    };
     if(!button){
       button=document.createElement("button");
       button.id="tutorial-zone-btn";
       button.type="button";
-      solo.insertAdjacentElement("afterend",button);
+      restorePosition(button);
     }
     if(button.dataset.ccgTutorialLaunchBound!=="true"){
       button.addEventListener("click",event=>{
@@ -197,7 +202,7 @@
     button.textContent="Tutorial";
     button.title="Open the safe Training Archive tutorial";
     button.classList.add("tutorial-primary-option");
-    if(button.parentElement!==row)solo.insertAdjacentElement("afterend",button);
+    if(button.parentElement!==row)restorePosition(button);
     return true;
   }
 

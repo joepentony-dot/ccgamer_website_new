@@ -13,10 +13,12 @@ const bodyStart=index.indexOf('<body ');
 const loader=index.indexOf('id="ccg-release-loading"');
 const main=index.indexOf('<main class="ccg-game">');
 const firstScript=index.indexOf('<script ');
+const cache=index.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)"/i)?.[1]||'';
+assert.match(cache,/^\d{8}r\d+$/,'startup contract requires a valid current release cache token');
 
 assert.ok(headEnd>0&&bodyStart>headEnd,'canonical document head/body boundary must remain intact');
 assert.ok(index.indexOf('css/v10-36-special-ui.css')>0&&index.indexOf('css/v10-36-special-ui.css')<headEnd,'release-loader CSS must block first paint in the document head');
-assert.match(index,/<link rel="stylesheet" data-ccg-v136-special-ui="true" href="css\/v10-36-special-ui\.css\?v=20261001r85">/,'blocking loader stylesheet must retain the marker used by the V10.36 compatibility bootstrap');
+assert.ok(index.includes(`<link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=${cache}">`),'blocking loader stylesheet must retain the marker and current cache token used by the V10.36 compatibility bootstrap');
 assert.ok(index.indexOf('css/v10-42-startup-first-visual.css')>0&&index.indexOf('css/v10-42-startup-first-visual.css')<headEnd,'settled menu presentation must exist before body paint');
 assert.ok(loader>bodyStart&&loader<main,'release loader must be static markup before the game shell');
 assert.ok(loader<firstScript,'release loader must exist before any runtime script executes');
@@ -46,13 +48,10 @@ for(const contract of [
   'filter:none!important'
 ])assert.ok(startupCss.includes(contract),`blocking startup presentation is missing R55 agreement: ${contract}`);
 
-for(const contract of [
-  'color:#f5eefb!important',
-  'button.primary{color:#f5eefb!important',
-  'top:9px!important',
-  'bottom:8px!important',
-  'text-shadow:none!important',
-  'filter:none!important'
-])assert.ok(r55.includes(contract),`retained R55 presentation changed without updating first-paint ownership: ${contract}`);
+assert.match(startupCss,/html body\[data-run-active="false"\] #menu #solo-btn\{[\s\S]*?background:linear-gradient/,'Solo must have its settled blended colour in blocking CSS');
+assert.match(startupCss,/html body\[data-run-active="false"\] #menu #tutorial-zone-btn\{[\s\S]*?background:linear-gradient/,'Tutorial must have its settled blended colour in blocking CSS');
+assert.match(startupCss,/html body\[data-run-active="false"\] #menu #continue-save-btn\{[\s\S]*?background:linear-gradient/,'Continue must have its settled blended colour in blocking CSS');
+assert.match(r55,/function markMenu\(\)\{[\s\S]*?compatibility no-op/,'R55 menu compatibility must remain non-mutating');
+assert.match(r55,/function tick\(\)\{repairHordeAuthority\(\)\}/,'R55 timer must not repaint or reorder the menu');
 
 console.log('Dungeon Carnage startup first-visual static contract passed');

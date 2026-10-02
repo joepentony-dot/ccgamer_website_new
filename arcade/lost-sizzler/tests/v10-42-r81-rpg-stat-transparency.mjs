@@ -11,8 +11,8 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 const source=read("js/v10-42-procedural-overhaul.js");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r85");
-assert.equal(version.cacheToken,"20261001r85");
+assert.match(version.build,/^V10\.42 r\d+$/,"feature contract requires the current V10.42 release family");
+assert.match(version.cacheToken,/^\d{8}r\d+$/,"feature contract requires a valid current release cache token");
 assert.match(source,/function attributeEffect\(player,id\)/,"R81 must expose one live-effect formatter for RPG attributes");
 assert.match(source,/canonical melee\/firearm damage/,"Might must explain its real canonical damage contribution");
 assert.match(source,/max health from Vitality/,"Vitality must explain its real maximum-health contribution");

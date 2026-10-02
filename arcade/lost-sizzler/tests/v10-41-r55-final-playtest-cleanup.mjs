@@ -7,16 +7,19 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const loader=fs.readFileSync(path.join(root,"js/v10-41-r53-terminal-solo-end-recovery.js"),"utf8");
 const r55=fs.readFileSync(path.join(root,"js/v10-41-r55-final-playtest-cleanup.js"),"utf8");
+const blocking=fs.readFileSync(path.join(root,"css/v10-42-startup-first-visual.css"),"utf8");
+const geometry=fs.readFileSync(path.join(root,"css/v10-41-r29.css"),"utf8");
 
 assert.match(loader,/v10-41-r55-final-playtest-cleanup\.js/,"R53 recovery edge must load R55 after R54");
 assert.match(loader,/data-ccg-v141-r55-final-playtest-cleanup/,"R55 loader must remain idempotent");
 
-assert.match(r55,/display:flex!important;align-items:center!important;justify-content:flex-start!important/,"menu mode-card titles must own a centred middle row");
-assert.match(r55,/padding:28px 12px 24px!important/,"menu cards must reserve independent top and bottom text bands");
-assert.match(r55,/button::before[\s\S]*top:9px!important/,"mode-card kicker must be pinned to its own top row");
-assert.match(r55,/button::after[\s\S]*bottom:8px!important/,"mode-card description must be pinned to its own bottom row");
-assert.match(r55,/#continue-save-btn\{min-height:78px!important/,"dynamic Continue copy must retain enough vertical space");
-assert.match(r55,/#horde-mode-btn,[\s\S]*#saboteurs-mode-btn,[\s\S]*#split-btn\{min-height:74px!important/,"special-mode cards must not collapse onto their descriptions");
+assert.match(geometry,/display:flex!important;[\s\S]*align-items:center!important;[\s\S]*justify-content:flex-start!important/,"blocking menu CSS must own the centred mode-card title row");
+assert.match(geometry,/padding:28px 12px 24px!important/,"blocking menu CSS must reserve independent top and bottom text bands");
+assert.match(blocking,/button::before[\s\S]*top:9px!important/,"blocking first-visual CSS must pin the mode-card kicker before runtime");
+assert.match(blocking,/button::after[\s\S]*bottom:8px!important/,"blocking first-visual CSS must pin the mode-card description before runtime");
+assert.match(geometry,/#continue-save-btn\{[\s\S]*min-height:78px!important/,"dynamic Continue copy must retain enough vertical space in blocking CSS");
+assert.match(r55,/function markMenu\(\)\{[\s\S]*compatibility no-op/,"R55 menu presentation must remain retired");
+assert.match(r55,/function tick\(\)\{repairHordeAuthority\(\)\}/,"R55 periodic work must be Horde-only and never repaint the menu");
 
 assert.match(r55,/document\.body\?\.dataset\?\.hordeSolo==="true"\|\|net\?\.mode==="solo"\|\|!net\?\.connected/,"Solo Horde must retain browser authority even when the dedicated module is present");
 assert.match(r55,/if\(dedicatedLive\(\)\)return false/,"browser authority must yield only after dedicated Horde authority is live");

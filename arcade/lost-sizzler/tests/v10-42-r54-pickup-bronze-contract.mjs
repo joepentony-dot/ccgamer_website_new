@@ -10,6 +10,8 @@ const render=read("arcade/lost-sizzler/js/game-render.js");
 const html=read("arcade/lost-sizzler/index.html");
 const css=read("arcade/lost-sizzler/css/game.css");
 const landing=read("arcade/lost-sizzler/js/v10-41-landing-notification-polish.js");
+const cache=html.match(/ccg-lost-sizzler-cache" content="([^"]+)"/)?.[1]||"";
+assert.match(cache,/^\d{8}r\d+$/,"pickup/bronze contract requires a valid current cache token");
 
 assert.ok(!/kind:cycle\[i%cycle\.length\],title:C\.c64Loot/.test(world),"generic pickups must not inherit C64 game titles");
 assert.match(local,/if\(i\.kind==="game"\)return i\.title\|\|"C64 GAME"/,"only real C64 game collectibles may use their game title");
@@ -39,7 +41,7 @@ assert.match(render,/chests:make\("assets\/pixel\/chest-sheet-v10-34\.png"\)/,"R
 assert.match(render,/meta\[name="ccg-lost-sizzler-cache"\]/,"R54 renderer must derive its sprite cache identity from the canonical page token");
 assert.match(render,/image\.src=`\$\{packageRoot\}\$\{path\}\?v=\$\{encodeURIComponent\(cache\)\}`/,"R54 renderer must append the canonical cache token to package-aware sprite paths");
 assert.match(render,/image\.fetchPriority="high"/,"R54 sprite sheets must receive high fetch priority");
-assert.match(html,/rel="preload" as="image" href="assets\/pixel\/chest-sheet-v10-34\.png\?v=20261001r85" fetchpriority="high"/,"canonical page must preload the established chest artwork");
+assert.ok(html.includes(`rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=${cache}" fetchpriority="high"`),"canonical page must preload the established chest artwork using the current cache token");
 assert.match(render,/function drawMerchantNpc\(t,s,col\)/,"shops must render a merchant character rather than only a generic shop block");
 assert.match(render,/PLAYER_WALK_RENDER_SEQUENCE=Object\.freeze\(\[/,"player animation must expose expanded renderer-owned walk cadence");
 assert.match(render,/PLAYER_MELEE_RENDER_SEQUENCE=Object\.freeze\(\[/,"player animation must expose expanded renderer-owned melee cadence");

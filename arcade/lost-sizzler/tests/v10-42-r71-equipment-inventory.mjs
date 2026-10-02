@@ -7,8 +7,11 @@ const bootstrap=fs.readFileSync(new URL("js/v10-42-bootstrap.js",root),"utf8");
 const moduleSource=fs.readFileSync(new URL("js/v10-42-r71-equipment-inventory.js",root),"utf8");
 const css=fs.readFileSync(new URL("css/v10-42-r71-equipment-inventory.css",root),"utf8");
 const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
+const version=JSON.parse(fs.readFileSync(new URL("version.json",root),"utf8"));
+const cache=String(version.cacheToken||"");
+assert.match(cache,/^\d{8}r\d+$/,"equipment contract requires a valid current release cache token");
 
-assert.ok(html.includes("v10-42-r71-equipment-inventory.css?v=20261001r85"));
+assert.ok(html.includes(`v10-42-r71-equipment-inventory.css?v=${cache}`));
 assert.ok(bootstrap.includes('v10-42-r71-equipment-inventory.js'));
 assert.ok(moduleSource.includes("Equipment & Inventory"));
 assert.ok(moduleSource.includes("r71-equipment-board"));
