@@ -429,7 +429,11 @@ body[data-run-active="true"] .player-hub .hub-progress{
   overflow:hidden!important;
 }
 body[data-run-active="true"] .player-hub .priority-xp{
+  position:relative!important;
+  z-index:3!important;
+  min-width:0!important;
   min-height:0!important;
+  overflow:visible!important;
   padding:8px!important;
   border:1px solid #57445e!important;
   border-top:2px solid #8d7043!important;
@@ -458,6 +462,9 @@ body[data-run-active="true"] .priority-xp small{
   font:700 6.5px/1.2 var(--r95-data-font)!important;
 }
 body[data-run-active="true"] .player-hub .run-stat{
+  position:relative!important;
+  z-index:1!important;
+  min-width:0!important;
   min-height:0!important;
   padding:7px 5px!important;
   border:1px solid #433648!important;
@@ -476,6 +483,10 @@ body[data-run-active="true"] .player-hub .run-stat b{
 }
 body[data-run-active="true"] .player-hub .run-stat:nth-child(3) b{color:var(--r95-gold)!important}
 body[data-run-active="true"] .pending-level-up{
+  position:relative!important;
+  z-index:4!important;
+  pointer-events:auto!important;
+  max-width:100%!important;
   margin-top:4px!important;
   border-color:#a17f48!important;
   background:#20170c!important;
@@ -557,12 +568,16 @@ body[data-run-active="true"] .overlay .panel h3{
 }
 
 @media(max-width:620px){
-  body[data-run-active="true"] .ccg-game,
-  body[data-run-active="true"] .ccg-game:fullscreen,
-  body[data-run-active="true"] .ccg-game:-webkit-full-screen{
+  body[data-run-active="true"] .ccg-game{
+    grid-template-rows:28px minmax(0,1fr) 84px!important;
+  }
+  body[data-run-active="true"] .ccg-game:fullscreen{
     grid-template-rows:28px minmax(0,1fr) 84px!important;
   }
   body[data-run-active="true"] .ccg-game>.player-hub{
+    grid-row:3!important;
+    align-self:stretch!important;
+    block-size:84px!important;
     height:84px!important;
     min-height:84px!important;
     max-height:84px!important;
