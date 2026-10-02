@@ -625,7 +625,7 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
 }
 .v104-touch-actions{
   display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
   gap:5px!important;
   height:142px!important;
   align-content:end!important;
