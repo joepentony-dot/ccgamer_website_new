@@ -17,6 +17,7 @@ body[data-run-active="false"] #menu .game-mode-buttons button.primary{
   color:#f5eefb!important;
 }
 body[data-run-active="false"] #menu .game-mode-buttons button::before{
+  content:attr(data-menu-kicker)!important;
   position:absolute!important;
   left:12px!important;
   right:12px!important;
@@ -36,6 +37,7 @@ body[data-run-active="false"] #menu .game-mode-buttons button::before{
   filter:none!important;
 }
 body[data-run-active="false"] #menu .game-mode-buttons button::after{
+  content:attr(data-menu-copy)!important;
   position:absolute!important;
   left:12px!important;
   right:12px!important;
@@ -56,6 +58,38 @@ body[data-run-active="false"] #menu .game-mode-buttons button::after{
   filter:none!important;
 }
 
+
+/* R93 first-paint card geometry. The final three-row menu is CSS-owned,
+ * not repaired by a later compatibility script. */
+html body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
+html body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn,
+html body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn{
+  box-sizing:border-box!important;
+  position:relative!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  padding:28px 12px 24px!important;
+  overflow:hidden!important;
+  white-space:normal!important;
+  text-overflow:clip!important;
+  text-align:left!important;
+  line-height:1.15!important;
+  text-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+  -webkit-filter:none!important;
+}
+html body[data-run-active="false"] #menu .game-mode-buttons #solo-btn{min-height:82px!important;font-size:10.5px!important}
+html body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn{min-height:78px!important;font-size:10px!important}
+html body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn{min-height:70px!important;font-size:9px!important}
+@media(max-width:900px),(pointer:coarse){
+  html body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
+  html body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn,
+  html body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn{
+    min-height:78px!important;
+    padding:29px 12px 25px!important;
+  }
+}
 
 /* R93 single-owner menu colour contract.
  * These are the settled card colours and must exist before any runtime code.
