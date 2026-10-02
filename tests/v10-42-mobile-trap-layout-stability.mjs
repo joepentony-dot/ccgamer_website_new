@@ -8,12 +8,14 @@ const touchPath="arcade/lost-sizzler/js/v10-42-r95-mobile-controls.js";
 const hudCssPath="arcade/lost-sizzler/css/v10-42-r95-rpg-hud.css";
 const gameplayPath="arcade/lost-sizzler/js/game-play.js";
 const assetOverridesPath="arcade/lost-sizzler/js/asset-overrides.js";
+const legacyRegressionPath="arcade/lost-sizzler/js/v10-4-regression-fixes.js";
 const source=fs.readFileSync(modulePath,"utf8");
 const bootstrap=fs.readFileSync(bootstrapPath,"utf8");
 const touchSource=fs.readFileSync(touchPath,"utf8");
 const hudCss=fs.readFileSync(hudCssPath,"utf8");
 const gameplaySource=fs.readFileSync(gameplayPath,"utf8");
 const assetOverrides=fs.readFileSync(assetOverridesPath,"utf8");
+const legacyRegression=fs.readFileSync(legacyRegressionPath,"utf8");
 
 assert.match(bootstrap,/v10-42-r19-mobile-trap-layout-stability\.js/,"ordered V10.42 bootstrap must load the portrait mobile layout adapter");
 assert.match(bootstrap,/CCGLostSizzlerV142R19MobileLayoutCompatibility/,"ordered bootstrap must wait for the non-gameplay layout marker");
@@ -22,6 +24,7 @@ assert.doesNotMatch(assetOverrides,/v10-4-patch\.js/,"current enhancement queue 
 assert.doesNotMatch(assetOverrides,/data-ccg-lost-sizzler-v104/,"current enhancement startup must not depend on the retired V10.4 owner marker");
 assert.doesNotMatch(assetOverrides,/v10-11-mobile-focus\.css/,"R95 must not late-load the retired V10.11 mobile layout owner");
 assert.doesNotMatch(assetOverrides,/v10-24-mobile-ergonomics\.css/,"R95 must not late-load the retired V10.24 mobile layout owner");
+assert.doesNotMatch(legacyRegression,/addTouchAction|completeTouchControls|querySelector\("#v104-touch-controls \.v104-touch-actions"\)/,"retained V10.4 regression support must not append buttons into the R95 touch dock");
 const mobileOwnerIndex=bootstrap.indexOf("v10-42-r95-mobile-controls.js");
 const r19Index=bootstrap.indexOf("v10-42-r19-mobile-trap-layout-stability.js");
 assert.ok(mobileOwnerIndex>=0&&mobileOwnerIndex<r19Index,"current touch-control owner must load before portrait compatibility");
