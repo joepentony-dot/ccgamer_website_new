@@ -93,12 +93,25 @@ try{
   });
 
   if(maintenanceExpected){
-    console.log("[production smoke] production game maintenance gate is intentionally active");
+    console.log("[production smoke] production game invited-preview gate is intentionally active");
     await page.goto(`${gameUrl}${gameUrl.includes("?")?"&":"?"}release-smoke=${Date.now()}`,{waitUntil:"domcontentloaded",timeout:30000});
-    await page.waitForURL(url=>new URL(url).pathname==="/games/ccg-games/",{timeout:15000});
-    const redirected=new URL(page.url());
-    assert.equal(redirected.hostname,"www.cheekycommodoregamer.co.uk","maintenance redirect must stay on the production CCG hostname");
-    assert.equal(redirected.pathname,"/games/ccg-games/","maintenance gate must land on the temporary CCG games hub");
+    await page.waitForSelector("#ccg-tester-access-gate",{state:"visible",timeout:15000});
+    await page.waitForSelector("#ccg-tester-access-code",{state:"visible",timeout:15000});
+    const gatedUrl=new URL(page.url());
+    assert.equal(gatedUrl.hostname,"www.cheekycommodoregamer.co.uk","tester gate must stay on the production CCG hostname");
+    assert.equal(gatedUrl.pathname,"/arcade/c64-dungeon-carnage/","tester gate must keep invited visitors on the Dungeon Carnage route");
+    const gateSnapshot=await page.evaluate(()=>({
+      gate:Boolean(document.getElementById("ccg-tester-access-gate")),
+      input:Boolean(document.getElementById("ccg-tester-access-code")),
+      submit:document.getElementById("ccg-tester-access-submit")?.textContent?.trim()||"",
+      exit:document.getElementById("ccg-tester-access-exit")?.getAttribute("href")||"",
+      state:document.documentElement.dataset.ccgPlayMaintenanceGate||null
+    }));
+    assert.equal(gateSnapshot.gate,true,"anonymous production visitor must see the tester access gate");
+    assert.equal(gateSnapshot.input,true,"tester access gate must expose a code field");
+    assert.equal(gateSnapshot.submit,"ENTER DUNGEON","tester access gate must expose the unlock action");
+    assert.equal(gateSnapshot.exit,"/games/ccg-games/","tester access gate must retain a safe exit to CCG Games");
+    assert.equal(gateSnapshot.state,"tester-code-required","anonymous production visitor must remain blocked until a valid tester code is entered");
 
     let deployedVersion=null,lastVersionPayload=null,lastVersionStatus=0;
     for(let attempt=1;attempt<=18;attempt++){
@@ -118,7 +131,7 @@ try{
       if(attempt<18)await sleep(10000);
     }
     assert.ok(deployedVersion,`public Dungeon Carnage version.json did not reach expected maintenance release identity: status=${lastVersionStatus} payload=${JSON.stringify(lastVersionPayload)} expected=${expectedBuild} / ${expectedCacheToken}`);
-    console.log(`[production smoke] maintenance gate passed; deployed package identity is ${expectedBuild} / ${expectedCacheToken}`);
+    console.log(`[production smoke] invited tester gate passed; deployed package identity is ${expectedBuild} / ${expectedCacheToken}`);
     await context.close();
   }else{
   console.log("[production smoke] wait for live release browser runtime and release markers");
