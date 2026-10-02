@@ -419,7 +419,8 @@ body[data-run-active="true"] .stack-count{
 /* Progression / objective block. */
 body[data-run-active="true"] .player-hub .hub-progress{
   display:grid!important;
-  grid-template-columns:minmax(0,1.65fr) repeat(3,minmax(62px,.58fr))!important;
+  /* XP plus Objective, Score, dynamically-owned Gold and Floor. */
+  grid-template-columns:minmax(0,1.65fr) repeat(4,minmax(52px,.48fr))!important;
   grid-template-rows:minmax(0,1fr)!important;
   grid-auto-rows:minmax(0,1fr)!important;
   gap:6px!important;
