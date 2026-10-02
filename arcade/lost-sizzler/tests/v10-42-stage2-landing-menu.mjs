@@ -20,11 +20,11 @@ for(const retiredId of ['create-btn','join-btn','horde-solo-btn','horde-mode-btn
 assert.ok(index.indexOf('css/v10-41-r29.css') < index.indexOf('</head>'),'Stage 2 landing rules must remain in blocking head CSS');
 assert.ok(index.indexOf('</head>') < index.indexOf('js/v10-41-landing-notification-polish.js'),'historical runtime polish must remain later than blocking CSS');
 
-// The old compatibility script may still create historical tier labels. Stage 2
-// deliberately outranks that presentation without rewriting gameplay ownership.
-assert.match(runtimePolish,/MAIN ADVENTURES/,'compatibility landing layer should remain intact rather than being rewritten for presentation-only work');
-assert.match(runtimePolish,/SPECIAL MODES/,'historical compatibility label remains isolated behind Stage 2 presentation ownership');
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.ccg-mode-tier-label\{display:none!important\}/,'runtime-injected tier labels must be hidden by the blocking Stage 2 hierarchy');
+// R93 retires the historical runtime menu presentation owner entirely.
+// The retained V10.41 module may own notifications/version compatibility only.
+assert.doesNotMatch(runtimePolish,/MAIN ADVENTURES|SPECIAL MODES|ensureModeLabels|modeObserver|data-ccg-legacy-menu-polish/,'retained landing compatibility code must not recreate menu tiers or presentation layers');
+assert.match(runtimePolish,/#ccg-major-notification/,'retained landing module must keep major-notification ownership');
+assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.ccg-mode-tier-label\{display:none!important\}/,'blocking CSS may defensively suppress stale tier labels without requiring runtime creation');
 
 const requiredStage2=[
   'html body[data-run-active="false"] #menu #continue-save-btn{',
@@ -51,16 +51,12 @@ assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.game-mode
 assert.match(blockingCss,/@media\(max-width:900px\),\(pointer:coarse\)\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)!important[\s\S]*?grid-column:1\/-1!important[\s\S]*?width:100%!important[\s\S]*?min-height:78px!important;[\s\S]*?padding:29px 12px 25px!important/,'phone/coarse landing geometry must collapse supported choices to one full-width column');
 assert.match(blockingCss,/#solo-btn\.primary\{color:#f5eefb!important\}/,'Solo primary text must retain readable light contrast on its dark card');
 
-// R55 still owns late card-text sealing. It must agree with the blocking geometry
-// and must reconcile DOM traversal order with the Stage 2 visual hierarchy.
-assert.match(lateLayoutOwner,/if\(id==="solo-btn"\|\|id==="create-btn"\)\{height="82px";font="10\.5px"\}/,'R55 Solo height must remain aligned with first-paint geometry');
-assert.match(lateLayoutOwner,/else if\(id==="continue-save-btn"\)\{height="78px";font="10px"\}/,'R55 Resume height must remain aligned with first-paint geometry');
-assert.match(lateLayoutOwner,/else if\(id==="tutorial-zone-btn"\|\|id==="daily-btn"\)\{height="70px";font="9px"\}/,'R55 secondary heights must remain aligned with first-paint geometry');
-assert.match(lateLayoutOwner,/\(max-width:900px\), \(pointer:coarse\)/,'R55 must use the same phone/coarse breakpoint as the blocking menu geometry');
-assert.match(lateLayoutOwner,/grid-template-columns:minmax\(0,1fr\)!important/,'R55 must keep supported mobile cards in one full-width column after late sealing');
-assert.match(lateLayoutOwner,/button\.primary\{color:#f5eefb!important\}/,'R55 must not restamp the Solo primary label to dark low-contrast text');
-assert.match(lateLayoutOwner,/if\(mobile\)height="78px"/,'R55 mobile height must remain aligned with blocking mobile geometry');
-assert.match(lateLayoutOwner,/const ids=\["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"\]/,'late owner must put supported buttons into visual/focus order');
-assert.match(lateLayoutOwner,/grid\.insertBefore\(fragment,grid\.firstChild\)/,'late owner must reconcile actual DOM order rather than relying only on CSS order');
+// R55 is retained for historical/Horde compatibility only. It must never repaint
+// or reorder the supported menu after first paint.
+assert.match(lateLayoutOwner,/function injectStyle\(\)\{[\s\S]*?document\.getElementById\(STYLE_ID\)\?\.remove\?\.\(\)/,'R55 must remove any stale injected menu style instead of adding one');
+assert.match(lateLayoutOwner,/function markMenu\(\)\{[\s\S]*?compatibility no-op/,'R55 menu presentation must remain a compatibility no-op');
+assert.match(lateLayoutOwner,/function tick\(\)\{repairHordeAuthority\(\)\}/,'R55 recurring compatibility tick must not touch menu presentation');
+assert.doesNotMatch(lateLayoutOwner,/function tick\(\)\{[^}]*markMenu\(/,'R55 timer must never call the legacy menu mutator');
+assert.doesNotMatch(lateLayoutOwner,/function tick\(\)\{[^}]*injectStyle\(/,'R55 timer must never inject menu styles');
 
 console.log('Stage 2 supported landing menu contract passed');
