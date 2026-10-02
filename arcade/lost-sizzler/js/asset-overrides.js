@@ -96,7 +96,6 @@ window.CCG_ASSET_OVERRIDES={
 const CCG_RELEASE_REV=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
 const CCG_V106_HUD_REV=CCG_RELEASE_REV;
 const CCG_V106_UI_REV=CCG_RELEASE_REV;
-const CCG_V104_PATCH_REV=CCG_RELEASE_REV;
 const CCG_V106_SIDEBAR_REV=CCG_RELEASE_REV;
 const CCG_PLAYLIST_AUDIO_REV=CCG_RELEASE_REV;
 const CCG_PLAYER_INSIGHTS_REV=CCG_RELEASE_REV;
@@ -273,7 +272,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
 (()=>{
   let started=false;
   async function startEnhancements(){
-    if(started||document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+    if(started)return;
     started=true;
 
     /* Cache sanitation is best-effort and bounded. The enhancement queue waits
@@ -291,7 +290,6 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
       [`js/v10-7-continuous-exploration.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerContinuousExplorationV107"],
-      [`js/v10-4-patch.js?v=${CCG_V104_PATCH_REV}`,"ccgLostSizzlerV104"],
       [`js/v10-4-death-cache.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerCacheV104"],
       [`js/v10-4-final-ui.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerFinalV104"],
       [`js/v10-4-collectible-effects.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerEffectsV104"],
