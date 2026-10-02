@@ -41,6 +41,8 @@ try{
   if(await notice.isVisible().catch(()=>false)){
     const accept=page.locator("#ccg-mobile-pc-accept");
     if(await accept.isVisible().catch(()=>false))await accept.click({noWaitAfter:true});
+    await page.waitForFunction(()=>document.getElementById("ccg-mobile-pc-notice")?.classList.contains("hidden")===true||getComputedStyle(document.getElementById("ccg-mobile-pc-notice")).display==="none",null,{timeout:10000});
+    await page.click("#solo-btn");
   }
   await page.waitForFunction(()=>document.body?.dataset?.runActive==="true"&&window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
   await page.waitForFunction(()=>document.getElementById("v104-touch-controls")?.classList.contains("active")===true,null,{timeout:10000});
