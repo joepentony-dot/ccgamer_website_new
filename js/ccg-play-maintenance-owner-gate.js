@@ -76,10 +76,10 @@
     });
   }
 
-  function runtimeBoundaryReady() {
+  function runtimeBoundaryReady(parserBoundaryHint) {
     runtimeBoundaryReached = true;
     parserBoundaryEligible = document.readyState === "loading"
-      && Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary"));
+      && (parserBoundaryHint === true || Boolean(document.currentScript?.hasAttribute?.("data-ccg-runtime-boundary")));
 
     // Development and local qualification are admitted immediately. When the
     // parser reaches the protected-runtime boundary, materialise the exact same
