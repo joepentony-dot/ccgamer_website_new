@@ -74,7 +74,9 @@ try{
         textShadow:computed.textShadow,
         filter:computed.filter,
         beforeTop:getComputedStyle(element,"::before").top,
-        afterBottom:getComputedStyle(element,"::after").bottom
+        afterBottom:getComputedStyle(element,"::after").bottom,
+        beforeContent:getComputedStyle(element,"::before").content,
+        afterContent:getComputedStyle(element,"::after").content
       }:null;
     };
     return {
@@ -211,7 +213,6 @@ try{
 
   releaseFiveDepth();
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
-  await page.waitForFunction(()=>document.querySelector("#menu .game-mode-buttons")?.dataset?.r55TextLayout==="true",null,{timeout:15000});
   await page.waitForFunction(()=>document.getElementById("ccg-release-loading")?.hidden===true,null,{timeout:15000});
 
   const settled=await page.evaluate(()=>{
@@ -225,7 +226,9 @@ try{
         textShadow:computed.textShadow,
         filter:computed.filter,
         beforeTop:getComputedStyle(element,"::before").top,
-        afterBottom:getComputedStyle(element,"::after").bottom
+        afterBottom:getComputedStyle(element,"::after").bottom,
+        beforeContent:getComputedStyle(element,"::before").content,
+        afterContent:getComputedStyle(element,"::after").content
       }:null;
     };
     return {
