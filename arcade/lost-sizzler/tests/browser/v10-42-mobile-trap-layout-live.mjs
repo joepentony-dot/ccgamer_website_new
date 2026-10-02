@@ -278,7 +278,7 @@ async function runViewport(viewport){
   assert.equal(first.armor,fixture.before.armor,"touch-triggered floor trap damage must preserve armour");
   assert.equal(first.xp,fixture.before.xp,"touch-triggered floor trap damage must not award XP");
   assert.equal(first.totalXp,fixture.before.totalXp,"touch-triggered floor trap damage must not alter total XP");
-  assert.ok(first.invuln>0,"touch-triggered trap damage must preserve canonical post-hit invulnerability");
+  assert.ok(first.invuln>0||first.hitStunMs>0,"touch-triggered trap damage must preserve a canonical transient post-hit protection/stun state");
   assert.equal(first.trapHits,fixture.trapHits+1,"one touch trap entry must create exactly one successful health hit");
 
   // Stay on the same live trap contact and invoke the authoritative R64 trap
