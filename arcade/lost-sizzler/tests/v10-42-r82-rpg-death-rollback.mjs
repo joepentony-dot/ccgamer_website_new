@@ -12,8 +12,8 @@ const source=read("js/v10-42-r82-rpg-death-rollback.js");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const version=JSON.parse(read("version.json"));
 
-assert.equal(version.build,"V10.42 r85");
-assert.equal(version.cacheToken,"20261001r85");
+assert.equal(version.build,"V10.42 r93");
+assert.equal(version.cacheToken,"20261002r93");
 assert.match(bootstrap,/v10-42-r80-wearable-equipment\.js[\s\S]*v10-42-r82-rpg-death-rollback\.js[\s\S]*v10-42-r72-map-death-feedback\.js/,"R82 rollback must load after current RPG/equipment composition and before death presentation");
 assert.match(source,/PGR\.applyDeathPenalty=function r82ApplyDeathPenalty/,"R82 must wrap the canonical exported death penalty");
 assert.match(source,/lostId\.startsWith\("v142-stat-"\)/,"R82 must only own RPG-stat history entries");
