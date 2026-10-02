@@ -248,21 +248,36 @@ function renderRoleControls(member) {
 }
 
 function renderDungeonPlaytester(member) {
-  const enabled = member.dungeon_carnage_playtester === true;
-  const label = enabled ? 'Revoke' : 'Grant';
-  const state = enabled
-    ? '<span class="badge badge-moderator">Playtester</span>'
-    : '<span>Not assigned</span>';
+  const active = member.dungeon_carnage_playtester === true;
+  const cohort = member.dungeon_carnage_round2_cohort === true;
+  const expires = member.dungeon_carnage_round2_expires_at
+    ? formatDate(member.dungeon_carnage_round2_expires_at)
+    : '';
+
+  if (!cohort) {
+    return `
+      <div class="dungeon-playtester-control">
+        <span>Not in Round 2</span>
+        <button class="toggle-dungeon-playtester" type="button" disabled aria-disabled="true">Cohort locked</button>
+      </div>
+    `;
+  }
+
+  const label = active ? 'Revoke' : 'Restore';
+  const state = active
+    ? '<span class="badge badge-moderator">Round 2 member</span>'
+    : '<span class="badge badge-warning">Revoked</span>';
 
   return `
     <div class="dungeon-playtester-control">
       ${state}
+      ${expires ? `<small>Pass ends ${escapeHtml(expires)}</small>` : ''}
       <button
         class="toggle-dungeon-playtester"
         type="button"
         data-user-id="${escapeHtml(member.user_id)}"
-        data-enabled="${enabled ? 'true' : 'false'}"
-        aria-label="${label} C64 Dungeon Carnage playtest access for ${escapeHtml(member.email)}"
+        data-enabled="${active ? 'true' : 'false'}"
+        aria-label="${label} C64 Dungeon Carnage Round 2 access for ${escapeHtml(member.email)}"
       >${label}</button>
     </div>
   `;
@@ -303,7 +318,7 @@ async function updateDungeonPlaytester(userId, enabled) {
     return;
   }
 
-  setInlineStatus(`${enabled ? 'Granting' : 'Revoking'} Dungeon Carnage playtest access…`, 'info');
+  setInlineStatus(`${enabled ? 'Granting' : 'Revoking'} Dungeon Carnage Round 2 access…`, 'info');
 
   const { error } = await supabase.rpc('admin_set_dungeon_carnage_playtester', {
     p_user_id: userId,
@@ -312,11 +327,11 @@ async function updateDungeonPlaytester(userId, enabled) {
 
   if (error) {
     console.error('[admin-members] admin_set_dungeon_carnage_playtester failed', error);
-    alert(`Failed to update Dungeon Carnage playtest access: ${error.message}`);
+    alert(`Failed to update Dungeon Carnage Round 2 access: ${error.message}`);
     setInlineStatus(`Playtest access update failed: ${error.message}`, 'error');
     return;
   }
 
-  setInlineStatus(`Dungeon Carnage playtest access ${enabled ? 'granted' : 'revoked'}. Refreshing list…`, 'success');
+  setInlineStatus(`Dungeon Carnage Round 2 access ${enabled ? 'restored' : 'revoked'}. Refreshing list…`, 'success');
   await loadMembers();
 }
