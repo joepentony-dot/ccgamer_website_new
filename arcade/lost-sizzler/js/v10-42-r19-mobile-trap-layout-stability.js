@@ -88,7 +88,7 @@
           object-fit:fill!important;
         }
       }
-`
+`;
     document.head.appendChild(style);
     return true
   }
