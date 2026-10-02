@@ -22,6 +22,8 @@ assert(gate.includes("runtimeBoundaryReached"), "protected runtime startup must 
 assert(gate.includes("runtimeBoundaryReady"), "the gate must expose an explicit parser-boundary handshake");
 assert(gate.includes("bootstrapProtectedRuntimeDuringParse"), "parser-boundary startup must use a dedicated parser-blocking path");
 assert(gate.includes("document.write(markup"), "parser-boundary startup must keep protected scripts ahead of the real DOM-ready event");
+assert(gate.includes('return `<script${attrs}>${inline}</script>`;'), "parser bootstrap must emit real closing script tags");
+assert(!gate.includes('<\\\\/script>'), "parser bootstrap must never emit literal backslash-closing script tags");
 assert(gate.includes("runtimeParserBootComplete"), "parser-blocking startup must signal completion only after the protected script block has executed");
 assert(gameCore.includes("var UI=window.UI={"), "protected runtime must preserve a classic global UI binding while mirroring it onto window");
 assert(gameCore.includes("var net=window.net=null;"), "protected runtime must preserve one classic mutable net binding while mirroring it onto window");
