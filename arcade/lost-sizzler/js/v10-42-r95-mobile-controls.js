@@ -9,31 +9,31 @@
 
   const state={installed:false,active:false,actions:0,movements:0,visibilitySyncs:0};
   const touchCapable=()=>Boolean((navigator.maxTouchPoints||0)>0||window.matchMedia?.("(pointer: coarse)")?.matches);
-  const playing=()=>document.body?.dataset?.runActive==="true"&&String(globalThis.mode||"")==="playing";
+  const playing=()=>document.body?.dataset?.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing";
 
   function releaseMovement(button){
     const key=button?.dataset?.key;
-    if(key&&globalThis.input?.delete)globalThis.input.delete(key);
+    try{if(key&&typeof input!=="undefined")input.delete(key)}catch(_){}
     button?.classList?.remove("held");
   }
 
   function stopFire(button){
-    globalThis.input?.delete?.("Space");
-    try{if(globalThis.p1&&typeof globalThis.setAttackHeldInput==="function")globalThis.setAttackHeldInput(globalThis.p1,false)}catch(_){}
+    try{if(typeof input!=="undefined")input.delete("Space")}catch(_){}
+    try{if(typeof p1!=="undefined"&&p1&&typeof setAttackHeldInput==="function")setAttackHeldInput(p1,false)}catch(_){}
     button?.classList?.remove("held");
   }
 
   function fire(button,event){
-    if(!playing()||!globalThis.p1)return false;
+    if(!playing()||typeof p1==="undefined"||!p1)return false;
     event?.preventDefault?.();
     try{button?.setPointerCapture?.(event.pointerId)}catch(_){}
     const tutorial=document.body?.dataset?.tutorialActive==="true";
     if(tutorial){
       window.CCGLostSizzlerV142R58AuthoritativeFireCore?.attackNow?.();
-    }else if(typeof globalThis.queueAttack==="function"){
-      globalThis.queueAttack(globalThis.p1);
-      globalThis.input?.add?.("Space");
-      try{globalThis.setAttackHeldInput?.(globalThis.p1,true)}catch(_){}
+    }else if(typeof queueAttack==="function"){
+      queueAttack(p1);
+      try{if(typeof input!=="undefined")input.add("Space")}catch(_){}
+      try{if(typeof setAttackHeldInput==="function")setAttackHeldInput(p1,true)}catch(_){}
     }
     button?.classList?.add("held");
     state.actions++;
@@ -41,16 +41,16 @@
   }
 
   function runAction(button,event){
-    if(!playing()||!globalThis.p1)return false;
+    if(!playing()||typeof p1==="undefined"||!p1)return false;
     const action=String(button?.dataset?.action||"");
     if(!action)return false;
     event?.preventDefault?.();
     if(action==="fire")return fire(button,event);
-    if(action==="dash"&&typeof globalThis.dashPlayer==="function")globalThis.dashPlayer(globalThis.p1,globalThis.d1?.()||globalThis.p1.dir);
-    else if(action==="potion")globalThis.usePotion?.(globalThis.p1);
-    else if(action==="torch")globalThis.useUtility?.(globalThis.p1);
-    else if(action==="banish")globalThis.useBanishment?.(globalThis.p1);
-    else if(action==="inventory")globalThis.toggleInventory?.();
+    if(action==="dash"&&typeof dashPlayer==="function")dashPlayer(p1,(typeof d1==="function"?d1():null)||p1.dir);
+    else if(action==="potion"&&typeof usePotion==="function")usePotion(p1);
+    else if(action==="torch"&&typeof useUtility==="function")useUtility(p1);
+    else if(action==="banish"&&typeof useBanishment==="function")useBanishment(p1);
+    else if(action==="inventory"&&typeof toggleInventory==="function")toggleInventory();
     state.actions++;
     return true
   }
@@ -67,7 +67,7 @@
     for(const [action,[label,kind]] of Object.entries(items)){
       const button=root?.querySelector?.(`[data-action="${action}"]`);
       if(!button)continue;
-      const count=globalThis.p1?inventoryCount(kind):0;
+      const count=typeof p1!=="undefined"&&p1?inventoryCount(kind):0;
       button.classList.toggle("touch-item-unavailable",count===0);
       const small=button.querySelector("small");
       if(small)small.textContent=count>0?`${count} HELD`:"NONE";
@@ -122,7 +122,7 @@
         if(!playing())return;
         event.preventDefault();
         try{button.setPointerCapture?.(event.pointerId)}catch(_){}
-        globalThis.input?.add?.(button.dataset.key);
+        try{if(typeof input!=="undefined")input.add(button.dataset.key)}catch(_){}
         button.classList.add("held");
         state.movements++;
       });
