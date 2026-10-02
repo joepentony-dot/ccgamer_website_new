@@ -2,7 +2,7 @@ function hostEnemyStep(dt){
   if(!net.isHost)return;const dm=PGR.difficulty(run).enemyDamage;
   A.stepEnemies(host,world.map,allPlayers(),dt,{
     shoot:s=>{s.power=Math.max(1,Math.round((s.power||1)*dm*(s.damageScale||1)));spawnEnemyShot(s);if(playMode==="online")net.send("enemy_shot",s)},
-    melee:(e,target,power)=>{power=Math.max(1,Math.round(power*dm*(e.namedDamageScale||1)));const source=isDeathStalkerEnemy(e)?"Death Stalker":e.follower?.name||e.championName||e.kind,lp=findLocal(target.id);if(lp){const before=lp.health;hurtPlayer(lp,power,false,source);if(before>power)knockPlayerAway(lp,e)}else if(playMode==="online")net.send("player_hit",{target:target.id,power,source})},
+    melee:(e,target,power)=>{power=Math.max(1,Math.round(power*dm*(e.namedDamageScale||1)));const source=isDeathStalkerEnemy(e)?"Death Stalker":e.follower?.name||e.championName||window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1)})||e.kind,lp=findLocal(target.id);if(lp){const before=lp.health;hurtPlayer(lp,power,false,source);if(before>power)knockPlayerAway(lp,e)}else if(playMode==="online")net.send("player_hit",{target:target.id,power,source})},
     notice:(html,sound,source)=>{const audible=source&&localPlayers().some(p=>visibleTo(p,source.x,source.y));if(audible){if(sound)S.sfx(sound);say(html,sound==="flame"?"red":"gold")}if(playMode==="online"&&source)net.send("notice",{html,source:{x:source.x,y:source.y}})},
     alert:(e,state,reason)=>{const seenHere=localPlayers().some(p=>visibleTo(p,e.x,e.y));if(state==="alert"&&seenHere){S.sfx("alert");floatText(e.x,e.y,"!",P.red);if(reason==="room"&&Math.random()<.18)say(`<strong>ROOM ALERT.</strong> ${e.follower?.name||e.championName||"Something"} has spotted you.`,"red")}if(state==="search"&&seenHere)S.sfx("search")}
   },world)
@@ -20,7 +20,7 @@ function enemyDefeatIdentity(e){
   if(e?.championName)return{key:`champion:${e.championName}`,name:e.championName,kind:e.kind||"champion",initials:String(e.championName).split(/\s+/).map(x=>x[0]).join("").slice(0,3).toUpperCase(),avatar:"",named:false};
   if(e?.guardian)return{key:"citadel-guardian",name:"Zzap! Citadel Guardian",kind:"guardian",initials:"ZG",avatar:"",named:false};
   if(e?.treasureGoblin)return{key:"treasure-goblin",name:"Treasure Goblin",kind:"treasure",initials:"TG",avatar:"",named:false};
-  const kind=e?.kind||"enemy",name=ENEMY_LABELS[kind]||kind.replace(/(^|[-_])\w/g,m=>m.replace(/[-_]/,"").toUpperCase());return{key:`kind:${kind}`,name,kind,initials:name.split(/\s+/).map(x=>x[0]).join("").slice(0,3).toUpperCase(),avatar:"",named:false}
+  const kind=e?.kind||"enemy",name=window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e?.v142Floor||1)})||ENEMY_LABELS[kind]||kind.replace(/(^|[-_])\w/g,m=>m.replace(/[-_]/,"").toUpperCase());return{key:`kind:${kind}`,name,kind,initials:name.split(/\s+/).map(x=>x[0]).join("").slice(0,3).toUpperCase(),avatar:"",named:false}
 }
 function recordEnemyDefeat(e,attacker,displayName=""){
   if(!run||!e)return;run.enemyDefeats=Array.isArray(run.enemyDefeats)?run.enemyDefeats:[];const identity=enemyDefeatIdentity(e);let row=run.enemyDefeats.find(x=>x.key===identity.key);
