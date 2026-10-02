@@ -179,6 +179,7 @@
         if(!chest.loot){try{chest.loot=PGR.lootForChest(chest,run,Math.random)}catch(_){} }
         const preflightLoot=chest.loot||null;
         if(preflightLoot&&!chestInventoryCanTake(player,preflightLoot)){
+          stopChestConfirmationGuard();
           const name=chestLootName(preflightLoot);
           try{showToast("INVENTORY FULL — CHEST HELD",`${name} is inside. Free a Quick Inventory slot and reopen this chest; the reward will not be lost.`,"cyan",7500)}catch(_){}
           return false;
