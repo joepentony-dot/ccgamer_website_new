@@ -204,13 +204,6 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
     link.dataset.ccgV109StabilityLayout="true";
     document.head.appendChild(link);
   }
-  if(!document.querySelector('link[data-ccg-v111-mobile-focus="true"]')){
-    const link=document.createElement("link");
-    link.rel="stylesheet";
-    link.href=`css/v10-11-mobile-focus.css?v=${CCG_MOBILE_FOCUS_REV}`;
-    link.dataset.ccgV111MobileFocus="true";
-    document.head.appendChild(link);
-  }
   if(!document.querySelector('link[data-ccg-v111-mobile-safety="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
@@ -230,13 +223,6 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
     link.rel="stylesheet";
     link.href=`css/v10-18-input-ui-bugfixes.css?v=${CCG_INPUT_UI_FIX_REV}`;
     link.dataset.ccgV118InputUiFixes="true";
-    document.head.appendChild(link);
-  }
-  if(!document.querySelector('link[data-ccg-v124-mobile-ergonomics="true"]')){
-    const link=document.createElement("link");
-    link.rel="stylesheet";
-    link.href=`css/v10-24-mobile-ergonomics.css?v=${CCG_MOBILE_ERGONOMICS_REV}`;
-    link.dataset.ccgV124MobileErgonomics="true";
     document.head.appendChild(link);
   }
   if(!document.querySelector('link[data-ccg-developer-changelog="true"]')){
