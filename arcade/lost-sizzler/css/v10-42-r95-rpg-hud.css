@@ -271,11 +271,18 @@ body[data-run-active="true"] .player-hub{
     linear-gradient(180deg,#171119 0%,#0b080d 58%,#070509 100%)!important;
   box-shadow:inset 0 1px 0 rgba(230,196,111,.08),0 -8px 20px rgba(0,0,0,.32)!important;
   overflow:hidden!important;
+  align-items:stretch!important;
 }
 body[data-run-active="true"] .player-hub .core-stats{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-auto-rows:minmax(0,1fr)!important;
   gap:6px!important;
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
 }
 body[data-run-active="true"] .player-hub .hub-stat{
   position:relative!important;
@@ -345,6 +352,10 @@ body[data-run-active="true"] .weapon-stat::after{display:none!important}
 /* Quick item belt. */
 body[data-run-active="true"] .player-hub .hub-inventory{
   min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
   padding:7px!important;
   border:1px solid #4f3d55!important;
   border-top:2px solid #8a6a3e!important;
@@ -409,7 +420,13 @@ body[data-run-active="true"] .stack-count{
 body[data-run-active="true"] .player-hub .hub-progress{
   display:grid!important;
   grid-template-columns:minmax(0,1.65fr) repeat(3,minmax(62px,.58fr))!important;
+  grid-auto-rows:minmax(0,1fr)!important;
   gap:6px!important;
+  min-width:0!important;
+  min-height:0!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
 }
 body[data-run-active="true"] .player-hub .priority-xp{
   min-height:0!important;
