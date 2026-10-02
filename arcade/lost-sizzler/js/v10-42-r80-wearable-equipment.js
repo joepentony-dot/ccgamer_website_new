@@ -232,17 +232,9 @@
     renderInventoryPanel=function r80RenderInventory(...args){const result=baseRender.apply(this,args);renderLoadout();decorateInventory();return result};
     renderInventoryPanel.__ccgV142R80Wearables=true;renderInventoryPanel.__ccgOriginal=baseRender;
   }
-  if(typeof MutationObserver==="function"){
-    const inventoryPanel=document.getElementById("inventory-panel");
-    if(inventoryPanel){
-      const visibilityObserver=new MutationObserver(()=>{
-        if(inventoryPanel.classList.contains("hidden"))return;
-        const refresh=()=>{try{renderLoadout();decorateInventory()}catch(_){}};
-        if(typeof queueMicrotask==="function")queueMicrotask(refresh);else Promise.resolve().then(refresh)
-      });
-      visibilityObserver.observe(inventoryPanel,{attributes:true,attributeFilter:["class"]})
-    }
-  }
+  /* R93: the wrapped renderInventoryPanel call above is the only wearable
+   * inventory render owner. A second visibility observer caused an immediate
+   * duplicate loadout rebuild whenever TAB opened the panel. */
 
   function wearableColour(item){
     return({"COMMON":"#9aa3ad","UNCOMMON":"#72ff9b","SIZZLER":"#6cecff","GOLD MEDAL":"#ffd85a","ZZAP! 97%":"#ff5bae"})[String(item?.rarity||"COMMON")]||"#9aa3ad"
