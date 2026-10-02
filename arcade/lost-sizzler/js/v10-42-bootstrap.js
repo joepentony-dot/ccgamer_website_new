@@ -55,6 +55,7 @@
     ["v10-42-warden-hunt-guidance.js","CCGLostSizzlerV142WardenHuntGuidance"],
     ["v10-42-warden-navigation-cues.js","CCGLostSizzlerV142WardenNavigationCues"],
     ["v10-42-warden-interface-consistency.js","CCGLostSizzlerV142WardenInterfaceConsistency"],
+    ["v10-42-r95-mobile-controls.js","CCGLostSizzlerV142R95MobileControls"],
     ["v10-42-r19-mobile-trap-layout-stability.js","CCGLostSizzlerV142R19MobileLayoutCompatibility"],
     ["v10-42-r21-owner-and-attack-seal.js","CCGLostSizzlerV142R21OwnerAndAttackSeal"],
     ["v10-42-r20-live-regression-stability.js","CCGLostSizzlerV142R20LiveRegressionStability"],
