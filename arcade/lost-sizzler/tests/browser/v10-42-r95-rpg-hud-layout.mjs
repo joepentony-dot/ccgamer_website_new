@@ -96,6 +96,11 @@ try{
   await mobilePage.goto(`${origin}/arcade/lost-sizzler/?r95-rpg-hud-mobile=1`,{waitUntil:"domcontentloaded"});
   await mobilePage.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true"&&Boolean(document.getElementById("solo-btn")),null,{timeout:90000});
   await mobilePage.click("#solo-btn");
+  const mobileNotice=mobilePage.locator("#ccg-mobile-pc-notice");
+  if(await mobileNotice.isVisible().catch(()=>false)){
+    const accept=mobilePage.locator("#ccg-mobile-pc-accept");
+    if(await accept.isVisible().catch(()=>false))await accept.click({noWaitAfter:true});
+  }
   await mobilePage.waitForFunction(()=>document.body?.dataset?.runActive==="true"&&window.mode==="playing"&&window.playMode==="solo",null,{timeout:30000});
   await mobilePage.waitForTimeout(120);
 
