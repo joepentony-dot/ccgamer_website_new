@@ -28,7 +28,7 @@ assert.match(r55,/function markMenu\(\)\{[\s\S]*compatibility no-op/,"legacy R55
 assert.match(r55,/function tick\(\)\{repairHordeAuthority\(\)\}/,"R55 timer must no longer mutate menu presentation");
 assert.ok(!bootstrap.includes("R55FinalPlaytestCleanup?.markMenu"),"ordered bootstrap must not replay legacy R55 menu presentation");
 
-assert.ok(landing.includes('body[data-ccg-legacy-menu-polish="true"][data-run-active="false"] #menu'),"legacy landing CSS must be dormant behind an unset compatibility flag");
+assert.doesNotMatch(landing,/data-ccg-legacy-menu-polish|ensureModeLabels|modeObserver/,"legacy landing menu presentation owner must be removed rather than merely hidden");
 assert.ok(!/state\.modeObserver=new MutationObserver/.test(landing),"legacy landing module must not observe/rebuild menu tiers");
 assert.doesNotMatch(gameCss,/\.mode-solo\{[^}]*background:#ffd85a!important/,"legacy solid Solo fill must not remain in base CSS");
 assert.doesNotMatch(gameCss,/#tutorial-zone-btn\{[^}]*background:#103542!important/,"legacy solid Tutorial fill must not remain in base CSS");
