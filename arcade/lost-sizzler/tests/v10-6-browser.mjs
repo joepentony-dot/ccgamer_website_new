@@ -35,7 +35,7 @@ await context.addInitScript(()=>{
   window.__ccgV106TestClientFactory=client;
 });
 await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
-const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV106);await page.evaluate(()=>{window.ccgSupabase={getClient:async()=>window.__ccgV106TestClientFactory()}});await page.locator("#player-name").fill(name);return page};
+const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true"&&(window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false||Boolean(window.CCGLostSizzlerV106)));await page.evaluate(()=>{window.ccgSupabase={getClient:async()=>window.__ccgV106TestClientFactory()}});await page.locator("#player-name").fill(name);return page};
 const joinInvite=async(page,name)=>{await page.locator("#v141-invite-name-gate:not(.hidden)").waitFor({timeout:12000});await page.locator("#v141-invite-player-name").fill(name);await page.locator("#v141-invite-name-join").click()};
 const syncLobby=page=>page.evaluate(()=>{net.syncSupabasePresence();window.CCGLostSizzlerV106.updateLobby();return net.getDiagnostics()});
 const assertTacticalContained=async(page,label)=>{
