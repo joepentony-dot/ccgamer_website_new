@@ -34,7 +34,7 @@ const home = read("home.html");
 const homeCtaCss = read("resources/css/home-lost-sizzler-cta.css");
 const homeArtwork = new URL("../resources/images/hero/c64-dungeon-carnage-home-feature.webp", import.meta.url);
 
-assert.match(home, /href="\/arcade\/lost-sizzler\/"[\s\S]*class="ccg-btn home-hero__beta-cta"/, "Home must keep a direct Dungeon Carnage link");
+assert.match(home, /href="\/arcade\/c64-dungeon-carnage\/"[\s\S]*class="ccg-btn home-hero__beta-cta"/, "Home must keep the canonical direct Dungeon Carnage link");
 assert.match(home, /c64-dungeon-carnage-home-feature\.webp/, "Home must use the dedicated compact Dungeon Carnage artwork");
 assert.match(home, /home-lost-sizzler-cta\.css\?v=20260922-carnage-feature/, "Home must cache-bust the compact CTA CSS");
 assert.doesNotMatch(home, /<span>C64 DUNGEON CARNAGE<\/span>/, "Home CTA must not repeat the game title as a yellow text banner");
