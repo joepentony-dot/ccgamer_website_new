@@ -23,50 +23,10 @@
   };
 
   function injectStyle(){
-    if(document.getElementById(STYLE_ID))return true;
-    const style=document.createElement("style");style.id=STYLE_ID;style.textContent=`
-      body[data-run-active="false"] #menu .game-mode-buttons button{
-        box-sizing:border-box!important;position:relative!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;
-        min-height:74px!important;padding:28px 12px 24px!important;overflow:hidden!important;white-space:normal!important;text-overflow:clip!important;
-        text-align:left!important;line-height:1.15!important;color:#f5eefb!important;text-shadow:none!important;transform:none!important;filter:none!important;-webkit-filter:none!important
-      }
-      body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
-      body[data-run-active="false"] #menu .game-mode-buttons #create-btn{min-height:82px!important;font-size:10.5px!important}
-      body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn{min-height:78px!important;font-size:10px!important}
-      body[data-run-active="false"] #menu .game-mode-buttons #horde-solo-btn,
-      body[data-run-active="false"] #menu .game-mode-buttons #horde-mode-btn,
-      body[data-run-active="false"] #menu .game-mode-buttons #saboteurs-mode-btn,
-      body[data-run-active="false"] #menu .game-mode-buttons #split-btn{min-height:74px!important;font-size:9.5px!important}
-      body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn,
-      body[data-run-active="false"] #menu .game-mode-buttons #daily-btn{min-height:70px!important;font-size:9px!important}
-      body[data-run-active="false"] #menu .game-mode-buttons button::before{
-        position:absolute!important;left:12px!important;right:12px!important;top:9px!important;bottom:auto!important;display:block!important;margin:0!important;
-        font-size:7.5px!important;font-weight:700!important;line-height:1!important;letter-spacing:.8px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-shadow:none!important;transform:none!important;filter:none!important
-      }
-      body[data-run-active="false"] #menu .game-mode-buttons button::after{
-        position:absolute!important;left:12px!important;right:12px!important;top:auto!important;bottom:8px!important;display:block!important;margin:0!important;
-        max-height:2.3em!important;font-size:7px!important;font-weight:400!important;line-height:1.15!important;letter-spacing:.35px!important;white-space:normal!important;overflow:hidden!important;text-overflow:clip!important;text-shadow:none!important;transform:none!important;filter:none!important
-      }
-      body[data-run-active="false"] #menu .game-mode-buttons button.primary{color:#f5eefb!important}
-      @media(max-width:900px),(pointer:coarse){
-        body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:minmax(0,1fr)!important}
-        body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #split-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #daily-btn{grid-column:1/-1!important;width:100%!important;min-width:0!important}
-        body[data-run-active="false"] #menu .game-mode-buttons button,
-        body[data-run-active="false"] #menu .game-mode-buttons #solo-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #create-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #continue-save-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #horde-solo-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #horde-mode-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #saboteurs-mode-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #split-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #tutorial-zone-btn,
-        body[data-run-active="false"] #menu .game-mode-buttons #daily-btn{min-height:78px!important;padding-top:29px!important;padding-bottom:25px!important}
-      }
-    `;document.head.appendChild(style);return true
+    /* R93: current blocking CSS owns menu presentation from first paint.
+     * Remove any stale R55 style node instead of injecting another menu layer. */
+    document.getElementById(STYLE_ID)?.remove?.();
+    return true
   }
 
   function sealButtonLayout(button){
@@ -109,10 +69,11 @@
   }
 
   function markMenu(){
-    const grid=document.querySelector("#menu .game-mode-buttons");if(!grid)return false;
-    alignSupportedMenuOrder(grid);
-    for(const button of grid.querySelectorAll("button"))sealButtonLayout(button);
-    grid.dataset.r55TextLayout="true";state.menuPasses++;return true
+    /* R93: retained as a compatibility no-op. The current menu is static CSS
+     * owned; R55 must not reorder or restyle it after first paint. */
+    const grid=document.querySelector("#menu .game-mode-buttons");
+    if(grid)delete grid.dataset.r55TextLayout;
+    return Boolean(grid)
   }
 
   function expectedAuthority(){
@@ -152,7 +113,7 @@
     updateBanner();return true
   }
 
-  function tick(){injectStyle();markMenu();repairHordeAuthority()}
+  function tick(){repairHordeAuthority()}
 
   injectStyle();tick();
   state.timer=setInterval(()=>{try{tick()}catch(error){console.warn("[Lost Sizzler r55] final cleanup tick failed",error)}},50);
