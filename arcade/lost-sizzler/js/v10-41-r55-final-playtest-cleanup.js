@@ -30,28 +30,8 @@
   }
 
   function sealButtonLayout(button){
-    if(!button)return false;
-    const id=String(button.id||"");
-    let height="74px",font="9.5px";
-    if(id==="solo-btn"||id==="create-btn"){height="82px";font="10.5px"}
-    else if(id==="continue-save-btn"){height="78px";font="10px"}
-    else if(id==="tutorial-zone-btn"||id==="daily-btn"){height="70px";font="9px"}
-    const mobile=matchMedia?.("(max-width:900px), (pointer:coarse)")?.matches===true;
-    if(mobile)height="78px";
-    const hidden=button.classList.contains("hidden");
-    const values={
-      "box-sizing":"border-box","position":"relative","align-items":"center","justify-content":"flex-start",
-      "min-height":height,"padding":mobile?"29px 12px 25px":"28px 12px 24px","overflow":"hidden","white-space":"normal","text-overflow":"clip",
-      "text-align":"left","line-height":"1.15","font-size":font,"text-shadow":"none","transform":"none","filter":"none","-webkit-filter":"none"
-    };
-    if(!hidden)values.display="flex";
-    let repaired=false;
-    if(hidden&&button.style.getPropertyValue("display")){button.style.removeProperty("display");repaired=true}
-    for(const [prop,value] of Object.entries(values)){
-      if(button.style.getPropertyValue(prop)!==value||button.style.getPropertyPriority(prop)!=="important"){button.style.setProperty(prop,value,"important");repaired=true}
-    }
-    if(repaired)state.menuRepairs++;
-    return true
+    /* R93: compatibility no-op. Blocking CSS/HTML owns the complete menu card. */
+    return Boolean(button)
   }
 
   function alignSupportedMenuOrder(grid){
