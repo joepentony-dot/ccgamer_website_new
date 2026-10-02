@@ -11,7 +11,7 @@ const gate=fs.readFileSync(path.join(repoRoot,"js/ccg-play-maintenance-owner-gat
 const smoke=fs.readFileSync(path.join(root,"tests/production/v10-41-r47-production-smoke.mjs"),"utf8");
 
 assert.match(index,/ccg-play-maintenance-owner-gate\.js\?v=20261001r85/,"Dungeon page must load the shared owner-preview gate under the current cache token");
-assert.match(index,/data-ccg-play-maintenance-gate="owner-preview"/,"Dungeon page must declare owner-preview maintenance ownership");
+assert.match(index,/data-ccg-play-maintenance-gate="owner-preview"/,"Dungeon page must retain the maintenance-preview ownership marker");
 assert.match(gate,/OWNER_USERNAME = "cheekycommodoregamer"/);
 assert.match(gate,/OWNER_DISPLAY_NAME = "cheeky commodore gamer"/);
 assert.match(gate,/OWNER_ROLE = "admin"/);
@@ -24,4 +24,4 @@ assert.match(gate,/Promise\.race\(\[resolveProfile\(\), timeout\]\)/,"owner look
 assert.match(smoke,/maintenanceExpected/,"production smoke must understand the intentional maintenance gate");
 assert.match(smoke,/redirected\.pathname,"\/games\/ccg-games\/"/,"anonymous production smoke must verify the maintenance destination");
 
-console.log("Dungeon Carnage retained owner-only maintenance preview contract passed.");
+console.log("Dungeon Carnage retained owner + member-playtester + tester-code preview contract passed.");
