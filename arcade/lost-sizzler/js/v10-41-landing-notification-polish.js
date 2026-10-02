@@ -131,7 +131,7 @@
     state.installed=true;document.body.dataset.v141LandingNotificationPolish="true";return true;
   }
 
-  const timer=setInterval(()=>{install();if(state.toastWrapped&&document.querySelector("#menu .game-mode-buttons")){clearInterval(timer)}},100);
+  const timer=setInterval(()=>{install();if(state.toastWrapped){clearInterval(timer)}},100);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
   window.addEventListener("ccg:v142-ready",retireVersionObserver,{once:true});
   window.addEventListener("ccg:floor-start",resetForFloor);
