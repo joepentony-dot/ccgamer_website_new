@@ -96,6 +96,13 @@ for(const cue of literalSfx){
     `literal gameplay SFX cue "${cue}" has neither a registered audio asset nor a procedural sound implementation`);
 }
 
+const insights=read("arcade/lost-sizzler/js/v10-8-player-insights.js");
+const releaseTelemetry=read("arcade/lost-sizzler/js/v10-41-r46-release-candidate-polish.js");
+for(const [name,source] of [["player insights",insights],["release telemetry",releaseTelemetry]]){
+  assert.ok(source.includes('meta[name="ccg-lost-sizzler-build"]'),`${name} must derive telemetry build identity from the authoritative page meta`);
+  assert.doesNotMatch(source,/const BUILD="V10\.(?:6|41-r46)"/,`${name} must not publish a stale historical build identifier`);
+}
+
 const render=read("arcade/lost-sizzler/js/game-render.js");
 const localRuntime=read("arcade/lost-sizzler/js/game-local-runtime.js");
 assert.ok(render.includes("CCGDungeonEnemyIdentity?.label?.(e"),"live enemy labels must use the floor-aware RPG identity owner");
