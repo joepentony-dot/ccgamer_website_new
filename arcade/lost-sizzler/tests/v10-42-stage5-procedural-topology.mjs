@@ -39,7 +39,17 @@ const profiles=[
   {floor:2,id:"iron-crossroads",minLoops:1},
   {floor:3,id:"crypt-rings",minLoops:1},
   {floor:4,id:"ember-braids",minLoops:1},
-  {floor:5,id:"sanctum-web",minLoops:1}
+  {floor:5,id:"sanctum-web",minLoops:1},
+  {floor:6,id:"tape-labyrinth",minLoops:1},
+  {floor:7,id:"moss-crypt-rings",minLoops:1},
+  {floor:8,id:"demo-undercroft-weave",minLoops:1},
+  {floor:9,id:"modem-warrens",minLoops:1},
+  {floor:10,id:"sid-furnace-braids",minLoops:1},
+  {floor:11,id:"ember-depths-forks",minLoops:1},
+  {floor:12,id:"pixel-foundry-circuit",minLoops:1},
+  {floor:13,id:"high-score-crypt-rings",minLoops:1},
+  {floor:14,id:"crt-maze-web",minLoops:1},
+  {floor:15,id:"blood-citadel-siege",minLoops:1}
 ];
 
 for(const profile of profiles){
@@ -81,6 +91,21 @@ for(const profile of profiles){
     assert.equal(a.rooms[id]?.stage5Landmark,true);
     assert.notEqual(id,a.startRoomId,"Stage 5 landmarks must not overwrite the guaranteed start room");
     assert.notEqual(id,a.exitRoomId,"Stage 5 landmarks must not overwrite the guaranteed exit room");
+  }
+}
+
+for(const profile of profiles){
+  for(const variant of ["A","B","C"]){
+    const seed=`R98-LAYOUT-${variant}-F${profile.floor}`;
+    const {C,W}=runtime();
+    const generated=W.generate(seed);
+    assert.equal(generated.topology?.floor,profile.floor,`Floor ${profile.floor} must retain its own topology profile for seed ${variant}`);
+    assert.equal(generated.topology?.profile,profile.id,`Floor ${profile.floor} must not fall back to another floor's topology for seed ${variant}`);
+    assert.equal(generated.topology?.doorTopology?.checked,generated.doorSpecs.length,`Floor ${profile.floor} must validate every optional door for seed ${variant}`);
+    assert.equal(generated.topology?.doorTopology?.valid,true,`Floor ${profile.floor} must finish with anchored optional doors for seed ${variant}`);
+    assert.equal(reachable(C,generated.map,generated.start,generated.exit),true,`Floor ${profile.floor} must preserve start-to-exit reachability for seed ${variant}`);
+    assert.ok(generated.topology?.loops?.length>=1,`Floor ${profile.floor} must retain at least one alternate route for seed ${variant}`);
+    assert.ok(generated.topology.loops.length<=generated.topology.loopTarget,`Floor ${profile.floor} must respect its loop budget for seed ${variant}`);
   }
 }
 
