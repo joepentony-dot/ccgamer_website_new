@@ -36,18 +36,18 @@ function reachable(C,map,start,end){
 
 const profiles=[
   {floor:1,id:"threshold-branches",minLoops:1},
-  {floor:2,id:"iron-crossroads",minLoops:1},
-  {floor:3,id:"crypt-rings",minLoops:1},
-  {floor:4,id:"ember-braids",minLoops:1},
-  {floor:5,id:"sanctum-web",minLoops:1},
+  {floor:2,id:"driveworks-crossroads",minLoops:1},
+  {floor:3,id:"iron-keep-rings",minLoops:1},
+  {floor:4,id:"budget-vault-braids",minLoops:1},
+  {floor:5,id:"cartridge-catacomb-web",minLoops:1},
   {floor:6,id:"tape-labyrinth",minLoops:1},
-  {floor:7,id:"moss-crypt-rings",minLoops:1},
+  {floor:7,id:"moss-iron-keep-rings",minLoops:1},
   {floor:8,id:"demo-undercroft-weave",minLoops:1},
   {floor:9,id:"modem-warrens",minLoops:1},
   {floor:10,id:"sid-furnace-braids",minLoops:1},
   {floor:11,id:"ember-depths-forks",minLoops:1},
   {floor:12,id:"pixel-foundry-circuit",minLoops:1},
-  {floor:13,id:"high-score-crypt-rings",minLoops:1},
+  {floor:13,id:"high-score-iron-keep-rings",minLoops:1},
   {floor:14,id:"crt-maze-web",minLoops:1},
   {floor:15,id:"blood-citadel-siege",minLoops:1}
 ];
