@@ -20,6 +20,12 @@ const identity=sandbox.window.CCGDungeonEnemyIdentity;
 const audio=sandbox.window.CCG_AUDIO_ASSETS;
 
 assert.equal(C.maxFloors,15,"release audit requires the full fifteen-floor campaign");
+const progressionSource=read("arcade/lost-sizzler/js/progression.js");
+const coreSource=read("arcade/lost-sizzler/js/game-core.js");
+assert.ok(progressionSource.includes('function floorSeed(run){return `${run.seed}-F${run.floor}`}'),
+  "live floor seeds must include the active floor number for topology selection");
+assert.ok(coreSource.includes("world=W.generate(seed);world.floor=run?.floor||1"),
+  "live world start must generate from the floor-specific seed before applying floor state");
 
 function reachableCells(world){
   const key=(x,y)=>x+","+y;
