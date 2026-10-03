@@ -88,8 +88,12 @@ for(const name of fs.readdirSync(jsDir).filter(name=>name.endsWith(".js"))){
   const source=fs.readFileSync(path.join(jsDir,name),"utf8");
   for(const match of source.matchAll(/\.sfx\(\s*["']([a-zA-Z0-9_-]+)["']/g))literalSfx.add(match[1]);
 }
+const audioSource=read("arcade/lost-sizzler/js/audio.js");
+const synthBlock=audioSource.slice(audioSource.indexOf("function sfx(name)"),audioSource.indexOf("function windWhistle"));
+const synthesisedSfx=new Set([...synthBlock.matchAll(/(?:^|[,\n]\s*)([A-Za-z][A-Za-z0-9_-]*):\(\)=>/g)].map(match=>match[1]));
 for(const cue of literalSfx){
-  assert.ok(Object.hasOwn(audio.sfx,cue),`literal gameplay SFX cue "${cue}" has no registered audio asset`);
+  assert.ok(Object.hasOwn(audio.sfx,cue)||synthesisedSfx.has(cue),
+    `literal gameplay SFX cue "${cue}" has neither a registered audio asset nor a procedural sound implementation`);
 }
 
 const render=read("arcade/lost-sizzler/js/game-render.js");
