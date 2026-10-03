@@ -52,13 +52,13 @@ try{
     const liveRooms=(world.rooms||[]).filter(Boolean).map(room=>({
       id:room.id,environment:Boolean(room.v142Environment),objective:Boolean(room.v142Objective),grammar:{...(room.v142RoomGrammar||{})}
     }));
-    const biomes=["threshold","iron","bone","ash","sigil"];
+    const biomes=["threshold","driveworks","iron","budget","cartridge","tapes","bone","demo","modem","sid","ash","foundry","scores","crt","citadel"];
     const samples=biomes.map((biome,index)=>{
       const floor=index+1,room={id:91,v142Environment:{biome,role:"chamber",rareRole:"",variant:`${biome}-sample`,dressingSeed:900+floor},v142Objective:{type:"recover-cache",title:"RECOVER THE CACHE"}};
       return api.grammarForRoom(room,{rooms:[room]},{},{seed:"R24-BROWSER",floor});
     });
     const secret=api.grammarForRoom({id:92,v142Environment:{biome:"bone",role:"secret",rareRole:"hidden-alcove",variant:"bone-secret"},v142Objective:{type:"recover-hidden-cache",title:"RECOVER THE HIDDEN CACHE"}},{rooms:[]},{},{seed:"R24-BROWSER",floor:3});
-    const exit=api.grammarForRoom({id:93,v142Environment:{biome:"sigil",role:"exit",rareRole:"",variant:"sigil-exit"},v142Objective:{type:"secure-exit",title:"SECURE THE DESCENT"}},{rooms:[]},{},{seed:"R24-BROWSER",floor:5});
+    const exit=api.grammarForRoom({id:93,v142Environment:{biome:"citadel",role:"exit",rareRole:"",variant:"citadel-exit"},v142Objective:{type:"secure-exit",title:"SECURE THE DESCENT"}},{rooms:[]},{},{seed:"R24-BROWSER",floor:15});
 
     let movement={moved:false,controller:window.CCGLostSizzlerModeRuntime?.detect?.()||"",mode:String(mode||"")};
     for(const dir of [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}]){
@@ -83,9 +83,9 @@ try{
   assert.ok(result.liveRooms.length>=3,"Live Solo generation must provide enough rooms to qualify room grammar.");
   assert.ok(result.liveRooms.every(room=>room.environment&&room.objective&&room.grammar.version==="V10.42-r24"),"R24 must compose after R6 environment and R7 objective metadata for every live room.");
   assert.ok(result.liveRooms.every(room=>room.grammar.landmark&&room.grammar.routeIntent&&room.grammar.approachCue&&room.grammar.foreshadowing),"Every live room grammar must carry landmark, route, approach and foreshadowing descriptors.");
-  assert.equal(new Set(result.samples.map(sample=>sample.biomeIdentity)).size,5,"All five campaign biomes must expose distinct R24 identities.");
-  assert.equal(new Set(result.samples.map(sample=>sample.landmark)).size,5,"All five campaign biomes must expose distinct deterministic landmarks for the same room seed.");
-  assert.deepEqual(result.samples.map(sample=>sample.biome),["threshold","iron","bone","ash","sigil"],"R24 must preserve the established five-depth biome order.");
+  assert.equal(new Set(result.samples.map(sample=>sample.biomeIdentity)).size,15,"All fifteen campaign biomes must expose distinct R24 identities.");
+  assert.equal(new Set(result.samples.map(sample=>sample.landmark)).size,15,"All fifteen campaign biomes must expose distinct deterministic landmarks for the same room seed.");
+  assert.deepEqual(result.samples.map(sample=>sample.biome),["threshold","driveworks","iron","budget","cartridge","tapes","bone","demo","modem","sid","ash","foundry","scores","crt","citadel"],"R24 must preserve the established fifteen-floor biome order.");
   assert.equal(result.secret.archetype,"concealed alcove","Hidden alcoves must refine room grammar into a distinct exploration archetype.");
   assert.equal(result.secret.routeIntent,"search","Hidden alcoves must advertise search intent without changing progression.");
   assert.equal(result.exit.routeIntent,"descend","Exit rooms must advertise descent intent without opening or changing exits.");
