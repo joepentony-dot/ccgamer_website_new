@@ -97,6 +97,9 @@ for(const cue of literalSfx){
 }
 
 const render=read("arcade/lost-sizzler/js/game-render.js");
+const localRuntime=read("arcade/lost-sizzler/js/game-local-runtime.js");
+assert.ok(render.includes("CCGDungeonEnemyIdentity?.label?.(e"),"live enemy labels must use the floor-aware RPG identity owner");
+assert.ok(localRuntime.includes("CCGDungeonEnemyIdentity?.label?.(e"),"defeat/credits identity recording must use the floor-aware RPG identity owner");
 for(const file of ["archer-green.png","soldier-red.png","orc-grunt.png","orc-peon-red.png","enemy-atlas-horde-v10-35.png","enemy-atlas-standard-a-v10-35.png","enemy-atlas-standard-b-v10-35.png"]){
   assert.ok(render.includes(file),`upgraded enemy renderer route is missing: ${file}`);
 }
