@@ -27,11 +27,13 @@ const r8Index=bootstrap.indexOf('["v10-42-r8-breakable-interaction-director.js",
 assert.ok(r7Index>=0&&r24Index>r7Index&&r8Index>r24Index,"Ordered bootstrap must load R24 after R6/R7 metadata and before downstream room interaction layers.");
 
 const campaignFloors=[
-  {floor:1,id:"threshold"},{floor:2,id:"iron"},{floor:3,id:"bone"},{floor:4,id:"ash"},{floor:5,id:"sigil"}
+  {floor:1,id:"threshold"},{floor:2,id:"driveworks"},{floor:3,id:"iron"},{floor:4,id:"budget"},{floor:5,id:"cartridge"},
+  {floor:6,id:"tapes"},{floor:7,id:"bone"},{floor:8,id:"demo"},{floor:9,id:"modem"},{floor:10,id:"sid"},
+  {floor:11,id:"ash"},{floor:12,id:"foundry"},{floor:13,id:"scores"},{floor:14,id:"crt"},{floor:15,id:"citadel"}
 ];
 const sandbox={console,run:{seed:"R24-CONTRACT",floor:1}};
 sandbox.window=sandbox;
-sandbox.CCG_CONFIG={maxFloors:5,proceduralDungeon:{campaignFloors}};
+sandbox.CCG_CONFIG={maxFloors:15,proceduralDungeon:{campaignFloors}};
 sandbox.CCGWorld={createHostState:worldState=>({revision:17,items:[{id:"item"}],enemies:[{id:"enemy"}],doors:[{id:"door"}],chests:[{id:"chest"}],shops:[{id:"shop"}],sourceWorld:worldState})};
 vm.createContext(sandbox);
 vm.runInContext(runtime,sandbox,{filename:runtimePath});
@@ -40,7 +42,7 @@ const api=sandbox.CCGLostSizzlerV142R24BiomeRoomGrammar;
 assert.ok(api,"R24 API must publish after installation.");
 assert.equal(api.version,"V10.42-r24","R24 API version must remain explicit.");
 
-const biomeIds=["threshold","iron","bone","ash","sigil"];
+const biomeIds=["threshold","driveworks","iron","budget","cartridge","tapes","bone","demo","modem","sid","ash","foundry","scores","crt","citadel"];
 const identities=[];
 const landmarks=[];
 for(let index=0;index<biomeIds.length;index++){
@@ -65,8 +67,8 @@ for(let index=0;index<biomeIds.length;index++){
   assert.equal(host.v142RoomGrammar.plans.length,1,"Host summary must expose one plan per room.");
   identities.push(grammar.biomeIdentity);landmarks.push(grammar.landmark);
 }
-assert.equal(new Set(identities).size,5,"All five campaign depths must expose distinct R24 biome identities.");
-assert.equal(new Set(landmarks).size,5,"A fixed room/seed across all five depths must expose distinct biome landmarks.");
+assert.equal(new Set(identities).size,15,"All fifteen campaign floors must expose distinct R24 biome identities.");
+assert.equal(new Set(landmarks).size,15,"A fixed room/seed across all fifteen floors must expose distinct biome landmarks.");
 
 sandbox.run={seed:"R24-DETERMINISM",floor:3};
 const makeRoom=()=>({id:12,v142Environment:{biome:"bone",role:"secret",rareRole:"hidden-alcove",variant:"bone-secret",dressingSeed:313},v142Objective:{type:"recover-hidden-cache",title:"RECOVER THE HIDDEN CACHE"}});
