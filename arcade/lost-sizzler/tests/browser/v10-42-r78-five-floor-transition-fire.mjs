@@ -7,6 +7,8 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
+const release=JSON.parse(fs.readFileSync(path.join(repo,"arcade/lost-sizzler/version.json"),"utf8"));
+const expectedBuild=String(release.build||"").trim(),expectedCache=String(release.cacheToken||"").trim();
 const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",".wav":"audio/wav",".mp3":"audio/mpeg",".ogg":"audio/ogg"};
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
@@ -76,7 +78,7 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?r78-five-floor-transition=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution)&&Boolean(window.CCGLostSizzlerV142FiveDepthCampaign)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
   const boot=await page.evaluate(()=>({build:window.CCGLostSizzlerV142Bootstrap?.build,cache:window.CCGLostSizzlerV142Bootstrap?.cache}));
-  assert.equal(boot.build,"V10.42 r97");assert.equal(boot.cache,"20261002r97");
+  assert.equal(boot.build,expectedBuild);assert.equal(boot.cache,expectedCache);
 
   await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
   await page.click("#solo-btn");
