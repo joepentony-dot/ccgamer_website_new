@@ -14,7 +14,7 @@
   const PREFS_KEY="ccg-lost-sizzler-accessibility-v1";
   const SESSION_KEY="ccg-lost-sizzler-r46-session";
   const FUNCTION_NAME="lost-sizzler-feedback";
-  const BUILD="V10.41-r46";
+  const BUILD=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"V10.42").trim();
   const VALID_MODES=new Set(["solo","online","split","daily","tutorial","horde-survivor","sizzler-saboteurs"]);
   const state={
     runActive:false,runStartedAt:0,startScore:0,lastFloor:0,lastKills:0,lastMode:"unknown",
