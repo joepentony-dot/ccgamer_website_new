@@ -139,8 +139,8 @@ window.CCGWorld=(()=>{
   }
 
   function stage5Floor(seedText){
-    const match=String(seedText||"").match(/-F([1-5])(?:$|[^0-9])/i);
-    return Math.max(1,Math.min(5,Number(match?.[1]||1)));
+    const match=String(seedText||"").match(/-F(1[0-5]|[1-9])(?:$|[^0-9])/i);
+    return Math.max(1,Math.min(15,Number(match?.[1]||1)));
   }
 
   const STAGE5_TOPOLOGY_PROFILES=Object.freeze({
@@ -148,7 +148,17 @@ window.CCGWorld=(()=>{
     2:{id:"iron-crossroads",loopTarget:2,maxPath:38,landmarkTarget:4},
     3:{id:"crypt-rings",loopTarget:2,maxPath:40,landmarkTarget:4},
     4:{id:"ember-braids",loopTarget:3,maxPath:44,landmarkTarget:5},
-    5:{id:"sanctum-web",loopTarget:3,maxPath:46,landmarkTarget:5}
+    5:{id:"sanctum-web",loopTarget:3,maxPath:46,landmarkTarget:5},
+    6:{id:"tape-labyrinth",loopTarget:2,maxPath:42,landmarkTarget:4},
+    7:{id:"moss-crypt-rings",loopTarget:2,maxPath:44,landmarkTarget:4},
+    8:{id:"demo-undercroft-weave",loopTarget:3,maxPath:44,landmarkTarget:5},
+    9:{id:"modem-warrens",loopTarget:2,maxPath:46,landmarkTarget:5},
+    10:{id:"sid-furnace-braids",loopTarget:3,maxPath:46,landmarkTarget:5},
+    11:{id:"ember-depths-forks",loopTarget:2,maxPath:48,landmarkTarget:5},
+    12:{id:"pixel-foundry-circuit",loopTarget:3,maxPath:48,landmarkTarget:5},
+    13:{id:"high-score-crypt-rings",loopTarget:2,maxPath:50,landmarkTarget:5},
+    14:{id:"crt-maze-web",loopTarget:3,maxPath:50,landmarkTarget:6},
+    15:{id:"blood-citadel-siege",loopTarget:3,maxPath:52,landmarkTarget:6}
   });
 
   function stage5PairKey(a,b){return a<b?`${a}:${b}`:`${b}:${a}`}
