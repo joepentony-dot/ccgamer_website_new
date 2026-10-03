@@ -145,18 +145,18 @@ window.CCGWorld=(()=>{
 
   const STAGE5_TOPOLOGY_PROFILES=Object.freeze({
     1:{id:"threshold-branches",loopTarget:1,maxPath:34,landmarkTarget:3},
-    2:{id:"iron-crossroads",loopTarget:2,maxPath:38,landmarkTarget:4},
-    3:{id:"crypt-rings",loopTarget:2,maxPath:40,landmarkTarget:4},
-    4:{id:"ember-braids",loopTarget:3,maxPath:44,landmarkTarget:5},
-    5:{id:"sanctum-web",loopTarget:3,maxPath:46,landmarkTarget:5},
+    2:{id:"driveworks-crossroads",loopTarget:2,maxPath:38,landmarkTarget:4},
+    3:{id:"iron-keep-rings",loopTarget:2,maxPath:40,landmarkTarget:4},
+    4:{id:"budget-vault-braids",loopTarget:3,maxPath:44,landmarkTarget:5},
+    5:{id:"cartridge-catacomb-web",loopTarget:3,maxPath:46,landmarkTarget:5},
     6:{id:"tape-labyrinth",loopTarget:2,maxPath:42,landmarkTarget:4},
-    7:{id:"moss-crypt-rings",loopTarget:2,maxPath:44,landmarkTarget:4},
+    7:{id:"moss-iron-keep-rings",loopTarget:2,maxPath:44,landmarkTarget:4},
     8:{id:"demo-undercroft-weave",loopTarget:3,maxPath:44,landmarkTarget:5},
     9:{id:"modem-warrens",loopTarget:2,maxPath:46,landmarkTarget:5},
     10:{id:"sid-furnace-braids",loopTarget:3,maxPath:46,landmarkTarget:5},
     11:{id:"ember-depths-forks",loopTarget:2,maxPath:48,landmarkTarget:5},
     12:{id:"pixel-foundry-circuit",loopTarget:3,maxPath:48,landmarkTarget:5},
-    13:{id:"high-score-crypt-rings",loopTarget:2,maxPath:50,landmarkTarget:5},
+    13:{id:"high-score-iron-keep-rings",loopTarget:2,maxPath:50,landmarkTarget:5},
     14:{id:"crt-maze-web",loopTarget:3,maxPath:50,landmarkTarget:6},
     15:{id:"blood-citadel-siege",loopTarget:3,maxPath:52,landmarkTarget:6}
   });
