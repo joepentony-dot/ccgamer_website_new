@@ -24,7 +24,7 @@ try{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
     const page=await browser.newPage({viewport});
     await page.goto(origin+"/arcade/lost-sizzler/version.json");
-    await page.setContent('<meta name="ccg-lost-sizzler-cache" content="20261002r97"><style>body{margin:0;background:#09040f;color:#eddbb8;font:12px Georgia}canvas{image-rendering:pixelated;max-width:100%}</style><canvas id="proof" width="780" height="420"></canvas>');
+    await page.setContent('<meta name="ccg-lost-sizzler-cache" content="20261003r98"><style>body{margin:0;background:#09040f;color:#eddbb8;font:12px Georgia}canvas{image-rendering:pixelated;max-width:100%}</style><canvas id="proof" width="780" height="420"></canvas>');
     await page.addScriptTag({content:'const canvas=document.getElementById("proof"),ctx=canvas.getContext("2d"),P={red:"#f00",cyan:"#0ff"};function enemySpriteSeed(){return 0}\n'+setup+"\n"+routes});
     await page.waitForFunction(()=>Object.values(lostSizzlerPixelAssets).filter(x=>x instanceof Image).every(x=>x.complete));
     const result=await page.evaluate(()=>{

@@ -11,42 +11,97 @@
   const C=window.CCG_CONFIG,W=window.CCGWorld;
   if(!C||!W||typeof W.createHostState!=="function")return;
 
-  const BIOME_ORDER=["threshold","iron","bone","ash","sigil"];
+  const BIOME_ORDER=["threshold","driveworks","iron","budget","cartridge","tapes","bone","demo","modem","sid","ash","foundry","scores","crt","citadel"];
   const FLOOR_GRAMMAR=Object.freeze({
     threshold:Object.freeze({
-      identity:"RUINED APPROACH",
-      routeMood:"exposed approach",
+      identity:"RUINED APPROACH",routeMood:"exposed approach",
       landmarks:Object.freeze(["collapsed gate arch","flooded watch court","broken signal tower","rain-cut archive wall","overgrown supply yard"]),
       approach:Object.freeze(["follow the least flooded stone","use broken walls as route markers","watch for masonry hiding side passages"]),
-      foreshadow:Object.freeze(["iron brackets point toward the keep below","old key marks survive on the gate stones","drain channels converge toward the descent"])
+      foreshadow:Object.freeze(["drive housings appear beneath the old archive","cable channels converge toward the machinery below","metal service plates replace the oldest stonework"])
+    }),
+    driveworks:Object.freeze({
+      identity:"MECHANICAL SERVICE MAZE",routeMood:"machine-room junctions",
+      landmarks:Object.freeze(["drive spindle bay","head-alignment bench","service gantry","disk-control alcove","cable trench crossing"]),
+      approach:Object.freeze(["follow service rails between machine bays","use numbered drive housings as route markers","watch cable trenches for side-room junctions"]),
+      foreshadow:Object.freeze(["riveted stonework thickens toward the keep","discarded armour fittings appear beside the machinery","service corridors end at fortified iron doors"])
     }),
     iron:Object.freeze({
-      identity:"FORTRESS INTERIOR",
-      routeMood:"military choke points",
+      identity:"FORTRESS INTERIOR",routeMood:"military choke points",
       landmarks:Object.freeze(["riveted gatehouse","abandoned armoury rack","chain-lift junction","cold forge throat","bannerless guard station"]),
       approach:Object.freeze(["read doorways as defensive choke points","use iron runners to distinguish main routes","expect guarded routes near forge infrastructure"]),
-      foreshadow:Object.freeze(["bone charms appear among confiscated gear","crypt dust gathers in unused guard rooms","old burial seals have been bolted over"])
+      foreshadow:Object.freeze(["cheap stock crates appear behind sealed gates","yellow tally marks survive on requisition walls","supply tunnels widen toward the vaults below"])
+    }),
+    budget:Object.freeze({
+      identity:"STOCKROOM VAULT NETWORK",routeMood:"packed storage lanes",
+      landmarks:Object.freeze(["discount stock cage","sealed price vault","crate sorting bay","yellow ledger wall","bulk storage crossing"]),
+      approach:Object.freeze(["use numbered stock bays to keep orientation","expect narrow lanes between storage chambers","check dead-end stockrooms for concealed routes"]),
+      foreshadow:Object.freeze(["green cartridge sockets appear in reinforced walls","plastic cases replace paper stock labels","slot-shaped recesses mark the deeper descent"])
+    }),
+    cartridge:Object.freeze({
+      identity:"SLOTSTONE CATACOMBS",routeMood:"socket-lined passages",
+      landmarks:Object.freeze(["cartridge reliquary","slotstone gallery","ROM vault arch","green socket junction","sealed case chamber"]),
+      approach:Object.freeze(["follow repeated socket markings along main routes","use cartridge galleries to distinguish major junctions","expect hidden rooms behind sealed case walls"]),
+      foreshadow:Object.freeze(["violet tape labels appear among the cases","magnetic reels are stored in side vaults","archive numbering becomes less orderly below"])
+    }),
+    tapes:Object.freeze({
+      identity:"MAGNETIC ARCHIVE LABYRINTH",routeMood:"repeating archive aisles",
+      landmarks:Object.freeze(["tape rack maze","reel archive crossway","violet loading bay","duplicator room","magnetic store junction"]),
+      approach:Object.freeze(["use reel colours and rack numbers as orientation marks","treat repeated aisles as a reason to check the map","follow loading bays toward larger junctions"]),
+      foreshadow:Object.freeze(["moss appears behind the oldest tape shelving","stone burial marks show through damaged racks","cool mist leaks from lower archive passages"])
     }),
     bone:Object.freeze({
-      identity:"DROWNED OSSUARY",
-      routeMood:"burial maze",
+      identity:"DROWNED OSSUARY",routeMood:"burial maze",
       landmarks:Object.freeze(["root-split reliquary","sunken ossuary aisle","mossed sarcophagus row","candleless memorial vault","bone-marked crossing"]),
       approach:Object.freeze(["follow carved burial numbers through repeated chambers","treat root growth as a sign of older side routes","look for disturbed bone piles near useful passages"]),
-      foreshadow:Object.freeze(["warm soot stains appear where no candles burn","sealed vents breathe dry heat from below","charred offerings mark the route toward Ember Depths"])
+      foreshadow:Object.freeze(["raster light flickers through cracks in the crypt","coloured test patterns mark repaired stone","electronic hum rises from the undercroft below"])
+    }),
+    demo:Object.freeze({
+      identity:"RASTER UNDERCROFT",routeMood:"showcase chambers and side stages",
+      landmarks:Object.freeze(["raster projection hall","scroll-text gallery","demo stage junction","copper timing room","colour-bar vault"]),
+      approach:Object.freeze(["use animated light and stage markings to track major rooms","expect showcase chambers to branch into smaller routes","follow timing cables toward the main descent"]),
+      foreshadow:Object.freeze(["carrier tones bleed through the masonry","terminal wiring replaces display cabling","cyan signal lamps point toward the warrens"])
+    }),
+    modem:Object.freeze({
+      identity:"SIGNAL EXCHANGE WARRENS",routeMood:"communications junctions",
+      landmarks:Object.freeze(["carrier exchange","dial bank chamber","terminal cross-connect","cyan relay trench","line-test alcove"]),
+      approach:Object.freeze(["follow cable bundles between relay rooms","use signal lamps to identify active junctions","expect narrow service passages around larger exchanges"]),
+      foreshadow:Object.freeze(["bass vibration rattles the relay covers","red furnace stone appears around signal conduits","sound channels grow wider toward the SID works"])
+    }),
+    sid:Object.freeze({
+      identity:"RESONANT FURNACE",routeMood:"acoustic heat channels",
+      landmarks:Object.freeze(["filter chamber","resonance gallery","waveform furnace","red oscillator vault","speaker-stone crossing"]),
+      approach:Object.freeze(["follow resonant channels toward larger machinery","use waveform markings to distinguish repeated chambers","avoid confusing heat vents with traversable routes"]),
+      foreshadow:Object.freeze(["ember deposits gather inside the lowest channels","scorched masonry replaces resonant stone","ash drifts upward from the depth below"])
     }),
     ash:Object.freeze({
-      identity:"BURNING WORKS",
-      routeMood:"industrial hazard network",
+      identity:"BURNING DEPTHS",routeMood:"industrial hazard network",
       landmarks:Object.freeze(["slag bridge","furnace spine","copper vent gallery","ash conveyor trench","cracked smelter chamber"]),
       approach:Object.freeze(["use vent direction to read the main route","expect exposed crossings around heat machinery","treat cooled slag lanes as safer navigation lines"]),
-      foreshadow:Object.freeze(["violet symbols survive beneath the soot","rune-cut stone appears inside furnace repairs","arcane seals have been heated but not destroyed"])
+      foreshadow:Object.freeze(["pixel-grid press marks appear in cooled metal","square mould channels replace natural cracks","foundry machinery is audible beyond sealed walls"])
     }),
-    sigil:Object.freeze({
-      identity:"RITUAL CORE",
-      routeMood:"converging ritual geometry",
-      landmarks:Object.freeze(["concentric rune dais","sealed reliquary axis","violet archive apse","floating shard gallery","three-key ritual gate"]),
-      approach:Object.freeze(["read repeated sigils as orientation marks","expect routes to converge toward ritual axes","use intact rune lines to distinguish deliberate paths from dead ends"]),
-      foreshadow:Object.freeze(["all three recovered domains are represented in the masonry","the final chambers repeat symbols seen across earlier depths","broken routes now point inward rather than downward"])
+    foundry:Object.freeze({
+      identity:"PIXEL PRESS WORKS",routeMood:"grid-aligned production halls",
+      landmarks:Object.freeze(["sprite press","copper pixel mould","tile stamping line","palette furnace","grid calibration bay"]),
+      approach:Object.freeze(["use floor grids to track direction through production halls","follow press lines toward major junctions","expect service rooms beside large stamping chambers"]),
+      foreshadow:Object.freeze(["gold score plates appear among rejected tiles","numbered plaques replace production labels","crypt masonry returns beneath the factory floor"])
+    }),
+    scores:Object.freeze({
+      identity:"GILDED SCORE CRYPT",routeMood:"trophy-lined burial routes",
+      landmarks:Object.freeze(["high-score mausoleum","gilded initials wall","record vault","champion plinth crossing","score-table crypt"]),
+      approach:Object.freeze(["use initials and score plaques as route markers","expect ceremonial dead ends around record chambers","follow repeated champion symbols toward central routes"]),
+      foreshadow:Object.freeze(["green phosphor light leaks through sealed stone","curved glass fragments appear in side chambers","scanline patterns mark the route toward the CRT maze"])
+    }),
+    crt:Object.freeze({
+      identity:"PHOSPHOR MAZE",routeMood:"screen-like recursive corridors",
+      landmarks:Object.freeze(["phosphor chamber","scanline gallery","glass-tube junction","deflection coil vault","green raster crossing"]),
+      approach:Object.freeze(["use scanline direction to distinguish parallel corridors","check the map often where chambers repeat","follow brighter phosphor marks toward major junctions"]),
+      foreshadow:Object.freeze(["blood-red runes interrupt the green glow","obsidian masonry appears behind broken glass","all routes begin converging toward the Citadel"])
+    }),
+    citadel:Object.freeze({
+      identity:"BLOOD CITADEL",routeMood:"fortified converging assault routes",
+      landmarks:Object.freeze(["blood-rune gate","scarlet bastion","obsidian guard axis","final reliquary court","citadel throne approach"]),
+      approach:Object.freeze(["read converging rune lines as the route toward the centre","expect defended junctions and fewer forgiving detours","use bastions and gate axes as fixed orientation marks"]),
+      foreshadow:Object.freeze(["the recovered domains repeat across the final masonry","every major route points inward toward the last guardian","broken side passages leave the central assault route exposed"])
     })
   });
 
@@ -85,11 +140,23 @@
 
   function normaliseBiome(value,floor=1){
     const raw=String(value||configuredFloorId(floor)||BIOME_ORDER[floor-1]||"threshold").toLowerCase();
+    if(FLOOR_GRAMMAR[raw])return raw;
+    if(raw.includes("drive"))return"driveworks";
     if(raw.includes("iron")||raw.includes("keep"))return"iron";
-    if(raw.includes("bone")||raw.includes("crypt")||raw.includes("moss"))return"bone";
+    if(raw.includes("budget"))return"budget";
+    if(raw.includes("cartridge"))return"cartridge";
+    if(raw.includes("tape"))return"tapes";
+    if(raw.includes("bone")||raw.includes("moss"))return"bone";
+    if(raw.includes("demo"))return"demo";
+    if(raw.includes("modem"))return"modem";
+    if(raw.includes("sid"))return"sid";
     if(raw.includes("ash")||raw.includes("ember"))return"ash";
-    if(raw.includes("sigil")||raw.includes("sanct"))return"sigil";
-    return"threshold";
+    if(raw.includes("foundry")||raw.includes("pixel"))return"foundry";
+    if(raw.includes("score"))return"scores";
+    if(raw.includes("crt")||raw.includes("phosphor"))return"crt";
+    if(raw.includes("citadel")||raw.includes("blood")||raw.includes("sigil")||raw.includes("sanct"))return"citadel";
+    if(raw.includes("crypt"))return floor>=13?"scores":floor>=7?"bone":"threshold";
+    return BIOME_ORDER[floor-1]||"threshold";
   }
 
   function roleFor(room){return String(room?.v142Environment?.role||"chamber")}

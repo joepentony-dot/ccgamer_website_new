@@ -76,7 +76,7 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?r78-five-floor-transition=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution)&&Boolean(window.CCGLostSizzlerV142FiveDepthCampaign)&&Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
   const boot=await page.evaluate(()=>({build:window.CCGLostSizzlerV142Bootstrap?.build,cache:window.CCGLostSizzlerV142Bootstrap?.cache}));
-  assert.equal(boot.build,"V10.42 r97");assert.equal(boot.cache,"20261002r97");
+  assert.equal(boot.build,"V10.42 r98");assert.equal(boot.cache,"20261003r98");
 
   await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
   await page.click("#solo-btn");

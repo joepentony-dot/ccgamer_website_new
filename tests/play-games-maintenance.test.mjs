@@ -21,8 +21,8 @@ for (const path of [
 ]) {
   const dungeon = read(path);
   assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, path + " must load the protected Dungeon access gate");
-  assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js\?v=20261002r97"/, path + " must load the R97 Supabase config cache identity");
-  assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js\?v=20261002r97"/, path + " must load the R97 Supabase client cache identity");
+  assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js\?v=20261003r98"/, path + " must load the R98 Supabase config cache identity");
+  assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js\?v=20261003r98"/, path + " must load the R98 Supabase client cache identity");
   assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261002-round2-v1"/);
   assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must retain supplied WebP");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/, path + " must keep game-main inert until access is validated");
