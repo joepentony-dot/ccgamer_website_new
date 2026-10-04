@@ -11,10 +11,10 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const tutorial=read("js/v10-23-tutorial-guidance.js");
 assert.match(tutorial,/let highlightedControlSignature="";/,"R101 must track the active Tutorial control highlight");
 assert.match(tutorial,/let highlightedInfoStep=-1;/,"R101 must track the active Tutorial information highlight");
-assert.match(tutorial,/if\(highlightedControlSignature===signature\)return;/,
-  "R101 must not remove and re-add an unchanged control highlight every 100 ms");
-assert.match(tutorial,/if\(highlightedInfoStep===numericStep\)return;/,
-  "R101 must not rebuild an unchanged information highlight every 100 ms");
+assert.match(tutorial,/highlightedControlSignature===signature&&nodes\.length>0&&nodes\.every\(/,
+  "R101 must not remove and re-add an unchanged live control highlight every 100 ms");
+assert.match(tutorial,/highlightedInfoStep===numericStep&&entries\.length>0&&entries\.every\(/,
+  "R101 must not rebuild an unchanged live information highlight every 100 ms");
 assert.match(tutorial,/@media\(min-width:701px\)[\s\S]*?animation:none!important;filter:none!important;/,
   "desktop Tutorial highlights must remain non-animated");
 assert.match(tutorial,/const timer=setInterval\(tick,100\);/,
