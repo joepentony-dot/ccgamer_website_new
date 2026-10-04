@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_PLAYER_INSIGHTS__=true;
 
   const FUNCTION_NAME="lost-sizzler-feedback";
-  const BUILD="V10.6";
+  const BUILD=String(document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"V10.42").trim();
   const START_ACTIONS=new Map([
     ["solo-btn","solo"],
     ["continue-save-btn","resume_saved"],

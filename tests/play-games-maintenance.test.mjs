@@ -15,14 +15,17 @@ for (const path of [
 }
 
 const ownerGate = read("js/ccg-play-maintenance-owner-gate.js");
+const dungeonVersion = JSON.parse(read("arcade/lost-sizzler/version.json"));
+const dungeonCache = String(dungeonVersion.cacheToken || "").trim();
+assert.ok(/^20261003r98$/.test(dungeonCache), "Dungeon maintenance boundary must follow the qualified R98 cache identity");
 for (const path of [
   "arcade/c64-dungeon-carnage/index.html",
   "arcade/lost-sizzler/index.html"
 ]) {
   const dungeon = read(path);
   assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, path + " must load the protected Dungeon access gate");
-  assert.match(dungeon, /src="\/js\/ccg-supabase-config\.js\?v=20261002r97"/, path + " must load the R97 Supabase config cache identity");
-  assert.match(dungeon, /src="\/js\/ccg-supabase-client\.js\?v=20261002r97"/, path + " must load the R97 Supabase client cache identity");
+  assert.ok(dungeon.includes(`src="/js/ccg-supabase-config.js?v=${dungeonCache}"`), path + " must load the current Supabase config cache identity");
+  assert.ok(dungeon.includes(`src="/js/ccg-supabase-client.js?v=${dungeonCache}"`), path + " must load the current Supabase client cache identity");
   assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261002-round2-v1"/);
   assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must retain supplied WebP");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/, path + " must keep game-main inert until access is validated");

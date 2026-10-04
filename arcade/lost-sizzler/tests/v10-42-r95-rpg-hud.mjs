@@ -6,10 +6,13 @@ import {fileURLToPath} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
+const version=JSON.parse(fs.readFileSync(path.join(root,"version.json"),"utf8"));
+const cache=String(version.cacheToken||"").trim();
 const css=fs.readFileSync(path.join(root,"css/v10-42-r95-rpg-hud.css"),"utf8");
 const core=fs.readFileSync(path.join(root,"js/game-core.js"),"utf8");
 
-assert.match(html,/v10-42-r71-equipment-inventory\.css\?v=20261002r97[\s\S]*v10-42-r95-rpg-hud\.css\?v=20261002r97/,"R95 HUD CSS must load after the established R71 inventory presentation.");
+const inventoryCss=`v10-42-r71-equipment-inventory.css?v=${cache}`,hudCss=`v10-42-r95-rpg-hud.css?v=${cache}`;
+assert.ok(html.indexOf(inventoryCss)>=0&&html.indexOf(hudCss)>html.indexOf(inventoryCss),"R95 HUD CSS must load after the established R71 inventory presentation under the current release cache.");
 assert.match(css,/--r95-rpg-font:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif/,"R95 must provide a self-contained RPG heading font stack.");
 assert.match(css,/--r95-data-font:Consolas,"Lucida Console","Courier New",monospace/,"R95 must retain a compact data font for live numeric readouts.");
 assert.match(css,/body\[data-run-active="true"\] \.player-hub\{/,"R95 must own the active gameplay HUD without changing the menu.");
