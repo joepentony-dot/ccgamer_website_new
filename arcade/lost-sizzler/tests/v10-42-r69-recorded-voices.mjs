@@ -8,6 +8,11 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const map=read("js/v10-42-r69-recorded-voices.js");
+const voiceSandbox={window:{}};
+(new Function("window",map+";return window.CCG_RECORDED_VOICE_SPRITE;"))(voiceSandbox.window);
+const recordedPack=voiceSandbox.window.CCG_RECORDED_VOICE_SPRITE;
+assert.ok(recordedPack&&recordedPack.aliases&&recordedPack.cues,"recorded voice metadata must execute into a complete sprite map");
+for(const [alias,cue] of Object.entries(recordedPack.aliases))assert.ok(recordedPack.cues[cue],`recorded alias ${alias} points to missing cue ${cue}`);
 const voiceAsset=path.join(root,"assets/audio/voice/ccg-recorded-voices-r69.ogg");
 assert.ok(fs.existsSync(voiceAsset),"the owner-recorded R69 OGG sprite must be present in the public runtime");
 assert.ok(fs.statSync(voiceAsset).size>1_900_000,"the recorded voice sprite must contain the assembled 84-cue payload");
@@ -29,6 +34,9 @@ assert.match(map,/"bronzeKeyRequired":"you-need-a-bronze-key"/,"bronze lock feed
 assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locked chest feedback must resolve to the recorded cue");
 assert.match(loader,/v10-42-r69-recorded-voices\.js[\s\S]*v10-16-voice-director\.js/,"recorded voice metadata must load before the single voice director");
 assert.match(voice,/recorded\?\.aliases\?\.\[key\]/,"voice playback must prefer the recorded sprite alias without adding a competing audio owner");
+assert.match(voice,/recordedAvailable=Boolean\(recordedCue\)/,"recorded voice playback must know when the owner's cue exists");
+assert.match(voice,/!recordedAvailable&&fallbackText&&speakText/,"a failed owner-recorded cue must not silently substitute browser speech");
+assert.match(loader,/const criticalFiles=\["admin-audio-overrides\.js","lost-sizzler-playlist-audio\.js","v10-42-r69-recorded-voices\.js","v10-16-voice-director\.js"/,"recorded voice metadata and director must be release-critical");
 assert.match(voice,/LOCKED BRONZE DOOR[\s\S]*bronzeKeyRequired/,"bronze doors must classify into explicit recorded feedback");
 assert.match(voice,/LOCKED CHEST[\s\S]*chestKeyRequired/,"locked chests must classify into explicit recorded feedback");
 assert.match(voice,/ccg:item-collected/,"pickup recordings must be driven by the established collection event");
