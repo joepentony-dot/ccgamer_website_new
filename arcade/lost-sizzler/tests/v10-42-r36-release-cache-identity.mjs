@@ -18,7 +18,7 @@ const cacheMeta=html.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)
 const localAssets=[...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+\?v=([^"&]+))"/g)].map(match=>({url:match[1],token:match[2]}));
 
 assert.equal(buildMeta,BUILD,"the blocking page identity must already be the current r101 build before any runtime restamp");
-assert.equal(cacheMeta,CACHE,"the cache guard must read the r100 token on its first execution");
+assert.equal(cacheMeta,CACHE,"the cache guard must read the r101 token on its first execution");
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
 assert.ok(bootstrap.includes(`const BUILD="${BUILD}";`),"ordered bootstrap build identity changed unexpectedly");
