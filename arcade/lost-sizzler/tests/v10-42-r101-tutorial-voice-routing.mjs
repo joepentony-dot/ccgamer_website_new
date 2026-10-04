@@ -27,16 +27,17 @@ assert.ok(sprite?.src,"owner-recorded voice sprite must remain available");
 
 const alchemistAliases={
   "npc.alchemist.empty":"bring-me-something-interesting",
-  "npc.alchemist.partial":"bring-me-three-and-i-can-help-you-deal-with-the-stalker",
-  "npc.alchemist.ready":"i-can-trade-those-artefacts-for-a-banishment-flask"
+  "npc.alchemist.partial":"bring-me-three-and-i-can-help-you-deal-with-the-stalker"
 };
 for(const [key,cue] of Object.entries(alchemistAliases)){
   assert.equal(sprite.aliases?.[key],cue,`${key} must route to the existing owner-recorded cue`);
   assert.ok(sprite.cues?.[cue],`owner-recorded cue missing for ${key}: ${cue}`);
 }
+assert.equal(sprite.aliases?.["npc.alchemist.ready"],undefined,
+  "the obsolete artefact-era Flask trade recording must not be replayed for the current Essence mechanic");
 
 const stage8=read("js/v10-41-stage8-npc-dialogue.js");
-for(const key of Object.keys(alchemistAliases)){
+for(const key of [...Object.keys(alchemistAliases),"npc.alchemist.ready"]){
   assert.ok(stage8.includes(`voiceKey:"${key}"`),`live Stage 8 dialogue no longer uses expected voice key ${key}`);
 }
 
