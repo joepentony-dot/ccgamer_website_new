@@ -17,7 +17,7 @@ for (const path of [
 const ownerGate = read("js/ccg-play-maintenance-owner-gate.js");
 const dungeonVersion = JSON.parse(read("arcade/lost-sizzler/version.json"));
 const dungeonCache = String(dungeonVersion.cacheToken || "").trim();
-assert.ok(/^20261004r99$/.test(dungeonCache), "Dungeon maintenance boundary must follow the qualified R99 cache identity");
+assert.ok(/^20261004r100$/.test(dungeonCache), "Dungeon maintenance boundary must follow the qualified R100 cache identity");
 for (const path of [
   "arcade/c64-dungeon-carnage/index.html",
   "arcade/lost-sizzler/index.html"
