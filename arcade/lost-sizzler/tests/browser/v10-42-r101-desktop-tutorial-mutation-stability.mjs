@@ -43,6 +43,10 @@ try{
     document.body.dataset.tutorialActive="true";
     const api=window.CCGLostSizzlerTutorialGuidanceV123;
     const settle=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const fixture=document.createElement("div");
+    fixture.className="command-grid";
+    fixture.innerHTML="<span>WASD MOVE</span>";
+    document.body.appendChild(fixture);
 
     api.highlightControls("move");
     await settle();
