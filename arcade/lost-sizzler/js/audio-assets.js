@@ -42,7 +42,17 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     stalker:"assets/audio/sfx/stalker-sting.wav",
     trap:"assets/audio/sfx/trap.wav",
     generator:"assets/audio/sfx/generator.wav",
-    secret:"assets/audio/sfx/secret-found.wav"
+    secret:"assets/audio/sfx/secret-found.wav",
+    melee:"assets/audio/sfx/enemy-attack.wav",
+    hazardwarn:"assets/audio/sfx/alert.wav",
+    bladehit:"assets/audio/sfx/armour-hit.wav",
+    chest:"assets/audio/sfx/objective-open.wav",
+    creak:"assets/audio/sfx/door-open.wav",
+    pssst:"assets/audio/sfx/flame.wav",
+    fireplace:"assets/audio/sfx/flame.wav",
+    woodhit:"assets/audio/sfx/wall-hit.wav",
+    woodbreak:"assets/audio/sfx/explosion.wav",
+    bones:"assets/audio/sfx/enemy-death.wav"
   }),
   music:Object.freeze({
     normal:"assets/audio/music/exploration.wav",
