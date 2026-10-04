@@ -25,6 +25,8 @@
   let tutorialLaunchPending=false;
   let queuedLaunch=null;
   let informationTourStep=-1;
+  let highlightedControlSignature="";
+  let highlightedInfoStep=-1;
 
   function ensureStyle(){
     if(document.getElementById("ccg-tutorial-guidance-style"))return;
@@ -100,11 +102,19 @@
   function rail(){return document.getElementById("ccg-tutorial-rail")}
 
   function clearHighlights(){
+    highlightedControlSignature="";
+    highlightedInfoStep=-1;
     document.querySelectorAll(".ccg-tutorial-control-highlight").forEach(el=>el.classList.remove("ccg-tutorial-control-highlight"));
     document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout;if(el.dataset.tutorialWasHidden==="true"){el.classList.add("hidden");delete el.dataset.tutorialWasHidden}});
   }
 
-  function highlightInformation(step){for(const [selector,label] of INFO_HIGHLIGHTS.get(step)||[]){const node=document.querySelector(selector);if(!node)continue;if(node.classList.contains("hidden")){node.dataset.tutorialWasHidden="true";node.classList.remove("hidden")}node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")}}
+  function highlightInformation(step){
+    const numericStep=Math.max(0,Number(step)||0);
+    if(highlightedInfoStep===numericStep)return;
+    document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout;if(el.dataset.tutorialWasHidden==="true"){el.classList.add("hidden");delete el.dataset.tutorialWasHidden}});
+    highlightedInfoStep=numericStep;
+    for(const [selector,label] of INFO_HIGHLIGHTS.get(numericStep)||[]){const node=document.querySelector(selector);if(!node)continue;if(node.classList.contains("hidden")){node.dataset.tutorialWasHidden="true";node.classList.remove("hidden")}node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")}
+  }
 
   function ensureInformationTour(){let tour=document.getElementById("ccg-tutorial-info-tour");if(tour)return tour;tour=document.createElement("section");tour.id="ccg-tutorial-info-tour";tour.className="hidden";tour.setAttribute("aria-live","polite");(document.querySelector(".ccg-game")||document.body).appendChild(tour);return tour}
   function hideInformationTour(){const tour=document.getElementById("ccg-tutorial-info-tour");if(tour)tour.classList.add("hidden");informationTourStep=-1}
@@ -121,8 +131,11 @@
   }
 
   function highlightControls(kind){
-    clearHighlights();
     const state=tutorialState();
+    const signature=`${kind}|${kind==="inventory"&&state?.inventoryOpened&&!state?.inventoryClosed?"close":"base"}`;
+    if(highlightedControlSignature===signature)return;
+    clearHighlights();
+    highlightedControlSignature=signature;
     const touch=document.getElementById("v104-touch-controls");
     if(touch){
       let nodes=[];
@@ -206,9 +219,9 @@
       },true);
       button.dataset.ccgTutorialLaunchBound="true";
     }
-    button.textContent="Tutorial";
-    button.title="Open the safe Training Archive tutorial";
-    button.classList.add("tutorial-primary-option");
+    if(button.textContent!=="Tutorial")button.textContent="Tutorial";
+    if(button.title!=="Open the safe Training Archive tutorial")button.title="Open the safe Training Archive tutorial";
+    if(!button.classList.contains("tutorial-primary-option"))button.classList.add("tutorial-primary-option");
     if(button.parentElement!==row)restorePosition(button);
     return true;
   }
