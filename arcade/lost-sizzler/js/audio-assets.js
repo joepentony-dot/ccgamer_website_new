@@ -12,6 +12,9 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     exitSigil:"assets/audio/sfx/exit-sigil-found.wav",
     bronze:"assets/audio/sfx/bronze-key-found.wav",
     dash:"assets/audio/sfx/dash.wav",
+    melee:"assets/audio/sfx/melee.wav",
+    hazardwarn:"assets/audio/sfx/hazard-warning.wav",
+    bladehit:"assets/audio/sfx/blade-hit.wav",
     enemy:"assets/audio/sfx/enemy-attack.wav",
     alert:"assets/audio/sfx/alert.wav",
     search:"assets/audio/sfx/search.wav",
@@ -26,6 +29,7 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     join:"assets/audio/sfx/join.wav",
     warp:"assets/audio/sfx/warp.wav",
     door:"assets/audio/sfx/door-clunk.wav",
+    chest:"assets/audio/sfx/chest-open.wav",
     dooropen:"assets/audio/sfx/door-open.wav",
     locked:"assets/audio/sfx/door-locked.wav",
     weapon:"assets/audio/sfx/weapon-upgrade.wav",
@@ -42,7 +46,13 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     stalker:"assets/audio/sfx/stalker-sting.wav",
     trap:"assets/audio/sfx/trap.wav",
     generator:"assets/audio/sfx/generator.wav",
-    secret:"assets/audio/sfx/secret-found.wav"
+    secret:"assets/audio/sfx/secret-found.wav",
+    creak:"assets/audio/sfx/creak.wav",
+    pssst:"assets/audio/sfx/torch-extinguish.wav",
+    fireplace:"assets/audio/sfx/fireplace.wav",
+    woodhit:"assets/audio/sfx/wood-hit.wav",
+    woodbreak:"assets/audio/sfx/wood-break.wav",
+    bones:"assets/audio/sfx/bones.wav"
   }),
   music:Object.freeze({
     normal:"assets/audio/music/exploration.wav",

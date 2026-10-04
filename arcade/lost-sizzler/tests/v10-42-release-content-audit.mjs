@@ -98,8 +98,8 @@ const audioSource=read("arcade/lost-sizzler/js/audio.js");
 const synthBlock=audioSource.slice(audioSource.indexOf("function sfx(name)"),audioSource.indexOf("function windWhistle"));
 const synthesisedSfx=new Set([...synthBlock.matchAll(/(?:^|[,\n]\s*)([A-Za-z][A-Za-z0-9_-]*):\(\)=>/g)].map(match=>match[1]));
 for(const cue of literalSfx){
-  assert.ok(Object.hasOwn(audio.sfx,cue)||synthesisedSfx.has(cue),
-    `literal gameplay SFX cue "${cue}" has neither a registered audio asset nor a procedural sound implementation`);
+  assert.ok(Object.hasOwn(audio.sfx,cue),
+    `literal gameplay SFX cue "${cue}" must resolve to a registered file-backed audio asset`);
 }
 
 const insights=read("arcade/lost-sizzler/js/v10-8-player-insights.js");
