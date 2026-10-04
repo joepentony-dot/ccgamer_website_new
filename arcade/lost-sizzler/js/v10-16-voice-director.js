@@ -231,7 +231,7 @@
     }catch(_){return false}
   }
   function playSprite(key,priority,fallbackText=""){
-    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],pack=recordedCue?recorded:BUNDLED_SPRITE,cue=recordedCue||BUNDLED_SPRITE.cues[key];
+    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],recordedAvailable=Boolean(recordedCue),pack=recordedAvailable?recorded:BUNDLED_SPRITE,cue=recordedCue||BUNDLED_SPRITE.cues[key];
     if(!cue||!pack?.src)return false;
     try{
       const audio=new Audio(pack.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
@@ -239,7 +239,7 @@
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
-        if(fallbackText&&speakText(fallbackText,priority,key))return;
+        if(!recordedAvailable&&fallbackText&&speakText(fallbackText,priority,key))return;
       };
       const begin=()=>{
         if(started||failed||state.active!==active)return;started=true;
@@ -275,8 +275,8 @@
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
     if(state.active){const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
-    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(key):"";let started=false;
-    if(src)started=playClip(src,priority,text,key);if(!started&&!forceTts)started=playSprite(key,priority,text);if(!started)started=speakText(text,priority,key);
+    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(key):"",recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),hasRecorded=Boolean(recorded?.cues?.[recordedKey]);let started=false;
+    if(src)started=playClip(src,priority,text,key);if(!started&&!forceTts)started=playSprite(key,priority,text);if(!started&&(!hasRecorded||forceTts))started=speakText(text,priority,key);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
     state.lastByKey.set(key,now);state.played++;return true;
   }
@@ -292,10 +292,10 @@
       if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false}
       stopActive("interrupted")
     }
-    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(voiceKey):"";let started=false;
+    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(voiceKey):"",recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[voiceKey]||voiceKey),hasRecorded=Boolean(recorded?.cues?.[recordedKey]);let started=false;
     if(src)started=playClip(src,priority,spokenText,voiceKey);
     if(!started&&!forceTts)started=playSprite(voiceKey,priority,spokenText);
-    if(!started)started=speakText(spokenText,priority,voiceKey);
+    if(!started&&(!hasRecorded||forceTts))started=speakText(spokenText,priority,voiceKey);
     if(!started){state.skipped++;state.lastSkipped={key:voiceKey,reason:"playback",at:now};return false}
     state.lastByKey.set(voiceKey,now);state.played++;return true
   }
