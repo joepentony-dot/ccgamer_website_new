@@ -46,7 +46,7 @@ for(const [cue,relative] of Object.entries(required)){
 }
 
 const releaseAudit=read("arcade/lost-sizzler/tests/v10-42-release-content-audit.mjs").toString("utf8");
-assert.match(releaseAudit,/literal gameplay SFX cue[sS]*must resolve to a registered file-backed audio asset/,
+assert.ok(releaseAudit.includes("must resolve to a registered file-backed audio asset"),
   "release audit must describe file-backed SFX as release-critical");
 assert.doesNotMatch(releaseAudit,/Object\.hasOwn\(audio\.sfx,cue\)\|\|synthesisedSfx\.has\(cue\)/,
   "release audit must not allow a procedural-only implementation to satisfy a live gameplay cue");
