@@ -618,7 +618,7 @@ function updateRoomMessage(p,force){
   UI.surroundings.innerHTML=`<strong>${th.name}</strong> — ${th.message}${room?.sanctuary?" <b>PERMANENTLY LIT SANCTUARY.</b>":room?.sigilRoom?" <b>SIGIL WARDEN TERRITORY.</b>":room?.dangerous?" <b>DANGER ROOM.</b>":""}`;
   if(p===p1)S.setRoomMood(roomMoodFor(r));
   if(force)return;
-  S.sfx("room");if(room?.fireplace)S.sfx("fireplace");
+  if(room?.fireplace)S.sfx("fireplace");
   if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"No monster can enter this safe room. Stand on the green regeneration square to recover 1 HP every 3 seconds.","green",9000);
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
   else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}

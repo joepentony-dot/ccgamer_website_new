@@ -56,6 +56,13 @@
     }catch(_){return false}
   };
 
+  function adminAudioPending(){
+    try{
+      const policy=window.CCGLostSizzlerRemoteMediaPolicy;
+      return Boolean(policy&&typeof policy.remoteMediaAllowed==="function"&&policy.remoteMediaAllowed()&&window.CCG_ADMIN_AUDIO_READY!==true)
+    }catch(_){return false}
+  }
+
   function categorySources(state){
     const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{};
     const admin=window.CCG_ADMIN_AUDIO||{};
@@ -67,6 +74,7 @@
       ...asList(admin[legacy])
     ]);
     if(custom.length)return custom;
+    if(adminAudioPending())return [];
     return unique([
       ...asList(assets.music?.playlists?.[state]),
       ...asList(assets.music?.[state])
@@ -131,7 +139,8 @@
   function scheduleRetry(state){
     clearRetry();
     if(!enabled||!started)return;
-    startFallback();
+    if(adminAudioPending())stopFallback();
+    else startFallback();
     retryTimer=setTimeout(()=>{
       retryTimer=null;
       if(!enabled||!started||desiredState()!==state)return;
@@ -418,6 +427,8 @@
       enabled,
       started,
       fallbackActive,
+      adminAudioReady:window.CCG_ADMIN_AUDIO_READY===true,
+      adminAudioPending:adminAudioPending(),
       failures:Object.fromEntries([...failures].map(([url,data])=>[url,{count:data.count,retryInMs:Math.max(0,data.retryAt-Date.now())}])),
       slots:Object.fromEntries(STATE_KEYS.map(state=>{
         const slot=stateSlots.get(state);

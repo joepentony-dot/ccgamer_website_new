@@ -41,6 +41,15 @@ async function settle(page){
     p1.invuln=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
     fire1=0;fireBuffer1=0;projectileCD=0;input.clear();
     window.CCGLostSizzlerV142AttackHoldLiveness?.clearHeld?.();
+    /*
+     * This is an ATTACK ownership soak, not an environmental-combo test.
+     * Melee knockback intentionally resolves a further 2 HP when the target
+     * lands on an active dedicated hazard, and a rare vortex can kill it.
+     * Remove those independent damage owners from this fixture so HP delta
+     * measures exactly one physical attack intent. Dedicated-hazard and
+     * vortex behaviour are covered by their own browser contracts.
+     */
+    if(host){host.traps=[];host.hazardRooms=[];host.rareVortexPit=null}
     for(const enemy of host?.enemies||[])enemy.alive=false;
   });
 }

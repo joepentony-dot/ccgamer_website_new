@@ -105,7 +105,7 @@
   function patchAll(){patchStageModal();patchRail();patchTour();patchCompletionBanner()}
 
   patchAll();
-  const observer=new MutationObserver(patchAll);observer.observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+  const observer=new MutationObserver(patchAll);observer.observe(document.documentElement,{childList:true,subtree:true});
   addEventListener("pagehide",()=>observer.disconnect(),{once:true});
   window.CCGLostSizzlerV142TutorialCampaign=Object.freeze({stepCopy:STEP_COPY,tourCopy:TOUR_COPY,patchAll});
 })();

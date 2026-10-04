@@ -246,13 +246,9 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
     script.async=false;
     document.body.appendChild(script);
   }
-  if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
-    const script=document.createElement("script");
-    script.src=`js/admin-audio-overrides.js?v=${CCG_ADMIN_AUDIO_REV}`;
-    script.dataset.ccgAdminAudio="true";
-    script.async=true;
-    document.head.appendChild(script);
-  }
+  /* R99: admin audio now loads inside the ordered enhancement queue below.
+   * It is release-critical because uploaded soundtrack and recorded voice ownership
+   * must never silently fall back to the base placeholder audio stack. */
 })();
 
 (()=>{
@@ -274,6 +270,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-20-onboarding-hardening.js?v=${CCG_ONBOARDING_HARDENING_REV}`,"ccgLostSizzlerOnboardingHardeningV120"],
       [`js/v10-23-tutorial-guidance.js?v=${CCG_TUTORIAL_GUIDANCE_REV}`,"ccgLostSizzlerTutorialGuidanceV123"],
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
+      [`js/admin-audio-overrides.js?v=${CCG_ADMIN_AUDIO_REV}`,"ccgAdminAudio"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
       [`js/v10-7-continuous-exploration.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerContinuousExplorationV107"],
       [`js/v10-4-death-cache.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerCacheV104"],
@@ -312,7 +309,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-42-bootstrap.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerV142Bootstrap"]
     ];
     const criticalFailures=[];
-    const criticalFiles=["v10-25-melee-ammo-balance.js","v10-26-ammo-budget.js","v10-29-achievements.js","v10-30-polish.js","v10-31-multiplayer-sync.js","v10-35-quality.js","v10-42-bootstrap.js"];
+    const criticalFiles=["admin-audio-overrides.js","lost-sizzler-playlist-audio.js","v10-42-r69-recorded-voices.js","v10-16-voice-director.js","v10-25-melee-ammo-balance.js","v10-26-ammo-budget.js","v10-29-achievements.js","v10-30-polish.js","v10-31-multiplayer-sync.js","v10-35-quality.js","v10-42-bootstrap.js"];
     const criticalPaths=new Set(["/arcade/lost-sizzler/","/arcade/c64-dungeon-carnage/"].flatMap(prefix=>criticalFiles.map(file=>`${prefix}js/${file}`)));
 
     /* Dynamic scripts with async=false execute in insertion order but may fetch

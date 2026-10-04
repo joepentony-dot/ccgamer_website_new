@@ -76,6 +76,13 @@
       #menu #tutorial-zone-btn.tutorial-primary-option{
         border-color:rgba(108,236,255,.72)!important;box-shadow:0 0 16px rgba(108,236,255,.14)!important;
       }
+      @media(min-width:701px){
+        body[data-tutorial-active="true"] .ccg-tutorial-control-highlight,
+        body[data-tutorial-active="true"] .ccg-tutorial-info-highlight,
+        body[data-tutorial-active="true"] #ccg-tutorial-live-progress{
+          animation:none!important;filter:none!important;
+        }
+      }
       @media(max-width:700px){
         #ccg-tutorial-stage-modal{align-items:center;padding:12px}
         #ccg-tutorial-stage-modal .ccg-tutorial-modal-card{width:min(94vw,620px);max-height:88dvh;padding:18px 16px}

@@ -8,6 +8,11 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const map=read("js/v10-42-r69-recorded-voices.js");
+const voiceSandbox={window:{}};
+(new Function("window",map+";return window.CCG_RECORDED_VOICE_SPRITE;"))(voiceSandbox.window);
+const recordedPack=voiceSandbox.window.CCG_RECORDED_VOICE_SPRITE;
+assert.ok(recordedPack&&recordedPack.aliases&&recordedPack.cues,"recorded voice metadata must execute into a complete sprite map");
+for(const [alias,cue] of Object.entries(recordedPack.aliases))assert.ok(recordedPack.cues[cue],`recorded alias ${alias} points to missing cue ${cue}`);
 const voiceAsset=path.join(root,"assets/audio/voice/ccg-recorded-voices-r69.ogg");
 assert.ok(fs.existsSync(voiceAsset),"the owner-recorded R69 OGG sprite must be present in the public runtime");
 assert.ok(fs.statSync(voiceAsset).size>1_900_000,"the recorded voice sprite must contain the assembled 84-cue payload");
@@ -29,6 +34,9 @@ assert.match(map,/"bronzeKeyRequired":"you-need-a-bronze-key"/,"bronze lock feed
 assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locked chest feedback must resolve to the recorded cue");
 assert.match(loader,/v10-42-r69-recorded-voices\.js[\s\S]*v10-16-voice-director\.js/,"recorded voice metadata must load before the single voice director");
 assert.match(voice,/recorded\?\.aliases\?\.\[key\]/,"voice playback must prefer the recorded sprite alias without adding a competing audio owner");
+assert.match(voice,/recordedAvailable=Boolean\(recordedCue\)/,"recorded voice playback must know when the owner's cue exists");
+assert.match(voice,/!recordedAvailable&&fallbackText&&speakText/,"a failed owner-recorded cue must not silently substitute browser speech");
+assert.match(loader,/const criticalFiles=\["admin-audio-overrides\.js","lost-sizzler-playlist-audio\.js","v10-42-r69-recorded-voices\.js","v10-16-voice-director\.js"/,"recorded voice metadata and director must be release-critical");
 assert.match(voice,/LOCKED BRONZE DOOR[\s\S]*bronzeKeyRequired/,"bronze doors must classify into explicit recorded feedback");
 assert.match(voice,/LOCKED CHEST[\s\S]*chestKeyRequired/,"locked chests must classify into explicit recorded feedback");
 assert.match(voice,/ccg:item-collected/,"pickup recordings must be driven by the established collection event");
@@ -37,6 +45,7 @@ assert.match(stage8,/voiceKey:"npc\.sanctuary\.keeper"/,"sanctuary greeting must
 assert.match(play,/const paidBronzeKey=Boolean\(chest\.locked&&!roomKeyPaid\);if\(chest\.locked&&!roomKeyPaid\)p\.bronzeKeys--;if\(paidBronzeKey\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("chestUnlocked"/,"a standalone locked chest must announce unlock only after the canonical bronze-key debit succeeds");
 assert.match(play,/dedicatedHazard[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("trapsNearby"/,"dedicated hazards must issue the recorded proximity warning");
 assert.match(runtime,/e\.exitWarden[\s\S]*sigilWardenDefeated[\s\S]*e\.guardian[\s\S]*guardianDefeated/,"guardian defeat recordings must be tied to actual enemy death ownership");
+assert.match(runtime,/target!==host\.stalker[\s\S]*deathStalkerBanished[\s\S]*cooldown:0/,"permanent Death Stalker banishment must use the supplied banishment confirmation without mislabelling Count Loadula");
 assert.match(sanctuary,/sayDialogue\?\.\("npc\.sanctuary\.keeper","Hello, big boy\."/,"walking onto a sanctuary dancer must play the supplied greeting directly");
 assert.match(sanctuary,/ccgDialogueVoiceHandled:true/,"sanctuary dancer greeting must suppress duplicate generic speech when the recording starts");
 assert.match(sanctuaryHardening,/say\?\.\("adventurerHelp"/,"lost adventurer recruitment must use the supplied rescue plea");
@@ -47,6 +56,12 @@ assert.match(voice,/sayKey\("hazardPain"/,"actual hazard damage must be able to 
 assert.match(voice,/ccg:shop-firearm-upgrade/,"voice director must subscribe to successful shop firearm upgrades");
 assert.match(voice,/sayKey\("weaponUpgraded"/,"successful firearm upgrades must trigger the supplied upgrade recording");
 assert.match(voice,/FURNITURE AMBUSH[\s\S]*return"ambush"/,"furniture ambushes must use the supplied ambush recording");
+assert.doesNotMatch(voice,/queue\.push|function pump\(/,"recorded follow-ups must preserve the no-backlog voice-channel contract");
+assert.match(voice,/arenaLockdown[\s\S]*setTimeout[\s\S]*surviveAmbush[\s\S]*2400/,"arena lockdown must retain the supplied survive-the-ambush follow-up without a playback queue");
+assert.match(voice,/memorySequenceStarted[\s\S]*setTimeout[\s\S]*watchSequence[\s\S]*3100/,"memory sequence introduction must retain the supplied watch-the-sequence follow-up without a playback queue");
+assert.match(voice,/MEMORY VAULT LOCKDOWN[\s\S]*roomLockdown/,"memory-vault sealing must use the supplied room-lockdown recording");
+assert.match(voice,/UPGRADE AVAILABLE[\s\S]*upgradeAvailable/,"upgrade-available feedback must use its dedicated supplied recording rather than the generic level-up line");
+assert.match(voice,/NAMED ENEMY\\s\*\[—-\][\s\S]*namedEnemy/,"named-enemy introduction must use the supplied named-enemy warning");
 assert.match(stage8,/merchantVoiceVisits/,"merchant dialogue must track contextual voice visits");
 assert.match(stage8,/hiddenPartial[\s\S]*hiddenReady/,"hidden merchant speech must distinguish partial and trade-ready artefact states");
 assert.match(stage8,/entranceRepeat/,"quartermaster repeat interactions must use a supplied repeat recording");

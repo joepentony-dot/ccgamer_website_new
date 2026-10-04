@@ -51,16 +51,22 @@ try{
       window.CCG_AUDIO_ASSETS={music:{playlists:{normal:["fallback.wav"]}}};
       window.ccgSupabase={getClient:async()=>({from:()=>({select(){return this},in(){return this},eq(){return this},order(){return new Promise(resolve=>window.__finishAdmin=resolve)}})})};
     `});
-    await page.addScriptTag({content:playlist});
-    await page.evaluate(()=>CCGSound.start());
     await page.addScriptTag({content:admin});
     await page.waitForFunction(()=>typeof window.__finishAdmin==="function");
+    await page.addScriptTag({content:playlist});
+    await page.evaluate(()=>CCGSound.start());
+    await page.waitForTimeout(60);
+    const pending=await page.evaluate(()=>({instances:__musicInstances.length,state:CCGLostSizzlerPlaylistAudio.getState()}));
+    assert.equal(pending.instances,0,"production startup must not construct bundled placeholder music while uploaded admin audio is still resolving");
+    assert.equal(pending.state.fallbackActive,false,"production startup must keep generated/bundled fallback silent while admin music is pending");
+    assert.equal(pending.state.adminAudioPending,true,"playlist owner must report the unresolved production soundtrack handoff");
     await page.evaluate(()=>__finishAdmin({data:[{asset_group:"music",asset_key:"lostSizzlerExploration--01",public_url:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/exploration-01.mp3"}],error:null}));
-    await page.waitForFunction(()=>CCG_ADMIN_AUDIO_READY===true&&__musicInstances.length===2);
-    const music=await page.evaluate(()=>({url:CCGLostSizzlerPlaylistAudio.getState().url,oldPaused:__musicInstances[0].paused,playing:__musicInstances.filter(x=>!x.paused).length,skipped:CCG_ADMIN_AUDIO.remoteMediaSkipped}));
+    await page.waitForFunction(()=>CCG_ADMIN_AUDIO_READY===true&&__musicInstances.length===1);
+    const music=await page.evaluate(()=>({url:CCGLostSizzlerPlaylistAudio.getState().url,playing:__musicInstances.filter(x=>!x.paused).length,skipped:CCG_ADMIN_AUDIO.remoteMediaSkipped,pending:CCGLostSizzlerPlaylistAudio.getState().adminAudioPending}));
     assert.equal(music.skipped,false,"test must exercise real admin readiness rather than automation skip");
+    assert.equal(music.pending,false,"uploaded soundtrack readiness must end the pending state");
     assert.ok(music.url.endsWith("/exploration-01.mp3"));
-    assert.equal(music.oldPaused,true);assert.equal(music.playing,1);
+    assert.equal(music.playing,1);
     await page.close();
   }
   console.log("R97 real PNG decode/draw desktop/mobile and deferred admin soundtrack integration passed.");

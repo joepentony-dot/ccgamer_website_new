@@ -84,8 +84,18 @@ try{
   assert.equal(fixture.ordinary,0,"R67 must keep ordinary FIRE/SPIKE/SHOCK traps absent");
   assert.equal(fixture.active,true,"dedicated hazard must be ACTIVE before real keyboard entry");
 
-  await page.keyboard.press(fixture.key,{delay:24});
-  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  await page.evaluate(()=>{
+    try{document.activeElement?.blur?.()}catch(_){}
+    const canvas=document.getElementById("game");
+    if(canvas){canvas.tabIndex=-1;try{canvas.focus({preventScroll:true})}catch(_){}}
+    try{window.focus()}catch(_){}
+  });
+  await page.keyboard.down(fixture.key);
+  try{
+    await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  }finally{
+    await page.keyboard.up(fixture.key).catch(()=>{});
+  }
   await page.waitForFunction(before=>Number(p1.health)===before-1,fixture.before.health,{timeout:2500,polling:16});
   const first=await page.evaluate(({id,target})=>{
     const hazard=(host.hazardRooms||[]).find(h=>String(h.id)===id);
