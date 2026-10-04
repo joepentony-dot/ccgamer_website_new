@@ -25,6 +25,8 @@
   let tutorialLaunchPending=false;
   let queuedLaunch=null;
   let informationTourStep=-1;
+  let highlightedControlSignature="";
+  let highlightedInfoStep=-1;
 
   function ensureStyle(){
     if(document.getElementById("ccg-tutorial-guidance-style"))return;
@@ -100,42 +102,52 @@
   function rail(){return document.getElementById("ccg-tutorial-rail")}
 
   function clearHighlights(){
+    highlightedControlSignature="";
+    highlightedInfoStep=-1;
     document.querySelectorAll(".ccg-tutorial-control-highlight").forEach(el=>el.classList.remove("ccg-tutorial-control-highlight"));
     document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout;if(el.dataset.tutorialWasHidden==="true"){el.classList.add("hidden");delete el.dataset.tutorialWasHidden}});
   }
 
-  function highlightInformation(step){for(const [selector,label] of INFO_HIGHLIGHTS.get(step)||[]){const node=document.querySelector(selector);if(!node)continue;if(node.classList.contains("hidden")){node.dataset.tutorialWasHidden="true";node.classList.remove("hidden")}node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")}}
+  function highlightInformation(step){
+    const numericStep=Math.max(0,Number(step)||0),entries=INFO_HIGHLIGHTS.get(numericStep)||[];
+    const intact=highlightedInfoStep===numericStep&&entries.length>0&&entries.every(([selector,label])=>{const node=document.querySelector(selector);return Boolean(node?.classList.contains("ccg-tutorial-info-highlight")&&node.dataset.tutorialCallout===label)});
+    if(intact)return;
+    document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout;if(el.dataset.tutorialWasHidden==="true"){el.classList.add("hidden");delete el.dataset.tutorialWasHidden}});
+    highlightedInfoStep=numericStep;
+    for(const [selector,label] of entries){const node=document.querySelector(selector);if(!node)continue;if(node.classList.contains("hidden")){node.dataset.tutorialWasHidden="true";node.classList.remove("hidden")}node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")}
+  }
 
   function ensureInformationTour(){let tour=document.getElementById("ccg-tutorial-info-tour");if(tour)return tour;tour=document.createElement("section");tour.id="ccg-tutorial-info-tour";tour.className="hidden";tour.setAttribute("aria-live","polite");(document.querySelector(".ccg-game")||document.body).appendChild(tour);return tour}
   function hideInformationTour(){const tour=document.getElementById("ccg-tutorial-info-tour");if(tour)tour.classList.add("hidden");informationTourStep=-1}
   function completeInformationTour(step){const state=tutorialState();if(!state?.active||Number(state.step)!==step)return;hideInformationTour();clearHighlights();rail()?.querySelector("[data-next]")?.click?.()}
   function showInformationTour(step){const data=INFO_SHOWCASES.get(step);if(!data)return false;const tour=ensureInformationTour();informationTourStep=step;tour.innerHTML=`<div class="tour-head"><div><small>LIVE VISUAL TOUR · ${step+1}/10</small><h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.copy)}</p></div><div class="tour-head-actions"><button type="button" class="ccg-tutorial-primary" data-tour-continue>CONTINUE</button><button type="button" data-tour-skip>SKIP TUTORIAL</button></div></div><div class="tour-grid">${data.items.map(([symbol,title,copy])=>`<article class="tour-item"><span class="tour-symbol">${escapeHtml(symbol)}</span><span><b>${escapeHtml(title)}</b><span>${escapeHtml(copy)}</span></span></article>`).join("")}</div>`;tour.querySelector("[data-tour-continue]")?.addEventListener("click",()=>completeInformationTour(step));tour.querySelector("[data-tour-skip]")?.addEventListener("click",exitTutorial);tour.classList.remove("hidden");return true}
 
-  function desktopCommand(kind){
+  function desktopCommandNodes(kind){
     const labels={move:["WASD","MOVE"],fire:["SPACE","FIRE"],dash:["SHIFT","DASH"],inventory:["TAB","ITEMS"]}[kind];
-    if(!labels)return;
-    document.querySelectorAll(".command-grid span").forEach(span=>{
+    if(!labels)return[];
+    return [...document.querySelectorAll(".command-grid span")].filter(span=>{
       const text=String(span.textContent||"").toUpperCase();
-      if(labels.some(label=>text.includes(label)))span.classList.add("ccg-tutorial-control-highlight");
+      return labels.some(label=>text.includes(label));
     });
   }
 
   function highlightControls(kind){
-    clearHighlights();
     const state=tutorialState();
+    const signature=`${kind}|${kind==="inventory"&&state?.inventoryOpened&&!state?.inventoryClosed?"close":"base"}`;
+    const nodes=[];
     const touch=document.getElementById("v104-touch-controls");
     if(touch){
-      let nodes=[];
-      if(kind==="move")nodes=[...touch.querySelectorAll("[data-dir]")];
-      if(kind==="fire")nodes=[...touch.querySelectorAll('[data-action="fire"]')];
-      if(kind==="dash")nodes=[...touch.querySelectorAll('[data-action="dash"]')];
-      if(kind==="inventory")nodes=[...touch.querySelectorAll('[data-action="inventory"],[data-action="items"]')];
-      nodes.forEach(node=>node.classList.add("ccg-tutorial-control-highlight"));
+      if(kind==="move")nodes.push(...touch.querySelectorAll("[data-dir]"));
+      if(kind==="fire")nodes.push(...touch.querySelectorAll('[data-action="fire"]'));
+      if(kind==="dash")nodes.push(...touch.querySelectorAll('[data-action="dash"]'));
+      if(kind==="inventory")nodes.push(...touch.querySelectorAll('[data-action="inventory"],[data-action="items"]'));
     }
-    if(kind==="inventory"&&state?.inventoryOpened&&!state?.inventoryClosed){
-      document.querySelectorAll("#inventory-close,#inventory-close-top").forEach(node=>node.classList.add("ccg-tutorial-control-highlight"));
-    }
-    desktopCommand(kind);
+    if(kind==="inventory"&&state?.inventoryOpened&&!state?.inventoryClosed)nodes.push(...document.querySelectorAll("#inventory-close,#inventory-close-top"));
+    nodes.push(...desktopCommandNodes(kind));
+    if(highlightedControlSignature===signature&&nodes.length>0&&nodes.every(node=>node.classList.contains("ccg-tutorial-control-highlight")))return;
+    clearHighlights();
+    highlightedControlSignature=signature;
+    nodes.forEach(node=>node.classList.add("ccg-tutorial-control-highlight"));
   }
 
   function firstRunTutorialRequired(){
@@ -206,9 +218,9 @@
       },true);
       button.dataset.ccgTutorialLaunchBound="true";
     }
-    button.textContent="Tutorial";
-    button.title="Open the safe Training Archive tutorial";
-    button.classList.add("tutorial-primary-option");
+    if(button.textContent!=="Tutorial")button.textContent="Tutorial";
+    if(button.title!=="Open the safe Training Archive tutorial")button.title="Open the safe Training Archive tutorial";
+    if(!button.classList.contains("tutorial-primary-option"))button.classList.add("tutorial-primary-option");
     if(button.parentElement!==row)restorePosition(button);
     return true;
   }
