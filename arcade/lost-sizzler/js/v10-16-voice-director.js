@@ -62,7 +62,7 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,queued:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
   let voiceContext=null,voiceImpulse=null;
 
   const lines={
@@ -189,7 +189,13 @@
   function chooseVoice(){const voices=state.voices.length?state.voices:(window.speechSynthesis?.getVoices?.()||[]);return voices.find(v=>/^en-GB$/i.test(v.lang)&&/female|serena|sonia|libby|ryan|daniel|george/i.test(v.name))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||voices[0]||null}
   function clearActiveTimers(active=state.active){if(active?.timer){clearInterval(active.timer);active.timer=null}if(active?.watchdog){clearTimeout(active.watchdog);active.watchdog=null}}
   function releaseDungeonFx(active){if(!active?.dungeonFx)return;try{active.dungeonFx.disconnect()}catch(_){}active.dungeonFx=null}
-  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;return true}
+  function drainQueue(){
+    if(state.active||!state.enabled||!state.unlocked||!state.queue.length)return false;
+    const next=state.queue.shift();
+    queueMicrotask(()=>{try{if(!state.active&&next?.key)sayKey(next.key,{...(next.opts||{}),queue:false,cooldown:0})}catch(_){}});
+    return true
+  }
+  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;drainQueue();return true}
   function stopActive(reason="stopped"){
     const active=state.active;if(!active)return false;state.active=null;state.activePriority=-1;state.serial++;
     clearActiveTimers(active);
@@ -274,7 +280,7 @@
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000),now=performance.now();if(!coolReady(key,cooldown,now))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
-    if(state.active){const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
+    if(state.active){const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;if(!mayInterrupt||priority<=state.activePriority){if(opts.queue===true&&state.queue.length<4&&!state.queue.some(item=>item?.key===key)){state.queue.push({key,opts:{...opts,queue:false}});state.queued++;return true}state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
     const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(key):"",recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),hasRecorded=Boolean(recorded?.cues?.[recordedKey]);let started=false;
     if(src)started=playClip(src,priority,text,key);if(!started&&!forceTts)started=playSprite(key,priority,text);if(!started&&(!hasRecorded||forceTts))started=speakText(text,priority,key);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
@@ -376,6 +382,7 @@
     if(/EXIT UNSEALED/.test(s))return"exitOpen";
     if(/FURNITURE AMBUSH/.test(s))return"ambush";
     if(/ARENA LOCKDOWN/.test(s))return"arenaLockdown";
+    if(/MEMORY VAULT LOCKDOWN/.test(s))return"roomLockdown";
     if(/TIMED CHAMBER/.test(s)&&!/CLEARED/.test(s))return"timedChamber";
     if(/MEMORY PAD SEQUENCE/.test(s))return"memorySequenceStarted";
     if(/MEMORY SEQUENCE SOLVED/.test(s))return"sequenceComplete";
@@ -412,14 +419,16 @@
       try{const room=world?.rooms?.[W.roomAt(world,p1?.x,p1?.y)];if(room?.sanctuary)return"sanctuary"}catch(_){}
       return"";
     }
-    if(/LEVEL UP|UPGRADE AVAILABLE|^LEVEL\s+\d+\b/.test(s))return"levelUp";
+    if(/UPGRADE AVAILABLE/.test(s))return"upgradeAvailable";
+    if(/LEVEL UP|^LEVEL\s+\d+\b/.test(s))return"levelUp";
+    if(/NAMED ENEMY\s*[—-]/.test(s))return"namedEnemy";
     if(/GOLD MEDAL|ZZAP! 97%|RARE.*LOOT|ARTEFACT/.test(s))return"rareLoot";
     return"";
   }
 
   if(typeof showToast==="function"){
     const originalShowToast=showToast;
-    showToast=function showToastV116Voice(title,text,tone,duration,meta){const result=originalShowToast.apply(this,arguments);try{if(meta?.ccgDialogueVoiceHandled!==true){const key=classifyToast(title,text);if(key)sayKey(key)}}catch(_){}return result};
+    showToast=function showToastV116Voice(title,text,tone,duration,meta){const result=originalShowToast.apply(this,arguments);try{if(meta?.ccgDialogueVoiceHandled!==true){const key=classifyToast(title,text);if(key){sayKey(key);if(key==="arenaLockdown")sayKey("surviveAmbush",{queue:true,cooldown:0});else if(key==="memorySequenceStarted")sayKey("watchSequence",{queue:true,cooldown:0})}}}catch(_){}return result};
   }
   if(typeof hurtPlayer==="function"){
     const originalHurtPlayer=hurtPlayer;
