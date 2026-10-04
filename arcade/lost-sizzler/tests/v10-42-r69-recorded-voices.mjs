@@ -45,6 +45,7 @@ assert.match(stage8,/voiceKey:"npc\.sanctuary\.keeper"/,"sanctuary greeting must
 assert.match(play,/const paidBronzeKey=Boolean\(chest\.locked&&!roomKeyPaid\);if\(chest\.locked&&!roomKeyPaid\)p\.bronzeKeys--;if\(paidBronzeKey\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("chestUnlocked"/,"a standalone locked chest must announce unlock only after the canonical bronze-key debit succeeds");
 assert.match(play,/dedicatedHazard[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("trapsNearby"/,"dedicated hazards must issue the recorded proximity warning");
 assert.match(runtime,/e\.exitWarden[\s\S]*sigilWardenDefeated[\s\S]*e\.guardian[\s\S]*guardianDefeated/,"guardian defeat recordings must be tied to actual enemy death ownership");
+assert.match(runtime,/target!==host\.stalker[\s\S]*deathStalkerBanished[\s\S]*queue:true/,"permanent Death Stalker banishment must use the supplied banishment confirmation without mislabelling Count Loadula");
 assert.match(sanctuary,/sayDialogue\?\.\("npc\.sanctuary\.keeper","Hello, big boy\."/,"walking onto a sanctuary dancer must play the supplied greeting directly");
 assert.match(sanctuary,/ccgDialogueVoiceHandled:true/,"sanctuary dancer greeting must suppress duplicate generic speech when the recording starts");
 assert.match(sanctuaryHardening,/say\?\.\("adventurerHelp"/,"lost adventurer recruitment must use the supplied rescue plea");
@@ -55,6 +56,12 @@ assert.match(voice,/sayKey\("hazardPain"/,"actual hazard damage must be able to 
 assert.match(voice,/ccg:shop-firearm-upgrade/,"voice director must subscribe to successful shop firearm upgrades");
 assert.match(voice,/sayKey\("weaponUpgraded"/,"successful firearm upgrades must trigger the supplied upgrade recording");
 assert.match(voice,/FURNITURE AMBUSH[\s\S]*return"ambush"/,"furniture ambushes must use the supplied ambush recording");
+assert.match(voice,/opts\.queue===true[\s\S]*state\.queue\.push/,"selected recorded follow-up lines must queue instead of being dropped while another cue is active");
+assert.match(voice,/arenaLockdown[\s\S]*surviveAmbush[\s\S]*queue:true/,"arena lockdown must retain the supplied survive-the-ambush follow-up");
+assert.match(voice,/memorySequenceStarted[\s\S]*watchSequence[\s\S]*queue:true/,"memory sequence introduction must retain the supplied watch-the-sequence follow-up");
+assert.match(voice,/MEMORY VAULT LOCKDOWN[\s\S]*roomLockdown/,"memory-vault sealing must use the supplied room-lockdown recording");
+assert.match(voice,/UPGRADE AVAILABLE[\s\S]*upgradeAvailable/,"upgrade-available feedback must use its dedicated supplied recording rather than the generic level-up line");
+assert.match(voice,/NAMED ENEMY\\s\*\[—-\][\s\S]*namedEnemy/,"named-enemy introduction must use the supplied named-enemy warning");
 assert.match(stage8,/merchantVoiceVisits/,"merchant dialogue must track contextual voice visits");
 assert.match(stage8,/hiddenPartial[\s\S]*hiddenReady/,"hidden merchant speech must distinguish partial and trade-ready artefact states");
 assert.match(stage8,/entranceRepeat/,"quartermaster repeat interactions must use a supplied repeat recording");
