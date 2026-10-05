@@ -33,6 +33,7 @@
   let fadeTimer=null;
   let retryTimer=null;
   let fallbackActive=false;
+  let pendingGestureState="";
   const stateSlots=new Map();
   const lastByState=new Map();
   const failures=new Map();
@@ -63,23 +64,23 @@
     }catch(_){return false}
   }
 
-  function categorySources(state){
+  function customSources(state){
     const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{};
     const admin=window.CCG_ADMIN_AUDIO||{};
     const legacy=LEGACY_ADMIN_KEYS[state];
-    const custom=unique([
+    return unique([
       ...asList(override.playlists?.[state]),
       ...asList(override[legacy]),
       ...asList(admin.playlists?.[state]),
       ...asList(admin[legacy])
     ]);
-    if(custom.length)return custom;
-    if(adminAudioPending())return [];
-    return unique([
-      ...asList(assets.music?.playlists?.[state]),
-      ...asList(assets.music?.[state])
-    ]);
   }
+
+  function categorySources(state){
+    return customSources(state);
+  }
+
+  const customSoundtrackOwned=state=>customSources(state).length>0;
 
   function desiredState(){return stalkerNear?"stalker":roomMood}
 
@@ -121,9 +122,8 @@
   }
 
   function startFallback(){
-    if(fallbackActive||!enabled||!started)return;
-    fallbackActive=true;
-    try{original.startMusic?.()}catch(_){}
+    fallbackActive=false;
+    return false;
   }
 
   function stopFallback(){
@@ -139,8 +139,7 @@
   function scheduleRetry(state){
     clearRetry();
     if(!enabled||!started)return;
-    if(adminAudioPending())stopFallback();
-    else startFallback();
+    stopFallback();
     retryTimer=setTimeout(()=>{
       retryTimer=null;
       if(!enabled||!started||desiredState()!==state)return;
@@ -272,7 +271,8 @@
     if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
       current.advancing=false;
       if(current.audio.paused){
-        try{Promise.resolve(current.audio.play()).then(()=>{clearFailure(current.url);stopFallback()}).catch(()=>{recordFailure(current.url);scheduleRetry(state)})}catch(_){recordFailure(current.url);scheduleRetry(state)}
+        if(customSoundtrackOwned(state))pendingGestureState=state;
+        try{Promise.resolve(current.audio.play()).then(()=>{pendingGestureState="";clearFailure(current.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)}
       }
       current.audio.volume=targetVolume(state);
       return;
@@ -290,7 +290,8 @@
     if(next===previous){
       next.advancing=false;
       if(next.audio.paused){
-        try{Promise.resolve(next.audio.play()).then(()=>{clearFailure(next.url);stopFallback()}).catch(()=>{recordFailure(next.url);scheduleRetry(state)})}catch(_){recordFailure(next.url);scheduleRetry(state)}
+        if(customSoundtrackOwned(state))pendingGestureState=state;
+        try{Promise.resolve(next.audio.play()).then(()=>{pendingGestureState="";clearFailure(next.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)}
       }
       next.audio.volume=targetVolume(state);
       return;
@@ -302,18 +303,22 @@
 
     finishPrevious(previous,next);
     stopFallback();
+    if(customSoundtrackOwned(state))pendingGestureState=state;
     try{
       Promise.resolve(next.audio.play()).then(()=>{
+        pendingGestureState="";
         clearFailure(next.url);
         fadeBetween(previous,next);
       }).catch(()=>{
         if(current!==next)return;
+        pendingGestureState=customSoundtrackOwned(state)?state:"";
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
       });
     }catch(_){
       if(current===next){
+        pendingGestureState=customSoundtrackOwned(state)?state:"";
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
@@ -346,6 +351,7 @@
     for(const slot of slots)destroySlot(slot);
     stateSlots.clear();
     failures.clear();
+    pendingGestureState="";
     if(fallbackActive){fallbackActive=false;try{original.stopMusic?.()}catch(_){}}
     else{try{original.stopMusic?.()}catch(_){}}
     if(releaseOwnership)musicBus.release("dungeon");
@@ -378,8 +384,24 @@
     updateVolumes();
   }
 
+  function retryUploadedMusicOnGesture(){
+    if(!enabled||!started)return false;
+    const state=desiredState();
+    if(!pendingGestureState&&!customSoundtrackOwned(state))return false;
+    failures.clear();
+    clearRetry();
+    pendingGestureState="";
+    stopFallback();
+    transition(true,false);
+    return true;
+  }
+
+  window.addEventListener("pointerdown",retryUploadedMusicOnGesture,{capture:true});
+  window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true});
+  window.addEventListener("keydown",retryUploadedMusicOnGesture,{capture:true});
+
   function toggle(){
-    try{enabled=original.toggle?Boolean(original.toggle()):!enabled}catch(_){enabled=!enabled}
+    enabled=!enabled;
     try{original.stopMusic?.()}catch(_){}
     fallbackActive=false;
     if(enabled){
@@ -414,8 +436,8 @@
     setStalkerNear,
     setStalkerSight,
     setDanger:()=>{},
-    sfx:(name,...args)=>name==="room"?undefined:original.sfx?.(name,...args),
-    windWhistle
+    sfx:(name,...args)=>!enabled||name==="room"?undefined:original.sfx?.(name,...args),
+    windWhistle:(...args)=>enabled?windWhistle(...args):undefined
   });
   window.CCGSound=base;
 
@@ -427,6 +449,8 @@
       enabled,
       started,
       fallbackActive,
+      pendingGestureState,
+      customSoundtrackOwned:customSoundtrackOwned(desiredState()),
       adminAudioReady:window.CCG_ADMIN_AUDIO_READY===true,
       adminAudioPending:adminAudioPending(),
       failures:Object.fromEntries([...failures].map(([url,data])=>[url,{count:data.count,retryInMs:Math.max(0,data.retryAt-Date.now())}])),
@@ -443,6 +467,7 @@
       }))
     }),
     getPlaylist:state=>categorySources(normaliseState(state)),
+    retryUploadedMusicOnGesture,
     isMeteredRemoteTrack,
     crossfadeMs:0,
     exclusive:true
