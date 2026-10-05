@@ -1,0 +1,91 @@
+name: CCG Retro.Directory UK Events
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/collections/retro-events.html"
+      - "resources/css/retro-events.css"
+      - "js/retro-directory-events.js"
+      - "scripts/sync-retro-directory-events.mjs"
+      - "tests/retro-directory-events-sync.test.mjs"
+      - "data/retro-directory-events.json"
+      - "feeds/uk-retro-events.xml"
+      - ".github/workflows/retro-directory-events-sync.yml"
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: retro-directory-events-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/retro-directory-events.js
+          node --check scripts/sync-retro-directory-events.mjs
+
+      - name: Run Retro.Directory feed tests
+        run: node --test tests/retro-directory-events-sync.test.mjs
+
+      - name: Check whitespace
+        run: git diff --check
+
+  sync:
+    if: ${{ github.event_name != 'pull_request' && vars.RETRO_DIRECTORY_FEED_URL != '' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      RETRO_DIRECTORY_FEED_URL: ${{ vars.RETRO_DIRECTORY_FEED_URL }}
+      RETRO_DIRECTORY_FEED_AUTH: ${{ secrets.RETRO_DIRECTORY_FEED_AUTH }}
+      RETRO_DIRECTORY_ASSUME_UK: ${{ vars.RETRO_DIRECTORY_ASSUME_UK }}
+      RETRO_DIRECTORY_ALLOW_EMPTY: ${{ vars.RETRO_DIRECTORY_ALLOW_EMPTY }}
+      DISCORD_RETRO_EVENTS_WEBHOOK: ${{ secrets.DISCORD_RETRO_EVENTS_WEBHOOK }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Refresh authorised UK events feed
+        run: node scripts/sync-retro-directory-events.mjs
+
+      - name: Commit changed generated event data
+        shell: bash
+        run: |
+          git add data/retro-directory-events.json feeds/uk-retro-events.xml
+
+          if git diff --cached --quiet; then
+            echo "No event changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(retro-events): refresh upcoming UK events"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
