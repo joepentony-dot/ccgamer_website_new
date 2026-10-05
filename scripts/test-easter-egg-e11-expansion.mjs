@@ -116,10 +116,16 @@ async function interact(page, code) {
     if (code === "workbench") {
         await page.locator('.ccg-e11--workbench [data-wb-open="games"]').click();
         await page.locator(".ccg-e11--workbench [data-wb-window]").waitFor({ state: "visible" });
+        await page.locator('.ccg-e11--workbench [data-wb-close]').click();
+        await page.locator(".ccg-e11--workbench [data-wb-window]").waitFor({ state: "hidden" });
+
         await page.locator('.ccg-e11--workbench [data-wb-open="prefs"]').click();
         await page.locator('.ccg-e11--workbench [data-wb-palette="dark"]').click();
         const palette = await page.locator(".ccg-e11--workbench").getAttribute("data-wb-palette");
         if (palette !== "dark") throw new Error("Workbench palette preference did not apply");
+        await page.locator('.ccg-e11--workbench [data-wb-close]').click();
+        await page.locator(".ccg-e11--workbench [data-wb-window]").waitFor({ state: "hidden" });
+
         await page.locator('.ccg-e11--workbench [data-wb-open="tools"]').click();
         await page.locator('.ccg-e11--workbench [data-wb-tool="sid"]').click();
         await page.waitForSelector(".ccg-e11--sid", { timeout: 5000 });
