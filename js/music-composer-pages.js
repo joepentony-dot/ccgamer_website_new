@@ -511,6 +511,61 @@ function composerSortLetter(name) {
     draw();
   }
 
+  function bindStaticHubAccordion() {
+    const searchInput = document.getElementById("composer-discovery-search");
+    const accordion = document.getElementById("composer-discovery-accordion");
+    if (!searchInput || !accordion) return;
+
+    const groups = Array.from(accordion.querySelectorAll(".composer-accordion__group"));
+    const openSet = new Set(
+      groups
+        .filter((group) => group.classList.contains("is-open"))
+        .map((group) => group.getAttribute("data-letter") || "")
+        .filter(Boolean)
+    );
+
+    const applyState = () => {
+      const query = normaliseName(searchInput.value);
+      const hasQuery = Boolean(query);
+
+      groups.forEach((group) => {
+        const letter = group.getAttribute("data-letter") || "";
+        const button = group.querySelector(".composer-accordion__header");
+        const body = group.querySelector(".composer-accordion__body");
+        const chips = Array.from(group.querySelectorAll(".ccg-composer-chip"));
+        let visible = 0;
+
+        chips.forEach((chip) => {
+          const match = !hasQuery || normaliseName(chip.textContent).includes(query);
+          chip.hidden = !match;
+          if (match) visible += 1;
+        });
+
+        group.hidden = hasQuery && visible === 0;
+        if (group.hidden || !body) return;
+
+        const expanded = hasQuery || openSet.has(letter);
+        group.classList.toggle("is-open", expanded);
+        body.hidden = !expanded;
+        button?.setAttribute("aria-expanded", expanded ? "true" : "false");
+      });
+    };
+
+    accordion.querySelectorAll(".composer-accordion__header").forEach((button) => {
+      button.addEventListener("click", () => {
+        const group = button.closest(".composer-accordion__group");
+        if (!group) return;
+        const letter = group.getAttribute("data-letter") || "";
+        if (openSet.has(letter)) openSet.delete(letter);
+        else openSet.add(letter);
+        applyState();
+      });
+    });
+
+    searchInput.addEventListener("input", applyState);
+    applyState();
+  }
+
   async function renderHubCards(composers, stats) {
     const containerFeatured = document.querySelector(".composer-grid-featured");
     if (!containerFeatured) {
@@ -1050,6 +1105,17 @@ function composerSortLetter(name) {
     initMusicScrollPerfPause();
     initBackToTop();
     ensureBackButton();
+
+    const isStaticHub = Boolean(
+      document.querySelector(".composer-grid-featured[data-static-composer-fallback='true']")
+      && document.getElementById("composer-discovery-accordion")?.hasAttribute("data-static-composer-fallback")
+    );
+
+    if (isStaticHub) {
+      bindStaticHubAccordion();
+      window.CCG_MUSIC_PAGE_READY = true;
+      return;
+    }
 
     try {
       const games = await loadGames();
