@@ -64,7 +64,19 @@
   const MAX_RECORDED_CLIP_MS=10000;
   const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
-  const primedVoiceSources=new Set(),primingVoiceSources=new Set();
+  const primedVoiceSources=new Set(),primingVoiceSources=new Set(),spriteAudioBySource=new Map();
+
+  function spriteAudioForSource(src){
+    const source=String(src||"").trim();if(!source)return null;
+    let audio=spriteAudioBySource.get(source);
+    if(!audio){
+      audio=new Audio(source);
+      audio.preload="auto";
+      spriteAudioBySource.set(source,audio);
+      try{audio.load()}catch(_){}
+    }
+    return audio;
+  }
 
   const lines={
     welcome:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:40,cooldown:10000},
@@ -259,7 +271,9 @@
     const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],legacyGreeting=approvedLegacyGreeting(key),recordedAvailable=Boolean(recordedCue),approvedLegacy=Boolean(legacyGreeting),pack=recordedAvailable?recorded:approvedLegacy?BUNDLED_SPRITE:null,cue=recordedCue||legacyGreeting;
     if(!cue||!pack?.src)return false;
     try{
-      const audio=new Audio(pack.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
+      const audio=spriteAudioForSource(pack.src);if(!audio)return false;
+      try{audio.onended=null;audio.onerror=null;audio.muted=false}catch(_){}
+      const active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
       const fallback=(retryOnGesture=false)=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
@@ -479,13 +493,12 @@
     beginRun=function beginRunV116Voice(opts={}){
       const result=originalBeginRun.apply(this,arguments);
       stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");const activeRun=run;
-      setTimeout(()=>{
-        try{
-          if(run!==activeRun||mode!=="playing")return;
-          sayKey("welcome",{cooldown:0});
-          if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
-        }catch(_){}
-      },450);
+      try{
+        if(run===activeRun&&mode==="playing")sayKey("welcome",{cooldown:0,priority:90,interrupt:true});
+      }catch(_){}
+      if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)setTimeout(()=>{
+        try{if(run===activeRun&&mode==="playing")sayKey("weeklyGhost")}catch(_){}
+      },900);
       return result;
     };
   }
@@ -517,6 +530,10 @@
     update=function updateV116Voice(dt){const result=originalUpdate.apply(this,arguments);try{voiceWatch(dt)}catch(_){}return result};
   }
 
+  try{
+    spriteAudioForSource(window.CCG_RECORDED_VOICE_SPRITE?.src);
+    spriteAudioForSource(BUNDLED_SPRITE?.src);
+  }catch(_){}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountButton,{once:true});else mountButton();
   window.CCGLostSizzlerVoice={say:sayKey,sayDialogue,stop:stopActive,classifyToast,setEnabled,primeRecordedVoices,retryPendingGesture,get enabled(){return state.enabled},get state(){return state},lines,bundledSprite:BUNDLED_SPRITE};
 })();
