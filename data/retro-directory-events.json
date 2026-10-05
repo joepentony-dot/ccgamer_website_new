@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "status": "awaiting_authorised_feed",
+  "source": {
+    "name": "retro.directory",
+    "url": "https://retro.directory/browse/events"
+  },
+  "updatedAt": null,
+  "events": []
+}
