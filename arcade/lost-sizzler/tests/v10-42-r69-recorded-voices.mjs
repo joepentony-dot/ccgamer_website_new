@@ -60,6 +60,7 @@ const sanctuaryEscort=read("js/v10-41-sanctuary-hardening.js");
 assert.match(map,/ccg-recorded-voices-r69\.ogg/,"R69 must target the owner-recorded browser voice sprite");
 assert.match(map,/"hello-big-boy":\{"start":/,"sanctuary greeting must have an explicit sprite cue");
 assert.match(map,/"npc\.sanctuary\.keeper":"hello-big-boy"/,"sanctuary keeper must resolve to the recorded greeting");
+assert.match(map,/"npc\.alchemist\.ready":"i-can-trade-those-artefacts-for-a-banishment-flask"/,"trade-ready Alchemist dialogue must resolve to the supplied Flask recording");
 assert.match(map,/"bronzeKeyRequired":"you-need-a-bronze-key"/,"bronze lock feedback must resolve to the supplied full recorded cue");
 assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locked chest feedback must resolve to the recorded cue");
 assert.match(loader,/v10-42-r69-recorded-voices\.js[\s\S]*v10-16-voice-director\.js/,"recorded voice metadata must load before the single voice director");
@@ -73,6 +74,9 @@ assert.match(voice,/\(recordedAvailable\|\|approvedLegacy\)&&retryOnGesture[\s\S
 assert.match(voice,/p\?\.then[\s\S]*fallback\(true\)/,"recorded sprite play-promise rejection must enter the gesture retry path");
 assert.match(core,/ccg:run-started/,"canonical run start must publish an authoritative audio-start event");
 assert.match(voice,/window\.addEventListener\("ccg:run-started",onAuthoritativeRunStarted\)/,"voice playback must bind Welcome to the authoritative run-start event rather than wrapper order");
+assert.match(voice,/window\.addEventListener\?\.\("ccg:toast-shown",onAuthoritativeToast\)/,"toast-driven recordings must bind to the authoritative toast event rather than wrapper order");
+assert.match(voice,/window\.addEventListener\?\.\("ccg:level-up",onAuthoritativeLevelUp\)/,"Level Up must bind to the authoritative XP level event");
+assert.doesNotMatch(voice,/showToast=function showToastV116Voice/,"voice playback must not depend on replacing the canonical showToast function");
 assert.match(voice,/if\(state\.pendingGesture\)retryPendingGesture\(\)/,"a retained recorded cue must retry synchronously inside the next real mobile user gesture");
 assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)/,"mobile retry must not be deferred outside the user-activation handler");
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
@@ -97,6 +101,8 @@ assert.match(sanctuary,/ccgDialogueVoiceHandled:true/,"sanctuary dancer greeting
 assert.match(sanctuaryHardening,/say\?\.\("adventurerHelp"/,"lost adventurer recruitment must use the supplied rescue plea");
 assert.match(sanctuaryHardening,/say\?\.\("adventurerSafe"/,"lost adventurer rescue must use the supplied safe-arrival recording");
 assert.match(core,/function descendFloor\(\)[\s\S]*CCGLostSizzlerVoice\?\.say\?\.\("descending"/,"descending to the next floor must use the supplied descent recording");
+assert.match(core,/ccg:toast-shown/,"canonical toast display must publish the authoritative voice-classification event");
+assert.match(core,/ccg:level-up/,"canonical XP award path must publish the authoritative Level Up event");
 assert.match(voice,/ccg:hazard-damage/,"voice director must subscribe to authoritative hazard damage");
 assert.match(voice,/sayKey\("hazardPain"/,"actual hazard damage must be able to trigger the supplied post-hit voice");
 assert.match(voice,/ccg:shop-firearm-upgrade/,"voice director must subscribe to successful shop firearm upgrades");
