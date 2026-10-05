@@ -34,6 +34,7 @@ assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n   
 assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
 assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
 assert(patch.includes('function beginGestureTrackedPlay(state)')&&patch.includes('pendingGestureAttempt===attempt')&&patch.includes('attempt!==playbackAttemptSerial'),'Stale music promises must be unable to clear or overwrite a newer mobile-recovery attempt.');
+assert(patch.includes('if(current!==next||playAttempt!==playbackAttemptSerial)return;'),'A stale rejected music attempt must not tear down a newer gesture-recovered track.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
