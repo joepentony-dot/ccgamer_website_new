@@ -33,6 +33,7 @@ assert(patch.includes('function customSources(state)'),'Playlist owner must isol
 assert(patch.includes('function categorySources(state){\n    return customSources(state);'),'Only uploaded production playlists may own live music; bundled placeholder tracks must never be selected.');
 assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n    return false;'),'Legacy/generated music fallback must be disabled outright.');
 assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
+assert(patch.includes('function transition(force=false,advance=false,gestureRetry=false){\n    if(!enabled||!started)return;\n    const state=desiredState();\n    stopFallback();'),'Every room-state transition, including red danger rooms, must stop any legacy/base music before uploaded-track selection.');
 assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
