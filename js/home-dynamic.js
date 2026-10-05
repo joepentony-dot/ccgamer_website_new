@@ -891,21 +891,18 @@ function buildVideoCard(game, systemLabel, index) {
 
     const playButton = card.querySelector('[data-ccg-video-play]');
     const iframe = card.querySelector('[data-ccg-video-iframe]');
-    const overlay = card.querySelector('.home-video-card__overlay');
-    const isMobileDevice = Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches);
 
-    if (hasVideo && iframe && isMobileDevice) {
-        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&playsinline=1&fs=1&enablejsapi=1`;
-        iframe.dataset.loaded = "true";
-        if (overlay) {
-            overlay.style.pointerEvents = "none";
-        }
-    }
-
+    /*
+     * Keep YouTube as a true click-to-load facade on every device.
+     * Assigning iframe.src during mobile startup downloads the full YouTube
+     * player before the visitor asks for it and was one of Home's largest
+     * mobile Lighthouse costs.
+     */
     if (hasVideo && playButton && iframe) {
+        iframe.dataset.videoId = videoId;
         playButton.onclick = () => {
-            if (!iframe.dataset.loaded) {
-                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&enablejsapi=1`;
+            if (iframe.dataset.loaded !== "true") {
+                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&playsinline=1&fs=1&autoplay=1&enablejsapi=1`;
                 iframe.dataset.loaded = "true";
             }
             card.classList.add("is-playing");
