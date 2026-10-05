@@ -28,6 +28,10 @@ assert(patch.includes('stalkerNear?"stalker":roomMood'),'Count Loadula must reta
 assert(owner.includes('lost-sizzler-playlist-audio.js'),'Playlist patch is not loaded by the game.');
 assert(owner.includes('admin-audio-overrides.js'),'Admin soundtrack hydration must be part of the ordered enhancement queue.');
 assert(owner.includes('const criticalFiles=["admin-audio-overrides.js","lost-sizzler-playlist-audio.js","v10-42-r69-recorded-voices.js","v10-16-voice-director.js"'),'Advanced music and recorded voice owners must be release-critical.');
+assert(owner.includes('async function waitForBaseSoundOwner()'),'Enhancement loading must wait for the base CCGSound owner before loading the playlist owner.');
+assert(owner.includes('if(!window.CCGLostSizzlerPlaylistAudio)criticalFailures.push("lost-sizzler-playlist-audio.js loaded without installing its music owner")'),'Release qualification must fail if the playlist script loads without installing its runtime owner.');
+assert(patch.includes('const RUN_LAUNCH_IDS=new Set(["solo-btn","continue-save-btn","daily-btn","split-btn"])'),'Uploaded music must recognise real run-launch controls as trusted playback gestures.');
+assert(patch.includes('if(launch&&!started)'),'Run-launch gestures must be able to prime the playlist before async Solo startup completes.');
 assert(patch.includes('function adminAudioPending()'),'Playlist owner must observe production admin soundtrack hydration state.');
 assert(patch.includes('function customSources(state)'),'Playlist owner must isolate uploaded production soundtrack sources.');
 assert(patch.includes('function packagedSources(state)'),'Packaged authored soundtrack sources must remain available if remote hydration is unavailable.');
@@ -156,6 +160,11 @@ const sandbox={
 };
 vm.runInNewContext(patch,sandbox,{filename:'lost-sizzler-playlist-audio.js'});
 const playingCount=()=>FakeAudio.instances.filter(audio=>!audio.paused).length;
+
+fakeWindow.dispatchEvent({type:"pointerdown",target:{closest:selector=>selector==="button"?{id:"solo-btn"}:null}});
+await Promise.resolve();
+assert(FakeAudio.instances.length===1,'The initial Solo launch gesture must construct uploaded Exploration music before async run startup.');
+assert(playingCount()===1,'The initial Solo launch gesture must begin uploaded Exploration music.');
 
 await fakeWindow.CCGSound.start();
 await Promise.resolve();
