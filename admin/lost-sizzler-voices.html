@@ -48,11 +48,11 @@
       <article class="arcade-panel">
         <h2>How Overrides Work</h2>
         <ul class="arcade-help">
-          <li><strong>Custom first:</strong> an enabled recording is used instead of speech synthesis for that cue.</li>
+          <li><strong>Recorded audio only:</strong> an enabled custom recording takes priority over the approved in-game recorded cue.</li>
           <li><strong>Several takes:</strong> upload several versions of “Ow!”, “Low health”, etc. and the game varies them automatically.</li>
-          <li><strong>Use Default:</strong> disables every custom recording for one cue without deleting the files. The normal British-English browser voice then takes over again.</li>
-          <li><strong>Test:</strong> previews an enabled custom clip; if none is enabled, it speaks the built-in fallback line.</li>
-          <li><strong>Safe fallback:</strong> a missing or failed recording never stops the game. The spoken fallback remains available.</li>
+          <li><strong>Use Game Recording:</strong> disables every custom recording for one cue without deleting the files. The approved in-game recording is used when available.</li>
+          <li><strong>Test Custom Cue:</strong> previews an enabled custom clip. If none is enabled, this page does not synthesize a replacement voice.</li>
+          <li><strong>No fallback speech:</strong> if no approved recording exists or playback fails, that cue remains silent rather than using browser TTS or a generic legacy voice.</li>
         </ul>
         <div class="arcade-callout"><strong>Recording tip:</strong> short, tightly trimmed clips work best. Avoid long silence at the beginning or end.</div>
       </article>

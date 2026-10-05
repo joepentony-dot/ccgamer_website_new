@@ -27,8 +27,13 @@ assert(patch.includes('stalkerNear?"stalker":roomMood'),'Count Loadula must reta
 assert(owner.includes('lost-sizzler-playlist-audio.js'),'Playlist patch is not loaded by the game.');
 assert(owner.includes('admin-audio-overrides.js'),'Admin soundtrack hydration must be part of the ordered enhancement queue.');
 assert(owner.includes('const criticalFiles=["admin-audio-overrides.js","lost-sizzler-playlist-audio.js","v10-42-r69-recorded-voices.js","v10-16-voice-director.js"'),'Advanced music and recorded voice owners must be release-critical.');
-assert(patch.includes('function adminAudioPending()'),'Playlist owner must wait for production admin soundtrack hydration before bundled fallback.');
-assert(patch.includes('if(adminAudioPending())return []'),'Bundled placeholder music must not start while uploaded production music is still resolving.');
+assert(patch.includes('function adminAudioPending()'),'Playlist owner must observe production admin soundtrack hydration state.');
+assert(patch.includes('function customSources(state)'),'Playlist owner must isolate uploaded production soundtrack sources.');
+assert(patch.includes('function categorySources(state){\n    return customSources(state);'),'Only uploaded production playlists may own live music; bundled placeholder tracks must never be selected.');
+assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n    return false;'),'Legacy/generated music fallback must be disabled outright.');
+assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
+assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
+assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
 assert(admin.includes('lostSizzlerAutoPlaylist'),'Batch auto-categorisation slot is missing.');
@@ -42,7 +47,7 @@ assert(patch.includes('Object.assign(base,{'),'Playlist patch must mutate the ca
 assert(patch.includes('window.CCGSound=base'),'Playlist patch must retain the original CCGSound object identity.');
 assert(!patch.includes('window.CCGSound={\n    ...base'),'Playlist patch must not replace the cached CCGSound object.');
 assert(patch.includes('original.stopMusic?.()'),'Playlist wrapper must call the captured base stop method without recursion.');
-assert(patch.includes('original.toggle'),'Playlist wrapper must call the captured base toggle method without recursion.');
+assert(!patch.includes('original.toggle?Boolean(original.toggle())'),'Sound toggling must not call the legacy toggle because that can start legacy music.');
 
 assert(owner.includes('v10-7-continuous-exploration.js'),'Continuous exploration guard is not loaded by the game.');
 assert(continuity.includes('if(room.sanctuary)return "sanctuary"'),'Sanctuary rooms must retain their dedicated music state.');
@@ -66,6 +71,7 @@ assert(patch.includes('stopImmediatePropagation'),'Admin music readiness must no
 
 class FakeAudio{
   static instances=[];
+  static rejectOnce=new Set();
   constructor(url){
     this.url=url;
     this.paused=true;
@@ -75,7 +81,10 @@ class FakeAudio{
     this.listeners={};
     FakeAudio.instances.push(this);
   }
-  play(){this.paused=false;return Promise.resolve()}
+  play(){
+    if(FakeAudio.rejectOnce.has(this.url)){FakeAudio.rejectOnce.delete(this.url);this.paused=true;return Promise.reject(new Error("mobile autoplay rejection"))}
+    this.paused=false;return Promise.resolve()
+  }
   pause(){this.paused=true}
   removeAttribute(){}
   load(){}
@@ -83,10 +92,10 @@ class FakeAudio{
   emit(name){for(const fn of this.listeners[name]||[])fn()}
 }
 const sfxCalls=[];
-let legacyDangerCalls=0;
+let legacyDangerCalls=0,legacyFallbackCalls=0;
 const baseSound={
   start:async()=>true,
-  startMusic:()=>{},
+  startMusic:()=>{legacyFallbackCalls++},
   stopMusic:()=>{},
   toggle:()=>true,
   isEnabled:()=>true,
@@ -107,7 +116,13 @@ const fakeWindow={
       stalker:['loadula-a.mp3','loadula-b.mp3']
     }
   }},
-  CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}}}},
+  CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{
+    normal:['explore-a.mp3','explore-b.mp3'],
+    danger:['danger-a.mp3','danger-b.mp3'],
+    sanctuary:['safe-a.mp3','safe-b.mp3'],
+    named:['named-a.mp3','named-b.mp3'],
+    stalker:['loadula-a.mp3','loadula-b.mp3']
+  }}}},
   CCG_ADMIN_AUDIO:{},
   addEventListener(name,fn){
     if(!eventListeners.has(name))eventListeners.set(name,[]);
@@ -127,7 +142,7 @@ const sandbox={
   performance:{now:()=>0},
   setInterval:()=>1,
   clearInterval:()=>{},
-  setTimeout:fn=>{fn();return 1},
+  setTimeout:()=>1,
   clearTimeout:()=>{},
   console
 };
@@ -234,14 +249,30 @@ fakeWindow.CCG_ASSET_OVERRIDES.audio.music.playlists.danger=[uploadedDanger];
 const ready=()=>fakeWindow.dispatchEvent({type:"ccg:admin-audio-ready",stopImmediatePropagation(){this.__stopped=true}});
 ready();await Promise.resolve();
 const customNormal=FakeAudio.instances.at(-1);
-assert(customNormal.url===uploadedNormal,"Late admin readiness must immediately replace the bundled exploration track.");
-assert(oldNormal.paused&&playingCount()===1,"Replacing late music must stop the old track without overlap.");
+assert(customNormal.url===uploadedNormal,"A production playlist update must immediately replace the previous exploration track.");
+assert(oldNormal.paused&&playingCount()===1,"Replacing production music must stop the old track without overlap.");
 assert(customNormal.loop===true,"Uploaded Supabase tracks must retain local looping to avoid repeated downloads.");
 customNormal.currentTime=23.75;ready();await Promise.resolve();
 assert(FakeAudio.instances.length===beforeReady+1&&customNormal.currentTime===23.75,"Repeated readiness for unchanged uploaded sources must preserve Audio object and position.");
 fakeWindow.CCGSound.setRoomMood("danger");await Promise.resolve();
-assert(FakeAudio.instances.at(-1).url===uploadedDanger&&danger.paused&&playingCount()===1,"A parked bundled category must refresh lazily when uploaded sources arrive.");
+assert(FakeAudio.instances.at(-1).url===uploadedDanger&&danger.paused&&playingCount()===1,"A parked production category must refresh when its uploaded source changes.");
 fakeWindow.CCGSound.setRoomMood("normal");await Promise.resolve();
 assert(!customNormal.paused&&customNormal.currentTime===23.75&&playingCount()===1,"Uploaded exploration must resume from its saved time after combat.");
-console.log('Lost Sizzler multi-track playlist and late uploaded soundtrack contracts passed.');
+
+FakeAudio.rejectOnce.add(uploadedDanger);
+fakeWindow.CCGSound.setRoomMood("danger");
+await Promise.resolve();await Promise.resolve();
+let mobileState=fakeWindow.CCGLostSizzlerPlaylistAudio.getState();
+assert(mobileState.pendingGestureState==="danger","A mobile play rejection must retain the uploaded Danger state for gesture recovery.");
+assert(mobileState.fallbackActive===false,"A mobile play rejection must not start the legacy generated-music fallback when an uploaded playlist exists.");
+assert(legacyFallbackCalls===0,"The legacy generated music engine must remain unused while uploaded production music owns the requested state.");
+
+fakeWindow.dispatchEvent({type:"touchstart"});
+await Promise.resolve();await Promise.resolve();
+mobileState=fakeWindow.CCGLostSizzlerPlaylistAudio.getState();
+assert(mobileState.pendingGestureState==="","The next mobile touch must clear pending uploaded-music recovery.");
+assert(mobileState.fallbackActive===false,"Gesture recovery must keep the legacy fallback stopped.");
+assert(FakeAudio.instances.at(-1).url===uploadedDanger&&!FakeAudio.instances.at(-1).paused,"The next mobile touch must restart the uploaded Danger track rather than legacy music.");
+
+console.log('Lost Sizzler multi-track playlist, mobile recovery and late uploaded soundtrack contracts passed.');
 

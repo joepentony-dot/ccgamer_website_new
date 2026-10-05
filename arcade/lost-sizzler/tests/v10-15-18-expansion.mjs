@@ -46,7 +46,7 @@ assert.match(balance,/DOUBLE GOLD/,"double-gold mutation is enforced at pickup t
 assert.match(balance,/NO SHOPPING/,"no-shopping mutation blocks floor traders");
 assert.match(balance,/ELITE BOUNTY/,"elite-bounty mutation pays on elite kills");
 
-assert.match(voice,/SpeechSynthesisUtterance/,"voice director has browser speech fallback");
+assert.doesNotMatch(voice,/SpeechSynthesisUtterance|speechSynthesis\.speak/,"voice director must not contain browser TTS fallback");
 assert.match(voice,/function tutorialSilent\(\)/,"tutorial mode must silence all recorded and browser speech prompts");
 assert.match(voice,/cooldown:120000/,"the low-ammo voice cue must retain a long secondary cooldown");
 assert.match(voice,/hadGun&&before>0&&after===0/,"the ammunition warning must require a real gun to expend its final round");
@@ -63,9 +63,9 @@ assert.match(voice,/wet\.gain\.value=\.12/,"dungeon ambience must remain subtle 
 assert.match(voice,/hurt:\{text:"Ow!",priority:8,cooldown:30000\}/,"Ow must have the requested 30-second gap");
 assert.match(voice,/painPlayed=after<before\?sayKey\("hurt"\):false/,"damage handling must request Ow only after real health or armour loss");
 assert.match(voice,/deathsAfter>deathsBefore\)setTimeout\(\(\)=>sayKey\("playerDeath"\),painPlayed\?800:0\)/,"the death line must wait for a played Ow cue and remain non-layered");
-assert.match(voice,/if\(state\.active\)\{const importantOverride=.*mayInterrupt=/,"a busy voice channel must make an immediate skip-or-interrupt decision while allowing major calls to replace routine chatter");
+assert.match(voice,/if\(state\.active\)\{[\s\S]*?const importantOverride=.*mayInterrupt=[\s\S]*?hasApprovedRecording\(key\)[\s\S]*?stopActive\("interrupted"\)/,"a busy voice channel must make an immediate skip-or-interrupt decision while allowing recorded major calls to replace routine chatter without destroying playback for an unavailable replacement");
 assert.doesNotMatch(voice,/queue\.push|function pump\(/,"voice events must never build a playback backlog");
-assert.match(voice,/speechSynthesis\.cancel\(\)/,"browser speech must flush any hidden browser queue before playback");
+assert.doesNotMatch(voice,/speechSynthesis\.cancel\(\)|speechSynthesis\.speak|SpeechSynthesisUtterance/,"browser speech fallback must remain completely absent");
 assert.match(voice,/deathStalkerEncounterVisible\(\)/,"Death Stalker speech must require a live same-room encounter");
 assert.match(voice,/loadulaEncounterVisible\(\)/,"Count Loadula speech must require a live same-room encounter");
 assert.doesNotMatch(voiceExpansion,/hurtPlayer=function/,"the expansion layer must not add a second death or respawn speech path");

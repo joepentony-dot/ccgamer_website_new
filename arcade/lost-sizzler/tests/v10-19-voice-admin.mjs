@@ -26,12 +26,12 @@ assert.match(adminAudio,/target\.voice\[cue\]=urls/,"uploaded voice variants are
 assert.match(director,/lastAssetByKey:new Map\(\)/,"voice director tracks the last custom clip per cue");
 assert.match(director,/Array\.isArray\(value\)/,"voice director accepts multiple recordings per cue");
 assert.match(director,/list\.length>1\?list\.filter\(src=>src!==last\)/,"voice director avoids immediate repeats when variants exist");
-assert.match(director,/speakText\(fallbackText,priority,key\)/,"failed custom audio falls back to browser speech at the cue-specific volume");
+assert.doesNotMatch(director,/speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"failed custom audio must never fall back to browser speech");
 assert.match(voicePage,/id="voice-upload-form"/,"dedicated voice upload page is present");
 assert.match(voicePage,/Lost Sizzler Voice Pack/,"voice library UI is present");
 assert.match(voiceAdmin,/\['gildedElf','Gilded Elf Appears'/,"Gilded Elf voice cue is administered");
 assert.match(voiceAdmin,/\['bountyStart','Dungeon Bounty'/,"rare-event bounty start cue matches the live voice system");
-assert.match(voiceAdmin,/data-action="default"/,"admin can return a cue to the default browser voice");
+assert.match(voiceAdmin,/data-action="default"/,"admin can return a cue to the approved game recording/silence policy");
 assert.match(voiceAdmin,/data-action="test"/,"admin can test individual cues");
 assert.match(adminNav,/lost-sizzler-voices\.html/,"voice overrides are linked from the main admin navigation");
 assert.match(migration,/'voice'/,"database asset-group constraint permits voice assets");
