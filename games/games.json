@@ -22581,11 +22581,11 @@
       "sports"
     ],
     "collections": [],
-    "videoid": "OiDZ6m7VnRY",
+    "videoid": "iG8480D1MtM",
     "thumbnail": "resources/images/thumbnails/all/summer_games.jpg",
     "pdf": "https://drive.google.com/file/d/16GeHhKof2_BRHinZVq06HBNhVPDJgkV6/view?usp=drive_link",
     "disk": [],
-    "description": "Summer Games is a 1984 Commodore 64 sports classic from Epyx that recreates Olympic-style events through joystick-driven skill challenges and competitive multiplayer play.",
+    "description": "Summer Games is a 1984 Commodore 64 sports classic from Epyx featuring a selection of Olympic-style events built around timing, rhythm, accuracy and joystick control. Players can compete across multiple disciplines, chase records and take part in multiplayer competition, making it one of Epyx’s best-known early multi-event sports games on the C64.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -22608,7 +22608,9 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "download_status": "",
+    "lemon": []
   },
   {
     "system": "C64",
