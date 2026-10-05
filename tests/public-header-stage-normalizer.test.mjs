@@ -16,6 +16,8 @@ const {
   PUBLIC_HEADER_FIRST_PAINT_STYLES,
   AUTH_SNAPSHOT_KEY,
   isImmediateRedirectShell,
+  ensureEarlyMobileLiteBootstrap,
+  normalisePublicBrandLogo,
   normaliseHtml,
   processRoot,
   rootAbsoluteUrl,
@@ -190,6 +192,33 @@ test('instant redirect stubs stay lightweight and outside the visible navigation
   assert.equal(result.html, html);
 });
 
+test('staged public pages bootstrap mobile-lite before stylesheets without changing desktop markup', () => {
+  const html = oldHeaderPage();
+  const result = normaliseHtml(html, { root: path.resolve('.'), relativePath: 'games/example/index.html' });
+
+  assert.equal(count(result.html, 'data-ccg-mobile-lite-bootstrap="true"'), 1);
+  assert.ok(
+    result.html.indexOf('data-ccg-mobile-lite-bootstrap="true"') < result.html.indexOf('rel="stylesheet"'),
+    'Mobile-lite bootstrap must run before render-blocking stylesheets'
+  );
+  assert.match(result.html, /classList\.add\("ccg-mobile-lite", "ccg-mobile-defer-visuals"\)/);
+
+  const twice = ensureEarlyMobileLiteBootstrap(result.html);
+  assert.equal(twice, result.html);
+});
+
+test('staged public brand logo reserves its true intrinsic ratio', () => {
+  const source = '<img src="/resources/images/ccgamer-logo.png" class="ccg-brand__logo" width="1500" height="1032" srcset="/resources/images/ccgamer-logo.png 1500w" sizes="320px">';
+  const output = normalisePublicBrandLogo(source);
+
+  assert.match(output, /width="326"/);
+  assert.match(output, /height="192"/);
+  assert.match(output, /loading="eager"/);
+  assert.match(output, /fetchpriority="high"/);
+  assert.doesNotMatch(output, /srcset=/);
+  assert.doesNotMatch(output, /sizes=/);
+});
+
 test('canonical header paths are root-absolute even when source markup uses parent-relative paths', () => {
   assert.equal(rootAbsoluteUrl('../home.html'), '/home.html');
   assert.equal(rootAbsoluteUrl('../../resources/images/ccgamer-logo.png'), '/resources/images/ccgamer-logo.png');
@@ -211,7 +240,10 @@ test('non-Music public pages without a header receive the master navigation shel
   assert.match(result.html, />Find Me a Game<\/a>/);
   assert.match(result.html, /href="\/home\.html" class="ccg-brand"/);
   assert.match(result.html, /src="\/resources\/images\/ccgamer-logo\.png"/);
-  assert.match(result.html, /srcset="\/resources\/images\/ccgamer-logo\.png 1500w"/);
+  assert.match(result.html, /width="326" height="192"/);
+  assert.match(result.html, /loading="eager"/);
+  assert.match(result.html, /fetchpriority="high"/);
+  assert.doesNotMatch(result.html, /srcset="\/resources\/images\/ccgamer-logo\.png 1500w"/);
 
   for (const href of PUBLIC_HEADER_FOUNDATION_STYLES) {
     assert.match(result.html, new RegExp(`href="${href.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
@@ -244,6 +276,8 @@ test('root processor writes site-wide staged navigation then passes check mode',
     assert.match(terms, />Browse Games<\/a>/);
     assert.match(terms, /href="\/resources\/css\/ccg-master\.css"/);
     assert.match(terms, /href="\/resources\/css\/ccg-nav-labelled-bridge\.css"/);
+    assert.match(terms, /data-ccg-mobile-lite-bootstrap="true"/);
+    assert.match(terms, /width="326" height="192"/);
 
     const redirect = fs.readFileSync(path.join(root, 'retro-specials', 'example.html'), 'utf8');
     assert.doesNotMatch(redirect, /data-ccg-header/);
