@@ -210,6 +210,26 @@ function isEditableKeyboardTarget(target){
   return Boolean(target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']"));
 }
 
+const DOUBLE_TAP_DASH_MS=280;
+const directionalTapState=new WeakMap();
+function directionalVectorForCode(player,code){
+  const p2Map={KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}};
+  const p1Map={ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};
+  return (player===p2?p2Map:p1Map)[code]||null
+}
+function maybeDoubleTapDash(player,code,now=performance.now()){
+  if(!player||mode!=="playing")return false;
+  const dir=directionalVectorForCode(player,code);if(!dir)return false;
+  const key=`${dir.x},${dir.y}`,previous=directionalTapState.get(player)||{key:"",at:0};
+  const doubleTap=previous.key===key&&now-previous.at>45&&now-previous.at<=DOUBLE_TAP_DASH_MS;
+  directionalTapState.set(player,{key,at:now});
+  if(!doubleTap)return false;
+  directionalTapState.set(player,{key:"",at:0});
+  dashPlayer(player,dir);
+  try{window.dispatchEvent(new CustomEvent("ccg:direction-double-tap-dash",{detail:{playerId:String(player.id||player.name||"P1"),direction:{...dir},code}}))}catch(_){}
+  return true
+}
+
 addEventListener("keydown",e=>{
   // Forms and text editors own their keyboard input. This must happen before
   // the gameplay preventDefault calls so Space remains usable in bug reports,
@@ -232,7 +252,9 @@ addEventListener("keydown",e=>{
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){if(mode==="paused")resumePausedRun();else pause();return}
   if(e.code==="KeyF"){toggleFullscreen();return}
   if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
-  if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);input.add(e.code);
+  if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);
+  if(!e.repeat){if(p1)maybeDoubleTapDash(p1,e.code);if(p2)maybeDoubleTapDash(p2,e.code)}
+  input.add(e.code);
   const p1AttackKey=e.code==="Space"||e.code==="Numpad0",p2AttackKey=e.code==="Enter";
   if(p1AttackKey&&p1){
     const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[0]?.has?.(e.code));

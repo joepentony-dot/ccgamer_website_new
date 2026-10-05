@@ -301,14 +301,25 @@
 
   function exitTutorial(){rail()?.querySelector("[data-skip]")?.click?.()}
 
+  function controllerProfile(){
+    try{
+      const pad=Array.from(navigator.getGamepads?.()||[]).find(item=>item&&item.connected!==false);
+      if(!pad)return{type:"keyboard",label:"Keyboard controls are active. You can also connect a joystick or joypad at any time."};
+      const buttons=Math.max(0,Number(pad.buttons?.length)||0);
+      if(buttons<=2)return{type:"single",label:"Single-button joystick detected: stick to move, fire button to attack, and double-tap any direction to dash."};
+      return{type:"multi",label:"Joypad detected: stick/D-pad moves, A attacks, Select/View opens Inventory, and double-tap a direction dashes. Pads with shoulder buttons can also use the right shoulder for dash."};
+    }catch(_){return{type:"keyboard",label:"Keyboard controls are active. You can also connect a joystick or joypad at any time."}}
+  }
+
   function showStage(step){
     const info=readStage();
     if(!info)return false;
     const kind=INPUT_STEPS.get(step)||null;
     const modal=ensureStageModal();
     clearHighlights();hideInformationTour();acknowledgedStep=-1;
+    const controller=controllerProfile();
     const note=kind
-      ? `Press Continue to acknowledge this step. The tutorial will then highlight the ${kind==="inventory"?"Items / Inventory":kind} control for you to use.`
+      ? `Press Continue to acknowledge this step. The tutorial will then highlight the ${kind==="inventory"?"Items / Inventory":kind} control for you to use. ${controller.label}`
       : step===9
         ? "Press Complete Tutorial when you have read this final message."
         : INFO_HIGHLIGHTS.has(step)

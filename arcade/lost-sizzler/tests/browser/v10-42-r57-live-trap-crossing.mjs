@@ -90,12 +90,12 @@ try{
     if(canvas){canvas.tabIndex=-1;try{canvas.focus({preventScroll:true})}catch(_){}}
     try{window.focus()}catch(_){}
   });
-  await page.keyboard.down(fixture.key);
-  try{
-    await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
-  }finally{
-    await page.keyboard.up(fixture.key).catch(()=>{});
-  }
+  // Use one discrete direction tap. Holding the key until the polling loop
+  // observes the target can legitimately advance another tile on a healthy
+  // movement cadence and, from R106 onward, movement also supports deliberate
+  // same-direction double-tap dashing.
+  await page.keyboard.press(fixture.key,{delay:24});
+  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
   await page.waitForFunction(before=>Number(p1.health)===before-1,fixture.before.health,{timeout:2500,polling:16});
   const first=await page.evaluate(({id,target})=>{
     const hazard=(host.hazardRooms||[]).find(h=>String(h.id)===id);
