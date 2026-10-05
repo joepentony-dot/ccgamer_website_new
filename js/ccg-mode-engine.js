@@ -80,19 +80,22 @@
 
         let audio = modeAudioCache.get(config.path);
         if (!audio) {
-            audio = new window.Audio(config.path);
-            audio.preload = "auto";
+            audio = new window.Audio();
+            audio.preload = "none";
             audio.volume = config.volume;
             audio.playsInline = true;
-            try {
-                if (typeof audio.load === "function") audio.load();
-            } catch (error) {}
+            audio.src = config.path;
             modeAudioCache.set(config.path, audio);
         }
         return audio;
     }
 
     function primeModeSounds() {
+        /*
+         * Build the tiny Audio objects without preloading their media.
+         * The mode cue is decorative and should never consume bandwidth
+         * during an ordinary page visit. Playback fetches it on demand.
+         */
         Object.keys(MODE_SOUNDS).forEach((mode) => {
             getModeAudio(mode);
         });
@@ -267,6 +270,11 @@
         const announce = options.announce !== false;
         const sound = options.sound === true;
 
+        if (nextMode === "amiga") {
+            ensureAmigaStyles();
+            ensureAmigaChrome();
+        }
+
         rootElement.setAttribute("data-ccg-mode", nextMode);
         rootElement.setAttribute("data-mode", nextMode);
         body.setAttribute("data-ccg-mode", nextMode);
@@ -318,8 +326,6 @@
         if (!document.body) return;
         initialized = true;
 
-        ensureAmigaStyles();
-        ensureAmigaChrome();
         primeModeSounds();
         document.addEventListener("click", handleToggleClick, true);
 
