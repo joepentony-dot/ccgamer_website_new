@@ -228,6 +228,7 @@ for (const item of cases) {
     const page = await context.newPage();
     await page.goto(baseURL + "home.html", { waitUntil: "domcontentloaded", timeout: 30000 });
     await page.waitForSelector(".ccg-brand__logo", { state: "visible", timeout: 15000 });
+    await page.addStyleTag({ content: '[data-ccg-consent-ui="banner"]{display:none!important;pointer-events:none!important}' });
     await page.evaluate(() => window.scrollTo(0, Math.min(700, Math.max(0, document.documentElement.scrollHeight - innerHeight - 80))));
     const initialScroll = await page.evaluate(() => scrollY);
 
