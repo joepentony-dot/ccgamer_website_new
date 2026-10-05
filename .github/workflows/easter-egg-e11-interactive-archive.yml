@@ -60,7 +60,7 @@ jobs:
             grep -q "code: \"$code\"" js/easter-eggs/easter-egg-registry.js
           done
           test -f resources/css/easter-eggs-e11.css
-          for part in core terminals machines amiga tools demo; do
+          for part in core terminals machines amiga tools demo premium; do
             test -f "resources/css/easter-eggs-e11-$part.css"
             grep -q "easter-eggs-e11-$part.css" resources/css/easter-eggs-e11.css
           done
