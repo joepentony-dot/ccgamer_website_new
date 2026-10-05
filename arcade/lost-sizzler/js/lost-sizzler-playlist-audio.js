@@ -127,7 +127,6 @@
   }
 
   function stopFallback(){
-    if(!fallbackActive)return;
     fallbackActive=false;
     try{original.stopMusic?.()}catch(_){}
   }
@@ -425,6 +424,10 @@
   }
 
   try{original.stopMusic?.()}catch(_){}
+  try{
+    const activeRun=document.body?.dataset?.runActive==="true"||(typeof mode==="string"&&mode==="playing");
+    if(activeRun){started=true;musicBus.claim("dungeon",()=>stopMusic(false));transition(false,false)}
+  }catch(_){}
 
   Object.assign(base,{
     start,
