@@ -82,7 +82,7 @@
 
   function showCompletionBanner(skipped=false){
     ensureStyle();state.completionBanner?.remove?.();const panel=document.querySelector("#menu .panel");if(!panel)return;
-    const banner=document.createElement("div");banner.id="ccg-tutorial-complete-banner";banner.innerHTML=skipped?'<b>TUTORIAL ENDED</b><span>You are back at the game options. Choose Tutorial to practise again or Play Solo when you are ready.</span>':'<b>TUTORIAL COMPLETE</b><span>You Are Ready To Take On The Adventure! Choose Play Solo to start the dungeon, or Tutorial to run through the training again.</span>';
+    const banner=document.createElement("div");banner.id="ccg-tutorial-complete-banner";banner.innerHTML=skipped?'<b>TUTORIAL ENDED</b><span>You are back at the game options. Choose Tutorial to practise again or Play when you are ready.</span>':'<b>TUTORIAL COMPLETE</b><span>You Are Ready To Take On The Adventure! Choose Play to start the dungeon, or Tutorial to run through the training again.</span>';
     const anchor=panel.querySelector(".hero-logo");if(anchor?.nextSibling)panel.insertBefore(banner,anchor.nextSibling);else panel.prepend(banner);state.completionBanner=banner;
   }
 
