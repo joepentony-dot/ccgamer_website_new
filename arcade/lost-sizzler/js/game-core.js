@@ -74,11 +74,11 @@ function displayToast(entry){
   UI.toast.className=`pickup-toast ${entry.tone||"gold"}`;UI.toastTitle.textContent=entry.title;UI.toastText.textContent=entry.text;
   if(UI.toastIcon){const words=`${entry.title} ${entry.text}`.toLowerCase(),kind=words.includes("torch")?"torch":words.includes("potion")||words.includes("health")?"potion":words.includes("ammo")?"ammo":words.includes("banish")||words.includes("death stalker")?"banishment":words.includes("teleport")||words.includes("warp")?"teleport":words.includes("key")||words.includes("sigil")?"exitSigil":words.includes("game")?"game":words.includes("armour")?"armour":words.includes("weapon")?"weapon":words.includes("xp")||words.includes("level")?"xpOrb":"shrine";UI.toastIcon.innerHTML=itemIconSVG(kind,entry.title)}
   UI.toast.classList.remove("show");requestAnimationFrame(()=>UI.toast.classList.add("show"));toastTimer=entry.duration||9000;retainedToast=Boolean(entry.retain);
-  try{window.dispatchEvent(new CustomEvent("ccg:toast-shown",{detail:{title:entry.title,text:entry.text,tone:entry.tone||"gold",duration:entry.duration||9000,retain:Boolean(entry.retain)}}))}catch(_){}
+  try{window.dispatchEvent(new CustomEvent("ccg:toast-shown",{detail:{title:entry.title,text:entry.text,tone:entry.tone||"gold",duration:entry.duration||9000,retain:Boolean(entry.retain),ccgDialogueVoiceHandled:Boolean(entry.ccgDialogueVoiceHandled)}}))}catch(_){}
 }
 function showToast(title,text,tone="gold",duration=9000,options={}){
   // Ordinary information is interrupt-driven; an explicitly retained confirmation owns the banner until it has been visible.
-  const entry={title:String(title),text:String(text),tone,duration:Math.max(5200,duration||9000),retain:Boolean(options?.retain)};
+  const entry={title:String(title),text:String(text),tone,duration:Math.max(5200,duration||9000),retain:Boolean(options?.retain),ccgDialogueVoiceHandled:Boolean(options?.ccgDialogueVoiceHandled)};
   if(retainedToast&&toastTimer>0&&!entry.retain){toastQueue.push(entry);return true}
   toastQueue.length=0;displayToast(entry);return true;
 }
