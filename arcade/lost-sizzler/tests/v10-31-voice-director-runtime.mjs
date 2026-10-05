@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const source=fs.readFileSync(path.join(root,"js/v10-16-voice-director.js"),"utf8");
+const recordedSource=fs.readFileSync(path.join(root,"js/v10-42-r69-recorded-voices.js"),"utf8");
 let now=100000;
 const audioInstances=[];
 class AudioMock{
@@ -29,7 +30,7 @@ const context={
   window:{CCG_ASSET_OVERRIDES:{audio:{voice:{}}},CCGLostSizzlerOnboardingV120:tutorial,speechSynthesis:speech}
 };
 context.window.window=context.window;
-vm.createContext(context);vm.runInContext(source,context,{filename:"v10-16-voice-director.js"});
+vm.createContext(context);vm.runInContext(recordedSource,context,{filename:"v10-42-r69-recorded-voices.js"});vm.runInContext(source,context,{filename:"v10-16-voice-director.js"});
 const voice=context.window.CCGLostSizzlerVoice;
 voice.state.unlocked=true;
 
@@ -61,8 +62,7 @@ assert.equal(typeof voice.sayDialogue,"function","voice owner must expose one bo
 voice.stop();
 const speechBefore=speech.spoken.length;
 assert.equal(voice.sayDialogue("npc.scout.found","There you are. Get me to the lights.",{cooldown:9000}),true,"first NPC dialogue line should use the existing voice channel");
-assert.equal(speech.spoken.length,speechBefore+1,"NPC dialogue without a recorded override must fall back through the existing speech owner");
-assert.equal(speech.spoken.at(-1)?.text,"There you are. Get me to the lights.","dialogue fallback must speak the supplied character text");
+assert.equal(speech.spoken.length,speechBefore,"NPC dialogue without an approved recording must remain silent rather than synthesize owner speech");
 voice.stop();
 assert.equal(voice.sayDialogue("npc.scout.found","There you are. Get me to the lights.",{cooldown:9000}),false,"the same dialogue key must respect its cooldown after playback ends");
 now+=9001;
