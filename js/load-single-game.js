@@ -309,6 +309,7 @@ const CCG_SINGLE_HYDRATION = {
 ============================================================ */
 
 lockSingleGameRender();
+primeExistingGameVideoFacade();
 
 async function hydrateSingleGamePage() {
     if (CCG_SINGLE_HYDRATION.started) return;
@@ -751,6 +752,83 @@ function resolveVideoId(game) {
         game.youtube ||
         ""
     ).toString().trim();
+}
+
+function gameVideoEmbedUrl(videoId, autoplay = false) {
+    const id = String(videoId || "").trim();
+    if (!id) return "";
+    const autoplayParam = autoplay ? "&autoplay=1" : "";
+    return `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1&controls=1&playsinline=1&fs=1${autoplayParam}`;
+}
+
+function gameVideoThumbnailUrl(videoId) {
+    const id = String(videoId || "").trim();
+    return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
+}
+
+function ensureGameVideoFacade(videoEmbed, videoId) {
+    if (!videoEmbed || !videoId) return null;
+
+    const gameVideo = videoEmbed.closest(".game-video");
+    if (!gameVideo) return null;
+
+    let facade = gameVideo.querySelector("[data-ccg-video-facade]");
+    if (!facade) {
+        facade = document.createElement("button");
+        facade.type = "button";
+        facade.className = "ccg-video-facade";
+        facade.setAttribute("data-ccg-video-facade", "true");
+        facade.innerHTML = `
+            <img class="ccg-video-facade__thumb" alt="" width="480" height="360" loading="lazy" decoding="async">
+            <span class="ccg-video-facade__shade" aria-hidden="true"></span>
+            <span class="ccg-video-facade__play" aria-hidden="true">▶</span>
+            <span class="ccg-video-facade__label">Play CCG video</span>
+        `;
+        gameVideo.insertBefore(facade, videoEmbed);
+    }
+
+    const thumbnail = facade.querySelector(".ccg-video-facade__thumb");
+    if (thumbnail) thumbnail.src = gameVideoThumbnailUrl(videoId);
+
+    facade.dataset.videoId = videoId;
+    facade.setAttribute("aria-label", "Play game video");
+    videoEmbed.dataset.videoId = videoId;
+
+    const currentSrc = videoEmbed.getAttribute("src") || "";
+    if (/youtube(?:-nocookie)?\.com\/embed\//i.test(currentSrc)) {
+        videoEmbed.removeAttribute("src");
+    }
+    videoEmbed.hidden = true;
+    facade.hidden = false;
+
+    if (facade.dataset.ccgVideoBound !== "true") {
+        facade.addEventListener("click", () => {
+            const activeId = facade.dataset.videoId || videoEmbed.dataset.videoId || "";
+            if (!activeId) return;
+            const source = videoEmbed.getAttribute("src") || "";
+            if (!/youtube(?:-nocookie)?\.com\/embed\//i.test(source)) {
+                videoEmbed.src = gameVideoEmbedUrl(activeId, true);
+            }
+            facade.hidden = true;
+            videoEmbed.hidden = false;
+        });
+        facade.dataset.ccgVideoBound = "true";
+    }
+
+    return facade;
+}
+
+function primeExistingGameVideoFacade() {
+    const videoEmbed = document.getElementById("game-video-embed");
+    if (!videoEmbed) return;
+
+    const source = videoEmbed.getAttribute("src") || "";
+    const sourceMatch = source.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{6,20})/i);
+    const videoId = String(videoEmbed.dataset.videoId || sourceMatch?.[1] || "").trim();
+    if (!videoId) return;
+
+    videoEmbed.removeAttribute("src");
+    ensureGameVideoFacade(videoEmbed, videoId);
 }
 
 function resolvePrimaryLink(value) {
@@ -1537,6 +1615,8 @@ function renderGame(game) {
 
     if (isDriveVideoGame) {
         if (videoEmbed) {
+            const facade = videoEmbed.closest(".game-video")?.querySelector("[data-ccg-video-facade]");
+            if (facade) facade.hidden = true;
             videoEmbed.src = "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/preview";
             videoEmbed.hidden = false;
         }
@@ -1545,8 +1625,7 @@ function renderGame(game) {
         toggleGameEmptyMessage(videoSection, "video", "");
     } else if (hasVideo) {
         if (videoEmbed) {
-            videoEmbed.src = `https://www.youtube-nocookie.com/embed/${vid}`;
-            videoEmbed.hidden = false;
+            ensureGameVideoFacade(videoEmbed, vid);
         }
         if (videoBtn) {
             videoBtn.href = `https://www.youtube.com/watch?v=${vid}`;
@@ -1556,8 +1635,10 @@ function renderGame(game) {
         toggleGameEmptyMessage(videoSection, "video", "");
     } else {
         if (videoEmbed) {
-            videoEmbed.src = "";
+            videoEmbed.removeAttribute("src");
             videoEmbed.hidden = true;
+            const facade = videoEmbed.closest(".game-video")?.querySelector("[data-ccg-video-facade]");
+            if (facade) facade.hidden = true;
         }
         if (videoBtn) videoBtn.hidden = true;
         if (videoActions) videoActions.hidden = true;
