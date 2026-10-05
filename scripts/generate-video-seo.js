@@ -158,6 +158,11 @@ function removeBooleanAttribute(tag, name) {
   return tag.replace(attrRe, "");
 }
 
+function removeAttribute(tag, name) {
+  const attrRe = new RegExp(`\\s${name}\\s*=\\s*(["']).*?\\1`, "gi");
+  return tag.replace(attrRe, "");
+}
+
 function enhanceVideoSection(html, game, videoId, metadata) {
   const presentation = videoPresentation(game, metadata);
   const sectionRe = /(<section\b[^>]*\bid=(["'])game-video-section\2[^>]*>)([\s\S]*?)(<\/section>)/i;
@@ -183,12 +188,28 @@ function enhanceVideoSection(html, game, videoId, metadata) {
   const iframeMatch = body.match(iframeRe);
   if (iframeMatch) {
     let iframe = iframeMatch[0];
-    iframe = setAttribute(iframe, "src", `https://www.youtube-nocookie.com/embed/${videoId}`);
+    iframe = removeAttribute(iframe, "src");
     iframe = setAttribute(iframe, "title", `${presentation.title} ${platformShort(game)} video by Cheeky Commodore Gamer`);
     iframe = setAttribute(iframe, "data-video-id", videoId);
     iframe = setAttribute(iframe, "loading", "lazy");
-    iframe = removeBooleanAttribute(iframe, "hidden");
-    body = body.replace(iframeRe, iframe);
+    if (!/\shidden(?=\s|>|\/)/i.test(iframe)) {
+      iframe = iframe.replace(/>$/, " hidden>");
+    }
+
+    const facade = `<button class="ccg-video-facade" type="button" data-ccg-video-facade data-video-id="${escapeHtml(videoId)}" aria-label="Play ${escapeHtml(presentation.title)} video">
+                    <img class="ccg-video-facade__thumb" src="${escapeHtml(youtubeThumbnail(videoId, metadata))}" alt="" width="480" height="360" loading="lazy" decoding="async">
+                    <span class="ccg-video-facade__shade" aria-hidden="true"></span>
+                    <span class="ccg-video-facade__play" aria-hidden="true">▶</span>
+                    <span class="ccg-video-facade__label">Play CCG video</span>
+                </button>`;
+
+    const existingFacadeRe = /<button\b[^>]*data-ccg-video-facade[^>]*>[\s\S]*?<\/button>/i;
+    if (existingFacadeRe.test(body)) {
+      body = body.replace(existingFacadeRe, facade);
+      body = body.replace(iframeRe, iframe);
+    } else {
+      body = body.replace(iframeRe, `${facade}\n                ${iframe}`);
+    }
   }
 
   const buttonRe = /<a\b[^>]*\bid=(["'])gameVideoBtn\1[^>]*>/i;
