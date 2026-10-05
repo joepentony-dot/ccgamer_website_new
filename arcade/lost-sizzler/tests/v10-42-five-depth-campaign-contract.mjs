@@ -27,7 +27,29 @@ const windowObject={
     roomCompletion(){return 0}
   },
   CCGWorld:{createHostState(){return{items:[],enemies:[],chests:[],doors:[],shops:[],voidStalkers:[],keysCollected:0,objective:{type:'keys',complete:false}}}},
-  CCGSystems:{decorate(_w,h){return h},updateObjective(){return false},objectiveText(){return'base objective'}},
+  CCGSystems:{
+    decorate(_w,h){return h},
+    updateObjective(h,_run,explorePct=0){
+      const type=h.objective?.type;let done=false;
+      if(type==='keys')done=(Number(h.keysCollected)||0)>=3;
+      else if(type==='generators')done=(h.generators||[]).every(g=>!g.alive);
+      else if(type==='rescue')done=Boolean(h.rescue?.rescued);
+      else if(type==='explore_guardian')done=explorePct>=70&&!h.guardian?.alive;
+      else if(type==='guardian')done=!h.guardian?.alive;
+      if(h.objective)h.objective.complete=done;
+      h.exitOpen=done&&Boolean(h.exitSigilCollected);
+      return h.exitOpen;
+    },
+    objectiveText(h,_run,explorePct=0){
+      const type=h.objective?.type;let base='Explore the dungeon';
+      if(type==='keys')base=`Recover main vault keys: ${Number(h.keysCollected)||0}/3`;
+      else if(type==='generators'){const generators=h.generators||[];base=`Destroy monster generators: ${generators.filter(g=>!g.alive).length}/${generators.length}`}
+      else if(type==='rescue')base=h.rescue?.rescued?'CCG scout rescued':'Find the trapped CCG scout and escort them to a sanctuary';
+      else if(type==='explore_guardian')base=`Map floor ${Math.floor(explorePct)}% / 70% and defeat the guardian`;
+      else if(type==='guardian')base=h.guardian?.alive?'Defeat the Zzap! Citadel guardian':'Guardian defeated';
+      return h.objective?.complete?(h.exitSigilCollected?`${base} — EXIT SIGIL acquired: reach the floor exit`:`${base} — recover the EXIT SIGIL`):base;
+    }
+  },
   CCGAI:{stepEnemies(){return true}},
   CCGLostSizzlerV142ProceduralOverhaul:{gameDeck(){return deterministicDeck.map(row=>({...row}))}}
 };
@@ -45,6 +67,102 @@ const api=windowObject.CCGLostSizzlerV142FiveDepthCampaign;
 assert(api,'Campaign runtime must install once its dependencies are available.');
 assert(source.includes('hostState.exitSigilCollected=false;hostState.exitOpen=true'),'Floors 1–14 must open stairs without pretending the final Sigil has been collected.');
 
+const floorProfiles=config.proceduralDungeon.campaignFloors;
+function hostForProfile(profile,complete){
+  const host={
+    objective:{type:profile.objective,complete:false},
+    generators:[],
+    rescue:null,
+    guardian:null,
+    doors:[{sigilGate:true,locked:true,open:false,opening:true}],
+    items:[],enemies:[],keysCollected:0,
+    sigilLockdown:true,sigilResolved:false,
+    exitSigilCollected:false,exitOpen:false
+  };
+  if(profile.objective==='generators')host.generators=complete?[{alive:false},{alive:false},{alive:false}]:[{alive:false},{alive:true},{alive:false}];
+  if(profile.objective==='rescue')host.rescue={rescued:complete};
+  if(profile.objective==='explore_guardian'||profile.objective==='guardian')host.guardian={alive:!complete};
+  if(profile.objective==='keys'){
+    host.keysCollected=complete?1:0;
+    if(!complete){
+      const domain=config.proceduralDungeon.keyDomains.find(row=>Number(row.floor)===Number(profile.floor));
+      host.items.push({id:`key-${profile.floor}`,kind:'key',active:true,domainId:domain?.id});
+      host.enemies.push({id:`key-guardian-${profile.floor}`,keyGuardian:true,domainId:domain?.id,alive:true});
+    }
+  }
+  return host;
+}
+function explorePctFor(profile,complete){return profile.objective==='explore_guardian'?(complete?70:69):0}
+
+for(const profile of floorProfiles.slice(0,-1)){
+  const floor=Number(profile.floor);
+  sandbox.run.floor=floor;
+  sandbox.run.v142ClaimedDomains=[];
+  const blocked=hostForProfile(profile,false);
+  assert(windowObject.CCGSystems.updateObjective(blocked,sandbox.run,explorePctFor(profile,false))===false,`Floor ${floor} must stay sealed before its authored objective is complete.`);
+
+  const completed=hostForProfile(profile,true);
+  const opened=windowObject.CCGSystems.updateObjective(completed,sandbox.run,explorePctFor(profile,true));
+  assert(opened===true&&completed.exitOpen===true,`Floor ${floor} must always expose a completion route once its authored objective is complete.`);
+  assert(completed.exitSigilCollected===false,`Floor ${floor} must never require or fake an interim Exit Sigil.`);
+  assert(completed.sigilLockdown===false&&completed.sigilResolved===true,`Floor ${floor} must clear stale Sigil lockdown state after objective completion.`);
+  assert(completed.doors[0].locked===false&&completed.doors[0].open===true&&completed.doors[0].opening===false,`Floor ${floor} must unseal any stale Sigil gate after objective completion.`);
+  const mission=windowObject.CCGSystems.objectiveText(completed,sandbox.run,explorePctFor(profile,true));
+  assert(/reach the stairs/i.test(mission),`Floor ${floor} mission text must direct the player to the stairs after completion.`);
+  assert(!/EXIT SIGIL/i.test(mission),`Floor ${floor} mission text must never demand a non-existent Exit Sigil.`);
+}
+
+sandbox.run.floor=15;
+sandbox.run.v142ClaimedDomains=['iron','bone','ash'];
+const finalProfile=floorProfiles.at(-1);
+const finalHost=hostForProfile(finalProfile,true);
+assert(windowObject.CCGSystems.updateObjective(finalHost,sandbox.run,0)===false,'Floor 15 must remain sealed after the guardian falls until the real final Sigil is collected.');
+assert(/AWAKENED SIGIL/i.test(windowObject.CCGSystems.objectiveText(finalHost,sandbox.run,0)),'Floor 15 must retain the real Awakened Sigil objective.');
+finalHost.exitSigilCollected=true;
+assert(windowObject.CCGSystems.updateObjective(finalHost,sandbox.run,0)===true&&finalHost.exitOpen===true,'Floor 15 must open only after both the final objective and the Awakened Sigil are complete.');
+
+sandbox.run.floor=3;
+sandbox.run.v142ClaimedDomains=[];
+const missingDomainHost={
+  objective:{type:'keys',complete:false},
+  keysCollected:0,
+  items:[],
+  enemies:[{id:'iron-guardian',keyGuardian:true,domainId:'iron',alive:false}],
+  doors:[{sigilGate:true,locked:true,open:false}],
+  exitOpen:false
+};
+assert(api.recoverMissingDomainKey(missingDomainHost,sandbox.run,api.domainForFloor(sandbox.run))===true,'A missing domain Key after its guardian is defeated must self-recover instead of deadlocking the floor.');
+assert(sandbox.run.v142ClaimedDomains.includes('iron'),'Recovered domain Key must bind to the campaign run.');
+assert(windowObject.CCGSystems.updateObjective(missingDomainHost,sandbox.run,0)===true&&missingDomainHost.exitOpen===true,'Recovered domain progression must immediately expose the stairs.');
+
+sandbox.run.floor=8;
+sandbox.run.v142ClaimedDomains=[];
+const restoredInterimHost={
+  objective:{type:'rescue',complete:true},
+  doors:[{sigilGate:true,locked:true,open:false,opening:true}],
+  exitSigilCollected:false,
+  exitOpen:false,
+  sigilLockdown:true,
+  sigilResolved:false
+};
+assert(api.ensureInterimExit(restoredInterimHost,sandbox.run)===true,'A restored save with a completed interim objective must repair a stale closed exit.');
+assert(restoredInterimHost.exitOpen===true&&restoredInterimHost.doors[0].open===true,'Restored interim progression repair must reopen the route without demanding a Sigil.');
+
+sandbox.run.floor=15;
+sandbox.run.v142ClaimedDomains=['iron','bone','ash'];
+const missingFinalSigilHost={
+  objective:{type:'guardian',complete:true},
+  items:[],
+  enemies:[],
+  doors:[{sigilGate:true,locked:true,open:false,opening:true}],
+  sigilDefenderIds:[],
+  sigilDropPos:{x:9,y:7},
+  exitSigilCollected:false,
+  exitOpen:false
+};
+assert(api.recoverMissingFinalSigil(missingFinalSigilHost,sandbox.run)===true,'A missing final Sigil after the chamber is cleared must self-recover instead of deadlocking Floor 15.');
+assert(missingFinalSigilHost.items.some(item=>item.kind==='exitSigil'&&item.active!==false),'Final recovery must create a collectible Awakened Sigil.');
+assert(missingFinalSigilHost.doors[0].locked===false&&missingFinalSigilHost.doors[0].open===true,'Final recovery must release the Sigil chamber gate.');
 const expected=[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],seen=[];
 for(let floor=1;floor<=15;floor++){
   const slice=api.floorPickupSlice('TEST-SEED',floor);
