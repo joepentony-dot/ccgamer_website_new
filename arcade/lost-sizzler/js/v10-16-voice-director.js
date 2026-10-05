@@ -295,7 +295,7 @@
         active.timer=timer;
         const p=audio.play();if(p?.then)p.then(()=>{if(state.pendingGesture?.key===key)state.pendingGesture=null}).catch(()=>fallback(true));
       };
-      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);audio.onerror=()=>fallback(false);state.active=active;state.activePriority=priority;armWatchdog(active,(Number(cue.duration)||0)*1000+2500);
+      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=null;audio.onerror=()=>fallback(false);state.active=active;state.activePriority=priority;armWatchdog(active,(Number(cue.duration)||0)*1000+2500);
       if(audio.readyState>=1)begin();else audio.addEventListener("loadedmetadata",begin,{once:true});
       audio.load();return true;
     }catch(_){return false}
