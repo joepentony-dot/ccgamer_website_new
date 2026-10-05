@@ -76,7 +76,7 @@ assert.match(voice,/if\(state\.pendingGesture\)retryPendingGesture\(\)/,"a retai
 assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)/,"mobile retry must not be deferred outside the user-activation handler");
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
 assert.match(voice,/const APPROVED_LEGACY_RECORDED_CUES=new Set\(\[/,"historical packaged recordings must remain behind an explicit allowlist");
-for(const legacyKey of ["welcomeRare","hurt","gameOver","playerDeath","loadula","weeklyDeath","mimic"])assert.match(voice,new RegExp(`"\${legacyKey}"`),`live packaged fallback must remain available for ${legacyKey} when no owner recording exists`);
+for(const legacyKey of ["welcomeRare","hurt","gameOver","playerDeath","loadula","weeklyDeath","mimic"])assert.match(voice,new RegExp(`"${legacyKey}"`),`live packaged fallback must remain available for ${legacyKey} when no owner recording exists`);
 assert.match(voice,/function approvedLegacyCue\(key\)\{return APPROVED_LEGACY_RECORDED_CUES\.has\(key\)\?BUNDLED_SPRITE\.cues\[key\]\|\|null:null\}/,"legacy packaged voice fallback must stay allowlisted rather than generic");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
 assert.match(voice,/greetingRoll=Math\.random\(\),welcomeKey=greetingRoll<\.1\?"welcomeRare":greetingRoll<\.55\?"welcome":"welcomeAlt"/,"run start must retain two normal greetings plus a ten-percent rare Watchers greeting");
