@@ -128,10 +128,11 @@
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="release-note" class="note">C64 Dungeon Carnage runs directly in your browser. Solo play and the Tutorial are the supported game modes. Starting a run requests fullscreen automatically. Sound begins when play starts.</p><p id="menu-note" hidden aria-hidden="true" style="display:none!important"></p>
         <details id="developer-changelog" class="menu-details developer-changelog" data-latest-build-only="true">
-          <summary>Latest Build Changes · V10.42 R102</summary>
+          <summary>Latest Build Changes · V10.42 R103</summary>
           <div class="developer-changelog-current">
-            <p><strong>ACTIVE BUILD: V10.42 R102</strong></p>
+            <p><strong>ACTIVE BUILD: V10.42 R103</strong></p>
             <ul>
+              <li>R103 fixes the live R102 audio acceptance failures: owner-recorded speech now stays directly audible without a suspended Web Audio effects route, Solo always requests the recorded Welcome cue, bundled/default music can no longer take ownership from uploaded production playlists, and trader placement is isolated from Sanctuary and existing shop rooms.</li>
               <li>R102 restores reliable owner-recorded voice playback on mobile, reconnects valid supplied encounter prompts that had lost live triggers, restores three distinct run-start greetings including the rare Watchers of Illusion Easter-egg greeting, removes browser/generic voice fallback, and makes uploaded production music exclusive so failed or blocked playback retries on a real gesture instead of ever starting legacy/generated or bundled fallback music.</li>
               <li>R101 stops the Tutorial from removing and re-applying the same desktop highlight state every 100 ms, and restores compatible owner-recorded Alchemist voice routing after the live NPC keys were renamed without replaying the obsolete artefact-era Flask line.</li>
               <li>R100 replaces the remaining live browser-synth-only gameplay cues with authored WAV assets for melee, hazard warning, blade impact, chest opening, creaking wood, torch extinguish, fireplace, wood impacts/breakage and bone collapse, and makes file-backed SFX coverage release-critical.</li>
