@@ -26,6 +26,8 @@
     for(const list of [host?.arenas,host?.timedRooms,host?.hazardRooms])for(const row of list||[])if(row?.roomId!=null)ids.add(row.roomId);
     for(const row of [host?.memoryPuzzle,host?.sequenceTorchPuzzle,host?.weightBridge,host?.spiderNest,host?.skeletonHorde])if(row?.roomId!=null)ids.add(row.roomId);
     if(host?.rescue?.roomId!=null)ids.add(host.rescue.roomId);
+    for(const shop of host?.shops||[])if(shop?.active&&shop.roomId!=null)ids.add(shop.roomId);
+    for(const shop of [host?.trader,host?.startShop])if(shop?.active&&shop.roomId!=null)ids.add(shop.roomId);
     return ids;
   }
   function eligibleRooms({allowOptional=false}={}){
