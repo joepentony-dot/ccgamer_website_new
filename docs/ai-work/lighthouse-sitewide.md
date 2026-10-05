@@ -53,3 +53,5 @@ Known regression classes are now enforced separately by the permanent `CCG Light
 - Lighthouse evidence is read-only against the public website.
 - Optimisation changes remain isolated PRs with normal repository qualification.
 - The existing Home mobile/desktop reports are a baseline, not a ceiling or a substitute for page-specific measurements.
+
+- Pass 2 now owns the shared game-video optimisation: canonical generation removes the initial YouTube iframe `src`, injects an Omega poster/play facade into legacy generated markup, and the runtime self-heals older canonical pages until authoritative generated output catches up. The native-wheel contract activates the facade before qualifying the post-play iframe shield, so deferred loading and mouse-wheel behaviour are both protected.
