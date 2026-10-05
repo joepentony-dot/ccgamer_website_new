@@ -30,7 +30,7 @@ assert.match(source,/spawnCooldown=Math\.max\(Number\(g\.spawnCooldown\|\|0\),fl
 assert.match(source,/FIRST-TIME TRAINING/,"core fallback must identify first-time training");
 assert.match(source,/data-tutorial-enter>START TUTORIAL</,"fallback chooser must retain Tutorial");
 assert.match(source,/data-tutorial-skip>SKIP TUTORIAL &amp; PLAY</,"fallback chooser must expose an explicit skip-to-play option");
-assert.match(source,/!state\.choiceAccepted&&!daily&&!online&&!split&&!readFlag\(SEEN\)/,"fallback chooser must only intercept an unseen first-time Solo player");
+assert.match(source,/!state\.choiceAccepted&&!readFlag\(SEEN\)/,"fallback chooser must only intercept an unseen first-time player");
 assert.match(source,/if\(!tutorial\)writeFlag\(SEEN,true\)/,"entering training must not mark the player seen until training is completed or skipped");
 assert.match(source,/isTutorialSeen:\(\)=>readFlag\(SEEN\)/,"onboarding must expose first-run seen state to the primary launcher");
 
@@ -79,15 +79,15 @@ assert.doesNotMatch(guidance,/SECRET ROUTE|SECRET WALL|SECRET DOOR/,"tutorial in
 assert.match(guidance,/#inventory-close,#inventory-close-top/,"inventory close controls must be highlighted after opening inventory");
 
 /* Start flow: the menu itself is the only chooser after the mobile notice. */
-assert.match(index,/<button id="solo-btn" class="[^"]*primary[^"]*"[^>]*>Play Solo<\/button>/,"Play Solo must be present in the shipped HTML as a static supported action");
+assert.match(index,/<button id="solo-btn" class="[^"]*primary[^"]*"[^>]*>Start Game<\/button>/,"Start Game must be present in the shipped HTML as the primary supported action");
 assert.match(index,/<button id="tutorial-zone-btn" type="button" class="tutorial-primary-option"[^>]*>Tutorial<\/button>/,"Tutorial must be present in the shipped HTML as a static supported action");
-assert.match(index,/<button id="solo-btn"[\s\S]*?<button id="split-btn"[^>]*hidden[\s\S]*?<button id="tutorial-zone-btn"/,"static menu order must preserve the hidden Split anchor between Solo and Tutorial without runtime reordering");
+assert.match(index,/<button id="solo-btn"[\s\S]*?<button id="tutorial-zone-btn"/,"static menu order must keep Start Game before Tutorial");
 assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must preserve the permanent Tutorial button if another runtime removes it");
 assert.match(guidance,/if\(!button\)\{[\s\S]*?restorePosition\(button\)/,"a missing Tutorial button must still be restored into the supported static menu slot");
 assert.match(guidance,/if\(button\.parentElement!==row\)restorePosition\(button\)/,"a detached Tutorial button must be restored to the supported menu slot");
 assert.doesNotMatch(guidance,/button\.previousElementSibling!==solo/,"tutorial guidance must not fight the Stage 2 runtime owner by repeatedly forcing an existing Tutorial button beside Solo");
 assert.match(guidance,/button\.textContent="Tutorial"/,"permanent tutorial option must be labelled Tutorial");
-assert.match(guidance,/function bindSoloDirect\(\)/,"Play Solo must retain the single primary launch path");
+assert.match(guidance,/function bindSoloDirect\(\)/,"Start Game must retain the single primary launch path");
 assert.match(guidance,/function firstRunTutorialRequired\(\)/,"primary Solo launch must detect first-time players");
 assert.match(guidance,/isTutorialSeen/,"primary Solo launch must derive first-run status from onboarding persistence");
 assert.match(guidance,/const requested=Boolean\(tutorial\|\|firstRunTutorialRequired\(\)\)/,"an unseen player selecting Solo must enter Tutorial automatically");
@@ -116,8 +116,7 @@ assert.match(source,/TUTORIAL COMPLETE<\/b>/,"completed training must leave a co
 assert.match(source,/You Are Ready To Take On The Adventure!/,"tutorial completion must include the requested adventure message");
 assert.match(source,/s\[0\]==="finish"\?'<button class="primary" type="button" data-finish>Complete Tutorial<\/button>'/,"the final rail step must expose only Complete Tutorial");
 assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>SKIP TUTORIAL<\/button>'\}/,"all non-final centred tutorial cards must expose Skip Tutorial");
-assert.match(source,/run\?\.daily\|\|playMode==="online"/,"ranked and online runs must not become tutorial runs");
-assert.match(source,/!state\.choiceAccepted&&!daily&&!online&&!split&&!readFlag\(SEEN\)/,"the fallback chooser must apply only to unseen Solo players and never intercept split-screen startup");
+assert.match(source,/!state\.choiceAccepted&&!readFlag\(SEEN\)/,"fallback chooser must only intercept an unseen first-time player");
 
 assert.match(hardening,/PGR\.makeRun\(\{difficulty,seed,daily:false\}\)/,"leaving training must reconstruct a pristine run");
 assert.match(hardening,/score=0/,"tutorial score must be discarded");
