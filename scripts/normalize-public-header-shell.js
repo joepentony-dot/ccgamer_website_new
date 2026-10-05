@@ -232,6 +232,52 @@ function insertBeforeHeadClose(html, markup) {
   return `${html.slice(0, closingHead)}  ${markup}\n${html.slice(closingHead)}`;
 }
 
+function insertBeforeFirstStylesheetOrHeadClose(html, markup) {
+  const source = String(html || "");
+  const firstStylesheet = source.search(/<link\b(?=[^>]*\brel\s*=\s*(["'])[^"']*stylesheet[^"']*\1)[^>]*>/i);
+  if (firstStylesheet >= 0) {
+    return `${source.slice(0, firstStylesheet)}${markup}\n  ${source.slice(firstStylesheet)}`;
+  }
+  return insertBeforeHeadClose(source, markup);
+}
+
+function ensureEarlyMobileLiteBootstrap(html) {
+  const source = String(html || "");
+  if (!hasPublicHeader(source)) return source;
+  if (/data-ccg-mobile-lite-bootstrap\s*=\s*(["'])true\1/i.test(source)) return source;
+
+  const markup = `<script data-ccg-mobile-lite-bootstrap="true">
+    (function () {
+      try {
+        var root = document.documentElement;
+        var mobile = window.matchMedia("(max-width: 900px)").matches
+          || window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          || window.matchMedia("(pointer: coarse)").matches;
+        if (mobile) root.classList.add("ccg-mobile-lite", "ccg-mobile-defer-visuals");
+      } catch (_error) {}
+    })();
+  </script>`;
+
+  return insertBeforeFirstStylesheetOrHeadClose(source, markup);
+}
+
+function normalisePublicBrandLogo(html) {
+  return String(html || "").replace(
+    /<img\b[^>]*\bclass\s*=\s*(["'])[^"']*\bccg-brand__logo\b[^"']*\1[^>]*>/gi,
+    (tag) => {
+      let output = tag
+        .replace(/\s(?:srcset|sizes)\s*=\s*(["']).*?\1/gi, "")
+        .replace(/\s(?:width|height|loading|decoding|fetchpriority)\s*=\s*(["']).*?\1/gi, "");
+
+      output = output.replace(
+        /\s*\/?\s*>$/,
+        ' width="326" height="192" loading="eager" decoding="async" fetchpriority="high">'
+      );
+      return output;
+    }
+  );
+}
+
 function hasDirectStylesheet(html, href) {
   const escaped = href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const pattern = new RegExp(`<link\\b(?=[^>]*\\brel\\s*=\\s*(["'])[^"']*stylesheet[^"']*\\1)(?=[^>]*\\bhref\\s*=\\s*(["'])${escaped}(?:[?#][^"']*)?\\2)[^>]*>`, "i");
@@ -347,6 +393,8 @@ function normaliseHtml(html, options = {}) {
   let finalHtml = result.html;
   if (result.applicable && hasPublicHeader(finalHtml)) {
     finalHtml = ensurePublicHeaderFirstPaintStyles(finalHtml);
+    finalHtml = normalisePublicBrandLogo(finalHtml);
+    finalHtml = ensureEarlyMobileLiteBootstrap(finalHtml);
   }
 
   return {
@@ -498,6 +546,8 @@ module.exports = {
   absolutiseMasterHeaderMarkup,
   extractMasterHeaderMarkup,
   buildModeIdentityMarkup,
+  ensureEarlyMobileLiteBootstrap,
+  normalisePublicBrandLogo,
   ensureMusicFirstPaintStyles,
   ensurePublicHeaderFoundationStyles,
   ensurePublicHeaderFirstPaintStyles,
