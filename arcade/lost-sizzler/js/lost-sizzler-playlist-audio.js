@@ -507,7 +507,7 @@
 
   function recoverActiveRunMusic(){
     if(!enabled)return false;
-    const runActive=document.body?.dataset?.runActive==="true"||String(window.mode||"")==="playing";
+    const runActive=(typeof document!=="undefined"&&document.body?.dataset?.runActive==="true")||String(window.mode||"")==="playing";
     if(!runActive)return false;
     started=true;
     musicBus.claim("dungeon",()=>stopMusic(false));
@@ -518,8 +518,10 @@
     return true;
   }
 
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(recoverActiveRunMusic,0),{once:true});
-  else setTimeout(recoverActiveRunMusic,0);
+  if(typeof document!=="undefined"){
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(recoverActiveRunMusic,0),{once:true});
+    else setTimeout(recoverActiveRunMusic,0);
+  }
   window.addEventListener("load",()=>setTimeout(recoverActiveRunMusic,0),{once:true});
 
   window.addEventListener("pagehide",()=>{
