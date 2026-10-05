@@ -158,6 +158,17 @@ function removeBooleanAttribute(tag, name) {
   return tag.replace(attrRe, "");
 }
 
+function removeAttribute(tag, name) {
+  const attrRe = new RegExp(`\\s${name}\\s*=\\s*([\"']).*?\\1`, "gi");
+  return tag.replace(attrRe, "");
+}
+
+function setBooleanAttribute(tag, name) {
+  const attrRe = new RegExp(`\\s${name}(?=\\s|>|/)`, "i");
+  if (attrRe.test(tag)) return tag;
+  return tag.replace(/\s*>$/, ` ${name}>`);
+}
+
 function enhanceVideoSection(html, game, videoId, metadata) {
   const presentation = videoPresentation(game, metadata);
   const sectionRe = /(<section\b[^>]*\bid=(["'])game-video-section\2[^>]*>)([\s\S]*?)(<\/section>)/i;
@@ -183,12 +194,33 @@ function enhanceVideoSection(html, game, videoId, metadata) {
   const iframeMatch = body.match(iframeRe);
   if (iframeMatch) {
     let iframe = iframeMatch[0];
-    iframe = setAttribute(iframe, "src", `https://www.youtube-nocookie.com/embed/${videoId}`);
+    iframe = removeAttribute(iframe, "src");
+    iframe = setAttribute(iframe, "data-video-src", `https://www.youtube-nocookie.com/embed/${videoId}`);
     iframe = setAttribute(iframe, "title", `${presentation.title} ${platformShort(game)} video by Cheeky Commodore Gamer`);
     iframe = setAttribute(iframe, "data-video-id", videoId);
     iframe = setAttribute(iframe, "loading", "lazy");
-    iframe = removeBooleanAttribute(iframe, "hidden");
+    iframe = setBooleanAttribute(iframe, "hidden");
     body = body.replace(iframeRe, iframe);
+  }
+
+  const facadeRe = /<button\b[^>]*\bid=(["'])game-video-facade\\1[^>]*>/i;
+  const facadeMatch = body.match(facadeRe);
+  if (facadeMatch) {
+    let facade = facadeMatch[0];
+    facade = setAttribute(facade, "aria-label", `Play ${presentation.title} video`);
+    facade = removeBooleanAttribute(facade, "hidden");
+    body = body.replace(facadeRe, facade);
+  }
+
+  const posterRe = /<img\b[^>]*\bid=(["'])game-video-poster\\1[^>]*>/i;
+  const posterMatch = body.match(posterRe);
+  if (posterMatch) {
+    let poster = posterMatch[0];
+    poster = setAttribute(poster, "src", youtubeThumbnail(videoId, metadata));
+    poster = setAttribute(poster, "alt", "");
+    poster = setAttribute(poster, "loading", "lazy");
+    poster = setAttribute(poster, "decoding", "async");
+    body = body.replace(posterRe, poster);
   }
 
   const buttonRe = /<a\b[^>]*\bid=(["'])gameVideoBtn\1[^>]*>/i;
