@@ -398,8 +398,22 @@
     updateVolumes();
   }
 
-  function retryUploadedMusicOnGesture(){
-    if(!enabled||!started)return false;
+  const RUN_LAUNCH_IDS=new Set(["solo-btn","continue-save-btn","daily-btn","split-btn"]);
+  function runLaunchGesture(event){
+    try{
+      const target=event?.target;
+      const button=target?.closest?.("button");
+      return Boolean(button&&RUN_LAUNCH_IDS.has(button.id))
+    }catch(_){return false}
+  }
+
+  function retryUploadedMusicOnGesture(event){
+    const launch=runLaunchGesture(event);
+    if(!enabled||(!started&&!launch))return false;
+    if(launch&&!started){
+      started=true;
+      musicBus.claim("dungeon",()=>stopMusic(false));
+    }
     const state=desiredState();
     if(!pendingGestureState&&!soundtrackOwned(state))return false;
     failures.clear();
