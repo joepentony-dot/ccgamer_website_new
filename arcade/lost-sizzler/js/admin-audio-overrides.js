@@ -55,17 +55,38 @@
     return true;
   }
 
-  async function load(){
+  let retryTimer=null;
+  const MAX_RETRY_ATTEMPTS=12;
+  const retryDelay=attempt=>Math.min(5000,750*Math.pow(1.65,Math.max(0,Number(attempt)||0)));
+  function scheduleHydrationRetry(attempt,reason){
+    if(retryTimer||attempt>=MAX_RETRY_ATTEMPTS)return false;
+    window.CCG_ADMIN_AUDIO_READY=false;
+    const delay=retryDelay(attempt);
+    retryTimer=setTimeout(()=>{
+      retryTimer=null;
+      load(attempt+1);
+    },delay);
+    try{console.warn("[C64 Dungeon Carnage] uploaded production audio hydration delayed; retrying.",String(reason?.message||reason||"not-ready"))}catch(_){}
+    return true;
+  }
+
+  async function load(attempt=0){
     try{
       if(!remoteMediaAllowed())return finishWithoutRemoteMedia("automation-or-localhost");
       const client=await window.ccgSupabase?.getClient?.();
-      if(!client?.from)throw new Error("Supabase asset client unavailable");
+      if(!client?.from){
+        if(scheduleHydrationRetry(attempt,"Supabase asset client unavailable"))return false;
+        throw new Error("Supabase asset client unavailable");
+      }
       const {data,error}=await client.from("arcade_assets")
         .select("asset_group,asset_key,public_url,enabled,created_at,asset_meta")
         .in("asset_group",["music","voice"])
         .eq("enabled",true)
         .order("created_at",{ascending:true});
-      if(error)throw error;
+      if(error){
+        if(scheduleHydrationRetry(attempt,error))return false;
+        throw error;
+      }
 
       const target=audioRoot();
       const playlists={normal:[],danger:[],sanctuary:[],named:[],stalker:[]};
@@ -108,6 +129,7 @@
       window.CCG_ADMIN_AUDIO_READY=true;
       window.dispatchEvent(new CustomEvent("ccg:admin-audio-ready",{detail:{applied:appliedMusic+appliedVoice,appliedMusic,appliedVoice,playlists,voice:voicePlaylists,remoteMediaSkipped:false}}));
     }catch(error){
+      if(remoteMediaAllowed()&&scheduleHydrationRetry(attempt,error))return false;
       const target=audioRoot();
       const playlists={normal:[],danger:[],sanctuary:[],named:[],stalker:[]};
       for(const state of Object.keys(playlists))target.music.playlists[state]=[];
