@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r106";
-  const CACHE="20261005r106";
+  const BUILD="V10.42 r107";
+  const CACHE="20261005r107";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -27,7 +27,6 @@
     ["v10-42-r23-rpg-build-expansion.js","CCGLostSizzlerV142R23RpgBuildExpansion"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
     ["v10-42-elemental-portal-foundation.js","CCGLostSizzlerV142ElementalPortalFoundation"],
-    ["v10-42-split-campaign-state.js","CCGLostSizzlerV142SplitCampaignState"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
     ["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"],
     ["v10-42-r7-room-objective-director.js","CCGLostSizzlerV142R7RoomObjectiveDirector"],
@@ -145,7 +144,7 @@
   }
 
   function blockedStart(event){
-    const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
+    const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#tutorial-zone-btn"):null;
     if(!target||state.failed)return;
     const paywall=window.CCGLostSizzlerV142DemoPaywall;
     if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn"){
@@ -154,7 +153,7 @@
       return;
     }
 
-    /* Keep V10.42 on the capture boundary after readiness for Solo/Tutorial.
+    /* Keep V10.42 on the capture boundary after readiness for Game/Tutorial.
      * A click can be scheduled while ready=false but dispatch after ready=true.
      * Letting that transition click fall through to the legacy core handler
      * bypasses the onboarding choiceAccepted handoff and silently returns to
@@ -198,7 +197,7 @@
       if(!button||!button.isConnected){retry();return}
       if(button.disabled||legacyGatePending){retry();return}
 
-      /* Solo and Tutorial are owned by the guidance layer once the ordered
+      /* Game and Tutorial are owned by the guidance layer once the ordered
        * bootstrap is ready. Hand the preserved intent to that owner directly:
        * a synthetic button click can be consumed by older capture listeners,
        * and clearing pendingStartId before a run actually starts loses the
@@ -353,7 +352,7 @@
       observeControllerSeal();
       /* R93: current blocking CSS owns the menu; do not replay legacy R55 presentation. */
       state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
-      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Solo and Tutorial are the supported local modes; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
+      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Start the main game or use the Tutorial; account features remain optional and the core game runs locally.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
       replayPendingStart();
     }catch(error){
