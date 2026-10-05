@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-10-05T07:13:38.079Z",
+  "updatedAt": "2026-10-05T19:07:56.035Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -3015,6 +3015,15 @@
       "uploadDate": "2024-03-06T18:30:27Z",
       "duration": "PT6M23S",
       "thumbnailUrl": "https://i.ytimg.com/vi/ifsWFog1s40/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "iG8480D1MtM": {
+      "title": "Summer Games – The C64 Classic That Started Epyx’s Greatest Series",
+      "description": "🕹️ Summer Games (1984) – Commodore 64 Olympic Multi-Event Classic\nReleased in 1984 by Epyx, Summer Games is a landmark title that helped define the multi-event sports genre on the Commodore 64. Inspired by the unreleased Starpath game Sweat!, it became the first entry in Epyx’s celebrated Games series and set the template for everything that followed.\n\n🌐 Full game info, manual & download:\n👉 https://www.cheekycommodoregamer.co.uk/games/summer-games/\n\nYou compete across a range of Olympic-style events including the 100m sprint, pole vault, platform diving, gymnastics, freestyle swimming, and skeet shooting. Each discipline has its own rhythm and control style, rewarding timing, coordination, and practice rather than button-mashing.\n\nThe game supports up to eight players, each representing a chosen country, making it perfect for competitive multiplayer sessions. Events can be played individually, selected freely, or tackled as a full tournament with medals awarded for top performances.\n\nA major step forward for Epyx, Summer Games was one of the first titles to feature a dedicated graphics designer, helping elevate presentation and polish. Today, it’s remembered as a genre-defining classic and a cornerstone of Commodore 64 sports gaming.\n\n💬 Which event did you always nail, and which one caused the most frustration?\n\n▶️ RELATED PLAYLISTS\nEpyx Games: https://www.youtube.com/playlist?list=PL_TYjnCNYSexmPHMtHPnTcp6ScN4LijvQ\nSports & Olympic Games: https://www.youtube.com/playlist?list=PL_TYjnCNYSey8SGz1nu8mJdPC_xb7eLBL\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#epyx #summergames #commodore64 #retrogaming #c64gaming",
+      "uploadDate": "2026-10-05T17:30:28Z",
+      "duration": "PT8M18S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/iG8480D1MtM/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
