@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const source=fs.readFileSync(path.join(root,"js/v10-16-voice-director.js"),"utf8");
+const recordedSource=fs.readFileSync(path.join(root,"js/v10-42-r69-recorded-voices.js"),"utf8");
 let now=100000;
 const audioInstances=[];
 class AudioMock{
@@ -29,7 +30,7 @@ const context={
   window:{CCG_ASSET_OVERRIDES:{audio:{voice:{}}},CCGLostSizzlerOnboardingV120:tutorial,speechSynthesis:speech}
 };
 context.window.window=context.window;
-vm.createContext(context);vm.runInContext(source,context,{filename:"v10-16-voice-director.js"});
+vm.createContext(context);vm.runInContext(recordedSource,context,{filename:"v10-42-r69-recorded-voices.js"});vm.runInContext(source,context,{filename:"v10-16-voice-director.js"});
 const voice=context.window.CCGLostSizzlerVoice;
 voice.state.unlocked=true;
 
@@ -40,17 +41,26 @@ assert.equal(voice.state.active,first,"a skipped cue must not replace current sp
 assert.equal(voice.state.queue.length,0,"skipped cues must never enter a backlog");
 assert.equal(voice.state.lastSkipped.reason,"busy");
 
-assert.equal(voice.say("gameOver"),true,"an explicitly interrupting critical cue may replace lower-priority speech");
+assert.equal(voice.say("gameOver"),false,"an unrecorded critical cue must not destroy an approved recording already in progress");
+assert.equal(voice.state.active,first,"the existing owner recording must continue when no approved critical replacement exists");
+assert.equal(first.audio.paused,false,"the existing recording must not be stopped for an unavailable replacement");
+assert.equal(voice.state.interrupted,0);
+assert.equal(voice.state.lastSkipped.reason,"no-approved-recording");
+
+assert.equal(voice.say("deathStalker"),true,"a critical cue with an approved owner recording may replace lower-priority speech");
 assert.notEqual(voice.state.active,first);
-assert.equal(first.audio.paused,true,"interruption must stop the old audio source");
+assert.equal(first.audio.paused,true,"an approved critical replacement must stop the old audio source");
 assert.equal(voice.state.interrupted,1);
 voice.stop();
 
-assert.equal(voice.say("hurt"),true,"Ow should play for the first registered hit");
+assert.equal(voice.say("hurt"),false,"an unrecorded Ow cue must remain silent rather than synthesize or substitute speech");
+assert.equal(voice.state.lastSkipped.reason,"playback");
+
+assert.equal(voice.say("shop"),true,"an approved recorded routine cue should play when the channel is idle");
 voice.stop();now+=1000;
-assert.equal(voice.say("hurt"),false,"Ow must not repeat inside 30 seconds");
-now+=29001;
-assert.equal(voice.say("hurt"),true,"Ow may play again after its 30-second gap");
+assert.equal(voice.say("shop"),false,"approved recorded cues must still respect their configured cooldown");
+now+=11001;
+assert.equal(voice.say("shop"),true,"an approved recorded cue may play again after its cooldown");
 voice.stop();
 
 tutorial.state.active=true;
@@ -61,8 +71,7 @@ assert.equal(typeof voice.sayDialogue,"function","voice owner must expose one bo
 voice.stop();
 const speechBefore=speech.spoken.length;
 assert.equal(voice.sayDialogue("npc.scout.found","There you are. Get me to the lights.",{cooldown:9000}),true,"first NPC dialogue line should use the existing voice channel");
-assert.equal(speech.spoken.length,speechBefore+1,"NPC dialogue without a recorded override must fall back through the existing speech owner");
-assert.equal(speech.spoken.at(-1)?.text,"There you are. Get me to the lights.","dialogue fallback must speak the supplied character text");
+assert.equal(speech.spoken.length,speechBefore,"NPC dialogue without an approved recording must remain silent rather than synthesize owner speech");
 voice.stop();
 assert.equal(voice.sayDialogue("npc.scout.found","There you are. Get me to the lights.",{cooldown:9000}),false,"the same dialogue key must respect its cooldown after playback ends");
 now+=9001;

@@ -122,7 +122,7 @@ function renderLibrary(){
     for(const[key,label,fallback]of items){
       const clips=rowsForCue(key),active=clips.filter(row=>row.enabled&&row.public_url);
       const card=document.createElement('article');card.className='voice-cue-card';card.dataset.cue=key;
-      card.innerHTML=`<div class="voice-cue-head"><div><h4>${esc(label)}</h4><p>Default: “${esc(fallback)}”</p><span class="voice-cue-state ${active.length?'':'default'}">${active.length?`${active.length} CUSTOM CLIP${active.length===1?'':'S'} ACTIVE`:'DEFAULT BROWSER VOICE'}</span></div><div class="voice-cue-actions"><button type="button" class="arcade-mini" data-action="test" data-cue="${esc(key)}">Test Cue</button><button type="button" class="arcade-mini" data-action="upload-cue" data-cue="${esc(key)}">Add Recording</button><button type="button" class="arcade-mini" data-action="default" data-cue="${esc(key)}" ${active.length?'':'disabled'}>Use Default</button></div></div>`;
+      card.innerHTML=`<div class="voice-cue-head"><div><h4>${esc(label)}</h4><p>Expected line: “${esc(fallback)}”</p><span class="voice-cue-state ${active.length?'':'default'}">${active.length?`${active.length} CUSTOM CLIP${active.length===1?'':'S'} ACTIVE`:'GAME RECORDING / SILENCE'}</span></div><div class="voice-cue-actions"><button type="button" class="arcade-mini" data-action="test" data-cue="${esc(key)}">Test Custom Cue</button><button type="button" class="arcade-mini" data-action="upload-cue" data-cue="${esc(key)}">Add Recording</button><button type="button" class="arcade-mini" data-action="default" data-cue="${esc(key)}" ${active.length?'':'disabled'}>Use Game Recording</button></div></div>`;
       const list=document.createElement('div');list.className='voice-clips';
       if(!clips.length){list.innerHTML='<p class="voice-empty">No custom recordings stored for this cue.</p>'}
       for(const clip of clips){
@@ -164,14 +164,8 @@ async function upload(event){
   finally{button.disabled=false}
 }
 
-function speakFallback(cue){
-  const info=cueMap.get(cue);if(!info)return;
-  if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined')return status('This browser cannot test speech synthesis.','error');
-  window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(info.fallback),voices=window.speechSynthesis.getVoices?.()||[];u.lang='en-GB';u.rate=.97;u.pitch=.92;u.volume=.92;u.voice=voices.find(v=>/^en-GB$/i.test(v.lang))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||null;window.speechSynthesis.speak(u);status(`Testing default browser voice for ${info.label}.`,'success');
-}
-
 function testCue(cue){
-  const active=enabledRowsForCue(cue);if(!active.length)return speakFallback(cue);
+  const active=enabledRowsForCue(cue);if(!active.length){const info=cueMap.get(cue);return status(`No custom clip is enabled for ${info?.label||cue}. The game uses its approved recording when one exists; otherwise this cue stays silent.`,'warn')}
   const clip=active[Math.floor(Math.random()*active.length)];try{const audio=new Audio(clip.public_url);audio.volume=.9;audio.play().catch(error=>status(error?.message||'Could not play this recording.','error'));status(`Testing custom ${cueMap.get(cue)?.label||cue} recording.`,'success')}catch(error){status(error?.message||'Could not play this recording.','error')}
 }
 
@@ -183,7 +177,7 @@ async function actions(event){
   if(action==='default'){
     const targets=enabledRowsForCue(cue);if(!targets.length)return;
     button.disabled=true;const result=await supabase.from('arcade_assets').update({enabled:false,updated_at:new Date().toISOString()}).in('asset_key',targets.map(row=>row.asset_key)).eq('asset_group','voice');button.disabled=false;
-    if(result.error)return status(result.error.message,'error');status(`${cueMap.get(cue)?.label||cue} returned to the default browser voice.`,'success');return loadRows();
+    if(result.error)return status(result.error.message,'error');status(`${cueMap.get(cue)?.label||cue} returned to the approved game recording/silence policy.`,'success');return loadRows();
   }
   const row=rows.find(item=>item.asset_key===key);if(!row)return;
   if(action==='toggle'){
