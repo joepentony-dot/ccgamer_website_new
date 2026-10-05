@@ -124,9 +124,16 @@ function main() {
       assert(iframeTag.includes(`data-video-provider="${external.provider || "external"}"`), `${slug}: external video provider marker is missing.`);
       externalVideos += 1;
     } else {
+      assert(!/\bsrc=(["'])[^'"]+\1/i.test(iframeTag), `${slug}: YouTube iframe must stay network-idle until the visitor presses Play.`);
+      assert(iframeTag.includes(`data-video-id="${videoId}"`), `${slug}: deferred YouTube iframe is missing its video ID.`);
+      assert(/\shidden(?:\s|>|\/)/i.test(iframeTag), `${slug}: deferred YouTube iframe must be hidden before interaction.`);
+
+      const facadeTag = (html.match(/<button\b[^>]*data-ccg-video-facade[^>]*>/i) || [])[0] || "";
+      assert(facadeTag, `${slug}: lightweight YouTube facade is missing.`);
+      assert(facadeTag.includes(`data-video-id="${videoId}"`), `${slug}: YouTube facade is missing its video ID.`);
       assert(
-        iframeTag.includes(`https://www.youtube-nocookie.com/embed/${videoId}`),
-        `${slug}: static iframe does not point to its YouTube video ID.`
+        html.includes(`https://i.ytimg.com/vi/${videoId}/`) || html.includes(metadata?.[videoId]?.thumbnailUrl || "__no_custom_thumbnail__"),
+        `${slug}: YouTube facade thumbnail is missing.`
       );
     }
     assert(/\btitle=(["'])[^'"]+\1/i.test(iframeTag), `${slug}: video iframe is missing a descriptive title.`);
