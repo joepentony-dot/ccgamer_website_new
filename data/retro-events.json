@@ -82,6 +82,35 @@
     "seo": {
       "title": "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle on Cheeky Commodore Gamer's Retro Events collection."
+    },
+    "relatedSlugs": [
+      "play-expo-blackpool-2026",
+      "play-expo-blackpool-romero-rare-consoles",
+      "play-expo-blackpool-legendary-guests",
+      "play-expo-blackpool-romero-highlights"
+    ]
+  },
+  {
+    "id": "play-expo-blackpool-2026",
+    "slug": "play-expo-blackpool-2026",
+    "type": "retro-events",
+    "title": "PLAY Expo Blackpool 2026 – Retro Gaming, Arcades & Classic Computers at Norbreck Castle",
+    "youtubeId": "5WqUDq5kQd8",
+    "thumbnail": "https://img.youtube.com/vi/5WqUDq5kQd8/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 5,
+    "summary": "A fan’s-eye tour of PLAY Expo Blackpool 2026 at Norbreck Castle, covering retro games, classic computers, arcades, pinball and the show-floor atmosphere.",
+    "description": "This event video visits PLAY Expo Blackpool 2026 at the Norbreck Castle Exhibition Centre, held on 3–4 October 2026 for the show’s 16th year. It follows the retro gaming floor with classic computers and consoles, arcade cabinets, pinball, exhibitors and the atmosphere of one of the UK’s longest-running retro gaming expos.",
+    "collection": "retro-events",
+    "relatedSlugs": [
+      "play-expo-blackpool-2025",
+      "play-expo-blackpool-romero-rare-consoles",
+      "play-expo-blackpool-legendary-guests",
+      "play-expo-blackpool-romero-highlights"
+    ],
+    "seo": {
+      "title": "PLAY Expo Blackpool 2026 – Retro Gaming, Arcades & Classic Computers at Norbreck Castle | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch PLAY Expo Blackpool 2026 at Norbreck Castle, with retro games, classic computers, arcade machines, pinball, exhibitors and show-floor highlights."
     }
   },
   {
@@ -92,7 +121,7 @@
     "youtubeId": "n_ZymsSyDAg",
     "thumbnail": "https://img.youtube.com/vi/n_ZymsSyDAg/hqdefault.jpg",
     "membersOnly": true,
-    "order": 5,
+    "order": 6,
     "summary": "Bonus Play Expo footage collecting extra moments and behind-the-scenes event clips.",
     "description": "This members-only Retro Events cut gathers additional Play Expo Blackpool footage that did not make the main feature. It offers extra context and atmosphere for viewers who enjoy full event coverage.",
     "collection": "retro-events",
@@ -109,7 +138,7 @@
     "youtubeId": "sAU3CPCCpvE",
     "thumbnail": "https://img.youtube.com/vi/sAU3CPCCpvE/hqdefault.jpg",
     "membersOnly": false,
-    "order": 6,
+    "order": 7,
     "summary": "On-location coverage from the Video Game Market Leeds 2024 event at the Royal Armouries.",
     "description": "This Retro Events episode follows a visit to the Leeds video game market and captures the experience of browsing retro stalls in person. It highlights event atmosphere, collector interest and the social side of retro gaming meetups.",
     "collection": "retro-events",
@@ -126,7 +155,7 @@
     "youtubeId": "SiMgKvZeXws",
     "thumbnail": "https://img.youtube.com/vi/SiMgKvZeXws/hqdefault.jpg",
     "membersOnly": true,
-    "order": 7,
+    "order": 8,
     "summary": "A meetup-focused retro event featuring the Yorkshire Amiga Group and community enthusiasts.",
     "description": "This members-only Retro Events video captures a North West retro computing meetup with the Yorkshire Amiga Group. It focuses on the people, conversations and shared enthusiasm that keep local retro communities active.",
     "collection": "retro-events",
