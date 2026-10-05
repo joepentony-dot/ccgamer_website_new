@@ -78,6 +78,8 @@ assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network error
 assert.match(voice,/function approvedLegacyGreeting\(key\)\{return key==="welcomeRare"\?BUNDLED_SPRITE\.cues\.welcomeRare:null\}/,"only the dedicated rare Watchers greeting may use the historical bundled sprite");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
 assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*sayKey\("welcome",\{cooldown:0\}\)/,"every Solo run start must request the owner-recorded Welcome cue");
+const beginRunVoiceSource=voice.slice(voice.indexOf("beginRun=function beginRunV116Voice"),voice.indexOf("if(typeof floorComplete",voice.indexOf("beginRun=function beginRunV116Voice")));
+assert.ok(beginRunVoiceSource.indexOf('sayKey("welcome",{cooldown:0})')>=0&&beginRunVoiceSource.indexOf('sayKey("welcome",{cooldown:0})')<beginRunVoiceSource.indexOf("setTimeout("),"mandatory Welcome playback must be requested synchronously during the Solo launch gesture, before delayed follow-up work.");
 assert.doesNotMatch(voice,/greetingRoll=Math\.random\(\)/,"run start must not randomly replace the expected Welcome cue");
 assert.match(voice,/function dungeonVoiceFx\(audio,key\)[\s\S]*audio\.volume=voiceVolume\(key\)[\s\S]*return null/,"owner-recorded speech must remain directly audible through its media element");
 assert.doesNotMatch(voice,/createMediaElementSource\(audio\)/,"recorded speech must not be rerouted into a separately suspended Web Audio context");
