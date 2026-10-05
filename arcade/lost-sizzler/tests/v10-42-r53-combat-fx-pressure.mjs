@@ -13,7 +13,7 @@ assert.match(
 );
 assert.match(
   play,
-  /if\(projectileImpactFxAllowed\(\)\)\{burst\(e\.x,e\.y,impactCol,20,1\.35\);ring\(e\.x,e\.y,impactCol,28\)\}const owner=findLocal\(b\.owner\);if\(owner\)\{damageEnemy\(e,b\.power,b\.element,owner\)\}/,
+  /if\(projectileImpactFxAllowed\(\)\)\{burst\(e\.x,e\.y,impactCol,20,1\.35\);ring\(e\.x,e\.y,impactCol,28\)\}const owner=findLocal\(b\.owner\)\|\|p1;if\(owner\)damageEnemy\(e,b\.power,b\.element,owner\)/,
   "FX pressure must not skip projectile damage ownership"
 );
 assert.match(
