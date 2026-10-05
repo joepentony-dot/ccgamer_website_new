@@ -78,7 +78,7 @@ assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
 assert.match(voice,/function approvedLegacyGreeting\(key\)\{return key==="welcomeRare"\?BUNDLED_SPRITE\.cues\.welcomeRare:null\}/,"only the dedicated rare Watchers greeting may use the historical bundled sprite");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
-assert.match(voice,/sayKey\("welcome",\{cooldown:0,allowDuringTutorial:true\}\)/,"every authoritative run start must request the owner-recorded Welcome cue even when onboarding state is still settling");
+assert.match(voice,/sayKey\("welcome",\{cooldown:0\}\)/,"every authoritative non-Tutorial run start must request the owner-recorded Welcome cue");
 assert.doesNotMatch(voice,/greetingRoll=Math\.random\(\)/,"run start must not randomly replace the expected Welcome cue");
 assert.match(voice,/function dungeonVoiceFx\(audio,key\)[\s\S]*audio\.volume=voiceVolume\(key\)[\s\S]*return null/,"owner-recorded speech must remain directly audible through its media element");
 assert.doesNotMatch(voice,/createMediaElementSource\(audio\)/,"recorded speech must not be rerouted into a separately suspended Web Audio context");
