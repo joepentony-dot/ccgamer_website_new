@@ -225,20 +225,16 @@
     state.pendingGesture=null;return playSprite(pending.key,pending.priority)
   }
   function dungeonVoiceFx(audio,key){
-    const Context=window.AudioContext||window.webkitAudioContext;if(!Context||!audio)return null;
-    try{
-      voiceContext=voiceContext||new Context();
-      if(!voiceImpulse){
-        const length=Math.max(1,Math.floor(voiceContext.sampleRate*.32));voiceImpulse=voiceContext.createBuffer(2,length,voiceContext.sampleRate);
-        for(let channel=0;channel<voiceImpulse.numberOfChannels;channel++){const data=voiceImpulse.getChannelData(channel);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,3.1)}
-      }
-      const source=voiceContext.createMediaElementSource(audio),tone=voiceContext.createBiquadFilter(),dry=voiceContext.createGain(),wet=voiceContext.createGain(),reverb=voiceContext.createConvolver(),master=voiceContext.createGain();
-      tone.type="lowpass";tone.frequency.value=3600;tone.Q.value=.55;dry.gain.value=.92;wet.gain.value=.12;reverb.buffer=voiceImpulse;master.gain.value=voiceVolume(key);
-      source.connect(tone);tone.connect(dry);dry.connect(master);tone.connect(reverb);reverb.connect(wet);wet.connect(master);master.connect(voiceContext.destination);audio.volume=1;
-      if(voiceContext.state==="suspended")voiceContext.resume?.().catch?.(()=>{});
-      state.dungeonFxApplied++;
-      return{disconnect(){for(const node of [source,tone,dry,wet,reverb,master])try{node.disconnect()}catch(_){}}};
-    }catch(_){audio.volume=voiceVolume(key);return null}
+    if(!audio)return null;
+    /*
+     * Owner-recorded speech must remain directly audible through the media
+     * element. Routing it through createMediaElementSource can make a clip
+     * silently "play" when a separately-created Web Audio context is suspended
+     * outside the original user gesture. Keep the recording itself authoritative;
+     * ambience/reverb must never be capable of muting it.
+     */
+    try{audio.volume=voiceVolume(key)}catch(_){}
+    return null
   }
   function playClip(src,priority,key=""){
     try{
@@ -486,8 +482,7 @@
       setTimeout(()=>{
         try{
           if(run!==activeRun||mode!=="playing")return;
-          const greetingRoll=Math.random(),welcomeKey=greetingRoll<.1?"welcomeRare":greetingRoll<.55?"welcome":"welcomeAlt";
-          sayKey(welcomeKey,{cooldown:0});
+          sayKey("welcome",{cooldown:0});
           if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
         }catch(_){}
       },450);
