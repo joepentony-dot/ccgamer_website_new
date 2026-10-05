@@ -462,6 +462,14 @@
     const originalShowToast=showToast;
     showToast=function showToastV116Voice(title,text,tone,duration,meta){const result=originalShowToast.apply(this,arguments);try{if(meta?.ccgDialogueVoiceHandled!==true){const key=classifyToast(title,text);if(key){const activeRun=typeof run==="object"?run:null;sayKey(key);if(key==="arenaLockdown")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("surviveAmbush",{cooldown:0})}catch(_){}},2400);else if(key==="memorySequenceStarted")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("watchSequence",{cooldown:0})}catch(_){}},3100)}}}catch(_){}return result};
   }
+  if(typeof awardXP==="function"){
+    const originalAwardXP=awardXP;
+    awardXP=function awardXPV116Voice(player,amount,reason){
+      const beforeLevel=Math.max(0,Number(player?.level||0)),result=originalAwardXP.apply(this,arguments),afterLevel=Math.max(0,Number(player?.level||0));
+      try{if(afterLevel>beforeLevel)sayKey("levelUp")}catch(_){}
+      return result
+    };
+  }
   if(typeof hurtPlayer==="function"){
     const originalHurtPlayer=hurtPlayer;
     hurtPlayer=function hurtPlayerV116Voice(player,n,friendly=false,source="enemy"){
