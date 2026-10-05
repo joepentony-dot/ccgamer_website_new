@@ -203,7 +203,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
     body = body.replace(iframeRe, iframe);
   }
 
-  const facadeRe = /<button\b[^>]*\bid=(["'])game-video-facade\\1[^>]*>/i;
+  const facadeRe = /<button\b[^>]*\bid=(["'])game-video-facade\1[^>]*>/i;
   const facadeMatch = body.match(facadeRe);
   if (facadeMatch) {
     let facade = facadeMatch[0];
@@ -212,7 +212,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
     body = body.replace(facadeRe, facade);
   }
 
-  const posterRe = /<img\b[^>]*\bid=(["'])game-video-poster\\1[^>]*>/i;
+  const posterRe = /<img\b[^>]*\bid=(["'])game-video-poster\1[^>]*>/i;
   const posterMatch = body.match(posterRe);
   if (posterMatch) {
     let poster = posterMatch[0];
