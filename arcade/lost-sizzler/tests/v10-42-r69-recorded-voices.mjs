@@ -13,6 +13,36 @@ const voiceSandbox={window:{}};
 const recordedPack=voiceSandbox.window.CCG_RECORDED_VOICE_SPRITE;
 assert.ok(recordedPack&&recordedPack.aliases&&recordedPack.cues,"recorded voice metadata must execute into a complete sprite map");
 for(const [alias,cue] of Object.entries(recordedPack.aliases))assert.ok(recordedPack.cues[cue],`recorded alias ${alias} points to missing cue ${cue}`);
+assert.equal(recordedPack.aliases.welcome,"welcome","primary run greeting must resolve to the owner-recorded welcome cue");
+assert.equal(recordedPack.aliases.welcomeAlt,"stay-alert","the second normal run greeting must use the supplied owner-recorded Stay Alert cue");
+assert.equal(recordedPack.aliases.welcomeRare,undefined,"the rare Watchers greeting must remain isolated from the owner sprite rather than aliasing to the normal welcome");
+for(const currentEssenceKey of ["essenceCollected","notEnoughEssence","essenceLore"]){
+  assert.equal(recordedPack.aliases[currentEssenceKey],undefined,`${currentEssenceKey} must not reuse an obsolete artefact-worded owner recording`);
+}
+const unreferencedRecordedCues=Object.keys(recordedPack.cues).filter(cue=>!Object.values(recordedPack.aliases).includes(cue));
+assert.deepEqual(unreferencedRecordedCues,["bronze-key-required"],"every owner-recorded cue except the retained duplicate legacy bronze-key phrase must remain addressable");
+const runtimeDir=path.join(root,"js");
+const runtimeSources=fs.readdirSync(runtimeDir)
+  .filter(name=>name.endsWith(".js")&&name!=="v10-42-r69-recorded-voices.js")
+  .map(name=>{
+    let source=fs.readFileSync(path.join(runtimeDir,name),"utf8");
+    if(name==="v10-16-voice-director.js")source=source.replace(/const lines=\{[\s\S]*?\n  \};/,"");
+    return source
+  }).join("\n");
+const ownerAliasesWithoutRuntimeRoute=Object.keys(recordedPack.aliases).filter(alias=>!runtimeSources.includes(alias)).sort();
+const intentionallyRetiredAliases=[
+  "artefactCollected",
+  "needThreeArtefacts",
+  "notEnoughScore",
+  "npc.merchant.hidden.empty",
+  "npc.merchant.hidden.partial",
+  "npc.merchant.hidden.ready",
+  "purchaseComplete"
+].sort();
+assert.deepEqual(ownerAliasesWithoutRuntimeRoute,intentionallyRetiredAliases,"only explicitly retired duplicate/obsolete owner-recorded aliases may lack a live runtime route");
+for(const currentKey of ["watchStep","enemiesNearby","escortScout","guardianEncountered","useBanishmentFlask"]){
+  assert.ok(!ownerAliasesWithoutRuntimeRoute.includes(currentKey),`${currentKey} must have a live current-game trigger`);
+}
 const voiceAsset=path.join(root,"assets/audio/voice/ccg-recorded-voices-r69.ogg");
 assert.ok(fs.existsSync(voiceAsset),"the owner-recorded R69 OGG sprite must be present in the public runtime");
 assert.ok(fs.statSync(voiceAsset).size>1_900_000,"the recorded voice sprite must contain the assembled 84-cue payload");
@@ -35,7 +65,19 @@ assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locke
 assert.match(loader,/v10-42-r69-recorded-voices\.js[\s\S]*v10-16-voice-director\.js/,"recorded voice metadata must load before the single voice director");
 assert.match(voice,/recorded\?\.aliases\?\.\[key\]/,"voice playback must prefer the recorded sprite alias without adding a competing audio owner");
 assert.match(voice,/recordedAvailable=Boolean\(recordedCue\)/,"recorded voice playback must know when the owner's cue exists");
-assert.match(voice,/!recordedAvailable&&fallbackText&&speakText/,"a failed owner-recorded cue must not silently substitute browser speech");
+assert.match(voice,/function primeRecordedVoices\(\)/,"mobile user gestures must prime the recorded voice media before delayed gameplay speech");
+assert.match(voice,/document\.addEventListener\("pointerdown",unlock,\{capture:true\}\)/,"voice media unlock must remain available on every pointer gesture, not disappear after the first tap");
+assert.match(voice,/document\.addEventListener\("touchstart",unlock,\{capture:true,passive:true\}\)/,"touch-first mobile browsers must have an explicit recorded-voice unlock path");
+assert.doesNotMatch(voice,/pointerdown",unlock,\{once:true/,"mobile voice unlock must not be a one-shot listener");
+assert.match(voice,/\(recordedAvailable\|\|approvedLegacy\)&&retryOnGesture[\s\S]*state\.pendingGesture=\{key,priority,runRef\}/,"a rejected approved recording must be retained for the next real user gesture");
+assert.match(voice,/p\?\.then[\s\S]*fallback\(true\)/,"recorded sprite play-promise rejection must enter the gesture retry path");
+assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*state\.unlocked=true;primeRecordedVoices\(\)/,"loader-replayed Solo starts must still attempt the recorded welcome and retain it for gesture retry");
+assert.match(voice,/if\(state\.pendingGesture\)retryPendingGesture\(\)/,"a retained recorded cue must retry synchronously inside the next real mobile user gesture");
+assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)/,"mobile retry must not be deferred outside the user-activation handler");
+assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
+assert.match(voice,/const APPROVED_LEGACY_CRITICAL_CUES=new Set\(\["welcomeRare","gameOver","playerDeath","loadula","gildedElf","gildedFive","gildedCaught","gildedEscaped","boulder","weeklyDeath"\]\)/,"only the explicitly approved critical cues may use the historical packaged recordings when no owner recording exists");\nassert.match(voice,/function approvedLegacyCue\(key\)\{return APPROVED_LEGACY_CRITICAL_CUES\.has\(key\)\?BUNDLED_SPRITE\.cues\[key\]\|\|null:null\}/,"legacy packaged voice fallback must stay allowlisted rather than generic");
+assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
+assert.match(voice,/greetingRoll=Math\.random\(\),welcomeKey=greetingRoll<\.1\?"welcomeRare":greetingRoll<\.55\?"welcome":"welcomeAlt"/,"run start must retain two normal greetings plus a ten-percent rare Watchers greeting");
 assert.match(loader,/const criticalFiles=\["admin-audio-overrides\.js","lost-sizzler-playlist-audio\.js","v10-42-r69-recorded-voices\.js","v10-16-voice-director\.js"/,"recorded voice metadata and director must be release-critical");
 assert.match(voice,/LOCKED BRONZE DOOR[\s\S]*bronzeKeyRequired/,"bronze doors must classify into explicit recorded feedback");
 assert.match(voice,/LOCKED CHEST[\s\S]*chestKeyRequired/,"locked chests must classify into explicit recorded feedback");
