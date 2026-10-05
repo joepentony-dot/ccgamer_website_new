@@ -32,6 +32,7 @@ on:
       - "data/publisher-histories*.json"
       - "data/seo-opportunity-targets.json"
       - "admin/js/content-publisher-image-optimizer.js"
+      - "admin/js/content-publisher.js"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
       - "admin/js/content-publisher-completion-guard.js"
@@ -43,6 +44,7 @@ on:
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
+      - "scripts/validate-game-performance-contract.mjs"
       - "scripts/apply-game-review-seo.js"
       - "scripts/generate-legacy-seo-redirects.js"
       - "scripts/validate-game-review-seo.js"
@@ -245,6 +247,9 @@ jobs:
         run: |
           node scripts/rebuild-games.js
           rm -f seo-audit-report.md
+
+      - name: Enforce Lighthouse contract for newly published games
+        run: node scripts/validate-game-performance-contract.mjs --base HEAD^ --require-generated
 
       - name: Confirm generated public HTML is canonical
         run: node scripts/normalize-public-header-shell.js --root . --check
