@@ -288,7 +288,7 @@
       current.advancing=false;
       if(current.audio.paused){
         const playAttempt=beginGestureTrackedPlay(state);
-        try{Promise.resolve(current.audio.play()).then(()=>{clearPendingGestureFor(state,playAttempt);clearFailure(current.url);stopFallback()}).catch(()=>{retainPendingGestureFor(state,playAttempt);recordFailure(current.url);scheduleRetry(state)})}catch(_){retainPendingGestureFor(state,playAttempt);recordFailure(current.url);scheduleRetry(state)}
+        try{Promise.resolve(current.audio.play()).then(()=>{if(playAttempt!==playbackAttemptSerial)return;clearPendingGestureFor(state,playAttempt);clearFailure(current.url);stopFallback()}).catch(()=>{if(playAttempt!==playbackAttemptSerial)return;retainPendingGestureFor(state,playAttempt);recordFailure(current.url);scheduleRetry(state)})}catch(_){if(playAttempt===playbackAttemptSerial){retainPendingGestureFor(state,playAttempt);recordFailure(current.url);scheduleRetry(state)}}
       }
       current.audio.volume=targetVolume(state);
       return;
@@ -307,7 +307,7 @@
       next.advancing=false;
       if(next.audio.paused){
         const playAttempt=beginGestureTrackedPlay(state);
-        try{Promise.resolve(next.audio.play()).then(()=>{clearPendingGestureFor(state,playAttempt);clearFailure(next.url);stopFallback()}).catch(()=>{retainPendingGestureFor(state,playAttempt);recordFailure(next.url);scheduleRetry(state)})}catch(_){retainPendingGestureFor(state,playAttempt);recordFailure(next.url);scheduleRetry(state)}
+        try{Promise.resolve(next.audio.play()).then(()=>{if(playAttempt!==playbackAttemptSerial)return;clearPendingGestureFor(state,playAttempt);clearFailure(next.url);stopFallback()}).catch(()=>{if(playAttempt!==playbackAttemptSerial)return;retainPendingGestureFor(state,playAttempt);recordFailure(next.url);scheduleRetry(state)})}catch(_){if(playAttempt===playbackAttemptSerial){retainPendingGestureFor(state,playAttempt);recordFailure(next.url);scheduleRetry(state)}}
       }
       next.audio.volume=targetVolume(state);
       return;
@@ -322,18 +322,19 @@
     const playAttempt=beginGestureTrackedPlay(state);
     try{
       Promise.resolve(next.audio.play()).then(()=>{
+        if(playAttempt!==playbackAttemptSerial)return;
         clearPendingGestureFor(state,playAttempt);
         clearFailure(next.url);
         fadeBetween(previous,next);
       }).catch(()=>{
-        if(current!==next)return;
+        if(current!==next||playAttempt!==playbackAttemptSerial)return;
         retainPendingGestureFor(state,playAttempt);
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
       });
     }catch(_){
-      if(current===next){
+      if(current===next&&playAttempt===playbackAttemptSerial){
         retainPendingGestureFor(state,playAttempt);
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
