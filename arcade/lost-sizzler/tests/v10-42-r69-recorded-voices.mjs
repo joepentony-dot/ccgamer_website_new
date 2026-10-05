@@ -71,7 +71,8 @@ assert.match(voice,/document\.addEventListener\("touchstart",unlock,\{capture:tr
 assert.doesNotMatch(voice,/pointerdown",unlock,\{once:true/,"mobile voice unlock must not be a one-shot listener");
 assert.match(voice,/\(recordedAvailable\|\|approvedLegacy\)&&retryOnGesture[\s\S]*state\.pendingGesture=\{key,priority,runRef\}/,"a rejected approved recording must be retained for the next real user gesture");
 assert.match(voice,/p\?\.then[\s\S]*fallback\(true\)/,"recorded sprite play-promise rejection must enter the gesture retry path");
-assert.match(core,/ccg:run-started/,"canonical run start must publish an authoritative audio-start event");\nassert.match(voice,/window\.addEventListener\("ccg:run-started",onAuthoritativeRunStarted\)/,"voice playback must bind Welcome to the authoritative run-start event rather than wrapper order");
+assert.match(core,/ccg:run-started/,"canonical run start must publish an authoritative audio-start event");
+assert.match(voice,/window\.addEventListener\("ccg:run-started",onAuthoritativeRunStarted\)/,"voice playback must bind Welcome to the authoritative run-start event rather than wrapper order");
 assert.match(voice,/if\(state\.pendingGesture\)retryPendingGesture\(\)/,"a retained recorded cue must retry synchronously inside the next real mobile user gesture");
 assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)/,"mobile retry must not be deferred outside the user-activation handler");
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
