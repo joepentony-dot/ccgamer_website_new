@@ -7,6 +7,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,'../../..');
 const read=relative=>fs.readFileSync(path.join(repo,relative),'utf8');
 const patch=read('arcade/lost-sizzler/js/lost-sizzler-playlist-audio.js');
+const baseAudio=read('arcade/lost-sizzler/js/audio.js');
 const continuity=read('arcade/lost-sizzler/js/v10-7-continuous-exploration.js');
 const core=read('arcade/lost-sizzler/js/game-core.js');
 const play=read('arcade/lost-sizzler/js/game-play.js');
@@ -31,6 +32,9 @@ assert(patch.includes('function adminAudioPending()'),'Playlist owner must obser
 assert(patch.includes('function customSources(state)'),'Playlist owner must isolate uploaded production soundtrack sources.');
 assert(patch.includes('function categorySources(state){\n    return customSources(state);'),'Only uploaded production playlists may own live music; bundled placeholder tracks must never be selected.');
 assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n    return false;'),'Legacy/generated music fallback must be disabled outright.');
+assert(baseAudio.includes('productionPlaylistExclusive=true'),'Base audio must explicitly disable bundled/generated music ownership in production.');
+assert(baseAudio.includes('if(productionPlaylistExclusive)return true'),'Base audio start must remain silent until the uploaded playlist owner takes control.');
+assert(baseAudio.includes('if(!started||productionPlaylistExclusive)return'),'Base startMusic must never restart generic music during room transitions.');
 assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
 assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
