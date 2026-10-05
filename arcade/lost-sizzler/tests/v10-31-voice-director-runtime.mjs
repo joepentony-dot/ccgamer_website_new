@@ -27,7 +27,7 @@ const context={
   document:{readyState:"complete",addEventListener(){},getElementById:()=>null,querySelector:()=>null,createElement:()=>({addEventListener(){},setAttribute(){}})},
   run:{floor:1},mode:"playing",p1:{x:2,y:2,maxHealth:8,health:8},world:{},host:{enemies:[]},
   W:{roomAt:(_world,x)=>x<10?1:2},visibleTo:()=>true,S:{isEnabled:()=>true},
-  window:{CCG_ASSET_OVERRIDES:{audio:{voice:{}}},CCGLostSizzlerOnboardingV120:tutorial,speechSynthesis:speech}
+  window:{CCG_ASSET_OVERRIDES:{audio:{voice:{}}},CCGLostSizzlerOnboardingV120:tutorial,speechSynthesis:speech,_listeners:new Map(),addEventListener(type,fn){if(!this._listeners.has(type))this._listeners.set(type,new Set());this._listeners.get(type).add(fn)},removeEventListener(type,fn){this._listeners.get(type)?.delete(fn)},dispatchEvent(event){for(const fn of this._listeners.get(event.type)||[])fn(event);return true}}
 };
 context.window.window=context.window;
 vm.createContext(context);vm.runInContext(recordedSource,context,{filename:"v10-42-r69-recorded-voices.js"});vm.runInContext(source,context,{filename:"v10-16-voice-director.js"});
