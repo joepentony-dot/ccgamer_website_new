@@ -319,18 +319,40 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
     const loadEntry=([src,key])=>new Promise(resolve=>{
       const selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
       const requestedPath=(()=>{try{return new URL(src,location.href).pathname}catch(_){return src.split("?")[0]}})();
+      const adminAudio=requestedPath.endsWith("/admin-audio-overrides.js");
+      let settled=false,timeout=null;
+      const settle=ok=>{if(settled)return;settled=true;if(timeout)clearTimeout(timeout);resolve(ok)};
+      const finishLoaded=()=>{
+        if(!adminAudio){settle(true);return}
+        const ready=window.CCG_ADMIN_AUDIO_READY_PROMISE;
+        if(!ready?.then){
+          if(window.CCG_ADMIN_AUDIO_READY===true)settle(true);
+          else{criticalFailures.push(`${requestedPath} did not expose audio readiness`);settle(false)}
+          return;
+        }
+        ready.then(()=>{
+          const admin=window.CCG_ADMIN_AUDIO||{},remoteSkipped=admin.remoteMediaSkipped===true,normalTracks=Array.isArray(admin.playlists?.normal)?admin.playlists.normal.length:0;
+          if(!remoteSkipped&&(admin.loadFailed===true||normalTracks<1)){
+            criticalFailures.push(`${requestedPath} did not hydrate the uploaded exploration soundtrack`);
+            settle(false);
+            return;
+          }
+          settle(true);
+        }).catch(error=>{
+          criticalFailures.push(`${requestedPath} audio readiness failed: ${String(error?.message||error)}`);
+          settle(false);
+        });
+      };
       const alreadyLoaded=[...document.scripts].some(node=>{const raw=node.getAttribute("src");if(!raw)return false;try{return new URL(raw,location.href).pathname===requestedPath}catch(_){return raw.split("?")[0]===requestedPath}});
-      if(document.querySelector(selector)||alreadyLoaded){resolve(true);return}
-      const script=document.createElement("script");
-      script.src=src;script.dataset[key]="true";script.async=false;
-      let settled=false;
-      const settle=ok=>{if(settled)return;settled=true;clearTimeout(timeout);resolve(ok)};
-      const timeout=setTimeout(()=>{
+      timeout=setTimeout(()=>{
         console.warn(`[Lost Sizzler] optional enhancement timed out: ${src}`);
         if(criticalPaths.has(requestedPath))criticalFailures.push(`${requestedPath} timed out`);
         settle(false);
-      },5000);
-      script.onload=()=>settle(true);
+      },adminAudio?12000:5000);
+      if(document.querySelector(selector)||alreadyLoaded){finishLoaded();return}
+      const script=document.createElement("script");
+      script.src=src;script.dataset[key]="true";script.async=false;
+      script.onload=finishLoaded;
       script.onerror=()=>{
         console.warn(`[Lost Sizzler] optional enhancement failed to load: ${src}`);
         if(criticalPaths.has(requestedPath))criticalFailures.push(`${requestedPath} failed`);
