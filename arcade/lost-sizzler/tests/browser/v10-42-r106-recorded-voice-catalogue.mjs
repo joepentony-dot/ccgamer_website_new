@@ -14,7 +14,7 @@ assert.ok(aliasMatch&&cueMatch,"recorded voice metadata must expose aliases and 
 const aliases=JSON.parse(aliasMatch[1]);
 const cues=JSON.parse(cueMatch[1]);
 for(const entry of Object.entries(aliases))assert.ok(cues[entry[1]],"recorded alias "+entry[0]+" must resolve to cue "+entry[1]);
-assert.equal(aliases["npc.alchemist.ready"],"i-can-trade-those-artefacts-for-a-banishment-flask","Alchemist ready state must use the recorded Flask line");
+assert.equal(aliases["npc.alchemist.ready"],undefined,"trade-ready Alchemist must not reuse the obsolete artefact-worded Flask recording");
 
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage"]});
 try{
