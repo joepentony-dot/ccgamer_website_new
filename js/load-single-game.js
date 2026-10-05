@@ -1530,12 +1530,18 @@ function renderGame(game) {
     const vid = resolveVideoId(game);
     const videoSection = document.getElementById("game-video-section");
     const videoEmbed = document.getElementById("game-video-embed");
+    const videoFacade = document.getElementById("game-video-facade");
+    const videoPoster = document.getElementById("game-video-poster");
     const videoActions = videoSection ? videoSection.querySelector(".game-video__actions") : null;
     const videoBtn = document.getElementById("gameVideoBtn");
     const isDriveVideoGame = game.id === "the_happiest_days_of_your_life";
     const hasVideo = !!vid || isDriveVideoGame;
 
     if (isDriveVideoGame) {
+        if (videoFacade) {
+            videoFacade.hidden = true;
+            videoFacade.onclick = null;
+        }
         if (videoEmbed) {
             videoEmbed.src = "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/preview";
             videoEmbed.hidden = false;
@@ -1544,9 +1550,27 @@ function renderGame(game) {
         if (videoActions) videoActions.hidden = false;
         toggleGameEmptyMessage(videoSection, "video", "");
     } else if (hasVideo) {
+        const embedUrl = `https://www.youtube-nocookie.com/embed/${vid}`;
         if (videoEmbed) {
-            videoEmbed.src = `https://www.youtube-nocookie.com/embed/${vid}`;
-            videoEmbed.hidden = false;
+            videoEmbed.removeAttribute("src");
+            videoEmbed.dataset.videoSrc = embedUrl;
+            videoEmbed.hidden = true;
+        }
+        if (videoPoster) {
+            videoPoster.src = `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`;
+            videoPoster.alt = "";
+        }
+        if (videoFacade) {
+            const titleText = String(game.title || "game").trim();
+            videoFacade.setAttribute("aria-label", `Play ${titleText} video`);
+            videoFacade.hidden = false;
+            videoFacade.onclick = () => {
+                if (!videoEmbed) return;
+                const src = videoEmbed.dataset.videoSrc || embedUrl;
+                videoEmbed.src = src.includes("?") ? `${src}&autoplay=1` : `${src}?autoplay=1`;
+                videoEmbed.hidden = false;
+                videoFacade.hidden = true;
+            };
         }
         if (videoBtn) {
             videoBtn.href = `https://www.youtube.com/watch?v=${vid}`;
@@ -1555,8 +1579,17 @@ function renderGame(game) {
         if (videoActions) videoActions.hidden = false;
         toggleGameEmptyMessage(videoSection, "video", "");
     } else {
+        if (videoFacade) {
+            videoFacade.hidden = true;
+            videoFacade.onclick = null;
+        }
+        if (videoPoster) {
+            videoPoster.removeAttribute("src");
+            videoPoster.alt = "";
+        }
         if (videoEmbed) {
-            videoEmbed.src = "";
+            videoEmbed.removeAttribute("src");
+            delete videoEmbed.dataset.videoSrc;
             videoEmbed.hidden = true;
         }
         if (videoBtn) videoBtn.hidden = true;
