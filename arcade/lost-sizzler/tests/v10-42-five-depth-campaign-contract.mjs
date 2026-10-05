@@ -113,6 +113,49 @@ assert(windowObject.CCGSystems.updateObjective(finalHost,sandbox.run,0)===false,
 assert(/AWAKENED SIGIL/i.test(windowObject.CCGSystems.objectiveText(finalHost,sandbox.run,0)),'Floor 15 must retain the real Awakened Sigil objective.');
 finalHost.exitSigilCollected=true;
 assert(windowObject.CCGSystems.updateObjective(finalHost,sandbox.run,0)===true&&finalHost.exitOpen===true,'Floor 15 must open only after both the final objective and the Awakened Sigil are complete.');
+
+sandbox.run.floor=3;
+sandbox.run.v142ClaimedDomains=[];
+const missingDomainHost={
+  objective:{type:'keys',complete:false},
+  keysCollected:0,
+  items:[],
+  enemies:[{id:'iron-guardian',keyGuardian:true,domainId:'iron',alive:false}],
+  doors:[{sigilGate:true,locked:true,open:false}],
+  exitOpen:false
+};
+assert(api.recoverMissingDomainKey(missingDomainHost,sandbox.run,api.domainForFloor(sandbox.run))===true,'A missing domain Key after its guardian is defeated must self-recover instead of deadlocking the floor.');
+assert(sandbox.run.v142ClaimedDomains.includes('iron'),'Recovered domain Key must bind to the campaign run.');
+assert(windowObject.CCGSystems.updateObjective(missingDomainHost,sandbox.run,0)===true&&missingDomainHost.exitOpen===true,'Recovered domain progression must immediately expose the stairs.');
+
+sandbox.run.floor=8;
+sandbox.run.v142ClaimedDomains=[];
+const restoredInterimHost={
+  objective:{type:'rescue',complete:true},
+  doors:[{sigilGate:true,locked:true,open:false,opening:true}],
+  exitSigilCollected:false,
+  exitOpen:false,
+  sigilLockdown:true,
+  sigilResolved:false
+};
+assert(api.ensureInterimExit(restoredInterimHost,sandbox.run)===true,'A restored save with a completed interim objective must repair a stale closed exit.');
+assert(restoredInterimHost.exitOpen===true&&restoredInterimHost.doors[0].open===true,'Restored interim progression repair must reopen the route without demanding a Sigil.');
+
+sandbox.run.floor=15;
+sandbox.run.v142ClaimedDomains=['iron','bone','ash'];
+const missingFinalSigilHost={
+  objective:{type:'guardian',complete:true},
+  items:[],
+  enemies:[],
+  doors:[{sigilGate:true,locked:true,open:false,opening:true}],
+  sigilDefenderIds:[],
+  sigilDropPos:{x:9,y:7},
+  exitSigilCollected:false,
+  exitOpen:false
+};
+assert(api.recoverMissingFinalSigil(missingFinalSigilHost,sandbox.run)===true,'A missing final Sigil after the chamber is cleared must self-recover instead of deadlocking Floor 15.');
+assert(missingFinalSigilHost.items.some(item=>item.kind==='exitSigil'&&item.active!==false),'Final recovery must create a collectible Awakened Sigil.');
+assert(missingFinalSigilHost.doors[0].locked===false&&missingFinalSigilHost.doors[0].open===true,'Final recovery must release the Sigil chamber gate.');
 const expected=[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],seen=[];
 for(let floor=1;floor<=15;floor++){
   const slice=api.floorPickupSlice('TEST-SEED',floor);
