@@ -1,0 +1,98 @@
+name: CCG Lighthouse Performance Protocol
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "AGENTS.md"
+      - "docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md"
+      - "docs/ai-work/lighthouse-sitewide.md"
+      - "admin/**"
+      - "games/game.html"
+      - "games/games.json"
+      - "games/*/index.html"
+      - "js/**"
+      - "resources/css/**"
+      - "resources/images/thumbnails/all/**"
+      - "resources/images/games/boxes-3d/**"
+      - "scripts/**"
+      - "templates/**"
+      - "service-worker.js"
+      - "tests/lighthouse-performance-protocol.test.mjs"
+      - "tests/image-performance-budget.test.mjs"
+      - ".github/workflows/ccg-lighthouse-protocol.yml"
+      - ".github/workflows/games-publishing.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "AGENTS.md"
+      - "docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md"
+      - "admin/**"
+      - "games/game.html"
+      - "games/games.json"
+      - "js/**"
+      - "resources/css/**"
+      - "resources/images/thumbnails/all/**"
+      - "resources/images/games/boxes-3d/**"
+      - "scripts/**"
+      - "templates/**"
+      - "service-worker.js"
+      - ".github/workflows/ccg-lighthouse-protocol.yml"
+      - ".github/workflows/games-publishing.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ccg-lighthouse-protocol-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse-protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate Lighthouse contract tooling
+        run: |
+          node --check scripts/validate-game-performance-contract.mjs
+          node --check admin/js/content-publisher.js
+          node --check admin/js/content-publisher-image-optimizer.js
+
+      - name: Run permanent performance protocol regressions
+        run: |
+          node --test tests/lighthouse-performance-protocol.test.mjs
+          node --test tests/image-performance-budget.test.mjs
+          node --test tests/content-publisher.test.mjs
+          node scripts/validate-game-performance-contract.mjs --shared-only
+
+      - name: Enforce new-game contract against pull-request base
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+          node scripts/validate-game-performance-contract.mjs --base "origin/${{ github.base_ref }}" --shared-only
+
+      - name: Enforce new-game contract on main updates
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            node scripts/validate-game-performance-contract.mjs --base HEAD^ --shared-only
+          fi
+
+      - name: Check whitespace
+        run: git diff --check
