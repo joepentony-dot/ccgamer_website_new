@@ -41,9 +41,9 @@ The user-supplied Lighthouse reports from **25 September 2026** for the public H
 
 ## Execution model
 
-The workflow is intentionally diagnostic. Weak Lighthouse scores do not fail unrelated development. Syntax, URL inventory breadth and execution failures are still treated as tooling defects.
+The complete site-wide Lighthouse matrix is intentionally the broad diagnostic sweep rather than a blanket score gate for every unrelated pull request. Syntax, URL inventory breadth and execution failures remain tooling defects.
 
-Pull requests that change the sweep tooling qualify the scripts and safety contracts without running the expensive full matrix. The complete public-site sweep runs automatically when the Lighthouse tooling is merged to `main`, and thereafter remains available by manual dispatch plus the weekly schedule. It is split into deterministic mobile and desktop shards with bounded parallelism.
+Known regression classes are now enforced separately by the permanent `CCG Lighthouse Performance Protocol` source/publishing guard. Public-site development must pass that contract even when the full multi-page matrix is not run pre-merge. The complete public-site sweep runs automatically after relevant shared changes reach `main`, and remains available by manual dispatch plus the weekly schedule. It is split into deterministic mobile and desktop shards with bounded parallelism.
 
 ## Safety
 
