@@ -40,6 +40,9 @@ assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
+assert(overrides.includes('function scheduleHydrationRetry(attempt,reason)'),'Production audio loader must retry when the live Supabase asset client is late or temporarily unavailable.');
+assert(overrides.includes('window.CCG_ADMIN_AUDIO_READY=false'),'A delayed production soundtrack hydration must remain pending rather than publishing an empty ready state.');
+assert(overrides.includes('load(attempt+1)'),'Production audio hydration retries must re-enter the real loader instead of leaving music permanently silent.');
 assert(admin.includes('lostSizzlerAutoPlaylist'),'Batch auto-categorisation slot is missing.');
 assert(admin.includes('input.multiple=Boolean(slot.playlist)'),'Lost Sizzler category uploads must accept multiple files.');
 assert(admin.includes(".from('arcade_assets').insert("),'Playlist uploads must append rows rather than replace a category.');
