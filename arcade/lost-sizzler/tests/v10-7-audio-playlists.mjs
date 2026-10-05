@@ -40,6 +40,7 @@ assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
+// R104 live acceptance: a late production asset client must recover without leaving the soundtrack silent.
 assert(overrides.includes('function scheduleHydrationRetry(attempt,reason)'),'Production audio loader must retry when the live Supabase asset client is late or temporarily unavailable.');
 assert(overrides.includes('window.CCG_ADMIN_AUDIO_READY=false'),'A delayed production soundtrack hydration must remain pending rather than publishing an empty ready state.');
 assert(overrides.includes('load(attempt+1)'),'Production audio hydration retries must re-enter the real loader instead of leaving music permanently silent.');
