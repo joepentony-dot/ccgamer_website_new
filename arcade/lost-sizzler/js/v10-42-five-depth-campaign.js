@@ -141,6 +141,39 @@
       authorizeInterimExit(hostState);
       return true;
     }
+    function noteProgressionRecovery(hostState,reason){
+      if(!hostState)return;
+      hostState.v142ProgressionSafetyRecovery={reason:String(reason||"unknown"),floor:floorNumber(currentRun()),at:Date.now()};
+    }
+    function recoverMissingDomainKey(hostState,runState,domain){
+      if(!hostState||!domain||claimedDomains(runState).includes(domain.id)||(Number(hostState.keysCollected)||0)>=1)return false;
+      const activeKey=(hostState.items||[]).some(item=>item?.active!==false&&item?.kind==="key"&&(!item.domainId||item.domainId===domain.id));
+      if(activeKey)return false;
+      const guardian=(hostState.enemies||[]).find(enemy=>enemy?.keyGuardian&&(!enemy.domainId||enemy.domainId===domain.id));
+      if(guardian?.alive)return false;
+      runState.v142ClaimedDomains=Array.isArray(runState.v142ClaimedDomains)?runState.v142ClaimedDomains:[];
+      if(!runState.v142ClaimedDomains.includes(domain.id))runState.v142ClaimedDomains.push(domain.id);
+      hostState.keysCollected=Math.max(1,Number(hostState.keysCollected)||0);
+      hostState.v142GlobalKeyCount=globalKeyCount(runState);
+      noteProgressionRecovery(hostState,`missing-domain-key:${domain.id}`);
+      announce("PROGRESSION RECOVERED",`${domain.name} was missing after its guardian was defeated. The campaign has restored the Key to prevent an unwinnable floor.`,"gold",9500);
+      return true;
+    }
+    function recoverMissingFinalSigil(hostState,runState){
+      if(!hostState||floorNumber(runState)!==CFG.maxFloors||globalKeyCount(runState)<CFG.keyTarget||!hostState.objective?.complete)return false;
+      const defenders=SYSTEMS.sigilDefendersAlive?.(hostState)||[];
+      if(defenders.length>0||hostState.exitSigilCollected)return false;
+      const activeSigil=(hostState.items||[]).some(item=>item?.active!==false&&item?.kind==="exitSigil");
+      if(activeSigil)return false;
+      const player=currentPlayer(),worldState=(()=>{try{return typeof world!=="undefined"?world:null}catch(_){return null}})(),fallback=worldState?.exit||{x:1,y:1},drop=hostState.sigilDropPos||player||fallback;
+      hostState.items=hostState.items||[];
+      hostState.items.push({id:`progression-recovery-sigil-${Date.now()}`,x:Number(drop.x)||fallback.x,y:Number(drop.y)||fallback.y,kind:"exitSigil",active:true,title:"AWAKENED SIGIL",v142ProgressionRecovery:true});
+      hostState.sigilResolved=true;hostState.sigilLockdown=false;hostState.exitSigilDropped=true;
+      for(const door of hostState.doors||[])if(door.sigilGate){door.locked=false;door.open=true;door.opening=false;door.openAt=0;door.openingStart=0}
+      noteProgressionRecovery(hostState,"missing-final-sigil");
+      announce("AWAKENED SIGIL RESTORED","The final Sigil failed to materialise after the chamber was cleared. It has been restored so the campaign can still be completed.","gold",10000);
+      return true;
+    }
     const baseUpdateObjective=SYSTEMS.updateObjective.bind(SYSTEMS),baseObjectiveText=SYSTEMS.objectiveText.bind(SYSTEMS);
     const stripInterimSigilSuffix=text=>String(text||"")
       .replace(/\s+—\s+SIGIL LOCKDOWN:.*$/i,"")
@@ -151,6 +184,7 @@
       const floor=floorNumber(runState),domain=domainForFloor(runState);
       if(floor===1){baseUpdateObjective(hostState,runState,explorePct);ensureInterimExit(hostState,runState);return hostState.exitOpen}
       if(domain){
+        recoverMissingDomainKey(hostState,runState,domain);
         const done=(Number(hostState.keysCollected)||0)>=1||claimedDomains(runState).includes(domain.id);if(hostState.objective)hostState.objective.complete=done;if(done)ensureInterimExit(hostState,runState);else hostState.exitOpen=false;return hostState.exitOpen;
       }
       if(floor<CFG.maxFloors){
@@ -159,7 +193,9 @@
         return hostState.exitOpen;
       }
       if(floor===CFG.maxFloors&&globalKeyCount(runState)<CFG.keyTarget){if(hostState.objective)hostState.objective.complete=false;hostState.exitOpen=false;return false}
-      return baseUpdateObjective(hostState,runState,explorePct);
+      const result=baseUpdateObjective(hostState,runState,explorePct);
+      if(hostState.objective?.complete)recoverMissingFinalSigil(hostState,runState);
+      return hostState.exitOpen||result;
     };
     SYSTEMS.objectiveText=function(hostState,runState,explorePct=0){
       const floor=floorNumber(runState),cfg=floorConfig(runState),domain=domainForFloor(runState),keys=globalKeyCount(runState);
@@ -210,7 +246,7 @@
     }
     updateMenuCopy();
 
-    window.CCGLostSizzlerV142FiveDepthCampaign={version:"V10.42",floorConfig,domainForFloor,floorPickupSlice,globalKeyCount,applyFloorTheme,applyFloorBalance};
+    window.CCGLostSizzlerV142FiveDepthCampaign={version:"V10.42",floorConfig,domainForFloor,floorPickupSlice,globalKeyCount,applyFloorTheme,applyFloorBalance,ensureInterimExit,recoverMissingDomainKey,recoverMissingFinalSigil};
     return true;
   }
 
