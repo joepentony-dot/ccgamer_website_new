@@ -1,0 +1,47 @@
+name: CCG First Paint Performance
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "resources/css/ccg-master.css"
+      - "js/analytics.js"
+      - "templates/base-omega.html"
+      - "templates/game-template.html"
+      - "games/index.html"
+      - "games/collections/index.html"
+      - "games/collections/retro-events.html"
+      - "games/*/index.html"
+      - "service-worker.js"
+      - "tests/sitewide-performance-first-paint.test.mjs"
+      - ".github/workflows/ccg-first-paint-performance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  first-paint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate changed JavaScript syntax
+        run: |
+          node --check js/analytics.js
+          node --check tests/sitewide-performance-first-paint.test.mjs
+
+      - name: Run first-paint regression tests
+        run: node --test tests/sitewide-performance-first-paint.test.mjs
+
+      - name: Check whitespace
+        run: git diff --check
