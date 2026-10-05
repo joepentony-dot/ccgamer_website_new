@@ -40,6 +40,17 @@ const FEATURED_NAMES = [
     "Rob Hubbard"
 ];
 
+function resolveComposerImagePath(slug) {
+    const base = path.join(repoRoot, "resources", "images", "composers", slug);
+    for (const extension of [".webp", ".jpg", ".jpeg", ".png"]) {
+        const candidate = `${base}${extension}`;
+        if (fs.existsSync(candidate)) {
+            return `/resources/images/composers/${slug}${extension}`;
+        }
+    }
+    return "";
+}
+
 function fail(message) {
     console.error(`[composers] ${message}`);
     process.exit(1);
@@ -416,13 +427,20 @@ function renderFeaturedFallback(routes) {
     return FEATURED_NAMES
         .map((name) => byKey.get(normalizeComposerKey(name)))
         .filter(Boolean)
-        .map((route) => `<a href="/music/${htmlEscape(route.slug)}/" class="composer-card composer-card--featured" data-slug="${htmlEscape(route.slug)}">
+        .map((route, index) => {
+            const imagePath = resolveComposerImagePath(route.slug);
+            const image = imagePath
+                ? `<div class="composer-thumb"><img src="${htmlEscape(imagePath)}" alt="${htmlEscape(route.name)}" ${index === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'} decoding="async"></div>`
+                : "";
+            return `<a href="/music/${htmlEscape(route.slug)}/" class="composer-card composer-card--featured" data-slug="${htmlEscape(route.slug)}">
+          ${image}
           <div class="composer-info">
             <h3>${htmlEscape(route.name)}</h3>
             <p class="composer-platform">${htmlEscape(platformLabel(route))}</p>
             <p class="composer-count">${route.count} Tracks</p>
           </div>
-        </a>`)
+        </a>`;
+        })
         .join("\n        ");
 }
 
