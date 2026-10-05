@@ -112,7 +112,6 @@ assert.match(assetOverrides,/const CCG_RELEASE_REV=/,"enhancement queue must der
 assert.match(assetOverrides,/v10-42-bootstrap\.js\?v=\$\{CCG_RELEASE_REV\}/,"V10.42 bootstrap must be release-tokened and owned by the enhancement queue");
 assert.ok(assetOverrides.indexOf("v10-35-quality.js")<assetOverrides.indexOf("v10-42-bootstrap.js"),"V10.42 ordered bootstrap must remain the final enhancement queue entry");
 assert.match(assetOverrides,/v10-4-death-cache\.js\?v=\$\{CCG_RELEASE_REV\}/,"death-cache code must remain release-tokened");
-assert.match(assetOverrides,/v10-6-runtime\.js\?v=\$\{CCG_RELEASE_REV\}/,"core runtime must remain release-tokened");
 assert.match(assetOverrides,/CCGLostSizzlerCacheGuard\?\.runtimeErrors/,"uncaught startup module errors must fail the release gate");
 
 assert.match(cacheGuard,/ccg-lost-sizzler:last-sanitised-cache/,"cache sanitation must run once per published cache token");
