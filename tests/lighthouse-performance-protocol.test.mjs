@@ -37,7 +37,8 @@ test("authoritative game publishing cannot bypass the Lighthouse contract", () =
   assert.match(rebuild, /validate-game-performance-contract\.mjs/);
   assert.match(publishingWorkflow, /validate-game-performance-contract\.mjs --base HEAD\^ --require-generated/);
   assert.match(publishingWorkflow, /scripts\/validate-game-performance-contract\.mjs/);
-  assert.match(validator, /generated HTML must not eagerly load a video iframe src/);
+  assert.match(validator, /video iframe must remain lazy/);
+  assert.match(validator, /video iframe must reserve width and height/);
   assert.match(validator, /hero must retain high fetch priority/);
   assert.match(validator, /new-game thumbnail must be WebP under the Lighthouse protocol/);
 });
