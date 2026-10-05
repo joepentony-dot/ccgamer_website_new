@@ -45,14 +45,17 @@ try{
     console.log("R97_SPRITE_PROOF_"+viewport.width+"="+(await page.screenshot()).toString("base64"));
     await page.addScriptTag({content:`
       window.__CCG_ALLOW_REMOTE_TEST_ASSETS__=true;
+      window.CCG_SUPABASE_URL="https://lcslgxpgmttaexsorxik.supabase.co";
+      window.CCG_SUPABASE_ANON_KEY="test-anon-key";
       window.__musicInstances=[];
-      window.Audio=class{constructor(url){this.url=url;this.paused=true;this.currentTime=0;this.duration=180;window.__musicInstances.push(this)}play(){this.paused=false;return Promise.resolve()}pause(){this.paused=true}load(){}removeAttribute(){}addEventListener(){}};
+      window.Audio=class{constructor(url){this.url=url;this.paused=true;this.currentTime=0;this.duration=180;this.loop=false;this.listeners={};window.__musicInstances.push(this)}play(){this.paused=false;return Promise.resolve()}pause(){this.paused=true}load(){}removeAttribute(){}addEventListener(name,fn){(this.listeners[name]||(this.listeners[name]=[])).push(fn)}};
       window.CCGSound={start:async()=>true,startMusic(){},stopMusic(){},isEnabled:()=>true};
       window.CCG_AUDIO_ASSETS={music:{playlists:{normal:["fallback.wav"]}}};
-      window.ccgSupabase={getClient:async()=>({from:()=>({select(){return this},in(){return this},eq(){return this},order(){return new Promise(resolve=>window.__finishAdmin=resolve)}})})};
+      window.fetch=()=>new Promise(resolve=>window.__finishAdminRest=resolve);
+      window.ccgSupabase=undefined;
     `});
     await page.addScriptTag({content:admin});
-    await page.waitForFunction(()=>typeof window.__finishAdmin==="function");
+    await page.waitForFunction(()=>typeof window.__finishAdminRest==="function");
     await page.addScriptTag({content:playlist});
     await page.evaluate(()=>CCGSound.start());
     await page.waitForTimeout(60);
@@ -60,11 +63,12 @@ try{
     assert.equal(pending.instances,0,"production startup must not construct bundled placeholder music while uploaded admin audio is still resolving");
     assert.equal(pending.state.fallbackActive,false,"production startup must keep generated/bundled fallback silent while admin music is pending");
     assert.equal(pending.state.adminAudioPending,true,"playlist owner must report the unresolved production soundtrack handoff");
-    await page.evaluate(()=>__finishAdmin({data:[{asset_group:"music",asset_key:"lostSizzlerExploration--01",public_url:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/exploration-01.mp3"}],error:null}));
+    await page.evaluate(()=>__finishAdminRest({ok:true,status:200,json:async()=>[{asset_group:"music",asset_key:"lostSizzlerExploration--01",public_url:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/exploration-01.mp3",enabled:true,created_at:"2026-08-22T15:13:48Z",asset_meta:{playlist:true}}]}));
     await page.waitForFunction(()=>CCG_ADMIN_AUDIO_READY===true&&__musicInstances.length===1);
-    const music=await page.evaluate(()=>({url:CCGLostSizzlerPlaylistAudio.getState().url,playing:__musicInstances.filter(x=>!x.paused).length,skipped:CCG_ADMIN_AUDIO.remoteMediaSkipped,pending:CCGLostSizzlerPlaylistAudio.getState().adminAudioPending}));
+    const music=await page.evaluate(()=>({url:CCGLostSizzlerPlaylistAudio.getState().url,playing:__musicInstances.filter(x=>!x.paused).length,skipped:CCG_ADMIN_AUDIO.remoteMediaSkipped,pending:CCGLostSizzlerPlaylistAudio.getState().adminAudioPending,source:CCG_ADMIN_AUDIO.source}));
     assert.equal(music.skipped,false,"test must exercise real admin readiness rather than automation skip");
     assert.equal(music.pending,false,"uploaded soundtrack readiness must end the pending state");
+    assert.equal(music.source,"rest","production soundtrack hydration must not depend on the supabase-js client");
     assert.ok(music.url.endsWith("/exploration-01.mp3"));
     assert.equal(music.playing,1);
     await page.close();
