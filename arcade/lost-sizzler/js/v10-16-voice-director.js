@@ -62,12 +62,14 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
+  const primedVoiceSources=new Set(),primingVoiceSources=new Set();
 
   const lines={
     welcome:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:40,cooldown:10000},
-    welcomeRare:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:42,cooldown:10000},
+    welcomeAlt:{text:"Stay alert.",priority:41,cooldown:10000},
+    welcomeRare:{text:"Watchers of Illusion.",priority:42,cooldown:10000},
     weeklyWelcome:{text:"Weekly High Score Vault. One attempt. Make it count.",priority:55,cooldown:10000},
     hurt:{text:"Ow!",priority:8,cooldown:30000},
     lowHealth:{text:"I need to heal.",priority:35,cooldown:0},
@@ -186,11 +188,11 @@
     return source;
   }
   function coolReady(key,cooldown,now=performance.now()){const last=state.lastByKey.get(key)||-Infinity;return now-last>=cooldown}
-  function chooseVoice(){const voices=state.voices.length?state.voices:(window.speechSynthesis?.getVoices?.()||[]);return voices.find(v=>/^en-GB$/i.test(v.lang)&&/female|serena|sonia|libby|ryan|daniel|george/i.test(v.name))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||voices[0]||null}
   function clearActiveTimers(active=state.active){if(active?.timer){clearInterval(active.timer);active.timer=null}if(active?.watchdog){clearTimeout(active.watchdog);active.watchdog=null}}
   function releaseDungeonFx(active){if(!active?.dungeonFx)return;try{active.dungeonFx.disconnect()}catch(_){}active.dungeonFx=null}
   function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;return true}
   function stopActive(reason="stopped"){
+    if(reason==="menu"||reason==="stopped")state.pendingGesture=null;
     const active=state.active;if(!active)return false;state.active=null;state.activePriority=-1;state.serial++;
     clearActiveTimers(active);
     if(active.audio){try{active.audio.onended=null;active.audio.onerror=null;active.audio.pause();active.audio.currentTime=0}catch(_){}}
@@ -201,6 +203,27 @@
   }
   function armWatchdog(active,ms=MAX_RECORDED_CLIP_MS){active.watchdog=setTimeout(()=>finishActive(active),Math.max(500,Number(ms)||MAX_RECORDED_CLIP_MS))}
   function voiceVolume(key){return key==="hurt" ? .56 : .72}
+  function primeVoiceSource(src){
+    const source=String(src||"").trim();if(!source||primedVoiceSources.has(source)||primingVoiceSources.has(source))return false;
+    primingVoiceSources.add(source);
+    try{
+      const audio=new Audio(source);audio.preload="auto";audio.muted=true;audio.volume=0;
+      const done=()=>{primingVoiceSources.delete(source);primedVoiceSources.add(source);try{audio.pause();audio.currentTime=0}catch(_){}};
+      const failed=()=>{primingVoiceSources.delete(source);try{audio.pause();audio.currentTime=0}catch(_){}};
+      const p=audio.play();if(p?.then)p.then(done).catch(failed);else done();return true
+    }catch(_){primingVoiceSources.delete(source);return false}
+  }
+  function primeRecordedVoices(){
+    const recorded=window.CCG_RECORDED_VOICE_SPRITE;let started=false;
+    for(const src of [recorded?.src,BUNDLED_SPRITE?.src])if(primeVoiceSource(src))started=true;
+    try{if(voiceContext?.state==="suspended")voiceContext.resume?.().catch?.(()=>{})}catch(_){}
+    return started
+  }
+  function retryPendingGesture(){
+    const pending=state.pendingGesture;if(!pending||state.active||!state.enabled||!soundAllowed())return false;
+    try{if(pending.runRef&&((typeof run==="object"&&run!==pending.runRef)||(typeof mode==="string"&&mode!=="playing"))){state.pendingGesture=null;return false}}catch(_){}
+    state.pendingGesture=null;return playSprite(pending.key,pending.priority)
+  }
   function dungeonVoiceFx(audio,key){
     const Context=window.AudioContext||window.webkitAudioContext;if(!Context||!audio)return null;
     try{
@@ -217,29 +240,30 @@
       return{disconnect(){for(const node of [source,tone,dry,wet,reverb,master])try{node.disconnect()}catch(_){}}};
     }catch(_){audio.volume=voiceVolume(key);return null}
   }
-  function playClip(src,priority,fallbackText="",key=""){
+  function playClip(src,priority,key=""){
     try{
       const audio=new Audio(src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false;
-      const fallback=()=>{
+      const fail=()=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onended=null;audio.onerror=null;audio.pause();audio.currentTime=0}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
-        if(fallbackText&&speakText(fallbackText,priority,key))return;
       };
-      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);state.active=active;state.activePriority=priority;audio.onended=()=>finishActive(active);audio.onerror=fallback;armWatchdog(active);
-      const p=audio.play();if(p?.catch)p.catch(fallback);return true;
+      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);state.active=active;state.activePriority=priority;audio.onended=()=>finishActive(active);audio.onerror=fail;armWatchdog(active);
+      const p=audio.play();if(p?.catch)p.catch(fail);return true;
     }catch(_){return false}
   }
-  function playSprite(key,priority,fallbackText=""){
-    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],recordedAvailable=Boolean(recordedCue),pack=recordedAvailable?recorded:BUNDLED_SPRITE,cue=recordedCue||BUNDLED_SPRITE.cues[key];
+  const APPROVED_LEGACY_CRITICAL_CUES=new Set(["welcomeRare","gameOver","playerDeath","loadula","gildedElf","gildedFive","gildedCaught","gildedEscaped","boulder","weeklyDeath"]);
+  function approvedLegacyCue(key){return APPROVED_LEGACY_CRITICAL_CUES.has(key)?BUNDLED_SPRITE.cues[key]||null:null}
+  function playSprite(key,priority){
+    const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],legacyCue=approvedLegacyCue(key),recordedAvailable=Boolean(recordedCue),approvedLegacy=Boolean(legacyCue),pack=recordedAvailable?recorded:approvedLegacy?BUNDLED_SPRITE:null,cue=recordedCue||legacyCue;
     if(!cue||!pack?.src)return false;
     try{
       const audio=new Audio(pack.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
-      const fallback=()=>{
+      const fallback=(retryOnGesture=false)=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
-        if(!recordedAvailable&&fallbackText&&speakText(fallbackText,priority,key))return;
+        if((recordedAvailable||approvedLegacy)&&retryOnGesture){let runRef=null;try{runRef=typeof run==="object"?run:null}catch(_){}state.pendingGesture={key,priority,runRef};return}
       };
       const begin=()=>{
         if(started||failed||state.active!==active)return;started=true;
@@ -253,18 +277,11 @@
           finishActive(active);
         },25);
         active.timer=timer;
-        const p=audio.play();if(p?.catch)p.catch(fallback);
+        const p=audio.play();if(p?.then)p.then(()=>{if(state.pendingGesture?.key===key)state.pendingGesture=null}).catch(()=>fallback(true));
       };
-      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);audio.onerror=fallback;state.active=active;state.activePriority=priority;armWatchdog(active,(Number(cue.duration)||0)*1000+2500);
+      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);audio.onerror=()=>fallback(false);state.active=active;state.activePriority=priority;armWatchdog(active,(Number(cue.duration)||0)*1000+2500);
       if(audio.readyState>=1)begin();else audio.addEventListener("loadedmetadata",begin,{once:true});
       audio.load();return true;
-    }catch(_){return false}
-  }
-  function speakText(text,priority,key=""){
-    if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined")return false;
-    try{
-      const u=new SpeechSynthesisUtterance(text),active={id:++state.serial,key,priority,speech:u,timer:null,watchdog:null};u.lang="en-GB";u.rate=.97;u.pitch=.92;u.volume=voiceVolume(key);const voice=chooseVoice();if(voice)u.voice=voice;
-      u.onend=()=>finishActive(active);u.onerror=()=>finishActive(active);try{window.speechSynthesis.cancel()}catch(_){}state.active=active;state.activePriority=priority;armWatchdog(active);window.speechSynthesis.speak(u);return true;
     }catch(_){return false}
   }
   function tutorialSilent(){const tutorial=window.CCGLostSizzlerOnboardingV120?.state;return Boolean(tutorial?.active||tutorial?.tutorialRequested||window.CCGLostSizzlerTutorialGuidanceV123?.tutorialLaunchPending)}
@@ -275,8 +292,8 @@
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
     if(state.active){const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}stopActive("interrupted")}
-    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(key):"",recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),hasRecorded=Boolean(recorded?.cues?.[recordedKey]);let started=false;
-    if(src)started=playClip(src,priority,text,key);if(!started&&!forceTts)started=playSprite(key,priority,text);if(!started&&(!hasRecorded||forceTts))started=speakText(text,priority,key);
+    const src=assetFor(key);let started=false;
+    if(src)started=playClip(src,priority,key);if(!started)started=playSprite(key,priority);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
     state.lastByKey.set(key,now);state.played++;return true;
   }
@@ -292,10 +309,9 @@
       if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false}
       stopActive("interrupted")
     }
-    const forceTts=Boolean(opts.forceTts),src=!forceTts?assetFor(voiceKey):"",recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[voiceKey]||voiceKey),hasRecorded=Boolean(recorded?.cues?.[recordedKey]);let started=false;
-    if(src)started=playClip(src,priority,spokenText,voiceKey);
-    if(!started&&!forceTts)started=playSprite(voiceKey,priority,spokenText);
-    if(!started&&(!hasRecorded||forceTts))started=speakText(spokenText,priority,voiceKey);
+    const src=assetFor(voiceKey);let started=false;
+    if(src)started=playClip(src,priority,voiceKey);
+    if(!started)started=playSprite(voiceKey,priority);
     if(!started){state.skipped++;state.lastSkipped={key:voiceKey,reason:"playback",at:now};return false}
     state.lastByKey.set(voiceKey,now);state.played++;return true
   }
@@ -304,10 +320,13 @@
   function mountButton(){
     if(document.getElementById("voice-btn"))return;
     const row=document.querySelector(".system-buttons");if(!row)return;
-    const btn=document.createElement("button");btn.id="voice-btn";btn.type="button";btn.className="sound-toggle";btn.addEventListener("click",()=>{state.unlocked=true;setEnabled(!state.enabled);if(state.enabled)sayKey("welcome",{cooldown:0,text:"Voice prompts enabled.",forceTts:true})});
+    const btn=document.createElement("button");btn.id="voice-btn";btn.type="button";btn.className="sound-toggle";btn.addEventListener("click",()=>{unlock();setEnabled(!state.enabled);if(state.enabled)sayKey("welcome",{cooldown:0})});
     const sound=document.getElementById("sound-btn");if(sound?.nextSibling)row.insertBefore(btn,sound.nextSibling);else row.appendChild(btn);state.button=btn;updateButton();
   }
-  function unlock(){state.unlocked=true}
+  function unlock(){
+    state.unlocked=true;primeRecordedVoices();
+    if(state.pendingGesture)retryPendingGesture()
+  }
   function onRecordedPickupVoice(event){
     const detail=event?.detail||{},kind=String(detail.kind||""),lootKind=String(detail.lootKind||"");
     const key=kind==="health"?"healthRestored":kind==="ammo"||kind==="mana"?"ammoCollected":kind==="armour"?"armourRestored":kind==="bronze"?"bronzeKeyCollected":kind==="exitSigil"?"exitSigilAcquired":kind==="loot"&&lootKind==="artefact"?"essenceCollected":"";
@@ -341,9 +360,7 @@
     window.removeEventListener?.("ccg:shop-firearm-upgrade",onShopFirearmUpgradeVoice);
     window.removeEventListener?.("ccg:firearm-evolved",onFirearmEvolvedVoice);
   },{once:true});
-  document.addEventListener("pointerdown",unlock,{once:true,capture:true});document.addEventListener("keydown",unlock,{once:true,capture:true});
-  if(window.speechSynthesis){const refresh=()=>{state.voices=window.speechSynthesis.getVoices?.()||[]};refresh();window.speechSynthesis.onvoiceschanged=refresh}
-
+  document.addEventListener("pointerdown",unlock,{capture:true});document.addEventListener("touchstart",unlock,{capture:true,passive:true});document.addEventListener("keydown",unlock,{capture:true});
   function sharesLiveRoom(enemy){
     if(!enemy?.alive||!p1||!world)return false;
     try{
@@ -455,12 +472,12 @@
     const originalBeginRun=beginRun;
     beginRun=function beginRunV116Voice(opts={}){
       const result=originalBeginRun.apply(this,arguments);
-      stopActive();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.lastByKey.delete("noAmmo");const activeRun=run;
+      stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");const activeRun=run;
       setTimeout(()=>{
         try{
           if(run!==activeRun||mode!=="playing")return;
-          const welcomeKey=opts?.daily?"weeklyWelcome":(Math.random()<.1?"welcomeRare":"welcome");
-          sayKey(welcomeKey);
+          const greetingRoll=Math.random(),welcomeKey=greetingRoll<.1?"welcomeRare":greetingRoll<.55?"welcome":"welcomeAlt";
+          sayKey(welcomeKey,{cooldown:0});
           if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
         }catch(_){}
       },450);
@@ -482,6 +499,12 @@
     try{
       if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.12&&!state.criticalHealthLatch.has(p1)){state.criticalHealthLatch.add(p1);sayKey("criticalHealth")}else if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){state.lowHealthLatch.add(p1);sayKey("lowHealth")}
       for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){state.gildedFiveWarned.add(elf.id);sayKey("gildedFive",{cooldown:0})}
+      const banish=typeof banishmentState==="function"?banishmentState(p1):null;
+      if(banish?.ready&&banish.nearest&&!state.banishmentPromptSeen.has(banish.nearest)){state.banishmentPromptSeen.add(banish.nearest);sayKey("useBanishmentFlask",{cooldown:0});return}
+      const guardians=[host?.guardian,...(host?.enemies||[])].filter(Boolean),guardian=guardians.find(enemy=>enemy?.alive&&enemy?.guardian&&!enemy?.exitWarden&&!enemy?.sigilWarden&&sharesLiveRoom(enemy));
+      if(guardian&&!state.guardianVoiceSeen.has(guardian)){state.guardianVoiceSeen.add(guardian);sayKey("guardianEncountered",{cooldown:0});return}
+      const roomId=W.roomAt(world,p1.x,p1.y),roomKey=`${Number(run?.floor||1)}:${roomId}`,ordinaryNearby=(host?.enemies||[]).some(enemy=>enemy?.alive&&!enemy?.follower&&!enemy?.guardian&&!enemy?.deathStalker&&!enemy?.exitWarden&&!enemy?.sigilWarden&&sharesLiveRoom(enemy));
+      if(ordinaryNearby&&!state.enemyRoomVoiceKeys.has(roomKey)){state.enemyRoomVoiceKeys.add(roomKey);sayKey("enemiesNearby",{cooldown:0})}
     }catch(_){}
   }
   if(typeof update==="function"){
@@ -490,5 +513,5 @@
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountButton,{once:true});else mountButton();
-  window.CCGLostSizzlerVoice={say:sayKey,sayDialogue,stop:stopActive,classifyToast,setEnabled,get enabled(){return state.enabled},get state(){return state},lines,bundledSprite:BUNDLED_SPRITE};
+  window.CCGLostSizzlerVoice={say:sayKey,sayDialogue,stop:stopActive,classifyToast,setEnabled,primeRecordedVoices,retryPendingGesture,get enabled(){return state.enabled},get state(){return state},lines,bundledSprite:BUNDLED_SPRITE};
 })();
