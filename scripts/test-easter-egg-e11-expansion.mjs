@@ -52,10 +52,14 @@ async function openSecretMenu(page, mobile) {
 
 async function interact(page, code) {
     if (code === "bbs") {
+        if (await page.locator(".ccg-e11--bbs .ccg-e11__bbs-status").count() !== 1) throw new Error("Premium BBS status panel missing");
         const input = page.locator(".ccg-e11--bbs [data-terminal-input]");
         await input.fill("HELP");
         await input.press("Enter");
-        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("AVAILABLE COMMANDS"));
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("CCG-BBS COMMAND DIRECTORY"));
+        await input.fill("FILES C64");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("SID-LAB.PRG"));
         await input.fill("PRIVATE");
         await input.press("Enter");
         await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("LEVEL 1541"));
@@ -67,6 +71,9 @@ async function interact(page, code) {
     if (code === "guru") {
         await page.locator('.ccg-e11--guru [data-guru="details"]').click();
         await page.locator("[data-guru-details]").waitFor({ state: "visible" });
+        if (await page.locator(".ccg-e11__guru-registers").count() !== 1) throw new Error("Guru register monitor missing");
+        await page.locator('.ccg-e11--guru [data-guru="dump"]').click();
+        await page.locator("[data-guru-dump]").waitFor({ state: "visible" });
         const reboot = page.locator('.ccg-e11--guru [data-guru="reboot"]');
         await reboot.click();
         await page.waitForSelector(".ccg-e11--guru.is-recovered");
@@ -76,6 +83,8 @@ async function interact(page, code) {
     }
 
     if (code === "sid") {
+        if (await page.locator(".ccg-e11--sid [data-sid-preset]").count() < 3) throw new Error("SID premium presets missing");
+        await page.locator('.ccg-e11--sid [data-sid-preset="LEAD"]').click();
         await page.locator(".ccg-e11--sid [data-note]").first().click();
         await page.waitForFunction(() => {
             const text = document.querySelector("[data-sid-status]")?.textContent || "";
@@ -85,12 +94,20 @@ async function interact(page, code) {
     }
 
     if (code === "1541") {
+        if (await page.locator(".ccg-e11--1541 [data-drive-track]").count() !== 1) throw new Error("1541 telemetry missing");
         await page.locator('.ccg-e11--1541 [data-e11-action="DIRECTORY"]').click();
         await page.waitForFunction(() => document.querySelector(".ccg-e11--1541")?.textContent.includes("BLOCKS FREE"));
+        await page.locator('.ccg-e11--1541 [data-e11-action="VALIDATE"]').click();
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--1541")?.textContent.includes("31 FILE ENTRIES CHECKED"));
     }
 
     if (code === "cracktro") {
         await page.locator(".ccg-e11--cracktro [data-cracktro-sound]").click();
+        const fx = page.locator(".ccg-e11--cracktro [data-cracktro-effect]");
+        const beforeFx = await fx.textContent();
+        await fx.click();
+        const afterFx = await fx.textContent();
+        if (beforeFx === afterFx) throw new Error("Cracktro FX control did not change effect");
         await page.locator(".ccg-e11--cracktro [data-cracktro-pause]").click();
         const pauseText = await page.locator(".ccg-e11--cracktro [data-cracktro-pause]").textContent();
         if (pauseText !== "RESUME") throw new Error("Cracktro pause control did not change state");
@@ -99,12 +116,18 @@ async function interact(page, code) {
     if (code === "workbench") {
         await page.locator('.ccg-e11--workbench [data-wb-open="games"]').click();
         await page.locator(".ccg-e11--workbench [data-wb-window]").waitFor({ state: "visible" });
+        await page.locator('.ccg-e11--workbench [data-wb-open="prefs"]').click();
+        await page.locator('.ccg-e11--workbench [data-wb-palette="dark"]').click();
+        const palette = await page.locator(".ccg-e11--workbench").getAttribute("data-wb-palette");
+        if (palette !== "dark") throw new Error("Workbench palette preference did not apply");
         await page.locator('.ccg-e11--workbench [data-wb-open="tools"]').click();
         await page.locator('.ccg-e11--workbench [data-wb-tool="sid"]').click();
         await page.waitForSelector(".ccg-e11--sid", { timeout: 5000 });
     }
 
     if (code === "sprite") {
+        if (await page.locator(".ccg-e11--sprite [data-sprite-preview]").count() !== 1) throw new Error("Sprite live preview missing");
+        if (await page.locator(".ccg-e11--sprite [data-sprite-colour]").count() !== 16) throw new Error("Sprite C64 palette incomplete");
         const data = page.locator(".ccg-e11--sprite [data-sprite-data]");
         const before = await data.inputValue();
         const first = page.locator(".ccg-e11--sprite .ccg-e11__pixel").nth(0);
@@ -150,6 +173,7 @@ async function interact(page, code) {
     }
 
     if (code === "modem") {
+        if (await page.locator(".ccg-e11--modem .ccg-e11__modem-panel").count() !== 1) throw new Error("Premium modem panel missing");
         await page.locator('.ccg-e11--modem [data-e11-action="ATDT0161641985"]').click();
         await page.waitForTimeout(120);
         await page.locator('.ccg-e11--modem [data-e11-action="ATH"]').click();
@@ -158,6 +182,8 @@ async function interact(page, code) {
         if (hungUpText.includes("CONNECT 2400")) throw new Error("Modem connected after HANG UP cancelled dialing");
         await page.locator('.ccg-e11--modem [data-e11-action="ATDT0161641985"]').click();
         await page.waitForFunction(() => document.querySelector(".ccg-e11--modem")?.textContent.includes("CONNECT 2400"), null, { timeout: 5000 });
+        const carrierLit = await page.locator('.ccg-e11--modem [data-modem-led="CD"]').evaluate(element => element.classList.contains("is-on"));
+        if (!carrierLit) throw new Error("Modem carrier LED did not light after connection");
         await page.locator('.ccg-e11--modem [data-e11-action="BBS"]').click();
         await page.waitForSelector(".ccg-e11--bbs", { timeout: 5000 });
     }
@@ -167,6 +193,7 @@ async function interact(page, code) {
         await input.fill("INITIALIZE");
         await input.press("Enter");
         await page.waitForFunction(() => document.querySelector(".ccg-e11--diskerror")?.textContent.includes("DRIVE RECOVERED"));
+        if (!await page.locator(".ccg-e11--diskerror").evaluate(element => element.classList.contains("is-recovered"))) throw new Error("Disk Error recovery state missing");
         await input.fill("RUN");
         await input.press("Enter");
         await page.waitForSelector(".ccg-e11--1541", { timeout: 5000 });
@@ -174,8 +201,10 @@ async function interact(page, code) {
 
     if (code === "kickstart") {
         const insert = page.locator(".ccg-e11--kickstart [data-kick-insert]");
+        if (await page.locator(".ccg-e11--kickstart [data-kick-progress]").count() !== 1) throw new Error("Kickstart boot progress missing");
         await insert.click();
         await page.waitForFunction(() => document.querySelector("[data-kick-insert]")?.textContent === "OPEN WORKBENCH", null, { timeout: 4000 });
+        if (!await page.locator(".ccg-e11--kickstart").evaluate(element => element.classList.contains("is-ready"))) throw new Error("Kickstart did not reach ready state");
         await insert.click();
         await page.waitForSelector(".ccg-e11--workbench", { timeout: 5000 });
     }
