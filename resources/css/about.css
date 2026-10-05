@@ -415,24 +415,25 @@
     object-fit: cover;
 }
 
-/* Legends & Heroes: preserve the full photographs so faces are never cropped. */
+/* Legends & Heroes: show the complete photograph so no heads or faces are cropped. */
 .about-gallery--legends {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
 }
 
 .about-gallery--legends .about-figure {
-    grid-template-rows: 1fr auto;
+    grid-template-rows: minmax(0, 1fr) auto;
     min-width: 0;
 }
 
 .about-gallery--legends .about-figure img {
+    display: block;
     width: 100%;
-    height: auto;
-    max-height: none;
-    aspect-ratio: 4 / 3;
-    object-fit: contain;
-    object-position: center top;
+    height: min(430px, 32vw) !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
+    object-position: center top !important;
     background:
         radial-gradient(circle at 50% 35%, rgba(var(--accent-rgb), 0.1), transparent 58%),
         rgba(0, 0, 0, 0.48);
@@ -497,10 +498,6 @@
     .about-panel__body--split,
     .about-panel--audio .about-panel__body--split {
         grid-template-columns: 1fr;
-    }
-
-    .about-gallery--legends {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .about-media-stack {
@@ -577,6 +574,10 @@
     .about-gallery--wide,
     .about-gallery--legends {
         grid-template-columns: 1fr;
+    }
+
+    .about-gallery--legends .about-figure img {
+        height: auto !important;
     }
 
     .about-figure img,
