@@ -58,18 +58,12 @@ function openingTag(html, id) {
 }
 
 function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\function hasAttribute(tag, name, expected) {
-  const expression = expected == null
-    ? new RegExp(`\\b${name}\\s*=`, "i")
-    : new RegExp(`\\b${name}\\s*=\\s*["']${expected}["']`, "i");
-  return expression.test(tag);
-}
-");
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function getAttributeValue(tag, name) {
   const safe = escapeRegExp(name);
-  const match = String(tag || "").match(new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["']([^"']*)["']`, "i"));
+  const match = String(tag || "").match(new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["\']([^"\']*)["\']`, "i"));
   return match ? match[1] : "";
 }
 
@@ -77,10 +71,9 @@ function hasAttribute(tag, name, expected) {
   const safe = escapeRegExp(name);
   const expression = expected == null
     ? new RegExp(`(?:^|\\s)${safe}\\s*=`, "i")
-    : new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["']${escapeRegExp(expected)}["']`, "i");
+    : new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["\']${escapeRegExp(expected)}["\']`, "i");
   return expression.test(String(tag || ""));
 }
-
 function validateSharedOwners(errors) {
   const shell = readText("games/game.html");
   const video = openingTag(shell, "game-video-embed");
