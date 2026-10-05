@@ -479,10 +479,11 @@
     beginRun=function beginRunV116Voice(opts={}){
       const result=originalBeginRun.apply(this,arguments);
       stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");const activeRun=run;
+      try{sayKey("welcome",{cooldown:0})}catch(_){}
       setTimeout(()=>{
         try{
           if(run!==activeRun||mode!=="playing")return;
-          sayKey("welcome",{cooldown:0});
+          if(state.pendingGesture?.key==="welcome")retryPendingGesture();
           if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
         }catch(_){}
       },450);
