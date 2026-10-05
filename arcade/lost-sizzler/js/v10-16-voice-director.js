@@ -64,7 +64,7 @@
   const MAX_RECORDED_CLIP_MS=10000;
   const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
-  const primedVoiceSources=new Set(),primingVoiceSources=new Set();
+  const primedVoiceSources=new Set(),primingVoiceSources=new Set(),spriteAudioBySource=new Map();
 
   const lines={
     welcome:{text:"Welcome to C64 Dungeon Carnage. Good luck down there.",priority:40,cooldown:10000},
@@ -203,13 +203,20 @@
   }
   function armWatchdog(active,ms=MAX_RECORDED_CLIP_MS){active.watchdog=setTimeout(()=>finishActive(active),Math.max(500,Number(ms)||MAX_RECORDED_CLIP_MS))}
   function voiceVolume(key){return key==="hurt" ? .56 : .72}
+  function spriteAudioForSource(src){
+    const source=String(src||"").trim();if(!source)return null;
+    let audio=spriteAudioBySource.get(source);
+    if(!audio){audio=new Audio(source);audio.preload="auto";spriteAudioBySource.set(source,audio)}
+    return audio
+  }
   function primeVoiceSource(src){
     const source=String(src||"").trim();if(!source||primedVoiceSources.has(source)||primingVoiceSources.has(source))return false;
     primingVoiceSources.add(source);
     try{
-      const audio=new Audio(source);audio.preload="auto";audio.muted=true;audio.volume=0;
-      const done=()=>{primingVoiceSources.delete(source);primedVoiceSources.add(source);try{audio.pause();audio.currentTime=0}catch(_){}};
-      const failed=()=>{primingVoiceSources.delete(source);try{audio.pause();audio.currentTime=0}catch(_){}};
+      const audio=spriteAudioForSource(source);if(!audio){primingVoiceSources.delete(source);return false}
+      audio.preload="auto";audio.muted=true;audio.volume=0;
+      const done=()=>{primingVoiceSources.delete(source);primedVoiceSources.add(source);try{audio.pause();audio.currentTime=0;audio.muted=false;audio.volume=.72}catch(_){}};
+      const failed=()=>{primingVoiceSources.delete(source);try{audio.pause();audio.currentTime=0;audio.muted=false;audio.volume=.72}catch(_){}};
       const p=audio.play();if(p?.then)p.then(done).catch(failed);else done();return true
     }catch(_){primingVoiceSources.delete(source);return false}
   }
@@ -228,6 +235,11 @@
     const Context=window.AudioContext||window.webkitAudioContext;if(!Context||!audio)return null;
     try{
       voiceContext=voiceContext||new Context();
+      if(voiceContext.state!=="running"){
+        try{voiceContext.resume?.().catch?.(()=>{})}catch(_){}
+        audio.volume=voiceVolume(key);
+        return null
+      }
       if(!voiceImpulse){
         const length=Math.max(1,Math.floor(voiceContext.sampleRate*.32));voiceImpulse=voiceContext.createBuffer(2,length,voiceContext.sampleRate);
         for(let channel=0;channel<voiceImpulse.numberOfChannels;channel++){const data=voiceImpulse.getChannelData(channel);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,3.1)}
@@ -235,7 +247,6 @@
       const source=voiceContext.createMediaElementSource(audio),tone=voiceContext.createBiquadFilter(),dry=voiceContext.createGain(),wet=voiceContext.createGain(),reverb=voiceContext.createConvolver(),master=voiceContext.createGain();
       tone.type="lowpass";tone.frequency.value=3600;tone.Q.value=.55;dry.gain.value=.92;wet.gain.value=.12;reverb.buffer=voiceImpulse;master.gain.value=voiceVolume(key);
       source.connect(tone);tone.connect(dry);dry.connect(master);tone.connect(reverb);reverb.connect(wet);wet.connect(master);master.connect(voiceContext.destination);audio.volume=1;
-      if(voiceContext.state==="suspended")voiceContext.resume?.().catch?.(()=>{});
       state.dungeonFxApplied++;
       return{disconnect(){for(const node of [source,tone,dry,wet,reverb,master])try{node.disconnect()}catch(_){}}};
     }catch(_){audio.volume=voiceVolume(key);return null}
@@ -263,7 +274,7 @@
     const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],legacyGreeting=approvedLegacyGreeting(key),recordedAvailable=Boolean(recordedCue),approvedLegacy=Boolean(legacyGreeting),pack=recordedAvailable?recorded:approvedLegacy?BUNDLED_SPRITE:null,cue=recordedCue||legacyGreeting;
     if(!cue||!pack?.src)return false;
     try{
-      const audio=new Audio(pack.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
+      const audio=spriteAudioForSource(pack.src);if(!audio)return false;audio.onended=null;audio.onerror=null;audio.muted=false;const active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
       const fallback=(retryOnGesture=false)=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
@@ -486,8 +497,7 @@
       setTimeout(()=>{
         try{
           if(run!==activeRun||mode!=="playing")return;
-          const greetingRoll=Math.random(),welcomeKey=greetingRoll<.1?"welcomeRare":greetingRoll<.55?"welcome":"welcomeAlt";
-          sayKey(welcomeKey,{cooldown:0});
+          sayKey("welcome",{cooldown:0});
           if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
         }catch(_){}
       },450);
