@@ -266,6 +266,7 @@
   function transition(force=false,advance=false,gestureRetry=false){
     if(!enabled||!started)return;
     const state=desiredState();
+    stopFallback();
 
     if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
       current.advancing=false;
