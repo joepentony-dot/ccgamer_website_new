@@ -42,6 +42,8 @@ assert(baseAudio.includes('if(!started||productionMusicExclusive)return'),'The b
 assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the soundtrack from a user gesture.');
 assert(patch.includes('window.addEventListener("ccg:run-started"'),'Authoritative run start must force a fresh playlist takeover.');
+assert(patch.includes('function recoverActiveRunMusic()'),'Playlist owner must recover music when it attaches after the run-start event.');
+assert(patch.includes('(typeof document!=="undefined"&&document.body?.dataset?.runActive==="true")||String(window.mode||"")==="playing"'),'Active-run recovery must derive ownership from current canonical run state without assuming a DOM in contract harnesses.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
 assert(admin.includes('lostSizzlerAutoPlaylist'),'Batch auto-categorisation slot is missing.');
