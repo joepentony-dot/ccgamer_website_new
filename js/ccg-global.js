@@ -1165,6 +1165,24 @@ if (IS_ADMIN_PATH) {
         const normalized = String(code || "").toLowerCase().replace(/\s+/g, "");
         recordEasterEggDiscovery(normalized);
 
+        const inheritedReturnScroll = secretState.activeEgg?.e11ReturnScroll || null;
+        const returnScroll = inheritedReturnScroll || {
+            left: window.scrollX || document.documentElement.scrollLeft || 0,
+            top: window.scrollY || document.documentElement.scrollTop || 0,
+        };
+        let scrollRestoreTimers = [];
+        const restoreScroll = () => {
+            const apply = () => window.scrollTo({
+                left: returnScroll.left,
+                top: returnScroll.top,
+                behavior: "auto",
+            });
+            apply();
+            requestAnimationFrame(() => requestAnimationFrame(apply));
+            scrollRestoreTimers.forEach(timer => window.clearTimeout(timer));
+            scrollRestoreTimers = [80, 180].map(delay => window.setTimeout(apply, delay));
+        };
+
         const styleId = "ccg-easter-egg-e11-css";
         if (!document.getElementById(styleId)) {
             const style = document.createElement("link");
@@ -1179,6 +1197,10 @@ if (IS_ADMIN_PATH) {
         loading.innerHTML = "<span>OPENING CCG INTERACTIVE ARCHIVE...</span>";
         const overlay = openEasterEggOverlay(loading, { className: "ccg-egg-overlay--e11" });
         overlay.dataset.ccgE11Module = "loading";
+        if (secretState.activeEgg?.overlay === overlay) {
+            secretState.activeEgg.e11ReturnScroll = returnScroll;
+            secretState.activeEgg.cleanup = restoreScroll;
+        }
 
         try {
             const moduleUrl = new URL(`${getSiteRoot()}js/easter-eggs/e11-interactive-archive.js`, window.location.origin).href;
@@ -1197,7 +1219,11 @@ if (IS_ADMIN_PATH) {
             const mediaContainer = overlay.querySelector(".ccg-egg-overlay__media");
             if (!mediaContainer) throw new Error("E11 media container was not created");
             mediaContainer.replaceChildren(experience.content);
-            secretState.activeEgg.cleanup = () => experience.cleanup?.();
+            secretState.activeEgg.e11ReturnScroll = returnScroll;
+            secretState.activeEgg.cleanup = () => {
+                experience.cleanup?.();
+                restoreScroll();
+            };
             overlay.dataset.ccgE11Module = "ready";
             requestAnimationFrame(() => experience.focus?.());
         } catch (error) {
