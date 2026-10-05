@@ -41,7 +41,7 @@ assert.match(play,/const authoritativeLocalProjectileInsert=\(b,remoteShot=false
 const firePlayerBlock=play.match(/function firePlayer\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"";
 assert.match(firePlayerBlock,/authoritativeLocalProjectileInsert\(b,false\)/,"local FIRE must insert its own projectile through the immutable core path");
 assert.doesNotMatch(firePlayerBlock,/window\.spawnBullet|externalSpawn|spawnBullet\(b,false\)/,"local FIRE must never delegate projectile creation to a mutable global spawn owner");
-assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*authoritativeLocalProjectileInsert\(b,false\)[\s\S]*\}catch\(_\)\{[\s\S]*bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
+assert.match(play,/const shotIds=\[\],beforeMana=Number\(p\.mana\|\|0\),beforeCount=[\s\S]*try\{[\s\S]*authoritativeLocalProjectileInsert\(b,false\)[\s\S]*\}catch\(error\)\{[\s\S]*for\(let i=bullets\.length-1;i>=0;i--\)if\(shotIds\.includes\(bullets\[i\]\?\.id\)\)bullets\.splice\(i,1\);[\s\S]*return false/,"projectile creation must fail transactionally and remove any partial volley");
 assert.match(play,/if\(afterCount<=beforeCount\)[\s\S]*return false[\s\S]*p\.mana=beforeMana-ammoCost/,"FIRE must not spend ammo until at least one projectile exists");
 assert.match(play,/const delay=.*[\s\S]*if\(isP2\)fire2=delay;else fire1=delay/,"FIRE cooldown must be committed only after projectile creation succeeds");
 assert.match(play,/window\.CCGLostSizzlerV142R58AuthoritativeFireCore=authoritativeFireApi/);
