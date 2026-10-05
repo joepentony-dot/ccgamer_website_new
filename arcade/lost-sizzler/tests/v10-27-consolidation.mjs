@@ -24,9 +24,10 @@ assert.match(oldTest,/location\.replace\(destination\.href\)/,'obsolete test URL
 assert.match(oldPrimary,/\/arcade\/c64-dungeon-carnage\//,'previous production URL must target canonical arcade path');
 assert.match(oldTest,/\/arcade\/c64-dungeon-carnage\//,'obsolete test URL must target canonical arcade path');
 assert.match(voice,/welcomeRare/,'rare recorded welcome support must remain wired');
-assert.match(voice,/Math\.random\(\)<\.1/,'rare welcome should remain uncommon');
-assert.match(voice,/playSprite/,'bundled recorded voice fallback must be present');
-assert.match(voice,/src=!forceTts\?assetFor\(key\):""/,'admin voice override must be checked before bundled fallback');
+assert.match(voice,/greetingRoll<\.1\?"welcomeRare"/,'rare welcome should remain uncommon');
+assert.match(voice,/function playSprite\(/,'approved recorded voice playback must remain present');
+assert.match(voice,/const src=assetFor\(key\);let started=false;[\s\S]*if\(src\)started=playClip\(src,priority,key\);if\(!started\)started=playSprite\(key,priority\);/,'admin voice override must be checked before approved game recording playback');
+assert.doesNotMatch(voice,/SpeechSynthesisUtterance|speechSynthesis\.speak/,'production voice playback must not fall back to browser TTS');
 assert.doesNotMatch(voice,/state\.queue\.push\(/,'voice cues must never accumulate into a playback backlog');
 
 console.log('C64 Dungeon Carnage consolidation regression checks passed.');
