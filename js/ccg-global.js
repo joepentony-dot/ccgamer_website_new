@@ -1613,6 +1613,7 @@ if (IS_ADMIN_PATH) {
         "modem": () => triggerE11("modem"),
         "readerror": () => triggerE11("readerror"),
         "kickstart": () => triggerE11("kickstart"),
+        "bedrooms": () => triggerE11("bedrooms"),
     };
 
     const EASTER_DISCOVERY_KEY = "ccg:easter-eggs:discovered:v1";
@@ -1769,6 +1770,7 @@ if (IS_ADMIN_PATH) {
                     <li data-ccg-secret-code="modem">MODEM</li>
                     <li data-ccg-secret-code="readerror">DISK ERROR</li>
                     <li data-ccg-secret-code="kickstart">AMIGA BOOT</li>
+                    <li data-ccg-secret-code="bedrooms">BEDROOMS</li>
                 </ul>
             </div>
         `;

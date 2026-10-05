@@ -10,6 +10,7 @@ const EXPERIENCE_MODULES = Object.freeze({
     modem: "./e11/modem.js",
     readerror: "./e11/disk-error.js",
     kickstart: "./e11/kickstart.js",
+    bedrooms: "./e11/bedrooms.js",
 });
 
 export async function createE11Experience(code, options) {

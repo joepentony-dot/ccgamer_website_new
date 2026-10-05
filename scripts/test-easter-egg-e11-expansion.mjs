@@ -28,6 +28,7 @@ const experiences = [
     ["modem", ".ccg-e11--modem"],
     ["readerror", ".ccg-e11--diskerror"],
     ["kickstart", ".ccg-e11--kickstart"],
+    ["bedrooms", ".ccg-e11--bedrooms"],
 ];
 
 async function openSecretMenu(page, mobile) {
@@ -213,6 +214,30 @@ async function interact(page, code) {
         if (!await page.locator(".ccg-e11--kickstart").evaluate(element => element.classList.contains("is-ready"))) throw new Error("Kickstart did not reach ready state");
         await insert.click();
         await page.waitForSelector(".ccg-e11--workbench", { timeout: 5000 });
+    }
+
+    if (code === "bedrooms") {
+        const frame = page.locator(".ccg-e11--bedrooms [data-bedrooms-frame]");
+        if (await frame.count() !== 1) throw new Error("BEDROOMS media frame missing");
+        const attributes = await frame.evaluate(element => ({
+            src: element.getAttribute("src"),
+            sandbox: element.getAttribute("sandbox"),
+            allow: element.getAttribute("allow"),
+            referrerPolicy: element.getAttribute("referrerpolicy"),
+        }));
+        if (attributes.src !== "https://drive.google.com/file/d/1Cy5CW7bfsFyD757lnTF3RO9ksuAvNwHb/preview") {
+            throw new Error("BEDROOMS media frame does not use the approved Drive preview URL");
+        }
+        if (!attributes.sandbox?.includes("allow-scripts") || !attributes.sandbox?.includes("allow-same-origin")) {
+            throw new Error("BEDROOMS media frame sandbox is incomplete");
+        }
+        if (attributes.sandbox.includes("allow-downloads") || attributes.sandbox.includes("allow-popups") || attributes.sandbox.includes("allow-top-navigation")) {
+            throw new Error("BEDROOMS media frame enables a download or escape capability");
+        }
+        if (!attributes.allow?.includes("fullscreen")) throw new Error("BEDROOMS player does not allow fullscreen playback");
+        if (attributes.referrerPolicy !== "no-referrer") throw new Error("BEDROOMS frame must not leak referrer data");
+        if (await page.locator(".ccg-e11--bedrooms a").count() !== 0) throw new Error("BEDROOMS exposes a direct source link");
+        if (await page.locator(".ccg-e11--bedrooms .ccg-e11__bedrooms-shield").count() !== 1) throw new Error("BEDROOMS player shield missing");
     }
 }
 
