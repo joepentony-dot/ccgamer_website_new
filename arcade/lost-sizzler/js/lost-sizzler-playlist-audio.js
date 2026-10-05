@@ -412,6 +412,11 @@
     pendingGestureAttempt=0;
     stopFallback();
     transition(true,false);
+    const active=current;
+    if(active?.state===state&&!active.destroyed&&!active.audio.paused&&pendingGestureState===state){
+      pendingGestureState="";
+      pendingGestureAttempt=0;
+    }
     return true;
   }
 
