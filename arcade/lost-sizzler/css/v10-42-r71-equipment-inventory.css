@@ -144,7 +144,7 @@
   border:1px solid #594365!important;
   background:linear-gradient(145deg,#100a14,#07050a)!important;
   display:grid!important;
-  grid-template-rows:auto minmax(210px,auto) auto auto auto!important;
+  grid-template-rows:auto minmax(238px,auto) auto auto auto!important;
   align-content:start!important;
   gap:7px!important;
 }
@@ -186,10 +186,10 @@
 .r71-xp-mini span{font-size:7px!important;color:#6fbac7!important}
 .r71-xp-mini b{font-size:10px!important;color:#d9c471!important}
 .r71-equipment-board{
-  min-height:210px!important;
+  min-height:238px!important;
   display:grid!important;
   grid-template-columns:minmax(150px,1fr) 136px minmax(150px,1fr)!important;
-  grid-template-rows:minmax(96px,1fr) minmax(96px,1fr)!important;
+  grid-template-rows:minmax(112px,auto) minmax(112px,auto)!important;
   gap:8px 11px!important;
   align-items:stretch!important;
 }
@@ -256,7 +256,7 @@
   align-self:center!important;
   justify-self:center!important;
   width:136px!important;
-  height:196px!important;
+  height:224px!important;
   display:grid!important;
   grid-template-rows:minmax(0,1fr) auto auto!important;
   justify-items:center!important;
