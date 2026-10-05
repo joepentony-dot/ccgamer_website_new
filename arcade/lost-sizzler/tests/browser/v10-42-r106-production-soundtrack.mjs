@@ -29,7 +29,7 @@ try{
     'window.__musicInstances=[];',
     'window.Audio=class{constructor(url){this.url=String(url||"");this.paused=true;this.currentTime=0;this.duration=180;this.volume=0;this.loop=false;this.preload="";this.listeners=new Map();window.__musicInstances.push(this)}addEventListener(name,fn){const list=this.listeners.get(name)||[];list.push(fn);this.listeners.set(name,list)}play(){this.paused=false;return Promise.resolve()}pause(){this.paused=true}load(){}removeAttribute(){}};',
     'window.CCGSound={start:async()=>true,startMusic(){},stopMusic(){},toggle(){return true},isEnabled:()=>true,sfx(){},windWhistle(){}};'
-  ].join("\\n")});
+  ].join("\n")});
   await page.evaluate((fixture)=>{
     window.fetch=async function(url,options){
       window.__audioFetch={url:String(url),headers:options&&options.headers||{}};
