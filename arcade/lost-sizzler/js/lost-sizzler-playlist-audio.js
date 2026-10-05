@@ -81,6 +81,7 @@
   }
 
   const customSoundtrackOwned=state=>customSources(state).length>0;
+  const clearPendingGestureFor=state=>{if(pendingGestureState===state)pendingGestureState=""};
 
   function desiredState(){return stalkerNear?"stalker":roomMood}
 
@@ -272,7 +273,7 @@
       current.advancing=false;
       if(current.audio.paused){
         if(customSoundtrackOwned(state))pendingGestureState=state;
-        try{Promise.resolve(current.audio.play()).then(()=>{pendingGestureState="";clearFailure(current.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)}
+        try{Promise.resolve(current.audio.play()).then(()=>{clearPendingGestureFor(state);clearFailure(current.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)}
       }
       current.audio.volume=targetVolume(state);
       return;
@@ -291,7 +292,7 @@
       next.advancing=false;
       if(next.audio.paused){
         if(customSoundtrackOwned(state))pendingGestureState=state;
-        try{Promise.resolve(next.audio.play()).then(()=>{pendingGestureState="";clearFailure(next.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)}
+        try{Promise.resolve(next.audio.play()).then(()=>{clearPendingGestureFor(state);clearFailure(next.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)}
       }
       next.audio.volume=targetVolume(state);
       return;
@@ -306,7 +307,7 @@
     if(customSoundtrackOwned(state))pendingGestureState=state;
     try{
       Promise.resolve(next.audio.play()).then(()=>{
-        pendingGestureState="";
+        clearPendingGestureFor(state);
         clearFailure(next.url);
         fadeBetween(previous,next);
       }).catch(()=>{
