@@ -64,7 +64,7 @@ jobs:
             test -f "resources/css/easter-eggs-e11-$part.css"
             grep -q "easter-eggs-e11-$part.css" resources/css/easter-eggs-e11.css
           done
-          if grep -R -E 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css --exclude='bedrooms.js'; then
+          if grep -R -E --exclude='bedrooms.js' 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css; then
             echo "E11 must remain locally implemented except for the explicitly approved BEDROOMS Drive preview."
             exit 1
           fi
