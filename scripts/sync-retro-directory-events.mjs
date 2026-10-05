@@ -18,7 +18,7 @@ function text(value) {
 }
 
 function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^$()|[\]{}]/g, '\\$&');
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function decodeEntities(value) {
