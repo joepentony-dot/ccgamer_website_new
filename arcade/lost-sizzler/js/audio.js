@@ -2,7 +2,7 @@ window.CCGSound=(()=>{
   "use strict";
   const C=window.CCG_CONFIG,ASSETS=window.CCG_AUDIO_ASSETS||{sfx:{},music:{}};
   let ctx=null,master=null,musicGain=null,sfxGain=null,dangerGain=null,stalkerGain=null,musicTimer=null,dangerTimer=null,stalkerTimer=null,step=0,enabled=true,started=false,danger=0,stalkerNear=false,stalkerSight=false,stalkerStep=0,roomMood="normal",musicLevel=.075,sfxLevel=1,musicAsset=null,musicAssetState="",namedEnemy="",namedLockUntil=0;
-  const activeSfx=new Set(),useMusicAssets=Boolean(ASSETS.music&&ASSETS.music.normal);
+  const activeSfx=new Set(),useMusicAssets=Boolean(ASSETS.music&&ASSETS.music.normal),productionPlaylistExclusive=true;
   const melody=[262,0,330,392,0,330,294,0,262,330,0,440,392,330,294,0,220,0,262,330,0,294,262,0,196,247,0,294,330,294,247,0];
   const counter=[0,523,0,494,0,440,392,0,0,392,0,440,0,494,523,0];
   const bass=[131,131,98,98,110,110,98,98];
@@ -67,14 +67,14 @@ window.CCGSound=(()=>{
     const n=stalkerNotes[stalkerStep++%stalkerNotes.length];if(n){tone(n,.42,"sawtooth",.20,-5,0,"stalker");tone(n*1.5,.24,"triangle",.08,-8,.08,"stalker")}
     if(stalkerStep%4===0)noise(.20,.024,"stalker");
   }
-  async function start(){if(!ensure())return false;try{if(ctx.state!=="running"){const resume=ctx.resume();if(resume?.catch)resume.catch(()=>{})}}catch(_){}started=true;if(useMusicAssets){syncAssetMusic()}else{if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}return true}
+  async function start(){if(!ensure())return false;try{if(ctx.state!=="running"){const resume=ctx.resume();if(resume?.catch)resume.catch(()=>{})}}catch(_){}started=true;if(productionPlaylistExclusive)return true;if(useMusicAssets){syncAssetMusic()}else{if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}return true}
   function stopMusic(){if(musicAsset){try{musicAsset.pause()}catch(_){}}if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(dangerTimer){clearInterval(dangerTimer);dangerTimer=null}if(stalkerTimer){clearInterval(stalkerTimer);stalkerTimer=null}}
   function stopAll(){
     stopMusic();for(const audio of activeSfx){try{audio.pause();audio.currentTime=0}catch(_){}}activeSfx.clear();
     if(ctx){try{ctx.close?.()}catch(_){}ctx=null;master=musicGain=sfxGain=dangerGain=stalkerGain=null}
     musicAsset=null;musicAssetState="";started=false;danger=0;stalkerNear=false;stalkerSight=false;namedEnemy="";namedLockUntil=0;
   }
-  function startMusic(){if(!started)return;if(useMusicAssets){syncAssetMusic();return}if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}
+  function startMusic(){if(!started||productionPlaylistExclusive)return;if(useMusicAssets){syncAssetMusic();return}if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}
   function setDanger(v){danger=Math.max(0,Math.min(1,Number(v)||0));if(dangerGain)dangerGain.gain.value=.045+.07*danger}
   function setRoomMood(v){const next=["normal","danger","sanctuary","named",...Object.keys(ASSETS.music?.rooms||{})].includes(v)?v:"normal";if(next===roomMood)return;roomMood=next;step=0;publishMusicState("room-mood");if(useMusicAssets)syncAssetMusic();else if(musicGain&&ctx)musicGain.gain.setTargetAtTime(next==="named"?.11:next==="danger"?.095:next==="sanctuary"?.065:.08,ctx.currentTime,.35)}
   function setNamedEnemy(name){const next=String(name||"");const now=performance.now();if(next===namedEnemy)return;if(next&&namedEnemy&&now<namedLockUntil)return;if(!next&&namedEnemy&&now<namedLockUntil)return;namedEnemy=next;if(next)namedLockUntil=now+2400;else namedLockUntil=0;publishMusicState("named-enemy");if(roomMood==="named"&&useMusicAssets)syncAssetMusic()}
