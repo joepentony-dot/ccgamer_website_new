@@ -34,6 +34,8 @@
   let retryTimer=null;
   let fallbackActive=false;
   let pendingGestureState="";
+  let playbackAttemptSerial=0;
+  let pendingGestureAttempt=0;
   const stateSlots=new Map();
   const lastByState=new Map();
   const failures=new Map();
@@ -81,7 +83,20 @@
   }
 
   const customSoundtrackOwned=state=>customSources(state).length>0;
-  const clearPendingGestureFor=state=>{if(pendingGestureState===state)pendingGestureState=""};
+  function beginGestureTrackedPlay(state){
+    const attempt=++playbackAttemptSerial;
+    if(customSoundtrackOwned(state)){pendingGestureState=state;pendingGestureAttempt=attempt}
+    else{pendingGestureState="";pendingGestureAttempt=0}
+    return attempt
+  }
+  function clearPendingGestureFor(state,attempt){
+    if(pendingGestureState===state&&pendingGestureAttempt===attempt){pendingGestureState="";pendingGestureAttempt=0}
+  }
+  function retainPendingGestureFor(state,attempt){
+    if(attempt!==playbackAttemptSerial)return;
+    if(customSoundtrackOwned(state)){pendingGestureState=state;pendingGestureAttempt=attempt}
+    else{pendingGestureState="";pendingGestureAttempt=0}
+  }
 
   function desiredState(){return stalkerNear?"stalker":roomMood}
 
@@ -272,8 +287,8 @@
     if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
       current.advancing=false;
       if(current.audio.paused){
-        if(customSoundtrackOwned(state))pendingGestureState=state;
-        try{Promise.resolve(current.audio.play()).then(()=>{clearPendingGestureFor(state);clearFailure(current.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)}
+        const playAttempt=beginGestureTrackedPlay(state);
+        try{Promise.resolve(current.audio.play()).then(()=>{clearPendingGestureFor(state,playAttempt);clearFailure(current.url);stopFallback()}).catch(()=>{retainPendingGestureFor(state,playAttempt);recordFailure(current.url);scheduleRetry(state)})}catch(_){retainPendingGestureFor(state,playAttempt);recordFailure(current.url);scheduleRetry(state)}
       }
       current.audio.volume=targetVolume(state);
       return;
@@ -291,8 +306,8 @@
     if(next===previous){
       next.advancing=false;
       if(next.audio.paused){
-        if(customSoundtrackOwned(state))pendingGestureState=state;
-        try{Promise.resolve(next.audio.play()).then(()=>{clearPendingGestureFor(state);clearFailure(next.url);stopFallback()}).catch(()=>{pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)}
+        const playAttempt=beginGestureTrackedPlay(state);
+        try{Promise.resolve(next.audio.play()).then(()=>{clearPendingGestureFor(state,playAttempt);clearFailure(next.url);stopFallback()}).catch(()=>{retainPendingGestureFor(state,playAttempt);recordFailure(next.url);scheduleRetry(state)})}catch(_){retainPendingGestureFor(state,playAttempt);recordFailure(next.url);scheduleRetry(state)}
       }
       next.audio.volume=targetVolume(state);
       return;
@@ -304,22 +319,22 @@
 
     finishPrevious(previous,next);
     stopFallback();
-    if(customSoundtrackOwned(state))pendingGestureState=state;
+    const playAttempt=beginGestureTrackedPlay(state);
     try{
       Promise.resolve(next.audio.play()).then(()=>{
-        clearPendingGestureFor(state);
+        clearPendingGestureFor(state,playAttempt);
         clearFailure(next.url);
         fadeBetween(previous,next);
       }).catch(()=>{
         if(current!==next)return;
-        pendingGestureState=customSoundtrackOwned(state)?state:"";
+        retainPendingGestureFor(state,playAttempt);
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
       });
     }catch(_){
       if(current===next){
-        pendingGestureState=customSoundtrackOwned(state)?state:"";
+        retainPendingGestureFor(state,playAttempt);
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
@@ -353,6 +368,7 @@
     stateSlots.clear();
     failures.clear();
     pendingGestureState="";
+    pendingGestureAttempt=0;
     if(fallbackActive){fallbackActive=false;try{original.stopMusic?.()}catch(_){}}
     else{try{original.stopMusic?.()}catch(_){}}
     if(releaseOwnership)musicBus.release("dungeon");
@@ -392,6 +408,7 @@
     failures.clear();
     clearRetry();
     pendingGestureState="";
+    pendingGestureAttempt=0;
     stopFallback();
     transition(true,false);
     return true;
