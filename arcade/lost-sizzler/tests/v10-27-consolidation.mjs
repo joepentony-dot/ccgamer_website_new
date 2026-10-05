@@ -24,7 +24,8 @@ assert.match(oldTest,/location\.replace\(destination\.href\)/,'obsolete test URL
 assert.match(oldPrimary,/\/arcade\/c64-dungeon-carnage\//,'previous production URL must target canonical arcade path');
 assert.match(oldTest,/\/arcade\/c64-dungeon-carnage\//,'obsolete test URL must target canonical arcade path');
 assert.match(voice,/welcomeRare/,'rare recorded welcome support must remain wired');
-assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*sayKey\("welcome",\{cooldown:0\}\)/,'Solo run start must always request the owner-recorded Welcome cue');
+assert.match(voice,/window\.addEventListener\("ccg:run-started",onAuthoritativeRunStarted\)/,'Solo run start must bind owner-recorded Welcome playback to the authoritative run-start event');
+assert.match(voice,/sayKey\("welcome",\{cooldown:0\}\)/,'Authoritative non-Tutorial run start must request the owner-recorded Welcome cue');
 assert.doesNotMatch(voice,/greetingRoll<\.1\?"welcomeRare"/,'Solo start must not randomly replace the expected Welcome cue');
 assert.match(voice,/function playSprite\(/,'approved recorded voice playback must remain present');
 assert.match(voice,/const src=assetFor\(key\);let started=false;[\s\S]*if\(src\)started=playClip\(src,priority,key\);if\(!started\)started=playSprite\(key,priority\);/,'admin voice override must be checked before approved game recording playback');

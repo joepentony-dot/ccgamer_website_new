@@ -287,7 +287,7 @@
   }
   function tutorialSilent(){const tutorial=window.CCGLostSizzlerOnboardingV120?.state;return Boolean(tutorial?.active||tutorial?.tutorialRequested||window.CCGLostSizzlerTutorialGuidanceV123?.tutorialLaunchPending)}
   function sayKey(key,opts={}){
-    const entry=lines[key];if(!entry||!state.enabled||tutorialSilent())return false;
+    const entry=lines[key];if(!entry||!state.enabled||(tutorialSilent()&&!opts.allowDuringTutorial))return false;
     const currentFloor=Math.max(0,Number(run?.floor||0));if(key==="rareLoot"&&currentFloor>0&&state.rareLootFloor===currentFloor)return false;if(key==="rareLoot"&&currentFloor>0)state.rareLootFloor=currentFloor;
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000),now=performance.now();if(!coolReady(key,cooldown,now))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
@@ -474,21 +474,23 @@
       return result;
     };
   }
-  if(typeof beginRun==="function"){
-    const originalBeginRun=beginRun;
-    beginRun=function beginRunV116Voice(opts={}){
-      const result=originalBeginRun.apply(this,arguments);
-      stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");const activeRun=run;
-      setTimeout(()=>{
-        try{
-          if(run!==activeRun||mode!=="playing")return;
-          sayKey("welcome",{cooldown:0});
-          if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
-        }catch(_){}
-      },450);
-      return result;
-    };
+  let announcedRun=null;
+  function resetRunVoiceState(){
+    stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");
   }
+  function onAuthoritativeRunStarted(event){
+    const detail=event?.detail||{},activeRun=detail.run||(typeof run==="object"?run:null);
+    if(!activeRun||announcedRun===activeRun)return;
+    announcedRun=activeRun;resetRunVoiceState();
+    setTimeout(()=>{
+      try{
+        if(run!==activeRun||mode!=="playing")return;
+        sayKey("welcome",{cooldown:0});
+        if(detail.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
+      }catch(_){}
+    },180);
+  }
+  window.addEventListener("ccg:run-started",onAuthoritativeRunStarted);
   if(typeof floorComplete==="function"){
     const originalFloorComplete=floorComplete;
     floorComplete=function floorCompleteV116Voice(){const result=originalFloorComplete.apply(this,arguments);try{sayKey("floorClear",{cooldown:0})}catch(_){}return result};
