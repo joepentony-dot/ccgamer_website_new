@@ -13,7 +13,7 @@ const BOX3D_MAX_BYTES = 500 * 1024;
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { base: "", requireGenerated: false };
+  const result = { base: "", requireGenerated: false, sharedOnly: false };
   for (let index = 0; index < args.length; index += 1) {
     const value = args[index];
     if (value === "--base") {
@@ -21,6 +21,8 @@ function parseArgs() {
       index += 1;
     } else if (value === "--require-generated") {
       result.requireGenerated = true;
+    } else if (value === "--shared-only") {
+      result.sharedOnly = true;
     } else {
       throw new Error(`Unknown argument: ${value}`);
     }
@@ -194,7 +196,9 @@ function main() {
   const current = readJson("games/games.json");
   if (!Array.isArray(current)) throw new Error("games/games.json is not an array.");
 
-  for (const game of current) validateGeneratedPage(game, args.requireGenerated, errors);
+  if (!args.sharedOnly) {
+    for (const game of current) validateGeneratedPage(game, args.requireGenerated, errors);
+  }
 
   const previous = previousGames(args.base);
   let newGames = [];
