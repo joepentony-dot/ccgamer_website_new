@@ -37,7 +37,7 @@ try{
     'pause(){this.paused=true}',
     'removeAttribute(){}',
     '};'
-  ].join("\\n")});
+  ].join("\n")});
   await page.addScriptTag({content:recordedSource});
   await page.addScriptTag({content:directorSource});
   await page.evaluate(()=>document.dispatchEvent(new KeyboardEvent("keydown",{code:"KeyA",bubbles:true})));
