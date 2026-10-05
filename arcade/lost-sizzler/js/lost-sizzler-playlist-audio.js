@@ -76,11 +76,21 @@
     ]);
   }
 
-  function categorySources(state){
-    return customSources(state);
+  function packagedSources(state){
+    const legacy=LEGACY_ADMIN_KEYS[state],music=assets.music||{};
+    return unique([
+      ...asList(music.playlists?.[state]),
+      ...asList(music[state]),
+      ...asList(music[legacy])
+    ]);
   }
 
-  const customSoundtrackOwned=state=>customSources(state).length>0;
+  function categorySources(state){
+    const custom=customSources(state);
+    return custom.length?custom:packagedSources(state);
+  }
+
+  const soundtrackOwned=state=>categorySources(state).length>0;
 
   function desiredState(){return stalkerNear?"stalker":roomMood}
 
@@ -271,8 +281,8 @@
     if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
       current.advancing=false;
       if(current.audio.paused){
-        if(!gestureRetry&&customSoundtrackOwned(state))pendingGestureState=state;
-        try{const attempt=++current.playAttempt;Promise.resolve(current.audio.play()).then(()=>{if(current.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(current.url);stopFallback()}).catch(()=>{if(current.playAttempt!==attempt)return;pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)}
+        if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
+        try{const attempt=++current.playAttempt;Promise.resolve(current.audio.play()).then(()=>{if(current.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(current.url);stopFallback()}).catch(()=>{if(current.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)})}catch(_){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);scheduleRetry(state)}
       }
       current.audio.volume=targetVolume(state);
       return;
@@ -290,8 +300,8 @@
     if(next===previous){
       next.advancing=false;
       if(next.audio.paused){
-        if(!gestureRetry&&customSoundtrackOwned(state))pendingGestureState=state;
-        try{const attempt=++next.playAttempt;Promise.resolve(next.audio.play()).then(()=>{if(next.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(next.url);stopFallback()}).catch(()=>{if(next.playAttempt!==attempt)return;pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)})}catch(_){pendingGestureState=customSoundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)}
+        if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
+        try{const attempt=++next.playAttempt;Promise.resolve(next.audio.play()).then(()=>{if(next.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(next.url);stopFallback()}).catch(()=>{if(next.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)})}catch(_){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(next.url);scheduleRetry(state)}
       }
       next.audio.volume=targetVolume(state);
       return;
@@ -303,7 +313,7 @@
 
     finishPrevious(previous,next);
     stopFallback();
-    if(!gestureRetry&&customSoundtrackOwned(state))pendingGestureState=state;
+    if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
     try{
       const attempt=++next.playAttempt;
       Promise.resolve(next.audio.play()).then(()=>{
@@ -313,14 +323,14 @@
         fadeBetween(previous,next);
       }).catch(()=>{
         if(next.playAttempt!==attempt||current!==next)return;
-        pendingGestureState=customSoundtrackOwned(state)?state:"";
+        pendingGestureState=soundtrackOwned(state)?state:"";
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
       });
     }catch(_){
       if(current===next){
-        pendingGestureState=customSoundtrackOwned(state)?state:"";
+        pendingGestureState=soundtrackOwned(state)?state:"";
         recordFailure(next.url);
         restorePreviousState(previous,next,replaced);
         if(created)scheduleRetry(state);
@@ -389,7 +399,7 @@
   function retryUploadedMusicOnGesture(){
     if(!enabled||!started)return false;
     const state=desiredState();
-    if(!pendingGestureState&&!customSoundtrackOwned(state))return false;
+    if(!pendingGestureState&&!soundtrackOwned(state))return false;
     failures.clear();
     clearRetry();
     pendingGestureState="";
@@ -452,7 +462,8 @@
       started,
       fallbackActive,
       pendingGestureState,
-      customSoundtrackOwned:customSoundtrackOwned(desiredState()),
+      customSoundtrackOwned:customSources(desiredState()).length>0,
+      soundtrackOwned:soundtrackOwned(desiredState()),
       adminAudioReady:window.CCG_ADMIN_AUDIO_READY===true,
       adminAudioPending:adminAudioPending(),
       failures:Object.fromEntries([...failures].map(([url,data])=>[url,{count:data.count,retryInMs:Math.max(0,data.retryAt-Date.now())}])),
@@ -480,6 +491,16 @@
     clearRetry();
     if(started&&enabled)transition(false,false);
     event?.stopImmediatePropagation?.();
+  });
+
+  window.addEventListener("ccg:run-started",()=>{
+    if(!enabled)return;
+    started=true;
+    musicBus.claim("dungeon",()=>stopMusic(false));
+    failures.clear();
+    clearRetry();
+    pendingGestureState="";
+    transition(true,false,true);
   });
 
   window.addEventListener("pagehide",()=>{
