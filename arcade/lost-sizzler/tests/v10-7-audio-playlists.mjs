@@ -43,7 +43,7 @@ assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner
 assert(baseAudio.includes('productionMusicExclusive=true'),'The base audio layer must explicitly disable bundled/generated music ownership.');
 assert(baseAudio.includes('if(productionMusicExclusive)return true'),'The legacy generated music engine must remain disabled while the playlist owner controls authored tracks.');
 assert(baseAudio.includes('if(!started||productionMusicExclusive)return'),'The base startMusic path must never start bundled/default music in production.');
-assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
+assert(patch.includes('function retryUploadedMusicOnGesture(event)'),'Mobile playback rejection must have a real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the soundtrack from a user gesture.');
 assert(patch.includes('window.addEventListener("ccg:run-started"'),'Authoritative run start must force a fresh playlist takeover.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
