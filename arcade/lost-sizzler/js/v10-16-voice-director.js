@@ -88,7 +88,7 @@
     gildedEscaped:{variants:["Too slow!","And he's gone."],priority:70,cooldown:5000},
     namedEnemy:{variants:["Named enemy ahead.","Something nasty has noticed you."],priority:52,cooldown:9000},
     rareLoot:{variants:["Rare loot!","That's worth picking up."],priority:30,cooldown:8000},
-    levelUp:{variants:["Level up.","Upgrade available."],priority:45,cooldown:4000},
+    levelUp:{variants:["Level up.","Upgrade available."],priority:72,cooldown:4000,interrupt:true},
     shop:{variants:["Shop discovered.","Supplies ahead."],priority:28,cooldown:12000},
     sanctuary:{variants:["Sanctuary.","Safe room. For now."],priority:30,cooldown:12000},
     trap:{variants:["Trap!","Move!"],priority:58,cooldown:5000},
@@ -228,6 +228,12 @@
     const Context=window.AudioContext||window.webkitAudioContext;if(!Context||!audio)return null;
     try{
       voiceContext=voiceContext||new Context();
+      /* Never route the only audible owner recording into a suspended Web Audio
+       * graph. Mobile/desktop browsers may report HTMLMediaElement.play() as
+       * successful while a suspended AudioContext produces silence. In that
+       * case keep the recording on direct media-element output; dungeon FX are
+       * optional presentation, not an ownership requirement. */
+      if(voiceContext.state!=="running"){try{voiceContext.resume?.().catch?.(()=>{})}catch(_){}audio.volume=voiceVolume(key);return null}
       if(!voiceImpulse){
         const length=Math.max(1,Math.floor(voiceContext.sampleRate*.32));voiceImpulse=voiceContext.createBuffer(2,length,voiceContext.sampleRate);
         for(let channel=0;channel<voiceImpulse.numberOfChannels;channel++){const data=voiceImpulse.getChannelData(channel);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,3.1)}
@@ -486,8 +492,7 @@
       setTimeout(()=>{
         try{
           if(run!==activeRun||mode!=="playing")return;
-          const greetingRoll=Math.random(),welcomeKey=greetingRoll<.1?"welcomeRare":greetingRoll<.55?"welcome":"welcomeAlt";
-          sayKey(welcomeKey,{cooldown:0});
+          sayKey("welcome",{cooldown:0,priority:90,interrupt:true});
           if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
         }catch(_){}
       },450);
