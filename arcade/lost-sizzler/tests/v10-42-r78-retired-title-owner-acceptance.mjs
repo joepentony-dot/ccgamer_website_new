@@ -31,8 +31,8 @@ assert.doesNotMatch(core,/THE LOST SIZZLER RECOVERED/,
 
 assert.match(voice,/welcome:\{text:"Welcome to C64 Dungeon Carnage\. Good luck down there\."/,
   "default welcome voice fallback must name C64 Dungeon Carnage");
-assert.match(voice,/welcomeRare:\{text:"Welcome to C64 Dungeon Carnage\. Good luck down there\."/,
-  "rare welcome voice fallback must name C64 Dungeon Carnage");
+assert.match(voice,/welcomeRare:\{text:"Watchers of Illusion\."/,
+  "rare welcome must retain the approved Watchers of Illusion greeting rather than reuse the standard welcome");
 assert.doesNotMatch(voice,/Welcome to The Lost Sizzler/,
   "retired spoken title must not survive in active voice fallbacks");
 
