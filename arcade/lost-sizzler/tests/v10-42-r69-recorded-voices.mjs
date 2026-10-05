@@ -77,7 +77,9 @@ assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
 assert.match(voice,/function approvedLegacyGreeting\(key\)\{return key==="welcomeRare"\?BUNDLED_SPRITE\.cues\.welcomeRare:null\}/,"only the dedicated rare Watchers greeting may use the historical bundled sprite");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
-assert.match(voice,/greetingRoll=Math\.random\(\),welcomeKey=greetingRoll<\.1\?"welcomeRare":greetingRoll<\.55\?"welcome":"welcomeAlt"/,"run start must retain two normal greetings plus a ten-percent rare Watchers greeting");
+assert.match(voice,/sayKey\("welcome",\{cooldown:0,priority:90,interrupt:true\}\)/,"every Solo run start must play the owner-recorded Welcome greeting");
+assert.match(voice,/levelUp:\{variants:\["Level up\.","Upgrade available\."\],priority:72,cooldown:4000,interrupt:true\}/,"level-up must be a priority owner-recorded cue that cannot be lost behind routine chatter");
+assert.match(voice,/voiceContext\.state!=="running"[\s\S]*audio\.volume=voiceVolume\(key\);return null/,"owner recordings must stay on direct audible media output when the optional Web Audio FX context is suspended");
 assert.match(loader,/const criticalFiles=\["admin-audio-overrides\.js","lost-sizzler-playlist-audio\.js","v10-42-r69-recorded-voices\.js","v10-16-voice-director\.js"/,"recorded voice metadata and director must be release-critical");
 assert.match(voice,/LOCKED BRONZE DOOR[\s\S]*bronzeKeyRequired/,"bronze doors must classify into explicit recorded feedback");
 assert.match(voice,/LOCKED CHEST[\s\S]*chestKeyRequired/,"locked chests must classify into explicit recorded feedback");
