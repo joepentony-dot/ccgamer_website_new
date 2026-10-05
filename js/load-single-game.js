@@ -1447,6 +1447,59 @@ function renderAffiliateSection(game) {
     }
 }
 
+function ensureGameVideoFacadeShell(videoEmbed) {
+    if (!videoEmbed) return { facade: null, poster: null };
+
+    let stage = videoEmbed.closest(".game-video__stage");
+    if (!stage) {
+        stage = document.createElement("div");
+        stage.className = "game-video__stage";
+        const parent = videoEmbed.parentNode;
+        if (parent) {
+            parent.insertBefore(stage, videoEmbed);
+            stage.appendChild(videoEmbed);
+        }
+    }
+
+    let facade = document.getElementById("game-video-facade");
+    if (!facade) {
+        facade = document.createElement("button");
+        facade.id = "game-video-facade";
+        facade.className = "game-video__facade";
+        facade.type = "button";
+        facade.hidden = true;
+
+        const play = document.createElement("span");
+        play.className = "game-video__play";
+        play.setAttribute("aria-hidden", "true");
+        play.textContent = "▶";
+
+        const label = document.createElement("span");
+        label.className = "game-video__play-label";
+        label.textContent = "Play video";
+
+        facade.append(play, label);
+        stage.insertBefore(facade, videoEmbed);
+    } else if (facade.parentElement !== stage) {
+        stage.insertBefore(facade, videoEmbed);
+    }
+
+    let poster = document.getElementById("game-video-poster");
+    if (!poster) {
+        poster = document.createElement("img");
+        poster.id = "game-video-poster";
+        poster.className = "game-video__poster";
+        poster.alt = "";
+        poster.width = 480;
+        poster.height = 360;
+        poster.loading = "lazy";
+        poster.decoding = "async";
+        facade.insertBefore(poster, facade.firstChild);
+    }
+
+    return { facade, poster };
+}
+
 function renderGame(game) {
 
     const preloaded = isPreloadedSingleGame();
@@ -1530,8 +1583,9 @@ function renderGame(game) {
     const vid = resolveVideoId(game);
     const videoSection = document.getElementById("game-video-section");
     const videoEmbed = document.getElementById("game-video-embed");
-    const videoFacade = document.getElementById("game-video-facade");
-    const videoPoster = document.getElementById("game-video-poster");
+    const videoShell = ensureGameVideoFacadeShell(videoEmbed);
+    const videoFacade = videoShell.facade;
+    const videoPoster = videoShell.poster;
     const videoActions = videoSection ? videoSection.querySelector(".game-video__actions") : null;
     const videoBtn = document.getElementById("gameVideoBtn");
     const isDriveVideoGame = game.id === "the_happiest_days_of_your_life";
