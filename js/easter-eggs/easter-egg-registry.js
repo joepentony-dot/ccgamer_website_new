@@ -29,7 +29,8 @@ export const EASTER_EGG_REGISTRY = Object.freeze([
     { code: "sprite", label: "SPRITE EDITOR", category: "commodore", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
     { code: "modem", label: "MODEM", category: "interactive", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
     { code: "readerror", label: "DISK ERROR", category: "commodore", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
-    { code: "kickstart", label: "AMIGA BOOT", category: "amiga", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" }
+    { code: "kickstart", label: "AMIGA BOOT", category: "amiga", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
+    { code: "bedrooms", label: "BEDROOMS", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "external-stream", phase: "E11" }
 ]);
 
 export const EASTER_EGG_BY_CODE = new Map(EASTER_EGG_REGISTRY.map(entry => [entry.code, entry]));
