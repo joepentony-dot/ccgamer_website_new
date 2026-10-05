@@ -60,7 +60,7 @@ const sanctuaryEscort=read("js/v10-41-sanctuary-hardening.js");
 assert.match(map,/ccg-recorded-voices-r69\.ogg/,"R69 must target the owner-recorded browser voice sprite");
 assert.match(map,/"hello-big-boy":\{"start":/,"sanctuary greeting must have an explicit sprite cue");
 assert.match(map,/"npc\.sanctuary\.keeper":"hello-big-boy"/,"sanctuary keeper must resolve to the recorded greeting");
-assert.match(map,/"npc\.alchemist\.ready":"i-can-trade-those-artefacts-for-a-banishment-flask"/,"trade-ready Alchemist dialogue must resolve to the supplied Flask recording");
+assert.equal(recordedPack.aliases["npc.alchemist.ready"],undefined,"trade-ready Alchemist must not reuse the obsolete artefact-worded Flask recording");
 assert.match(map,/"bronzeKeyRequired":"you-need-a-bronze-key"/,"bronze lock feedback must resolve to the supplied full recorded cue");
 assert.match(map,/"chestKeyRequired":"you-need-a-key-to-open-this-chest"/,"locked chest feedback must resolve to the recorded cue");
 assert.match(loader,/v10-42-r69-recorded-voices\.js[\s\S]*v10-16-voice-director\.js/,"recorded voice metadata must load before the single voice director");
