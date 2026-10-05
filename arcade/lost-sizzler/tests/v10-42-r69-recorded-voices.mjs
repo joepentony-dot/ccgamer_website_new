@@ -77,7 +77,10 @@ assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
 assert.match(voice,/function approvedLegacyGreeting\(key\)\{return key==="welcomeRare"\?BUNDLED_SPRITE\.cues\.welcomeRare:null\}/,"only the dedicated rare Watchers greeting may use the historical bundled sprite");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
-assert.match(voice,/greetingRoll=Math\.random\(\),welcomeKey=greetingRoll<\.1\?"welcomeRare":greetingRoll<\.55\?"welcome":"welcomeAlt"/,"run start must retain two normal greetings plus a ten-percent rare Watchers greeting");
+assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*sayKey\("welcome",\{cooldown:0\}\)/,"every Solo run start must request the owner-recorded Welcome cue");
+assert.doesNotMatch(voice,/greetingRoll=Math\.random\(\)/,"run start must not randomly replace the expected Welcome cue");
+assert.match(voice,/function dungeonVoiceFx\(audio,key\)[\s\S]*audio\.volume=voiceVolume\(key\)[\s\S]*return null/,"owner-recorded speech must remain directly audible through its media element");
+assert.doesNotMatch(voice,/createMediaElementSource\(audio\)/,"recorded speech must not be rerouted into a separately suspended Web Audio context");
 assert.match(loader,/const criticalFiles=\["admin-audio-overrides\.js","lost-sizzler-playlist-audio\.js","v10-42-r69-recorded-voices\.js","v10-16-voice-director\.js"/,"recorded voice metadata and director must be release-critical");
 assert.match(voice,/LOCKED BRONZE DOOR[\s\S]*bronzeKeyRequired/,"bronze doors must classify into explicit recorded feedback");
 assert.match(voice,/LOCKED CHEST[\s\S]*chestKeyRequired/,"locked chests must classify into explicit recorded feedback");
