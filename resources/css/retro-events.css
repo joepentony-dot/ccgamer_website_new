@@ -572,10 +572,196 @@ body:is(
 }
 
 /* =========================================================
+   RETRO.DIRECTORY — UPCOMING UK EVENTS
+========================================================= */
+
+body[data-collection="Retro Events"] .ccg-retro-directory,
+body[data-collection="Retro Events"] .ccg-retro-archive-heading {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto clamp(28px, 4vw, 42px);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory {
+    padding: clamp(18px, 2.8vw, 28px);
+    border: 1px solid rgba(var(--accent-rgb), 0.32);
+    border-radius: 16px;
+    background:
+        linear-gradient(135deg, rgba(var(--accent-rgb), 0.10), transparent 42%),
+        rgba(4, 9, 20, 0.82);
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.34),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 22px;
+    margin-bottom: 20px;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__intro {
+    max-width: 760px;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__eyebrow {
+    margin: 0 0 8px;
+    color: rgb(var(--accent-rgb));
+    font: 700 0.68rem/1.2 "Orbitron", sans-serif;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory h2,
+body[data-collection="Retro Events"] .ccg-retro-archive-heading h2 {
+    margin: 0 0 10px;
+    color: rgba(249,252,255,0.98);
+    font: 700 clamp(1.22rem, 2.6vw, 1.7rem)/1.25 "Orbitron", sans-serif;
+    letter-spacing: 0.025em;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__intro > p:not(.ccg-retro-directory__eyebrow):not(.ccg-retro-directory__status-line),
+body[data-collection="Retro Events"] .ccg-retro-archive-heading > p:not(.ccg-retro-directory__eyebrow) {
+    margin: 0;
+    color: rgba(231,240,249,0.78);
+    line-height: 1.65;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__status-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 12px 0 0;
+    color: rgba(234,244,253,0.72);
+    font-size: 0.86rem;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: min(100%, 280px);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100%;
+    padding: 16px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 12px;
+    background:
+        linear-gradient(150deg, rgba(var(--accent-rgb),0.055), transparent 46%),
+        rgba(7,12,25,0.86);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__date {
+    margin: 0 0 8px;
+    color: rgb(var(--accent-rgb));
+    font: 700 0.7rem/1.35 "Orbitron", sans-serif;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__title {
+    margin: 0 0 10px;
+    color: rgba(249,252,255,0.98);
+    font: 700 1rem/1.4 "Orbitron", sans-serif;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__location,
+body[data-collection="Retro Events"] .ccg-retro-directory-card__category {
+    margin: 0 0 8px;
+    color: rgba(226,236,246,0.72);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__category {
+    color: rgba(226,236,246,0.58);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 10px;
+    color: rgb(var(--accent-rgb));
+    font: 700 0.7rem/1.35 "Orbitron", sans-serif;
+    letter-spacing: 0.045em;
+    text-decoration: none;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__link::after {
+    content: "↗";
+    font-size: 0.95rem;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-card__link:hover,
+body[data-collection="Retro Events"] .ccg-retro-directory-card__link:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__credit {
+    margin: 18px 0 0;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    color: rgba(224,235,246,0.62);
+    font-size: 0.8rem;
+    line-height: 1.55;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory__credit a {
+    color: rgb(var(--accent-rgb));
+    text-underline-offset: 3px;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-empty {
+    grid-column: 1 / -1;
+    padding: 22px;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px;
+    background: rgba(5,10,22,0.62);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-empty h3 {
+    margin: 0 0 8px;
+    color: rgba(249,252,255,0.96);
+    font: 700 1rem/1.4 "Orbitron", sans-serif;
+}
+
+body[data-collection="Retro Events"] .ccg-retro-directory-empty p {
+    margin: 0;
+    color: rgba(230,239,248,0.72);
+}
+
+body[data-collection="Retro Events"] .ccg-retro-archive-heading {
+    margin-bottom: 18px;
+    padding: 0;
+}
+
+/* =========================================================
    RESPONSIVE
 ========================================================= */
 
 @media (max-width: 1040px) {
+    body[data-collection="Retro Events"] .ccg-retro-directory-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     body:is(
         [data-collection="Retro Specials"],
         [data-collection="Retro Events"],
@@ -586,6 +772,25 @@ body:is(
 }
 
 @media (max-width: 680px) {
+    body[data-collection="Retro Events"] .ccg-retro-directory,
+    body[data-collection="Retro Events"] .ccg-retro-archive-heading {
+        width: calc(100% - 20px);
+    }
+
+    body[data-collection="Retro Events"] .ccg-retro-directory__header {
+        flex-direction: column;
+    }
+
+    body[data-collection="Retro Events"] .ccg-retro-directory__actions {
+        justify-content: flex-start;
+        width: 100%;
+        min-width: 0;
+    }
+
+    body[data-collection="Retro Events"] .ccg-retro-directory-grid {
+        grid-template-columns: 1fr;
+    }
+
     body:is(
         [data-collection="Retro Specials"],
         [data-collection="Retro Events"],
