@@ -1,7 +1,7 @@
-/* The Lost Sizzler V10.41 r47 — all-mode performance governor and fault telemetry.
+/* C64 Dungeon Carnage V10.41 r47 — performance governor and fault telemetry.
  *
  * This layer never owns simulation, combat, scoring, collision, world generation,
- * saves or multiplayer transport. It observes the existing runtime, trims only
+ * or saves. It observes the existing runtime, trims only
  * disposable visual arrays when sustained frame pressure is detected, records
  * bounded diagnostics and reports deduplicated client faults through the existing
  * feedback endpoint.
@@ -17,7 +17,7 @@
   const ERROR_COOLDOWN_MS=60000;
   const MAX_ERRORS_PER_SESSION=6;
   const TIERS={NORMAL:"normal",REDUCED:"reduced",SEVERE:"severe"};
-  const MODES=new Set(["solo","online","split","daily","tutorial","dungeon","horde-survivor","sizzler-saboteurs"]);
+  const MODES=new Set(["game","tutorial","menu"]);
   const state={
     tier:TIERS.NORMAL,timer:0,longTaskObserver:null,mode:"menu",samples:0,
     reducedVotes:0,severeVotes:0,recoveryVotes:0,lastFrameMs:16.7,lastFps:60,
@@ -33,27 +33,20 @@
   const activeRun=()=>document.body?.dataset?.runActive==="true";
   const currentMode=()=>{
     try{
-      const special=safe(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode);
-      if(special)return special;
       if(document.body?.dataset?.tutorialActive==="true")return"tutorial";
-      if(run?.daily)return"daily";
       const current=safe(playMode||"");
-      if(current==="online")return safe(net?.getRoomMode?.()?.id||net?.roomMode||"dungeon")||"dungeon";
-      if(current)return current;
+      if(current&&current!=="solo")return current;
+      if(current==="solo")return"game";
     }catch(_){}
-    return activeRun()?"solo":"menu"
+    return activeRun()?"game":"menu"
   };
   const normalizedMode=mode=>MODES.has(safe(mode))?safe(mode):safe(mode)||"unknown";
 
   function budgets(mode=currentMode(),tier=state.tier){
     mode=normalizedMode(mode);
     let particles=420,rings=80,floaters=96;
-    if(mode==="split"){particles=320;rings=72;floaters=82}
-    else if(mode==="horde-survivor"){particles=260;rings=64;floaters=76}
-    else if(mode==="sizzler-saboteurs"){particles=240;rings=60;floaters=72}
-    else if(mode==="online"||mode==="dungeon"){particles=340;rings=72;floaters=84}
-    else if(mode==="tutorial"){particles=300;rings=64;floaters=76}
-    else if(mode==="daily"){particles=390;rings=76;floaters=90}
+    if(mode==="tutorial"){particles=300;rings=64;floaters=76}
+    else if(mode==="game"){particles=340;rings=72;floaters=84}
     const scale=tier===TIERS.SEVERE?.52:tier===TIERS.REDUCED?.74:1;
     return{
       particles:Math.max(120,Math.floor(particles*scale)),
