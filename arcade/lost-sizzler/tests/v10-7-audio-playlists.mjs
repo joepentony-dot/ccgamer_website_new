@@ -11,6 +11,7 @@ const continuity=read('arcade/lost-sizzler/js/v10-7-continuous-exploration.js');
 const core=read('arcade/lost-sizzler/js/game-core.js');
 const play=read('arcade/lost-sizzler/js/game-play.js');
 const assets=read('arcade/lost-sizzler/js/audio-assets.js');
+const baseAudio=read('arcade/lost-sizzler/js/audio.js');
 const overrides=read('arcade/lost-sizzler/js/admin-audio-overrides.js');
 const owner=read('arcade/lost-sizzler/js/asset-overrides.js');
 const admin=read('admin/js/arcade-assets.js');
@@ -32,6 +33,9 @@ assert(patch.includes('function customSources(state)'),'Playlist owner must isol
 assert(patch.includes('function categorySources(state){\n    return customSources(state);'),'Only uploaded production playlists may own live music; bundled placeholder tracks must never be selected.');
 assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n    return false;'),'Legacy/generated music fallback must be disabled outright.');
 assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
+assert(baseAudio.includes('productionMusicExclusive=true'),'The base audio layer must explicitly disable bundled/generated music ownership.');
+assert(baseAudio.includes('if(productionMusicExclusive)return true'),'Starting audio must leave music silent until the uploaded playlist owner takes control.');
+assert(baseAudio.includes('if(!started||productionMusicExclusive)return'),'The base startMusic path must never start bundled/default music in production.');
 assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback rejection must have a real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
