@@ -79,7 +79,7 @@ A new game published through the CCG admin/publishing chain must satisfy all of 
 3. an optional 3D box is WebP and within the uploader hard limit;
 4. the canonical generated game route reserves hero-image dimensions and marks the hero/LCP image with the existing eager/high-priority contract;
 5. the canonical page keeps scripts deferred where owned by the shared template;
-6. the page does not gain a new eager third-party video payload merely because a YouTube ID exists;
+6. the page must use the shared game-video delivery owner and must not add any page-specific eager third-party embed path; the shared video owner itself remains subject to the site-wide remediation programme and may only improve from this baseline;
 7. the authoritative rebuild and Lighthouse performance contract validators pass.
 
 The legacy Game Builder remains a fallback UI, but it does not bypass the repository performance validators.
