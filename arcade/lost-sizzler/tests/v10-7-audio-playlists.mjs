@@ -46,6 +46,15 @@ assert(patch.includes('function recoverActiveRunMusic()'),'Playlist owner must r
 assert(patch.includes('(typeof document!=="undefined"&&document.body?.dataset?.runActive==="true")||String(window.mode||"")==="playing"'),'Active-run recovery must derive ownership from current canonical run state without assuming a DOM in contract harnesses.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
+assert(overrides.includes('window.CCG_ADMIN_AUDIO_READY_PROMISE=new Promise'),'Production audio loader must expose a readiness promise for the release gate.');
+assert(overrides.includes('async function fetchRowsViaRest()'),'Production audio must support direct public REST hydration without depending on supabase-js startup timing.');
+assert(overrides.includes('/rest/v1/arcade_assets?'),'Production audio REST hydration must read the arcade_assets catalogue directly.');
+assert(overrides.includes('async function fetchRowsViaClient()'),'Supabase JS client remains a secondary recovery path after direct REST.');
+assert(overrides.includes('for(let attempt=1;attempt<=3;attempt++)'),'Production audio hydration must retry transient catalogue failures before failing.');
+assert(owner.includes('const adminAudio=requestedPath.endsWith("/admin-audio-overrides.js")'),'Release loader must identify admin audio as readiness-gated.');
+assert(owner.includes('window.CCG_ADMIN_AUDIO_READY_PROMISE'),'Release loader must wait for production audio catalogue hydration, not merely script load.');
+assert(owner.includes('normalTracks<1'),'Live gameplay must not unlock when the uploaded Exploration soundtrack is absent.');
+
 assert(admin.includes('lostSizzlerAutoPlaylist'),'Batch auto-categorisation slot is missing.');
 assert(admin.includes('input.multiple=Boolean(slot.playlist)'),'Lost Sizzler category uploads must accept multiple files.');
 assert(admin.includes(".from('arcade_assets').insert("),'Playlist uploads must append rows rather than replace a category.');
