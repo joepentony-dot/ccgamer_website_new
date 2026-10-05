@@ -54,6 +54,11 @@ try{
       list:rect("#inventory-list"),
       head:rect("#inventory-loadout .r71-loadout-head"),
       board:rect("#inventory-loadout .r71-equipment-board"),
+      weapon:rect("#inventory-loadout .r71-equip-weapon"),
+      armour:rect("#inventory-loadout .r71-equip-armour"),
+      sigil:rect("#inventory-loadout .r71-equip-sigil"),
+      utility:rect("#inventory-loadout .r71-equip-utility"),
+      character:rect("#inventory-loadout .r71-character-stage"),
       wearables:rect("#r80-wearable-strip"),
       stats:rect("#inventory-loadout .r71-stat-strip"),
       relics:rect("#inventory-loadout .r71-relic-strip"),
@@ -63,13 +68,17 @@ try{
   });
 
   assert.deepEqual(errors,[],`inventory launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  for(const key of ["panel","layout","objective","loadout","list","head","board","wearables","stats","relics"])assert.ok(layout[key],`${key} must exist: ${JSON.stringify(layout)}`);
+  for(const key of ["panel","layout","objective","loadout","list","head","board","weapon","armour","sigil","utility","character","wearables","stats","relics"])assert.ok(layout[key],`${key} must exist: ${JSON.stringify(layout)}`);
 
   const before=(a,b,tolerance=2)=>a.bottom<=b.top+tolerance;
   assert.ok(before(layout.objective,layout.loadout),`objective must finish above loadout: ${JSON.stringify(layout)}`);
   assert.ok(before(layout.objective,layout.list),`objective must finish above carried inventory: ${JSON.stringify(layout)}`);
   assert.ok(layout.loadout.right<=layout.list.left+2,`loadout and carried inventory columns must not overlap: ${JSON.stringify(layout)}`);
   assert.ok(layout.loadout.bottom<=layout.layout.bottom+2,`loadout must remain inside inventory layout: ${JSON.stringify(layout)}`);
+  assert.ok(before(layout.weapon,layout.sigil,2),`weapon and sigil cards must not overlap: ${JSON.stringify(layout)}`);
+  assert.ok(before(layout.armour,layout.utility,2),`body armour and active utility cards must not overlap: ${JSON.stringify(layout)}`);
+  assert.ok(before(layout.board,layout.wearables,2),`equipment board must finish above wearable cards: ${JSON.stringify(layout)}`);
+  assert.ok(layout.character.top>=layout.board.top-2&&layout.character.bottom<=layout.board.bottom+2,`character stage must remain inside the equipment board: ${JSON.stringify(layout)}`);
   assert.ok(layout.list.bottom<=layout.layout.bottom+2,`carried inventory must remain inside inventory layout: ${JSON.stringify(layout)}`);
 
   const ordered=[layout.head,layout.board,layout.wearables,layout.stats,layout.relics];
