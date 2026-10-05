@@ -115,7 +115,7 @@
       window.CCG_ADMIN_AUDIO={...(window.CCG_ADMIN_AUDIO||{}),playlists,voice:{},exploration:null,danger:null,sanctuary:null,named:null,stalker:null,remoteMediaSkipped:false,loadFailed:true,error:message};
       window.CCG_ADMIN_AUDIO_READY=true;
       window.dispatchEvent(new CustomEvent("ccg:admin-audio-ready",{detail:{applied:0,appliedMusic:0,appliedVoice:0,playlists,voice:{},remoteMediaSkipped:false,loadFailed:true,error:message}}));
-      console.warn("[Lost Sizzler] custom admin audio unavailable; explicit bundled fallback authorised.",error);
+      console.warn("[C64 Dungeon Carnage] uploaded production audio unavailable; live music remains silent rather than using bundled fallback.",error);
     }
   }
 
