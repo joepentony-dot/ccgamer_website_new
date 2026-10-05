@@ -31,7 +31,9 @@ assert(owner.includes('const criticalFiles=["admin-audio-overrides.js","lost-siz
 assert(patch.includes('function adminAudioPending()'),'Playlist owner must observe production admin soundtrack hydration state.');
 assert(patch.includes('function customSources(state)'),'Playlist owner must isolate uploaded production soundtrack sources.');
 assert(patch.includes('function packagedSources(state)'),'Packaged authored soundtrack sources must remain available if remote hydration is unavailable.');
-assert(patch.includes('return custom.length?custom:packagedSources(state);'),'Uploaded playlists must take priority, with packaged authored tracks as the silence-prevention source.');
+assert(patch.includes('if(custom.length)return custom;'),'Uploaded playlists must take priority over packaged authored tracks.');
+assert(patch.includes('if(adminAudioPending())return [];'),'Packaged authored music must wait until uploaded/admin soundtrack hydration has resolved.');
+assert(patch.includes('return packagedSources(state);'),'Packaged authored tracks must remain the silence-prevention source after hydration resolves without a custom track.');
 assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n    return false;'),'Legacy/generated music fallback must be disabled outright.');
 assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
 assert(baseAudio.includes('productionMusicExclusive=true'),'The base audio layer must explicitly disable bundled/generated music ownership.');
