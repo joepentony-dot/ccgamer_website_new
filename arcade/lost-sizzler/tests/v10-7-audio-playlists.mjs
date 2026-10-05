@@ -11,6 +11,7 @@ const continuity=read('arcade/lost-sizzler/js/v10-7-continuous-exploration.js');
 const core=read('arcade/lost-sizzler/js/game-core.js');
 const play=read('arcade/lost-sizzler/js/game-play.js');
 const assets=read('arcade/lost-sizzler/js/audio-assets.js');
+const baseAudio=read('arcade/lost-sizzler/js/audio.js');
 const overrides=read('arcade/lost-sizzler/js/admin-audio-overrides.js');
 const owner=read('arcade/lost-sizzler/js/asset-overrides.js');
 const admin=read('admin/js/arcade-assets.js');
@@ -47,6 +48,14 @@ assert(patch.includes('Object.assign(base,{'),'Playlist patch must mutate the ca
 assert(patch.includes('window.CCGSound=base'),'Playlist patch must retain the original CCGSound object identity.');
 assert(!patch.includes('window.CCGSound={\n    ...base'),'Playlist patch must not replace the cached CCGSound object.');
 assert(patch.includes('original.stopMusic?.()'),'Playlist wrapper must call the captured base stop method without recursion.');
+assert(patch.includes('function stopFallback(){\n    fallbackActive=false;\n    try{original.stopMusic?.()}catch(_){}'),'Every uploaded-playlist transition must forcibly stop any legacy/base music owner even when no fallback flag was set.');
+assert(patch.includes('const activeRun=document.body?.dataset?.runActive==="true"'),'A playlist owner loaded after an early run start must adopt that active run instead of leaving base music in control.');
+assert(overrides.includes('CANONICAL_UPLOADED_MUSIC'),'Production must retain a canonical manifest of the owner-uploaded soundtrack.');
+assert(overrides.includes('fillCanonicalMusic(playlists)'),'Missing catalogue categories must be restored from the canonical uploaded soundtrack manifest.');
+assert(baseAudio.includes('function uploadedOnlyRequired()'),'The base audio owner must distinguish production from local/automation fallback.');
+assert(baseAudio.includes('if(uploadedOnlyRequired())return"";'),'Production base audio must remain silent rather than substitute bundled music while uploaded music is unavailable.');
+assert(baseAudio.includes('admin.danger||admin.dangerRoom'),'Danger music must recognise the production admin danger category.');
+assert(baseAudio.includes('admin.named||admin.namedEnemy'),'Named-enemy music must recognise the production admin named category.');
 assert(!patch.includes('original.toggle?Boolean(original.toggle())'),'Sound toggling must not call the legacy toggle because that can start legacy music.');
 
 assert(owner.includes('v10-7-continuous-exploration.js'),'Continuous exploration guard is not loaded by the game.');
