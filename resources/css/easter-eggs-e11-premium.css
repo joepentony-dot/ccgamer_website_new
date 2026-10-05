@@ -130,3 +130,22 @@
 @media(prefers-reduced-motion:reduce){
   .ccg-e11__guru-pulse,.ccg-e11__voice.is-active::after,.ccg-e11__drive-spindle.is-spinning,.ccg-e11__error-sector.is-bad,.ccg-e11__kick-drive i.is-on,.ccg-e11--workbench.is-disk-active .ccg-e11__wb-statusbar span:last-child{animation:none!important}
 }
+
+/* BEDROOMS streaming player */
+.ccg-e11--bedrooms{display:grid;place-items:center;background:radial-gradient(circle at 50% 18%,rgba(58,96,148,.16),transparent 42%),#030509;color:#edf5ff;overflow:auto}
+.ccg-e11__bedrooms-shell{width:min(1180px,96%);display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;padding:12px;background:linear-gradient(180deg,#111923,#070b10);border:1px solid rgba(153,193,232,.25);box-shadow:0 22px 70px rgba(0,0,0,.52),inset 0 0 45px rgba(73,118,167,.05)}
+.ccg-e11__bedrooms-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 10px;border:1px solid rgba(157,198,238,.18);background:#0b1118}
+.ccg-e11__bedrooms-header>div{display:grid;gap:2px}.ccg-e11__bedrooms-header strong{font-size:clamp(1.15rem,2.3vw,1.75rem);letter-spacing:.13em;color:#fff}.ccg-e11__bedrooms-header span{font-size:.64rem;letter-spacing:.12em;color:#9fb4c9}
+.ccg-e11__bedrooms-badge{flex:0 0 auto;padding:6px 9px;border:1px solid rgba(144,221,179,.34);color:#9ce9bb!important;background:rgba(26,82,48,.18);font-size:.58rem!important}
+.ccg-e11__bedrooms-player{position:relative;width:100%;aspect-ratio:16/9;min-height:0;overflow:hidden;background:#000;border:1px solid rgba(183,210,238,.18);box-shadow:inset 0 0 40px rgba(0,0,0,.7)}
+.ccg-e11__bedrooms-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.ccg-e11__bedrooms-shield{position:absolute;z-index:4;top:0;right:0;width:112px;height:54px;background:linear-gradient(135deg,transparent 0 14%,rgba(3,5,9,.92) 48%,#030509 100%);pointer-events:auto;cursor:default}
+.ccg-e11__bedrooms-footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:7px 9px;border-top:1px solid rgba(158,194,226,.16);color:#8094a7;font-size:.57rem;letter-spacing:.09em}
+.ccg-e11__bedrooms-footer span:nth-child(2){color:#8ed8a9}
+@media(max-width:620px){
+  .ccg-e11__bedrooms-shell{width:98%;padding:7px;gap:7px}.ccg-e11__bedrooms-header{padding:6px 7px}.ccg-e11__bedrooms-header>div span{display:none}.ccg-e11__bedrooms-badge{font-size:.5rem!important;padding:5px 6px}.ccg-e11__bedrooms-shield{width:82px;height:46px}.ccg-e11__bedrooms-footer{font-size:.5rem;justify-content:center}.ccg-e11__bedrooms-footer span:last-child{display:none}
+}
+@media(max-height:650px) and (orientation:landscape){
+  .ccg-e11__bedrooms-shell{width:min(1050px,97%);padding:6px;gap:5px}.ccg-e11__bedrooms-header{padding-block:5px}.ccg-e11__bedrooms-player{max-height:76vh}.ccg-e11__bedrooms-footer{padding-block:4px}
+}
+
