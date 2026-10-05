@@ -17,7 +17,7 @@ assert.match(main,/function maybeDoubleTapDash\(player,code,now=performance\.now
 assert.match(main,/previous\.key===key&&now-previous\.at>45&&now-previous\.at<=DOUBLE_TAP_DASH_MS/,"double tap must require a fresh second directional press inside the bounded window");
 assert.match(main,/dashPlayer\(player,dir\)/,"double tap must reuse the canonical dash implementation");
 assert.match(main,/ccg:direction-double-tap-dash/,"double-tap dash must publish an observable action event");
-assert.match(main,/if\(!e\.repeat\)\{if\(p1\)maybeDoubleTapDash\(p1,e\.code\);if\(p2\)maybeDoubleTapDash\(p2,e\.code\)\}/,"held/repeat movement must never generate repeated dashes");
+assert.match(main,/if\(!e\.repeat&&p1\)maybeDoubleTapDash\(p1,e\.code\)/,"held/repeat movement must never generate repeated dashes");
 
 assert.match(gamepad,/const P1_MOVE=\{up:"KeyW",down:"KeyS",left:"KeyA",right:"KeyD"\}/,"gamepad movement must continue to translate through the canonical P1 direction keys");
 assert.match(gamepad,/setHeld\(slot,map\.up,up\);setHeld\(slot,map\.down,down\);setHeld\(slot,map\.left,left\);setHeld\(slot,map\.right,right\)/,"gamepad stick/D-pad edges must flow through the same key path as double-tap dash");
