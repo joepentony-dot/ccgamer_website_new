@@ -82,7 +82,14 @@ function hostForProfile(profile,complete){
   if(profile.objective==='generators')host.generators=complete?[{alive:false},{alive:false},{alive:false}]:[{alive:false},{alive:true},{alive:false}];
   if(profile.objective==='rescue')host.rescue={rescued:complete};
   if(profile.objective==='explore_guardian'||profile.objective==='guardian')host.guardian={alive:!complete};
-  if(profile.objective==='keys')host.keysCollected=complete?1:0;
+  if(profile.objective==='keys'){
+    host.keysCollected=complete?1:0;
+    if(!complete){
+      const domain=config.proceduralDungeon.keyDomains.find(row=>Number(row.floor)===Number(profile.floor));
+      host.items.push({id:`key-${profile.floor}`,kind:'key',active:true,domainId:domain?.id});
+      host.enemies.push({id:`key-guardian-${profile.floor}`,keyGuardian:true,domainId:domain?.id,alive:true});
+    }
+  }
   return host;
 }
 function explorePctFor(profile,complete){return profile.objective==='explore_guardian'?(complete?70:69):0}
