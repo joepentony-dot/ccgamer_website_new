@@ -55,7 +55,7 @@ jobs:
           grep -q 'CCG EASTER EGG E11 INTERACTIVE ARCHIVE EXPANSION' js/ccg-global.js
           grep -q 'ccg:easter-eggs:discovered:v1' js/ccg-global.js
           grep -q 'SECRETS FOUND:' js/ccg-global.js
-          for code in bbs guru sid 1541 cracktro workbench sprite modem readerror kickstart; do
+          for code in bbs guru sid 1541 cracktro workbench sprite modem readerror kickstart bedrooms; do
             grep -q "data-ccg-secret-code=\"$code\"" js/ccg-global.js
             grep -q "code: \"$code\"" js/easter-eggs/easter-egg-registry.js
           done
@@ -64,8 +64,17 @@ jobs:
             test -f "resources/css/easter-eggs-e11-$part.css"
             grep -q "easter-eggs-e11-$part.css" resources/css/easter-eggs-e11.css
           done
-          if grep -R -E 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css; then
-            echo "E11 must remain locally implemented without external runtime dependencies."
+          if grep -R -E 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css --exclude='bedrooms.js'; then
+            echo "E11 must remain locally implemented except for the explicitly approved BEDROOMS Drive preview."
+            exit 1
+          fi
+          grep -Fq 'const DRIVE_PREVIEW_URL = "https://drive.google.com/file/d/1Cy5CW7bfsFyD757lnTF3RO9ksuAvNwHb/preview";' js/easter-eggs/e11/bedrooms.js
+          if grep -E 'https?://' js/easter-eggs/e11/bedrooms.js | grep -Fv 'https://drive.google.com/file/d/1Cy5CW7bfsFyD757lnTF3RO9ksuAvNwHb/preview'; then
+            echo "BEDROOMS contains an unapproved external URL."
+            exit 1
+          fi
+          if grep -Eiq 'export=download|/view\?|allow-downloads|allow-popups|allow-top-navigation' js/easter-eggs/e11/bedrooms.js; then
+            echo "BEDROOMS must not expose Drive download, popup, or top-navigation capabilities."
             exit 1
           fi
 
