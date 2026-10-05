@@ -272,7 +272,7 @@ assert(legacyFallbackCalls===0,"The legacy generated music engine must remain un
 fakeWindow.dispatchEvent({type:"touchstart"});
 await Promise.resolve();await Promise.resolve();
 mobileState=fakeWindow.CCGLostSizzlerPlaylistAudio.getState();
-assert(mobileState.pendingGestureState==="","The next mobile touch must clear pending uploaded-music recovery.");
+assert(mobileState.pendingGestureState==="",`The next mobile touch must clear pending uploaded-music recovery (got ${JSON.stringify(mobileState)}).`);
 assert(mobileState.fallbackActive===false,"Gesture recovery must keep the legacy fallback stopped.");
 assert(FakeAudio.instances.at(-1).url===uploadedDanger&&!FakeAudio.instances.at(-1).paused,"The next mobile touch must restart the uploaded Danger track rather than legacy music.");
 
