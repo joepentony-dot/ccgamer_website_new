@@ -446,12 +446,15 @@
   }
 
   function onAuthoritativeToast(event){
-    const detail=event?.detail||{},key=classifyToast(detail.title,detail.text);
-    if(!key)return;
-    const activeRun=typeof run==="object"?run:null;
-    try{sayKey(key)}catch(_){}
-    if(key==="arenaLockdown")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("surviveAmbush",{cooldown:0})}catch(_){}},2400);
-    else if(key==="memorySequenceStarted")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("watchSequence",{cooldown:0})}catch(_){}},3100);
+    const meta=event?.detail||{};
+    if(meta?.ccgDialogueVoiceHandled!==true){
+      const key=classifyToast(meta.title,meta.text);
+      if(!key)return;
+      const activeRun=typeof run==="object"?run:null;
+      try{sayKey(key)}catch(_){}
+      if(key==="arenaLockdown")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("surviveAmbush",{cooldown:0})}catch(_){}},2400);
+      else if(key==="memorySequenceStarted")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("watchSequence",{cooldown:0})}catch(_){}},3100);
+    }
   }
   function onAuthoritativeLevelUp(){try{sayKey("levelUp",{cooldown:0})}catch(_){}}
   window.addEventListener?.("ccg:toast-shown",onAuthoritativeToast);
