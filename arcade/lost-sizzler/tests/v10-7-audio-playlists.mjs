@@ -263,7 +263,7 @@ FakeAudio.rejectOnce.add(uploadedDanger);
 fakeWindow.CCGSound.setRoomMood("danger");
 await Promise.resolve();await Promise.resolve();
 let mobileState=fakeWindow.CCGLostSizzlerPlaylistAudio.getState();
-assert(mobileState.pendingGestureState==="danger","A mobile play rejection must retain the uploaded Danger state for gesture recovery.");
+assert(mobileState.pendingGestureState==="danger",`A mobile play rejection must retain the uploaded Danger state for gesture recovery (got ${JSON.stringify(mobileState)}).`);
 assert(mobileState.fallbackActive===false,"A mobile play rejection must not start the legacy generated-music fallback when an uploaded playlist exists.");
 assert(legacyFallbackCalls===0,"The legacy generated music engine must remain unused while uploaded production music owns the requested state.");
 
