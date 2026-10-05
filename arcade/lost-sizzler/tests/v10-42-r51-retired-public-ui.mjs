@@ -30,19 +30,18 @@ assert.doesNotMatch(html,/id="weekly-vault"/i,"retired Weekly leaderboard sectio
 assert.doesNotMatch(html,/weekly-challenge\.js/i,"retired Weekly browser client must not load");
 assert.doesNotMatch(html,/split-player-hud\.js/i,"retired split-screen HUD must not load");
 assert.doesNotMatch(html,/v10-41-r29-buglog\.js|v10-41-r30-buglog\.js/i,"historical developer buglogs must not load publicly");
-assert.match(html,/id="daily-btn"[^>]*hidden[^>]*aria-hidden="true"[^>]*display:none!important/i,"legacy daily compatibility anchor must remain inert");
-assert.match(html,/id="split-btn"[^>]*hidden[^>]*aria-hidden="true"[^>]*display:none!important/i,"legacy split compatibility anchor must remain inert");
-assert.match(html,/id="release-note"[^>]*>C64 Dungeon Carnage runs directly in your browser\. Solo play and the Tutorial are the supported game modes\./i);
+assert.doesNotMatch(html,/id="daily-btn"/i,"retired daily compatibility control must be absent from the public DOM");
+assert.doesNotMatch(html,/id="split-btn"/i,"retired split compatibility control must be absent from the public DOM");
+assert.match(html,/id="release-note"[^>]*>C64 Dungeon Carnage runs directly in your browser\. Start the main game or use the Tutorial to learn the controls\./i);
 assert.match(html,/id="menu-note"[^>]*hidden[^>]*aria-hidden="true"[^>]*display:none!important/i,"legacy release-note sink must stay hidden");
-assert.match(html,/M MAP/,"Solo map shortcut must remain documented after P2 help removal");
+assert.match(html,/M MAP/,"map shortcut must remain documented after retired secondary-player help removal");
 
 assert.doesNotMatch(hub,/split-screen|co-op|Weekly High-Score Vault/i,"maintenance hub must not advertise retired Dungeon modes");
-assert.match(hub,/Solo play/);
+assert.match(hub,/Browser play/);
 assert.match(hub,/>Tutorial</);
 
 assert.match(release,/const LOCAL_BUTTON_IDS=\["solo-btn","tutorial-zone-btn"\];/);
-assert.match(release,/const ONLINE_BUTTON_IDS=\[[^\]]*"daily-btn"[^\]]*"split-btn"[^\]]*\];/);
-assert.match(release,/#daily-btn,#split-btn,#weekly-vault,\.online-howto/);
+assert.doesNotMatch(release,/ONLINE_BUTTON_IDS|daily-btn|split-btn|weekly-vault|online-howto/,"local release policy must not retain retired alternate-mode controls");
 assert.doesNotMatch(release,/#developer-changelog|\.developer-changelog/,"current-build changelog must remain visible");
 assert.match(html,/id="developer-changelog"[^>]*data-latest-build-only="true"/,"one canonical latest-build changelog must remain");
 assert.ok(html.includes(`Latest Build Changes · ${buildUpper}`));
