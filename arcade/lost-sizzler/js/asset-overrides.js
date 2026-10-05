@@ -118,7 +118,6 @@ const CCG_DUNGEON_VARIETY_REV=CCG_RELEASE_REV;
 const CCG_ONBOARDING_SAFETY_REV=CCG_RELEASE_REV;
 const CCG_ONBOARDING_HARDENING_REV=CCG_RELEASE_REV;
 const CCG_TUTORIAL_GUIDANCE_REV=CCG_RELEASE_REV;
-const CCG_MULTIPLAYER_SYNC_REV=CCG_RELEASE_REV;
 const CCG_ENVIRONMENTAL_POLISH_REV=CCG_RELEASE_REV;
 const CCG_MOBILE_ERGONOMICS_REV=CCG_RELEASE_REV;
 const CCG_MELEE_AMMO_REV=CCG_RELEASE_REV;
@@ -131,7 +130,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
  * the base combat, onboarding and balance functions. Keep the first requested
  * launch and replay it once the complete release runtime is ready. */
 (()=>{
-  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","join-btn"]);
+  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn"]);
   let resolveReady;
   const state={ready:false,failed:false,pendingId:"",errors:[],promise:new Promise(resolve=>{resolveReady=resolve})};
   const setBodyState=value=>{if(document.body)document.body.dataset.releaseReady=value};
@@ -286,7 +285,6 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
       [`js/v10-6-menu-runtime-fix.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerMenuRuntimeV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
-      [`js/v10-5-online-effects.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerOnlineEffectsV105"],
       [`js/v10-6-stalker-shop-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerStalkerShopBalanceV106"],
       [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
       [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
@@ -304,17 +302,16 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"],
       [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"],
       [`js/v10-30-polish.js?v=${CCG_POLISH_REV}`,"ccgLostSizzlerPolishV130"],
-      [`js/v10-31-multiplayer-sync.js?v=${CCG_MULTIPLAYER_SYNC_REV}`,"ccgLostSizzlerMultiplayerSyncV131"],
       [`js/v10-35-quality.js?v=${CCG_QUALITY_V135_REV}`,"ccgLostSizzlerQualityV135"],
       [`js/v10-42-bootstrap.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerV142Bootstrap"]
     ];
     const criticalFailures=[];
-    const criticalFiles=["admin-audio-overrides.js","lost-sizzler-playlist-audio.js","v10-42-r69-recorded-voices.js","v10-16-voice-director.js","v10-25-melee-ammo-balance.js","v10-26-ammo-budget.js","v10-29-achievements.js","v10-30-polish.js","v10-31-multiplayer-sync.js","v10-35-quality.js","v10-42-bootstrap.js"];
+    const criticalFiles=["admin-audio-overrides.js","lost-sizzler-playlist-audio.js","v10-42-r69-recorded-voices.js","v10-16-voice-director.js","v10-25-melee-ammo-balance.js","v10-26-ammo-budget.js","v10-29-achievements.js","v10-30-polish.js","v10-35-quality.js","v10-42-bootstrap.js"];
     const criticalPaths=new Set(["/arcade/lost-sizzler/","/arcade/c64-dungeon-carnage/"].flatMap(prefix=>criticalFiles.map(file=>`${prefix}js/${file}`)));
 
     /* Dynamic scripts with async=false execute in insertion order but may fetch
      * in parallel. This keeps the long-established module ownership order while
-     * removing the serial network waterfall that could leave releaseReady=false
+     * removing the serial startup waterfall that could leave releaseReady=false
      * for 15+ seconds and strand an early New Solo Run click. */
     const loadEntry=([src,key])=>new Promise(resolve=>{
       const selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
