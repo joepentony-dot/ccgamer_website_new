@@ -75,8 +75,9 @@ assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*state\.unlocked=tr
 assert.match(voice,/if\(state\.pendingGesture\)retryPendingGesture\(\)/,"a retained recorded cue must retry synchronously inside the next real mobile user gesture");
 assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)/,"mobile retry must not be deferred outside the user-activation handler");
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
-assert.match(voice,/const APPROVED_LEGACY_CRITICAL_CUES=new Set\(\["welcomeRare","gameOver","playerDeath","loadula","gildedElf","gildedFive","gildedCaught","gildedEscaped","boulder","weeklyDeath"\]\)/,"only the explicitly approved critical cues may use the historical packaged recordings when no owner recording exists");
-assert.match(voice,/function approvedLegacyCue\(key\)\{return APPROVED_LEGACY_CRITICAL_CUES\.has\(key\)\?BUNDLED_SPRITE\.cues\[key\]\|\|null:null\}/,"legacy packaged voice fallback must stay allowlisted rather than generic");
+assert.match(voice,/const APPROVED_LEGACY_RECORDED_CUES=new Set\(\[/,"historical packaged recordings must remain behind an explicit allowlist");
+for(const legacyKey of ["welcomeRare","hurt","gameOver","playerDeath","loadula","weeklyDeath","mimic"])assert.match(voice,new RegExp(`"\${legacyKey}"`),`live packaged fallback must remain available for ${legacyKey} when no owner recording exists`);
+assert.match(voice,/function approvedLegacyCue\(key\)\{return APPROVED_LEGACY_RECORDED_CUES\.has\(key\)\?BUNDLED_SPRITE\.cues\[key\]\|\|null:null\}/,"legacy packaged voice fallback must stay allowlisted rather than generic");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
 assert.match(voice,/greetingRoll=Math\.random\(\),welcomeKey=greetingRoll<\.1\?"welcomeRare":greetingRoll<\.55\?"welcome":"welcomeAlt"/,"run start must retain two normal greetings plus a ten-percent rare Watchers greeting");
 assert.match(loader,/const criticalFiles=\["admin-audio-overrides\.js","lost-sizzler-playlist-audio\.js","v10-42-r69-recorded-voices\.js","v10-16-voice-director\.js"/,"recorded voice metadata and director must be release-critical");
