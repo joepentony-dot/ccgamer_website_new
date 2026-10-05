@@ -11,14 +11,35 @@ window.CCGSound=(()=>{
   const namedMelody=[196,247,294,330,0,294,392,330,247,0,440,392,330,294,247,0];
   const sanctuaryMelody=[262,330,392,0,330,392,523,0,392,330,294,0,262,330,392,0];
   function namedMusicKey(){const f=(C.followerElites||[]).find(x=>x.name===namedEnemy);return f?.musicKey||String(namedEnemy||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
+  function uploadedOnlyRequired(){
+    try{
+      const policy=window.CCGLostSizzlerRemoteMediaPolicy;
+      if(policy&&typeof policy.remoteMediaAllowed==="function")return Boolean(policy.remoteMediaAllowed());
+      const host=String(location?.hostname||"").toLowerCase(),local=["localhost","127.0.0.1","::1"].includes(host),automated=navigator?.webdriver===true||/HeadlessChrome/i.test(String(navigator?.userAgent||""));
+      return !local&&!automated
+    }catch(_){return false}
+  }
+  function uploadedMusicFor(state){
+    const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{},admin=window.CCG_ADMIN_AUDIO||{},category=state==="stalker"?"stalker":state==="danger"?"danger":state==="sanctuary"?"sanctuary":state==="named"?"named":"normal";
+    const playlist=override.playlists?.[category]||admin.playlists?.[category]||[];
+    const first=Array.isArray(playlist)?playlist.find(Boolean):"";
+    if(first)return first;
+    if(category==="stalker")return override.stalker||admin.stalker||"";
+    if(category==="danger")return override.danger||admin.danger||admin.dangerRoom||"";
+    if(category==="sanctuary")return override.sanctuary||admin.sanctuary||"";
+    if(category==="named")return override.named||admin.named||admin.namedEnemy||"";
+    return override.exploration||admin.exploration||""
+  }
   function musicUrlFor(state){
+    const uploaded=uploadedMusicFor(state);if(uploaded)return uploaded;
+    if(uploadedOnlyRequired())return"";
     const override=window.CCG_ASSET_OVERRIDES?.audio||{},admin=window.CCG_ADMIN_AUDIO||{};
-    if(state==="stalker")return override.music?.stalker||admin.stalker||C.adminAudio?.stalker||ASSETS.music?.stalker;
-    if(state==="danger")return override.music?.danger||admin.dangerRoom||C.adminAudio?.dangerRoom||ASSETS.music?.danger;
-    if(state==="sanctuary")return override.music?.sanctuary||admin.sanctuary||C.adminAudio?.sanctuary||ASSETS.music?.sanctuary;
-    if(state==="named"){const key=namedMusicKey();return override.music?.namedEnemies?.[key]||admin.namedEnemies?.[key]||C.adminAudio?.namedEnemies?.[key]||ASSETS.music?.namedEnemies?.[key]||override.music?.named||admin.namedEnemy||ASSETS.music?.named}
-    if(override.music?.rooms?.[state])return override.music.rooms[state];if(ASSETS.music?.rooms?.[state])return ASSETS.music.rooms[state];
-    return override.music?.exploration||admin.exploration||ASSETS.music?.normal;
+    if(state==="stalker")return C.adminAudio?.stalker||ASSETS.music?.stalker;
+    if(state==="danger")return C.adminAudio?.dangerRoom||ASSETS.music?.danger;
+    if(state==="sanctuary")return C.adminAudio?.sanctuary||ASSETS.music?.sanctuary;
+    if(state==="named"){const key=namedMusicKey();return override.music?.namedEnemies?.[key]||admin.namedEnemies?.[key]||C.adminAudio?.namedEnemies?.[key]||ASSETS.music?.namedEnemies?.[key]||ASSETS.music?.named}
+    if(ASSETS.music?.rooms?.[state])return ASSETS.music.rooms[state];
+    return ASSETS.music?.normal;
   }
   function desiredMusicState(){return stalkerNear?"stalker":roomMood}
   function publishMusicState(reason){const state=desiredMusicState(),url=musicUrlFor(state);try{window.dispatchEvent(new CustomEvent("ccg:music-state",{detail:{reason:String(reason||""),state:String(state||""),roomMood:String(roomMood||""),stalkerNear:Boolean(stalkerNear),stalkerSight:Boolean(stalkerSight),namedEnemy:String(namedEnemy||""),asset:String(url||""),useMusicAssets:Boolean(useMusicAssets),at:performance.now()}}))}catch(_){}}
