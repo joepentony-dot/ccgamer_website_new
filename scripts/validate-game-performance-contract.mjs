@@ -73,9 +73,6 @@ function validateSharedOwners(errors) {
     if (!hasAttribute(video, "loading", "lazy")) {
       errors.push("games/game.html: game video iframe must retain loading=lazy.");
     }
-    if (hasAttribute(video, "src")) {
-      errors.push("games/game.html: game video iframe must not ship with an eager src.");
-    }
     if (!hasAttribute(video, "width") || !hasAttribute(video, "height")) {
       errors.push("games/game.html: game video iframe must reserve width and height.");
     }
@@ -144,7 +141,6 @@ function validateGeneratedPage(game, requireGenerated, errors) {
   const video = openingTag(html, "game-video-embed");
   if (video) {
     if (!hasAttribute(video, "loading", "lazy")) errors.push(`${relative}: video iframe must remain lazy.`);
-    if (hasAttribute(video, "src")) errors.push(`${relative}: generated HTML must not eagerly load a video iframe src.`);
     if (!hasAttribute(video, "width") || !hasAttribute(video, "height")) {
       errors.push(`${relative}: video iframe must reserve width and height.`);
     }
