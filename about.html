@@ -68,7 +68,7 @@
 
     
     <link rel="stylesheet" href="resources/css/info-pages.css" />
-    <link rel="stylesheet" href="resources/css/about.css?v=20261005-facefix" />
+    <link rel="stylesheet" href="resources/css/about.css?v=20261005-omegaquick" />
 
     <!-- FOOTER CSS (ISOLATED) -->
     <link rel="stylesheet" href="resources/css/ccg-footer.css" />
@@ -522,26 +522,75 @@
                     <span class="ccg-omega-core"></span>
                 </div>
 
-                <article class="about-panel">
+                <article class="about-panel about-panel--quick-links">
                     <div class="about-panel__header">
                         <div>
                             <p class="about-kicker">Quick links</p>
                             <h2>EXPLORE MORE</h2>
                         </div>
                         <div class="about-meta">
-                            <span>Stay curious</span>
+                            <span>Omega navigation deck</span>
                         </div>
                     </div>
-                    <div class="about-panel__body about-panel__body--split about-quick-links">
-                        <div class="ccg-info-actions">
-                            <a class="ccg-btn ccg-btn--primary" href="home.html" data-about-sfx>HOME</a>
-                            <a class="ccg-btn ccg-btn--primary" href="games/index.html" data-about-sfx>GAMES</a>
-                            <a class="ccg-btn ccg-btn--ghost" href="games/collections/index.html" data-about-sfx>COLLECTIONS</a>
-                            <a class="ccg-btn ccg-btn--ghost" href="games/genres/index.html" data-about-sfx>GENRES</a>
-                            <a class="ccg-btn ccg-btn--ghost" href="quiz/quiz.html" data-about-sfx>QUIZ</a>
-                            <a class="ccg-btn ccg-btn--ghost" href="emulation.html" data-about-sfx>EMULATION</a>
-                            <a class="ccg-btn ccg-btn--secondary" href="contact.html" data-about-sfx>CONTACT</a>
-                        </div>
+                    <div class="about-panel__body about-quick-links">
+                        <nav class="about-quick-links__grid" aria-label="Explore more">
+                            <a class="about-quick-link" href="home.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-house"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">HOME</span>
+                                    <span class="about-quick-link__copy">Return to the CCG front page</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="about-quick-link" href="games/index.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-gamepad"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">GAMES</span>
+                                    <span class="about-quick-link__copy">Browse the C64 &amp; Amiga archive</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="about-quick-link" href="games/collections/index.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-layer-group"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">COLLECTIONS</span>
+                                    <span class="about-quick-link__copy">Curated picks, features &amp; favourites</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="about-quick-link" href="games/genres/index.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-table-cells-large"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">GENRES</span>
+                                    <span class="about-quick-link__copy">Explore the archive by game type</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="about-quick-link" href="quiz/quiz.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-circle-question"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">QUIZ</span>
+                                    <span class="about-quick-link__copy">Test your retro gaming knowledge</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="about-quick-link" href="emulation.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-microchip"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">EMULATION</span>
+                                    <span class="about-quick-link__copy">Set up classic Commodore gaming</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a class="about-quick-link about-quick-link--contact" href="contact.html" data-about-sfx>
+                                <span class="about-quick-link__icon" aria-hidden="true"><i class="fa-solid fa-envelope"></i></span>
+                                <span class="about-quick-link__text">
+                                    <span class="about-quick-link__label">CONTACT</span>
+                                    <span class="about-quick-link__copy">Questions, stories or collaboration ideas</span>
+                                </span>
+                                <span class="about-quick-link__arrow" aria-hidden="true">→</span>
+                            </a>
+                        </nav>
                     </div>
                 </article>
             </section>
