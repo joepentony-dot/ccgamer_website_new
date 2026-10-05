@@ -87,7 +87,9 @@
 
   function categorySources(state){
     const custom=customSources(state);
-    return custom.length?custom:packagedSources(state);
+    if(custom.length)return custom;
+    if(adminAudioPending())return [];
+    return packagedSources(state);
   }
 
   const soundtrackOwned=state=>categorySources(state).length>0;
