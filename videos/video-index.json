@@ -1,13 +1,27 @@
 {
   "version": 1,
   "counts": {
-    "total": 700,
+    "total": 701,
     "gameVideos": 664,
-    "retroVideos": 36,
+    "retroVideos": 37,
     "c64GameVideos": 561,
     "amigaGameVideos": 103
   },
   "items": [
+    {
+      "id": "5WqUDq5kQd8",
+      "kind": "retro",
+      "filter": "retro-events",
+      "badge": "Retro Event",
+      "title": "Play Expo Blackpool 2026 – Eugene Jarvis, Oliver Twins, Dominik Diamond, C64 & Amiga",
+      "description": "A fan’s-eye tour of PLAY Expo Blackpool 2026 at Norbreck Castle, covering retro games, classic computers, arcades, pinball and the show-floor atmosphere.",
+      "url": "/retro-events/play-expo-blackpool-2026/",
+      "thumbnail": "https://i.ytimg.com/vi/5WqUDq5kQd8/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Events"
+    },
     {
       "id": "nNikuNhBcic",
       "kind": "game",

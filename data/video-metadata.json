@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-09-30T18:12:01.370Z",
+  "updatedAt": "2026-10-05T07:13:38.079Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -702,6 +702,15 @@
       "uploadDate": "2026-08-17T17:30:01Z",
       "duration": "PT6M42S",
       "thumbnailUrl": "https://i.ytimg.com/vi/5tpXo_IEU_U/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "5WqUDq5kQd8": {
+      "title": "Play Expo Blackpool 2026 – Eugene Jarvis, Oliver Twins, Dominik Diamond, C64 & Amiga",
+      "description": "🕹️ Play Expo Blackpool 2026 – Retro Gaming, C64, Amiga, Arcades & Gaming Legends!\nAnother year, another trip to Play Expo Blackpool at the Norbreck Castle Hotel, with a full day of retro games, classic computers, arcade machines, consoles, pinball and plenty of familiar faces from the gaming world.\n\nThis year was a particularly memorable one because I got to meet Eugene Jarvis, the legendary arcade designer behind classics including Defender, Robotron: 2084 and Smash TV.  I also met The Oliver Twins — Philip and Andrew Oliver — who were responsible for some of the most recognisable British computer games of the 1980s and 1990s, including the Dizzy series.\n\nAnd if that wasn’t enough, I also got to meet Dominik Diamond, best known to millions of UK gamers as the presenter of GamesMaster.  Not a bad collection of gaming legends for one day.\n\nAway from the guests, there was plenty to get stuck into, with Commodore 64 and Amiga machines, arcade cabinets, consoles, homebrew games, retro hardware and all the usual Play Expo madness spread throughout the venue.\n\nAs always, this isn’t meant to be a clinical tour of every machine in the building. It’s more about taking you along for the day, having a wander around, playing some games, meeting people and enjoying one of the biggest retro gaming events in the North West.\n\n🌐 CCG Retro Events Archive\n👉 https://www.cheekycommodoregamer.co.uk/games/collections/retro-events.html\nIf you spot yourself in the video, let me know in the comments. It would be great to see how many viewers and subscribers were there this year.\n\n📺 WATCH THE PREVIOUS PLAY EXPO VIDEOS\n🎥 Play Expo 2022 Highlights\n👉 https://youtu.be/_KRx_UxPWTM\n🎮 Play Expo 2023 Highlights\n👉 https://youtu.be/C7_aTXHJ4iI\n🎮 Play Expo 2024 Highlights\n👉 https://youtu.be/Z6iXT4iPqs8\n🎮 Play Expo 2025 Highlights\n👉 https://youtu.be/smVNHlm_jM0\n🕹️ Arcade Club Bury Tour\n👉 https://youtu.be/6PmRNlqIdFY\n\n👍 LIKE, COMMENT & SUBSCRIBE for more from the Cheeky Commodore Gamer channel:\n\n• Commodore 64 & Amiga gaming\n• Retro gaming events\n• Classic game reviews and retrospectives\n• Arcade and gaming history\n• Livestreams and retro nostalgia\n\n📍 Location: Norbreck Castle Hotel, Blackpool\n🎉 Event: Play Expo Blackpool 2026\n🕹️ Featuring: Eugene Jarvis, The Oliver Twins, Dominik Diamond, C64, Amiga, arcade machines, consoles and more\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\n\nTimestamps\n00:00 Play Expo Blackpool 2026\n00:44 Lets Do This! (Games, Games & More Games!)\n15:57 Slopes Games Room\n19:04 Dominik Diamond – GamesMaster Legend\n20:43 Eugene Jarvis – Defender, Robotron & Smash TV\n24:35 Meeting The Oliver Twins\n27:45 Reviewing The Norbreck Castle Hotel\n28:37 Merchandise\n42:36 Final Thoughts Of Blackpool Play Expo\n\n#PlayExpo #PlayExpoBlackpool #RetroGaming #EugeneJarvis #OliverTwins #DominikDiamond #Commodore64 #Amiga #GamesMaster #Defender",
+      "uploadDate": "2026-10-04T17:58:55Z",
+      "duration": "PT43M28S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/5WqUDq5kQd8/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
