@@ -1,0 +1,73 @@
+name: Site-wide Performance Vitals
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/collections/index.html"
+      - "games/collections/retro-events.html"
+      - "js/ccg-mode-engine.js"
+      - "js/home-dynamic.js"
+      - "js/load-single-game.js"
+      - "js/music-composer-pages.js"
+      - "music/index.html"
+      - "music/composers/index.html"
+      - "resources/css/game-pages.css"
+      - "scripts/generate-composer-pages.js"
+      - "scripts/generate-video-seo.js"
+      - "scripts/normalize-public-header-shell.js"
+      - "scripts/validate-video-seo.js"
+      - "service-worker.js"
+      - "tests/public-header-stage-normalizer.test.mjs"
+      - "tests/sitewide-performance-vitals.test.mjs"
+      - ".github/workflows/sitewide-performance-vitals.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sitewide-performance-vitals-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  performance-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate changed JavaScript syntax
+        run: |
+          node --check js/ccg-mode-engine.js
+          node --check js/home-dynamic.js
+          node --check js/load-single-game.js
+          node --check js/music-composer-pages.js
+          node --check scripts/generate-composer-pages.js
+          node --check scripts/generate-video-seo.js
+          node --check scripts/normalize-public-header-shell.js
+          node --check scripts/validate-video-seo.js
+          node --check tests/sitewide-performance-vitals.test.mjs
+
+      - name: Run performance regression contracts
+        run: |
+          node --test tests/public-header-stage-normalizer.test.mjs tests/sitewide-performance-vitals.test.mjs
+
+      - name: Validate fresh public cache namespace
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin +main:refs/remotes/origin/main
+          node scripts/check-public-code-cache-version.mjs --base origin/main
+
+      - name: Check whitespace
+        run: git diff --check
