@@ -474,6 +474,14 @@ return (function () {
     if (!frame) return { ready: false, reason: 'game video iframe missing' };
 
     var source = frame.getAttribute('src') || '';
+    var facade = document.querySelector('#game-video-facade');
+
+    if (!source && facade && !facade.hidden && facade.dataset.ccgWheelAuditActivated !== 'true') {
+        facade.dataset.ccgWheelAuditActivated = 'true';
+        facade.click();
+        source = frame.getAttribute('src') || '';
+    }
+
     var host = frame.parentElement;
     var shield = host ? host.querySelector('.ccg-wheel-guard') : null;
 
@@ -482,6 +490,8 @@ return (function () {
             && frame.dataset.ccgWheelGuard === 'ready'
             && !!shield,
         source: source,
+        facadePresent: !!facade,
+        facadeHidden: facade ? !!facade.hidden : null,
         guardState: frame.dataset.ccgWheelGuard || '',
         shieldPresent: !!shield
     };
