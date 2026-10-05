@@ -265,8 +265,7 @@ body[data-ccg-directory="collection-record"] .ccg-category-omega__discovery-head
 
 /* Dense category indexes and game-record grids */
 
-body[data-ccg-directory="genre-index"] .ccg-genre-grid,
-body[data-ccg-directory="collection-index"] .ccg-genre-grid {
+body[data-ccg-directory="genre-index"] .ccg-genre-grid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 10px;
 }
