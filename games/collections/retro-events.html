@@ -26,6 +26,7 @@
     </script>
 
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/collections/retro-events.html">
+    <link rel="alternate" type="application/rss+xml" title="CCG Upcoming UK Retro Events RSS" href="/feeds/uk-retro-events.xml">
 
     <title>Retro Events – C64 &amp; Amiga | Cheeky Commodore Gamer</title>
 
@@ -317,6 +318,38 @@
         <p class="ccg-section__intro ccg-collection-intro-links">Prefer a broader route? Visit <a href="../genres/index.html">genre pages</a> or the <a href="../index.html">full game library</a>.</p>
     </section>
 
+    <!-- UPCOMING UK RETRO EVENTS — ACTIVATES ONLY WHEN AN AUTHORISED FEED IS CONNECTED -->
+    <section class="ccg-section ccg-retro-directory" data-ccg-retro-directory hidden aria-labelledby="ccgUpcomingRetroEventsHeading">
+        <div class="ccg-retro-directory__header">
+            <div class="ccg-retro-directory__intro">
+                <p class="ccg-retro-directory__eyebrow">UK RETRO EVENTS DIRECTORY</p>
+                <h2 id="ccgUpcomingRetroEventsHeading">Upcoming UK Retro Events</h2>
+                <p>Upcoming retro gaming and computing events from around the UK, with each listing linking back to its original Retro.Directory entry.</p>
+                <p class="ccg-retro-directory__status-line">
+                    <span><strong id="ccgUpcomingRetroEventsCount">0</strong> upcoming events</span>
+                    <span id="ccgUpcomingRetroEventsUpdated"></span>
+                </p>
+            </div>
+            <div class="ccg-retro-directory__actions">
+                <a href="/feeds/uk-retro-events.xml" class="ccg-btn ccg-btn--ghost" type="application/rss+xml">RSS Feed</a>
+                <a href="https://retro.directory/browse/events" class="ccg-btn ccg-btn--primary" target="_blank" rel="noopener noreferrer">Browse Retro.Directory ↗</a>
+            </div>
+        </div>
+
+        <div id="ccgUpcomingRetroEvents" class="ccg-retro-directory-grid" aria-live="polite" aria-busy="true"></div>
+
+        <p class="ccg-retro-directory__credit">
+            Event discovery source: <a href="https://retro.directory/browse/events" target="_blank" rel="noopener noreferrer">retro.directory</a>.
+            Dates and event details can change, so check the original listing before travelling.
+        </p>
+    </section>
+
+    <section class="ccg-section ccg-retro-archive-heading" aria-labelledby="ccgRetroArchiveHeading">
+        <p class="ccg-retro-directory__eyebrow">CCG EVENT COVERAGE</p>
+        <h2 id="ccgRetroArchiveHeading">Retro Events Archive</h2>
+        <p>Videos and coverage from retro events attended by Cheeky Commodore Gamer.</p>
+    </section>
+
     <!-- GRID -->
     <section class="ccg-genre-main">
         <div id="genreGamesGrid" class="ccg-genre-grid">
@@ -354,6 +387,7 @@
 <script src="../../js/ccg-nav-core.js" defer></script>
 <script src="../../js/ccg-global.js" defer></script>
 <script src="../../js/ccg-mode-engine.js" defer></script>
+<script src="../../js/retro-directory-events.js" defer></script>
 <script src="../../js/retro-events-loader.js" defer></script>
 
 <!-- GOATCOUNTER — SAFE ANALYTICS -->
