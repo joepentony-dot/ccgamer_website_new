@@ -1357,15 +1357,14 @@ export function createExperience({ siteRoot = "/", onLaunch } = {}) {
 
         const parts = printable.split(/\s+/);
         const command = String(parts.shift() || "").toUpperCase();
-        const argument = printable.slice(printable.indexOf(parts.length ? parts[0] : "")).trim();
-        const normalizedArgument = parts.join(" ");
+        const argument = parts.join(" ");
 
         appendLine(output, "> " + printable, "is-command");
         history.push(printable);
         historyIndex = history.length;
 
         const handler = commands[command];
-        if (handler) handler(normalizedArgument || argument);
+        if (handler) handler(argument);
         else appendLine(output, "?UNKNOWN COMMAND: " + command + "  (TYPE HELP)", "is-error");
     };
 
