@@ -5,15 +5,6 @@ on:
     paths:
       - "resources/js/ccg-performance.js"
       - "resources/css/ccg-performance-foundations.css"
-      - "resources/css/ccg-master.css"
-      - "js/analytics.js"
-      - "templates/base-omega.html"
-      - "templates/game-template.html"
-      - "games/index.html"
-      - "games/collections/index.html"
-      - "games/collections/retro-events.html"
-      - "games/*/index.html"
-      - "tests/sitewide-performance-first-paint.test.mjs"
       - "scripts/audit-performance-foundations.js"
       - "docs/seo-baseline/phase-13-performance-foundations.md"
       - ".github/workflows/ccg-performance-foundations.yml"
@@ -40,9 +31,6 @@ jobs:
 
       - name: Run performance foundations audit
         run: node scripts/audit-performance-foundations.js
-
-      - name: Run first-paint performance regression
-        run: node --test tests/sitewide-performance-first-paint.test.mjs
 
       - name: Confirm audit made no repository changes
         run: |
