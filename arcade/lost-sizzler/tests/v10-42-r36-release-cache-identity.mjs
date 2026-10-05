@@ -11,8 +11,8 @@ const bootstrap=fs.readFileSync(path.join(root,"js/v10-42-bootstrap.js"),"utf8")
 const handoff=fs.readFileSync(path.join(root,"js/v10-41-r30-buglog.js"),"utf8");
 const guard=fs.readFileSync(path.join(root,"js/v10-41-cache-guard.js"),"utf8");
 
-const BUILD="V10.42 r104";
-const CACHE="20261005r104";
+const BUILD="V10.42 r105";
+const CACHE="20261005r105";
 const buildMeta=html.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)"/i)?.[1]||"";
 const cacheMeta=html.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)"/i)?.[1]||"";
 const localAssets=[...html.matchAll(/(?:src|href)="((?:js|css)\/[^"?]+\?v=([^"&]+))"/g)].map(match=>({url:match[1],token:match[2]}));
@@ -22,7 +22,7 @@ assert.equal(cacheMeta,CACHE,"the cache guard must read the r103 token on its fi
 assert.equal(version.build,BUILD,"version.json must describe the same current build as the blocking page and bootstrap");
 assert.equal(version.cacheToken,CACHE,"version.json must describe the same current cache token as the blocking page and bootstrap");
 assert.ok(bootstrap.includes(`const BUILD="${BUILD}";`),"ordered bootstrap build identity changed unexpectedly");
-assert.match(bootstrap,/const CACHE="20261005r104";/,"ordered bootstrap cache identity changed unexpectedly");
+assert.match(bootstrap,/const CACHE="20261005r105";/,"ordered bootstrap cache identity changed unexpectedly");
 assert.match(bootstrap,/function versionCheckOutdated\(\)\{[\s\S]*?CCGLostSizzlerVersion\?\.state\?\.outdated===true/,"ordered bootstrap must observe the version checker's stale-browser ownership");
 assert.match(bootstrap,/if\(!versionCheckOutdated\(\)\)\{[\s\S]*?expectedBadge=`BUILD \${BUILD\.toUpperCase\(\)}`[\s\S]*?badge\.textContent=expectedBadge[\s\S]*?\}/,"ordered bootstrap must not overwrite the stale-browser Update Available presentation while still stamping release metadata");
 assert.match(guard,/ccg-lost-sizzler-cache[^\n]+content/,"cache guard must continue taking its initial token from the blocking page meta");
