@@ -253,6 +253,15 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
 
 (()=>{
   let started=false;
+  async function waitForBaseSoundOwner(){
+    if(window.CCGSound)return true;
+    const startedAt=performance.now();
+    while(!window.CCGSound&&performance.now()-startedAt<10000){
+      await new Promise(resolve=>setTimeout(resolve,25));
+    }
+    return Boolean(window.CCGSound)
+  }
+
   async function startEnhancements(){
     if(started)return;
     started=true;
@@ -263,6 +272,8 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       const guard=window.CCGLostSizzlerCacheGuard;
       if(guard?.ready)await Promise.race([guard.ready,new Promise(resolve=>setTimeout(resolve,3800))]);
     }catch(error){console.warn("[Lost Sizzler] cache guard unavailable; continuing with release-token URLs",error)}
+
+    const baseSoundReady=await waitForBaseSoundOwner();
 
     const queue=[
       [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
@@ -309,6 +320,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-42-bootstrap.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerV142Bootstrap"]
     ];
     const criticalFailures=[];
+    if(!baseSoundReady)criticalFailures.push("base CCGSound owner did not initialise before enhancement queue");
     const criticalFiles=["admin-audio-overrides.js","lost-sizzler-playlist-audio.js","v10-42-r69-recorded-voices.js","v10-16-voice-director.js","v10-25-melee-ammo-balance.js","v10-26-ammo-budget.js","v10-29-achievements.js","v10-30-polish.js","v10-31-multiplayer-sync.js","v10-35-quality.js","v10-42-bootstrap.js"];
     const criticalPaths=new Set(["/arcade/lost-sizzler/","/arcade/c64-dungeon-carnage/"].flatMap(prefix=>criticalFiles.map(file=>`${prefix}js/${file}`)));
 
@@ -341,6 +353,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
 
     const loads=queue.map(loadEntry);
     Promise.all(loads).then(()=>{
+      if(!window.CCGLostSizzlerPlaylistAudio)criticalFailures.push("lost-sizzler-playlist-audio.js loaded without installing its music owner");
       const runtimeErrors=window.CCGLostSizzlerCacheGuard?.runtimeErrors||[];
       for(const row of runtimeErrors)criticalFailures.push(`runtime error${row.source?` in ${row.source}`:""}: ${row.message}`);
       window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);
