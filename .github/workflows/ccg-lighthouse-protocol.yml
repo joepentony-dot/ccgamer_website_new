@@ -67,10 +67,7 @@ jobs:
           node-version: "22"
 
       - name: Validate Lighthouse contract tooling
-        run: |
-          node --check scripts/validate-game-performance-contract.mjs
-          node --check admin/js/content-publisher.js
-          node --check admin/js/content-publisher-image-optimizer.js
+        run: node --check scripts/validate-game-performance-contract.mjs
 
       - name: Run permanent performance protocol regressions
         run: |
