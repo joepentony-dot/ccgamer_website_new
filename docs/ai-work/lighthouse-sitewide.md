@@ -9,7 +9,7 @@
 - New-game publishing is being hardened in the same performance workstream: newly published thumbnails must be WebP, the browser optimiser targets 350 KB with a 500 KB hard limit, 3D boxes retain WebP with a 500 KB hard limit, the changed-thumbnail repository budget is tightened to the same ceiling, and the authoritative rebuild/Reliable Games Publishing chain runs `validate-game-performance-contract.mjs`.
 - New source-level CI `CCG Lighthouse Performance Protocol` is a hard guard for known regression classes. The complete site-wide Lighthouse matrix remains the broad live-site diagnostic sweep; numeric release thresholds will be tightened from fresh post-remediation evidence rather than manufactured by degrading the site.
 - Visual contract remains absolute: do not remove the Omega presentation, Orbitron/Roboto identity, effects, modes, artwork or useful functionality simply to increase a lab score.
-- Current shared game-video generation still materialises the established lazy iframe `src`; Pass 1 no longer falsely blocks the whole catalogue for that pre-existing behaviour. A click/deferred video facade remains a subsequent shared optimisation so one generator/runtime repair can improve existing and future game pages together.
+- Pass 2 is now stacked on Pass 1 in `codex/sitewide-performance-pass-2-video-facade`: the shared game shell, runtime and video SEO generator use a lightweight poster/play facade and only create the YouTube player after an explicit click. This removes the multi-megabyte YouTube player from initial game-page loading while preserving the existing video section, dimensions, styling and direct YouTube link. External non-YouTube overrides keep their explicit player ownership. Pass 2 must not merge before Pass 1.
 
 
 ## Music composer wheel/Lighthouse follow-through — 28 September 2026
@@ -53,3 +53,5 @@ Known regression classes are now enforced separately by the permanent `CCG Light
 - Lighthouse evidence is read-only against the public website.
 - Optimisation changes remain isolated PRs with normal repository qualification.
 - The existing Home mobile/desktop reports are a baseline, not a ceiling or a substitute for page-specific measurements.
+
+- Pass 2 now owns the shared game-video optimisation: canonical generation removes the initial YouTube iframe `src`, injects an Omega poster/play facade into legacy generated markup, and the runtime self-heals older canonical pages until authoritative generated output catches up. The native-wheel contract activates the facade before qualifying the post-play iframe shield, so deferred loading and mouse-wheel behaviour are both protected.
