@@ -415,6 +415,29 @@
     object-fit: cover;
 }
 
+/* Legends & Heroes: preserve the full photographs so faces are never cropped. */
+.about-gallery--legends {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.about-gallery--legends .about-figure {
+    grid-template-rows: 1fr auto;
+    min-width: 0;
+}
+
+.about-gallery--legends .about-figure img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    object-position: center top;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(var(--accent-rgb), 0.1), transparent 58%),
+        rgba(0, 0, 0, 0.48);
+}
+
 /* Calls to action */
 
 .about-cta-grid {
@@ -474,6 +497,10 @@
     .about-panel__body--split,
     .about-panel--audio .about-panel__body--split {
         grid-template-columns: 1fr;
+    }
+
+    .about-gallery--legends {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .about-media-stack {
@@ -547,7 +574,8 @@
     }
 
     .about-gallery,
-    .about-gallery--wide {
+    .about-gallery--wide,
+    .about-gallery--legends {
         grid-template-columns: 1fr;
     }
 
