@@ -1,3 +1,14 @@
+## Site-wide Lighthouse performance programme — 5 October 2026
+
+- Draft PR **#2512** / `codex/sitewide-performance-pass-1` is the active website-performance vehicle, based on the current main at branch creation. It is not merged yet.
+- User supplied 12 Lighthouse JSON reports across representative Home, Games, Collections, single-game, Retro Events and Music pages. Shared findings include severe CLS on several page families, mobile LCP/TBT pressure, image-delivery waste, short static cache lifetimes and eager/non-critical third-party work.
+- Pass 1 preserves the Omega appearance and targets shared first-paint waste: scripted mobile navigation no longer renders an expanded desktop geometry before hydration, and consented Google Analytics is scheduled away from initial rendering. The dedicated first-paint guard passed; full triggered qualification remains required.
+- Permanent repository rule: all future public-site development must follow `docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md`. `AGENTS.md` now requires it. Do not trade away visual quality or functionality for a score.
+- New-game publishing is included in the performance contract: new thumbnails are WebP, changed/new thumbnail hard budget is 500 KB (350 KB review/target), optional 3D boxes use WebP with a 500 KB hard limit, and authoritative game generation/publishing runs `scripts/validate-game-performance-contract.mjs`.
+- A dedicated `CCG Lighthouse Performance Protocol` workflow provides source/publishing non-regression coverage. The full site-wide Lighthouse matrix remains the read-only broad diagnostic sweep and should be re-run after material performance batches.
+- Continue automatically through image delivery, CSS critical path, mobile main-thread work, caching/static assets, duplicate requests and remaining page-family outliers after Pass 1 qualifies/merges. Merge only qualified changes.
+
+
 ## R98 fifteen-floor release-hardening candidate — 3 October 2026
 
 - **Active vehicle:** PR #2488 / `codex/dungeon-release-audit-15-floor-topology`, branched from R97 main `0e34e4e1b8e3ae242b28a37192cead7b1775cee7`. Candidate identity is **V10.42 r98 / 20261003r98**. Do not describe R98 as qualified or merged until the exact-head PR/Full Qualification matrix is green and the PR is merged.
