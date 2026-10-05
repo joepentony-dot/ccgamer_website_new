@@ -485,7 +485,7 @@
     setTimeout(()=>{
       try{
         if(run!==activeRun||mode!=="playing")return;
-        sayKey("welcome",{cooldown:0,allowDuringTutorial:true});
+        sayKey("welcome",{cooldown:0});
         if(detail.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost");
       }catch(_){}
     },180);
