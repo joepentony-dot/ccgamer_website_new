@@ -35,9 +35,11 @@
 
   function markerState(p,r=R(),h=H(),w=W()){
     if(!p||!r||!h||!w)return[];markDomainKnowledge(p,r,h,w);
-    const n=floor(r),row=floorRecord(n,r),domain=h.v142WardenDomain,markers=[];
-    if(domain&&Number(domain.floor||n)===n&&row?.domainDiscovered&&!domain.cleansed&&domain.active!==false){
-      const room=w.rooms?.[Number(domain.roomId)],q=centre(room);if(q)markers.push({kind:"corruption",...q,label:String(domain.profileName||"WARDEN CORRUPTION"),roomId:Number(domain.roomId)});
+    const n=floor(r),row=floorRecord(n,r),domain=h.v142WardenDomain,markers=[],resolved=Boolean(row?.resolved||row?.cleansed||domain?.cleansed||domain?.active===false);
+    if(domain&&Number(domain.floor||n)===n&&row?.domainDiscovered&&!resolved){
+      const source=[...(h.enemies||[]),h.stalker].filter(Boolean).find(enemy=>String(enemy?.id||"")===String(domain.sourceId||""));
+      const liveSource=Boolean(source&&(source.alive||source.awake)&&!source.v142WardenDefeated&&!source.permanentlyBanished);
+      if(liveSource){const room=w.rooms?.[Number(domain.roomId)],q=centre(room);if(q)markers.push({kind:"corruption",...q,label:String(domain.profileName||"WARDEN CORRUPTION"),roomId:Number(domain.roomId)})}
     }
     const refuge=h.v142CleansedRefuge;
     if(refuge?.active&&Number(refuge.floor)===n&&Number.isFinite(Number(refuge.x))&&Number.isFinite(Number(refuge.y)))markers.push({kind:"refuge",x:Number(refuge.x),y:Number(refuge.y),label:"WARDEN REFUGE",roomId:Number(refuge.roomId)});
