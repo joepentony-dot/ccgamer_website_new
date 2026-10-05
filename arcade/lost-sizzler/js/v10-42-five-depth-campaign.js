@@ -137,11 +137,21 @@
       for(const door of hostState.doors||[])if(door.sigilGate){door.locked=false;door.open=true;door.opening=false;door.openAt=0;door.openingStart=0}
     }
     const baseUpdateObjective=SYSTEMS.updateObjective.bind(SYSTEMS),baseObjectiveText=SYSTEMS.objectiveText.bind(SYSTEMS);
+    const stripInterimSigilSuffix=text=>String(text||"")
+      .replace(/\s+—\s+SIGIL LOCKDOWN:.*$/i,"")
+      .replace(/\s+—\s+enter the reinforced Sigil chamber.*$/i,"")
+      .replace(/\s+—\s+recover the EXIT SIGIL.*$/i,"")
+      .replace(/\s+—\s+EXIT SIGIL acquired:.*$/i,"");
     SYSTEMS.updateObjective=function(hostState,runState,explorePct=0){
       const floor=floorNumber(runState),domain=domainForFloor(runState);
       if(floor===1){baseUpdateObjective(hostState,runState,explorePct);if(hostState.objective?.complete)authorizeInterimExit(hostState);return hostState.exitOpen}
       if(domain){
         const done=(Number(hostState.keysCollected)||0)>=1||claimedDomains(runState).includes(domain.id);if(hostState.objective)hostState.objective.complete=done;if(done)authorizeInterimExit(hostState);else hostState.exitOpen=false;return hostState.exitOpen;
+      }
+      if(floor<CFG.maxFloors){
+        baseUpdateObjective(hostState,runState,explorePct);
+        if(hostState.objective?.complete)authorizeInterimExit(hostState);else hostState.exitOpen=false;
+        return hostState.exitOpen;
       }
       if(floor===CFG.maxFloors&&globalKeyCount(runState)<CFG.keyTarget){if(hostState.objective)hostState.objective.complete=false;hostState.exitOpen=false;return false}
       return baseUpdateObjective(hostState,runState,explorePct);
@@ -152,7 +162,8 @@
       if(domain){const got=claimedDomains(runState).includes(domain.id)||(Number(hostState.keysCollected)||0)>=1;return got?`${domain.name} SECURED — global Keys ${Math.min(CFG.keyTarget,keys||1)}/${CFG.keyTarget}; reach the stairs`:`Defeat ${domain.guardian} and recover ${domain.name} — global Keys ${keys}/${CFG.keyTarget}`}
       if(floor===CFG.maxFloors&&keys<CFG.keyTarget)return `${cfg?.name||"The final Citadel"} rejects you — recover all three Keys (${keys}/${CFG.keyTarget})`;
       if(floor===CFG.maxFloors){const base=baseObjectiveText(hostState,runState,explorePct);return base.replace(/floor exit/gi,"final escape").replace(/EXIT SIGIL/g,"AWAKENED SIGIL")}
-      return `${cfg?.name||`FLOOR ${floor}`} — ${baseObjectiveText(hostState,runState,explorePct)}`;
+      const base=stripInterimSigilSuffix(baseObjectiveText(hostState,runState,explorePct));
+      return hostState.objective?.complete?`${cfg?.name||`FLOOR ${floor}`} — ${base} — reach the stairs`:`${cfg?.name||`FLOOR ${floor}`} — ${base}`;
     };
 
     if(typeof movementTriggers==="function"){
