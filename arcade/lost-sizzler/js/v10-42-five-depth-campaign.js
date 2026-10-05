@@ -136,6 +136,11 @@
       hostState.sigilLockdown=false;hostState.sigilResolved=true;hostState.exitSigilCollected=false;hostState.exitOpen=true;
       for(const door of hostState.doors||[])if(door.sigilGate){door.locked=false;door.open=true;door.opening=false;door.openAt=0;door.openingStart=0}
     }
+    function ensureInterimExit(hostState,runState){
+      if(!hostState||floorNumber(runState)>=CFG.maxFloors||!hostState.objective?.complete)return false;
+      authorizeInterimExit(hostState);
+      return true;
+    }
     const baseUpdateObjective=SYSTEMS.updateObjective.bind(SYSTEMS),baseObjectiveText=SYSTEMS.objectiveText.bind(SYSTEMS);
     const stripInterimSigilSuffix=text=>String(text||"")
       .replace(/\s+—\s+SIGIL LOCKDOWN:.*$/i,"")
@@ -144,13 +149,13 @@
       .replace(/\s+—\s+EXIT SIGIL acquired:.*$/i,"");
     SYSTEMS.updateObjective=function(hostState,runState,explorePct=0){
       const floor=floorNumber(runState),domain=domainForFloor(runState);
-      if(floor===1){baseUpdateObjective(hostState,runState,explorePct);if(hostState.objective?.complete)authorizeInterimExit(hostState);return hostState.exitOpen}
+      if(floor===1){baseUpdateObjective(hostState,runState,explorePct);ensureInterimExit(hostState,runState);return hostState.exitOpen}
       if(domain){
-        const done=(Number(hostState.keysCollected)||0)>=1||claimedDomains(runState).includes(domain.id);if(hostState.objective)hostState.objective.complete=done;if(done)authorizeInterimExit(hostState);else hostState.exitOpen=false;return hostState.exitOpen;
+        const done=(Number(hostState.keysCollected)||0)>=1||claimedDomains(runState).includes(domain.id);if(hostState.objective)hostState.objective.complete=done;if(done)ensureInterimExit(hostState,runState);else hostState.exitOpen=false;return hostState.exitOpen;
       }
       if(floor<CFG.maxFloors){
         baseUpdateObjective(hostState,runState,explorePct);
-        if(hostState.objective?.complete)authorizeInterimExit(hostState);else hostState.exitOpen=false;
+        if(hostState.objective?.complete)ensureInterimExit(hostState,runState);else hostState.exitOpen=false;
         return hostState.exitOpen;
       }
       if(floor===CFG.maxFloors&&globalKeyCount(runState)<CFG.keyTarget){if(hostState.objective)hostState.objective.complete=false;hostState.exitOpen=false;return false}
@@ -194,7 +199,7 @@
 
     if(typeof sync==="function"){
       const baseSync=sync;
-      sync=function(...args){const result=baseSync(...args),runState=currentRun(),hostState=currentHost(),player=currentPlayer();if(!runState||!hostState)return result;const keys=globalKeyCount(runState),floor=floorNumber(runState),cfg=floorConfig(runState);if(UI?.keys)UI.keys.textContent=`${keys}/${CFG.keyTarget}`;if(UI?.room)UI.room.textContent=`F${floor}/${CFG.maxFloors}`;if(UI?.quickKeyring)UI.quickKeyring.textContent=`KEYS ${keys}/${CFG.keyTarget} • ${claimedDomains(runState).map(id=>id.toUpperCase()).join(" · ")||"NONE"}${hostState.exitSigilCollected&&floor===CFG.maxFloors?" • SIGIL":""}`;if(UI?.mission)UI.mission.textContent=SYSTEMS.objectiveText(hostState,runState,Math.round(window.CCGProgression.roomCompletion(explored.get(player?.id)||new Set(),world)*100));return result};
+      sync=function(...args){const result=baseSync(...args),runState=currentRun(),hostState=currentHost(),player=currentPlayer();if(!runState||!hostState)return result;ensureInterimExit(hostState,runState);const keys=globalKeyCount(runState),floor=floorNumber(runState),cfg=floorConfig(runState);if(UI?.keys)UI.keys.textContent=`${keys}/${CFG.keyTarget}`;if(UI?.room)UI.room.textContent=`F${floor}/${CFG.maxFloors}`;if(UI?.quickKeyring)UI.quickKeyring.textContent=`KEYS ${keys}/${CFG.keyTarget} • ${claimedDomains(runState).map(id=>id.toUpperCase()).join(" · ")||"NONE"}${hostState.exitSigilCollected&&floor===CFG.maxFloors?" • SIGIL":""}`;if(UI?.mission)UI.mission.textContent=SYSTEMS.objectiveText(hostState,runState,Math.round(window.CCGProgression.roomCompletion(explored.get(player?.id)||new Set(),world)*100));return result};
     }
 
     function updateMenuCopy(){
