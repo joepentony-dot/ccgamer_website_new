@@ -34,7 +34,8 @@ test('performance budgets apply only to added or modified raster files', () => {
   assert.match(budget, /--diff-filter=AM/);
   assert.match(budget, /f"\{base\}\.\.\.HEAD"/);
   assert.match(budget, /THUMBNAIL_PREFIX = "resources\/images\/thumbnails\/all\/"/);
-  assert.match(budget, /THUMBNAIL_MAX_BYTES = 900 \* 1024/);
+  assert.match(budget, /THUMBNAIL_MAX_BYTES = 500 \* 1024/);
+  assert.match(budget, /THUMBNAIL_WARN_BYTES = 350 \* 1024/);
   assert.match(budget, /GENERAL_MAX_BYTES = 2 \* 1024 \* 1024/);
   assert.match(budget, /TOTAL_CHANGED_IMAGE_BYTES = 12 \* 1024 \* 1024/);
 });
