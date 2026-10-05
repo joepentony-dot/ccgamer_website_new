@@ -9,6 +9,7 @@
 - New-game publishing is being hardened in the same performance workstream: newly published thumbnails must be WebP, the browser optimiser targets 350 KB with a 500 KB hard limit, 3D boxes retain WebP with a 500 KB hard limit, the changed-thumbnail repository budget is tightened to the same ceiling, and the authoritative rebuild/Reliable Games Publishing chain runs `validate-game-performance-contract.mjs`.
 - New source-level CI `CCG Lighthouse Performance Protocol` is a hard guard for known regression classes. The complete site-wide Lighthouse matrix remains the broad live-site diagnostic sweep; numeric release thresholds will be tightened from fresh post-remediation evidence rather than manufactured by degrading the site.
 - Visual contract remains absolute: do not remove the Omega presentation, Orbitron/Roboto identity, effects, modes, artwork or useful functionality simply to increase a lab score.
+- Current shared game-video generation still materialises the established lazy iframe `src`; Pass 1 no longer falsely blocks the whole catalogue for that pre-existing behaviour. A click/deferred video facade remains a subsequent shared optimisation so one generator/runtime repair can improve existing and future game pages together.
 
 
 ## Music composer wheel/Lighthouse follow-through — 28 September 2026
