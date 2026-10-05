@@ -57,11 +57,28 @@ function openingTag(html, id) {
   return html.match(expression)?.[0] || "";
 }
 
-function hasAttribute(tag, name, expected) {
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\function hasAttribute(tag, name, expected) {
   const expression = expected == null
     ? new RegExp(`\\b${name}\\s*=`, "i")
     : new RegExp(`\\b${name}\\s*=\\s*["']${expected}["']`, "i");
   return expression.test(tag);
+}
+");
+}
+
+function getAttributeValue(tag, name) {
+  const safe = escapeRegExp(name);
+  const match = String(tag || "").match(new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["']([^"']*)["']`, "i"));
+  return match ? match[1] : "";
+}
+
+function hasAttribute(tag, name, expected) {
+  const safe = escapeRegExp(name);
+  const expression = expected == null
+    ? new RegExp(`(?:^|\\s)${safe}\\s*=`, "i")
+    : new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["']${escapeRegExp(expected)}["']`, "i");
+  return expression.test(String(tag || ""));
 }
 
 function validateSharedOwners(errors) {
@@ -148,9 +165,17 @@ function validateGeneratedPage(game, requireGenerated, errors) {
   const video = openingTag(html, "game-video-embed");
   if (video) {
     if (!hasAttribute(video, "loading", "lazy")) errors.push(`${relative}: video iframe must remain lazy.`);
-    if (hasAttribute(video, "src")) errors.push(`${relative}: generated HTML must not eagerly load a video iframe src.`);
+    const source = getAttributeValue(video, "src");
+    const provider = getAttributeValue(video, "data-video-provider");
+    if (source && !provider) errors.push(`${relative}: generated HTML must not eagerly load a video iframe src.`);
     if (!hasAttribute(video, "width") || !hasAttribute(video, "height")) {
       errors.push(`${relative}: video iframe must reserve width and height.`);
+    }
+
+    const deferredSource = getAttributeValue(video, "data-video-src");
+    if (deferredSource) {
+      if (!html.includes('id="game-video-facade"')) errors.push(`${relative}: deferred YouTube video is missing its play facade.`);
+      if (!html.includes('id="game-video-poster"')) errors.push(`${relative}: deferred YouTube video is missing its poster image.`);
     }
   }
 
