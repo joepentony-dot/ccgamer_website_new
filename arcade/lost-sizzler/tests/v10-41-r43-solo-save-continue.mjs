@@ -63,7 +63,7 @@ assert.doesNotMatch(source,/Number\(saved\.floor[^\n]*<=1/,"r43 Continue must su
 assert.match(source,/legacy_migration/,"legacy Solo checkpoints must be migratable");
 assert.match(source,/if\(checkpointIsSolo\(data\)\)return writeEnvelope[\s\S]*return original\.saveCheckpointData\(data\)/,"non-Solo legacy checkpoint writes must remain on their existing path");
 assert.match(source,/if\(soloSaveOwner\(\)\)[\s\S]*clearSoloSave\(\)[\s\S]*return original\.clearCheckpoint\(\)/,"Solo completion must still clear the v2 save even after autosave ownership has ended");
-assert.match(source,/Continue Solo — Floor/,"Continue button must expose the saved floor");
+assert.match(source,/Continue — Floor/,"Continue button must expose the saved floor without retired mode wording");
 assert.match(source,/Saved run: Floor/,"menu must expose save metadata");
 
 console.log("V10.41 r43 Solo save/continue and deterministic automatic floor-prompt ownership contract passed.");
