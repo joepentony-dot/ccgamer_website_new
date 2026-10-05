@@ -200,7 +200,31 @@ function enhanceVideoSection(html, game, videoId, metadata) {
     iframe = setAttribute(iframe, "data-video-id", videoId);
     iframe = setAttribute(iframe, "loading", "lazy");
     iframe = setBooleanAttribute(iframe, "hidden");
-    body = body.replace(iframeRe, iframe);
+
+    const hasFacade = /\bid=(["'])game-video-facade\1/i.test(body);
+    const hasStage = /class=(["'])[^"']*\bgame-video__stage\b[^"']*\1/i.test(body);
+
+    if (!hasFacade) {
+      const posterUrl = youtubeThumbnail(videoId, metadata);
+      const facadeMarkup = [
+        `<button id="game-video-facade" class="game-video__facade" type="button" aria-label="Play ${escapeHtml(presentation.title)} video">`,
+        `    <img id="game-video-poster" class="game-video__poster" src="${escapeHtml(posterUrl)}" alt="" width="480" height="360" loading="lazy" decoding="async">`,
+        '    <span class="game-video__play" aria-hidden="true">▶</span>',
+        '    <span class="game-video__play-label">Play video</span>',
+        '</button>'
+      ].join("\n");
+
+      if (hasStage) {
+        body = body.replace(iframeRe, `${facadeMarkup}\n${iframe}`);
+      } else {
+        body = body.replace(
+          iframeRe,
+          `<div class="game-video__stage">\n${facadeMarkup}\n${iframe}\n</div>`
+        );
+      }
+    } else {
+      body = body.replace(iframeRe, iframe);
+    }
   }
 
   const facadeRe = /<button\b[^>]*\bid=(["'])game-video-facade\1[^>]*>/i;
