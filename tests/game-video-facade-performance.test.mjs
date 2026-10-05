@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import test from "node:test";
 
 const read = (path) => fs.readFileSync(new URL("../" + path, import.meta.url), "utf8");
+const require = createRequire(import.meta.url);
+const { enhanceVideoSection } = require("../scripts/generate-video-seo.js");
 
 const shell = read("games/game.html");
 const runtime = read("js/load-single-game.js");
@@ -58,4 +61,38 @@ test("facade preserves the existing player geometry and Omega presentation", () 
   assert.match(gamesCss, /\.game-video__facade:focus-visible/);
   assert.match(pageCss, /\.game-video__stage[\s\S]*aspect-ratio:\s*4\s*\/\s*3/);
   assert.match(pageCss, /@media \(max-width: 560px\)[\s\S]*\.game-video__stage[\s\S]*aspect-ratio:\s*16\s*\/\s*10/);
+});
+
+
+test("canonical generator upgrades legacy iframe-only markup into one deferred facade", () => {
+  const legacy = [
+    '<section id="game-video-section">',
+    '<h2 class="game-section__title">Watch the Action</h2>',
+    '<div class="game-video">',
+    '<iframe id="game-video-embed" class="game-video__frame" src="https://www.youtube-nocookie.com/embed/OLDVIDEO123" loading="lazy" width="560" height="315"></iframe>',
+    '<div class="game-video__actions"><a id="gameVideoBtn" href="#">Open on YouTube</a></div>',
+    '</div>',
+    '</section>'
+  ].join("\n");
+
+  const first = enhanceVideoSection(
+    legacy,
+    { title: "Test Game", system: "C64" },
+    "NEWVIDEO123",
+    { thumbnailUrl: "https://i.ytimg.com/vi/NEWVIDEO123/hqdefault.jpg" }
+  );
+  const second = enhanceVideoSection(
+    first,
+    { title: "Test Game", system: "C64" },
+    "NEWVIDEO123",
+    { thumbnailUrl: "https://i.ytimg.com/vi/NEWVIDEO123/hqdefault.jpg" }
+  );
+
+  const iframe = second.match(/<iframe\b[^>]*id="game-video-embed"[^>]*>/i)?.[0] || "";
+  assert.ok(iframe);
+  assert.doesNotMatch(iframe, /(?:^|\s)src\s*=/i);
+  assert.match(iframe, /data-video-src="https:\/\/www\.youtube-nocookie\.com\/embed\/NEWVIDEO123"/);
+  assert.equal((second.match(/id="game-video-facade"/g) || []).length, 1);
+  assert.equal((second.match(/id="game-video-poster"/g) || []).length, 1);
+  assert.equal((second.match(/class="game-video__stage"/g) || []).length, 1);
 });
