@@ -203,9 +203,20 @@ test('game publisher can auto-build factual description copy without overwriting
 
 test('new game thumbnail uploads default to a slug-based WebP path without manual repository-path entry', () => {
   assert.match(html, /Thumbnail path \(optional override\)/);
-  assert.match(html, /Normally leave blank\. Selecting an image below optimises it to WebP/i);
+  assert.match(html, /Normally leave blank\. New games must publish a WebP thumbnail; selecting an image below optimises it locally/i);
   assert.match(html, /data-game-thumbnail-file/);
   assert.doesNotMatch(html, /data-game-field="thumbnail"[^>]*required/i);
   assert.match(js, /if \(!raw\) return `\$\{ALLOWED_THUMBNAIL_PREFIX\}\$\{slug\}\.webp`/);
   assert.match(js, /Select a thumbnail image, or enter an existing repository thumbnail path/);
+});
+
+
+test('new game publishing enforces the Lighthouse image contract', () => {
+  assert.match(optimiser, /TARGET_BYTES = 350 \* 1024/);
+  assert.match(optimiser, /HARD_BYTES = 500 \* 1024/);
+  assert.match(optimiser, /BOX3D_HARD_BYTES = 500 \* 1024/);
+  assert.match(js, /NEW_GAME_THUMBNAIL_MAX_BYTES = 500 \* 1024/);
+  assert.match(js, /New game thumbnails must use WebP/);
+  assert.match(js, /Thumbnail optimisation must finish as WebP before publishing/);
+  assert.match(rebuildGames, /validate-game-performance-contract\.mjs/);
 });

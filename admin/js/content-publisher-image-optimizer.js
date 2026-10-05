@@ -5,8 +5,8 @@ import './content-publisher-completion-guard.js?v=publisher-20260924-completion-
 
 const MAX_WIDTH = 1280;
 const MAX_HEIGHT = 960;
-const TARGET_BYTES = 650 * 1024;
-const HARD_BYTES = 900 * 1024;
+const TARGET_BYTES = 350 * 1024;
+const HARD_BYTES = 500 * 1024;
 const PRIMARY_QUALITY = 0.9;
 const SECONDARY_QUALITY = 0.84;
 const FINAL_QUALITY = 0.8;
@@ -15,7 +15,7 @@ const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const BOX3D_PREFIX = 'resources/images/games/boxes-3d/';
 const BOX3D_MAX_WIDTH = 960;
 const BOX3D_MAX_HEIGHT = 1440;
-const BOX3D_HARD_BYTES = 900 * 1024;
+const BOX3D_HARD_BYTES = 500 * 1024;
 
 const fileInput = document.querySelector('[data-game-thumbnail-file]');
 const pathInput = document.querySelector('[data-game-field="thumbnail"]');
@@ -28,7 +28,7 @@ if (fileInput && pathInput && publishButton) {
   const status = document.createElement('small');
   status.dataset.thumbnailOptimizationStatus = 'true';
   status.setAttribute('aria-live', 'polite');
-  status.textContent = 'PNG, JPEG and WebP uploads can be optimised locally. An explicit .jpg, .jpeg or .png thumbnail path is preserved exactly.';
+  status.textContent = 'New game uploads are optimised to WebP for the Lighthouse performance contract. Existing-game non-WebP paths can still be preserved when no new game is being created.';
   fileInput.insertAdjacentElement('afterend', status);
 
   fileInput.addEventListener('change', () => {
@@ -145,6 +145,10 @@ async function optimiseSelectedImage() {
       outputWidth = Math.max(1, Math.round(sourceWidth * extraScale));
       outputHeight = Math.max(1, Math.round(sourceHeight * extraScale));
       output = await encodeWebp(source, outputWidth, outputHeight, FINAL_QUALITY);
+    }
+
+    if (output.size > HARD_BYTES) {
+      throw new Error(`optimised thumbnail is ${formatBytes(output.size)}, above the ${formatBytes(HARD_BYTES)} Lighthouse hard limit.`);
     }
 
     const alreadyWebp = original.type === 'image/webp';

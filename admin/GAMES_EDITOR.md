@@ -53,6 +53,16 @@ The imported information remains editable. Review every imported value against t
 
 Keep the slug stable after publication because it owns the canonical URL at `/games/<slug>/`.
 
+## Lighthouse performance requirement
+
+Every newly added game must also satisfy `docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md`.
+
+For new games, use a WebP thumbnail under `resources/images/thumbnails/all/`. New or modified thumbnails are subject to the repository's changed-image budget, currently 500 KB hard / 350 KB review threshold. Optional 3D box artwork must remain WebP and within the publisher's 500 KB hard limit.
+
+`node scripts/rebuild-games.js` now includes the generated-game performance contract, and Reliable Games Publishing performs an additional previous-revision check for newly added games. The fallback editor therefore cannot bypass the same repository guard simply by producing a deployment ZIP.
+
+The performance rule must be met without stripping the established Omega styling, artwork, typography or useful game-page functionality.
+
 ## Publishing a new game
 
 1. Open `/admin/games-editor.html` and use **Fetch live games.json**.

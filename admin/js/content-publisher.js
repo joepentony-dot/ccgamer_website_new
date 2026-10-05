@@ -9,6 +9,8 @@ const WORKFLOW_POLL_TIMEOUT_MS = 240000;
 const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
 const ALLOWED_THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 const BOX3D_PREFIX = 'resources/images/games/boxes-3d/';
+const NEW_GAME_THUMBNAIL_MAX_BYTES = 500 * 1024;
+const NEW_GAME_BOX3D_MAX_BYTES = 500 * 1024;
 const ZZAP_MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
@@ -966,6 +968,20 @@ function validateGameEntry(entry) {
   if (!entry.description || entry.description.length < 70) errors.push('Description should be at least 70 characters for useful page/search copy.');
   if (!entry.videoid || !isYoutubeId(entry.videoid)) errors.push('A valid 11-character YouTube video ID is required.');
   if (!entry.thumbnail || !isSafeThumbnailPath(entry.thumbnail)) errors.push(`Thumbnail must be an image inside ${ALLOWED_THUMBNAIL_PREFIX}`);
+  if (entry.thumbnail && !/\.webp$/i.test(entry.thumbnail)) {
+    errors.push('New game thumbnails must use WebP so the published page stays inside the Lighthouse image-delivery budget.');
+  }
+  const selectedThumbnail = el.gameThumbnailFile?.files?.[0] || null;
+  if (selectedThumbnail && selectedThumbnail.type !== 'image/webp') {
+    errors.push('Thumbnail optimisation must finish as WebP before publishing.');
+  }
+  if (selectedThumbnail && selectedThumbnail.size > NEW_GAME_THUMBNAIL_MAX_BYTES) {
+    errors.push(`Optimised thumbnail is ${Math.ceil(selectedThumbnail.size / 1024)} KB; the new-game Lighthouse hard limit is 500 KB.`);
+  }
+  const selectedBox3d = el.gameBox3dFile?.files?.[0] || null;
+  if (selectedBox3d && selectedBox3d.size > NEW_GAME_BOX3D_MAX_BYTES) {
+    errors.push(`Optimised 3D box is ${Math.ceil(selectedBox3d.size / 1024)} KB; the new-game Lighthouse hard limit is 500 KB.`);
+  }
   if (!el.gameThumbnailFile?.files?.[0] && !gameValue('thumbnail')) {
     errors.push('Select a thumbnail image, or enter an existing repository thumbnail path.');
   }

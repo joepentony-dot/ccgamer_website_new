@@ -22,8 +22,8 @@ EXCLUDED_PREFIXES = ("data/lemon-cache/", "docs/", "_site/", ".git/")
 THUMBNAIL_PREFIX = "resources/images/thumbnails/all/"
 
 # Hard limits apply only to added/modified files.
-THUMBNAIL_MAX_BYTES = 900 * 1024
-THUMBNAIL_WARN_BYTES = 500 * 1024
+THUMBNAIL_MAX_BYTES = 500 * 1024
+THUMBNAIL_WARN_BYTES = 350 * 1024
 THUMBNAIL_MAX_PIXELS = 2_000_000
 GENERAL_MAX_BYTES = 2 * 1024 * 1024
 GENERAL_WARN_BYTES = 1024 * 1024
