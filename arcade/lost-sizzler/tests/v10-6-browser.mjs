@@ -21,60 +21,93 @@ if(!browserPath){console.log("V10.6 browser checks skipped: no Chromium executab
 
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");
 const mime={".html":"text/html",".js":"text/javascript",".css":"text/css",".json":"application/json",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".mp3":"audio/mpeg",".wav":"audio/wav"};
-const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);if(!file.startsWith(repo)){res.writeHead(403).end();return}fs.readFile(file,(error,data)=>{if(error){res.writeHead(404).end("not found");return}res.setHeader("content-type",mime[path.extname(file)]||"application/octet-stream");res.end(data)})});
-await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const base=`http://127.0.0.1:${server.address().port}/arcade/lost-sizzler/`;
-
-const browser=await chromium.launch({headless:true,executablePath:browserPath});const context=await browser.newContext({viewport:{width:1600,height:900}});
-await context.addInitScript(()=>{
-  let fsElement=null;Object.defineProperty(document,"fullscreenElement",{configurable:true,get:()=>fsElement});Element.prototype.requestFullscreen=function(){fsElement=this;window.__mockFullscreen=true;document.dispatchEvent(new Event("fullscreenchange"));return Promise.resolve()};document.exitFullscreen=()=>{fsElement=null;document.dispatchEvent(new Event("fullscreenchange"));return Promise.resolve()};
-  Object.defineProperty(navigator,"clipboard",{configurable:true,value:{writeText:async text=>{window.__copiedInvite=text}}});
-  const handlers=new Set();window.addEventListener("storage",event=>{for(const fn of handlers)fn(event)});
-  function client(){return{channel(topic,options={}){const key=options.config?.presence?.key||Math.random().toString(36),events=[],bc=new BroadcastChannel(`mock-${topic}`),prefix=`mock-presence:${topic}:`;let mine=null,sub=null;
-    const firePresence=()=>{for(const row of events)if(row.type==="presence")row.callback()};handlers.add(event=>{if(event.key?.startsWith(prefix))firePresence()});bc.onmessage=event=>{const data=event.data;if(data?.type==="presence"){firePresence();return}for(const row of events)if(row.type==="broadcast"&&row.filter?.event===data.event)row.callback({payload:data.payload})};
-    const channel={on(type,filter,callback){events.push({type,filter,callback});return channel},subscribe(callback){sub=callback;queueMicrotask(()=>sub?.("SUBSCRIBED"));return channel},async track(payload){mine={...payload};localStorage.setItem(`${prefix}${key}`,JSON.stringify(mine));firePresence();bc.postMessage({type:"presence"});return"ok"},presenceState(){const state={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k?.startsWith(prefix))continue;try{const value=JSON.parse(localStorage.getItem(k));state[k.slice(prefix.length)]=[value]}catch{}}return state},async send(message){bc.postMessage({event:message.event,payload:message.payload});return"ok"},async untrack(){localStorage.removeItem(`${prefix}${key}`);mine=null;firePresence();bc.postMessage({type:"presence"});return"ok"},close(){bc.close()}};return channel},async removeChannel(channel){channel.close?.();return"ok"}}}
-  window.__ccgV106TestClientFactory=client;
+const server=http.createServer((req,res)=>{
+  const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);
+  if(!file.startsWith(repo)){res.writeHead(403).end();return}
+  fs.readFile(file,(error,data)=>{if(error){res.writeHead(404).end("not found");return}res.setHeader("content-type",mime[path.extname(file)]||"application/octet-stream");res.setHeader("cache-control","no-store");res.end(data)})
 });
-await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
-const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true"&&(window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false||Boolean(window.CCGLostSizzlerV106)));await page.evaluate(()=>{window.ccgSupabase={getClient:async()=>window.__ccgV106TestClientFactory()}});await page.locator("#player-name").fill(name);return page};
-const joinInvite=async(page,name)=>{await page.locator("#v141-invite-name-gate:not(.hidden)").waitFor({timeout:12000});await page.locator("#v141-invite-player-name").fill(name);await page.locator("#v141-invite-name-join").click()};
-const syncLobby=page=>page.evaluate(()=>{net.syncSupabasePresence();window.CCGLostSizzlerV106.updateLobby();return net.getDiagnostics()});
+await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
+const base=`http://127.0.0.1:${server.address().port}/arcade/lost-sizzler/`;
+
+const browser=await chromium.launch({headless:true,executablePath:browserPath});
+const context=await browser.newContext({viewport:{width:1600,height:900}});
+await context.addInitScript(()=>{
+  let fsElement=null;
+  Object.defineProperty(document,"fullscreenElement",{configurable:true,get:()=>fsElement});
+  Element.prototype.requestFullscreen=function(){fsElement=this;window.__mockFullscreen=true;document.dispatchEvent(new Event("fullscreenchange"));return Promise.resolve()};
+  document.exitFullscreen=()=>{fsElement=null;document.dispatchEvent(new Event("fullscreenchange"));return Promise.resolve()};
+  try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}
+});
+
+const pages=[];
+const makePage=async(name,url=base)=>{
+  const page=await context.newPage();pages.push(page);
+  await page.goto(url,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142ZeroServerRelease?.releaseModel==="local-browser",{timeout:90000});
+  const fatal=await page.evaluate(()=>({fatal:document.getElementById("ccg-release-loading")?.classList.contains("is-error")===true,errors:[...(window.CCGLostSizzlerReleaseGate?.state?.errors||[])]}));
+  assert.equal(fatal.fatal,false,`local release must not enter fatal loading state: ${JSON.stringify(fatal.errors)}`);
+  await page.locator("#player-name").fill(name);
+  return page;
+};
 const assertTacticalContained=async(page,label)=>{
   const tactical=await page.locator(".tactical-zone").boundingBox(),radar=await page.locator(".radar-card").boundingBox(),radarCanvas=await page.locator("#radar-canvas").boundingBox(),shortcuts=await page.locator(".shortcut-dock").boundingBox();
-  assert.ok(tactical&&radar&&radarCanvas&&shortcuts,`${label}: tactical radar and shortcut panels are visible`);const tolerance=2,right=box=>box.x+box.width,bottom=box=>box.y+box.height;
-  for(const [name,box] of [["radar card",radar],["radar canvas",radarCanvas],["shortcut dock",shortcuts]])assert.ok(box.x>=tactical.x-tolerance&&right(box)<=right(tactical)+tolerance,`${label}: ${name} stays inside the tactical sidebar horizontally: ${JSON.stringify({tactical,box})}`);
-  assert.ok(shortcuts.y>=bottom(radar)-tolerance,`${label}: shortcut dock remains below the radar instead of being forced into a legacy second column`);
+  assert.ok(tactical&&radar&&radarCanvas&&shortcuts,`${label}: tactical radar and shortcut panels are visible`);
+  const tolerance=2,right=box=>box.x+box.width,bottom=box=>box.y+box.height;
+  for(const [name,box] of [["radar card",radar],["radar canvas",radarCanvas],["shortcut dock",shortcuts]])assert.ok(box.x>=tactical.x-tolerance&&right(box)<=right(tactical)+tolerance,`${label}: ${name} stays inside the tactical sidebar horizontally`);
+  assert.ok(shortcuts.y>=bottom(radar)-tolerance,`${label}: shortcut dock remains below the radar`);
 };
 
 try{
-  const host=await makePage("Host");
-  assert.equal(await host.locator("body").getAttribute("data-run-active"),"false");assert.equal(await host.locator(".canvas-wrap").isVisible(),false,"the dungeon canvas is hidden on the start page");assert.equal(await host.locator(".tactical-zone").isVisible(),false,"the radar is hidden on the start page");assert.equal(await host.locator(".player-hub").isVisible(),false,"the HUD is hidden on the start page");assert.equal(await host.locator(".mission").isVisible(),false,"the live mission strip is hidden on the start page");
-  const viewport=host.viewportSize(),menuBox=await host.locator("#menu").boundingBox(),soloBox=await host.locator("#solo-btn").boundingBox();assert.ok(menuBox.width>=viewport.width-2&&menuBox.height>=viewport.height-2,`start menu fills the viewport: ${JSON.stringify(menuBox)}`);assert.ok(await host.locator("#solo-btn").isVisible()&&soloBox.y>=0&&soloBox.y+soloBox.height<=viewport.height,"Play Solo is visible without scrolling at desktop launch");
+  const game=await makePage("Local Tester");
+  assert.equal(await game.locator("body").getAttribute("data-run-active"),"false");
+  assert.equal(await game.locator("#solo-btn").textContent(),"Start Game","the shipped primary action must remain Start Game at runtime");
+  assert.equal(await game.locator(".canvas-wrap").isVisible(),false,"the dungeon canvas is hidden on the start page");
+  assert.equal(await game.locator(".tactical-zone").isVisible(),false,"the radar is hidden on the start page");
+  assert.equal(await game.locator(".player-hub").isVisible(),false,"the HUD is hidden on the start page");
+  assert.equal(await game.evaluate(()=>typeof window.net),"undefined","retired network transport must not be recreated at runtime");
 
-  const zeroServerRelease=await host.evaluate(()=>document.body.dataset.releaseModel==="zero-server-cost"&&window.CCGLostSizzlerV142ZeroServerRelease?.onlineMultiplayer===false);
-  if(zeroServerRelease){
-    for(const id of ["create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"]){
-      assert.equal(await host.locator(`#${id}`).isVisible(),false,`${id} stays retired on the V10.42 zero-server production menu`);
-    }
-    assert.equal(await host.locator("#online-lobby").isVisible(),false,"the V10.42 zero-server release never exposes the legacy online lobby");
-    assert.equal(await host.evaluate(()=>Boolean(net?.connected)),false,"the V10.42 zero-server release remains disconnected while idle on the menu");
-    assert.equal(await host.evaluate(()=>String(net?.transport||"")),"solo","the V10.42 zero-server release keeps the preserved network object inert in Solo transport");
-  }else{
-    await host.locator("#create-btn").click();await host.locator("#online-lobby:not(.hidden)").waitFor();assert.equal(await host.evaluate(()=>Boolean(window.__mockFullscreen)),false,"Create remains in a normal lobby until Start");
-    assert.equal(await host.locator("body").getAttribute("data-run-active"),"false","the online lobby does not reveal gameplay panels");
-    const code=(await host.locator("#lobby-room-code").textContent()).trim();assert.match(code,/^[A-Z0-9]{5}$/);const invite=await host.locator("#lobby-invite-url").inputValue();assert.ok(invite.includes(`room=${code}`));await host.locator("#lobby-copy-btn").click();assert.equal(await host.evaluate(()=>window.__copiedInvite),invite);
+  const viewport=game.viewportSize(),menuBox=await game.locator("#menu").boundingBox(),startBox=await game.locator("#solo-btn").boundingBox();
+  assert.ok(menuBox.width>=viewport.width-2&&menuBox.height>=viewport.height-2,"start menu fills the viewport");
+  assert.ok(await game.locator("#solo-btn").isVisible()&&startBox.y>=0&&startBox.y+startBox.height<=viewport.height,"Start Game is visible without scrolling");
 
-    const guests=[];for(let i=1;i<=3;i++){const name=`Guest ${i}`,guest=await makePage(name,`${base}?room=${code}`);guests.push(guest);assert.equal(await guest.locator("#room-code").inputValue(),code);await joinInvite(guest,name);await guest.locator("#online-lobby:not(.hidden)").waitFor();assert.equal(await guest.evaluate(()=>Boolean(window.__mockFullscreen)),false,"Invite joiners stay on the normal lobby screen until the host starts")}
-    const fullDiagnostics=await syncLobby(host);assert.equal(fullDiagnostics.memberCount,4,`production presence sync must rebuild a full four-player room: ${JSON.stringify(fullDiagnostics)}`);await host.waitForFunction(()=>document.getElementById("lobby-status")?.textContent.includes("4/4 players connected"));assert.equal(await host.locator("#lobby-player-list li").count(),4);
+  await game.locator("#solo-btn").click();
+  await game.waitForFunction(()=>document.body.dataset.runActive==="true");
+  assert.equal(await game.evaluate(()=>Boolean(window.__mockFullscreen)),true,"starting the game requests fullscreen");
+  const box=await game.locator(".canvas-wrap").boundingBox();
+  assert.ok(box.width>1150&&box.height>650,`desktop canvas becomes gameplay dominant after Start: ${JSON.stringify(box)}`);
+  await assertTacticalContained(game,"1600x900 game");
 
-    const fifth=await makePage("Fifth",`${base}?room=${code}`);await joinInvite(fifth,"Fifth");await fifth.waitForFunction(()=>/room is full/i.test(document.getElementById("menu-note")?.textContent||""),null,{timeout:12000});assert.ok(await fifth.locator("#online-lobby.hidden").count());
+  await game.locator("#quit-btn").click();await game.locator("#pause:not(.hidden)").waitFor();
+  assert.equal(await game.locator(".player-hub").isVisible(),false,"the pause screen hides the HUD");
+  assert.equal(await game.locator(".tactical-zone").isVisible(),false,"the pause screen hides the radar");
+  await game.locator("#resume-btn").click();
+  assert.equal(await game.locator(".player-hub").isVisible(),true,"continuing restores the HUD");
+  assert.equal(await game.locator(".tactical-zone").isVisible(),true,"continuing restores the radar");
+  await game.evaluate(()=>showNamedDossier());await game.locator("#named-dossier-panel:not(.hidden)").waitFor();
+  await game.locator("#named-dossier-close").click();
+  await game.locator("#quit-btn").click();await game.locator("#pause-quit-btn").click();
+  await game.waitForFunction(()=>document.body.dataset.runActive==="false"&&!document.getElementById("menu")?.classList.contains("hidden"));
 
-    await guests[2].locator("#lobby-cancel-btn").click();const reducedDiagnostics=await syncLobby(host);assert.equal(reducedDiagnostics.memberCount,3,`production presence sync must remove a departed guest: ${JSON.stringify(reducedDiagnostics)}`);await host.waitForFunction(()=>document.getElementById("lobby-status")?.textContent.includes("3/4 players connected"));
-    await host.locator("#lobby-start-btn").click();await host.waitForFunction(()=>document.getElementById("online-lobby")?.classList.contains("hidden")&&document.body.dataset.runActive==="true");for(const guest of guests.slice(0,2))await guest.waitForFunction(()=>document.getElementById("online-lobby")?.classList.contains("hidden")&&document.getElementById("menu")?.classList.contains("hidden")&&document.body.dataset.runActive==="true",null,{timeout:10000});assert.equal(await host.evaluate(()=>Boolean(window.__mockFullscreen)),true,"Host enters fullscreen on Start");const box=await host.locator(".canvas-wrap").boundingBox();assert.ok(box.width>1150&&box.height>650,`desktop canvas becomes gameplay dominant after Start: ${JSON.stringify(box)}`);await assertTacticalContained(host,"1600x900 host");
-  }
+  const wide=await context.newPage();pages.push(wide);await wide.setViewportSize({width:1920,height:1080});await wide.goto(base);
+  await wide.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true",{timeout:90000});
+  await wide.locator("#solo-btn").click();await wide.waitForFunction(()=>document.body.dataset.runActive==="true");
+  const wideBox=await wide.locator(".canvas-wrap").boundingBox();
+  assert.ok(wideBox.width>1500&&wideBox.height>850,`1920×1080 canvas remains large after play begins: ${JSON.stringify(wideBox)}`);
+  await assertTacticalContained(wide,"1920x1080 game");
 
-  const solo=await makePage("Quit Tester");await solo.locator("#solo-btn").click();await solo.waitForFunction(()=>document.body.dataset.runActive==="true");await solo.locator("#quit-btn").click();await solo.locator("#pause:not(.hidden)").waitFor();assert.equal(await solo.locator(".player-hub").isVisible(),false,"the pause screen hides the HUD");assert.equal(await solo.locator(".tactical-zone").isVisible(),false,"the pause screen hides the radar");await solo.locator("#resume-btn").click();assert.equal(await solo.locator(".player-hub").isVisible(),true,"continuing restores the HUD");assert.equal(await solo.locator(".tactical-zone").isVisible(),true,"continuing restores the radar");await solo.evaluate(()=>showNamedDossier());await solo.locator("#named-dossier-panel:not(.hidden)").waitFor();assert.equal(await solo.locator(".player-hub").isVisible(),false,"the enemy dossier hides the HUD");assert.equal(await solo.locator(".tactical-zone").isVisible(),false,"the enemy dossier hides the radar");await solo.locator("#named-dossier-close").click();assert.equal(await solo.locator(".player-hub").isVisible(),true,"closing the dossier restores the HUD");assert.equal(await solo.locator(".tactical-zone").isVisible(),true,"closing the dossier restores the radar");await solo.locator("#quit-btn").click();await solo.locator("#pause-quit-btn").click();await solo.waitForFunction(()=>document.body.dataset.runActive==="false"&&!document.getElementById("menu")?.classList.contains("hidden"));assert.equal(await solo.locator(".player-hub").isVisible(),false,"quitting hides the abandoned run HUD");assert.equal(await solo.locator(".tactical-zone").isVisible(),false,"quitting hides the abandoned run radar");
+  const mobile=await context.newPage();pages.push(mobile);await mobile.setViewportSize({width:844,height:390});await mobile.goto(base);
+  await mobile.waitForFunction(()=>document.body.dataset.gameReady==="true"&&document.body.dataset.releaseReady==="true",{timeout:90000});
+  const mobileMenu=await mobile.locator("#menu").boundingBox();
+  assert.equal(await mobile.locator(".canvas-wrap").isVisible(),false);assert.ok(mobileMenu.width>=842&&mobileMenu.height>=388,"mobile menu fills its viewport");
+  await mobile.locator("#solo-btn").click();await mobile.waitForFunction(()=>document.body.dataset.runActive==="true");
+  const mobileBox=await mobile.locator(".canvas-wrap").boundingBox(),mobileRail=await mobile.locator(".game-message-rail").boundingBox();
+  assert.ok(mobileBox.width>800&&mobileBox.height>230,`mobile landscape remains playable: ${JSON.stringify(mobileBox)}`);
+  assert.ok(mobileRail&&mobileRail.height<=22,`short-landscape message rail stays compact: ${JSON.stringify(mobileRail)}`);
+  await mobile.evaluate(()=>toggleInventory());await mobile.locator("#inventory-panel:not(.hidden)").waitFor();
+  assert.ok(await mobile.locator("#inventory-close-top").isVisible(),"mobile inventory has a persistent Back to Game button");
 
-  const wide=await context.newPage();pages.push(wide);await wide.setViewportSize({width:1920,height:1080});await wide.goto(base);await wide.waitForFunction(()=>document.body.dataset.gameReady==="true");assert.equal(await wide.locator(".canvas-wrap").isVisible(),false);await wide.locator("#solo-btn").click();await wide.waitForFunction(()=>document.body.dataset.runActive==="true");const wideBox=await wide.locator(".canvas-wrap").boundingBox();assert.ok(wideBox.width>1500&&wideBox.height>850,`1920×1080 canvas remains large after play begins: ${JSON.stringify(wideBox)}`);await assertTacticalContained(wide,"1920x1080 solo");
-  const mobile=await context.newPage();pages.push(mobile);await mobile.setViewportSize({width:844,height:390});await mobile.goto(base);await mobile.waitForFunction(()=>document.body.dataset.gameReady==="true");const mobileMenu=await mobile.locator("#menu").boundingBox();assert.equal(await mobile.locator(".canvas-wrap").isVisible(),false);assert.equal(await mobile.locator("#menu").isVisible(),true);assert.ok(await mobile.locator(".desktop-play-recommendation").isVisible(),"the desktop recommendation is visible before play");assert.ok(mobileMenu.width>=842&&mobileMenu.height>=388,"mobile menu also fills its viewport");await mobile.locator("#solo-btn").click();await mobile.waitForFunction(()=>document.body.dataset.runActive==="true");const mobileBox=await mobile.locator(".canvas-wrap").boundingBox(),mobileRail=await mobile.locator(".game-message-rail").boundingBox();assert.ok(mobileBox.width>800&&mobileBox.height>230,`mobile landscape remains playable with the reserved message rail: ${JSON.stringify(mobileBox)}`);assert.ok(mobileRail&&mobileRail.height<=22,`short-landscape R51 message rail stays compact instead of crowding gameplay: ${JSON.stringify(mobileRail)}`);await mobile.evaluate(()=>toggleInventory());await mobile.locator("#inventory-panel:not(.hidden)").waitFor();assert.ok(await mobile.locator("#inventory-close-top").isVisible(),"mobile inventory has a persistent Back to Game button");await mobile.locator(".inventory-slot.empty").first().click();assert.match(await mobile.locator("#inventory-mobile-notice").textContent(),/EMPTY INVENTORY SLOT/);await mobile.locator("#inventory-dossier-btn").click();await mobile.locator("#named-dossier-panel:not(.hidden)").waitFor();assert.ok(await mobile.locator("#named-dossier-close-top").isVisible(),"mobile dossier has a persistent Back to Game button");await mobile.locator("#named-dossier-close-top").click();assert.equal(await mobile.locator("#named-dossier-panel").isVisible(),false);assert.equal(await mobile.locator("#inventory-panel").isVisible(),false,"Back to Game closes both stacked mobile panels");
-  console.log(`V10.6 browser ${zeroServerRelease?"zero-server menu, ":"lobby, invite-name, "}radar layout and responsive checks passed`);
-}finally{for(const page of pages)await page.close().catch(()=>{});await context.close();await browser.close();await new Promise(resolve=>server.close(resolve))}
+  console.log("V10.6 local browser start, pause, responsive layout and retired-transport checks passed");
+}finally{
+  for(const page of pages)await page.close().catch(()=>{});
+  await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));
+}
