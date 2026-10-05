@@ -7,12 +7,6 @@ on:
     paths:
       - "resources/css/ccg-master.css"
       - "js/analytics.js"
-      - "templates/base-omega.html"
-      - "templates/game-template.html"
-      - "games/index.html"
-      - "games/collections/index.html"
-      - "games/collections/retro-events.html"
-      - "games/*/index.html"
       - "service-worker.js"
       - "tests/sitewide-performance-first-paint.test.mjs"
       - ".github/workflows/ccg-first-paint-performance.yml"
