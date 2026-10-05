@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:ccg="https://www.cheekycommodoregamer.co.uk/ns/retro-events">
+  <channel>
+    <title>Cheeky Commodore Gamer – Upcoming UK Retro Events</title>
+    <link>https://www.cheekycommodoregamer.co.uk/games/collections/retro-events.html</link>
+    <description>Upcoming UK retro gaming and computing events. The live source is awaiting an authorised syndication feed.</description>
+    <language>en-gb</language>
+    <atom:link href="https://www.cheekycommodoregamer.co.uk/feeds/uk-retro-events.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>
