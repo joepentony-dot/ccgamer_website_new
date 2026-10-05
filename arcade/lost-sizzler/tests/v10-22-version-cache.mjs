@@ -110,7 +110,7 @@ assert.match(index,/id="hud-weapon">SWORD</,"static HUD must show the starting m
 assert.match(index,/SPACE ATTACK/,"keyboard help must describe the shared firearm/melee attack action");
 assert.match(index,/M MAP/,"keyboard help must reserve M for the Solo full dungeon map");
 assert.doesNotMatch(index,/M SOUND/,"keyboard help must not advertise the retired M sound shortcut");
-assert.match(index,/essential keys or an Exit Sigil are returned safely to the floor and marked on the maps/,"published death rules must explain progression-item protection");
+assert.match(index,/essential keys or the final Awakened Sigil are returned safely to the floor and marked on the maps/,"published death rules must explain progression-item protection");
 assert.match(index,/THE GAMBLER/,"published rulebook must document the rare Gambler encounter");
 
 assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must retain current compatibility branding");
