@@ -74,6 +74,7 @@ const steps = [
   ["ensure-publisher-history-runtime.js", "--check"],
   ["ensure-manual-viewer-polish.js", "--root", ".", "--check"],
   ["validate-downloads-page.js"],
+  ["validate-game-performance-contract.mjs", "--require-generated"],
   ["normalize-public-header-shell.js", "--root", ".", "--check"],
 ];
 

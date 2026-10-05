@@ -2,6 +2,14 @@
 
 This repository now includes a lightweight, dependency-free Node.js SEO toolchain that generates game sitemaps and audits internal game links at build time. The goal is to make sure search engines can discover and index every canonical game page without changing runtime behaviour.
 
+## Lighthouse performance governance
+
+All public-site development is governed by `docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md`.
+
+The rule is permanent: new work must preserve or improve Lighthouse/Core Web Vitals behaviour and must not knowingly reintroduce avoidable CLS, blocking third-party work, oversized images, eager heavy embeds, duplicate network requests or other previously-remediated performance regressions. Performance work must preserve the established Omega visual design and functionality rather than simplifying the site merely to raise a score.
+
+New-game publishing is included in this contract. The Content Publisher, authoritative rebuild and Reliable Games Publishing workflow enforce WebP/new-image budgets and generated-page performance checks before a new game can be treated as complete.
+
 ## What was added
 
 - `tools/seo/generate-sitemap.js`

@@ -49,6 +49,22 @@ After a direct main commit, the existing workflows handle the rest:
 7. Sitemap/SEO/protected-file validation runs.
 8. The publisher polls the matching workflow runs and then checks the final live URL.
 
+## Lighthouse performance contract for new games
+
+New games are subject to the permanent repository contract in `docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md`.
+
+The unified publisher now treats performance as part of publication correctness:
+
+- a newly published game thumbnail must use WebP;
+- the browser optimiser targets 350 KB and refuses a thumbnail above the 500 KB hard limit;
+- optional 3D box uploads are converted to WebP and must remain at or below 500 KB;
+- the authoritative rebuild validates the generated canonical route for reserved hero dimensions, eager/high-priority LCP artwork, deferred shared runtime and non-eager source markup for the video iframe;
+- Reliable Games Publishing compares a newly added game with the previous source revision and rejects a new thumbnail that bypasses the WebP/size contract.
+
+Existing legacy artwork is not mass-rewritten merely because it predates the rule. If an existing asset is replaced, the normal changed-image budget applies.
+
+This contract is not permission to reduce visual quality. Artwork should remain visually faithful while avoiding needless bytes and dimensions.
+
 ## Adding a video / feature
 
 Supported source datasets are:

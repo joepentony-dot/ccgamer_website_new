@@ -1,5 +1,17 @@
 # Site-wide Lighthouse programme
 
+## Site-wide remediation + permanent protocol — 5 October 2026
+
+- User supplied 12 Lighthouse JSON reports covering Home, Games, Collections, Summer Games, Retro Events and Music in desktop/mobile modes. The evidence shows the site is not at its performance ceiling: repeated large CLS, mobile LCP delays, heavy third-party/video work, image-delivery waste and short static cache lifetimes remain.
+- Active performance vehicle: draft PR **#2512** / `codex/sitewide-performance-pass-1`. The first guarded batch removes the scripted-mobile expanded-nav first frame and schedules consented Google Analytics away from first paint while preserving the settled Omega design and typography. The dedicated first-paint qualification is green; all normal repository checks still govern merge.
+- A flaky Native Mouse Wheel attempt reached and passed Home, Games, single-game, Genres, Publishers, Collections, discovery, Music and Videos before timing out waiting for the unchanged Zzap archive ready boundary. It is being retried unchanged; no wheel assertion or timeout was weakened.
+- The owner explicitly requires future website work and newly published games to obey a permanent Lighthouse non-regression rule. `docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md` is now the repository contract, and `AGENTS.md` requires it before public-site changes.
+- New-game publishing is being hardened in the same performance workstream: newly published thumbnails must be WebP, the browser optimiser targets 350 KB with a 500 KB hard limit, 3D boxes retain WebP with a 500 KB hard limit, the changed-thumbnail repository budget is tightened to the same ceiling, and the authoritative rebuild/Reliable Games Publishing chain runs `validate-game-performance-contract.mjs`.
+- New source-level CI `CCG Lighthouse Performance Protocol` is a hard guard for known regression classes. The complete site-wide Lighthouse matrix remains the broad live-site diagnostic sweep; numeric release thresholds will be tightened from fresh post-remediation evidence rather than manufactured by degrading the site.
+- Visual contract remains absolute: do not remove the Omega presentation, Orbitron/Roboto identity, effects, modes, artwork or useful functionality simply to increase a lab score.
+- Current shared game-video generation still materialises the established lazy iframe `src`; Pass 1 no longer falsely blocks the whole catalogue for that pre-existing behaviour. A click/deferred video facade remains a subsequent shared optimisation so one generator/runtime repair can improve existing and future game pages together.
+
+
 ## Music composer wheel/Lighthouse follow-through — 28 September 2026
 
 - User reported sluggish up/down mouse-wheel response on the deployed `/music/paul-norman/` composer page.
@@ -30,9 +42,9 @@ The user-supplied Lighthouse reports from **25 September 2026** for the public H
 
 ## Execution model
 
-The workflow is intentionally diagnostic. Weak Lighthouse scores do not fail unrelated development. Syntax, URL inventory breadth and execution failures are still treated as tooling defects.
+The complete site-wide Lighthouse matrix is intentionally the broad diagnostic sweep rather than a blanket score gate for every unrelated pull request. Syntax, URL inventory breadth and execution failures remain tooling defects.
 
-Pull requests that change the sweep tooling qualify the scripts and safety contracts without running the expensive full matrix. The complete public-site sweep runs automatically when the Lighthouse tooling is merged to `main`, and thereafter remains available by manual dispatch plus the weekly schedule. It is split into deterministic mobile and desktop shards with bounded parallelism.
+Known regression classes are now enforced separately by the permanent `CCG Lighthouse Performance Protocol` source/publishing guard. Public-site development must pass that contract even when the full multi-page matrix is not run pre-merge. The complete public-site sweep runs automatically after relevant shared changes reach `main`, and remains available by manual dispatch plus the weekly schedule. It is split into deterministic mobile and desktop shards with bounded parallelism.
 
 ## Safety
 

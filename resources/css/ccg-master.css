@@ -1890,13 +1890,26 @@ html:not([data-ccg-page="home"]) .ccg-header-actions:not(:has([data-ccg-global-s
         display: none;
     }
 
-    .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__bar {
-        display: flex;
-    }
-
+    /*
+       FIRST-FRAME MOBILE NAV STABILITY
+       ---------------------------------------------------------
+       The hydrated mobile header uses the drawer, so rendering the full
+       desktop nav before deferred JS initialises creates a large header-height
+       handoff and pushes the whole page. Keep that fallback for genuinely
+       scriptless browsers only; scripted pages start in their settled layout.
+    */
+    .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__bar,
     .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__list--secondary,
     .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__more {
-        display: flex;
+        display: none;
+    }
+
+    @media (scripting: none) {
+        .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__bar,
+        .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__list--secondary,
+        .ccg-nav:not(.ccg-nav--hydrated) .ccg-nav__more {
+            display: flex;
+        }
     }
 
     .ccg-nav__list--secondary,

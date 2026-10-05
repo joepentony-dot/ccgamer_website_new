@@ -114,7 +114,7 @@
     wait_for_update: 500
   });
 
-  function loadGoogleAnalytics() {
+  function loadGoogleAnalyticsNow() {
     if (window.ccgAnalyticsLoaded) return;
     window.ccgAnalyticsLoaded = true;
 
@@ -130,6 +130,29 @@
       allow_google_signals: false,
       allow_ad_personalization_signals: false
     });
+  }
+
+  function loadGoogleAnalytics() {
+    if (window.ccgAnalyticsLoaded || window.ccgAnalyticsScheduled) return;
+    window.ccgAnalyticsScheduled = true;
+
+    var start = function () {
+      window.ccgAnalyticsScheduled = false;
+      loadGoogleAnalyticsNow();
+    };
+
+    /*
+     * Analytics is non-critical to rendering. On consented returning visits,
+     * starting GTM during the first paint competes with archive rendering and
+     * creates avoidable long tasks on mobile. Preserve analytics, but let the
+     * visible CCG interface settle first.
+     */
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(start, { timeout: 4000 });
+      return;
+    }
+
+    window.setTimeout(start, 1800);
   }
 
   function applyConsent(state) {

@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "iG8480D1MtM",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Summer Games – The C64 Classic That Started Epyx’s Greatest Series",
+      "description": "Summer Games is a 1984 Commodore 64 sports classic from Epyx featuring a selection of Olympic-style events built around timing, rhythm, accuracy and joystick control. Players can compete ac…",
+      "url": "/games/summer-games/",
+      "thumbnail": "https://i.ytimg.com/vi/iG8480D1MtM/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1984,
+      "publisher": "Epyx, US Gold"
+    },
+    {
       "id": "5WqUDq5kQd8",
       "kind": "retro",
       "filter": "retro-events",
@@ -9131,19 +9144,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "iG8480D1MtM",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Summer Games",
-      "description": "Summer Games is a 1984 Commodore 64 sports classic from Epyx featuring a selection of Olympic-style events built around timing, rhythm, accuracy and joystick control. Players can compete ac…",
-      "url": "/games/summer-games/",
-      "thumbnail": "https://i.ytimg.com/vi/iG8480D1MtM/mqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1984,
-      "publisher": "Epyx, US Gold"
     },
     {
       "id": "ght7u1k_tqw",
