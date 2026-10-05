@@ -23,8 +23,9 @@ assert.match(oldPrimary,/location\.replace\(destination\.href\)/,'previous produ
 assert.match(oldTest,/location\.replace\(destination\.href\)/,'obsolete test URL must redirect');
 assert.match(oldPrimary,/\/arcade\/c64-dungeon-carnage\//,'previous production URL must target canonical arcade path');
 assert.match(oldTest,/\/arcade\/c64-dungeon-carnage\//,'obsolete test URL must target canonical arcade path');
-assert.match(voice,/welcomeRare/,'rare recorded welcome support must remain wired');
-assert.match(voice,/greetingRoll<\.1\?"welcomeRare"/,'rare welcome should remain uncommon');
+assert.match(voice,/welcomeRare/,'rare recorded welcome support may remain available for explicit use');
+assert.match(voice,/sayKey\("welcome",\{cooldown:0\}\)/,'normal run start must always use the owner-recorded Welcome greeting');
+assert.doesNotMatch(voice,/greetingRoll=Math\.random\(\)/,'normal run start must not randomly replace the expected Welcome greeting');
 assert.match(voice,/function playSprite\(/,'approved recorded voice playback must remain present');
 assert.match(voice,/const src=assetFor\(key\);let started=false;[\s\S]*if\(src\)started=playClip\(src,priority,key\);if\(!started\)started=playSprite\(key,priority\);/,'admin voice override must be checked before approved game recording playback');
 assert.doesNotMatch(voice,/SpeechSynthesisUtterance|speechSynthesis\.speak/,'production voice playback must not fall back to browser TTS');
