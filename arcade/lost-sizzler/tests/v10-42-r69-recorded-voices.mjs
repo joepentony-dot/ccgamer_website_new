@@ -71,13 +71,13 @@ assert.match(voice,/document\.addEventListener\("touchstart",unlock,\{capture:tr
 assert.doesNotMatch(voice,/pointerdown",unlock,\{once:true/,"mobile voice unlock must not be a one-shot listener");
 assert.match(voice,/\(recordedAvailable\|\|approvedLegacy\)&&retryOnGesture[\s\S]*state\.pendingGesture=\{key,priority,runRef\}/,"a rejected approved recording must be retained for the next real user gesture");
 assert.match(voice,/p\?\.then[\s\S]*fallback\(true\)/,"recorded sprite play-promise rejection must enter the gesture retry path");
-assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*state\.unlocked=true;primeRecordedVoices\(\)/,"loader-replayed Solo starts must still attempt the recorded welcome and retain it for gesture retry");
+assert.match(core,/ccg:run-started/,"canonical run start must publish an authoritative audio-start event");\nassert.match(voice,/window\.addEventListener\("ccg:run-started",onAuthoritativeRunStarted\)/,"voice playback must bind Welcome to the authoritative run-start event rather than wrapper order");
 assert.match(voice,/if\(state\.pendingGesture\)retryPendingGesture\(\)/,"a retained recorded cue must retry synchronously inside the next real mobile user gesture");
 assert.doesNotMatch(voice,/pendingGesture\)queueMicrotask\(retryPendingGesture\)/,"mobile retry must not be deferred outside the user-activation handler");
 assert.match(voice,/audio\.onerror=\(\)=>fallback\(false\)/,"media/network errors must not be misclassified as autoplay rejections");
 assert.match(voice,/function approvedLegacyGreeting\(key\)\{return key==="welcomeRare"\?BUNDLED_SPRITE\.cues\.welcomeRare:null\}/,"only the dedicated rare Watchers greeting may use the historical bundled sprite");
 assert.doesNotMatch(voice,/function speakText\(|SpeechSynthesisUtterance|speechSynthesis\.speak/,"browser TTS fallback must be absent from the production voice owner");
-assert.match(voice,/beginRun=function beginRunV116Voice[\s\S]*sayKey\("welcome",\{cooldown:0\}\)/,"every Solo run start must request the owner-recorded Welcome cue");
+assert.match(voice,/sayKey\("welcome",\{cooldown:0,allowDuringTutorial:true\}\)/,"every authoritative run start must request the owner-recorded Welcome cue even when onboarding state is still settling");
 assert.doesNotMatch(voice,/greetingRoll=Math\.random\(\)/,"run start must not randomly replace the expected Welcome cue");
 assert.match(voice,/function dungeonVoiceFx\(audio,key\)[\s\S]*audio\.volume=voiceVolume\(key\)[\s\S]*return null/,"owner-recorded speech must remain directly audible through its media element");
 assert.doesNotMatch(voice,/createMediaElementSource\(audio\)/,"recorded speech must not be rerouted into a separately suspended Web Audio context");
