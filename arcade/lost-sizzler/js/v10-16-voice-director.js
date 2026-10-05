@@ -252,8 +252,8 @@
       const p=audio.play();if(p?.catch)p.catch(fail);return true;
     }catch(_){return false}
   }
-  const APPROVED_LEGACY_CRITICAL_CUES=new Set(["welcomeRare","gameOver","playerDeath","loadula","gildedElf","gildedFive","gildedCaught","gildedEscaped","boulder","weeklyDeath"]);
-  function approvedLegacyCue(key){return APPROVED_LEGACY_CRITICAL_CUES.has(key)?BUNDLED_SPRITE.cues[key]||null:null}
+  const APPROVED_LEGACY_RECORDED_CUES=new Set(["welcomeRare","hurt","objectiveNear","gameOver","playerDeath","respawn","rareLoot","boulder","merchantGone","adventurerSaved","cabinet","cabinetFail","cabinetWin","bounty","buriedCache","loadula","cursed","developerRoom","bountyStart","tremor","mutation","gildedElf","gildedCaught","gildedEscaped","gildedFive","goldenRoom","adventurer","mysteryPotion","objectiveHint","taxman","treasureBat","treasureMap","merchant","weeklyGhost","weeklyReset","weeklyDeath","weeklyWelcome","mimic"]);
+  function approvedLegacyCue(key){return APPROVED_LEGACY_RECORDED_CUES.has(key)?BUNDLED_SPRITE.cues[key]||null:null}
   function playSprite(key,priority){
     const recorded=window.CCG_RECORDED_VOICE_SPRITE,recordedKey=String(recorded?.aliases?.[key]||key),recordedCue=recorded?.cues?.[recordedKey],legacyCue=approvedLegacyCue(key),recordedAvailable=Boolean(recordedCue),approvedLegacy=Boolean(legacyCue),pack=recordedAvailable?recorded:approvedLegacy?BUNDLED_SPRITE:null,cue=recordedCue||legacyCue;
     if(!cue||!pack?.src)return false;
