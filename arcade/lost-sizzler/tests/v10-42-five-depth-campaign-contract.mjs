@@ -27,7 +27,18 @@ const windowObject={
     roomCompletion(){return 0}
   },
   CCGWorld:{createHostState(){return{items:[],enemies:[],chests:[],doors:[],shops:[],voidStalkers:[],keysCollected:0,objective:{type:'keys',complete:false}}}},
-  CCGSystems:{decorate(_w,h){return h},updateObjective(){return false},objectiveText(){return'base objective'}},
+  CCGSystems:{
+    decorate(_w,h){return h},
+    updateObjective(h){
+      if(h.objective?.type==='generators')h.objective.complete=(h.generators||[]).every(g=>!g.alive);
+      h.exitOpen=Boolean(h.objective?.complete)&&Boolean(h.exitSigilCollected);
+      return h.exitOpen;
+    },
+    objectiveText(h){
+      const generators=h.generators||[],base=`Destroy monster generators: ${generators.filter(g=>!g.alive).length}/${generators.length}`;
+      return h.objective?.complete?`${base} — recover the EXIT SIGIL`:base;
+    }
+  },
   CCGAI:{stepEnemies(){return true}},
   CCGLostSizzlerV142ProceduralOverhaul:{gameDeck(){return deterministicDeck.map(row=>({...row}))}}
 };
@@ -44,6 +55,24 @@ vm.runInNewContext(source,sandbox,{filename:'v10-42-five-depth-campaign.js'});
 const api=windowObject.CCGLostSizzlerV142FiveDepthCampaign;
 assert(api,'Campaign runtime must install once its dependencies are available.');
 assert(source.includes('hostState.exitSigilCollected=false;hostState.exitOpen=true'),'Floors 1–14 must open stairs without pretending the final Sigil has been collected.');
+
+const ordinaryInterimFloors=[2,4,5,6,8,9,10,12,13,14];
+for(const floor of ordinaryInterimFloors){
+  sandbox.run.floor=floor;sandbox.run.v142ClaimedDomains=[];
+  const h={objective:{type:'generators',complete:false},generators:[{alive:false},{alive:false},{alive:false}],doors:[{sigilGate:true,locked:true,open:false}],items:[],enemies:[],keysCollected:0,exitSigilCollected:false,exitOpen:false};
+  const opened=windowObject.CCGSystems.updateObjective(h,sandbox.run,0);
+  assert(opened===true&&h.exitOpen===true,`Floor ${floor} must open its stairs as soon as its ordinary HUD objective is complete.`);
+  assert(h.exitSigilCollected===false,`Floor ${floor} must not fake an Exit Sigil pickup.`);
+  assert(h.doors[0].locked===false&&h.doors[0].open===true,`Floor ${floor} must unseal the interim route when its HUD objective completes.`);
+  const mission=windowObject.CCGSystems.objectiveText(h,sandbox.run,0);
+  assert(/reach the stairs/i.test(mission),`Floor ${floor} mission text must direct the player to the stairs.`);
+  assert(!/EXIT SIGIL/i.test(mission),`Floor ${floor} mission text must not demand a non-existent Exit Sigil.`);
+}
+
+sandbox.run.floor=15;sandbox.run.v142ClaimedDomains=['iron','bone','ash'];
+const finalHost={objective:{type:'generators',complete:false},generators:[{alive:false}],doors:[],items:[],enemies:[],keysCollected:0,exitSigilCollected:false,exitOpen:false};
+assert(windowObject.CCGSystems.updateObjective(finalHost,sandbox.run,0)===false,'Floor 15 must remain closed until its real final Sigil is collected.');
+assert(/AWAKENED SIGIL/i.test(windowObject.CCGSystems.objectiveText(finalHost,sandbox.run,0)),'Floor 15 must retain the final Awakened Sigil objective.');
 
 const expected=[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1],seen=[];
 for(let floor=1;floor<=15;floor++){
