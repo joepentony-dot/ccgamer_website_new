@@ -14,7 +14,7 @@ const recordedPack=voiceSandbox.window.CCG_RECORDED_VOICE_SPRITE;
 assert.ok(recordedPack&&recordedPack.aliases&&recordedPack.cues,"recorded voice metadata must execute into a complete sprite map");
 for(const [alias,cue] of Object.entries(recordedPack.aliases))assert.ok(recordedPack.cues[cue],`recorded alias ${alias} points to missing cue ${cue}`);
 assert.equal(recordedPack.aliases.welcome,"welcome","primary run greeting must resolve to the owner-recorded welcome cue");
-assert.equal(recordedPack.aliases.welcomeAlt,"stay-alert","the second normal run greeting must use the supplied owner-recorded Stay Alert cue");
+assert.equal(recordedPack.aliases.welcomeAlt,undefined,"the retired alternate startup greeting must not compete with the mandatory owner-recorded Welcome cue");
 assert.equal(recordedPack.aliases.welcomeRare,undefined,"the rare Watchers greeting must remain isolated from the owner sprite rather than aliasing to the normal welcome");
 for(const currentEssenceKey of ["essenceCollected","notEnoughEssence","essenceLore"]){
   assert.equal(recordedPack.aliases[currentEssenceKey],undefined,`${currentEssenceKey} must not reuse an obsolete artefact-worded owner recording`);
