@@ -203,7 +203,7 @@ test('game publisher can auto-build factual description copy without overwriting
 
 test('new game thumbnail uploads default to a slug-based WebP path without manual repository-path entry', () => {
   assert.match(html, /Thumbnail path \(optional override\)/);
-  assert.match(html, /Normally leave blank\. Selecting an image below optimises it to WebP/i);
+  assert.match(html, /Normally leave blank\. New games must publish a WebP thumbnail; selecting an image below optimises it locally/i);
   assert.match(html, /data-game-thumbnail-file/);
   assert.doesNotMatch(html, /data-game-field="thumbnail"[^>]*required/i);
   assert.match(js, /if \(!raw\) return `\$\{ALLOWED_THUMBNAIL_PREFIX\}\$\{slug\}\.webp`/);
