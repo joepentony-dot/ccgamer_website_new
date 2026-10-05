@@ -21,6 +21,9 @@ test("single-game shell reserves the player but does not eagerly load YouTube", 
 });
 
 test("runtime loads YouTube only after the play facade is activated", () => {
+  assert.match(runtime, /function ensureGameVideoFacadeShell\(videoEmbed\)/);
+  assert.match(runtime, /document\.createElement\("button"\)/);
+  assert.match(runtime, /document\.createElement\("img"\)/);
   assert.match(runtime, /videoEmbed\.removeAttribute\("src"\)/);
   assert.match(runtime, /videoEmbed\.dataset\.videoSrc = embedUrl/);
   assert.match(runtime, /videoFacade\.onclick = \(\) =>/);
@@ -35,6 +38,9 @@ test("generated canonical pages use poster metadata without materialising a YouT
   assert.match(videoSeo, /setBooleanAttribute\(iframe, "hidden"\)/);
   assert.match(videoSeo, /game-video-facade/);
   assert.match(videoSeo, /game-video-poster/);
+  assert.match(videoSeo, /hasFacade/);
+  assert.match(videoSeo, /hasStage/);
+  assert.match(videoSeo, /<div class="game-video__stage">/);
   assert.match(videoSeo, /youtubeThumbnail\(videoId, metadata\)/);
   assert.doesNotMatch(videoSeo, /iframe = setAttribute\(iframe, "src"/);
 });
