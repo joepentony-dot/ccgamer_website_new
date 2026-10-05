@@ -28,7 +28,7 @@ if (fileInput && pathInput && publishButton) {
   const status = document.createElement('small');
   status.dataset.thumbnailOptimizationStatus = 'true';
   status.setAttribute('aria-live', 'polite');
-  status.textContent = 'PNG, JPEG and WebP uploads can be optimised locally. An explicit .jpg, .jpeg or .png thumbnail path is preserved exactly.';
+  status.textContent = 'New game uploads are optimised to WebP for the Lighthouse performance contract. Existing-game non-WebP paths can still be preserved when no new game is being created.';
   fileInput.insertAdjacentElement('afterend', status);
 
   fileInput.addEventListener('change', () => {
@@ -145,6 +145,10 @@ async function optimiseSelectedImage() {
       outputWidth = Math.max(1, Math.round(sourceWidth * extraScale));
       outputHeight = Math.max(1, Math.round(sourceHeight * extraScale));
       output = await encodeWebp(source, outputWidth, outputHeight, FINAL_QUALITY);
+    }
+
+    if (output.size > HARD_BYTES) {
+      throw new Error(`optimised thumbnail is ${formatBytes(output.size)}, above the ${formatBytes(HARD_BYTES)} Lighthouse hard limit.`);
     }
 
     const alreadyWebp = original.type === 'image/webp';
