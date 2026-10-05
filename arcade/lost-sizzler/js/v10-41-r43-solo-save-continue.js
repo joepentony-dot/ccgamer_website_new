@@ -194,10 +194,10 @@
     const button=document.getElementById("continue-save-btn"),solo=document.getElementById("solo-btn"),node=ensureSummaryNode();
     const envelope=readEnvelope();
     if(!button)return;
-    if(!envelope){button.classList.add("hidden");if(solo)solo.textContent="Play Solo";node?.classList.add("hidden");return}
+    if(!envelope){button.classList.add("hidden");if(solo)solo.textContent="Start Game";node?.classList.add("hidden");return}
     const s=envelope.summary||checkpointSummary(envelope.checkpoint);
-    button.classList.remove("hidden");button.textContent=`Continue Solo — Floor ${s.floor}`;
-    if(solo)solo.textContent="New Solo Run";
+    button.classList.remove("hidden");button.textContent=`Continue — Floor ${s.floor}`;
+    if(solo)solo.textContent="Start Game";
     if(node){node.textContent=`Saved run: Floor ${s.floor} • Level ${s.level} • Score ${Number(s.score||0).toLocaleString()} • ${s.difficulty} • ${formatWhen(s.savedAt)}`;node.classList.remove("hidden")}
   }
 
