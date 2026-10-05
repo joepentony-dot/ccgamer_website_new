@@ -40,6 +40,11 @@ assert(patch.includes('function retryUploadedMusicOnGesture()'),'Mobile playback
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the uploaded soundtrack from a user gesture.');
 assert(!play.includes('S.sfx("room")'),'Canonical room entry must not emit the retired jingle even if an audio wrapper is unavailable.');
 assert(overrides.includes('key.startsWith(`${prefix}--`)'),'Admin playlist rows are not collected by category prefix.');
+assert(overrides.includes('const CANONICAL_UPLOADED_MUSIC=Object.freeze({'),'Production audio loader must retain a verified uploaded soundtrack manifest.');
+assert(overrides.includes('function seedCanonicalUploadedMusic()'),'Uploaded soundtrack sources must be seeded synchronously before async catalogue hydration.');
+assert(overrides.includes('seedCanonicalUploadedMusic();\n  load();'),'Canonical uploaded music must be available before the asynchronous Supabase refresh begins.');
+assert(overrides.includes('1787411626645-5-exploration-01.mp3'),'Verified Exploration upload must remain in the resilience manifest.');
+assert(overrides.includes('canonicalUploadedFallback:true'),'A catalogue failure must retain verified uploaded music instead of falling silent or using bundled music.');
 assert(admin.includes('lostSizzlerAutoPlaylist'),'Batch auto-categorisation slot is missing.');
 assert(admin.includes('input.multiple=Boolean(slot.playlist)'),'Lost Sizzler category uploads must accept multiple files.');
 assert(admin.includes(".from('arcade_assets').insert("),'Playlist uploads must append rows rather than replace a category.');
