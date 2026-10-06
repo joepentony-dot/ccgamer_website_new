@@ -160,6 +160,7 @@ try{
   const text=await page.locator("#ccg-bug-report-text").inputValue();
   assert.match(text,/CCG DUNGEON CARNAGE BUG REPORT/);
   assert.match(text,/Fire state:/);
+  assert.match(text,/Music: state=/,"bug report must expose live production-music ownership/playback state");
   assert.match(text,/Inventory hidden: true/);
   await page.click('[data-bug-close]');
 
