@@ -533,7 +533,8 @@ body[data-run-active="true"] .overlay .panel h3{
   body[data-run-active="true"] .ccg-game>.player-hub .hub-stat{padding:6px 6px 15px!important}
   body[data-run-active="true"] .ccg-game>.player-hub .hub-stat b{margin-top:5px!important;font-size:clamp(12px,1.18vw,17px)!important}
   body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory{padding:5px!important}
-  body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head{min-height:15px!important;margin-bottom:3px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head{min-height:15px!important;margin-bottom:3px!important;flex-wrap:nowrap!important}
+  body[data-run-active="true"] .ccg-game>.player-hub #quick-specials{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
   /* Short desktops already expose keys in the live KEYS & ITEMS sidebar. Hide the
    * duplicate bottom keyring so the quick belt never clips below the viewport. */
   body[data-run-active="true"] .ccg-game>.player-hub #quick-keyring-icons{display:none!important}
