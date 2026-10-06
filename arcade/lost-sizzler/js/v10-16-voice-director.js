@@ -456,7 +456,7 @@
       else if(key==="memorySequenceStarted")setTimeout(()=>{try{if((!activeRun||run===activeRun)&&mode==="playing")sayKey("watchSequence",{cooldown:0})}catch(_){}},3100);
     }
   }
-  function onAuthoritativeLevelUp(){try{sayKey("levelUp",{cooldown:0})}catch(_){}}
+  function onAuthoritativeLevelUp(){try{sayKey("levelUp",{cooldown:0,priority:100,interrupt:true})}catch(_){}}
   window.addEventListener?.("ccg:toast-shown",onAuthoritativeToast);
   window.addEventListener?.("ccg:level-up",onAuthoritativeLevelUp);
   if(typeof hurtPlayer==="function"){

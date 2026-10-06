@@ -39,6 +39,24 @@ try{
   });
   assert.equal(prefResult.stored.reducedMotion,true);assert.equal(prefResult.stored.reducedFlashes,true);assert.equal(prefResult.stored.largeText,true);assert.equal(prefResult.stored.musicPercent,40);assert.deepEqual(prefResult.classes,[true,true,true]);
 
+  console.log("[r46 RC] stale zero music preference recovers once, explicit mute remains respected");
+  const musicRecovery=await page.evaluate(()=>{
+    const api=window.CCGLostSizzlerV141R46ReleaseCandidatePolish;
+    localStorage.setItem(api.PREFS_KEY,JSON.stringify({version:1,musicPercent:0}));
+    const recovered=api.loadPrefs();
+    api.openOptions();
+    const slider=document.querySelector('#ccg-r46-options input[data-pref="musicPercent"]');
+    slider.value="0";
+    slider.dispatchEvent(new Event("input",{bubbles:true}));
+    const explicit=api.loadPrefs();
+    document.querySelector("#ccg-r46-options [data-close]")?.click();
+    return{recovered,explicit};
+  });
+  assert.equal(musicRecovery.recovered.musicPercent,30,"legacy silent music preference must recover to the audible default");
+  assert.equal(musicRecovery.recovered.musicExplicit,false,"legacy recovery must remain distinguishable from an explicit user mute");
+  assert.equal(musicRecovery.explicit.musicPercent,0,"an explicit user-selected mute must remain at zero");
+  assert.equal(musicRecovery.explicit.musicExplicit,true,"explicit music slider changes must be persisted as intentional");
+
   console.log("[r46 RC] menu options and lifetime statistics open and close normally");
   await page.click("#ccg-r46-options-btn");await page.waitForFunction(()=>!document.getElementById("ccg-r46-options")?.classList.contains("hidden"));await page.click("#ccg-r46-options [data-close]");
   await page.click("#ccg-r46-stats-btn");await page.waitForFunction(()=>!document.getElementById("ccg-r46-stats")?.classList.contains("hidden"));await page.click("#ccg-r46-stats [data-close]");
