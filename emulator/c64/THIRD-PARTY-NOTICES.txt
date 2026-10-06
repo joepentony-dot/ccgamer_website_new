@@ -1,0 +1,49 @@
+CCG Browser C64 — bundled source and third-party notices
+=======================================================
+
+CCG interface and browser integration
+-------------------------------------
+The Cheeky Commodore Gamer command-deck interface, browser adapter, Game Vault,
+T64 quick-loader, touch controls and site integration are CCG-specific
+modifications.
+
+GPL-derived browser emulator core
+---------------------------------
+Copyright © 2026 Morten Øien Eriksen.
+The retained browser C64 machine/core source is conveyed under
+GNU GPL-3.0-or-later. Applicable source files retain SPDX and copyright notices.
+The full GPL-3.0 text is distributed as GPL-3.0.txt.
+
+reSID / SID analogue model
+--------------------------
+Copyright © 2010 Dag Lem <resid@nimrod.no> (voice.cc portions © 2004).
+GNU GPL version 2 or, at your option, any later version.
+
+The SID oscillator/waveform timing, ADSR model, R-2R DAC behavior, measured
+combined-waveform data, transistor-level filter/mixer/nonlinear volume stage,
+external RC filter and related conventions are translated or derived from
+reSID as distributed in VICE 3.10's src/resid tree. The GPL-2.0-or-later grant
+permits conveyance in this GPL-3.0-or-later work.
+
+VICE
+----
+Copyright © The VICE Team.
+GNU GPL version 2 or later.
+https://vice-emu.sourceforge.io/
+
+The reSID lineage used by the retained SID source follows the VICE 3.10 source
+release conventions and modifications documented in the source headers.
+Reference pin: official VICE 3.10 source release, vice-3.10.tar.gz,
+SHA-256 8e5bac18cbcb9f192380ad3ef881f8790f5b75c41d7b3da65d831985d864d6d1.
+
+ROM images and user media
+-------------------------
+Commodore/MOS KERNAL, BASIC, CHARGEN and 1541 ROM images are not distributed by
+CCG. Games, disks, tapes and cartridges selected by a user remain user-supplied
+media and are not bundled with the emulator.
+
+Not bundled by this CCG route
+-----------------------------
+The CCG browser emulator does not bundle the upstream project's fonts, 3D
+models, three.js UI, Workbox application shell, or optional compiled SID
+WebAssembly engine.

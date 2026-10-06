@@ -90,3 +90,11 @@
 
 /sitemap-pages.xml
   Content-Type: application/xml; charset=utf-8
+
+# CCG browser C64 emulator only: SID audio uses SharedArrayBuffer. Keep this
+# isolation scoped to the emulator so normal CCG pages and third-party embeds
+# are not forced into COEP.
+/emulator/c64/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Permissions-Policy: gamepad=(self)
