@@ -119,17 +119,44 @@ window.CCGProgression=(()=>{
   function xpNeed(level){level=Math.max(1,Math.floor(Number(level)||1));return 1000+level*350+level*level*75}
   function floorLevelCap(run){const floor=Math.max(1,Math.min(C.maxFloors,run?.floor||1));return C.levelCaps?.[floor-1]||Math.max(5,floor*3+2)}
   function xpCapacityToCap(player,cap){let level=Math.max(1,player?.level||1),xp=Math.max(0,player?.xp||0),capacity=0;if(level>=cap)return 0;while(level<cap){capacity+=Math.max(0,xpNeed(level)-xp);level++;xp=0}return capacity}
+  function restoreLostLevelProgression(player,levels=[]){
+    const reached=new Set((levels||[]).map(level=>Math.max(1,Math.floor(Number(level)||1))));
+    const queue=Array.isArray(player?.lostLevelProgression)?player.lostLevelProgression:[];
+    if(!reached.size||!queue.length)return[];
+    const remaining=[],restored=[];
+    for(const record of queue){
+      const targetLevel=Math.max(2,Math.floor(Number(record?.targetLevel)||2));
+      if(!reached.has(targetLevel)){remaining.push(record);continue}
+      if(record?.pendingOnly){
+        restored.push({targetLevel,pendingLevelRestored:true,skillId:null,skillName:"Unused level-up"});
+        continue;
+      }
+      const skill=skills.find(row=>row.id===record?.skillId);
+      if(!skill){
+        restored.push({targetLevel,pendingLevelRestored:true,skillId:null,skillName:null});
+        continue;
+      }
+      skill.apply(player);
+      player.pendingLevels=Math.max(0,Math.floor(Number(player.pendingLevels)||0)-1);
+      player.skills=Array.isArray(player.skills)?player.skills:[];
+      player.skills.push(skill.id);
+      restored.push({targetLevel,pendingLevelRestored:false,skillId:skill.id,skillName:skill.name});
+    }
+    player.lostLevelProgression=remaining;
+    return restored;
+  }
   function gainXP(player,run,amount,reason="Exploration"){
     const gross=Math.max(0,Math.round(amount)),cap=floorLevelCap(run);
     // The floor cap is a hard stop. Excess XP is discarded, never held for later.
-    if((player.level||1)>=cap){player.xp=0;player.xpDebt=0;return{amount:0,gross,debtPaid:0,discarded:gross,capped:true,cap,reason,levels:[]}}
+    if((player.level||1)>=cap){player.xp=0;player.xpDebt=0;return{amount:0,gross,debtPaid:0,discarded:gross,capped:true,cap,reason,levels:[],restoredProgression:[]}}
     const capacity=xpCapacityToCap(player,cap),earned=Math.min(gross,capacity),discarded=Math.max(0,gross-earned);
     player.xpDebt=0;player.totalXp=(player.totalXp||0)+earned;player.xp=(player.xp||0)+earned;run.floorXP+=earned;
     if(earned>0){player.everEarnedXp=true;run.everEarnedXp=true;run.xpPeak=Math.max(run.xpPeak||0,player.totalXp||0)}
     const levels=[];
     while((player.level||1)<cap&&player.xp>=xpNeed(player.level||1)){player.xp-=xpNeed(player.level||1);player.level=(player.level||1)+1;player.pendingLevels=(player.pendingLevels||0)+1;levels.push(player.level)}
+    const restoredProgression=restoreLostLevelProgression(player,levels);
     if((player.level||1)>=cap)player.xp=0;
-    return{amount:earned,gross,debtPaid:0,discarded,capped:(player.level||1)>=cap,cap,reason,levels};
+    return{amount:earned,gross,debtPaid:0,discarded,capped:(player.level||1)>=cap,cap,reason,levels,restoredProgression};
   }
   function skillChoices(player,r=Math.random){
     const pool=[...skills],out=[];while(out.length<3&&pool.length){out.push(pool.splice(Math.floor(r()*pool.length),1)[0])}return out;
@@ -158,12 +185,27 @@ window.CCGProgression=(()=>{
   function cloneItem(x){return x&&typeof x==="object"?{...x}:x}
   function deathDebtFor(player){return Math.max(1,Math.ceil(Math.max(0,player?.totalXp||0)*.12))}
   function applyDeathPenalty(player,score,run=null){
-    const levelNeed=level=>window.CCGProgression?.xpNeed?.(level)||xpNeed(level),scoreBefore=Math.max(0,Math.floor(Number(score)||0)),scoreAfter=Math.floor(scoreBefore*.5),before=Math.max(0,Math.round(player?.totalXp||0)),levelBefore=Math.max(1,Number(player?.level||1)),progressBefore=Math.max(0,Number(player?.xp||0)),wanted=Math.max(1,Math.ceil(levelNeed(levelBefore)*.15)),loss=Math.min(before,wanted);let levelLost=false,lostSkill=null;
+    const levelNeed=level=>window.CCGProgression?.xpNeed?.(level)||xpNeed(level),scoreBefore=Math.max(0,Math.floor(Number(score)||0)),scoreAfter=Math.floor(scoreBefore*.5),before=Math.max(0,Math.round(player?.totalXp||0)),levelBefore=Math.max(1,Number(player?.level||1)),progressBefore=Math.max(0,Number(player?.xp||0)),wanted=Math.max(1,Math.ceil(levelNeed(levelBefore)*.15)),loss=Math.min(before,wanted);let levelLost=false,lostSkill=null,progressionRecovery=null;
     if(loss<progressBefore)player.xp=progressBefore-loss;
-    else if(levelBefore>1){const deficit=Math.max(1,loss-progressBefore),newLevel=levelBefore-1;player.level=newLevel;player.xp=Math.max(0,levelNeed(newLevel)-deficit);levelLost=true;const unused=Math.max(0,Math.floor(Number(player.pendingLevels)||0));if(unused>0){player.pendingLevels=unused-1;lostSkill={name:"Unused level-up"}}else lostSkill=removeLastSkill(player)}
-    else player.xp=0;
+    else if(levelBefore>1){
+      const deficit=Math.max(1,loss-progressBefore),newLevel=levelBefore-1;
+      player.level=newLevel;
+      player.xp=Math.max(0,levelNeed(newLevel)-deficit);
+      levelLost=true;
+      const unused=Math.max(0,Math.floor(Number(player.pendingLevels)||0));
+      if(unused>0){
+        player.pendingLevels=unused-1;
+        lostSkill={name:"Unused level-up"};
+        progressionRecovery={targetLevel:levelBefore,pendingOnly:true,skillId:null,skillName:"Unused level-up"};
+      }else{
+        lostSkill=removeLastSkill(player);
+        progressionRecovery={targetLevel:levelBefore,pendingOnly:false,skillId:lostSkill?.id||null,skillName:lostSkill?.name||null};
+      }
+      player.lostLevelProgression=Array.isArray(player.lostLevelProgression)?player.lostLevelProgression:[];
+      player.lostLevelProgression.push({...progressionRecovery});
+    }else player.xp=0;
     player.totalXp=Math.max(0,before-loss);player.xpDebt=0;const zeroKey=String(player?.id||"solo");let xpZeroDeaths=Math.max(0,Number(run?.xpZeroDeathsByPlayer?.[zeroKey]??(zeroKey==="solo"?(run?.xpZeroDeaths||0):0))),zeroWarning=false,gameOver=false;if(run){const floorLoss=Math.min(Math.max(0,Number(run.floorXP||0)),loss),bankedLoss=loss-floorLoss;run.floorXP=Math.max(0,Number(run.floorXP||0)-floorLoss);run.bankedXP=Math.max(0,Number(run.bankedXP||0)-bankedLoss);run.everEarnedXp=Boolean(run.everEarnedXp||before>0);run.xpPeak=Math.max(run.xpPeak||0,before);run.xpZeroDeathsByPlayer=run.xpZeroDeathsByPlayer&&typeof run.xpZeroDeathsByPlayer==="object"?run.xpZeroDeathsByPlayer:{};if(run.everEarnedXp&&player.totalXp===0){xpZeroDeaths=run.xpZeroDeathsByPlayer[zeroKey]=xpZeroDeaths+1;run.xpZeroDeaths=Math.max(run.xpZeroDeaths||0,...Object.values(run.xpZeroDeathsByPlayer).map(Number));zeroWarning=xpZeroDeaths===1;gameOver=xpZeroDeaths>=2}}
-    return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,xpZeroDeaths,zeroWarning,gameOver}
+    return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,progressionRecovery,xpZeroDeaths,zeroWarning,gameOver}
   }
   function createDeathCache(player,run,x,y){
     const carried=(player.inventory||[]).filter(it=>!it.quest).map(cloneItem),kept=(player.inventory||[]).filter(it=>it.quest).map(cloneItem),games=[...(run.floorGames||[])];
@@ -171,12 +213,16 @@ window.CCGProgression=(()=>{
     return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0,inventory:carried,games,score:0,xp:0,createdFloor:run.floor||1};
   }
   function recoverDeathCache(player,run,cache){
-    if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0};let recovered=0;const remaining=[];
+    if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0,xp:0,levels:[],progressionRecovered:false};let recovered=0;const remaining=[];
     for(const it of cache.inventory||[]){if(inventoryAdd(player,cloneItem(it)))recovered+=itemQty(it);else remaining.push(cloneItem(it))}
     const games=[...(cache.games||[])];for(const g of games)if(!(run.floorGames||[]).includes(g))run.floorGames.push(g);
-    const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0)),cachedXP=Math.max(0,Math.floor(Number(cache.xp)||0)),xpResult=cachedXP?gainXP(player,run,cachedXP,"Death cache recovered"):{amount:0,discarded:0,levels:[]},reservedXP=Math.max(0,cachedXP-Number(xpResult.amount||0));if(reservedXP){player.totalXp=(player.totalXp||0)+reservedXP;run.floorXP=(run.floorXP||0)+reservedXP}cache.inventory=remaining;cache.games=[];cache.score=0;cache.xp=0;cache.active=remaining.length>0;
+    const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0)),cachedXP=Math.max(0,Math.floor(Number(cache.xp)||0)),xpResult=cachedXP?gainXP(player,run,cachedXP,"Death cache recovered"):{amount:0,discarded:0,levels:[],restoredProgression:[]};
+    const restoredProgression=Array.isArray(xpResult.restoredProgression)?xpResult.restoredProgression:[];
+    cache.inventory=remaining;cache.games=[];cache.score=0;cache.xp=0;cache.progressionRecovery=null;cache.active=remaining.length>0;
     if(!cache.active)run.stats.deathCachesRecovered=(run.stats.deathCachesRecovered||0)+1;
-    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),score:recoveredScore,xp:cachedXP,levels:xpResult.levels||[]};
+    const restoredSkill=restoredProgression.find(row=>row?.skillName&&!row.pendingLevelRestored)?.skillName||null;
+    const pendingLevelRestored=restoredProgression.some(row=>row?.pendingLevelRestored);
+    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),score:recoveredScore,xp:Number(xpResult.amount||0),xpDiscarded:Number(xpResult.discarded||0),levels:xpResult.levels||[],progressionRecovered:restoredProgression.length>0,restoredSkill,pendingLevelRestored,restoredLevel:(xpResult.levels||[]).length>0};
   }
   function loseFloorProgress(player,run){const cache=createDeathCache(player,run,player?.x||0,player?.y||0);return{lostXP:0,lostItem:cache.inventory?.[0]||null,cache}}
   function persistentCollection(){try{return JSON.parse(localStorage.getItem("ccg-quest-collection")||"[]")}catch(_){return[]}}

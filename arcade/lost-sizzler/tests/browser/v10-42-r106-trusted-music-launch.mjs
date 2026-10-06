@@ -139,9 +139,12 @@ try{
 
   const playing=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio.getState());
   assert.ok(musicRequests>=1,"the fresh trusted Start Game click must request an authored soundtrack file");
+  assert.ok(playing.slots[playing.state].readyState>=1,"the trusted launch gesture must prepare the selected authored media before/while playback begins");
   assert.equal(playing.fallbackActive,false,"trusted launch must not fall back to generated music");
   assert.equal(playing.adminAudioReady,true,"trusted launch must use the hydrated production soundtrack catalogue");
   assert.equal(playing.pendingGestureState,"","successful trusted launch must not leave music waiting for another gesture");
+  assert.ok(playing.slots[playing.state].volume>=.1,"live authored music must remain at an audible non-zero level");
+  assert.equal(playing.slots[playing.state].muted,false,"live authored music must not be muted");
   assert.deepEqual(pageErrors,[],`trusted launch must not raise page errors: ${pageErrors.join("\n")}`);
 
   await context.close();
