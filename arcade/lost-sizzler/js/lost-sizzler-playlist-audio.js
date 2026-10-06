@@ -290,7 +290,9 @@
 
   function primeState(state=desiredState()){
     const normalised=normaliseState(state);
-    if(!categorySources(normalised).length)return false;
+    /* Pre-run priming is only for uploaded/custom production tracks. Packaged
+     * fallback media must remain untouched until gameplay actually starts. */
+    if(!customSources(normalised).length)return false;
     const {slot}=ensureStateSlot(normalised,false);
     if(!slot)return false;
     /* Priming selects the authored track and establishes audible state without
