@@ -756,7 +756,7 @@
     }
     const before=currentSnapshot(`keydown-${event.code}`);
     push("keydown",{code:event.code,repeat:false,mode:before.game.mode,input:before.game.inputKeys,fire1:before.game.fire1,buffer:before.game.fireBuffer1,inventoryHidden:before.panels.inventory.hidden});
-    if(["Space","KeyF","Numpad0"].includes(event.code))fireProbe(event.code,before);
+    if(["Space","Numpad0"].includes(event.code))fireProbe(event.code,before);
     if(["Tab","Escape","KeyP"].includes(event.code))setTimeout(()=>snapshotSummary(`after-${event.code}`),80);
   },true);
   addEventListener("keyup",event=>{if(interesting.has(event.code))push("keyup",{code:event.code,mode:safe(()=>String(mode),""),input:safe(()=>[...input].map(String),[])})},true);
