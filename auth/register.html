@@ -26,7 +26,8 @@
         <div class="auth-field">
           <label for="password">Password</label>
           <div class="password-wrap">
-            <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required />
+            <input id="password" name="password" type="password" autocomplete="new-password" minlength="10" required aria-describedby="passwordHelp" />
+            <small id="passwordHelp" class="auth-field-help">Use at least 10 characters.</small>
             <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password"></button>
           </div>
         </div>
@@ -83,6 +84,13 @@
 
       const email = byId('email').value;
       const password = byId('password').value;
+
+      if (password.trim().length < 10) {
+        setMessage(message, 'Password must be at least 10 characters.', 'error');
+        byId('password').focus();
+        return;
+      }
+
       const notificationPreferences = {
         notifyNewGames: Boolean(byId('notifyNewGames').checked),
         notifyNewsletter: Boolean(byId('notifyNewsletter').checked),
