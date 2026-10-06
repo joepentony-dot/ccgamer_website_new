@@ -192,7 +192,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   if(!document.querySelector('link[data-ccg-v106-sidebar-fix="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`;
+    link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}&ui=20261006-viewport`;
     link.dataset.ccgV106SidebarFix="true";
     document.head.appendChild(link);
   }
@@ -220,7 +220,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   if(!document.querySelector('link[data-ccg-v118-input-ui-fixes="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href=`css/v10-18-input-ui-bugfixes.css?v=${CCG_INPUT_UI_FIX_REV}`;
+    link.href=`css/v10-18-input-ui-bugfixes.css?v=${CCG_INPUT_UI_FIX_REV}&ui=20261006-viewport`;
     link.dataset.ccgV118InputUiFixes="true";
     document.head.appendChild(link);
   }
@@ -234,7 +234,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   if(!document.querySelector('link[data-ccg-v130-polish="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href=`css/v10-30-polish.css?v=${CCG_POLISH_REV}`;
+    link.href=`css/v10-30-polish.css?v=${CCG_POLISH_REV}&ui=20261006-viewport`;
     link.dataset.ccgV130Polish="true";
     document.head.appendChild(link);
   }
@@ -281,7 +281,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-5-rpg-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerRpgBalanceV105"],
       [`js/v10-6-death-room-recovery.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerDeathRoomRecoveryV106"],
       [`js/v10-6-ui-polish.js?v=${CCG_V106_UI_REV}`,"ccgLostSizzlerUiV106"],
-      [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
+      [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}&ui=20261006-viewport`,"ccgLostSizzlerInventoryHudV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
       [`js/v10-6-stalker-shop-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerStalkerShopBalanceV106"],
       [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
