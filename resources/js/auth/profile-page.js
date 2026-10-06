@@ -4,7 +4,9 @@ const DEBUG = typeof window !== 'undefined' && new URLSearchParams(window.locati
 const TOP_PICKS_LIMIT = 10;
 const CANONICAL_SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const PROFILE_AVATAR_BUCKET = 'profile-avatars';
-const PROFILE_AVATAR_MAX_BYTES = 2 * 1024 * 1024;
+const PROFILE_AVATAR_SIZE = 512;
+const PROFILE_AVATAR_SOURCE_MAX_BYTES = 8 * 1024 * 1024;
+const PROFILE_AVATAR_OUTPUT_MAX_BYTES = 2 * 1024 * 1024;
 const PROFILE_AVATAR_FALLBACK = '/favicon.ico';
 
 export function deriveTopPickSlugs(rows) {
@@ -379,12 +381,77 @@ async function fetchTopPicks(supabaseClient, userId) {
   return Array.isArray(data) ? data : [];
 }
 
-function avatarExtension(file) {
-  const mime = String(file?.type || '').toLowerCase();
-  if (mime === 'image/jpeg') return 'jpg';
-  if (mime === 'image/png') return 'png';
-  if (mime === 'image/webp') return 'webp';
-  return '';
+function decodeAvatarImage(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(image);
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('Could not read this image.'));
+    };
+
+    image.src = objectUrl;
+  });
+}
+
+async function buildAvatarBlob(file) {
+  if (!file) throw new Error('Choose an image first.');
+
+  const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+  if (!allowedTypes.has(String(file.type || '').toLowerCase())) {
+    throw new Error('Avatar must be a JPG, PNG or WebP image.');
+  }
+
+  if (Number(file.size || 0) > PROFILE_AVATAR_SOURCE_MAX_BYTES) {
+    throw new Error('Avatar source image must be 8 MB or smaller.');
+  }
+
+  const image = await decodeAvatarImage(file);
+  const sourceWidth = Number(image.naturalWidth || image.width || 0);
+  const sourceHeight = Number(image.naturalHeight || image.height || 0);
+  if (!sourceWidth || !sourceHeight) throw new Error('Could not read this image.');
+
+  const side = Math.min(sourceWidth, sourceHeight);
+  const sourceX = Math.max(0, (sourceWidth - side) / 2);
+  const sourceY = Math.max(0, (sourceHeight - side) / 2);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = PROFILE_AVATAR_SIZE;
+  canvas.height = PROFILE_AVATAR_SIZE;
+
+  const context = canvas.getContext('2d', { alpha: false });
+  if (!context) throw new Error('Image processing is unavailable in this browser.');
+
+  context.fillStyle = '#071321';
+  context.fillRect(0, 0, PROFILE_AVATAR_SIZE, PROFILE_AVATAR_SIZE);
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    side,
+    side,
+    0,
+    0,
+    PROFILE_AVATAR_SIZE,
+    PROFILE_AVATAR_SIZE
+  );
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob(resolve, 'image/webp', 0.86);
+  });
+
+  if (!blob) throw new Error('Could not prepare this avatar.');
+  if (blob.size > PROFILE_AVATAR_OUTPUT_MAX_BYTES) {
+    throw new Error('Prepared avatar exceeds the 2 MB upload limit.');
+  }
+
+  return blob;
 }
 
 async function removeStoredAvatars(supabaseClient, userId) {
@@ -419,33 +486,23 @@ async function saveAvatarUrl(supabaseClient, userId, avatarUrl) {
 async function uploadProfileAvatar({ supabaseClient, user, file, messageBox }) {
   if (!file) return false;
 
-  const extension = avatarExtension(file);
-  if (!extension) {
-    setMessage(messageBox, 'Avatar must be a JPG, PNG or WebP image.', 'error');
-    return false;
-  }
-
-  if (Number(file.size || 0) > PROFILE_AVATAR_MAX_BYTES) {
-    setMessage(messageBox, 'Avatar must be 2 MB or smaller.', 'error');
-    return false;
-  }
-
   const changeButton = document.getElementById('profileAvatarChange');
   const removeButton = document.getElementById('profileAvatarRemove');
   if (changeButton) changeButton.disabled = true;
   if (removeButton) removeButton.disabled = true;
-  setMessage(messageBox, 'Uploading avatar…');
+  setMessage(messageBox, 'Preparing avatar…');
 
   try {
+    const blob = await buildAvatarBlob(file);
     await removeStoredAvatars(supabaseClient, user.id);
 
-    const path = `${user.id}/avatar.${extension}`;
+    const path = `${user.id}/avatar.webp`;
     const { error: uploadError } = await supabaseClient.storage
       .from(PROFILE_AVATAR_BUCKET)
-      .upload(path, file, {
+      .upload(path, blob, {
         cacheControl: '3600',
         upsert: true,
-        contentType: file.type
+        contentType: 'image/webp'
       });
 
     if (uploadError) throw uploadError;
@@ -466,9 +523,11 @@ async function uploadProfileAvatar({ supabaseClient, user, file, messageBox }) {
     return true;
   } catch (error) {
     console.error('[profile] Avatar upload failed', error, { userId: user.id });
-    setMessage(messageBox, 'Could not update avatar. Please try again.', 'error');
+    setMessage(messageBox, error?.message || 'Could not update avatar. Please try again.', 'error');
     return false;
   } finally {
+    const input = document.getElementById('profileAvatarInput');
+    if (input) input.value = '';
     if (changeButton) changeButton.disabled = false;
     if (removeButton) removeButton.disabled = false;
   }
