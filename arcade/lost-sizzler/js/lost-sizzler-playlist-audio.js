@@ -560,12 +560,12 @@
   window.addEventListener("ccg:admin-audio-ready",event=>{
     failures.clear();
     clearRetry();
-    primeState(desiredState());
-    if(started&&enabled)transition(false,false);
+    if(started&&enabled){
+      primeState(desiredState());
+      transition(false,false);
+    }
     event?.stopImmediatePropagation?.();
   });
-
-  if(window.CCG_ADMIN_AUDIO_READY===true)primeState("normal");
 
   window.addEventListener("ccg:run-started",()=>{
     if(!enabled)return;
