@@ -6,6 +6,7 @@ import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault } from "./game-vault.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
+import { CRT_MODES, presetParams } from "./core/crt-params.js";
 
 const vault = new ROMVault();
 const gameVault = new GameVault();
@@ -53,6 +54,9 @@ const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const audioStatus = document.querySelector("[data-audio-status]");
 const audioButton = document.querySelector("[data-audio-toggle]");
+const crtButton = document.querySelector("[data-crt-toggle]");
+const sizeButton = document.querySelector("[data-size-toggle]");
+const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
 const PAL_FRAME_MS = 1000 / 50.125;
 let machine = null;
@@ -69,12 +73,48 @@ let mountedCartridge = null;
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
+let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
+if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
+let fixed2x = localStorage.getItem("ccg.emulator.c64.size") === "2x";
 
 const SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js";
 let audioContext = null;
 let sidNode = null;
 let masterGain = null;
 let audioMuted = false;
+
+function applyCrtMode() {
+  const strong = crtButton?.querySelector("strong");
+  if (!presenter) {
+    if (strong) strong.textContent = "PLAIN";
+    return;
+  }
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches || false;
+  presenter.setCrt(presetParams(crtMode), { reducedMotion });
+  if (strong) strong.textContent = crtMode.toUpperCase();
+}
+
+function cycleCrtMode() {
+  const index = Math.max(0, CRT_MODES.indexOf(crtMode));
+  crtMode = CRT_MODES[(index + 1) % CRT_MODES.length];
+  localStorage.setItem("ccg.emulator.c64.crtMode", crtMode);
+  applyCrtMode();
+}
+
+function applyScreenSize() {
+  screenStage?.classList.toggle("is-2x", fixed2x);
+  const strong = sizeButton?.querySelector("strong");
+  if (strong) strong.textContent = fixed2x ? "2X" : "FIT";
+}
+
+function toggleScreenSize() {
+  fixed2x = !fixed2x;
+  localStorage.setItem("ccg.emulator.c64.size", fixed2x ? "2x" : "fit");
+  applyScreenSize();
+}
+
+applyCrtMode();
+applyScreenSize();
 
 function updateAudioUi(label = null) {
   if (audioStatus && label) audioStatus.textContent = label;
@@ -667,6 +707,9 @@ powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", resetMachine);
 pauseButton?.addEventListener("click", togglePause);
 audioButton?.addEventListener("click", toggleAudioMute);
+crtButton?.addEventListener("click", cycleCrtMode);
+sizeButton?.addEventListener("click", toggleScreenSize);
+screen?.addEventListener("pointerdown", () => screen.focus());
 
 loadMediaButton?.addEventListener("click", () => {
   if (!running) return;
