@@ -51,16 +51,16 @@
           <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" tabindex="0"></canvas>
           <div class="ccg-c64-screen-glass" aria-hidden="true"></div>
         </div>
-        <div class="ccg-c64-drop-hint" aria-hidden="true">DROP C64 MEDIA HERE</div>
+        <div class="ccg-c64-drop-hint" aria-hidden="true">DROP D64 / TAP / PRG / CRT HERE — AUTO LOAD</div>
       </div>
 
       <div class="ccg-c64-screen-foot">
         <span>384 × 272 SOURCE</span>
         <span>WEBGL / CRT PRESENTER</span>
-        <span>DROP OR LOAD C64 MEDIA</span>
+        <span>DROP GAME HERE — AUTO LOAD</span>
       </div>
 
-      <p class="ccg-c64-stage-note" data-stage-note>Choose a C64 file or an Online Library item. System ROM setup is only requested if this browser has not stored them yet.</p>
+      <p class="ccg-c64-stage-note" data-stage-note>Drop a C64 game onto the screen or choose a file. Fast Load is the default, so disk images mount and LOAD/RUN automatically.</p>
 
       <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
         <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
@@ -80,7 +80,7 @@
         <div class="ccg-c64-quickload">
           <button type="button" class="ccg-c64-primary-load" data-load-any-media>LOAD YOUR FILE</button>
           <input id="ccg-c64-any-media-input" type="file" accept=".prg,.d64,.d71,.d81,.g64,.tap,.t64,.crt" hidden>
-          <p>PRG, D64, D71, D81, G64, TAP, T64 and CRT are accepted. You can also drag a file onto the C64 screen.</p>
+          <p>PRG, D64, D71, D81, G64, TAP, T64 and CRT are accepted. Drop a game directly onto the C64 screen; common disk images auto-mount and start in Fast Load mode.</p>
         </div>
       </section>
 
@@ -135,7 +135,7 @@
         <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
         <div class="ccg-c64-media-row">
           <button type="button" data-load-disk>LOAD DISK</button>
-          <button type="button" data-drive-mode aria-pressed="false" disabled>FAST LOAD</button>
+          <button type="button" data-drive-mode aria-pressed="false" disabled title="Default mode: mount disk and automatically LOAD/RUN">FAST LOAD</button>
         </div>
         <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
       </section>
