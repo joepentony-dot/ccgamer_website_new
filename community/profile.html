@@ -300,21 +300,17 @@
                 </div>
               </section>
 
-              <section class="member-panel member-panel--compact" id="memberAchievements" aria-labelledby="memberAchievementsTitle">
-                <div class="member-panel__header">
-                  <div>
-                    <p class="member-panel__kicker">Personal milestones</p>
-                    <h2 class="member-panel__title" id="memberAchievementsTitle">Member Badges</h2>
-                  </div>
-                </div>
-                <div class="member-achievements">
-                  <article class="member-achievement" id="memberBadgeC64"><span aria-hidden="true">🕹️</span><strong>C64 Explorer</strong><small data-member-achievement-progress>0/12 viewed</small></article>
-                  <article class="member-achievement" id="memberBadgeAmiga"><span aria-hidden="true">💾</span><strong>Amiga Explorer</strong><small data-member-achievement-progress>0/12 viewed</small></article>
-                  <article class="member-achievement" id="memberBadgeReviewer"><span aria-hidden="true">💬</span><strong>CCG Reviewer</strong><small id="memberBadgeReviewerProgress">0/5 reviews</small></article>
-                  <article class="member-achievement" id="memberBadgeTopPicker"><span aria-hidden="true">⭐</span><strong>Top Picker</strong><small data-member-achievement-progress>0/10 picks</small></article>
-                  <article class="member-achievement" id="memberBadgeZzap"><span aria-hidden="true">🏅</span><strong>Zzap!64 Archivist</strong><small data-member-achievement-progress>Visit archive</small></article>
-                </div>
-              </section>
+              <details class="member-panel member-panel--compact member-achievements-menu" id="memberAchievements">
+                <summary class="member-achievements-menu__summary">
+                  <span class="member-achievements-menu__icon" aria-hidden="true">🏅</span>
+                  <span class="member-achievements-menu__copy">
+                    <span class="member-panel__kicker">Personal milestones</span>
+                    <span class="member-panel__title" id="memberAchievementsTitle">Achievements &amp; Badges</span>
+                    <span class="member-achievements-menu__hint">View progress, earned badges and C64 Dungeon Carnage achievements</span>
+                  </span>
+                  <span class="member-achievements-menu__action" aria-hidden="true">Open</span>
+                </summary>
+              </details>
             </div>
           </div>
 
