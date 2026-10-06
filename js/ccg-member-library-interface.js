@@ -29,6 +29,10 @@
     const link = document.createElement("a");
     link.href = "#personalGameLibrary";
     link.textContent = "My Games";
+    link.addEventListener("click", () => {
+      const library = document.getElementById("personalGameLibrary");
+      if (library && "open" in library) library.open = true;
+    });
 
     const reviewsLink = nav.querySelector('a[href="#memberReviews"]');
     if (reviewsLink) nav.insertBefore(link, reviewsLink);
@@ -58,6 +62,7 @@
   }
 
   function ensureStats() {
+    if (document.querySelector(".member-dashboard-grid")) return;
     const stats = document.getElementById("memberOverview");
     if (!stats) return;
     addStat(stats, "memberStatPlayed", "Played");
@@ -72,14 +77,20 @@
 
     const reviews = document.getElementById("memberReviews");
     const favourites = document.getElementById("memberFavourites");
-    const parent = reviews?.parentElement || favourites?.parentElement;
+    const compactDashboard = document.querySelector(".member-dashboard-grid");
+    const parent = compactDashboard
+      ? favourites?.parentElement
+      : (reviews?.parentElement || favourites?.parentElement);
     if (!parent) return null;
 
-    const section = document.createElement("section");
+    const section = document.createElement(compactDashboard ? "details" : "section");
     section.id = "personalGameLibrary";
-    section.className = "profile-library";
+    section.className = compactDashboard
+      ? "profile-library member-compact-details"
+      : "profile-library";
     section.setAttribute("aria-labelledby", "personalGameLibraryTitle");
     section.innerHTML = `
+      ${compactDashboard ? '<summary>My Games &amp; Collections</summary><div class="member-compact-details__body">' : ''}
       <div class="profile-library__header">
         <div>
           <p class="member-panel__kicker">Your private collection</p>
@@ -97,9 +108,13 @@
         <button type="button" class="profile-library__tab" data-profile-list-tab="still" aria-pressed="false">Still Own</button>
       </div>
       <ul id="personalGameLibraryList" class="profile-library__list"></ul>
+      ${compactDashboard ? '</div>' : ''}
     `;
 
-    if (reviews?.parentElement === parent) parent.insertBefore(section, reviews);
+    if (compactDashboard && favourites?.parentElement === parent) {
+      if (favourites.nextSibling) parent.insertBefore(section, favourites.nextSibling);
+      else parent.appendChild(section);
+    } else if (reviews?.parentElement === parent) parent.insertBefore(section, reviews);
     else if (favourites?.nextSibling) parent.insertBefore(section, favourites.nextSibling);
     else parent.appendChild(section);
 
