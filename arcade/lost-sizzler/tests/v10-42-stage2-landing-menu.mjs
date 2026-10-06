@@ -8,12 +8,14 @@ const lateLayoutOwner=fs.readFileSync(new URL('../js/v10-41-r55-final-playtest-c
 
 // Stage 2 is a product-facing landing milestone, not another retired-mode cleanup
 // pass. The canonical menu must expose only supported release choices.
-for(const id of ['solo-btn','continue-save-btn','split-btn','tutorial-zone-btn','daily-btn']){
+for(const id of ['solo-btn','continue-save-btn','tutorial-zone-btn']){
   assert.match(index,new RegExp(`id=["']${id}["']`),`${id} must remain present on the supported landing menu`);
 }
-for(const retiredId of ['create-btn','join-btn','horde-solo-btn','horde-mode-btn','saboteurs-mode-btn']){
+for(const retiredId of ['create-btn','join-btn','split-btn','daily-btn','horde-solo-btn','horde-mode-btn','saboteurs-mode-btn']){
   assert.doesNotMatch(index,new RegExp(`id=["']${retiredId}["']`),`${retiredId} must not return to the canonical landing menu`);
 }
+assert.match(index,/id="solo-btn"[^>]*>Start Game<\/button>/,'the main supported entry must be labelled Start Game');
+assert.doesNotMatch(index,/>Play Solo<|SOLO DUNGEON/,'retired Solo-facing menu wording must not return');
 
 // Preserve #2127: final visible landing geometry must exist in a stylesheet that
 // blocks first paint, before the historical runtime compatibility layer executes.
@@ -31,22 +33,16 @@ const requiredStage2=[
   'order:10!important;',
   'html body[data-run-active="false"] #menu #solo-btn{',
   'order:11!important;',
-  'html body[data-run-active="false"] #menu #split-btn{',
-  'order:12!important;',
   'html body[data-run-active="false"] #menu #tutorial-zone-btn{',
-  'order:21!important;',
-  'html body[data-run-active="false"] #menu #daily-btn{',
-  'order:22!important;'
+  'order:12!important;'
 ];
 for(const contract of requiredStage2){
   assert.ok(blockingCss.includes(contract),`Stage 2 landing hierarchy is missing: ${contract}`);
 }
 
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #continue-save-btn\{[\s\S]*?grid-column:1\/-1!important[\s\S]*?min-height:78px!important/,'saved-run resume must own the full-width priority row and match the late R55 geometry');
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #solo-btn\{[\s\S]*?grid-column:span 2!important[\s\S]*?min-height:82px!important/,'Solo must remain a large primary release choice with the settled R55 height');
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #split-btn\{[\s\S]*?grid-column:span 2!important[\s\S]*?min-height:74px!important/,'local Split Screen must sit beside Solo and match the settled R55 height');
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #tutorial-zone-btn\{[\s\S]*?min-height:70px!important/,'Tutorial first-paint geometry must match the retained R55 owner');
-assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #daily-btn\{[\s\S]*?min-height:70px!important/,'Weekly first-paint geometry must match the retained R55 owner');
+assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #continue-save-btn\{[\s\S]*?grid-column:1\/-1!important[\s\S]*?min-height:78px!important/,'saved-run resume must own the full-width priority row and match the settled geometry');
+assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #solo-btn\{[\s\S]*?grid-column:span 2!important[\s\S]*?min-height:82px!important/,'Start Game must remain a large primary release choice with the settled height');
+assert.match(blockingCss,/html body\[data-run-active="false"\] #menu #tutorial-zone-btn\{[\s\S]*?order:12!important[\s\S]*?min-height:70px!important/,'Tutorial first-paint geometry must follow Start Game without retired mode cards');
 assert.match(blockingCss,/html body\[data-run-active="false"\] #menu \.game-mode-buttons button:not\(\.hidden\)\{[\s\S]*?padding:28px 12px 24px!important/,'blocking CSS must own the same desktop card padding as R55 for visible controls before first paint without forcing hidden controls visible');
 assert.match(blockingCss,/@media\(max-width:900px\),\(pointer:coarse\)\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)!important[\s\S]*?grid-column:1\/-1!important[\s\S]*?width:100%!important[\s\S]*?min-height:78px!important;[\s\S]*?padding:29px 12px 25px!important/,'phone/coarse landing geometry must collapse supported choices to one full-width column');
 assert.match(blockingCss,/#solo-btn\.primary\{color:#f5eefb!important\}/,'Solo primary text must retain readable light contrast on its dark card');
