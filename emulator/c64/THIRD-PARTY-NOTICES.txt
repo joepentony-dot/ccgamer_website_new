@@ -1,18 +1,36 @@
 CCG Browser C64 — bundled source and third-party notices
 =======================================================
 
-CCG interface and browser integration
--------------------------------------
-The Cheeky Commodore Gamer command-deck interface, browser adapter, Game Vault,
-T64 quick-loader, touch controls and site integration are CCG-specific
-modifications.
+CCG interface and site integration
+----------------------------------
+The Cheeky Commodore Gamer page shell, branding, responsive layout, ROM setup,
+Game Vault integration and site navigation are CCG-specific modifications.
 
-GPL-derived browser emulator core
----------------------------------
+C64 READY GPL-derived emulator runtime
+--------------------------------------
 Copyright © 2026 Morten Øien Eriksen.
-The retained browser C64 machine/core source is conveyed under
-GNU GPL-3.0-or-later. Applicable source files retain SPDX and copyright notices.
-The full GPL-3.0 text is distributed as GPL-3.0.txt.
+Original project: C64 READY
+Licence: GNU GPL-3.0-or-later.
+
+This CCG route incorporates and modifies GPL-3.0-or-later source from the
+public C64 READY repository. The runtime baseline used for this parity pass is:
+
+  Repository: mortyeriksen/c64ready
+  Revision:   a5821f95cd9b0de5a6e14807f978b30986c0b5da
+  Date pin:   2026-10-06
+
+Applicable source files retain their SPDX and copyright notices. The complete
+GPL-3.0 text is distributed beside this notice as GPL-3.0.txt.
+
+In addition to the previously retained machine/chip/media core, this parity
+pass incorporates the upstream SID AudioWorklet, embedded SID WebAssembly
+payload, WebGL presenter and CRT preset definitions. The CCG adapter invokes
+those components from the CCG-branded page rather than presenting C64 READY
+as the product name.
+
+The exact upstream revision above remains the corresponding public source
+reference for the imported components, including the Rust SID source used to
+produce the embedded WebAssembly payload.
 
 reSID / SID analogue model
 --------------------------
@@ -44,6 +62,6 @@ media and are not bundled with the emulator.
 
 Not bundled by this CCG route
 -----------------------------
-The CCG browser emulator does not bundle the upstream project's fonts, 3D
-models, three.js UI, Workbox application shell, or optional compiled SID
-WebAssembly engine.
+The CCG route does not bundle Commodore ROM images or copyrighted game media.
+The optional C64 READY 3D Retro Vibes models, upstream PWA shell and upstream
+product branding/assets are not required for the CCG emulator route.
