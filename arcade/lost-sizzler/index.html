@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="ccg-lost-sizzler-build" content="V10.42 r107">
-  <meta name="ccg-lost-sizzler-cache" content="20261005r107">
+  <meta name="ccg-lost-sizzler-build" content="V10.42 r109">
+  <meta name="ccg-lost-sizzler-cache" content="20261006r109">
   <meta name="theme-color" content="#09040f">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Play C64 Dungeon Carnage, a free retro Commodore 64-inspired browser dungeon crawler. Fight tactical enemies, collect loot and survive fifteen procedural floors.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/">
   <title>C64 Dungeon Carnage | Free Retro C64 Dungeon Game</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20261005r107" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20261005r107" fetchpriority="high">
-  <link rel="stylesheet" href="css/game.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-41-r28.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-41-r29.css?v=20261005r107">
-  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20261005r107&ui=20261006-viewport">
-  <link rel="stylesheet" href="css/v10-42-r95-rpg-hud.css?v=20261005r107&ui=20261006-viewport">
+  <link rel="preload" as="image" href="assets/pixel/explorer-sheet-v10-34.png?v=20261006r109" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=20261006r109" fetchpriority="high">
+  <link rel="stylesheet" href="css/game.css?v=20261006r109">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20261006r109">
+  <link rel="stylesheet" href="css/v10-41-r28.css?v=20261006r109">
+  <link rel="stylesheet" href="css/v10-41-r29.css?v=20261006r109">
+  <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20261006r109">
+  <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20261006r109">
+  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20261006r109&ui=20261006-viewport">
+  <link rel="stylesheet" href="css/v10-42-r95-rpg-hud.css?v=20261006r109&ui=20261006-viewport">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -44,8 +44,8 @@
     </div>
   </div>
 </div>
-  <script src="/js/ccg-supabase-config.js?v=20261005r107"></script>
-  <script src="/js/ccg-supabase-client.js?v=20261005r107"></script>
+  <script src="/js/ccg-supabase-config.js?v=20261006r109"></script>
+  <script src="/js/ccg-supabase-client.js?v=20261006r109"></script>
   <script src="/js/ccg-play-maintenance-owner-gate.js?v=20261002-round2-v1" data-ccg-play-maintenance-gate="owner-preview"></script>
 <main class="ccg-game">
   <header class="topbar v102-topbar">
@@ -126,10 +126,12 @@
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="release-note" class="note">C64 Dungeon Carnage runs directly in your browser. Start the main game or use the Tutorial to learn the controls. Starting a run requests fullscreen automatically. Sound begins when play starts.</p><p id="menu-note" hidden aria-hidden="true" style="display:none!important"></p>
         <details id="developer-changelog" class="menu-details developer-changelog" data-latest-build-only="true">
-          <summary>Latest Build Changes · V10.42 R107</summary>
+          <summary>Latest Build Changes · V10.42 R109</summary>
           <div class="developer-changelog-current">
-            <p><strong>ACTIVE BUILD: V10.42 R107</strong></p>
+            <p><strong>ACTIVE BUILD: V10.42 R109</strong></p>
             <ul>
+              <li>R109 repairs live production-music startup without eager Supabase downloads: the selected authored track is prepared at an audible level and the trusted Start Game gesture owns the actual media load/play. The tactical minimap now keeps its backing bitmap matched to the visible canvas so narrow and short layouts are not stretched or squashed.</li>
+              <li>R108 fixes death XP accounting: death removes the exact XP loss immediately, level-derived attribute gains roll back when XP falls below a threshold, death-cache recovery restores only the recorded loss once, and re-levelling requires crossing the threshold again.</li>
               <li>R103 fixes the live R102 audio acceptance failures: owner-recorded speech now stays directly audible without a suspended Web Audio effects route, Starting a run always requests the recorded Welcome cue, bundled/default music can no longer take ownership from uploaded production playlists, and trader placement is isolated from Sanctuary and existing shop rooms.</li>
               <li>R102 restores reliable owner-recorded voice playback on mobile, reconnects valid supplied encounter prompts that had lost live triggers, restores three distinct run-start greetings including the rare Watchers of Illusion Easter-egg greeting, removes browser/generic voice fallback, and makes uploaded production music exclusive so failed or blocked playback retries on a real gesture instead of ever starting legacy/generated or bundled fallback music.</li>
               <li>R101 stops the Tutorial from removing and re-applying the same desktop highlight state every 100 ms, and restores compatible owner-recorded Alchemist voice routing after the live NPC keys were renamed without replaying the obsolete artefact-era Flask line.</li>
@@ -268,33 +270,33 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-cache-guard.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-load-watchdog.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/version-check.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-23-tutorial-guidance.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/asset-overrides.js?v=20261005r107&ui=20261006-viewport"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/avatar-data.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/config.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/progression.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio-assets.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/world.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/ai.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/systems.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-core.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-local-runtime.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-play.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-render.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-lake-item-safety.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-gambler-devroom.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-vault-hardening.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-asset-catalog.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-landing-notification-polish.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-major-notification-hardening.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-active-enemy-fire.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r29-runtime-repair.js?v=20261005r107"></script>
-  <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r30-global-movement-guard.js?v=20261005r107"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-cache-guard.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-load-watchdog.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/version-check.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-23-tutorial-guidance.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/asset-overrides.js?v=20261006r109&ui=20261006-viewport"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/avatar-data.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/config.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/progression.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio-assets.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/audio.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/world.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/ai.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/systems.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-core.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-local-runtime.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-play.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-render.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/game-main.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-lake-item-safety.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-gambler-devroom.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-vault-hardening.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-developer-asset-catalog.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-landing-notification-polish.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-major-notification-hardening.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-active-enemy-fire.js?v=20261006r109"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r29-runtime-repair.js?v=20261006r109"></script>
+  <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-r30-global-movement-guard.js?v=20261006r109"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime>
 (()=>{const purgeLegacy=()=>document.querySelectorAll("#developer-changelog,.developer-changelog").forEach(node=>{if(node.dataset.latestBuildOnly!=="true")node.remove()});purgeLegacy();addEventListener("DOMContentLoaded",purgeLegacy,{once:true});addEventListener("load",purgeLegacy,{once:true});setTimeout(purgeLegacy,2000)})();
 </script>
