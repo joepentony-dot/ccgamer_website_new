@@ -94,117 +94,56 @@ try{
     };
   });
 
-  // Model the production defect precisely: leave() must still execute all of its
-  // synchronous local cleanup, but its remote channel cleanup never settles.
-  // Record the caller stack as well so a failure identifies which lifecycle
-  // owner reached the stale channel before the v2 Continue transaction.
-  await page.evaluate(()=>{
-    window.__r43StalledUntrackCalls=0;
-    window.__r43UnexpectedRemoveCalls=0;
-    window.__r43LeaveCalls=[];
-    window.__r43OriginalLeave=net.leave;
-    net.leave=function r43LeaveCallerProbe(...args){
-      window.__r43LeaveCalls.push(String(new Error("LS-SOLO-008 net.leave caller").stack||""));
-      return window.__r43OriginalLeave.apply(this,args)
-    };
-    net.channel={untrack(){window.__r43StalledUntrackCalls++;return new Promise(()=>{})}};
-    net.client={removeChannel(){window.__r43UnexpectedRemoveCalls++;return Promise.resolve()}};
-  });
-
+  // R107 has no multiplayer/network transport. Continue must restore the
+  // local floor-entry save without consulting or recreating the retired net owner.
   const beforeContinue=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
     return{
       envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
-      resumes:Number(api.state?.resumes||0),mode:String(mode||""),playMode:String(playMode||""),connected:Boolean(net?.connected),
-      transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
-      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),leaveCalls:Number(window.__r43LeaveCalls?.length||0),
+      resumes:Number(api.state?.resumes||0),mode:String(mode||""),playMode:String(playMode||""),
+      networkRuntimePresent:typeof net!=="undefined",
       soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),
       soloRecoveries:Number(watchdog?.soloRecoveries||0)
     };
   });
-  assert.equal(beforeContinue.channelPresent,true,"LS-SOLO-008 regression requires a stale remote channel before Continue");
-  assert.equal(beforeContinue.clientPresent,true,"LS-SOLO-008 regression requires a stale remote client before Continue");
-  assert.equal(beforeContinue.soloRecoveryTimerActive,false,"Continue must not inherit a stale Play Solo liveness timer");
-  assert.equal(beforeContinue.soloLivenessObserverActive,false,"Continue must not inherit a stale Play Solo liveness observer");
+  assert.equal(beforeContinue.networkRuntimePresent,false,"R107 must not recreate the retired Dungeon network runtime before Continue");
+  assert.equal(beforeContinue.soloRecoveryTimerActive,false,"Continue must not inherit a stale Start Game liveness timer");
+  assert.equal(beforeContinue.soloLivenessObserverActive,false,"Continue must not inherit a stale Start Game liveness observer");
 
   await page.click("#continue-save-btn");
-  let resumed=false,remoteCleanup={stalledUntrackCalls:0,unexpectedRemoveCalls:0,leaveCalls:[]},resumeFailure=null,continueDossierBoundary=null;
-  try{
-    try{
-      await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
-      resumed=true;
-    }catch(error){
-      resumeFailure=await page.evaluate(()=>{
-        const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api?.readEnvelope?.(),watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
-        return{
-          resumeInProgress:Boolean(api?.state?.resumeInProgress),resumes:Number(api?.state?.resumes||0),lastError:String(api?.state?.lastError||""),
-          mode:String(mode||""),playMode:String(playMode||""),runActive:String(document.body?.dataset?.runActive||""),
-          runSeed:String(run?.seed||""),runFloor:Number(run?.floor||0),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
-          p1Present:Boolean(p1),worldPresent:Boolean(world),hostPresent:Boolean(host),menuHidden:Boolean(document.getElementById("menu")?.classList.contains("hidden")),
-          namedDossierVisible:Boolean(document.getElementById("named-dossier-panel")&&!document.getElementById("named-dossier-panel").classList.contains("hidden")),
-          connected:Boolean(net?.connected),transport:String(net?.transport||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),memberCount:Number(net?.members?.size||0),
-          stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
-          leaveCalls:(window.__r43LeaveCalls||[]).map(stack=>String(stack).slice(0,1800)),
-          soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),soloRecoveries:Number(watchdog?.soloRecoveries||0)
-        };
-      });
-      resumeFailure.waitError=String(error?.message||error);
-      continueDossierBoundary=await dismissVisibleDossierBoundary(page);
-      if(continueDossierBoundary.dismissed){
-        await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:3000});
-        resumed=true;
-      }
-    }
-    remoteCleanup=await page.evaluate(()=>({
-      stalledUntrackCalls:Number(window.__r43StalledUntrackCalls||0),
-      unexpectedRemoveCalls:Number(window.__r43UnexpectedRemoveCalls||0),
-      leaveCalls:(window.__r43LeaveCalls||[]).map(stack=>String(stack).slice(0,1800))
-    }));
-  }finally{
-    await page.evaluate(()=>{
-      if(window.__r43OriginalLeave)net.leave=window.__r43OriginalLeave;
-      delete window.__r43OriginalLeave;delete window.__r43LeaveCalls;delete window.__r43StalledUntrackCalls;delete window.__r43UnexpectedRemoveCalls
-    });
-  }
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:10000});
 
-  assert.equal(resumed,true,`LS-SOLO-008: Continue must not wait for stalled remote channel cleanup before restoring a local Solo save; diagnostic=${JSON.stringify({beforeContinue,resumeFailure,continueDossierBoundary,remoteCleanup})}`);
   const restored=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R43SoloSave,envelope=api.readEnvelope(),entry=api.state?.entryCheckpoint,watchdog=window.CCGLostSizzlerLoadWatchdog?.state;
     return{
       seed:String(run?.seed||""),entrySeed:String(entry?.run?.seed||""),envelopeSeed:String(envelope?.checkpoint?.run?.seed||""),envelopeReason:String(envelope?.reason||""),
       score:Number(score||0),health:Number(p1?.health||0),mana:Number(p1?.mana||0),x:Number(p1?.x||0),y:Number(p1?.y||0),
-      playMode:String(playMode||""),connected:Boolean(net?.connected),transport:String(net?.transport||""),resumes:Number(api.state?.resumes||0),
-      mode:String(mode||""),runActive:String(document.body.dataset.runActive||""),channelPresent:Boolean(net?.channel),clientPresent:Boolean(net?.client),
-      memberCount:Number(net?.members?.size||0),soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),
-      soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),soloRecoveries:Number(watchdog?.soloRecoveries||0)
+      playMode:String(playMode||""),networkRuntimePresent:typeof net!=="undefined",resumes:Number(api.state?.resumes||0),
+      mode:String(mode||""),runActive:String(document.body.dataset.runActive||""),
+      soloRecoveryTimerActive:Boolean(watchdog?.soloRecoveryTimer),soloLivenessObserverActive:Boolean(watchdog?.soloLivenessObserver),
+      soloRecoveries:Number(watchdog?.soloRecoveries||0)
     };
   });
 
-  const diagnostic={soloLivenessAfterStart,beforeQuit,afterQuit,beforeContinue,continueDossierBoundary,restored,remoteCleanup};
+  const diagnostic={soloLivenessAfterStart,beforeQuit,afterQuit,beforeContinue,restored};
   assert.equal(afterQuit.envelopeSeed,beforeQuit.envelopeSeed,`Save & Quit must preserve the captured floor-entry seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(beforeContinue.envelopeSeed,afterQuit.envelopeSeed,`the saved envelope must remain stable before Continue: ${JSON.stringify(diagnostic)}`);
-  assert.ok(remoteCleanup.stalledUntrackCalls>=1,`the regression must prove that real leave() reached a remote untrack promise that remained stalled: ${JSON.stringify(diagnostic)}`);
-  assert.equal(remoteCleanup.unexpectedRemoveCalls,0,`removeChannel must remain unreachable while the preceding untrack promise is stalled: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.seed,afterQuit.envelopeSeed,`stalled-cleanup recovery must restore the Save & Quit envelope seed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.seed,afterQuit.envelopeSeed,`local Continue must restore the Save & Quit envelope seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.entrySeed,afterQuit.envelopeSeed,`r43 entry checkpoint must match the restored Save & Quit seed: ${JSON.stringify(diagnostic)}`);
   assert.equal(restored.envelopeSeed,afterQuit.envelopeSeed,`Continue must not replace the saved envelope while restoring: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.score,afterQuit.score,`stalled-cleanup recovery must restore floor-entry score: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.health,afterQuit.health,`stalled-cleanup recovery must restore floor-entry health: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.mana,afterQuit.mana,`stalled-cleanup recovery must restore floor-entry ammunition: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.x,afterQuit.x,`stalled-cleanup recovery must restore entry X: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.y,afterQuit.y,`stalled-cleanup recovery must restore entry Y: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.playMode,"solo",`stalled-cleanup recovery must restore Solo ownership: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.connected,false,`stalled-cleanup recovery must leave the local runtime disconnected: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.transport,"solo",`stalled-cleanup recovery must leave the local transport in Solo mode: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.channelPresent,false,`leave() synchronous cleanup must detach the stale channel before its remote await stalls: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.clientPresent,false,`leave() synchronous cleanup must detach the stale client before its remote await stalls: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.memberCount,1,`net.setSolo() must rebuild exactly one local member while remote cleanup remains stalled: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.soloRecoveryTimerActive,false,`restored Continue must not arm a Play Solo liveness timer: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.soloLivenessObserverActive,false,`restored Continue must not arm a Play Solo liveness observer: ${JSON.stringify(diagnostic)}`);
-  assert.equal(restored.soloRecoveries,beforeContinue.soloRecoveries,`Continue must not trigger a stale Play Solo liveness recovery: ${JSON.stringify(diagnostic)}`);
-  assert.ok(restored.resumes>=1,`stalled-cleanup recovery must advance the r43 resume diagnostic: ${JSON.stringify(diagnostic)}`);
-  assert.deepEqual(errors,[],`LS-SOLO-008 stalled-cleanup regression must not produce page errors: ${errors.join("\n")} diagnostic=${JSON.stringify(diagnostic)}`);
-  console.log(`LS-SOLO-008 stalled remote-cleanup diagnostic passed: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.score,afterQuit.score,`local Continue must restore floor-entry score: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.health,afterQuit.health,`local Continue must restore floor-entry health: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.mana,afterQuit.mana,`local Continue must restore floor-entry ammunition: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.x,afterQuit.x,`local Continue must restore entry X: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.y,afterQuit.y,`local Continue must restore entry Y: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.playMode,"solo",`Continue must preserve the one-player local game mode: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.networkRuntimePresent,false,`Continue must remain independent of the retired network runtime: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.soloRecoveryTimerActive,false,`restored Continue must not arm a stale Start Game liveness timer: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.soloLivenessObserverActive,false,`restored Continue must not arm a stale Start Game liveness observer: ${JSON.stringify(diagnostic)}`);
+  assert.equal(restored.soloRecoveries,beforeContinue.soloRecoveries,`Continue must not trigger a stale Start Game liveness recovery: ${JSON.stringify(diagnostic)}`);
+  assert.ok(restored.resumes>=1,`local Continue must advance the r43 resume diagnostic: ${JSON.stringify(diagnostic)}`);
+  assert.deepEqual(errors,[],`LS-SOLO-008 local-only Continue regression must not produce page errors: ${errors.join("\n")} diagnostic=${JSON.stringify(diagnostic)}`);
+  console.log(`LS-SOLO-008 local-only Save & Quit -> Continue diagnostic passed: ${JSON.stringify(diagnostic)}`);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(resolve));
