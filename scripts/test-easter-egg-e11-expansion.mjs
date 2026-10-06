@@ -29,6 +29,8 @@ const experiences = [
     ["readerror", ".ccg-e11--diskerror"],
     ["kickstart", ".ccg-e11--kickstart"],
     ["bedrooms", ".ccg-e11--bedrooms"],
+    ["nightmare", ".ccg-e11--nightmare"],
+    ["daglish", ".ccg-e11--daglish"],
 ];
 
 async function openSecretMenu(page, mobile) {
@@ -238,6 +240,54 @@ async function interact(page, code) {
         if (attributes.referrerPolicy !== "no-referrer") throw new Error("BEDROOMS frame must not leak referrer data");
         if (await page.locator(".ccg-e11--bedrooms a").count() !== 0) throw new Error("BEDROOMS exposes a direct source link");
         if (await page.locator(".ccg-e11--bedrooms .ccg-e11__bedrooms-shield").count() !== 1) throw new Error("BEDROOMS player shield missing");
+    }
+
+    if (code === "nightmare") {
+        const expectedSrc = "https://drive.google.com/file/d/1URmXhKAS62KjI0Pl_m4Fo595e4TS_uqa/preview";
+        const root = page.locator(".ccg-e11--" + code);
+        const frame = root.locator("[data-document-frame]");
+        if (await frame.count() !== 1) throw new Error(code + ": protected PDF frame missing");
+        const attributes = await frame.evaluate(element => ({
+            src: element.getAttribute("src"),
+            sandbox: element.getAttribute("sandbox"),
+            referrerPolicy: element.getAttribute("referrerpolicy"),
+        }));
+        if (attributes.src !== expectedSrc) throw new Error(code + ": PDF frame does not use the approved Drive preview URL");
+        if (!attributes.sandbox?.includes("allow-scripts") || !attributes.sandbox?.includes("allow-same-origin")) {
+            throw new Error(code + ": PDF sandbox is incomplete");
+        }
+        if (attributes.sandbox.includes("allow-downloads") || attributes.sandbox.includes("allow-popups") || attributes.sandbox.includes("allow-top-navigation")) {
+            throw new Error(code + ": PDF frame enables a download or escape capability");
+        }
+        if (attributes.referrerPolicy !== "no-referrer") throw new Error(code + ": PDF frame must not leak referrer data");
+        if (await root.locator("a").count() !== 0) throw new Error(code + ": exposes a direct source link");
+        if (await root.locator("[data-document-control-shield]").count() !== 1) throw new Error(code + ": Drive control shield missing");
+        const footerText = await root.locator(".ccg-e11__document-footer").textContent();
+        if (!footerText?.includes("NO DOWNLOAD LINK")) throw new Error(code + ": protected viewer status is missing");
+    }
+
+    if (code === "daglish") {
+        const frame = page.locator(".ccg-e11--daglish [data-daglish-frame]");
+        if (await frame.count() !== 1) throw new Error("DAGLISH media frame missing");
+        const attributes = await frame.evaluate(element => ({
+            src: element.getAttribute("src"),
+            sandbox: element.getAttribute("sandbox"),
+            allow: element.getAttribute("allow"),
+            referrerPolicy: element.getAttribute("referrerpolicy"),
+        }));
+        if (attributes.src !== "https://drive.google.com/file/d/0Byfhj-Alj58DRk4wMllyTEpsM1U/preview?resourcekey=0-LhdiJUbhLF3gyTttcS0h0Q") {
+            throw new Error("DAGLISH media frame does not use the approved Drive preview URL");
+        }
+        if (!attributes.sandbox?.includes("allow-scripts") || !attributes.sandbox?.includes("allow-same-origin")) {
+            throw new Error("DAGLISH media frame sandbox is incomplete");
+        }
+        if (attributes.sandbox.includes("allow-downloads") || attributes.sandbox.includes("allow-popups") || attributes.sandbox.includes("allow-top-navigation")) {
+            throw new Error("DAGLISH media frame enables a download or escape capability");
+        }
+        if (!attributes.allow?.includes("fullscreen")) throw new Error("DAGLISH player does not allow fullscreen playback");
+        if (attributes.referrerPolicy !== "no-referrer") throw new Error("DAGLISH frame must not leak referrer data");
+        if (await page.locator(".ccg-e11--daglish a").count() !== 0) throw new Error("DAGLISH exposes a direct source link");
+        if (await page.locator(".ccg-e11--daglish .ccg-e11__bedrooms-shield").count() !== 1) throw new Error("DAGLISH player shield missing");
     }
 }
 
