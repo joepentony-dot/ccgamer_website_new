@@ -565,6 +565,114 @@ select:disabled {
   letter-spacing: 0.08em;
 }
 
+
+/* File-first media flow -------------------------------------- */
+
+.ccg-c64-panel--quickload,
+.ccg-c64-panel--library {
+  grid-column: 1 / -1;
+}
+
+.ccg-c64-quickload {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.2fr);
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.ccg-c64-primary-load {
+  min-height: 46px;
+  border: 1px solid rgba(213, 104, 219, 0.58);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(213,104,219,0.16), rgba(116,48,127,0.2));
+  color: #fff;
+  font-family: var(--ccg-font-mono, "Courier New", monospace);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.ccg-c64-primary-load:hover,
+.ccg-c64-primary-load:focus-visible {
+  border-color: var(--emu-accent-2);
+  background: rgba(213,104,219,0.22);
+}
+
+.ccg-c64-quickload p,
+.ccg-c64-library-note {
+  margin: 0;
+  color: var(--emu-muted);
+  font-size: 0.56rem;
+  line-height: 1.45;
+}
+
+.ccg-c64-library-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px;
+  gap: 0.4rem;
+}
+
+.ccg-c64-library-row select,
+.ccg-c64-library-row button {
+  min-height: 38px;
+  border: 1px solid #373b74;
+  border-radius: 8px;
+  background: #131633;
+  color: #d4d5f4;
+  font-size: 0.56rem;
+  font-weight: 800;
+}
+
+.ccg-c64-library-row select {
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+}
+
+.ccg-c64-library-row button {
+  cursor: pointer;
+}
+
+.ccg-c64-library-row button:hover:not(:disabled),
+.ccg-c64-library-row select:hover {
+  border-color: var(--emu-accent);
+}
+
+.ccg-c64-library-note {
+  display: block;
+  margin-top: 0.45rem;
+}
+
+.ccg-c64-drop-hint {
+  position: absolute;
+  inset: auto 50% 1rem auto;
+  z-index: 4;
+  transform: translateX(50%);
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(141,130,255,0.34);
+  border-radius: 7px;
+  background: rgba(7,9,28,0.8);
+  color: rgba(228,227,255,0.65);
+  font-family: var(--ccg-font-mono, "Courier New", monospace);
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.ccg-c64-screen-stage.is-dragover {
+  border-color: var(--emu-accent);
+  box-shadow: inset 0 0 70px rgba(0,0,0,0.88), 0 0 28px rgba(141,130,255,0.18);
+}
+
+.ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint {
+  color: #fff;
+  border-color: var(--emu-accent);
+  background: rgba(62,55,137,0.86);
+  transform: translateX(50%) scale(1.04);
+}
+
 /* Touch controller ----------------------------------------- */
 
 .ccg-c64-touch-controls {
@@ -1033,6 +1141,20 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-control-stack {
     grid-template-columns: 1fr;
     gap: 0.45rem;
+  }
+
+  .ccg-c64-quickload {
+    grid-template-columns: 1fr;
+  }
+
+  .ccg-c64-panel--quickload,
+  .ccg-c64-panel--library {
+    grid-column: auto;
+  }
+
+  .ccg-c64-drop-hint {
+    bottom: 0.55rem;
+    font-size: 0.46rem;
   }
 
   .ccg-c64-panel,

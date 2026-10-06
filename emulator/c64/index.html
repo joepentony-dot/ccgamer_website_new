@@ -28,7 +28,7 @@
     </a>
     <nav class="ccg-c64-topnav" aria-label="C64 emulator navigation">
       <a href="/emulation.html">GUIDES</a>
-      <button type="button" data-open-setup>ROMS</button>
+      <button type="button" data-open-setup>SYSTEM ROMS</button>
       <a href="/emulator/c64/legal.html">SOURCE</a>
     </nav>
   </header>
@@ -38,7 +38,7 @@
       <div class="ccg-c64-display-head">
         <div>
           <span class="ccg-c64-kicker">CCG BROWSER C64 // PAL</span>
-          <strong data-machine-state>WAITING FOR ROM CHECK</strong>
+          <strong data-machine-state>READY FOR MEDIA</strong>
         </div>
         <div class="ccg-c64-live-state">
           <span class="ccg-c64-led"></span>
@@ -46,20 +46,21 @@
         </div>
       </div>
 
-      <div class="ccg-c64-screen-stage">
+      <div class="ccg-c64-screen-stage" data-media-dropzone>
         <div class="ccg-c64-screen-bezel">
           <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" tabindex="0"></canvas>
           <div class="ccg-c64-screen-glass" aria-hidden="true"></div>
         </div>
+        <div class="ccg-c64-drop-hint" aria-hidden="true">DROP C64 MEDIA HERE</div>
       </div>
 
       <div class="ccg-c64-screen-foot">
         <span>384 × 272 SOURCE</span>
         <span>WEBGL / CRT PRESENTER</span>
-        <span>CLICK SCREEN FOR KEYBOARD</span>
+        <span>DROP OR LOAD C64 MEDIA</span>
       </div>
 
-      <p class="ccg-c64-stage-note" data-stage-note>Load your own C64 ROMs once, then press POWER.</p>
+      <p class="ccg-c64-stage-note" data-stage-note>Choose a C64 file or an Online Library item. System ROM setup is only requested if this browser has not stored them yet.</p>
 
       <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
         <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
@@ -74,10 +75,30 @@
     </section>
 
     <aside class="ccg-c64-control-stack" aria-label="C64 controls and media">
+      <section class="ccg-c64-panel ccg-c64-panel--quickload">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>PLAY C64 MEDIA</strong><em>FILE FIRST</em></header>
+        <div class="ccg-c64-quickload">
+          <button type="button" class="ccg-c64-primary-load" data-load-any-media>LOAD YOUR FILE</button>
+          <input id="ccg-c64-any-media-input" type="file" accept=".prg,.d64,.d71,.d81,.g64,.tap,.t64,.crt" hidden>
+          <p>PRG, D64, D71, D81, G64, TAP, T64 and CRT are accepted. You can also drag a file onto the C64 screen.</p>
+        </div>
+      </section>
+
+      <section class="ccg-c64-panel ccg-c64-panel--library">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>ONLINE LIBRARY</strong><em data-online-library-status>LOADING</em></header>
+        <div class="ccg-c64-library-row">
+          <select data-online-library-select aria-label="Choose C64 media from the CCG Online Library">
+            <option value="">Loading library…</option>
+          </select>
+          <button type="button" data-online-library-load disabled>LOAD</button>
+        </div>
+        <small class="ccg-c64-library-note">CCG-hosted entries are limited to media CCG is permitted to distribute. More can be added to the library manifest without changing the emulator.</small>
+      </section>
+
       <section class="ccg-c64-panel ccg-c64-panel--status">
         <header class="ccg-c64-panel-title"><span>••</span><strong>STATUS</strong><em data-audio-status>STARTS ON BOOT</em></header>
         <div class="ccg-c64-status-grid">
-          <div><span>ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
+          <div><span>SYSTEM ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
           <div><span>1541 DOS</span><strong data-drive-status>OPTIONAL</strong></div>
           <div><span>SID</span><strong>6581 / 8580</strong></div>
           <div><span>VIDEO</span><strong>PAL 50 HZ</strong></div>
@@ -93,9 +114,9 @@
           <button type="button" data-crt-toggle><span>CRT</span><strong>TUBE</strong></button>
           <button type="button" data-size-toggle><span>SIZE</span><strong>FIT</strong></button>
           <button type="button" data-fullscreen><span>DISPLAY</span><strong>FULL</strong></button>
-          <button type="button" data-load-media disabled><span>PROGRAM</span><strong>LOAD PRG</strong></button>
+          <button type="button" data-load-media><span>PROGRAM</span><strong>LOAD PRG</strong></button>
           <button type="button" data-audio-toggle disabled><span>SID AUDIO</span><strong>MUTE</strong></button>
-          <button type="button" data-open-setup><span>ROM BANK</span><strong>SETUP</strong></button>
+          <button type="button" data-open-setup><span>SYSTEM ROMS</span><strong>SETUP</strong></button>
         </div>
         <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
       </section>
@@ -112,7 +133,7 @@
       <section class="ccg-c64-panel">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
         <div class="ccg-c64-media-row">
-          <button type="button" data-load-disk disabled>LOAD DISK</button>
+          <button type="button" data-load-disk>LOAD DISK</button>
           <button type="button" data-drive-mode aria-pressed="false" disabled>FAST LOAD</button>
         </div>
         <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
@@ -121,7 +142,7 @@
       <section class="ccg-c64-panel">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DATASETTE</strong><em data-tape-slot-status>TAP / T64</em></header>
         <div class="ccg-c64-media-row ccg-c64-media-row--four">
-          <button type="button" data-load-tape disabled>LOAD</button>
+          <button type="button" data-load-tape>LOAD</button>
           <button type="button" data-tape-play disabled>PLAY</button>
           <button type="button" data-tape-stop disabled>STOP</button>
           <button type="button" data-tape-rewind disabled>REW</button>
@@ -132,7 +153,7 @@
       <section class="ccg-c64-panel">
         <header class="ccg-c64-panel-title"><span>••</span><strong>CARTRIDGE</strong><em data-cartridge-slot-status>CRT / EASYFLASH</em></header>
         <div class="ccg-c64-media-row">
-          <button type="button" data-load-cartridge disabled>LOAD CRT</button>
+          <button type="button" data-load-cartridge>LOAD CRT</button>
           <button type="button" data-eject-cartridge disabled>EJECT</button>
         </div>
         <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
@@ -153,10 +174,10 @@
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--rom">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>ROM CONTROL</strong><em>LOCAL BROWSER STORAGE</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>SYSTEM ROMS</strong><em>ONE-TIME BROWSER SETUP</em></header>
         <div class="ccg-c64-media-row">
-          <button type="button" data-open-setup>OPEN SETUP</button>
-          <button type="button" data-clear-roms>CLEAR ROMS</button>
+          <button type="button" data-open-setup>ADD / CHANGE</button>
+          <button type="button" data-clear-roms>CLEAR</button>
         </div>
       </section>
     </aside>
@@ -164,7 +185,7 @@
 
   <footer class="ccg-c64-footer">
     <span>&copy; <span data-ccg-c64-year></span> Cheeky Commodore Gamer.</span>
-    <span>ROM images are not supplied. User media remains local to the browser.</span>
+    <span>C64 system ROM images are not supplied. User media remains local unless an authorised Online Library item is selected.</span>
     <a href="/emulator/c64/legal.html">GPL source &amp; notices</a>
   </footer>
 
@@ -173,31 +194,31 @@
     <section class="ccg-c64-setup__dialog" role="dialog" aria-modal="true" aria-labelledby="ccg-rom-setup-title">
       <div class="ccg-c64-setup__header">
         <div>
-          <span class="ccg-c64-kicker">FIRST BOOT // ROM CONTROL</span>
-          <h2 id="ccg-rom-setup-title">Prepare your C64 ROM bank</h2>
+          <span class="ccg-c64-kicker">SYSTEM ROMS // ONE-TIME SETUP</span>
+          <h2 id="ccg-rom-setup-title">Add the C64 system ROMs</h2>
         </div>
-        <a href="/emulation.html" class="ccg-c64-setup__exit">EXIT</a>
+        <button type="button" class="ccg-c64-setup__exit" data-close-setup>CLOSE</button>
       </div>
 
-      <p class="ccg-c64-setup__lead">The emulator needs the original C64 KERNAL, BASIC and character ROMs. CCG does not include or download copyrighted Commodore ROMs. Files you choose are checked locally and kept in this browser.</p>
+      <p class="ccg-c64-setup__lead">A real C64 needs KERNAL, BASIC and CHARGEN firmware before any D64, TAP, PRG or cartridge can run. Select those files once and this browser remembers them. After that, media loading is direct.</p>
 
       <div class="ccg-c64-setup__steps">
         <section class="ccg-c64-setup-step">
           <div class="ccg-c64-setup-step__number">01</div>
           <div class="ccg-c64-setup-step__body">
-            <h3>Scan an existing VICE installation</h3>
-            <p>Choose the main VICE folder. The browser searches its subfolders for recognised C64 ROM filenames and sizes.</p>
-            <label class="ccg-c64-file-trigger" for="ccg-vice-folder">SCAN VICE FOLDER</label>
-            <input id="ccg-vice-folder" type="file" webkitdirectory directory multiple hidden>
-            <output class="ccg-c64-setup-message" data-vice-message>Nothing scanned yet.</output>
+            <h3>Select a ROM set</h3>
+            <p>Select KERNAL, BASIC and CHARGEN together. The optional 1541 DOS ROM may be included for cycle-driven drive emulation.</p>
+            <label class="ccg-c64-file-trigger" for="ccg-rom-set">CHOOSE ROM FILES</label>
+            <input id="ccg-rom-set" type="file" accept=".bin,.rom" multiple hidden>
+            <output class="ccg-c64-setup-message" data-rom-set-message>Select three or four ROM files.</output>
           </div>
         </section>
 
         <section class="ccg-c64-setup-step">
           <div class="ccg-c64-setup-step__number">02</div>
           <div class="ccg-c64-setup-step__body">
-            <h3>Or choose ROM files individually</h3>
-            <p>Each slot validates the expected byte size before it is accepted.</p>
+            <h3>Individual files</h3>
+            <p>If your files have unusual names, add them to the matching slot instead.</p>
             <div class="ccg-c64-rom-grid">
               <label class="ccg-c64-rom-slot" data-rom-card="kernal">
                 <span>KERNAL</span><strong data-rom-state="kernal">WAITING</strong><small>8,192 bytes</small>
@@ -222,16 +243,16 @@
         <section class="ccg-c64-setup-step ccg-c64-setup-step--final">
           <div class="ccg-c64-setup-step__number">03</div>
           <div class="ccg-c64-setup-step__body">
-            <h3>ROM check</h3>
+            <h3>Ready</h3>
             <p data-rom-summary>Three required ROMs are still needed.</p>
-            <button type="button" class="ccg-c64-ready-button" data-finish-setup disabled>ENTER EMULATOR</button>
+            <button type="button" class="ccg-c64-ready-button" data-finish-setup disabled>CONTINUE</button>
           </div>
         </section>
       </div>
 
       <div class="ccg-c64-setup__privacy">
         <strong>LOCAL ONLY</strong>
-        <span>No ROM file is uploaded to CCG. Validated ROM bytes remain in browser storage on this device.</span>
+        <span>System ROM files are stored only in this browser. They are not uploaded to CCG. Game and demo files loaded from your computer also remain local.</span>
       </div>
     </section>
   </div>
