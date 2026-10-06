@@ -101,9 +101,19 @@ try{
   assert.equal(heldModule,true,"trusted-music regression must hold an ordered module so the first Start Game click is genuinely pre-ready");
 
   const start=page.locator("#solo-btn");
-  await start.click({force:true});
+  const blocked=await page.evaluate(()=>{
+    const loader=document.getElementById("ccg-release-loading");
+    const style=loader?getComputedStyle(loader):null;
+    return{
+      releaseReady:document.body.dataset.releaseReady||"",
+      loaderVisible:Boolean(loader&&!loader.hidden&&style?.display!=="none"),
+      bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready)
+    };
+  });
+  assert.deepEqual(blocked,{releaseReady:"false",loaderVisible:true,bootstrapReady:false},"the pre-ready menu must remain physically covered by the canonical loader");
+  await start.dispatchEvent("click");
   const captured=await page.evaluate(()=>({pending:window.CCGLostSizzlerV142Bootstrap?.pendingStartId||"",note:document.getElementById("menu-note")?.textContent||""}));
-  assert.equal(captured.pending,"solo-btn","the early Start Game click must be captured before startup is released");
+  assert.equal(captured.pending,"solo-btn","a pre-ready Start Game request reaching the bootstrap boundary must be captured before startup is released");
   releaseHeldModule();
 
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true&&window.CCGLostSizzlerReleaseGate?.state?.ready===true);
