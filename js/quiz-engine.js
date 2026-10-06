@@ -421,7 +421,10 @@
         if (imageSrc) {
             const img = document.createElement("img");
             img.src = imageSrc;
-            img.alt = q.gameName ? `Screenshot for ${q.gameName}` : "Quiz image";
+            img.alt = q.imageAlt || (q.gameName ? `Screenshot for ${q.gameName}` : "Quiz image");
+            if (q.pixelArt === true) {
+                img.dataset.pixelArt = "true";
+            }
             mediaEl.appendChild(img);
         }
 
@@ -483,7 +486,16 @@
             e.currentTarget.classList.add("quiz-answer--correct");
             e.currentTarget.classList.add("quiz-answer--highlight-correct");
             if (feedbackEl) {
-                feedbackEl.textContent = "Correct!";
+                feedbackEl.replaceChildren();
+                const verdict = document.createElement("strong");
+                verdict.textContent = "Correct!";
+                feedbackEl.appendChild(verdict);
+                if (quizState.currentQuestion.reveal) {
+                    const detail = document.createElement("span");
+                    detail.className = "quiz-feedback-detail";
+                    detail.textContent = quizState.currentQuestion.reveal;
+                    feedbackEl.appendChild(detail);
+                }
                 feedbackEl.classList.add("quiz-feedback--correct", "is-visible");
             }
             speakFeedback("Correct");
@@ -498,7 +510,16 @@
                 }
             }, WRONG_REVEAL_FLASH_MS);
             if (feedbackEl) {
-                feedbackEl.textContent = "Incorrect";
+                feedbackEl.replaceChildren();
+                const verdict = document.createElement("strong");
+                verdict.textContent = "Incorrect";
+                feedbackEl.appendChild(verdict);
+                if (quizState.currentQuestion.reveal) {
+                    const detail = document.createElement("span");
+                    detail.className = "quiz-feedback-detail";
+                    detail.textContent = quizState.currentQuestion.reveal;
+                    feedbackEl.appendChild(detail);
+                }
                 feedbackEl.classList.add("quiz-feedback--wrong", "is-visible");
             }
             speakFeedback("Incorrect");
