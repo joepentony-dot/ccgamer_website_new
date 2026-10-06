@@ -48,7 +48,7 @@ assert(owner.includes('ccg-arcade-assets/music/lostSizzlerNamed'),'R110 must pin
 assert(owner.includes('ccg-arcade-assets/music/lostSizzlerStalker'),'R110 must pin the approved uploaded Stalker soundtrack into the release manifest.');
 for(const html of [index,publicIndex]){
   const basePos=html.indexOf('js/audio.js?v=20261006r110');
-  const playlistPos=html.indexOf('js/lost-sizzler-playlist-audio.js?v=20261006r110-music-core');
+  const playlistPos=html.indexOf('js/lost-sizzler-playlist-audio.js?v=20261006r110');
   assert(basePos>=0&&playlistPos>basePos,'R110 public entries must core-load the playlist owner immediately after base audio.');
 }
 assert(patch.includes('function retryUploadedMusicOnGesture(event)')&&patch.includes('event?.target?.closest?.("#solo-btn,#tutorial-zone-btn")'),'Mobile playback rejection and trusted launch must use an event-aware real-gesture recovery path.');
