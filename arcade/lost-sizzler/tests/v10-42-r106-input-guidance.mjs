@@ -36,4 +36,7 @@ assert.match(guidance,/function controllerProfile\(\)/,"tutorial acknowledgement
 assert.match(guidance,/buttons<=2.*Single-button joystick detected/s,"low-button controllers must be described as single-button joystick controls");
 assert.match(guidance,/Joypad detected: stick\/D-pad moves, A attacks, Select\/View opens Inventory, and double-tap a direction dashes/,"multi-button joypads must receive the correct live alternatives");
 
+assert.doesNotMatch(guidance,/void requestPlayFullscreen\(\);\s*result=startSolo\(\)/,"tutorial/start guidance must not consume the trusted click on fullscreen before the soundtrack starts");
+assert.match(guidance,/result=startSolo\(\)/,"Game and Tutorial must still route through canonical startSolo audio/fullscreen ordering");
+
 console.log("Dungeon R106 double-tap dash and controller-aware tutorial contract passed.");
