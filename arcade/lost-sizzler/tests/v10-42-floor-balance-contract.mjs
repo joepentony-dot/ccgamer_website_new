@@ -8,6 +8,9 @@ const root=path.resolve(here,'../../..');
 const source=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-floor-balance.js'),'utf8');
 const loader=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-41-r30-buglog.js'),'utf8');
 const bootstrap=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-bootstrap.js'),'utf8');
+const config=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/config.js'),'utf8');
+const localRuntime=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/game-local-runtime.js'),'utf8');
+const gamePlay=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/game-play.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 const systems={decorate(_world,host){return host}};
@@ -31,6 +34,9 @@ assert(bootstrap.indexOf('v10-42-five-depth-campaign.js')<bootstrap.indexOf('v10
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-tutorial-campaign.js'),'Floor combat balance must install before presentation-only Tutorial copy.');
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-zero-server-release.js'),'Floor combat balance must install before the production release-policy guard.');
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-r1-stability.js'),'Floor combat balance must install before final V10.42 stability protection.');
+assert(config.includes('CASUAL:{enemyHp:.72,enemyDamage:.65,enemyTempo:.82,damageGraceMs:1150,loot:1.2,ammo:1.35,stalker:.72}'),'Casual must be materially lower-pressure than Arcade rather than relying only on integer-rounded damage.');
+assert(localRuntime.includes('Number(dt||0)*tempo'),'Authoritative enemy AI must apply the difficulty enemyTempo multiplier.');
+assert(gamePlay.includes('PGR.difficulty(run)?.damageGraceMs||800'),'Player damage recovery must honour the longer Casual damage grace window.');
 
 const expectedDamage=[.80,.84,.88,.92,.96,1.00,1.04,1.08,1.12,1.16,1.20,1.23,1.26,1.29,1.32];
 for(let floor=1;floor<=15;floor++){
