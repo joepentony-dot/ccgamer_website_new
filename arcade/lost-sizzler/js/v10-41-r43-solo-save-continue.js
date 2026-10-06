@@ -42,7 +42,7 @@
   const soloSaveOwner=()=>{
     if(tutorialOwned())return false;
     const special=specialType();if(special||ACTIVE_SPECIAL_MODES.has(special))return false;
-    try{return Boolean(run&&!run.daily&&p1&&!p2&&String(playMode||"")==="solo"&&!net?.connected&&document.body?.dataset?.hordeSolo!=="true")}catch(_){return false}
+    try{return Boolean(run&&!run.daily&&p1&&!p2&&String(playMode||"")==="solo"&&!(typeof net!=="undefined"&&net?.connected)&&document.body?.dataset?.hordeSolo!=="true")}catch(_){return false}
   };
   const standardSolo=()=>{
     if(!soloSaveOwner())return false;
@@ -243,9 +243,10 @@
       // their promises before the saved checkpoint is authoritative again.
       try{audio=S.start()}catch(_){}
       try{fs=requestPlayFullscreen()}catch(_){}
-      // Continue is a local checkpoint restore. net.setSolo() initiates
-      // best-effort transport teardown and resets local network state immediately.
-      net.setSolo(saved.player?.name||playerName());
+      // Continue is now a local-only checkpoint restore. Older builds exposed
+      // net.setSolo(); R107 removes the network runtime entirely, so retain the
+      // teardown only when an older compatibility object is actually present.
+      if(typeof net!=="undefined"&&typeof net?.setSolo==="function")net.setSolo(saved.player?.name||playerName());
       run=clone(saved.run);score=Math.max(0,Number(saved.score)||0);p1=clone(saved.player);p2=null;playMode="solo";mode="playing";
       startWorld(PGR.floorSeed(run),false,true,true);
       restoreCheckpointEntryPosition(saved.player);
