@@ -454,9 +454,17 @@
     updateVolumes();
   }
 
-  function retryUploadedMusicOnGesture(){
-    if(!enabled||!started)return false;
+  function retryUploadedMusicOnGesture(event){
+    if(!enabled)return false;
     const state=desiredState();
+    if(!started){
+      const launchTarget=event?.target?.closest?.("#solo-btn,#tutorial-zone-btn");
+      if(!launchTarget)return false;
+      primeState(state);
+      const slot=stateSlots.get(state);
+      if(slot)prepareSlotForPlay(slot);
+      return Boolean(slot);
+    }
     if(!pendingGestureState&&!soundtrackOwned(state))return false;
     failures.clear();
     clearRetry();
