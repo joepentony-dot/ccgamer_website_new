@@ -4,13 +4,13 @@
 // transport, buffering and browser integration live here.
 
 import { makeVoiceTrio, computeSyncPulses } from "./core/sid/sid-voice.js";
+import { SIDFilter, SIDExternalFilter, clip16 } from "./core/sid/sid-filter.js";
 
 const C64_CLOCK_HZ = 985248;
 const RING_CAPACITY = 131072;
 const RING_MASK = RING_CAPACITY - 1;
 const HEADER_BYTES = 16;
 const PREFILL_MS = 30;
-const DEFAULT_GAIN = 1 / (524288 * 3);
 
 class CCGSidProcessor extends AudioWorkletProcessor {
   constructor() {
@@ -21,12 +21,10 @@ class CCGSidProcessor extends AudioWorkletProcessor {
     this.currentCycle = 0;
     this.cycleFraction = 0;
     this.paused = true;
-    this.volume = 0;
-    this.filterRoute = 0;
-    this.modeVol = 0;
+    this.filter = null;
+    this.extfilt = new SIDExternalFilter();
+    this.scaleFactor = 5;
     this.prefillSamples = 0;
-    this.prevInput = 0;
-    this.prevOutput = 0;
     this.voices = makeVoiceTrio();
 
     this.port.onmessage = (event) => {
@@ -64,11 +62,11 @@ class CCGSidProcessor extends AudioWorkletProcessor {
       voice.is8580 = is8580;
       if (!powerCycle) voice.reset();
     }
-    this.volume = 0;
-    this.filterRoute = 0;
-    this.modeVol = 0;
-    this.prevInput = 0;
-    this.prevOutput = 0;
+    if (!this.filter) this.filter = new SIDFilter(is8580 ? 1 : 0);
+    else this.filter.setChipModel(is8580 ? 1 : 0);
+    this.filter.reset();
+    this.extfilt.reset();
+    this.scaleFactor = is8580 ? 5 : 3;
   }
 
   _applyWrite(reg, value) {
@@ -79,14 +77,11 @@ class CCGSidProcessor extends AudioWorkletProcessor {
       this.voices[voice].write(reg % 7, value);
       return;
     }
-    if (reg === 23) {
-      this.filterRoute = value;
-      return;
-    }
-    if (reg === 24) {
-      this.modeVol = value;
-      this.volume = value & 0x0f;
-    }
+    if (!this.filter) return;
+    if (reg === 21) this.filter.writeFC_LO(value);
+    else if (reg === 22) this.filter.writeFC_HI(value);
+    else if (reg === 23) this.filter.writeRES_FILT(value);
+    else if (reg === 24) this.filter.writeMODE_VOL(value);
   }
 
   _consumeDueEvents() {
@@ -116,17 +111,13 @@ class CCGSidProcessor extends AudioWorkletProcessor {
     v2.clockCore();
     v3.clockCore();
 
-    let s1 = v1.outputStageAudio();
-    let s2 = v2.outputStageAudio();
-    let s3 = v3.outputStageAudio();
-
-    // MODE/VOL bit 7 disables voice 3 when it is not routed through the
-    // hardware filter. This first CCG audio pass does not yet model the
-    // analog filter itself, but preserves the voice-3-off behaviour.
-    if ((this.modeVol & 0x80) && !(this.filterRoute & 0x04)) s3 = 0;
+    const s1 = v1.outputStageAudio();
+    const s2 = v2.outputStageAudio();
+    const s3 = v3.outputStageAudio();
+    const filtered = this.extfilt.clockOut(this.filter.clockOut(s1, s2, s3));
 
     this.currentCycle = (this.currentCycle + 1) >>> 0;
-    return (s1 + s2 + s3) * DEFAULT_GAIN * (this.volume / 15);
+    return clip16(((this.scaleFactor * filtered) / 2) | 0) / 32768;
   }
 
   _nextSample() {
@@ -136,15 +127,7 @@ class CCGSidProcessor extends AudioWorkletProcessor {
 
     let sum = 0;
     for (let i = 0; i < cycles; i++) sum += this._clockOneCycle();
-    let input = sum / cycles;
-
-    // Lightweight DC blocking keeps the SID DAC's modelled offset from
-    // consuming headroom. The analog reSID filter/output stage remains a
-    // later qualification pass; this is the first live browser-audio path.
-    const output = input - this.prevInput + 0.995 * this.prevOutput;
-    this.prevInput = input;
-    this.prevOutput = output;
-    return Math.max(-1, Math.min(1, output));
+    return Math.max(-1, Math.min(1, sum / cycles));
   }
 
   process(_inputs, outputs) {
