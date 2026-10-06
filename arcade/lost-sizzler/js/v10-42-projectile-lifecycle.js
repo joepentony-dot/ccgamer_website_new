@@ -84,7 +84,12 @@
         if(!projectilePathClear(b,nx,ny)){b.ttl=0;continue}
         b.x=nx;b.y=ny;b.ttl--;
         if(b.style==="fire")burst(nx,ny,Math.random()<.5?P.orange:P.gold,3,.6);
-        for(const lp of localPlayers())if(Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,Number(b.power||1),false,b.source||"enemy");const px=lp.x+b.dx,py=lp.y+b.dy;if(W.walkable(world.map,px,py,host)){lp.x=px;lp.y=py}break}
+        let deflected=false;
+        for(const lp of localPlayers()){
+          if(typeof deflectEnemyProjectile==="function"&&deflectEnemyProjectile(lp,b,nx,ny)){deflected=true;break}
+          if(Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,Number(b.power||1),false,b.source||"enemy");const px=lp.x+b.dx,py=lp.y+b.dy;if(W.walkable(world.map,px,py,host)){lp.x=px;lp.y=py}break}
+        }
+        if(deflected)continue;
       }
       completed=true;
     }finally{
