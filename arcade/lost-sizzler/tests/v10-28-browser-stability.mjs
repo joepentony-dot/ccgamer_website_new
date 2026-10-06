@@ -315,7 +315,7 @@ try{
       };
     });
     assert.equal(split.exists,false,"R107 must remove the retired Split Screen compatibility anchor entirely");
-    assert.deepEqual(split.localModes,["solo","tutorial"],"R107 must expose only the main game and Tutorial as supported local modes");
+    assert.deepEqual(split.localModes,["game","tutorial"],"R107 must expose only the main game and Tutorial as supported local modes");
     assert.equal(split.runActive,"false","checking the retired Split anchor must not start a run");
     await assertHealthy(state,"retired split-screen entry");
     logStage("retired split-screen removal: complete");
