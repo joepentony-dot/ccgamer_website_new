@@ -34,6 +34,8 @@ assert(onboarding.includes('one death cache'),'Tutorial must explain exact-one d
 assert(onboarding.includes('weapon caches upgrade the single evolving firearm'),'Tutorial must reject obsolete separate-weapon cache semantics.');
 assert(onboarding.includes('SHOPS, SANCTUARY & SPECIAL OPPORTUNITIES'),'Tutorial must teach shops and Sanctuary as core discovered services.');
 assert(onboarding.includes('Sanctuary rooms are challenge-free refuges'),'Tutorial must explain Sanctuary safety.');
+assert(onboarding.includes('r._tutorialTheme=r.theme;r.tutorialZone=true;r.dangerous=false'),'Tutorial must preserve the generated dungeon room theme while making the start room safe.');
+assert(!onboarding.includes('r.theme="TRAINING_ARCHIVE"'),'Tutorial must not replace the live dungeon artwork with the retired flat-blue Training Archive theme.');
 assert(onboarding.includes('You Are Ready To Take On The Adventure!'),'Established completion signal must remain present.');
 
 assert(guidance.includes('SANCTUARY","Green cross only after discovery'),'Information tour must teach discovered-only Sanctuary map semantics.');
