@@ -6,6 +6,11 @@ const profileHtml = fs.readFileSync('community/profile.html', 'utf8');
 const memberHubCss = fs.readFileSync('resources/css/member-hub.css', 'utf8');
 const profileJs = fs.readFileSync('resources/js/auth/profile-page.js', 'utf8');
 const memberHubJs = fs.readFileSync('resources/js/auth/member-hub.js', 'utf8');
+const libraryInterface = fs.readFileSync('js/ccg-member-library-interface.js', 'utf8');
+const customCollections = fs.readFileSync('resources/js/auth/member-custom-collections.js', 'utf8');
+const memberCommunity = fs.readFileSync('resources/js/auth/member-community.js', 'utf8');
+const achievementCss = fs.readFileSync('resources/css/member-achievement-badges.css', 'utf8');
+const loyaltyCss = fs.readFileSync('resources/css/member-loyalty-badges.css', 'utf8');
 const avatarMigration = fs.readFileSync(
   'supabase/migrations/20261006123000_add_member_profile_avatars.sql',
   'utf8'
@@ -63,4 +68,27 @@ test('member hub CSS keeps badges and stats compact', () => {
 
 test('member settings no longer writes retired profile preference columns', () => {
   assert.doesNotMatch(memberHubJs, /notify_new_games_opt_in/);
+});
+
+
+test('optional Member Hub tools stay collapsed instead of extending the page', () => {
+  assert.match(profileHtml, /member-milestones-details/);
+  assert.match(profileHtml, /<details[^>]+id="memberAchievements"/);
+  assert.match(libraryInterface, /document\.createElement\(compact \? "details" : "section"\)/);
+  assert.match(libraryInterface, /member-personal-library-details/);
+  assert.match(memberCommunity, /document\.createElement\('details'\)/);
+  assert.match(memberCommunity, /member-public-settings member-compact-details/);
+});
+
+test('compact profile does not dynamically inflate the four-stat summary', () => {
+  assert.match(libraryInterface, /if \(isCompactHub\(\)\) return;/);
+  assert.match(customCollections, /if \(document\.querySelector\("\.member-dashboard-grid"\)\) return;/);
+});
+
+test('detailed achievement and loyalty surfaces use dense Member Hub rows', () => {
+  assert.match(achievementCss, /grid-template-columns:\s*34px minmax\(0, 1fr\)/);
+  assert.match(achievementCss, /min-height:\s*0/);
+  assert.match(achievementCss, /member-achievement-card__description[\s\S]*display:\s*none/);
+  assert.match(loyaltyCss, /grid-template-columns:\s*64px minmax\(0, 1fr\)/);
+  assert.match(loyaltyCss, /member-loyalty-badge__message[\s\S]*display:\s*none/);
 });
