@@ -172,8 +172,6 @@ try{
   });
   await page.waitForTimeout(80);
   await page.keyboard.down("Space");
-  await page.waitForTimeout(90);
-  await page.keyboard.up("Space");
   try{
     await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before,swordBefore,{timeout:3000});
   }catch(error){
@@ -186,6 +184,8 @@ try{
       activeElement:String(document.activeElement?.id||document.activeElement?.tagName||""),updateFaults:window.CCGLostSizzlerV141R29?.state?.updateFaults,renderFaults:window.CCGLostSizzlerV141R29?.state?.renderFaults
     }))));
     throw error;
+  }finally{
+    await page.keyboard.up("Space");
   }
   const firstSwordSwing=await page.evaluate(()=>Number(p1._meleeSwingAt||0));
   await page.waitForTimeout(1200);
@@ -230,9 +230,11 @@ try{
   assert.equal(adjacentBefore.hud,"L2 FIELD PULSE","weapon HUD must show compact level plus readable weapon family");
   assert.match(adjacentBefore.title,/Weapon Level 2 · TIER 2 · Field Pulse II/,"weapon HUD title must retain full evolved weapon identity");
   await page.keyboard.down("Space");
-  await page.waitForTimeout(90);
-  await page.keyboard.up("Space");
-  await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
+  try{
+    await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
+  }finally{
+    await page.keyboard.up("Space");
+  }
   const adjacentAfter=await page.evaluate(()=>({
     mana:Number(p1.mana),
     swing:Number(p1._meleeSwingAt||0),
