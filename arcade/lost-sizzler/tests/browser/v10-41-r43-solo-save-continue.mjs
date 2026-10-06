@@ -83,7 +83,7 @@ try{
   assert.equal(savedQuit.mana,floor1.mana,"Save & Quit must not preserve mid-room ammunition mutation");
   assert.equal(savedQuit.x,floor1.x,"Save & Quit must retain entry X position");
   assert.equal(savedQuit.y,floor1.y,"Save & Quit must retain entry Y position");
-  assert.match(savedQuit.button,/Continue Solo — Floor 1/,"menu must expose a Floor 1 Continue action");
+  assert.match(savedQuit.button,/Continue — Floor 1/,"menu must expose a Floor 1 Continue action");
   assert.match(savedQuit.summary,/Saved run: Floor 1/,"menu must expose saved-run metadata");
   assert.ok(savedQuit.saveQuits>=1,"Save & Quit diagnostic must advance");
 
