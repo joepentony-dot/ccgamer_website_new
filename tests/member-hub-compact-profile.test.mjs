@@ -4,33 +4,42 @@ import test from 'node:test';
 
 const html = fs.readFileSync('community/profile.html', 'utf8');
 const css = fs.readFileSync('resources/css/member-hub.css', 'utf8');
+const achievementCss = fs.readFileSync('resources/css/member-achievement-badges.css', 'utf8');
+const achievementJs = fs.readFileSync('resources/js/auth/member-achievement-badges.js', 'utf8');
 const profileJs = fs.readFileSync('resources/js/auth/profile-page.js', 'utf8');
 const memberHubJs = fs.readFileSync('resources/js/auth/member-hub.js', 'utf8');
 
-test('member hub is reduced to the compact core sections', () => {
-  for (const id of [
-    'memberOverview',
-    'memberFavourites',
-    'memberReviews',
-    'memberAchievements',
-    'memberSettings'
-  ]) {
-    assert.match(html, new RegExp(`id="${id}"`));
-  }
-
+test('member hub keeps the core information sections in compact menus', () => {
+  assert.match(html, /<details id="memberFavourites"/);
+  assert.match(html, /<details id="memberReviews"/);
+  assert.match(html, /<details class="member-panel member-panel--compact member-achievements-menu" id="memberAchievements">/);
+  assert.match(html, /<details class="member-account-settings member-info-menu" id="memberSettings">/);
   assert.match(html, /<details class="member-compact-details" id="memberCommunity">/);
-  assert.doesNotMatch(html, />CCG Community</);
+
   assert.doesNotMatch(html, /Member Benefits/);
   assert.doesNotMatch(html, /Share Your Verdict/);
   assert.doesNotMatch(html, /New and Recently Updated/);
 });
 
-test('member badge layout and advanced tools are deliberately compact', () => {
-  assert.match(css, /\.member-achievements\s*\{/);
-  assert.match(css, /grid-template-columns:\s*repeat\(5/);
-  assert.match(css, /min-height:\s*54px/);
-  assert.match(css, /\.member-compact-details\s*\{/);
-  assert.match(css, /\.member-achievement-disclosure/);
+test('achievements are collapsed by default and use a dense information grid', () => {
+  const achievementTag = html.match(/<details[^>]+id="memberAchievements"[^>]*>/)?.[0] || '';
+  assert.ok(achievementTag);
+  assert.doesNotMatch(achievementTag, /\sopen(?:\s|=|>)/);
+
+  assert.match(css, /\.member-achievements-menu__summary/);
+  assert.match(css, /\.member-info-menu__summary/);
+  assert.match(achievementCss, /grid-template-columns:\s*repeat\(4/);
+  assert.match(achievementCss, /min-height:\s*82px/);
+  assert.match(achievementCss, /-webkit-line-clamp:\s*2/);
+
+  assert.doesNotMatch(achievementJs, /document\.createElement\('details'\)/);
+  assert.match(achievementJs, /section\.insertBefore\(panel, legacyGrid\)/);
+  assert.match(achievementJs, /section\.open = true/);
+});
+
+test('member navigation opens targeted accordion sections', () => {
+  assert.match(memberHubJs, /target\?\.tagName === "DETAILS"/);
+  assert.match(memberHubJs, /target\.open = true/);
 });
 
 test('member profile exposes custom avatar controls', () => {
