@@ -1379,7 +1379,10 @@ function drawRadarCross(ctx,x,y,colour,size=6){
 }
 function renderRadarPanel(p){
   if(!radarCtx||!radarCanvasEl||!world||!p)return;
-  const r=radarCanvasEl.getBoundingClientRect(),rw=Math.max(260,Math.round(r.width)),rh=Math.max(140,Math.round(r.height));
+  /* Match the backing bitmap to the actual rendered minimap size. The old
+   * 260x140 minimum forced a different bitmap aspect ratio into narrow/short
+   * sidebar slots, so the browser stretched the radar and made it look squashed. */
+  const r=radarCanvasEl.getBoundingClientRect(),rw=Math.max(1,Math.round(r.width)),rh=Math.max(1,Math.round(r.height));
   if(radarCanvasEl.width!==rw||radarCanvasEl.height!==rh){radarCanvasEl.width=rw;radarCanvasEl.height=rh}
   try{radarCtx.setTransform(1,0,0,1,0,0);radarCtx.globalAlpha=1;radarCtx.globalCompositeOperation="source-over";radarCtx.filter="none";radarCtx.shadowBlur=0;radarCtx.shadowColor="rgba(0,0,0,0)"}catch(_){}
   radarCtx.clearRect(0,0,rw,rh);radarCtx.fillStyle="#030205";radarCtx.fillRect(0,0,rw,rh);
