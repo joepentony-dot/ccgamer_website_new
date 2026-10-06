@@ -24,6 +24,23 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 
 const artifacts=path.resolve(process.env.DUNGEON_VIEWPORT_ARTIFACTS||"node_modules/viewport-artifacts");
 fs.mkdirSync(artifacts,{recursive:true});
+async function captureViewport(page,file){
+  const fontsReady=await page.evaluate(async()=>{
+    if(!document.fonts||document.fonts.status==="loaded")return true;
+    await Promise.race([document.fonts.ready,new Promise(resolve=>setTimeout(resolve,1500))]);
+    return document.fonts.status==="loaded";
+  });
+  if(!fontsReady){
+    console.warn("Viewport screenshot skipped because webfonts did not settle within the diagnostic window.");
+    return;
+  }
+  try{
+    await page.screenshot({path:file,timeout:15000});
+  }catch(error){
+    console.warn(`Viewport screenshot skipped after bounded capture failure: ${error?.message||error}`);
+  }
+}
+
 const selectors=[".ccg-game",".player-hub",".core-stats",".hub-inventory",".hub-progress",".tactical-zone",".radar-card","#radar-canvas",".shortcut-dock","#item-shortcuts",".inventory-panel",".r71-inventory-layout","#inventory-close-top","#inventory-objective","#inventory-loadout","#inventory-list",".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip","#inventory-close",".inventory-footer-actions",".ccg-evolving-firearm","#quick-keyring-icons","#quick-level-up","#hud-health","#hud-p2","#hud-mana","#hud-weapon",...Array.from({length:6},(_,i)=>`#inventory-list .inventory-slot:nth-child(${i+1})`),...Array.from({length:8},(_,i)=>`#item-shortcuts .carried-item:nth-of-type(${i+1})`)];
 try{
  for(const [width,height,windowed] of [[2560,1440],[1920,1080],[1440,900],[1366,768]].flatMap(([w,h])=>[[w,h,false],[w,h,true]]).concat([[390,844,true]])){
@@ -51,12 +68,12 @@ try{
   const measure=()=>page.evaluate(selectors=>Object.fromEntries(selectors.map(s=>{const n=document.querySelector(s),r=n?.getBoundingClientRect();return[s,n?{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,sw:n.scrollWidth,cw:n.clientWidth,sh:n.scrollHeight,ch:n.clientHeight,iw:Number(n.width||0),ih:Number(n.height||0),display:getComputedStyle(n).display}:null]})),selectors);
   const hud=await measure();
 
-  await page.screenshot({path:path.join(artifacts,`${label}-hud.png`)});
+  await captureViewport(page,path.join(artifacts,`${label}-hud.png`));
   await page.keyboard.press("Tab");
   await page.waitForFunction(()=>mode==="inventory"&&!!document.querySelector("#r80-wearable-strip"));
   await page.waitForTimeout(250);
   const inventory=await measure();
-  await page.screenshot({path:path.join(artifacts,`${label}-inventory.png`)});
+  await captureViewport(page,path.join(artifacts,`${label}-inventory.png`));
   fs.writeFileSync(path.join(artifacts,`${label}.json`),JSON.stringify({hud,inventory},null,2));
   const bounds={x:0,y:0,right:width,bottom:height};
   const inside=(a,b)=>a&&a.w>0&&a.x>=b.x-2&&a.y>=b.y-2&&a.right<=b.right+2&&a.bottom<=b.bottom+2;
