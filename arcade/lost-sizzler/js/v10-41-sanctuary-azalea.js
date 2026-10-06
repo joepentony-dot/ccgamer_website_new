@@ -108,7 +108,7 @@
     }
     const trees=edge.filter((_,i)=>i%2===0).slice(0,4);
     const dancerCandidates=edge.filter(q=>!trees.some(t=>t.x===q.x&&t.y===q.y));
-    const dancers=dancerCandidates.slice(0,Math.min(2,dancerCandidates.length)).map((q,index)=>({...q,id:`sanctuary-dancer-${room.id}-${index+1}`,variant:index}));
+    const dancers=dancerCandidates.slice(0,Math.min(1,dancerCandidates.length)).map((q,index)=>({...q,id:`sanctuary-keeper-${room.id}-${index+1}`,variant:index}));
     return{id:`sanctuary-scene-${room.id}`,roomId:room.id,lake,trees,dancers,regen:{x:centre.x,y:centre.y}};
   }
 

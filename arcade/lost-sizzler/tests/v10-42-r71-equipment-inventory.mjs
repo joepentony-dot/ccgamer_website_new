@@ -31,7 +31,7 @@ assert.match(moduleSource,/new Set\(claimedDomains/,"campaign Domain Keys must c
 assert.ok(moduleSource.includes("player.relics"));
 assert.ok(moduleSource.includes("player?.rpgStats"));
 assert.ok(moduleSource.includes('guide.setAttribute("aria-hidden","true")'));
-assert.ok(css.includes("height:min(760px,93dvh)"));
+assert.ok(css.includes("height:min(740px,100%)"));
 assert.ok(css.includes("overflow:hidden!important"));
 assert.ok(css.includes("@media(max-height:820px) and (min-width:901px)"),"short desktop inventory must have a dedicated compact fit rather than inheriting the narrow-screen scrolling layout");
 assert.ok(css.includes("#inventory-panel{overflow:hidden!important}"),"desktop inventory overlay must not expose an outer scrollbar");

@@ -28,7 +28,7 @@
 .ccg-r72-death-card>button:hover,.ccg-r72-death-card>button:focus-visible{background:#4a1324!important;outline:2px solid #ffd85a!important;outline-offset:3px!important}
 .ccg-r72-death-card>em{display:block!important;margin-top:10px!important;color:#9d8c94!important;font:700 9px/1.3 "Courier New",monospace!important;font-style:normal!important;letter-spacing:.7px!important}
 
-.radar-legend.r72-radar-legend{gap:7px 10px!important;padding-top:3px!important}
+.radar-legend.r72-radar-legend{gap:6px 9px!important;padding-top:4px!important;align-content:center!important}
 .radar-legend .radar-sanctuary{position:relative;background:transparent!important;border:0!important;width:10px!important;height:10px!important}
 .radar-legend .radar-sanctuary::before,.radar-legend .radar-sanctuary::after{content:"";position:absolute;background:#64ffa2;box-shadow:0 0 4px rgba(100,255,162,.55)}
 .radar-legend .radar-sanctuary::before{left:4px;top:0;width:3px;height:10px}
@@ -36,7 +36,7 @@
 .radar-legend .radar-key{background:#ffd85a!important;border:1px solid #fff4bb!important;border-radius:50%!important}
 .radar-legend .radar-warden{border:1px solid #e260ff!important;background:#5b2269!important;transform:rotate(45deg)}
 .radar-legend .radar-refuge{border:1px solid #8deeff!important;border-radius:50%!important;background:#17343a!important}
-.radar-room-legend{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin-top:2px;color:#81758b;font-size:6.6px;line-height:1.1}
+.radar-room-legend{display:none!important}
 .radar-room-legend b{color:#b9adbf;font-weight:700}
 .radar-room-legend span{display:inline-flex;align-items:center;gap:3px}
 .radar-room-legend i{display:inline-block;width:7px;height:7px;border:1px solid rgba(255,255,255,.22)}

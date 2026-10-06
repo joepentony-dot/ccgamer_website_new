@@ -1,12 +1,16 @@
+/* The RPG panel owns its viewport geometry; legacy scrolling rules exclude it. */
+#inventory-panel{padding:12px!important}
+.r71-inventory-panel .mobile-panel-head{display:flex!important;justify-content:space-between!important;align-items:center!important}
+.r71-inventory-panel #inventory-close-top{display:block!important;padding:6px 10px!important;min-height:32px!important;font-size:12px!important}
 /* C64 Dungeon Carnage V10.42 R71 — compact RPG equipment/inventory presentation. */
 #inventory-panel .inventory-panel.r71-inventory-panel{
   --r71-rpg-font:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
-  width:min(1120px,96vw)!important;
-  max-width:1120px!important;
-  height:min(760px,93dvh)!important;
-  max-height:93dvh!important;
+  width:min(1200px,100%)!important;
+  max-width:1200px!important;
+  height:min(740px,100%)!important;
+  max-height:100%!important;
   overflow:hidden!important;
-  padding:14px 16px 12px!important;
+  padding:10px 12px!important;
   display:grid!important;
   grid-template-rows:auto auto minmax(0,1fr) auto!important;
   gap:8px!important;
@@ -35,7 +39,7 @@
   margin:0!important;
   min-height:24px!important;
   padding:5px 8px!important;
-  font-size:9px!important;
+  font-size:11px!important;
   letter-spacing:.35px!important;
   color:#9a8ea3!important;
   border-color:#322539!important;
@@ -48,9 +52,10 @@
   display:none!important;
 }
 .r71-inventory-layout{
+  grid-row:3!important;
   min-height:0!important;
   display:grid!important;
-  grid-template-columns:minmax(0,1.42fr) minmax(350px,.88fr)!important;
+  grid-template-columns:minmax(0,1.42fr) minmax(0,.88fr)!important;
   grid-template-rows:auto minmax(0,1fr)!important;
   gap:9px 10px!important;
   overflow:hidden!important;
@@ -61,7 +66,7 @@
   min-height:62px!important;
   padding:7px 9px!important;
   display:grid!important;
-  grid-template-columns:minmax(280px,1fr) auto!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
   align-items:center!important;
   gap:10px!important;
   border:1px solid #4f3b59!important;
@@ -124,12 +129,12 @@
 .r71-quest-chip small{
   margin:0!important;
   color:#82758a!important;
-  font-size:6.5px!important;
+  font-size:10px!important;
   white-space:nowrap!important;
 }
 .r71-quest-chip b{
   color:#d7c69b!important;
-  font-size:8.5px!important;
+  font-size:11px!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
@@ -142,8 +147,8 @@
   overscroll-behavior:contain!important;
   border:1px solid #594365!important;
   background:linear-gradient(145deg,#100a14,#07050a)!important;
-  display:grid!important;
-  grid-template-rows:auto minmax(210px,auto) auto auto auto!important;
+  display:flex!important;
+  flex-direction:column!important;
   align-content:start!important;
   gap:7px!important;
 }
@@ -163,7 +168,7 @@
 .r71-strip-title{
   color:#9e809f!important;
   font-family:var(--r71-rpg-font)!important;
-  font-size:9px!important;
+  font-size:11px!important;
   letter-spacing:1px!important;
 }
 .r71-loadout-head b{
@@ -175,20 +180,20 @@
   color:#8f8197!important;
   font-family:Consolas,"Courier New",monospace!important;
   font-style:normal!important;
-  font-size:8px!important;
+  font-size:11px!important;
 }
 .r71-xp-mini{
   display:grid!important;
   justify-items:end!important;
   gap:1px!important;
 }
-.r71-xp-mini span{font-size:7px!important;color:#6fbac7!important}
+.r71-xp-mini span{font-size:10px!important;color:#6fbac7!important}
 .r71-xp-mini b{font-size:10px!important;color:#d9c471!important}
 .r71-equipment-board{
-  min-height:210px!important;
+  min-height:160px!important;
   display:grid!important;
-  grid-template-columns:minmax(150px,1fr) 136px minmax(150px,1fr)!important;
-  grid-template-rows:minmax(96px,1fr) minmax(96px,1fr)!important;
+  grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr)!important;
+  grid-template-rows:repeat(2,minmax(0,1fr))!important;
   gap:8px 11px!important;
   align-items:stretch!important;
 }
@@ -217,13 +222,13 @@
   grid-column:1/-1!important;
   color:#9b7c8e!important;
   font-family:var(--r71-rpg-font)!important;
-  font-size:8px!important;
+  font-size:11px!important;
   letter-spacing:.8px!important;
 }
 .r71-equip-card b{
   min-width:0!important;
   color:#e3d6bd!important;
-  font-size:9px!important;
+  font-size:11px!important;
   line-height:1.2!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
@@ -233,7 +238,7 @@
   grid-column:2!important;
   margin:1px 0 0!important;
   color:#877c8b!important;
-  font-size:7px!important;
+  font-size:10px!important;
   line-height:1.2!important;
 }
 .r71-equip-weapon{grid-column:1;grid-row:1}
@@ -254,8 +259,8 @@
   grid-row:1/3!important;
   align-self:center!important;
   justify-self:center!important;
-  width:136px!important;
-  height:196px!important;
+  width:120px!important;
+  height:160px!important;
   display:grid!important;
   grid-template-rows:minmax(0,1fr) auto auto!important;
   justify-items:center!important;
@@ -272,7 +277,7 @@
 .r71-character-frame{
   position:relative!important;
   width:112px!important;
-  height:128px!important;
+  height:106px!important;
   display:grid!important;
   place-items:center!important;
 }
@@ -313,7 +318,7 @@
   max-width:100%!important;
   color:#d4bd83!important;
   font-family:var(--r71-rpg-font)!important;
-  font-size:8px!important;
+  font-size:11px!important;
   letter-spacing:.9px!important;
   white-space:nowrap!important;
   overflow:hidden!important;
@@ -322,7 +327,7 @@
 .r71-character-stage>small{
   max-width:100%!important;
   color:#827788!important;
-  font-size:6.5px!important;
+  font-size:10px!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
@@ -393,7 +398,7 @@
   left:7px!important;
   bottom:17px!important;
   color:#d1ac62!important;
-  font-size:8px!important;
+  font-size:11px!important;
 }
 .r71-preview-sigil.active,
 .r71-preview-relic.active{opacity:.92!important}
@@ -406,14 +411,14 @@
   gap:4px!important;
 }
 .r71-stat{
-  height:36px!important;
+  min-height:42px!important;height:auto!important;
   padding:4px!important;
   display:grid!important;
   place-items:center!important;
   border:1px solid #3c2f42!important;
   background:#09060b!important;
 }
-.r71-stat span{font-size:6.5px!important;color:#8d7d93!important}
+.r71-stat span{font-size:10px!important;color:#8d7d93!important}
 .r71-stat b{font-family:var(--r71-rpg-font)!important;font-size:13px!important;color:#d5bf83!important}
 .r71-relic-strip{
   min-width:0!important;
@@ -430,7 +435,7 @@
 }
 .r71-relic{
   min-width:0!important;
-  height:30px!important;
+  min-height:24px!important;height:auto!important;
   padding:4px 6px!important;
   display:flex!important;
   align-items:center!important;
@@ -438,11 +443,11 @@
   border:1px solid #493a4e!important;
   background:#0a070c!important;
 }
-.r71-relic i{color:#b88bc8!important;font-style:normal!important;font-size:9px!important}
+.r71-relic i{color:#b88bc8!important;font-style:normal!important;font-size:11px!important}
 .r71-relic span{
   min-width:0!important;
   color:#b8abbc!important;
-  font-size:7px!important;
+  font-size:10px!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
@@ -493,14 +498,14 @@
 .r71-inventory-panel .inventory-slot-copy>b{
   grid-column:1/-1!important;
   color:#9d7f9a!important;
-  font-size:7px!important;
+  font-size:10px!important;
 }
 .r71-inventory-panel .inventory-slot-copy>span{
   min-width:0!important;
   margin:0!important;
   color:#e0d6e2!important;
   font-family:var(--r71-rpg-font)!important;
-  font-size:9px!important;
+  font-size:11px!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
@@ -519,12 +524,13 @@
   border:1px solid #493b50!important;
   background:#120d15!important;
   color:#b9abbc!important;
-  font-size:6.5px!important;
+  font-size:10px!important;
   line-height:1!important;
 }
 .r71-inventory-panel .slot-actions button[data-use]{border-color:#56765b!important;color:#a6d5a9!important}
 .r71-inventory-panel .slot-actions button[data-info]{border-color:#496373!important;color:#8dc6d4!important}
 .r71-inventory-panel .inventory-footer-actions{
+  grid-row:4!important;
   margin:0!important;
   padding-top:5px!important;
   min-height:34px!important;
@@ -535,7 +541,7 @@
 }
 .r71-inventory-panel .inventory-footer-actions button{
   padding:6px 9px!important;
-  font-size:8px!important;
+  font-size:11px!important;
 }
 #inventory-panel{overflow:hidden!important}
 
@@ -644,25 +650,29 @@
 
 /* Narrow screens may stack; short desktop screens must not be forced into this path. */
 @media(max-width:900px){
-  #inventory-panel .inventory-panel.r71-inventory-panel{
-    height:auto!important;
-    max-height:95dvh!important;
-    overflow:auto!important;
-  }
-  .r71-inventory-layout{
-    grid-template-columns:1fr!important;
-    overflow:visible!important;
-  }
+  #inventory-panel .inventory-panel.r71-inventory-panel{height:auto!important;max-height:100%!important;overflow:auto!important}
+  .r71-inventory-layout{display:flex!important;flex-direction:column!important;overflow:visible!important}
   .r71-inventory-layout #inventory-objective{grid-template-columns:1fr!important}
   .r71-quest-strip{grid-template-columns:repeat(4,1fr)!important}
-  .r71-inventory-layout #inventory-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:78px!important;overflow:auto!important}
-  .r71-inventory-layout #inventory-loadout{overflow:visible!important}
+  .r71-inventory-layout #inventory-loadout,.r71-inventory-layout #inventory-list{flex:none!important;height:auto!important;min-height:0!important;overflow:visible!important}
+  .r71-inventory-layout #inventory-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:minmax(100px,auto)!important}
+  .r71-inventory-panel .mobile-panel-head{position:sticky!important;top:0!important;z-index:12!important;background:#100a14!important}
 }
 @media(max-width:680px){
   .r71-inventory-panel .mobile-panel-head h2{font-size:20px!important}
   .r71-inventory-layout #inventory-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .r71-equipment-board{grid-template-columns:1fr 110px 1fr!important}
+  .r71-equipment-board{grid-template-columns:minmax(0,1fr) 110px minmax(0,1fr)!important}
   .r71-quest-strip{grid-template-columns:repeat(2,1fr)!important}
   .r71-stat-strip{grid-template-columns:repeat(3,1fr)!important}
   .r71-relic-strip{grid-template-columns:1fr!important}
 }
+
+.r71-inventory-panel .ccg-evolving-firearm{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)!important;gap:4px 8px!important;white-space:normal!important}
+.r71-inventory-panel .ccg-evolving-firearm>b,.r71-inventory-panel .ccg-evolving-firearm>span{font-size:11px!important;line-height:1.2!important}
+.r71-inventory-panel .ccg-evolving-firearm>small{grid-column:1/-1!important;font-size:10px!important;line-height:1.25!important;margin:0!important}
+
+.r71-inventory-layout #inventory-loadout>*{flex:none!important}
+.r71-loadout-head{line-height:1.2!important}
+.r71-inventory-panel .r80-wearable-card>b{font-size:12px!important;line-height:1.15!important;margin:0!important}
+.r71-inventory-panel .r80-wearable-card>small{font-size:10px!important;line-height:1.2!important;margin:0!important}
+.r71-inventory-panel .r80-wearable-card>button{min-height:24px!important;padding:4px 6px!important;font-size:10px!important;line-height:1!important}

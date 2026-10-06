@@ -7,6 +7,9 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
+const reporterSource=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-42-bug-reporter.js"),"utf8");
+assert.match(reporterSource,/if\(\["Space","Numpad0"\]\.includes\(event\.code\)\)fireProbe/,"only real Player 1 attack keys may arm the attack-failure probe");
+assert.doesNotMatch(reporterSource,/\["Space","KeyF","Numpad0"\]/,"fullscreen F must never be classified as an attack key");
 const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",".wav":"audio/wav",".mp3":"audio/mpeg",".ogg":"audio/ogg"};
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
@@ -157,6 +160,7 @@ try{
   const text=await page.locator("#ccg-bug-report-text").inputValue();
   assert.match(text,/CCG DUNGEON CARNAGE BUG REPORT/);
   assert.match(text,/Fire state:/);
+  assert.match(text,/Music: state=/,"bug report must expose live production-music ownership/playback state");
   assert.match(text,/Inventory hidden: true/);
   await page.click('[data-bug-close]');
 

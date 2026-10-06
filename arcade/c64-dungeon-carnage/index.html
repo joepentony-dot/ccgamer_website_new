@@ -21,8 +21,8 @@
   <link rel="stylesheet" href="css/v10-41-r29.css?v=20261005r107">
   <link rel="stylesheet" data-ccg-v136-special-ui="true" href="css/v10-36-special-ui.css?v=20261005r107">
   <link rel="stylesheet" href="css/v10-42-startup-first-visual.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20261005r107">
-  <link rel="stylesheet" href="css/v10-42-r95-rpg-hud.css?v=20261005r107">
+  <link rel="stylesheet" href="css/v10-42-r71-equipment-inventory.css?v=20261005r107&ui=20261006-viewport">
+  <link rel="stylesheet" href="css/v10-42-r95-rpg-hud.css?v=20261005r107&ui=20261006-viewport">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <div id="ccg-release-loading" class="ccg-release-loading" role="status" aria-live="polite">
@@ -79,9 +79,9 @@
 
   <section class="tactical-zone" aria-label="Dungeon intelligence">
     <section class="reference-card radar-card v102-radar-card">
-      <h3>DUNGEON MAP — TRACKING VIEW</h3>
+      <h3>DUNGEON MAP</h3>
       <canvas id="radar-canvas" width="480" height="240" aria-label="Explored dungeon radar"></canvas>
-      <div class="radar-legend r72-radar-legend"><span><i class="radar-player"></i>YOU</span><span><i class="radar-sanctuary"></i>SANCTUARY</span><span><i class="radar-key"></i>KEY</span><span><i class="radar-sigil"></i><b id="radar-sigil-label">SIGIL</b></span><span><i class="radar-shop"></i>SHOP</span><span><i class="radar-cache"></i>DEATH CACHE</span><span><i class="radar-warden"></i>WARDEN</span><span><i class="radar-refuge"></i>REFUGE</span><span><i class="radar-exit"></i>EXIT</span></div><div class="radar-room-legend"><b>ROOMS</b><span><i class="radar-room-normal"></i>NORMAL</span><span><i class="radar-room-sanctuary"></i>SANCTUARY</span><span><i class="radar-room-shop"></i>SHOP</span><span><i class="radar-room-danger"></i>DANGER</span><span><i class="radar-room-sigil"></i>SIGIL</span><span><i class="radar-room-optional"></i>OPTIONAL</span></div>
+      <div class="radar-legend r72-radar-legend" aria-label="Dungeon map symbols"><span><i class="radar-player"></i>YOU</span><span><i class="radar-exit"></i>EXIT</span><span><i class="radar-key"></i>KEY</span><span><i class="radar-sigil"></i><b id="radar-sigil-label">SIGIL</b></span><span><i class="radar-sanctuary"></i>SANCTUARY</span><span><i class="radar-shop"></i>SHOP</span><span><i class="radar-warden"></i>WARDEN</span><span><i class="radar-cache"></i>DEATH CACHE</span></div>
     </section>
     <section class="reference-card dossier-card">
       <div class="dossier-heading"><h3>NAMED ENEMY DOSSIER</h3><button id="named-dossier-btn" class="dossier-expand" type="button">OPEN FULL DOSSIER</button></div>
@@ -274,7 +274,7 @@
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-41-load-watchdog.js?v=20261005r107"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/version-check.js?v=20261005r107"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/v10-23-tutorial-guidance.js?v=20261005r107"></script>
-<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/asset-overrides.js?v=20261005r107"></script>
+<script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/asset-overrides.js?v=20261005r107&ui=20261006-viewport"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/avatar-data.js?v=20261005r107"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/config.js?v=20261005r107"></script>
 <script type="application/ccg-protected-runtime" data-ccg-protected-runtime src="js/progression.js?v=20261005r107"></script>

@@ -53,7 +53,7 @@ assert(overrides.includes('async function fetchRowsViaClient()'),'Supabase JS cl
 assert(overrides.includes('for(let attempt=1;attempt<=3;attempt++)'),'Production audio hydration must retry transient catalogue failures before failing.');
 assert(owner.includes('const adminAudio=requestedPath.endsWith("/admin-audio-overrides.js")'),'Release loader must identify admin audio as readiness-gated.');
 assert(owner.includes('window.CCG_ADMIN_AUDIO_READY_PROMISE'),'Release loader must wait for production audio catalogue hydration, not merely script load.');
-assert(owner.includes('normalTracks<1'),'Live gameplay must not unlock when the uploaded Exploration soundtrack is absent.');
+assert(owner.includes('const requiredStates=["normal","danger","sanctuary","named","stalker"]')&&owner.includes('missingStates=requiredStates.filter')&&owner.includes('missingStates.length'),'Live gameplay must not unlock unless every required uploaded soundtrack state is hydrated.');
 
 assert(admin.includes('lostSizzlerAutoPlaylist'),'Batch auto-categorisation slot is missing.');
 assert(admin.includes('input.multiple=Boolean(slot.playlist)'),'Lost Sizzler category uploads must accept multiple files.');

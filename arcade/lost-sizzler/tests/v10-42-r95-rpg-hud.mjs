@@ -15,7 +15,7 @@ const inventoryCss=`v10-42-r71-equipment-inventory.css?v=${cache}`,hudCss=`v10-4
 assert.ok(html.indexOf(inventoryCss)>=0&&html.indexOf(hudCss)>html.indexOf(inventoryCss),"R95 HUD CSS must load after the established R71 inventory presentation under the current release cache.");
 assert.match(css,/--r95-rpg-font:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif/,"R95 must provide a self-contained RPG heading font stack.");
 assert.match(css,/--r95-data-font:Consolas,"Lucida Console","Courier New",monospace/,"R95 must retain a compact data font for live numeric readouts.");
-assert.match(css,/body\[data-run-active="true"\] \.player-hub\{/,"R95 must own the active gameplay HUD without changing the menu.");
+assert.match(css,/body\[data-run-active="true"\] \.ccg-game>\.player-hub\{/,"R95 must own the active gameplay HUD without changing the menu.");
 assert.match(css,/\.health-stat::before\{width:var\(--health-pct,100%\)!important/,"health meter must consume the canonical live health percentage.");
 assert.match(css,/\.armour-stat::before\{width:var\(--armour-pct,0%\)!important/,"armour meter must consume the canonical live armour percentage.");
 assert.match(css,/\.ammo-stat::before\{width:var\(--ammo-pct,0%\)!important/,"ammo meter must consume the canonical live ammunition percentage.");

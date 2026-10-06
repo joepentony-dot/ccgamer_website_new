@@ -259,13 +259,13 @@ body[data-run-active="true"] .game-quest-list{
 }
 
 /* Player HUD: three strong RPG blocks rather than a row of equal telemetry boxes. */
-body[data-run-active="true"] .player-hub{
-  height:112px!important;
-  min-height:112px!important;
-  max-height:112px!important;
+body[data-run-active="true"] .ccg-game>.player-hub{
+  height:128px!important;
+  min-height:128px!important;
+  max-height:128px!important;
   padding:8px 9px!important;
   gap:8px!important;
-  grid-template-columns:minmax(0,1.08fr) minmax(0,.96fr) minmax(0,1.16fr)!important;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,1.2fr) minmax(0,1.05fr)!important;
   border-top:2px solid #8a6a3e!important;
   background:
     linear-gradient(180deg,#171119 0%,#0b080d 58%,#070509 100%)!important;
@@ -273,7 +273,7 @@ body[data-run-active="true"] .player-hub{
   overflow:hidden!important;
   align-items:stretch!important;
 }
-body[data-run-active="true"] .player-hub .core-stats{
+body[data-run-active="true"] .ccg-game>.player-hub .core-stats{
   display:grid!important;
   grid-template-columns:repeat(4,minmax(0,1fr))!important;
   grid-auto-rows:minmax(0,1fr)!important;
@@ -284,7 +284,7 @@ body[data-run-active="true"] .player-hub .core-stats{
   height:100%!important;
   overflow:hidden!important;
 }
-body[data-run-active="true"] .player-hub .hub-stat{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-stat{
   position:relative!important;
   min-height:0!important;
   padding:8px 8px 18px!important;
@@ -296,13 +296,13 @@ body[data-run-active="true"] .player-hub .hub-stat{
   text-align:left!important;
   overflow:hidden!important;
 }
-body[data-run-active="true"] .player-hub .hub-stat span{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-stat span{
   margin:0!important;
   color:#94889a!important;
   font:700 7px/1 var(--r95-data-font)!important;
   letter-spacing:.8px!important;
 }
-body[data-run-active="true"] .player-hub .hub-stat b{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-stat b{
   display:block!important;
   margin-top:7px!important;
   overflow:hidden!important;
@@ -311,7 +311,7 @@ body[data-run-active="true"] .player-hub .hub-stat b{
   text-overflow:ellipsis!important;
   white-space:nowrap!important;
 }
-body[data-run-active="true"] .player-hub .hub-stat::after{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-stat::after{
   content:""!important;
   position:absolute!important;
   left:8px!important;
@@ -324,7 +324,7 @@ body[data-run-active="true"] .player-hub .hub-stat::after{
   background:#050407!important;
   box-shadow:inset 0 1px 2px #000!important;
 }
-body[data-run-active="true"] .player-hub .hub-stat::before{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-stat::before{
   content:""!important;
   position:absolute!important;
   left:9px!important;
@@ -350,7 +350,7 @@ body[data-run-active="true"] .weapon-stat::before,
 body[data-run-active="true"] .weapon-stat::after{display:none!important}
 
 /* Quick item belt. */
-body[data-run-active="true"] .player-hub .hub-inventory{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory{
   min-width:0!important;
   min-height:0!important;
   width:100%!important;
@@ -361,29 +361,31 @@ body[data-run-active="true"] .player-hub .hub-inventory{
   border-top:2px solid #8a6a3e!important;
   background:linear-gradient(180deg,#151018,#0b080d)!important;
 }
-body[data-run-active="true"] .player-hub .hub-inventory-head{
-  min-height:18px!important;
-  margin:0 0 5px!important;
+body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head{
+  flex-wrap:wrap!important;
+  gap:2px!important;
+  min-height:14px!important;
+  margin:0 0 3px!important;
 }
-body[data-run-active="true"] .player-hub .hub-inventory-head>b{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head>b{
   color:var(--r95-gold)!important;
   font:700 10px/1 var(--r95-rpg-font)!important;
   letter-spacing:.45px!important;
 }
-body[data-run-active="true"] .player-hub .hub-inventory-flags{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-flags{
   color:#8f8395!important;
   font:700 6.5px/1 var(--r95-data-font)!important;
 }
-body[data-run-active="true"] .player-hub .hub-bronze-key{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-bronze-key{
   border-color:#765333!important;
   background:#1b110b!important;
   color:#d59852!important;
 }
-body[data-run-active="true"] .player-hub .quick-slots{
+body[data-run-active="true"] .ccg-game>.player-hub .quick-slots{
   gap:5px!important;
 }
-body[data-run-active="true"] .player-hub .quick-slot{
-  height:59px!important;
+body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{
+  height:35px!important;
   border:1px solid #4c3e52!important;
   border-bottom:2px solid #6e5876!important;
   background:
@@ -391,7 +393,7 @@ body[data-run-active="true"] .player-hub .quick-slot{
     linear-gradient(180deg,#110d14,#070509)!important;
   box-shadow:inset 0 0 10px rgba(0,0,0,.55)!important;
 }
-body[data-run-active="true"] .player-hub .quick-slot.filled{
+body[data-run-active="true"] .ccg-game>.player-hub .quick-slot.filled{
   border-color:#806b88!important;
   box-shadow:inset 0 0 12px rgba(196,163,214,.06),0 0 0 1px rgba(230,196,111,.03)!important;
 }
@@ -417,7 +419,7 @@ body[data-run-active="true"] .stack-count{
 }
 
 /* Progression / objective block. */
-body[data-run-active="true"] .player-hub .hub-progress{
+body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{
   display:grid!important;
   /* XP plus Objective, Score, dynamically-owned Gold and Floor. */
   grid-template-columns:minmax(0,1.65fr) repeat(4,minmax(52px,.48fr))!important;
@@ -430,7 +432,7 @@ body[data-run-active="true"] .player-hub .hub-progress{
   height:100%!important;
   overflow:hidden!important;
 }
-body[data-run-active="true"] .player-hub .priority-xp{
+body[data-run-active="true"] .ccg-game>.player-hub .priority-xp{
   /* Retire game.css's full-row XP span; keep stats beside the upgrade action. */
   grid-column:auto!important;
   position:relative!important;
@@ -465,7 +467,7 @@ body[data-run-active="true"] .priority-xp small{
   color:#857a8b!important;
   font:700 6.5px/1.2 var(--r95-data-font)!important;
 }
-body[data-run-active="true"] .player-hub .run-stat{
+body[data-run-active="true"] .ccg-game>.player-hub .run-stat{
   position:relative!important;
   z-index:1!important;
   min-width:0!important;
@@ -475,17 +477,17 @@ body[data-run-active="true"] .player-hub .run-stat{
   background:linear-gradient(180deg,#141017,#0b080d)!important;
   text-align:center!important;
 }
-body[data-run-active="true"] .player-hub .run-stat span{
+body[data-run-active="true"] .ccg-game>.player-hub .run-stat span{
   color:#817686!important;
   font:700 6.5px/1 var(--r95-data-font)!important;
   letter-spacing:.6px!important;
 }
-body[data-run-active="true"] .player-hub .run-stat b{
+body[data-run-active="true"] .ccg-game>.player-hub .run-stat b{
   margin-top:8px!important;
   color:#e2d5e5!important;
   font:700 13px/1 var(--r95-data-font)!important;
 }
-body[data-run-active="true"] .player-hub .run-stat:nth-child(3) b{color:var(--r95-gold)!important}
+body[data-run-active="true"] .ccg-game>.player-hub .run-stat:nth-child(3) b{color:var(--r95-gold)!important}
 body[data-run-active="true"] .pending-level-up{
   position:relative!important;
   z-index:4!important;
@@ -520,7 +522,7 @@ body[data-run-active="true"] .overlay .panel h3{
 
 /* Short/wide desktop fit: preserve every HUD block without horizontal clipping. */
 @media(max-height:900px) and (min-width:1181px){
-  body[data-run-active="true"] .player-hub{
+  body[data-run-active="true"] .ccg-game>.player-hub{
     height:100px!important;
     min-height:100px!important;
     max-height:100px!important;
@@ -528,31 +530,35 @@ body[data-run-active="true"] .overlay .panel h3{
     gap:6px!important;
     grid-template-columns:minmax(0,1.04fr) minmax(0,.9fr) minmax(0,1.16fr)!important;
   }
-  body[data-run-active="true"] .player-hub .hub-stat{padding:6px 6px 15px!important}
-  body[data-run-active="true"] .player-hub .hub-stat b{margin-top:5px!important;font-size:clamp(12px,1.18vw,17px)!important}
-  body[data-run-active="true"] .player-hub .hub-inventory{padding:5px!important}
-  body[data-run-active="true"] .player-hub .hub-inventory-head{min-height:15px!important;margin-bottom:3px!important}
-  body[data-run-active="true"] .player-hub .quick-slot{height:48px!important}
-  body[data-run-active="true"] .player-hub .hub-progress{gap:4px!important;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,.48fr))!important}
-  body[data-run-active="true"] .player-hub .priority-xp{padding:6px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-stat{padding:6px 6px 15px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-stat b{margin-top:5px!important;font-size:clamp(12px,1.18vw,17px)!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory{padding:5px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head{min-height:15px!important;margin-bottom:3px!important;flex-wrap:nowrap!important}
+  body[data-run-active="true"] .ccg-game>.player-hub #quick-specials{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  /* Short desktops already expose keys in the live KEYS & ITEMS sidebar. Hide the
+   * duplicate bottom keyring so the quick belt never clips below the viewport. */
+  body[data-run-active="true"] .ccg-game>.player-hub #quick-keyring-icons{display:none!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{height:32px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{gap:4px!important;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,.48fr))!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .priority-xp{padding:6px!important}
   body[data-run-active="true"] .xp-track{margin:5px 0 3px!important}
-  body[data-run-active="true"] .player-hub .run-stat{padding:5px 3px!important}
-  body[data-run-active="true"] .player-hub .run-stat b{margin-top:5px!important;font-size:11px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .run-stat{padding:5px 3px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .run-stat b{margin-top:5px!important;font-size:11px!important}
 }
 
 /* Desktop compression without returning to unreadable micro-text. */
 @media(max-width:1180px) and (min-width:821px){
-  body[data-run-active="true"] .player-hub{
+  body[data-run-active="true"] .ccg-game>.player-hub{
     height:150px!important;
     min-height:150px!important;
     max-height:150px!important;
     grid-template-columns:1fr 1fr!important;
     grid-template-rows:72px 62px!important;
   }
-  body[data-run-active="true"] .player-hub .hub-progress{
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{
     grid-column:1/-1!important;
   }
-  body[data-run-active="true"] .player-hub .quick-slot{height:48px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{height:48px!important}
 }
 
 /* Mobile keeps combat essentials large and discards secondary ornament. */
@@ -567,26 +573,26 @@ body[data-run-active="true"] .overlay .panel h3{
   }
   body[data-run-active="true"] .v102-mission>strong{font-size:11px!important}
   body[data-run-active="true"] .v102-mission #mission-text{font-size:8.5px!important}
-  body[data-run-active="true"] .player-hub{
+  body[data-run-active="true"] .ccg-game>.player-hub{
     height:84px!important;
     min-height:84px!important;
     max-height:84px!important;
     grid-template-columns:1fr!important;
     padding:5px!important;
   }
-  body[data-run-active="true"] .player-hub .core-stats{
+  body[data-run-active="true"] .ccg-game>.player-hub .core-stats{
     grid-template-columns:repeat(4,minmax(0,1fr))!important;
   }
-  body[data-run-active="true"] .player-hub .hub-stat{
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-stat{
     padding:6px 5px 14px!important;
   }
-  body[data-run-active="true"] .player-hub .hub-stat b{
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-stat b{
     margin-top:5px!important;
     font-size:12px!important;
   }
-  body[data-run-active="true"] .player-hub .hub-stat span{font-size:5.8px!important}
-  body[data-run-active="true"] .player-hub .hub-inventory,
-  body[data-run-active="true"] .player-hub .hub-progress{display:none!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-stat span{font-size:5.8px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory,
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{display:none!important}
   body[data-run-active="true"] .tactical-zone{
     padding:4px!important;
     background:rgba(7,5,9,.94)!important;
@@ -611,14 +617,14 @@ body[data-run-active="true"] .overlay .panel h3{
 }
 
 @media(max-height:760px) and (min-width:821px){
-  body[data-run-active="true"] .player-hub{
+  body[data-run-active="true"] .ccg-game>.player-hub{
     height:98px!important;
     min-height:98px!important;
     max-height:98px!important;
     padding:6px 7px!important;
   }
-  body[data-run-active="true"] .player-hub .hub-stat{padding:6px 6px 15px!important}
-  body[data-run-active="true"] .player-hub .quick-slot{height:50px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-stat{padding:6px 6px 15px!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{height:50px!important}
 }
 
 
@@ -1008,4 +1014,15 @@ body.v104-touch-device[data-run-active="true"] .v104-touch-controls.active{displ
 @media(max-width:380px){
   body.v104-touch-device #inventory-panel .inventory-list{grid-template-columns:1fr!important}
   body.v104-touch-device #inventory-close-top{min-width:112px!important;font-size:11.5px!important}
+}
+
+@media(min-width:901px) and (pointer:fine){
+ body[data-run-active="true"] .inventory-live-dock .item-shortcuts{gap:3px!important}
+ body[data-run-active="true"] .carried-item{min-height:32px!important;padding:3px!important;grid-template-columns:24px minmax(0,1fr) auto!important;gap:4px!important}
+ body[data-run-active="true"] .carried-item>.item-svg-wrap,body[data-run-active="true"] .carried-item .item-art-wrap{width:24px!important;height:24px!important}
+ body[data-run-active="true"] .carried-copy b{font-size:10px!important;white-space:normal!important}
+ body[data-run-active="true"] .carried-copy span{font-size:9px!important;line-height:1.15!important}
+ body[data-run-active="true"] .carried-meta{min-width:40px!important}
+ body[data-run-active="true"] .carried-meta strong{font-size:10px!important}
+ body[data-run-active="true"] .carried-section-label{position:static!important;font-size:9px!important;padding:3px!important}
 }

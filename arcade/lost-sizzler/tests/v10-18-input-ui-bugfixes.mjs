@@ -20,7 +20,7 @@ assert.match(fixes,/REINFORCED_WARNING_COOLDOWN_MS=1800/,"reinforced-door warnin
 assert.match(fixes,/door\.sigilGate/,"Sigil reinforced gates are recognised by the fix");
 assert.match(fixes,/panel\.scrollTop=/,"inventory wheel explicitly controls the inner panel scroll position");
 assert.match(css,/#inventory-panel\{[\s\S]*overflow:hidden!important/,"inventory overlay no longer competes for wheel scrolling");
-assert.match(css,/#inventory-panel>\.inventory-panel\{[\s\S]*overflow-y:auto!important/,"inventory panel owns vertical scrolling");
+assert.match(css,/#inventory-panel>\.inventory-panel:not\(\.r71-inventory-panel\)\{[\s\S]*overflow-y:auto!important/,"legacy inventory panel owns vertical scrolling; RPG panel owns its viewport geometry");
 assert.match(css,/overflow-anchor:none!important/,"scroll anchoring cannot snap the inventory list back down");
 assert.match(css,/overscroll-behavior:contain!important/,"inventory overscroll is contained");
 
