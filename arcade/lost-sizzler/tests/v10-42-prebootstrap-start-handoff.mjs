@@ -8,10 +8,14 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const file=path.join(root,"js","v10-41-startup-freeze-guard.js");
 const source=fs.readFileSync(file,"utf8");
+const bootstrapSource=fs.readFileSync(path.join(root,"js","v10-42-bootstrap.js"),"utf8");
 
 assert.ok(source.includes("capturePreBootstrapStart"),"the first pre-bootstrap guard must capture local start clicks");
 assert.ok(source.includes("ccg:v142-ready"),"captured starts must wait for the authoritative V10.42 ready event");
-assert.ok(source.includes("document.body?.dataset?.releaseReady!==\"true\""),"replay must still require release readiness");
+assert.ok(source.includes("releasePreBootstrapStart"),"captured starts must be released for a fresh trusted click after readiness");
+assert.equal(source.includes("button.click()"),false,"the pre-bootstrap guard must never synthesize a game-start click");
+assert.equal(bootstrapSource.includes("replayPendingStart"),false,"V10.42 bootstrap must not replay a deferred start outside the trusted input task");
+assert.ok(bootstrapSource.includes("guidance.launchSolo(target.id===\"tutorial-zone-btn\")"),"ready Game/Tutorial clicks must launch synchronously from the real click handler");
 assert.equal(source.includes("requestAnimationFrame"),false,"the start handoff must not add another frame owner");
 assert.equal(source.includes("WebSocket"),false,"the start handoff must not add a network owner");
 assert.equal(source.includes("fetch("),false,"the start handoff must not add a network request");
@@ -69,8 +73,8 @@ const readyListener=windowListeners.get("ccg:v142-ready");
 assert.equal(typeof readyListener,"function","the handoff must listen for V10.42 readiness");
 readyListener();
 await Promise.resolve();
-assert.equal(button.clicks,1,"the held Solo request must replay exactly once after V10.42 is ready");
-assert.equal(api.state.earlyStartReplayed,1);
+assert.equal(button.clicks,0,"the held Start Game request must not be replayed synthetically after V10.42 is ready");
+assert.equal(api.state.earlyStartReleased,1);
 assert.equal(api.state.pendingStartId,"");
 assert.equal(button.attrs.has("aria-busy"),false);
 
@@ -78,6 +82,6 @@ prevented=false;stopped=false;
 api.capturePreBootstrapStart({target:button,preventDefault(){prevented=true},stopImmediatePropagation(){stopped=true}});
 assert.equal(prevented,false,"once V10.42 bootstrap exists it must retain normal start ownership");
 assert.equal(stopped,false,"the early guard must not compete with V10.42 bootstrap");
-assert.equal(button.clicks,1);
+assert.equal(button.clicks,0);
 
-console.log("Lost Sizzler V10.42 pre-bootstrap local start handoff contract passed.");
+console.log("Lost Sizzler V10.42 trusted pre-bootstrap start handoff contract passed.");
