@@ -207,8 +207,9 @@ function powerOffAudio() {
 function toggleAudioMute() {
   if (!masterGain || !audioContext) return;
   audioMuted = !audioMuted;
-  masterGain.gain.setTargetAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime, 0.01);
-  updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
+  const silent = audioMuted || warpLoadActive || paused;
+  masterGain.gain.setTargetAtTime(silent ? 0 : 0.72, audioContext.currentTime, 0.01);
+  updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
 }
 
 function applyJoystickPort2() {
@@ -692,7 +693,10 @@ function togglePause() {
   frameAccumulator = 0;
   lastFrameTime = 0;
   if (machineState) machineState.textContent = paused ? "C64 PAUSED" : "C64 CORE RUNNING // VIDEO ACTIVE";
-  if (!paused && stageNote) stageNote.textContent = "C64 resumed at normal 1× speed.";
+  if (stageNote) stageNote.textContent = paused
+    ? "C64 paused. Warp Load has been cancelled."
+    : "C64 resumed at normal 1× speed.";
+  updateAudioUi(paused ? "PAUSED" : (audioMuted ? "MUTED" : "SID ACTIVE"));
   setControlState(vault.snapshot());
 }
 
