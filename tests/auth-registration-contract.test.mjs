@@ -70,3 +70,10 @@ test('signup trigger qualifies pgcrypto in Supabase extensions schema', () => {
   assert.match(pgcryptoFix, /set search_path = public/);
   assert.match(pgcryptoFix, /revoke execute on function public\.handle_new_user_profile\(\) from public, anon, authenticated/);
 });
+
+
+test('shared auth core rejects short registration passwords with an explicit message', () => {
+  assert.match(authCore, /safePassword\.length < 10/);
+  assert.match(authCore, /Password must be at least 10 characters\./);
+  assert.match(authCore, /category: 'weak_password'/);
+});
