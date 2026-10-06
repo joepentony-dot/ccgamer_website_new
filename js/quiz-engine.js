@@ -540,7 +540,8 @@
             scoreAfter: nextScore
         });
 
-        setTimeout(nextQuestionOrFinish, ANSWER_REVEAL_DELAY_MS);
+        const revealDelay = quizState.currentQuestion.reveal ? 3200 : ANSWER_REVEAL_DELAY_MS;
+        setTimeout(nextQuestionOrFinish, revealDelay);
     }
 
     function nextQuestionOrFinish() {
