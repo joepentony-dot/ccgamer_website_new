@@ -3,7 +3,7 @@
 - New active draft workstream: `codex/ccg-c64-browser-emulator-stage1`, based on main `60d1aff5deecfa5b08b184103a2c2cf09dfa9450`.
 - Stage 1 adds the isolated `/emulator/c64/` CCG Omega command deck, real local ROM validation/cache + VICE-folder scanning, scoped COOP/COEP headers, emulation-hub entry point, sitemap ownership and a Stage 1 regression contract.
 - The interface is an original CCG layout and contains no upstream product branding. GPL-derived source attribution is retained only where legally required in source/legal notices.
-- **Do not merge Stage 1 yet:** actual C64 machine boot, SID/worklet audio, media loading, gamepad/mobile input, save-state/library integration and full qualification remain outstanding.
+- The branch now also contains the vendored GPL machine dependency graph and a live C64 video boot path: C64Machine loads the user's ROMs, runs PAL-paced frames into the 384×272 CCG CRT, supports power/reset/pause and can quick-load a PRG. **Do not merge yet:** SID/worklet audio, full keyboard/joystick/gamepad input, disk/tape/cartridge loading, save-state/library integration, mobile controls and full qualification remain outstanding.
 - Intro loader and `games/games.json` are untouched. See `docs/ai-work/browser-c64-emulator.md`.
 
 ## Site-wide Lighthouse performance programme — 5 October 2026

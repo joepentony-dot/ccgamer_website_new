@@ -29,6 +29,9 @@ assert(vault.includes("sizes: [8192]"), "KERNAL/BASIC size validation is require
 assert(vault.includes("sizes: [4096]"), "CHARGEN size validation is required");
 assert(vault.includes("sizes: [16384, 16386]"), "1541 size validation is required");
 assert(app.includes("vault.restore()"), "Cached ROM restoration must be wired");
+assert(app.includes('import { C64Machine } from "./core/machine.js"'), "Machine core must be wired into the CCG app");
+assert(app.includes("machine.runFrame()"), "PAL frame execution must be wired");
+assert(app.includes("machine.loadPRG(bytes)"), "Stage 2 quick PRG loading must be wired");
 assert(headers.includes("/emulator/c64/*"), "Emulator-specific headers are required");
 assert(headers.includes("Cross-Origin-Embedder-Policy: require-corp"), "COEP must be scoped for SharedArrayBuffer");
 assert(emulation.includes('href="/emulator/c64/"'), "Emulation hub must link to the CCG browser emulator");

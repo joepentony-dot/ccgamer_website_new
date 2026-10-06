@@ -13,9 +13,16 @@
 - Lighthouse rule: the emulator is isolated to its own route. No emulator payload is added to ordinary CCG pages beyond the small link. Stage 1 contains no iframe and no third-party runtime script.
 - Intro loader files and `games/games.json` are untouched.
 
+## Video-core integration — 6 October 2026
+
+- The GPL machine dependency graph required for BASIC boot is now vendored under `js/ccg-c64/core/`, preserving source copyright/SPDX notices while leaving all upstream UI/CSS behind.
+- `app.js` now creates `C64Machine` only after the required ROM bank is present, loads KERNAL/BASIC/CHARGEN, optionally attaches the user's 1541 DOS ROM, runs PAL-paced frames and blits the real 384×272 VIC-II framebuffer into the CCG CRT.
+- Power, reset, pause and fullscreen are live. A bounded quick-load path accepts a user PRG, injects it into the running machine and starts it through the core's existing PRG run path.
+- This establishes a real emulator video boot path rather than a visual mock-up. Audio and complete physical input/media ownership remain outstanding.
+
 ## Not merge-ready yet
 
-Stage 1 intentionally does not claim a working emulator core. Before merge, the branch must integrate and qualify the machine core, framebuffer, SID/worklet audio, keyboard/joystick/gamepad input, disk/tape/cartridge loading, reset/pause/power lifecycle, save-state/media storage, mobile controls, source/licence inventory and performance. The Stage 1 shell should remain the visual contract while those systems are connected.
+The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still integrate and qualify SID/worklet audio, keyboard/joystick/gamepad input, disk/tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. The Stage 1 shell should remain the visual contract while those systems are connected.
 
 ## Visual/legal rule
 

@@ -40,7 +40,7 @@
       <span class="ccg-c64-led" data-lab-led="shell"></span>
       <span>COMMAND DECK ONLINE</span>
       <span class="ccg-c64-lab-topbar__divider" aria-hidden="true"></span>
-      <span data-core-label>CORE INTEGRATION: STAGE 1</span>
+      <span data-core-label>CORE INTEGRATION: VIDEO BOOT</span>
     </div>
     <nav class="ccg-c64-lab-topbar__nav" aria-label="Browser emulator links">
       <a href="/emulation.html">Emulation Hub</a>
@@ -48,7 +48,7 @@
     </nav>
   </header>
 
-  <main class="ccg-c64-lab" id="main-content" data-core-state="stage1">
+  <main class="ccg-c64-lab" id="main-content" data-core-state="video-core">
     <section class="ccg-c64-lab-intro" aria-labelledby="ccg-c64-lab-title">
       <div>
         <span class="ccg-c64-eyebrow">CCG OMEGA // MACHINE BAY 64</span>
@@ -135,15 +135,16 @@
             <span>RUN STATE</span><strong>PAUSE</strong>
           </button>
           <button type="button" class="ccg-c64-command" data-load-media disabled>
-            <span>QUICK MEDIA</span><strong>LOAD GAME</strong>
+            <span>QUICK MEDIA</span><strong>LOAD PRG</strong>
           </button>
+          <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
           <button type="button" class="ccg-c64-command" data-fullscreen>
             <span>DISPLAY</span><strong>FULLSCREEN</strong>
           </button>
         </div>
 
         <p class="ccg-c64-stage-note" data-stage-note>
-          Stage 1 establishes the original CCG command deck and local ROM pipeline. The cycle-accurate machine core is being connected on this branch before release.
+          The cycle-accurate machine/video core is now connected to this CCG command deck. SID output, full keyboard/joystick routing and the wider media bay remain under integration before release.
         </p>
       </section>
 
@@ -181,7 +182,7 @@
 
         <div class="ccg-c64-media-bay__future">
           <strong>NEXT CORE PASS</strong>
-          <span>Machine boot, audio worklet, media loading, gamepad routing and mobile controls will unlock here without changing this CCG layout.</span>
+          <span>SID AudioWorklet output, full input routing, disk/tape/cartridge loading, game vault and mobile controls will unlock here without changing this CCG layout.</span>
         </div>
       </aside>
     </div>
