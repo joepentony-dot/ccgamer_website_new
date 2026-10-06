@@ -39,6 +39,7 @@ assert.match(combat,/Potions no longer restore firearm ammunition/,"potions must
 assert.match(combat,/RESPAWN_AMMO=6/,"death respawn ammo must be a tiny reserve rather than a large free refill");
 assert.match(combat,/ATTACK — START WITH YOUR SWORD/,"tutorial must explain the sword-first combat model");
 assert.match(combat,/Ammo is deliberately scarce/,"tutorial must explain firearm scarcity and zero-ammo melee fallback");
+assert.match(combat,/While a sword swing is active, incoming enemy shots can be deflected/,"Tutorial must teach the active sword projectile-deflection window.");
 assert.match(combat,/gunfire or melee knockback can force them into hazards/,"tutorial must teach melee environmental knockback");
 assert.match(combat,/_meleeSwingAt=performance\.now\(\)/,"melee attacks must start a timed visible swing");
 assert.match(combat,/_meleeSwingDir=\{\.\.\.dir\}/,"the sword arc must preserve the attack direction for its full animation");
