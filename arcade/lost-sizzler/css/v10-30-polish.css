@@ -50,7 +50,7 @@ body[data-release-ready="false"] #menu :is(#solo-btn,#tutorial-zone-btn,#continu
     grid-column:2!important;
     grid-row:5!important;
     min-width:0!important;
-    grid-template-rows:minmax(166px,48%) minmax(0,1fr)!important;
+    grid-template-rows:minmax(110px,1fr) minmax(430px,auto)!important;
     padding:6px!important;
     gap:6px!important;
   }
