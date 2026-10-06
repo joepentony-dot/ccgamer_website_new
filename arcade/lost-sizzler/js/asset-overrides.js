@@ -70,8 +70,42 @@ window.CCG_ASSET_OVERRIDES={
   },
   audio:{
     music:{
-      exploration:null,danger:null,sanctuary:null,named:null,stalker:null,
-      playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}
+      /* R110 pins the currently approved uploaded production soundtrack into
+       * the release itself. Admin hydration can still replace these arrays at
+       * runtime, but live play no longer depends on a late catalogue fetch. */
+      exploration:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411626645-5-exploration-01.mp3",
+      danger:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411621547-0-combat-01.mp3",
+      sanctuary:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerSanctuary/1787411634411-12-sanctuary-01.mp3",
+      named:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411632588-10-named-01.mp3",
+      stalker:"https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411624060-2-count-loadula-01.mp3",
+      playlists:{
+        normal:[
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411626645-5-exploration-01.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411628149-6-exploration-02.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411629062-7-exploration-03.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411630429-8-exploration-04.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411631439-9-exploration-05.mp3"
+        ],
+        danger:[
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411621547-0-combat-01.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411622953-1-combat-03.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411636390-14-combat-02.mp3"
+        ],
+        sanctuary:[
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerSanctuary/1787411634411-12-sanctuary-01.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerSanctuary/1787411635463-13-sanctuary-02.mp3"
+        ],
+        named:[
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411632588-10-named-01.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411633643-11-named-02.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411637581-15-named-03.mp3"
+        ],
+        stalker:[
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411624060-2-count-loadula-01.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411624977-3-count-loadula-02.mp3",
+          "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411625578-4-count-loadula-03.mp3"
+        ]
+      }
     },
     sfx:{},
     voice:{
