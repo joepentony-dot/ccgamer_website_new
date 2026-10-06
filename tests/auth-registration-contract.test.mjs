@@ -8,6 +8,10 @@ const migration = fs.readFileSync(
   'supabase/migrations/20261006104000_fix_signup_profile_trigger_schema_drift.sql',
   'utf8'
 );
+const pgcryptoFix = fs.readFileSync(
+  'supabase/migrations/20261006105000_fix_signup_pgcrypto_schema.sql',
+  'utf8'
+);
 
 test('registration page matches the live ten-character password policy', () => {
   assert.match(registerPage, /minlength="10"/);
@@ -58,4 +62,11 @@ test('signup trigger migration targets the current profile contract', () => {
   assert.match(migration, /notify_new_games,/);
   assert.match(migration, /notify_newsletter,/);
   assert.match(migration, /notification_preferences_updated_at,/);
+});
+
+
+test('signup trigger qualifies pgcrypto in Supabase extensions schema', () => {
+  assert.match(pgcryptoFix, /extensions\.gen_random_bytes\(24\)/);
+  assert.match(pgcryptoFix, /set search_path = public/);
+  assert.match(pgcryptoFix, /revoke execute on function public\.handle_new_user_profile\(\) from public, anon, authenticated/);
 });
