@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 const patch=fs.readFileSync(new URL("../js/v10-41-sanctuary-hardening.js",import.meta.url),"utf8");
 const quality=fs.readFileSync(new URL("../js/v10-35-quality.js",import.meta.url),"utf8");
+const procedural=fs.readFileSync(new URL("../js/v10-42-procedural-overhaul.js",import.meta.url),"utf8");
 
 assert.match(patch,/\["arenas","timedRooms"\]/,"sanctuary hardening must remove arena and timed-room assignments");
 assert.match(patch,/challenge=>!ids\.has\(Number\(challenge\?\.roomId\)\)/,"sanctuary challenge filtering must be keyed to sanctuary room ids");
@@ -13,6 +14,13 @@ assert.match(patch,/leaf\.locked=false;\s*leaf\.open=true/,"a blocked sanctuary 
 assert.match(patch,/door\.type==="secret"\|\|door\.sigilGate\|\|door\.sigilAnnex/,"secret and Sigil gates must not be accidentally converted into sanctuary exits");
 assert.match(quality,/if\(room\.sanctuary\)continue/,"sanctuary enemy expulsion must remain active");
 assert.match(quality,/host\.sanctuaryRegeneration/,"sanctuary regeneration tiles must remain installed");
+assert.match(quality,/function regenCellOccupied\(/,"sanctuary healing placement must reject cells already occupied by gameplay objects");
+assert.match(quality,/host\?\.shops/,"sanctuary healing placement must not hide beneath a shop");
+assert.match(quality,/function validSanctuaryTile\(/,"sanctuary healing tiles must be revalidated after later room decoration");
+assert.match(quality,/periodMs:3000/,"sanctuary healing must remain +1 HP on the established three-second cadence");
+assert.doesNotMatch(procedural,/id:"v142-sanctuary-alchemist"/,"procedural generation must not spawn a second Alchemist inside a Sanctuary");
+assert.match(procedural,/sanctuaryIds=new Set/,"procedural shop finalisation must know every Sanctuary room");
+assert.match(procedural,/!sanctuaryIds\.has\(Number\(shop\.roomId\)\)/,"all active dungeon shops must be filtered out of Sanctuary rooms");
 
 assert.match(patch,/ADVENTURER_SCORE_REWARD=1000/,"Lost Adventurer rescue must award 1,000 score");
 assert.match(patch,/ADVENTURER_XP_REWARD=200/,"Lost Adventurer rescue must award 200 XP");
