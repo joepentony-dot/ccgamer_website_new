@@ -123,7 +123,7 @@
 
   function validSanctuaryTile(tile){
     if(!tile||!world||!host)return false;
-    const room=roomById(tile.roomId);
+    const room=(world.rooms||[]).find(candidate=>Number(candidate?.id)===Number(tile.roomId))||null;
     if(!room?.sanctuary)return false;
     if(!W.walkable(world.map,Number(tile.x),Number(tile.y),host))return false;
     return !regenCellOccupied(tile.x,tile.y);
