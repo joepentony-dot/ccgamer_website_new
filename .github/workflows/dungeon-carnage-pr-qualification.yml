@@ -150,6 +150,7 @@ jobs:
             "arcade/lost-sizzler/tests/browser/v10-42-live-defects-current-main.mjs"
             "arcade/lost-sizzler/tests/browser/v10-42-bug-reporter.mjs"
             "arcade/lost-sizzler/tests/browser/v10-42-r55-shop-feedback.mjs"
+            "arcade/lost-sizzler/tests/browser/v10-42-r106-trusted-music-launch.mjs"
           )
           failures=()
           for test_file in "${tests[@]}"; do
