@@ -87,7 +87,17 @@ assert(app.includes("machine.injectLoadAndRun()"), "The first D64 quick-load rou
 assert(app.includes('let driveMode = "fast"'), "Each emulator visit must start in Fast Load so ordinary disk images auto-start");
 assert(app.includes("firstSupportedDroppedFile"), "Screen drop loading must choose a supported C64 media file");
 assert(app.includes('mediaDropzone?.addEventListener("drop"'), "The C64 screen stage must accept dropped game media");
-assert(app.includes("await queueMediaFile(file)"), "Dropped media must use the same automatic boot/load route as file selection");
+assert(app.includes("await queueMediaFile(file, { freshBoot: true })"), "Dropped media must use the same clean automatic boot/load route as primary file selection");
+assert(html.includes("LOAD &amp; AUTO START"), "Primary file loader must advertise automatic game start");
+assert(app.includes("function basicReady()"), "Auto-start must wait for a real BASIC READY prompt");
+assert(app.includes("function queueAutoStart(steps)"), "Auto-start must use a staged load sequence");
+assert(app.includes("function serviceAutoStart()"), "Auto-start sequence must advance from the emulation loop");
+assert(app.includes("machine.bufferKeyboardText(autoStartTypeRest)"), "Long LOAD commands must be chunk-fed through the C64 keyboard buffer");
+assert(app.includes("{ loadDone: true }"), "Disk/tape auto-start must wait for loading to finish before RUN");
+assert(app.includes("prepareFreshGameSession()"), "Primary file loading must be able to start a clean C64 session");
+assert(app.includes("queueMediaFile(file, { freshBoot: true })"), "Primary file and drop routes must request a clean auto-start session");
+assert(app.includes("{ type: 'LOAD\"*\",8,1\\r' }"), "Disk auto-start must enter LOAD wildcard on device 8");
+assert(app.includes('{ type: "RUN\\r" }'), "Disk/tape auto-start must enter RUN after loading");
 assert(html.includes("AUTO LOAD"), "The emulator UI must advertise screen drop auto-loading");
 assert(html.includes("data-load-disk"), "The CCG media bay must expose its disk load control");
 assert(html.includes('accept=".d64,.d71,.d81,.g64"'), "Disk bay must expose D64/D71/D81/G64 workflows");
