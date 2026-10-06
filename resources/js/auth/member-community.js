@@ -42,10 +42,12 @@ function ensurePublicSettings() {
   const actions = settings?.querySelector('.profile-actions');
   if (!settings || !actions || document.getElementById('memberPublicSettings')) return;
 
-  const panel = document.createElement('section');
-  panel.className = 'member-public-settings';
+  const panel = document.createElement('details');
+  panel.className = 'member-public-settings member-compact-details';
   panel.id = 'memberPublicSettings';
   panel.innerHTML = `
+    <summary>Optional public profile</summary>
+    <div class="member-compact-details__body">
     <h3>Optional Public Profile</h3>
     <p class="member-public-settings__intro">Your profile remains private unless you switch this on. Email, notes, activity history and unshared game lists are never included.</p>
     <form class="member-public-form" id="memberPublicProfileForm">
@@ -83,6 +85,7 @@ function ensurePublicSettings() {
       <p class="member-public-link" id="memberPublicLink"></p>
       <p class="member-community-status" id="memberPublicProfileStatus" aria-live="polite"></p>
     </form>
+    </div>
   `;
   settings.insertBefore(panel, actions);
 }
