@@ -27,72 +27,40 @@ try{
   const errors=[];
   page.on('pageerror',error=>errors.push(String(error?.stack||error)));
 
-  await page.goto(`${origin}/arcade/lost-sizzler/?zero-server-release=1`,{waitUntil:'domcontentloaded'});
+  await page.goto(`${origin}/arcade/lost-sizzler/?local-release=1`,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.body.dataset.v142BootstrapReady==='true'&&Boolean(window.CCGLostSizzlerV142ZeroServerRelease),null,{timeout:90000});
 
   const state=await page.evaluate(()=>({
     releaseModel:document.body.dataset.releaseModel,
-    onlineFlag:document.body.dataset.onlineMultiplayer,
     api:window.CCGLostSizzlerV142ZeroServerRelease,
     bootstrap:[...(window.CCGLostSizzlerV142Bootstrap?.loaded||[])],
-    retiredSpyGlobals:{
-      inventory:Boolean(window.CCGLostSizzlerV142R3RetainedSpyInventorySeal),
-      exitMovement:Boolean(window.CCGLostSizzlerV142R5SpyExitMovementSeal),
-      packetRejection:Boolean(window.CCGLostSizzlerV142R11SpyPacketRejectionSeal)
-    },
-    retiredNetworkGlobals:{
-      multiplayerState:Boolean(window.CCGLostSizzlerV142MultiplayerState),
-      collectAuthority:Boolean(window.CCGLostSizzlerV142MultiplayerCollectAuthority)
-    },
-    visible:Object.fromEntries(['solo-btn','tutorial-zone-btn','split-btn','daily-btn','create-btn','horde-mode-btn','saboteurs-mode-btn','join-btn'].map(id=>{
-      const node=document.getElementById(id);return[id,Boolean(node&&!node.hidden&&getComputedStyle(node).display!=='none')]
-    })),
-    onlineHowtoVisible:(()=>{const node=document.querySelector('.online-howto');return Boolean(node&&!node.hidden&&getComputedStyle(node).display!=='none')})(),
-    joinRowVisible:(()=>{const node=document.querySelector('.join-row');return Boolean(node&&!node.hidden&&getComputedStyle(node).display!=='none')})(),
-    weeklyPresent:Boolean(document.getElementById('weekly-vault')),
-    networkConnected:Boolean(net?.connected),
-    networkTransport:String(net?.transport||'')
+    gameVisible:(()=>{const node=document.getElementById('solo-btn');return Boolean(node&&!node.hidden&&getComputedStyle(node).display!=='none'&&node.textContent.trim()==='Start Game')})(),
+    tutorialVisible:(()=>{const node=document.getElementById('tutorial-zone-btn');return Boolean(node&&!node.hidden&&getComputedStyle(node).display!=='none')})(),
+    retiredIds:['split-btn','daily-btn','create-btn','horde-mode-btn','saboteurs-mode-btn','join-btn','online-lobby'].filter(id=>Boolean(document.getElementById(id))),
+    releaseNote:document.getElementById('release-note')?.textContent||''
   }));
 
-  assert.equal(state.releaseModel,'zero-server-cost');
-  assert.equal(state.onlineFlag,'disabled');
-  assert.equal(state.api?.onlineMultiplayer,false);
-  assert.deepEqual([...state.api.localModes],['solo','tutorial']);
+  assert.equal(state.releaseModel,'local-browser');
+  assert.equal(state.api?.releaseModel,'local-browser');
+  assert.deepEqual([...state.api.localModes],['game','tutorial']);
   assert.equal(state.api?.supabaseAccountFeatures,true);
-  assert.equal(state.visible['solo-btn'],true,'Solo must remain available.');
-  assert.equal(state.visible['tutorial-zone-btn'],true,'Tutorial must remain available.');
-  assert.equal(state.visible['split-btn'],false,'retired 2P Split Screen must remain hidden.');
-  assert.equal(state.visible['daily-btn'],false,'retired Weekly Vault entry point must remain hidden.');
-  for(const id of ['create-btn','horde-mode-btn','saboteurs-mode-btn','join-btn'])assert.equal(state.visible[id],false,`${id} must not be a production entry point.`);
-  assert.equal(state.onlineHowtoVisible,false,'Online multiplayer instructions must be removed from the release menu.');
-  assert.equal(state.joinRowVisible,false,'Room-code entry must be removed from the release menu.');
-  assert.equal(state.weeklyPresent,false,'retired Weekly Vault panel must remain absent.');
-  assert.equal(state.networkConnected,false,'Zero-server release must not start connected to a multiplayer room.');
-  assert.equal(state.networkTransport,'solo','Zero-server release network object must remain in inert Solo state.');
-  assert.ok(!state.bootstrap.includes('v10-42-multiplayer-state.js'),'Online multiplayer state adapter must not load in production V10.42.');
-  assert.ok(!state.bootstrap.includes('v10-42-multiplayer-collect-authority.js'),'Online collection authority bridge must not load in production V10.42.');
-  for(const file of ['v10-42-r3-retained-spy-inventory-seal.js','v10-42-r5-spy-exit-movement-seal.js','v10-42-r11-spy-packet-rejection-seal.js'])assert.ok(!state.bootstrap.includes(file),`${file} must remain retired from the production V10.42 bootstrap.`);
-  assert.deepEqual(state.retiredSpyGlobals,{inventory:false,exitMovement:false,packetRejection:false},'Retired V10.42 Spy compatibility owners must never be installed in the zero-server release.');
-  assert.deepEqual(state.retiredNetworkGlobals,{multiplayerState:false,collectAuthority:false},'Retired V10.42 networked Dungeon Multiplayer adapters must remain absent from the zero-server release.');
-  assert.ok(state.bootstrap.includes('v10-42-zero-server-release.js'),'Zero-server release policy must load in production V10.42.');
+  assert.equal(state.gameVisible,true,'The main Start Game action must remain available.');
+  assert.equal(state.tutorialVisible,true,'Tutorial must remain available.');
+  assert.deepEqual(state.retiredIds,[],'Retired alternate-mode controls must be absent from the production DOM.');
+  assert.match(state.releaseNote,/Start the main game or use the Tutorial/i);
+  assert.ok(state.bootstrap.includes('v10-42-zero-server-release.js'),'Local release policy must load in production V10.42.');
+  assert.ok(!state.bootstrap.some(file=>/(multiplayer|network|split|online)/i.test(file)),'Production bootstrap must not load retired alternate-mode transports.');
 
   const schedulerAdvanced=await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(true)))));
-  assert.equal(schedulerAdvanced,true,'Zero-server menu enforcement must not starve animation/layout scheduling.');
+  assert.equal(schedulerAdvanced,true,'Local release menu enforcement must not starve animation/layout scheduling.');
   const menuBox=await page.locator('#menu').boundingBox({timeout:5000});
-  assert.ok(menuBox&&menuBox.width>1500&&menuBox.height>900,`Zero-server start menu must complete viewport layout: ${JSON.stringify(menuBox)}`);
-
-  const blocked=await page.evaluate(async()=>{
-    try{await net.createOnlineRoom('ABCDE','TEST',{mode:'dungeon'});return{blocked:false}}catch(error){return{blocked:true,code:error?.code||'',message:String(error?.message||error)}}
-  });
-  assert.equal(blocked.blocked,true,'Direct legacy room creation must be blocked even when called programmatically.');
-  assert.equal(blocked.code,'online_multiplayer_disabled');
+  assert.ok(menuBox&&menuBox.width>1500&&menuBox.height>900,`Local start menu must complete viewport layout: ${JSON.stringify(menuBox)}`);
 
   await page.click('#solo-btn');
   await page.waitForFunction(()=>document.body.dataset.runActive==='true'&&mode==='playing'&&Boolean(p1),null,{timeout:20000});
-  assert.equal(await page.evaluate(()=>Boolean(net?.connected)),false,'Starting Solo must not create a multiplayer connection.');
 
-  assert.deepEqual(errors,[],`Zero-server release regression must not raise page errors: ${errors.join('\n')}`);
-  console.log('Lost Sizzler V10.42 zero-server release browser regression passed.');
+  assert.deepEqual(errors,[],`Local release regression must not raise page errors: ${errors.join('\n')}`);
+  console.log('C64 Dungeon Carnage V10.42 local release browser regression passed.');
   await context.close();
 }finally{
   await browser.close();

@@ -11,7 +11,7 @@
   window.__CCG_LOST_SIZZLER_V141_STARTUP_FREEZE_GUARD__=true;
 
   const state={timer:0,hooked:false,observerArmed:false,bypassed:false,deferred:false,source:null,canvas:null,pendingStartId:"",earlyStartCaptured:0,earlyStartReleased:0};
-  const V142_START_IDS=new Set(["solo-btn","continue-save-btn","daily-btn","split-btn","tutorial-zone-btn"]);
+  const V142_START_IDS=new Set(["solo-btn","continue-save-btn","tutorial-zone-btn"]);
 
   /* The V10.42 ordered bootstrap is loaded late in the legacy enhancement
    * queue. This guard is injected by the first static cache guard, so it is
@@ -20,7 +20,7 @@
    * Once the V10.42 bootstrap exists, it owns start buffering normally. */
   function capturePreBootstrapStart(event){
     if(window.CCGLostSizzlerV142Bootstrap)return;
-    const target=event?.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
+    const target=event?.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#tutorial-zone-btn"):null;
     if(!target||!V142_START_IDS.has(target.id))return;
     if(document.body?.dataset?.runActive==="true")return;
     event.preventDefault();

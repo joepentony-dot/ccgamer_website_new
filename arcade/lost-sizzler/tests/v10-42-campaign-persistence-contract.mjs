@@ -13,8 +13,8 @@ const overhaul=read('arcade/lost-sizzler/js/v10-42-procedural-overhaul.js');
 const campaign=read('arcade/lost-sizzler/js/v10-42-five-depth-campaign.js');
 
 assert(core.includes('run.floor++;run.deepest=Math.max(run.deepest,run.floor);'),'Floor descent must advance the existing run object rather than replacing the campaign.');
-assert(core.includes('startWorld(PGR.floorSeed(run),Boolean(p2),true);'),'Floor descent must request player preservation when generating the next procedural floor.');
-assert(core.includes('const old1=preserve?p1:null,old2=preserve?p2:null'),'startWorld must retain the old players when preservation is requested.');
+assert(core.includes('startWorld(PGR.floorSeed(run),false,true);'),'Floor descent must preserve the local player when generating the next procedural floor.');
+assert(core.includes('const old1=preserve?p1:null;'),'startWorld must retain the local player when preservation is requested.');
 assert(core.includes('old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer'),'The next floor must rebuild Player 1 from the preserved player state.');
 
 for(const marker of ['rpgStats','relics','banishmentVessel','banishmentEssence','banishmentEssenceCost','sigilReveal','sigilWard','sigilBind','sigilBanish']){
@@ -31,7 +31,7 @@ assert(progression.includes('for(const g of run.bankedGames)if(!saved.includes(g
 assert(progression.includes('function checkpointClone(value){try{return JSON.parse(JSON.stringify(value))}'),'Checkpoint storage must clone the complete dynamic run/player objects rather than a narrow legacy whitelist.');
 assert(progression.includes('run:checkpointClone(run),player:checkpointClone(player),player2:checkpointClone(player2)'),'Checkpoint payload must retain the complete V10.42 run and character state.');
 assert(core.includes('run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player'),'Resume must restore the saved run and player before rebuilding the current floor.');
-assert(core.includes('startWorld(PGR.floorSeed(run),Boolean(p2),true,true)'),'Resume must preserve the restored player while regenerating the deterministic floor entrance.');
+assert(core.includes('startWorld(PGR.floorSeed(run),false,true,true)'),'Resume must preserve the restored local player while regenerating the deterministic floor entrance.');
 
 const representative={
   run:{floor:4,v142ClaimedDomains:['iron','bone','ash'],v142AllKeysAnnounced:true,bankedGames:['Boulder Dash','Bruce Lee'],floorGames:['Commando']},

@@ -76,6 +76,13 @@ try{
   if(!orderedState.r19)throw new Error("R19 mobile trap layout module missing after ordered bootstrap readiness");
   await page.waitForLoadState("load");
   await page.waitForFunction(()=>document.body.classList.contains("v104-touch-device")&&Boolean(document.getElementById("v104-touch-controls")));
+  const fatalLoader=await page.evaluate(()=>({
+    fatal:document.getElementById("ccg-release-loading")?.classList.contains("is-error")===true,
+    status:document.getElementById("ccg-release-loading-status")?.textContent||"",
+    gate:window.CCGLostSizzlerReleaseGate?.state?{ready:Boolean(window.CCGLostSizzlerReleaseGate.state.ready),failed:Boolean(window.CCGLostSizzlerReleaseGate.state.failed),errors:[...(window.CCGLostSizzlerReleaseGate.state.errors||[])]}:null,
+    runtimeErrors:[...(window.CCGLostSizzlerCacheGuard?.runtimeErrors||[])]
+  }));
+  if(fatalLoader.fatal)throw new Error("mobile loader fatal before game start: "+JSON.stringify(fatalLoader));
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
   await page.waitForFunction(()=>document.getElementById("menu")?.classList.contains("hidden")===true);

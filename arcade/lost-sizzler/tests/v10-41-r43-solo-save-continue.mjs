@@ -16,7 +16,7 @@ assert.match(source,/checksum:hashText/,"save envelope must include an integrity
 assert.match(source,/hashText\(JSON\.stringify\(payload\)\)!==String\(checksum\)/,"load path must reject checksum mismatches");
 assert.match(source,/const primary=readSlot\(PRIMARY_KEY\);if\(primary\)return primary;[\s\S]*const backup=readSlot\(BACKUP_KEY\)/,"load path must prefer primary and fall back to backup");
 
-assert.match(source,/const soloSaveOwner=\(\)=>[\s\S]*run&&!run\.daily&&p1&&!p2&&String\(playMode\|\|""\)==="solo"&&!net\?\.connected/,"r43 ownership must be standard Solo only");
+assert.match(source,/const soloSaveOwner=\(\)=>[\s\S]*run&&!run\.daily&&p1&&!p2&&String\(playMode\|\|""\)==="solo"&&!\(typeof net!=="undefined"&&net\?\.connected\)/,"r43 ownership must accept the local-only Solo runtime while rejecting any retained connected transport");
 assert.match(source,/tutorialOwned\(\)/,"Tutorial must be excluded from r43 ownership");
 assert.match(source,/ACTIVE_SPECIAL_MODES/,"special multiplayer modes must be excluded");
 assert.match(source,/document\.body\?\.dataset\?\.hordeSolo!=="true"/,"Horde Solo presentation must not be mistaken for Dungeon Solo");
@@ -63,7 +63,7 @@ assert.doesNotMatch(source,/Number\(saved\.floor[^\n]*<=1/,"r43 Continue must su
 assert.match(source,/legacy_migration/,"legacy Solo checkpoints must be migratable");
 assert.match(source,/if\(checkpointIsSolo\(data\)\)return writeEnvelope[\s\S]*return original\.saveCheckpointData\(data\)/,"non-Solo legacy checkpoint writes must remain on their existing path");
 assert.match(source,/if\(soloSaveOwner\(\)\)[\s\S]*clearSoloSave\(\)[\s\S]*return original\.clearCheckpoint\(\)/,"Solo completion must still clear the v2 save even after autosave ownership has ended");
-assert.match(source,/Continue Solo — Floor/,"Continue button must expose the saved floor");
+assert.match(source,/Continue — Floor/,"Continue button must expose the saved floor without retired mode wording");
 assert.match(source,/Saved run: Floor/,"menu must expose save metadata");
 
 console.log("V10.41 r43 Solo save/continue and deterministic automatic floor-prompt ownership contract passed.");

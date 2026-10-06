@@ -64,7 +64,6 @@ assert.equal(restored.run.floor,4,"unlocking Air must still leave descent to the
 assert.doesNotMatch(source,/runState\.floor\s*(?:\+\+|\+=|=\s*[^=])/,'portal foundation must not write the authoritative run.floor');
 const campaignIndex=bootstrap.indexOf('["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"]');
 const portalIndex=bootstrap.indexOf('["v10-42-elemental-portal-foundation.js","CCGLostSizzlerV142ElementalPortalFoundation"]');
-const splitIndex=bootstrap.indexOf('["v10-42-split-campaign-state.js","CCGLostSizzlerV142SplitCampaignState"]');
-assert.ok(campaignIndex>=0&&portalIndex>campaignIndex&&splitIndex>portalIndex,"portal foundation must load after five-depth ownership and before split campaign state");
+assert.ok(campaignIndex>=0&&portalIndex>campaignIndex,"portal foundation must load after five-depth campaign ownership");
 
 console.log("PASS V10.42 elemental portal foundation");

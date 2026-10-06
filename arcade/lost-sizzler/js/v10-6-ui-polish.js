@@ -77,13 +77,13 @@
     panel.dataset.conciseMenu="true";
 
     const title=panel.querySelector("h2"),intro=title?.nextElementSibling;
-    if(intro?.tagName==="P")intro.textContent="A five-floor C64 dungeon crawl: rescue games, build your loadout and survive whatever the Vault throws at you.";
+    if(intro?.tagName==="P")intro.textContent="A fifteen-floor C64 dungeon crawl: rescue games, build your loadout and survive whatever the dungeon throws at you.";
 
     const desktop=panel.querySelector(".desktop-play-recommendation");
     if(desktop)desktop.innerHTML="<strong>DESKTOP RECOMMENDED</strong><span>Mobile works too; keyboard and a larger screen are easier.</span>";
 
     const features=panel.querySelector(".feature-strip");
-    if(features)features.innerHTML="<span><b>5 FLOORS</b>Changing objectives</span><span><b>RPG LOOT</b>Weapons, XP & items</span><span><b>1–4 PLAYERS</b>Solo, local or online</span>";
+    if(features)features.innerHTML="<span><b>15 FLOORS</b>Changing objectives</span><span><b>RPG LOOT</b>Weapons, XP & items</span><span><b>LOCAL GAME</b>Main adventure or Tutorial</span>";
 
     const weeklyButton=document.getElementById("daily-btn");
     if(weeklyButton&&!window.CCGWeeklyChallenge?.state?.ready)weeklyButton.textContent="Weekly Dungeon";

@@ -165,9 +165,13 @@ try{
     p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.controlLocked=false;p1.controlsLocked=false;
     fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
     window.CCGLostSizzlerV142AttackHoldLiveness?.clearHeld?.();
+    if(typeof setAttackHeldInput==="function")setAttackHeldInput(p1,false);
+    window.CCGLostSizzlerV142R58AuthoritativeFireCore?.clearTrace?.();
+    if(typeof focusGameplayKeyboard==="function")focusGameplayKeyboard();
     return Number(p1._meleeSwingAt||0);
   });
-  await page.keyboard.press("Space");
+  await page.waitForTimeout(80);
+  await page.keyboard.down("Space");
   try{
     await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before,swordBefore,{timeout:3000});
   }catch(error){
@@ -177,9 +181,11 @@ try{
       weapon:p1?.weapon,mana:p1?.mana,meleeWeapon:p1?.meleeWeapon,weaponLevel:p1?.weaponLevel,
       fire1,fireBuffer1,projectileCD,space:input.has("Space"),swing:p1?._meleeSwingAt,
       trace:window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace,
-      updateFaults:window.CCGLostSizzlerV141R29?.state?.updateFaults,renderFaults:window.CCGLostSizzlerV141R29?.state?.renderFaults
+      activeElement:String(document.activeElement?.id||document.activeElement?.tagName||""),updateFaults:window.CCGLostSizzlerV141R29?.state?.updateFaults,renderFaults:window.CCGLostSizzlerV141R29?.state?.renderFaults
     }))));
     throw error;
+  }finally{
+    await page.keyboard.up("Space");
   }
   const firstSwordSwing=await page.evaluate(()=>Number(p1._meleeSwingAt||0));
   await page.waitForTimeout(1200);
@@ -211,7 +217,7 @@ try{
     fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
     p1.dir={x:1,y:0};
     host.blockingDecor=host.blockingDecor||[];
-    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:Number(p1.x)+1,y:Number(p1.y),type:"crate",blocking:true,structural:false});
+    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:Number(p1.x)+1,y:Number(p1.y),type:"crate",blocking:true,structural:false,hp:2,maxHp:2});
     sync();
     window.CCGLostSizzlerInventoryHudV106?.render?.();
     return{
@@ -223,8 +229,12 @@ try{
   });
   assert.equal(adjacentBefore.hud,"L2 FIELD PULSE","weapon HUD must show compact level plus readable weapon family");
   assert.match(adjacentBefore.title,/Weapon Level 2 · TIER 2 · Field Pulse II/,"weapon HUD title must retain full evolved weapon identity");
-  await page.keyboard.press("Space");
-  await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
+  await page.keyboard.down("Space");
+  try{
+    await page.waitForFunction(before=>Number(p1?._meleeSwingAt||0)>before.swing,adjacentBefore,{timeout:3000});
+  }finally{
+    await page.keyboard.up("Space");
+  }
   const adjacentAfter=await page.evaluate(()=>({
     mana:Number(p1.mana),
     swing:Number(p1._meleeSwingAt||0),

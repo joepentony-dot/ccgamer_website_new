@@ -17,7 +17,7 @@ assert.match(main,/function maybeDoubleTapDash\(player,code,now=performance\.now
 assert.match(main,/previous\.key===key&&now-previous\.at>45&&now-previous\.at<=DOUBLE_TAP_DASH_MS/,"double tap must require a fresh second directional press inside the bounded window");
 assert.match(main,/dashPlayer\(player,dir\)/,"double tap must reuse the canonical dash implementation");
 assert.match(main,/ccg:direction-double-tap-dash/,"double-tap dash must publish an observable action event");
-assert.match(main,/if\(!e\.repeat\)\{if\(p1\)maybeDoubleTapDash\(p1,e\.code\);if\(p2\)maybeDoubleTapDash\(p2,e\.code\)\}/,"held/repeat movement must never generate repeated dashes");
+assert.match(main,/if\(!e\.repeat&&p1\)maybeDoubleTapDash\(p1,e\.code\)/,"held/repeat movement must never generate repeated dashes");
 
 assert.match(gamepad,/const P1_MOVE=\{up:"KeyW",down:"KeyS",left:"KeyA",right:"KeyD"\}/,"gamepad movement must continue to translate through the canonical P1 direction keys");
 assert.match(gamepad,/setHeld\(slot,map\.up,up\);setHeld\(slot,map\.down,down\);setHeld\(slot,map\.left,left\);setHeld\(slot,map\.right,right\)/,"gamepad stick/D-pad edges must flow through the same key path as double-tap dash");
@@ -35,5 +35,8 @@ assert.doesNotMatch(onboarding,/Choose Play Solo/,"tutorial completion must not 
 assert.match(guidance,/function controllerProfile\(\)/,"tutorial acknowledgement must detect the connected controller profile");
 assert.match(guidance,/buttons<=2.*Single-button joystick detected/s,"low-button controllers must be described as single-button joystick controls");
 assert.match(guidance,/Joypad detected: stick\/D-pad moves, A attacks, Select\/View opens Inventory, and double-tap a direction dashes/,"multi-button joypads must receive the correct live alternatives");
+
+assert.doesNotMatch(guidance,/void requestPlayFullscreen\(\);\s*result=startSolo\(\)/,"tutorial/start guidance must not consume the trusted click on fullscreen before the soundtrack starts");
+assert.match(guidance,/result=startSolo\(\)/,"Game and Tutorial must still route through canonical startSolo audio/fullscreen ordering");
 
 console.log("Dungeon R106 double-tap dash and controller-aware tutorial contract passed.");

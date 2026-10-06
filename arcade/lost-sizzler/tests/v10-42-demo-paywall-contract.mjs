@@ -27,8 +27,9 @@ assert(source.includes('finally{state.checking=false}'),'Paywall presentation mu
 assert(/function watchTutorialCompletion\(\)\{\s*if\(!DEMO_MODE\)return;/.test(source),'Tutorial-completion purchase presentation must be disabled outside the explicit demo wrapper.');
 assert(source.includes('if(!complete){completionQueued=false;return}'),'Tutorial completion detection must re-arm after the completion banner disappears so replayed training can trigger the offer again.');
 assert(source.includes('event.stopImmediatePropagation()'),'Demo lock must stop the underlying full-game action before presenting the entitlement screen.');
-assert(source.includes('"continue-save-btn","join-btn"'),'Demo mode must also guard saved-run resume and room-code join entry paths.');
-assert(source.includes('#continue-save-btn')&&source.includes('#join-btn'),'Saved-run resume and room-code join controls must receive the same visible demo-lock treatment as the main paid modes.');
+assert(source.includes('const FULL_GAME_BUTTONS=["solo-btn","continue-save-btn"]'),'Demo mode must guard only the current paid main-game and saved-run entry paths.');
+assert(source.includes('#solo-btn')&&source.includes('#continue-save-btn'),'Start Game and saved-run Resume must receive the visible demo-lock treatment.');
+for(const retired of ['"split-btn"','"daily-btn"','"join-btn"','"create-btn"','"horde-mode-btn"','"saboteurs-mode-btn"'])assert(!source.includes(retired),`Retired control ${retired} must not remain in the R107 entitlement boundary.`);
 assert(!source.includes('"tutorial-zone-btn"'),'The free Tutorial must remain outside the paid full-game guard set.');
 assert(source.includes('const safeOfferText=')&&source.includes('.trim().slice(0,32)'),'Commerce-controlled offer text must be normalized and length-bounded before presentation.');
 assert(source.includes('${esc(offer.display)} ONE-OFF'),'Commerce-controlled display-price text must be HTML-escaped before entering the paywall template.');

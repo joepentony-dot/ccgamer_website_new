@@ -67,9 +67,12 @@ try{
     await new Promise(resolve=>setTimeout(resolve,0));
     const createdLevel=window.__voiceInstances.slice(beforeLevel).filter(audio=>audio.url===recorded.src&&!audio.muted);
     const levelAudio=createdLevel.length?createdLevel[createdLevel.length-1]:null;
-    const levelUp={created:Boolean(levelAudio),currentTime:levelAudio?Number(levelAudio.currentTime):null,expected:Number(recorded.cues[recorded.aliases.levelUp].start)};
+    const levelCurrentTime=levelAudio?Number(levelAudio.currentTime):null;
     api.stop("test-reset");
-    return{rows,levelUp};
+    return{
+      rows,
+      levelUp:{created:Boolean(levelAudio),currentTime:levelCurrentTime,expected:Number(recorded.cues[recorded.aliases.levelUp].start)}
+    };
   });
 
   for(const row of results.rows){

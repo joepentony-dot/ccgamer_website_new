@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r106";
-  const CACHE="20261005r106";
+  const BUILD="V10.42 r107";
+  const CACHE="20261005r107";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -27,7 +27,6 @@
     ["v10-42-r23-rpg-build-expansion.js","CCGLostSizzlerV142R23RpgBuildExpansion"],
     ["v10-42-five-depth-campaign.js","CCGLostSizzlerV142FiveDepthCampaign"],
     ["v10-42-elemental-portal-foundation.js","CCGLostSizzlerV142ElementalPortalFoundation"],
-    ["v10-42-split-campaign-state.js","CCGLostSizzlerV142SplitCampaignState"],
     ["v10-42-floor-balance.js","CCGLostSizzlerV142FloorBalance"],
     ["v10-42-r6-biome-environment-director.js","CCGLostSizzlerV142R6BiomeEnvironmentDirector"],
     ["v10-42-r7-room-objective-director.js","CCGLostSizzlerV142R7RoomObjectiveDirector"],
@@ -145,7 +144,7 @@
   }
 
   function blockedStart(event){
-    const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#daily-btn,#split-btn,#tutorial-zone-btn"):null;
+    const target=event.target instanceof Element?event.target.closest("#solo-btn,#continue-save-btn,#tutorial-zone-btn"):null;
     if(!target||state.failed)return;
     const paywall=window.CCGLostSizzlerV142DemoPaywall;
     if(paywall?.demoMode&&document.body?.dataset?.fullGameEntitled!=="true"&&target.id!=="tutorial-zone-btn"){
@@ -154,7 +153,7 @@
       return;
     }
 
-    /* Keep V10.42 on the capture boundary after readiness for Solo/Tutorial.
+    /* Keep V10.42 on the capture boundary after readiness for Game/Tutorial.
      * A click can be scheduled while ready=false but dispatch after ready=true.
      * Letting that transition click fall through to the legacy core handler
      * bypasses the onboarding choiceAccepted handoff and silently returns to
@@ -167,10 +166,9 @@
       state.pendingStartId="";
       target.setAttribute("aria-busy","true");
 
-      /* Fullscreen and authored music must begin inside this real click task.
-       * Replaying the request later through a timer, microtask chain or
-       * synthetic click can lose browser media activation and leave the
-       * production soundtrack silent for the whole run. */
+      /* Audio and fullscreen must begin inside this trusted click task.
+       * Deferring the launch through a synthetic click or timer strips browser
+       * media activation and can leave the authored soundtrack permanently silent. */
       const guidance=window.CCGLostSizzlerTutorialGuidanceV123;
       if(typeof guidance?.launchSolo!=="function"){
         target.removeAttribute("aria-busy");
@@ -333,9 +331,9 @@
       if(pendingId){
         const pendingButton=document.getElementById(pendingId);
         try{pendingButton?.focus?.({preventScroll:true})}catch(_){try{pendingButton?.focus?.()}catch(__){}}
-        const label=pendingId==="tutorial-zone-btn"?"Tutorial":pendingId==="continue-save-btn"?"Resume Saved Run":pendingId==="daily-btn"?"Weekly Vault":pendingId==="split-btn"?"2 Player Split Screen":"Start Game";
+        const label=pendingId==="tutorial-zone-btn"?"Tutorial":pendingId==="continue-save-btn"?"Resume Saved Run":"Start Game";
         if(note)note.textContent=`V10.42 READY — click ${label} again to begin. This fresh click is required so fullscreen and authored music start with browser permission.`;
-      }else if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Solo and Tutorial are the supported local modes; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
+      }else if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Start the main game or use the Tutorial; account features remain optional and the core game runs locally.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
     }catch(error){
       state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";

@@ -105,6 +105,27 @@
   margin-top:4px!important;
 }
 
+@media(max-height:820px) and (min-width:901px){
+  .r71-inventory-panel .r80-wearable-strip{gap:4px!important}
+  .r71-inventory-panel .r80-wearable-card{
+    min-height:46px!important;
+    padding:4px 5px!important;
+    gap:2px!important;
+  }
+  .r71-inventory-panel .r80-wearable-card>span{font-size:6px!important}
+  .r71-inventory-panel .r80-wearable-card>b{font-size:8px!important}
+  .r71-inventory-panel .r80-wearable-card>small{
+    min-height:14px!important;
+    font-size:6px!important;
+    line-height:1.15!important;
+  }
+  .r71-inventory-panel .r80-wearable-card>button{
+    margin-top:1px!important;
+    padding:3px 5px!important;
+    font-size:6px!important;
+  }
+}
+
 @media(max-width:820px){
   .r80-wearable-strip{grid-template-columns:1fr}
   .r80-wearable-card{min-height:68px}

@@ -19,7 +19,6 @@ const assetOverrides=readGame("js/asset-overrides.js");
 const cacheGuard=readGame("js/v10-41-cache-guard.js");
 const loadWatchdog=readGame("js/v10-41-load-watchdog.js");
 const startupFreezeGuard=readGame("js/v10-41-startup-freeze-guard.js");
-const network=readGame("js/network.js");
 const activeEnemyFire=readGame("js/v10-41-active-enemy-fire.js");
 const r29=readGame("js/v10-41-r29-runtime-repair.js");
 const core=readGame("js/game-core.js");
@@ -46,10 +45,10 @@ const activeAssets=[
   "css/game.css","css/v10-6-gameplay.css","css/v10-41-r28.css","css/v10-41-r29.css",
   "js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js","js/version-check.js",
   "js/v10-23-tutorial-guidance.js","js/asset-overrides.js","js/avatar-data.js","js/config.js","js/progression.js",
-  "js/audio-assets.js","js/audio.js","js/world.js","js/network.js","js/ai.js","js/systems.js","js/game-core.js",
-  "js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js",
+  "js/audio-assets.js","js/audio.js","js/world.js","js/ai.js","js/systems.js","js/game-core.js",
+  "js/game-play.js","js/game-render.js","js/game-main.js",
   "js/v10-41-lake-item-safety.js","js/v10-41-gambler-devroom.js","js/v10-41-developer-vault-hardening.js",
-  "js/v10-41-developer-asset-catalog.js","js/v10-41-split-friendly-fire.js","js/v10-41-landing-notification-polish.js",
+  "js/v10-41-developer-asset-catalog.js","js/v10-41-landing-notification-polish.js",
   "js/v10-41-major-notification-hardening.js","js/v10-41-active-enemy-fire.js",
   "js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js",
 ];
@@ -60,7 +59,6 @@ for(const asset of activeAssets){
 
 const retiredPublicAssets=[
   "js/weekly-challenge.js",
-  "js/split-player-hud.js",
   "js/v10-41-r29-buglog.js",
   "js/v10-41-r30-buglog.js"
 ];
@@ -80,13 +78,9 @@ for(const asset of retiredDirectAssets){
 }
 assert.doesNotMatch(index,/id="horde-mode-btn"/,"retired Horde mode must not be exposed in the live menu");
 assert.doesNotMatch(index,/id="saboteurs-mode-btn"/,"retired Spy Vs Spy mode must not be exposed in the live menu");
-assert.doesNotMatch(index,/Choose Dungeon or Horde|Spy Vs Spy for exactly two/i,"retired mixed-mode online guidance must remain absent");
-assert.doesNotMatch(index,/id="create-btn"|id="join-btn"|id="online-lobby"|class="online-howto"/,"retired online multiplayer entry and lobby markup must not be exposed in the live menu");
-assert.doesNotMatch(index,/Dungeon Multiplayer|Join Online Room|ONLINE MULTIPLAYER/,"retired online multiplayer guidance must not remain in canonical HTML");
 
 assert.doesNotMatch(checker,/v10-37-horde-focus\.js|v10-38-horde-live\.js|v10-39-horde-live-loadout\.js|v10-40-horde-final\.js|v10-41-horde-combat-polish\.js|v10-41-horde-completion\.js/,"version loader must not inject retired Horde runtime modules");
 assert.match(checker,/v10-36-bootstrap\.js/,"version loader must retain the active V10.36 bootstrap");
-assert.match(checker,/v10-41-multiplayer-presence\.js/,"version loader must retain Dungeon multiplayer presence");
 assert.match(checker,/v10-41-world-safety\.js/,"version loader must retain shared world safety");
 assert.match(checker,/v10-41-sanctuary-hardening\.js/,"version loader must retain sanctuary hardening");
 assert.match(checker,/v10-41-sanctuary-azalea\.js/,"version loader must retain sanctuary scenery and AZALEA");
@@ -94,8 +88,6 @@ assert.match(checker,/v10-41-progression-recovery\.js/,"version loader must reta
 assert.match(checker,/v10-41-xp-permadeath-hardening\.js/,"version loader must retain zero-XP permadeath hardening");
 assert.match(checker,/v10-41-solo-full-map\.js/,"version loader must retain the Solo full-map layer");
 
-assert.doesNotMatch(index,/v10-41-live-join-presence\.js/,"live-presence must not be requested twice from canonical HTML");
-assert.match(network,/v10-41-live-join-presence\.js\?v=\$\{encodeURIComponent\(releaseRev\)\}/,"network-owned live-presence must inherit the page release token");
 const token=manifest.cacheToken;
 assert.ok(index.indexOf(`js/v10-41-cache-guard.js?v=${token}`)<index.indexOf(`js/asset-overrides.js?v=${token}`),"cache guard must begin before the enhancement queue owner loads");
 assert.ok(index.indexOf(`js/v10-41-load-watchdog.js?v=${token}`)<index.indexOf(`js/asset-overrides.js?v=${token}`),"load watchdog must start before the enhancement queue");
@@ -120,7 +112,6 @@ assert.match(assetOverrides,/const CCG_RELEASE_REV=/,"enhancement queue must der
 assert.match(assetOverrides,/v10-42-bootstrap\.js\?v=\$\{CCG_RELEASE_REV\}/,"V10.42 bootstrap must be release-tokened and owned by the enhancement queue");
 assert.ok(assetOverrides.indexOf("v10-35-quality.js")<assetOverrides.indexOf("v10-42-bootstrap.js"),"V10.42 ordered bootstrap must remain the final enhancement queue entry");
 assert.match(assetOverrides,/v10-4-death-cache\.js\?v=\$\{CCG_RELEASE_REV\}/,"death-cache code must remain release-tokened");
-assert.match(assetOverrides,/v10-6-runtime\.js\?v=\$\{CCG_RELEASE_REV\}/,"multiplayer runtime must remain release-tokened");
 assert.match(assetOverrides,/CCGLostSizzlerCacheGuard\?\.runtimeErrors/,"uncaught startup module errors must fail the release gate");
 
 assert.match(cacheGuard,/ccg-lost-sizzler:last-sanitised-cache/,"cache sanitation must run once per published cache token");
@@ -151,4 +142,4 @@ assert.doesNotMatch(homeScript,/addEventListener\(["']wheel["']/,"home recogniti
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative game mark must never capture pointer or wheel targeting");
 
-console.log("Dungeon Carnage V10.42 build/cache/startup and retired-mode boundary contract passed.");
+console.log("Dungeon Carnage V10.42 build/cache/startup contract passed.");

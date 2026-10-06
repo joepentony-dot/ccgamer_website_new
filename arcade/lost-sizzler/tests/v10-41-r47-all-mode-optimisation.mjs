@@ -24,8 +24,9 @@ const r46At=loader.indexOf('v10-41-r46-release-candidate-polish.js');
 const r47At=loader.indexOf('v10-41-r47-all-mode-optimisation.js');
 assert.ok(r46At>=0&&r47At>r46At,"r47 must load after the release-candidate layer");
 
-console.log("[r47 static] governor covers every published mode without gameplay ownership");
-for(const mode of ["solo","online","split","daily","tutorial","dungeon","horde-survivor","sizzler-saboteurs"])assert.match(r47,new RegExp(`(?:\\"|')${mode}(?:\\"|')`));
+console.log("[r47 static] governor covers the current local release paths without gameplay ownership");
+for(const mode of ["game","tutorial","menu"])assert.match(r47,new RegExp(`(?:\\"|')${mode}(?:\\"|')`));
+for(const retired of ["online","split","horde-survivor","sizzler-saboteurs"])assert.ok(!r47.includes(`"${retired}"`)&&!r47.includes(`\'${retired}\'`),`retired mode must stay absent from r47: ${retired}`);
 for(const array of ["particles","rings","floaters"])assert.match(r47,new RegExp(`trimArray\\(${array},`));
 for(const forbidden of ["trimArray(bullets","trimArray(enemyBullets","trimArray(hazards","trimArray(host.enemies","score=","saveFloorCheckpoint=","broadcastWorld=","net.send="])assert.ok(!r47.includes(forbidden),`r47 must not take gameplay/network authority: ${forbidden}`);
 assert.match(r47,/unhandledrejection/);
@@ -33,11 +34,11 @@ assert.match(r47,/client_error/);
 assert.match(r47,/MAX_ERRORS_PER_SESSION=6/);
 assert.match(r47,/ERROR_COOLDOWN_MS=60000/);
 
-console.log("[r47 static] pre-release Solo clicks are held and replayed exactly through the release gate");
+console.log("[r47 static] pre-release game clicks are held and replayed exactly through the release gate");
 assert.match(loadWatchdog,/pendingSolo:false/);
 assert.match(loadWatchdog,/capturePreReleaseSolo/);
 assert.match(loadWatchdog,/event\.stopImmediatePropagation\(\)/);
-assert.match(loadWatchdog,/if\(releaseReady\(\)\)\{replayPendingSolo\(\);stopLoaderObservers\(\)\}/,"Solo replay must wait for the authoritative runtime-ready boundary, not only the legacy release gate");
+assert.match(loadWatchdog,/if\(releaseReady\(\)\)\{replayPendingSolo\(\);stopLoaderObservers\(\)\}/,"Game-start replay must wait for the authoritative runtime-ready boundary, not only the legacy release gate");
 assert.match(loadWatchdog,/state\.pendingSolo=false;state\.soloReplays\+\+;\s*button\.click\(\)/);
 assert.ok(!loadWatchdog.includes("startSolo("),"load watchdog must replay the owned button intent rather than taking startSolo gameplay ownership");
 

@@ -45,10 +45,8 @@ assert.match(paywall,/Unlock C64 Dungeon Carnage permanently/,
 assert.doesNotMatch(paywall,/The Lost Sizzler/,
   "active purchase/entitlement presentation must not expose the retired title");
 
-assert.match(zero,/Online multiplayer is not part of the C64 Dungeon Carnage browser release\./,
-  "retired multiplayer error must use the current game identity");
-assert.doesNotMatch(zero,/zero-server-cost Lost Sizzler release/,
-  "retired game name must not surface through the multiplayer rejection");
+assert.doesNotMatch(zero,/Online multiplayer|zero-server-cost Lost Sizzler release/i,
+  "retired alternate-mode rejection copy must not survive in the local release policy");
 
 for(const id of ["threshold-stone","drive-steel","iron-keep","budget-amber","cartridge-green","tape-violet","crypt-moss","demo-magenta","modem-cyan","sid-red","ember-orange","foundry-copper","score-gold","crt-green","blood-citadel"]){
   assert.ok(render.includes(`id:"${id}"`),`fifteen-floor owner acceptance must retain palette ${id}`);

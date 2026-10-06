@@ -138,9 +138,8 @@
   min-height:0!important;
   margin:0!important;
   padding:9px!important;
-  overflow:auto!important;
+  overflow:hidden!important;
   overscroll-behavior:contain!important;
-  scrollbar-gutter:stable!important;
   border:1px solid #594365!important;
   background:linear-gradient(145deg,#100a14,#07050a)!important;
   display:grid!important;
@@ -457,9 +456,8 @@
   grid-auto-rows:minmax(78px,auto)!important;
   gap:7px!important;
   align-content:start!important;
-  overflow:auto!important;
+  overflow:hidden!important;
   overscroll-behavior:contain!important;
-  scrollbar-gutter:stable!important;
   border:1px solid #4d3958!important;
   background:#08050b!important;
 }
@@ -539,7 +537,113 @@
   padding:6px 9px!important;
   font-size:8px!important;
 }
-@media(max-width:900px),(max-height:720px){
+#inventory-panel{overflow:hidden!important}
+
+/* A short desktop must compress the RPG sheet, not turn it into a scrolling document. */
+@media(max-height:820px) and (min-width:901px){
+  #inventory-panel .inventory-panel.r71-inventory-panel{
+    width:min(1080px,97vw)!important;
+    height:calc(100dvh - 16px)!important;
+    max-height:calc(100dvh - 16px)!important;
+    padding:8px 10px!important;
+    gap:5px!important;
+    overflow:hidden!important;
+  }
+  .r71-inventory-panel .mobile-panel-head{
+    min-height:30px!important;
+    padding-bottom:4px!important;
+  }
+  .r71-inventory-panel .mobile-panel-head h2{font-size:19px!important}
+  .r71-inventory-panel #inventory-mobile-notice{
+    min-height:18px!important;
+    padding:3px 6px!important;
+    font-size:7.5px!important;
+  }
+  .r71-inventory-layout{
+    grid-template-columns:minmax(0,1.5fr) minmax(320px,.82fr)!important;
+    grid-template-rows:48px minmax(0,1fr)!important;
+    gap:5px 7px!important;
+    overflow:hidden!important;
+  }
+  .r71-inventory-layout #inventory-objective{
+    min-height:48px!important;
+    padding:4px 6px!important;
+    gap:6px!important;
+  }
+  .r71-objective-copy small{font-size:8px!important}
+  .r71-objective-copy b{font-size:10px!important}
+  .r71-quest-chip{
+    height:36px!important;
+    padding:3px 4px!important;
+    grid-template-columns:20px minmax(0,1fr)!important;
+  }
+  .r71-quest-icon,.r71-slot-icon{width:19px!important;height:19px!important}
+  .r71-quest-icon .item-svg-wrap,.r71-slot-icon .item-svg-wrap{width:18px!important;height:18px!important}
+  .r71-inventory-layout #inventory-loadout{
+    padding:5px!important;
+    grid-template-rows:auto minmax(150px,1fr) auto auto auto!important;
+    gap:4px!important;
+    overflow:hidden!important;
+  }
+  .r71-loadout-head{padding-bottom:3px!important}
+  .r71-loadout-head span,.r71-strip-title{font-size:7px!important}
+  .r71-loadout-head b{font-size:12px!important}
+  .r71-equipment-board{
+    min-height:150px!important;
+    grid-template-columns:minmax(120px,1fr) 100px minmax(120px,1fr)!important;
+    grid-template-rows:repeat(2,minmax(68px,1fr))!important;
+    gap:5px 7px!important;
+  }
+  .r71-equip-card{
+    padding:5px!important;
+    grid-template-columns:23px minmax(0,1fr)!important;
+    column-gap:4px!important;
+  }
+  .r71-slot-label{font-size:6.5px!important}
+  .r71-equip-card b{font-size:7.5px!important}
+  .r71-equip-card small{font-size:6px!important}
+  .r71-character-stage{
+    width:100px!important;
+    height:146px!important;
+    padding:5px!important;
+  }
+  .r71-character-frame{width:84px!important;height:92px!important}
+  .r71-character-sprite-window{width:72px!important;height:72px!important}
+  .r71-character-sprite{transform:scale(2.25)!important}
+  .r71-stat{height:27px!important;padding:2px!important}
+  .r71-stat span{font-size:5.5px!important}
+  .r71-stat b{font-size:10px!important}
+  .r71-relic{height:23px!important;padding:2px 4px!important}
+  .r71-relic span{font-size:6px!important}
+  .r71-inventory-layout #inventory-list{
+    padding:5px!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:repeat(3,minmax(0,1fr))!important;
+    grid-auto-rows:minmax(0,1fr)!important;
+    gap:4px!important;
+    overflow:hidden!important;
+  }
+  .r71-inventory-panel .inventory-slot{
+    min-height:0!important;
+    padding:4px!important;
+    grid-template-columns:32px minmax(0,1fr)!important;
+    gap:4px!important;
+  }
+  .r71-inventory-panel .inventory-slot-icon{width:30px!important;height:30px!important}
+  .r71-inventory-panel .inventory-slot-icon .item-svg-wrap{width:25px!important;height:25px!important}
+  .r71-inventory-panel .inventory-slot-copy>b{font-size:6px!important}
+  .r71-inventory-panel .inventory-slot-copy>span{font-size:7.5px!important}
+  .r71-inventory-panel .slot-actions{gap:2px!important;margin-top:1px!important}
+  .r71-inventory-panel .slot-actions button{padding:2px 4px!important;font-size:5.8px!important}
+  .r71-inventory-panel .inventory-footer-actions{
+    min-height:27px!important;
+    padding-top:3px!important;
+  }
+  .r71-inventory-panel .inventory-footer-actions button{padding:4px 7px!important;font-size:7px!important}
+}
+
+/* Narrow screens may stack; short desktop screens must not be forced into this path. */
+@media(max-width:900px){
   #inventory-panel .inventory-panel.r71-inventory-panel{
     height:auto!important;
     max-height:95dvh!important;
@@ -551,7 +655,8 @@
   }
   .r71-inventory-layout #inventory-objective{grid-template-columns:1fr!important}
   .r71-quest-strip{grid-template-columns:repeat(4,1fr)!important}
-  .r71-inventory-layout #inventory-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:78px!important}
+  .r71-inventory-layout #inventory-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-auto-rows:78px!important;overflow:auto!important}
+  .r71-inventory-layout #inventory-loadout{overflow:visible!important}
 }
 @media(max-width:680px){
   .r71-inventory-panel .mobile-panel-head h2{font-size:20px!important}

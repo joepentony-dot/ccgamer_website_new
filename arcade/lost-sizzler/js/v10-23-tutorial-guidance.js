@@ -170,10 +170,9 @@
     tutorialLaunchPending=requested;
     let result;
     try{
-      // This must happen in the original menu-click task.  The normal
-      // startSolo path also asks for fullscreen, but this guidance capture
-      // handler intentionally stops the legacy click listeners first.
-      void requestPlayFullscreen();
+      // startSolo owns both audio and fullscreen. It calls CCGSound.start()
+      // before requestPlayFullscreen(), so authored music gets first use of
+      // the trusted click instead of fullscreen consuming that activation.
       result=startSolo();
     }catch(error){
       state.choiceAccepted=false;

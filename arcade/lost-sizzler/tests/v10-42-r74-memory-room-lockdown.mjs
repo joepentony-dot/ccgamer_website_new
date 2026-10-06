@@ -20,7 +20,7 @@ assert.match(play,/z\.padEntryByPlayer\[id\]=current/,"leaving and entering a ne
 assert.match(play,/if\(current<0\)return false;return activateMemoryTile\(p,current\)/,"a fresh numbered-pad entry must activate the pad");
 assert.match(play,/if\(z\.phase==="input"\)\{for\(const player of roomPlayers\)memoryPadEntry\(player,z\)\}/,"frame update must provide a fallback pad-entry owner so later pads cannot be missed");
 assert.match(play,/for\(const player of roomPlayers\)\{const occupied=\(z\.tiles\|\|\[\]\)\.find\(t=>t\.x===player\.x&&t\.y===player\.y\).*z\.padEntryByPlayer\[id\]=occupied\?Number\(occupied\.index\):-1\}/,"players already standing on numbered pads when replay ends must be latched without counting as fresh entries");
-assert.match(play,/else\{host\.revision\+\+;broadcastWorld\(\)\}return true/,"every accepted non-final pad must broadcast its updated progress");
+assert.match(play,/else\{host\.revision\+\+;\}return true/,"every accepted non-final pad must publish its updated progress through the authoritative local revision");
 assert.ok(play.includes("showToast(`MEMORY PAD ${tileIndex+1}`"),"each correct pad must give explicit progress feedback");
 
 assert.match(play,/SYS\.lockRoomDoors\(host,z\.roomId,true\)/,"entering an unsolved memory room must seal its room doors");

@@ -7,7 +7,6 @@
   const state={
     timer:0,reassertions:0,stableLoopSkips:0,lastLoop:null,
     spyRuntimeRequested:false,spyRuntimeReady:false,spyRuntimeError:"",
-    spyNetworkRequested:false,spyNetworkReady:false,spyNetworkError:"",
     notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false,
     notificationPending:false,notificationToastWrapped:false,notificationTopStabilised:0,
     spyHintAt:0,spyHintSuppressed:0
@@ -40,19 +39,6 @@
     const script=document.createElement("script");script.src=`js/v10-41-r29-spy-engine-isolation.js?v=${encodeURIComponent(releaseRevision())}`;script.async=false;script.dataset.ccgR29SpyEngine="true";
     script.addEventListener("load",()=>{state.spyRuntimeReady=Boolean(window.CCGLostSizzlerV141R29SpyEngine);state.spyRuntimeError=state.spyRuntimeReady?"":"Spy runtime loaded without registering its engine."},{once:true});
     script.addEventListener("error",()=>{state.spyRuntimeError="Unable to load isolated Spy Vs Spy runtime.";state.spyRuntimeRequested=false},{once:true});
-    document.body.appendChild(script);return false;
-  }
-
-  function ensureSpyNetwork(){
-    if(window.CCGLostSizzlerV141R29SpyNetwork){state.spyNetworkReady=true;state.spyNetworkError="";return true}
-    if(!window.CCGLostSizzlerV141R29SpyEngine)return false;
-    if(state.spyNetworkRequested)return false;
-    const existing=document.querySelector('script[data-ccg-r29-spy-network="true"]');
-    if(existing){state.spyNetworkRequested=true;return false}
-    state.spyNetworkRequested=true;
-    const script=document.createElement("script");script.src=`js/v10-41-r29-spy-network-isolation.js?v=${encodeURIComponent(releaseRevision())}`;script.async=false;script.dataset.ccgR29SpyNetwork="true";
-    script.addEventListener("load",()=>{state.spyNetworkReady=Boolean(window.CCGLostSizzlerV141R29SpyNetwork);state.spyNetworkError=state.spyNetworkReady?"":"Spy network runtime loaded without registering its transport."},{once:true});
-    script.addEventListener("error",()=>{state.spyNetworkError="Unable to load isolated Spy Vs Spy network transport.";state.spyNetworkRequested=false},{once:true});
     document.body.appendChild(script);return false;
   }
 
@@ -240,7 +226,7 @@
   }
 
   function maintain(){
-    ensureFinalLoop();ensureSpyRuntime();ensureSpyNetwork();ensureNotificationRailGuard();ensureNotificationToastOwner();
+    ensureFinalLoop();ensureSpyRuntime();ensureNotificationRailGuard();ensureNotificationToastOwner();
   }
 
   maintain();
@@ -251,5 +237,5 @@
     state.notificationObserver=null;
   },{once:true});
 
-  window.CCGLostSizzlerV141R29LoopFinalizer={ensureFinalLoop,ensureSpyRuntime,ensureSpyNetwork,ensureNotificationRailGuard,ensureNotificationToastOwner,spyGuidanceSuppressed,syncNotificationRail,get state(){return state}};
+  window.CCGLostSizzlerV141R29LoopFinalizer={ensureFinalLoop,ensureSpyRuntime,ensureNotificationRailGuard,ensureNotificationToastOwner,spyGuidanceSuppressed,syncNotificationRail,get state(){return state}};
 })();

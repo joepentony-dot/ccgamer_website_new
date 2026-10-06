@@ -8,7 +8,6 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const runtime=read("js/v10-41-r29-spy-engine-isolation.js");
-const network=read("js/v10-41-r29-spy-network-isolation.js");
 const finalizer=read("js/v10-41-r29-loop-finalizer.js");
 const controller=read("js/v10-41-mode-runtime.js");
 const movementFinalizer=read("js/v10-41-spy-movement-finalizer.js");
@@ -16,25 +15,13 @@ const movementFinalizer=read("js/v10-41-spy-movement-finalizer.js");
 assert.match(finalizer,/v10-41-r29-spy-engine-isolation\.js/,"r29 finalizer must load the isolated Spy runtime");
 assert.match(finalizer,/data-ccg-r29-spy-engine|ccgR29SpyEngine/,"Spy runtime loader must be deduplicated");
 assert.match(finalizer,/spyRuntimeReady/,"release diagnostics must expose whether the Spy runtime registered");
-assert.match(finalizer,/v10-41-r29-spy-network-isolation\.js/,"r29 finalizer must load the dedicated Spy position transport after the isolated engine");
-assert.match(finalizer,/data-ccg-r29-spy-network|ccgR29SpyNetwork/,"Spy network loader must be deduplicated");
-assert.match(finalizer,/spyNetworkReady/,"release diagnostics must expose whether the Spy network transport registered");
+assert.doesNotMatch(finalizer,/v10-41-r29-spy-network-isolation\.js|ccg-r29-spy-network|CCGLostSizzlerV141R29SpyNetwork|ensureSpyNetwork/,"R107 finalizer must not restore the retired Spy network transport");
 assert.match(finalizer,/rail\.style\.setProperty\("display",live\?"contents":"none","important"\)/,"late r29 runtime must own live/idle notification rail geometry above legacy CSS");
 assert.match(finalizer,/new MutationObserver\(syncNotificationRail\)/,"notification rail ownership must react immediately to toast visibility changes");
 assert.match(finalizer,/if\(typeof before==="function"&&before\.__ccgV141R29Stable\)\{[\s\S]*state\.stableLoopSkips\+\+[\s\S]*return true[\s\S]*\}/,"r29 finalizer must not re-run the runtime installer when R59/R29 already owns the stable loop");
 assert.doesNotMatch(finalizer,/const before=window\.loop;\s*try\{api\.install\(\)\}/,"r29 finalizer must guard stable-loop ownership before calling the installer");
 
-assert.match(network,/PACKET="v141_spy_position"/,"Spy movement must use a dedicated packet instead of Dungeon player movement packets");
-assert.match(network,/net\.send\(PACKET,payload\)/,"local Spy movement must publish through the dedicated position transport");
-assert.match(network,/remote\?\.set\?\.\(id,next\)/,"received Spy positions must update the remote agent directly");
-assert.doesNotMatch(network,/processRemoteMovement\s*\(/,"dedicated Spy positions must never invoke Dungeon remote-movement room triggers");
-assert.match(network,/if\(moved\)sendPosition\(true\)/,"successful Spy movement must publish immediately as well as via the heartbeat");
-assert.doesNotMatch(network,/MONITOR_MS=40/,"Spy position transport must not retain the retired cross-mode 40 ms monitor");
-assert.match(network,/new MutationObserver\(syncMode\)/,"Spy position transport mode entry must be event-driven");
-assert.match(network,/attributeFilter:\["data-special-mode","data-mode-controller","data-run-active"\]/,"Spy position transport must observe only bounded mode lifecycle attributes");
-assert.match(network,/state\.timer=setInterval\(heartbeat,SEND_MS\)/,"Spy position heartbeat must exist only as the active-mode 85 ms transport cadence");
-assert.match(network,/clearInterval\(state\.timer\);state\.timer=0/,"Spy position heartbeat must be fully stopped on mode exit");
-assert.match(network,/return spyActive\(\)\?startHeartbeat\(\):stopHeartbeat\(\)/,"Spy transport lifecycle signals must start or stop the heartbeat from actual mode state");
+
 
 assert.match(runtime,/MODE_ID="sizzler-saboteurs"/,"isolated runtime must be scoped to Spy Vs Spy only");
 assert.match(runtime,/ROOM_STEP_X=11,ROOM_STEP_Y=11,ROOM_W=9,ROOM_H=9/,"Spy physical rooms must be materially smaller than the old 13x13 grid");
@@ -84,4 +71,4 @@ assert.match(runtime,/else\{ensureMovementOwner\(true\);ensureDamageBoundary\(\)
 assert.doesNotMatch(movementFinalizer,/window\.update=function updateV141SpyRespawnFinal/,"Spy respawn finalizer must not add another global update wrapper");
 assert.match(movementFinalizer,/controllerOwnedRespawns:true/,"Spy respawns must declare controller-owned execution");
 
-console.log("Lost Sizzler V10.41 controller-owned Spy engine, stable compact map, passive re-entry ownership with the retired polling timer absent, active-only dedicated position transport, furniture collision and respawn ownership checks passed.");
+console.log("Dungeon Carnage R107 retained isolated Spy-engine compatibility without restoring the retired network transport; compact-map, furniture collision and respawn ownership checks passed.");

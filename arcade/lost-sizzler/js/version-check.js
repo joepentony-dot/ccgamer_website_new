@@ -120,14 +120,6 @@
     script.dataset.ccgV136Bootstrap="true";
     document.head.appendChild(script);
   }
-  function loadV141MultiplayerPresence(){
-    if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
-    const script=document.createElement("script");
-    script.src=`js/v10-41-multiplayer-presence.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
-    script.async=false;
-    script.dataset.ccgV141MultiplayerPresence="true";
-    document.head.appendChild(script);
-  }
   function loadV141WorldSafety(){
     if(document.querySelector('script[data-ccg-v141-world-safety="true"]'))return;
     const script=document.createElement("script");
@@ -177,7 +169,6 @@
     document.head.appendChild(script);
   }
   loadV136Bootstrap();
-  loadV141MultiplayerPresence();
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
   loadV141SanctuaryAzalea();

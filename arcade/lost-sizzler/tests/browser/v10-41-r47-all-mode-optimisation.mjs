@@ -87,12 +87,8 @@ try{
   console.log("[r47 active modes] retired Split Screen remains unavailable in R51");
   await page.evaluate(()=>quitToMenu());
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="menu");
-  const splitRetired=await page.evaluate(()=>{
-    const button=document.getElementById("split-btn");
-    return{hidden:Boolean(button?.hidden),display:button?getComputedStyle(button).display:"missing"};
-  });
-  assert.equal(splitRetired.hidden,true,"R51 must keep the Split Screen compatibility anchor hidden");
-  assert.equal(splitRetired.display,"none","R51 must not expose Split Screen as a playable menu mode");
+  const splitRetired=await page.evaluate(()=>Boolean(document.getElementById("split-btn")));
+  assert.equal(splitRetired,false,"R107 must remove the retired Split Screen compatibility anchor from the landing DOM");
 
   console.log("[r47 active modes] bounded soak cycles active diagnostics without installing extra gameplay ownership");
   const soak=await page.evaluate(async()=>{

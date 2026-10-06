@@ -1,5 +1,4 @@
 "use strict";
-net=new window.CCGNetwork.RoomNetwork({onMembers,onPacket});
 
 function installEarlyStableResize(){
   if(window.__CCG_LOST_SIZZLER_EARLY_RESIZE_GUARD__)return;
@@ -53,7 +52,7 @@ function installFloorCheckpointContinuity(){
     if(data)b.textContent=savedRunLabel(data);
   };
   captureFloorEntryCheckpoint=function(){
-    if(!run||run.daily||playMode==="online"||Number(run.floor||0)<1){floorEntryCheckpoint=null;return null}
+    if(!run||Number(run.floor||0)<1){floorEntryCheckpoint=null;return null}
     floorEntryCheckpoint=PGR.makeCheckpoint(run,p1,p2,score,playMode);
     return floorEntryCheckpoint;
   };
@@ -68,7 +67,7 @@ function installFloorCheckpointContinuity(){
     return ok;
   };
   offerFloorSave=function(restPrompt=false){
-    if(!run||run.daily||playMode==="online"||!UI.savePanel||Number(run.floor||0)<1)return false;
+    if(!run||!UI.savePanel||Number(run.floor||0)<1)return false;
     savePromptReason=restPrompt?"rest":"entry";
     UI.saveTitle.textContent=restPrompt?"FIVE DEATHS — SAVE FOR ANOTHER DAY?":`FLOOR ${run.floor} CHECKPOINT`;
     UI.saveCopy.textContent=restPrompt?"That was five deaths on this floor. Save the floor-entry checkpoint and return when you are feeling braver, or keep going now.":"Save this floor-entry checkpoint so you can leave the game and resume from the start of this floor later.";
@@ -83,10 +82,8 @@ function installFloorCheckpointContinuity(){
     if(!saved||floor<1){updateSavedRunButton();return false}
     const audio=S.start(),fs=requestPlayFullscreen();
     await Promise.all([audio,fs]);
-    await net.leave();
-    net.setSolo(saved.player?.name||playerName());
-    run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player;p2=saved.player2||null;playMode=p2?"split":"solo";mode="playing";
-    startWorld(PGR.floorSeed(run),Boolean(p2),true,true);
+    run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player;p2=null;playMode="solo";mode="playing";
+    startWorld(PGR.floorSeed(run),false,true,true);
     floorEntryCheckpoint=saved;
     UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();
     showToast("CHECKPOINT RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. You are back at the floor entrance with the saved loadout.`,"green",9000);
@@ -95,7 +92,7 @@ function installFloorCheckpointContinuity(){
   const startRun=beginRun;
   beginRun=function(options={}){
     const started=startRun(options);
-    if(started!==false&&run&&!run.daily&&playMode!=="online")captureFloorEntryCheckpoint();
+    if(started!==false&&run)captureFloorEntryCheckpoint();
     return started;
   };
   window.CCGDungeonSaveRestoreContract=Object.freeze({floorOne:true,entrySnapshot:true,writeFailureSafe:true,r43AutosaveAware:true});
@@ -114,10 +111,8 @@ function clearAbandonedRun(){
   const radar=$("radar-canvas"),radarContext=radar?.getContext?.("2d");radarContext?.clearRect(0,0,radar.width,radar.height);
 }
 async function quitToMenu(){
-  if(run?.daily)await submitWeeklyResultOnce();
-  try{window.CCGLostSizzlerSpecialModes?.stop?.(undefined,true)}catch(_){}
   hideStaticPanels();closeInventoryForMenu();UI.pause.classList.add("hidden");UI.floorComplete?.classList.add("hidden");UI.levelUp?.classList.add("hidden");UI.end.classList.add("hidden");
-  await net.leave();mode="menu";clearAbandonedRun();setRunPresentation(false);net.setSolo(playerName());S.setStalkerNear(false);S.setNamedEnemy?.(null);S.startMusic();UI.menu.classList.remove("hidden");refreshCollection();syncFullscreenState()
+  mode="menu";clearAbandonedRun();setRunPresentation(false);S.setStalkerNear(false);S.setNamedEnemy?.(null);S.startMusic();UI.menu.classList.remove("hidden");refreshCollection();syncFullscreenState()
 }
 function showRulebook(){UI.support?.classList.add("hidden");UI.rulebook?.classList.remove("hidden")}
 function showSupport(){UI.rulebook?.classList.add("hidden");UI.support?.classList.remove("hidden")}
@@ -196,7 +191,7 @@ function capturePausedResumeAttackReset(event){
 addEventListener("keydown",capturePausedResumeAttackReset,true);
 addEventListener("click",capturePausedResumeAttackReset,true);
 
-$("solo-btn").addEventListener("click",()=>{void requestPlayFullscreen();startSolo()});$("tutorial-zone-btn")?.addEventListener("click",()=>{void requestPlayFullscreen()},{capture:true});$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("resume-btn")?.addEventListener("click",resumePausedRun);$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
+$("solo-btn")?.addEventListener("click",()=>{void requestPlayFullscreen();startSolo()});$("tutorial-zone-btn")?.addEventListener("click",()=>{void requestPlayFullscreen()},{capture:true});$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("resume-btn")?.addEventListener("click",resumePausedRun);$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("inventory-close-top")?.addEventListener("click",returnToGameFromPanel);$("named-dossier-close-top")?.addEventListener("click",returnToGameFromPanel);
@@ -213,9 +208,8 @@ function isEditableKeyboardTarget(target){
 const DOUBLE_TAP_DASH_MS=280;
 const directionalTapState=new WeakMap();
 function directionalVectorForCode(player,code){
-  const p2Map={KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}};
   const p1Map={ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};
-  return (player===p2?p2Map:p1Map)[code]||null
+  return player===p1?p1Map[code]||null:null
 }
 function maybeDoubleTapDash(player,code,now=performance.now()){
   if(!player||mode!=="playing")return false;
@@ -252,27 +246,22 @@ addEventListener("keydown",e=>{
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){if(mode==="paused")resumePausedRun();else pause();return}
   if(e.code==="KeyF"){toggleFullscreen();return}
   if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
-  if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);
-  if(!e.repeat){if(p1)maybeDoubleTapDash(p1,e.code);if(p2)maybeDoubleTapDash(p2,e.code)}
+  if(mode!=="playing")return;if(p1)setDir(p1,e.code);
+  if(!e.repeat&&p1)maybeDoubleTapDash(p1,e.code)
   input.add(e.code);
-  const p1AttackKey=e.code==="Space"||e.code==="Numpad0",p2AttackKey=e.code==="Enter";
+  const p1AttackKey=e.code==="Space"||e.code==="Numpad0";
   if(p1AttackKey&&p1){
     const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[0]?.has?.(e.code));
     setAttackHeldInput(p1,Boolean(e.repeat||gamepadHeld));
     if(e.isTrusted&&!e.repeat&&!gamepadHeld)setTimeout(()=>{if(input.has(e.code)&&p1)setAttackHeldInput(p1,true)},0);
     if(!e.repeat)queueAttack(p1)
   }
-  if(p2&&p2AttackKey){
-    const gamepadHeld=!e.isTrusted&&Boolean(window.CCGLostSizzlerV141R49GamepadInput?.state?.held?.[1]?.has?.(e.code));
-    setAttackHeldInput(p2,Boolean(e.repeat||gamepadHeld));
-    if(e.isTrusted&&!e.repeat&&!gamepadHeld)setTimeout(()=>{if(input.has(e.code)&&p2)setAttackHeldInput(p2,true)},0);
-    if(!e.repeat)queueAttack(p2)
-  }if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
+  if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1)
 },{passive:false});
-addEventListener("keyup",e=>{input.delete(e.code);if((e.code==="Space"||e.code==="Numpad0")&&p1)setAttackHeldInput(p1,false);if(e.code==="Enter"&&p2)setAttackHeldInput(p2,false)});addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
+addEventListener("keyup",e=>{input.delete(e.code);if((e.code==="Space"||e.code==="Numpad0")&&p1)setAttackHeldInput(p1,false)});addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
 canvas.addEventListener("pointerdown",()=>{if(document.body.dataset.runActive==="true")try{canvas.tabIndex=-1;canvas.focus({preventScroll:true})}catch(_){}});
 refreshCollection();
-net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
+mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
 
 let gameResizeFrame=0;
 function scheduleGameResize(){

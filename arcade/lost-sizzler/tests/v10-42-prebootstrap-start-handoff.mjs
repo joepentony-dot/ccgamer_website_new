@@ -15,7 +15,7 @@ assert.ok(source.includes("ccg:v142-ready"),"captured starts must wait for the a
 assert.ok(source.includes("releasePreBootstrapStart"),"captured starts must be released for a fresh trusted click after readiness");
 assert.equal(source.includes("button.click()"),false,"the pre-bootstrap guard must never synthesize a game-start click");
 assert.equal(bootstrapSource.includes("replayPendingStart"),false,"V10.42 bootstrap must not replay a deferred start outside the trusted input task");
-assert.ok(bootstrapSource.includes('guidance.launchSolo(target.id==="tutorial-zone-btn")'),"ready Solo/Tutorial clicks must launch synchronously from the real click handler");
+assert.ok(bootstrapSource.includes("guidance.launchSolo(target.id===\"tutorial-zone-btn\")"),"ready Game/Tutorial clicks must launch synchronously from the real click handler");
 assert.equal(source.includes("requestAnimationFrame"),false,"the start handoff must not add another frame owner");
 assert.equal(source.includes("WebSocket"),false,"the start handoff must not add a network owner");
 assert.equal(source.includes("fetch("),false,"the start handoff must not add a network request");

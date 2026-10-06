@@ -102,33 +102,17 @@ body[data-run-active="false"] #menu .ccg-mode-tier-label[data-tier="main"]{order
 body[data-run-active="false"] #menu .ccg-mode-tier-label[data-tier="special"]{order:20;margin-top:2px}
 body[data-run-active="false"] #menu .ccg-mode-tier-label[data-tier="other"]{order:30;margin-top:2px}
 body[data-run-active="false"] #menu #solo-btn{order:11;grid-column:span 2!important}
-body[data-run-active="false"] #menu #create-btn{order:12;grid-column:span 2!important}
-body[data-run-active="false"] #menu #continue-save-btn{order:13;grid-column:1/-1!important}
-body[data-run-active="false"] #menu #horde-solo-btn{order:21}
-body[data-run-active="false"] #menu #horde-mode-btn{order:22}
-body[data-run-active="false"] #menu #saboteurs-mode-btn{order:23}
-body[data-run-active="false"] #menu #split-btn{order:24}
-body[data-run-active="false"] #menu #tutorial-zone-btn{order:31;grid-column:span 2!important}
-body[data-run-active="false"] #menu #daily-btn{order:32;grid-column:span 2!important}
-body[data-run-active="false"] #menu #solo-btn,
-body[data-run-active="false"] #menu #create-btn{min-height:54px!important;border-width:2px!important;font-size:10.5px!important;box-shadow:0 8px 18px rgba(0,0,0,.20),inset 0 1px rgba(255,255,255,.08)!important}
-body[data-run-active="false"] #menu #horde-solo-btn,
-body[data-run-active="false"] #menu #horde-mode-btn,
-body[data-run-active="false"] #menu #saboteurs-mode-btn,
-body[data-run-active="false"] #menu #split-btn{min-height:46px!important;font-size:9px!important;box-shadow:none!important;filter:saturate(.88)}
-body[data-run-active="false"] #menu #tutorial-zone-btn,
-body[data-run-active="false"] #menu #daily-btn{min-height:38px!important;font-size:8.5px!important;opacity:.88;box-shadow:none!important}
+body[data-run-active="false"] #menu #continue-save-btn{order:10;grid-column:1/-1!important}
+body[data-run-active="false"] #menu #tutorial-zone-btn{order:12;grid-column:span 2!important}
+body[data-run-active="false"] #menu #solo-btn{min-height:54px!important;border-width:2px!important;font-size:10.5px!important;box-shadow:0 8px 18px rgba(0,0,0,.20),inset 0 1px rgba(255,255,255,.08)!important}
+body[data-run-active="false"] #menu #tutorial-zone-btn{min-height:38px!important;font-size:8.5px!important;opacity:.88;box-shadow:none!important}
 body[data-run-active="false"] #menu .secondary-menu{gap:6px!important;padding:8px!important;background:rgba(4,3,8,.28)!important;border-color:rgba(185,120,255,.13)!important}
 body[data-run-active="false"] #menu .secondary-menu button,
 body[data-run-active="false"] #menu .secondary-menu a{min-height:34px!important;padding:7px 10px!important;font-size:7.5px!important;box-shadow:none!important;filter:saturate(.78)}
 @media(max-width:760px){
   body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:1fr 1fr!important}
   body[data-run-active="false"] #menu #solo-btn,
-  body[data-run-active="false"] #menu #create-btn{grid-column:span 1!important}
-  body[data-run-active="false"] #menu #horde-solo-btn,
-  body[data-run-active="false"] #menu #horde-mode-btn,
-  body[data-run-active="false"] #menu #saboteurs-mode-btn,
-  body[data-run-active="false"] #menu #split-btn{grid-column:span 1!important}
+  body[data-run-active="false"] #menu #tutorial-zone-btn{grid-column:span 1!important}
   body[data-run-active="false"] #menu .feature-strip{grid-template-columns:1fr!important}
 }
 
@@ -164,26 +148,11 @@ html body[data-run-active="false"] #menu #solo-btn{
   min-height:82px!important;
   font-size:10.5px!important;
 }
-html body[data-run-active="false"] #menu #split-btn{
+html body[data-run-active="false"] #menu #tutorial-zone-btn{
   order:12!important;
   grid-column:span 2!important;
-  min-height:74px!important;
-  font-size:9.5px!important;
-}
-html body[data-run-active="false"] #menu #tutorial-zone-btn{
-  order:21!important;
-  grid-column:span 2!important;
   min-height:70px!important;
   font-size:9px!important;
-}
-html body[data-run-active="false"] #menu #daily-btn{
-  order:22!important;
-  grid-column:span 2!important;
-  min-height:70px!important;
-  font-size:9px!important;
-}
-html body[data-run-active="false"] #menu #tutorial-zone-btn,
-html body[data-run-active="false"] #menu #daily-btn{
   margin-top:3px!important;
 }
 html body[data-run-active="false"] #menu #solo-btn.primary{color:#f5eefb!important}
@@ -191,9 +160,7 @@ html body[data-run-active="false"] #menu #solo-btn.primary{color:#f5eefb!importa
   html body[data-run-active="false"] #menu .game-mode-buttons{grid-template-columns:minmax(0,1fr)!important}
   html body[data-run-active="false"] #menu #continue-save-btn,
   html body[data-run-active="false"] #menu #solo-btn,
-  html body[data-run-active="false"] #menu #split-btn,
-  html body[data-run-active="false"] #menu #tutorial-zone-btn,
-  html body[data-run-active="false"] #menu #daily-btn{
+  html body[data-run-active="false"] #menu #tutorial-zone-btn{
     grid-column:1/-1!important;
     width:100%!important;
     min-width:0!important;

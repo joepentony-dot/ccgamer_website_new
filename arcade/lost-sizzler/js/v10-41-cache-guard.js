@@ -23,8 +23,8 @@
   }
   function releaseV142Ready(){
     const bootstrap=window.CCGLostSizzlerV142Bootstrap;
-    const zeroServer=window.CCGLostSizzlerV142ZeroServerRelease;
-    if(bootstrap?.ready!==true||zeroServer?.enabled!==true||zeroServer?.onlineMultiplayer!==false){
+    const localRelease=window.CCGLostSizzlerV142ZeroServerRelease;
+    if(bootstrap?.ready!==true||localRelease?.enabled!==true||localRelease?.releaseModel!=="local-browser"){
       holdV142ReleaseReady();
       return false;
     }

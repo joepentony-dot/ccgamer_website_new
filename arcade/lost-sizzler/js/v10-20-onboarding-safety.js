@@ -86,8 +86,8 @@
     const anchor=panel.querySelector(".hero-logo");if(anchor?.nextSibling)panel.insertBefore(banner,anchor.nextSibling);else panel.prepend(banner);state.completionBanner=banner;
   }
 
-  function announceWelcome(daily=false,tutorial=false){
-    if(state.welcomeForRun&&!tutorial)return;state.welcomeForRun=true;const title=tutorial?"WELCOME — TUTORIAL ZONE":daily?"WELCOME — WEEKLY HIGH-SCORE VAULT":"WELCOME TO THE LOST SIZZLER",text=tutorial?"This Training Archive is safe. Learn the essentials here, then return to the options when training is complete.":daily?"One ranked attempt. Read the objective, protect your health and make it count.":"Read the mission, use the radar and take the opening rooms steadily. Danger increases deeper into the dungeon.";try{showToast(title,text,tutorial?"green":"cyan",9000)}catch(_){}
+  function announceWelcome(tutorial=false){
+    if(state.welcomeForRun&&!tutorial)return;state.welcomeForRun=true;const title=tutorial?"WELCOME — TUTORIAL ZONE":"WELCOME TO THE LOST SIZZLER",text=tutorial?"This Training Archive is safe. Learn the essentials here, then return to the options when training is complete.":"Read the mission, use the radar and take the opening rooms steadily. Danger increases deeper into the dungeon.";try{showToast(title,text,tutorial?"green":"cyan",9000)}catch(_){}
   }
 
   const depth=id=>Math.max(0,Number(world?.rooms?.[id]?.depth||0));
@@ -163,7 +163,7 @@
   }
   function lockDoors(){state.lockedDoors=[];for(const d of host?.doors||[]){if(Number(d.roomId)!==Number(world?.startRoomId))continue;state.lockedDoors.push([d,d.locked,d.open]);d.locked=true;d.open=false;d._tutorialLock=true}}
   function unlockDoors(){for(const [d,l,o] of state.lockedDoors){d.locked=l;d.open=o;delete d._tutorialLock}state.lockedDoors=[]}
-  function activateTutorial(){if(!state.tutorialRequested||!world||!host||!p1||run?.daily||playMode==="online")return;state.active=true;state.step=0;state.moved=state.fired=state.dashed=state.inventoryOpened=state.inventoryClosed=false;state.swingCount=0;state.dashCount=0;state.start={x:p1.x,y:p1.y};clearTimeout(state.autoAdvanceTimer);state.autoAdvanceTimer=0;resetMovementTracking();document.body.dataset.tutorialActive="true";if(window.CCGWorld?.themes&&!window.CCGWorld.themes.TRAINING_ARCHIVE)window.CCGWorld.themes.TRAINING_ARCHIVE={name:"Training Archive",floor:"#101720",alt:"#17212c",wall:"#315f78",hi:"#64a8c7",accent:"#72ff9b",message:"TRAINING ARCHIVE — safe area before the dungeon.",motif:"shelves"};const r=world.rooms?.[world.startRoomId];if(r){r._tutorialTheme=r.theme;r.theme="TRAINING_ARCHIVE";r.tutorialZone=true;r.dangerous=false}host.enemies=(host.enemies||[]).filter(e=>window.CCGWorld?.roomAt?.(world,e.x,e.y)!==world.startRoomId);lockDoors();announceWelcome(false,true);renderStep()}
+  function activateTutorial(){if(!state.tutorialRequested||!world||!host||!p1)return;state.active=true;state.step=0;state.moved=state.fired=state.dashed=state.inventoryOpened=state.inventoryClosed=false;state.swingCount=0;state.dashCount=0;state.start={x:p1.x,y:p1.y};clearTimeout(state.autoAdvanceTimer);state.autoAdvanceTimer=0;resetMovementTracking();document.body.dataset.tutorialActive="true";if(window.CCGWorld?.themes&&!window.CCGWorld.themes.TRAINING_ARCHIVE)window.CCGWorld.themes.TRAINING_ARCHIVE={name:"Training Archive",floor:"#101720",alt:"#17212c",wall:"#315f78",hi:"#64a8c7",accent:"#72ff9b",message:"TRAINING ARCHIVE — safe area before the dungeon.",motif:"shelves"};const r=world.rooms?.[world.startRoomId];if(r){r._tutorialTheme=r.theme;r.theme="TRAINING_ARCHIVE";r.tutorialZone=true;r.dangerous=false}host.enemies=(host.enemies||[]).filter(e=>window.CCGWorld?.roomAt?.(world,e.x,e.y)!==world.startRoomId);lockDoors();announceWelcome(true);renderStep()}
   function finishTutorial(skipped=false){
     if(!state.active)return;state.active=false;state.tutorialRequested=false;clearTimeout(state.autoAdvanceTimer);state.autoAdvanceTimer=0;document.body.dataset.tutorialActive="false";unlockDoors();state.panel?.remove();state.panel=null;state.progressPanel?.remove?.();state.progressPanel=null;window.CCGLostSizzlerVoice?.stop?.("tutorial-end");writeFlag(SEEN,true);if(!skipped)writeFlag(COMPLETE,true);state.welcomeForRun=false;
     setTimeout(async()=>{
@@ -173,9 +173,9 @@
       try{S?.stopAll?.()}catch(_){}
     },120);
   }
-  function afterRunStarted(daily=false){state.welcomeForRun=false;applyGentleOpening();setTimeout(softenRareOpening,0);if(state.tutorialRequested&&!daily)setTimeout(activateTutorial,80);else announceWelcome(daily,false)}
+  function afterRunStarted(){state.welcomeForRun=false;applyGentleOpening();setTimeout(softenRareOpening,0);if(state.tutorialRequested)setTimeout(activateTutorial,80);else announceWelcome(false)}
 
-  function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(opts={}){const daily=Boolean(opts?.daily),online=Boolean(opts?.online),split=Boolean(opts?.split);if(!state.choiceAccepted&&!daily&&!online&&!split&&!readFlag(SEEN)){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted(daily);return result};state.installed.begin=true}
+  function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(){if(!state.choiceAccepted&&!readFlag(SEEN)){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted();return result};state.installed.begin=true}
   function installWorld(){if(state.installed.startWorld||typeof startWorld!=="function")return;const original=startWorld;startWorld=function(){const result=original.apply(this,arguments);try{applyGentleOpening();setTimeout(softenRareOpening,0)}catch(e){console.warn("[Lost Sizzler] gentle opening pass failed",e)}return result};state.installed.startWorld=true}
   function actionChainHasMarker(fn,marker,limit=64){
     const seen=new Set();let current=fn,depth=0;

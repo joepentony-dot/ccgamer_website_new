@@ -76,8 +76,6 @@
   load("js/v10-41-startup-freeze-guard.js","data-ccg-v141-startup-freeze-guard");
   load("js/v10-41-environment-transparency-hotfix.js","data-ccg-v141-environment-transparency-hotfix");
   load("js/v10-41-horde-mode-safety.js","data-ccg-v141-horde-mode-safety");
-  load("js/v10-41-horde-network-performance.js","data-ccg-v141-horde-network-performance");
-  load("js/v10-41-multiplayer-no-pause.js","data-ccg-v141-multiplayer-no-pause");
   load("js/v10-41-browser-stability-gameplay-hotfix.js","data-ccg-v141-browser-stability-gameplay-hotfix");
   load("js/v10-41-r42-solo-live-recovery.js","data-ccg-v141-r42-solo-live-recovery");
   load("js/v10-41-r43-solo-save-continue.js","data-ccg-v141-r43-solo-save-continue");
@@ -87,14 +85,12 @@
   load("js/v10-41-tutorial-action-finalizer.js","data-ccg-v141-tutorial-action-finalizer");
   load("js/v10-41-r24-live-regressions.js","data-ccg-v141-r24-live-regressions");
   load("js/v10-41-r29-loop-finalizer.js","data-ccg-v141-r29-loop-finalizer");
-  load("js/v10-41-multimode-performance.js","data-ccg-v141-multimode-performance");
   load("js/v10-41-r37-global-performance.js","data-ccg-v141-r37-global-performance");
   load("js/v10-41-release-overlay-safety.js","data-ccg-v141-release-overlay-safety");
   load("js/v10-41-r46-release-candidate-polish.js","data-ccg-v141-r46-release-candidate-polish");
   load("js/v10-41-r47-all-mode-optimisation.js","data-ccg-v141-r47-all-mode-optimisation");
   load("js/v10-41-r48-character-animation-polish.js","data-ccg-v141-r48-character-animation-polish");
   load("js/v10-41-r49-gamepad-input-polish.js","data-ccg-v141-r49-gamepad-input-polish");
-  load("js/v10-41-r50-multiplayer-recovery-ux.js","data-ccg-v141-r50-multiplayer-recovery-ux");
   load("js/v10-41-r51-visual-ui-overhaul.js","data-ccg-v141-r51-visual-ui-overhaul");
   load("js/v10-41-r51-world-lighting-addendum.js","data-ccg-v141-r51-world-lighting-addendum");
   load("js/v10-41-r51-menu-focus-polish.js","data-ccg-v141-r51-menu-focus-polish");
@@ -102,47 +98,5 @@
   load("js/v10-41-r52-audio-accessibility.js","data-ccg-v141-r52-audio-accessibility");
   load("js/v10-41-r53-terminal-solo-end-recovery.js","data-ccg-v141-r53-terminal-solo-end-recovery");
 
-  let dungeonLoaded=false,dungeonTimer=0;
-  const dungeonOnline=()=>{
-    try{
-      const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");
-      const roomMode=String(net?.getRoomMode?.()?.id||net?.roomMode||"dungeon");
-      return playMode==="online"&&Boolean(net?.connected)&&roomMode==="dungeon"&&!special
-    }catch(_){return false}
-  };
-  const loadDungeonServer=()=>{
-    if(dungeonLoaded||!dungeonOnline())return false;
-    dungeonLoaded=true;if(dungeonTimer)clearInterval(dungeonTimer);dungeonTimer=0;
-    load("js/v10-41-r40-colyseus-dungeon.js","data-ccg-v141-r40-colyseus-dungeon");return true
-  };
-  if(!loadDungeonServer())dungeonTimer=setInterval(loadDungeonServer,250);
 
-  let spyLoaded=false,spyTimer=0;
-  const spyOnline=()=>{
-    try{
-      const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");
-      const code=String(net?.roomCode||"").toUpperCase();
-      return playMode==="online"&&Boolean(net?.connected)&&code.length>=4&&special==="sizzler-saboteurs"
-    }catch(_){return false}
-  };
-  const loadSpyServer=()=>{
-    if(spyLoaded||!spyOnline())return false;
-    spyLoaded=true;if(spyTimer)clearInterval(spyTimer);spyTimer=0;
-    load("js/v10-41-r41-colyseus-spy.js","data-ccg-v141-r41-colyseus-spy");return true
-  };
-  if(!loadSpyServer())spyTimer=setInterval(loadSpyServer,250);
-
-  let hordeLoaded=false,hordeObserver=null;
-  const loadHordeServer=()=>{
-    if(hordeLoaded||document.body?.dataset?.specialMode!=="horde-survivor")return false;
-    hordeLoaded=true;hordeObserver?.disconnect();hordeObserver=null;
-    load("js/v10-41-r38-colyseus-horde.js","data-ccg-v141-r38-colyseus-horde");
-    load("js/v10-41-r39-horde-responsive-handoff.js","data-ccg-v141-r39-horde-responsive-handoff");
-    return true
-  };
-  if(!loadHordeServer()&&window.MutationObserver&&document.body){
-    hordeObserver=new MutationObserver(records=>{if(records.some(record=>record.attributeName==="data-special-mode"))loadHordeServer()});
-    hordeObserver.observe(document.body,{attributes:true,attributeFilter:["data-special-mode"]});
-  }
-  addEventListener("pagehide",()=>{hordeObserver?.disconnect();if(dungeonTimer)clearInterval(dungeonTimer);if(spyTimer)clearInterval(spyTimer)},{once:true});
 })();

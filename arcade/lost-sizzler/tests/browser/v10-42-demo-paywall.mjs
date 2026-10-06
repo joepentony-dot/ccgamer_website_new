@@ -54,9 +54,9 @@ async function auditPage(context,label){
 async function waitForDemoGuards(page){
   await page.waitForFunction(()=>{
     const api=window.CCGLostSizzlerV142DemoPaywall;
-    const ids=["solo-btn","split-btn","daily-btn","continue-save-btn"];
+    const ids=["solo-btn","continue-save-btn"];
     const present=ids.filter(id=>Boolean(document.getElementById(id)));
-    return document.body.dataset.v142DemoLocked==="true"&&!document.getElementById("create-btn")&&!document.getElementById("join-btn")&&!document.getElementById("horde-mode-btn")&&!document.getElementById("saboteurs-mode-btn")&&present.length===4&&api?.diagnostics().guardedCount===present.length;
+    return document.body.dataset.v142DemoLocked==="true"&&!document.getElementById("create-btn")&&!document.getElementById("join-btn")&&!document.getElementById("horde-mode-btn")&&!document.getElementById("saboteurs-mode-btn")&&present.length===2&&api?.diagnostics().guardedCount===present.length;
   });
 }
 
@@ -135,7 +135,7 @@ try{
   }));
   assert.equal(callbackAudit.entitled,false,"A checkout callback claiming permanent ownership must not set entitlement without a fresh provider read.");
   assert.equal(callbackAudit.locked,"true","Callback-only purchase data must leave demo mode locked.");
-  assert.equal(callbackAudit.guarded,4,"Callback-only purchase data must retain all four DOM-backed supported full-game guards until entitlement is verified.");
+  assert.equal(callbackAudit.guarded,2,"Callback-only purchase data must retain both DOM-backed supported full-game guards until entitlement is verified.");
   assert.equal(callbackAudit.owned,false,"Callback-only purchase data must not render the full-game-owned state.");
   assert.match(callbackAudit.status,/Purchase was not verified/i,"Callback-only purchase data must report verification failure.");
   assert.deepEqual(callback.pageErrors,[],`Callback-only checkout verification must not raise page errors: ${callback.pageErrors.join("\n")}`);
@@ -159,8 +159,8 @@ try{
   }));
   assert.equal(lockedAudit.demoMode,true,"Explicit demo mode must activate the V10.42 permanent-unlock boundary.");
   assert.equal(lockedAudit.locked,"true","Demo mode must mark the full-game runtime as locked.");
-  assert.equal(lockedAudit.guarded,4,"Demo guard registry must retain the four DOM-backed supported full-game controls until entitlement is verified.");
-  assert.equal(lockedAudit.badges,4,"Every DOM-backed supported demo guard must retain one FULL GAME badge until entitlement is verified.");
+  assert.equal(lockedAudit.guarded,2,"Demo guard registry must retain both DOM-backed supported full-game controls until entitlement is verified.");
+  assert.equal(lockedAudit.badges,2,"Every DOM-backed supported demo guard must retain one FULL GAME badge until entitlement is verified.");
   assert.equal(lockedAudit.tutorialBadge,false,"The free Tutorial must remain outside the paid-control guard set.");
   assert.equal(lockedAudit.resumeBadge,true,"A visible saved-run Resume control must remain behind the demo entitlement boundary.");
   assert.equal(lockedAudit.retiredCreatePresent,false,"Retired Dungeon Multiplayer entry must remain physically absent in demo mode.");
@@ -204,8 +204,8 @@ try{
     };
   });
   assert.equal(retiredOnlineAudit.zeroServer,true,"V10.42 zero-server release must remain authoritative for retired online entry points.");
-  assert.equal(retiredOnlineAudit.releaseModel,"zero-server-cost","Online entry retirement must remain part of the zero-server-cost release model.");
-  assert.equal(retiredOnlineAudit.onlineMultiplayer,"disabled","Online multiplayer must remain disabled in the zero-server release.");
+  assert.equal(retiredOnlineAudit.releaseModel,"local-browser","Retired online entry points must remain governed by the R107 local-browser release model.");
+  assert.equal(retiredOnlineAudit.onlineMultiplayer,"","Retired online multiplayer state must remain physically absent from the R107 local-browser release.");
   assert.equal(retiredOnlineAudit.createPresent,false,"Dungeon Multiplayer entry must remain physically absent from the rendered release UI.");
   assert.equal(retiredOnlineAudit.joinPresent,false,"Room-code Join must remain physically absent from the rendered release UI.");
   assert.equal(retiredOnlineAudit.roomCodePresent,false,"Retired room-code input must remain physically absent from the rendered release UI.");
