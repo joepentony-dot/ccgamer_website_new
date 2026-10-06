@@ -1,5 +1,6 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickViceRoms } from "./rom-vault.js";
 import { C64Machine } from "./core/machine.js";
+import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 
 const vault = new ROMVault();
 const setup = document.querySelector("[data-rom-setup]");
@@ -16,6 +17,7 @@ const pauseButton = document.querySelector("[data-machine-pause]");
 const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
 const stageNote = document.querySelector("[data-stage-note]");
+const inputStatus = document.querySelector("[data-input-status]");
 
 const PAL_FRAME_MS = 1000 / 50.125;
 let machine = null;
@@ -25,6 +27,135 @@ let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
 let frameAccumulator = 0;
+
+
+const heldMatrixKeys = new Map();
+let shiftLeftPhysical = false;
+let shiftRightPhysical = false;
+let syntheticShiftCount = 0;
+let gamepadConnected = false;
+
+function syncShiftKeys() {
+  if (!machine) return;
+  machine.cia1.setKey(1, 7, shiftLeftPhysical || syntheticShiftCount > 0);
+  machine.cia1.setKey(6, 4, shiftRightPhysical);
+}
+
+function releaseAllInput() {
+  if (machine) {
+    for (const held of heldMatrixKeys.values()) {
+      machine.cia1.setKey(held.col, held.row, false);
+    }
+    machine.joyPort1 = 0xFF;
+    machine.joyPort2 = 0xFF;
+    machine.setRestoreNmiLine(false);
+  }
+  heldMatrixKeys.clear();
+  shiftLeftPhysical = false;
+  shiftRightPhysical = false;
+  syntheticShiftCount = 0;
+  syncShiftKeys();
+}
+
+function eventMatrixBinding(event) {
+  const charBinding = event.key && event.key.length === 1 ? CHAR_MAP[event.key] : null;
+  if (charBinding) {
+    return {
+      col: charBinding.col,
+      row: charBinding.row,
+      syntheticShift: Boolean(charBinding.shift),
+    };
+  }
+
+  const physical = KEY_MAP[event.code] || KEY_MAP[event.key];
+  if (!physical) return null;
+  return { col: physical[0], row: physical[1], syntheticShift: false };
+}
+
+function handleC64Key(event, pressed) {
+  if (!running || !machine || document.activeElement !== screen) return;
+
+  if (event.code === "F12") {
+    event.preventDefault();
+    machine.setRestoreNmiLine(pressed);
+    return;
+  }
+
+  if (event.code === "ShiftLeft") {
+    event.preventDefault();
+    shiftLeftPhysical = pressed;
+    syncShiftKeys();
+    return;
+  }
+
+  if (event.code === "ShiftRight") {
+    event.preventDefault();
+    shiftRightPhysical = pressed;
+    syncShiftKeys();
+    return;
+  }
+
+  const heldKey = `${event.code}|${event.key}`;
+  if (pressed) {
+    if (event.repeat || heldMatrixKeys.has(heldKey)) {
+      if (heldMatrixKeys.has(heldKey)) event.preventDefault();
+      return;
+    }
+
+    const binding = eventMatrixBinding(event);
+    if (!binding) return;
+    event.preventDefault();
+    machine.cia1.setKey(binding.col, binding.row, true);
+    if (binding.syntheticShift) {
+      syntheticShiftCount += 1;
+      syncShiftKeys();
+    }
+    heldMatrixKeys.set(heldKey, binding);
+    return;
+  }
+
+  const binding = heldMatrixKeys.get(heldKey);
+  if (!binding) return;
+  event.preventDefault();
+  machine.cia1.setKey(binding.col, binding.row, false);
+  if (binding.syntheticShift) {
+    syntheticShiftCount = Math.max(0, syntheticShiftCount - 1);
+    syncShiftKeys();
+  }
+  heldMatrixKeys.delete(heldKey);
+}
+
+function pollGamepad() {
+  if (!machine || !running) return;
+  const pads = typeof navigator.getGamepads === "function" ? navigator.getGamepads() : [];
+  const pad = Array.from(pads || []).find((entry) => entry && entry.connected);
+
+  if (!pad) {
+    machine.joyPort2 = 0xFF;
+    if (gamepadConnected) {
+      gamepadConnected = false;
+      if (inputStatus) inputStatus.textContent = "KEYBOARD READY";
+    }
+    return;
+  }
+
+  const axisX = Number(pad.axes?.[0] || 0);
+  const axisY = Number(pad.axes?.[1] || 0);
+  const pressed = (index) => Boolean(pad.buttons?.[index]?.pressed);
+
+  let byte = 0xFF;
+  if (axisY < -0.35 || pressed(12)) byte &= ~0x01;
+  if (axisY > 0.35 || pressed(13)) byte &= ~0x02;
+  if (axisX < -0.35 || pressed(14)) byte &= ~0x04;
+  if (axisX > 0.35 || pressed(15)) byte &= ~0x08;
+  if (pressed(0) || pressed(1)) byte &= ~0x10;
+  machine.joyPort2 = byte;
+
+  if (!gamepadConnected) {
+    gamepadConnected = true;
+    if (inputStatus) inputStatus.textContent = "GAMEPAD // PORT 2";
+  }
+}
 
 function drawStatus(snapshot, message = null) {
   if (!screen) return;
@@ -147,6 +278,7 @@ function blitMachine() {
 
 function frameLoop(now) {
   if (!running || !machine) return;
+  pollGamepad();
   if (!lastFrameTime) lastFrameTime = now;
   const delta = Math.min(100, Math.max(0, now - lastFrameTime));
   lastFrameTime = now;
@@ -166,6 +298,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  releaseAllInput();
   running = false;
   paused = false;
   stopFrameLoop();
@@ -208,7 +341,8 @@ function powerOn() {
     frameImage = null;
     frameAccumulator = 0;
     lastFrameTime = 0;
-    if (machineState) machineState.textContent = "C64 CORE RUNNING // VIDEO ACTIVE";
+    if (machineState) machineState.textContent = "C64 CORE RUNNING // VIDEO + INPUT ACTIVE";
+    if (inputStatus) inputStatus.textContent = "KEYBOARD READY";
     if (stageNote) stageNote.textContent = "Live machine/video core active. SID output and complete physical input/media routing are the next integration gates.";
     setControlState(snapshot);
     frameHandle = requestAnimationFrame(frameLoop);
@@ -331,6 +465,10 @@ prgInput?.addEventListener("change", async () => {
   }
 });
 
+window.addEventListener("keydown", (event) => handleC64Key(event, true));
+window.addEventListener("keyup", (event) => handleC64Key(event, false));
+window.addEventListener("blur", releaseAllInput);
+
 fullscreenButton?.addEventListener("click", async () => {
   const target = document.querySelector(".ccg-c64-console");
   if (!target) return;
@@ -346,4 +484,7 @@ const initial = vault.restore();
 render(initial);
 if (!initial.allRequiredReady) showSetup();
 
-window.addEventListener("pagehide", stopFrameLoop);
+window.addEventListener("pagehide", () => {
+  releaseAllInput();
+  stopFrameLoop();
+});
