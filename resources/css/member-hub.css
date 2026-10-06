@@ -442,6 +442,94 @@ body.page-member-hub {
   padding: 0 10px 10px;
 }
 
+.member-details-summary__eyebrow,
+.member-details-summary__title {
+  display: block;
+}
+
+.member-details-summary__eyebrow {
+  margin-bottom: 2px;
+  color: var(--member-accent);
+  font-size: 0.52rem;
+  letter-spacing: 0.11em;
+}
+
+.member-details-summary__title {
+  color: #eef6ff;
+  font-size: 0.67rem;
+  letter-spacing: 0.05em;
+}
+
+.member-milestones-details > .member-achievements {
+  gap: 4px;
+  padding: 0 10px 9px;
+}
+
+.member-hub-main .member-personal-library-details {
+  padding: 0;
+  border-top: 1px solid var(--member-line);
+}
+
+.member-personal-library-details > .member-compact-details__body {
+  padding-top: 0;
+}
+
+.member-personal-library-details .profile-library__header {
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
+.member-personal-library-details .profile-library__header > div:first-child {
+  display: none;
+}
+
+.member-personal-library-details .profile-library__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.member-personal-library-details .profile-library__actions .auth-btn,
+.member-personal-library-details .member-library-sync-controls .auth-btn {
+  width: auto;
+  min-width: 0;
+  min-height: 28px;
+  padding: 5px 7px;
+  font-size: 0.58rem;
+}
+
+.member-personal-library-details .profile-library__tabs {
+  gap: 4px;
+  margin: 0;
+}
+
+.member-personal-library-details .profile-library__tab {
+  min-height: 28px;
+  padding: 5px 7px;
+  font-size: 0.6rem;
+}
+
+.member-account-settings details.member-public-settings.member-compact-details {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--member-line);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.member-public-settings__body > h3 {
+  display: none;
+}
+
+.member-account-settings .member-public-settings__body {
+  padding: 0 9px 9px;
+}
+
+.member-account-settings .member-public-settings__intro {
+  margin: 0 0 7px;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
 .member-empty {
   margin: 0;
   padding: 8px;
