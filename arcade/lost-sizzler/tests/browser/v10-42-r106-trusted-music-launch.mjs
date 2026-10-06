@@ -94,6 +94,7 @@ try{
   page.setDefaultTimeout(45000);
   const pageErrors=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
+  page.on("request",request=>{const url=request.url();if(/\\.supabase\\.co\\/storage\\/v1\\/object\\//i.test(url)&&/\\/music\\//i.test(url))musicRequests+=1});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?trusted-music-launch=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap)&&window.CCGLostSizzlerV142Bootstrap.ready===false);
@@ -135,11 +136,11 @@ try{
   await page.waitForFunction(()=>{
     const snapshot=window.CCGLostSizzlerPlaylistAudio?.getState?.();
     const slot=snapshot?.slots?.[snapshot.state];
-    return Boolean(snapshot?.started&&snapshot?.url?.includes("/assets/audio/music/")&&slot?.active===true&&slot?.paused===false);
+    return Boolean(snapshot?.started&&snapshot?.customSoundtrackOwned===true&&snapshot?.url?.includes("/music/")&&slot?.active===true&&slot?.paused===false);
   });
 
   const playing=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio.getState());
-  assert.ok(musicRequests>=1,"the fresh trusted Start Game click must request an authored soundtrack file");
+  assert.ok(musicRequests>=1,"the fresh trusted Start Game click must request an uploaded/authored soundtrack file");
   assert.ok(playing.slots[playing.state].readyState>=1,"the trusted launch gesture must prepare the selected authored media before/while playback begins");
   assert.equal(playing.fallbackActive,false,"trusted launch must not fall back to generated music");
   assert.equal(playing.adminAudioReady,true,"trusted launch must use the hydrated production soundtrack catalogue");
