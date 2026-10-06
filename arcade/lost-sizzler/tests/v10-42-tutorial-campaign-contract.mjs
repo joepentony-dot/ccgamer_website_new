@@ -42,6 +42,9 @@ assert(guidance.includes('SANCTUARY","Green cross only after discovery'),'Inform
 assert(guidance.includes('WEAPON CACHE","Evolves the current Field Pulse'),'Information tour must teach weapon-cache evolution.');
 assert(guidance.includes('DEATH CACHE","Recover lost XP/items before another death'),'Information tour must teach death-cache recovery.');
 assert(guidance.includes('SHOP","Supplies, upgrades and useful services'),'Information tour must teach shop purpose without front-loading every service.');
+assert(guidance.includes('selector===".canvas-wrap"'),'Tutorial visual tour must special-case the live canvas instead of applying the generic filtered highlight owner.');
+assert(guidance.includes('ccg-tutorial-canvas-highlight'),'Tutorial visual tour must retain a non-destructive canvas outline owner.');
+assert(guidance.includes('ccg-tutorial-canvas-callout'),'Tutorial visual tour must render the canvas callout as a child badge rather than a compositing filter/pseudo-element on the canvas wrapper.');
 assert(guidance.includes('You do not need to memorise every system before starting the run')||onboarding.includes('You do not need to memorise every system before starting the run'),'Tutorial philosophy must remain contextual rather than becoming a manual dump.');
 
 for(const stat of ['Might','Vitality','Agility','Endurance','Luck','Arcana'])assert(source.includes(stat),`Tutorial must retain RPG attribute ${stat}.`);
