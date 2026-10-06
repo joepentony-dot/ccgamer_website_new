@@ -107,10 +107,11 @@ try{
     return{
       releaseReady:document.body.dataset.releaseReady||"",
       loaderVisible:Boolean(loader&&!loader.hidden&&style?.display!=="none"),
-      bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready)
+      bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+      playlistOwner:Boolean(window.CCGLostSizzlerPlaylistAudio)
     };
   });
-  assert.deepEqual(blocked,{releaseReady:"false",loaderVisible:true,bootstrapReady:false},"the pre-ready menu must remain physically covered by the canonical loader");
+  assert.deepEqual(blocked,{releaseReady:"false",loaderVisible:true,bootstrapReady:false,playlistOwner:true},"the pre-ready menu must remain covered while the R110 playlist owner is already core-loaded");
   await start.dispatchEvent("click");
   const captured=await page.evaluate(()=>({pending:window.CCGLostSizzlerV142Bootstrap?.pendingStartId||"",note:document.getElementById("menu-note")?.textContent||""}));
   assert.equal(captured.pending,"solo-btn","a pre-ready Start Game request reaching the bootstrap boundary must be captured before startup is released");
