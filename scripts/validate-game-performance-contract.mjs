@@ -58,13 +58,7 @@ function openingTag(html, id) {
 }
 
 function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\function hasAttribute(tag, name, expected) {
-  const expression = expected == null
-    ? new RegExp(`\\b${name}\\s*=`, "i")
-    : new RegExp(`\\b${name}\\s*=\\s*["']${expected}["']`, "i");
-  return expression.test(tag);
-}
-");
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function getAttributeValue(tag, name) {
