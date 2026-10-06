@@ -3,6 +3,10 @@ import { getSupabaseClient } from './supabase-client.js';
 const DEBUG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
 const TOP_PICKS_LIMIT = 10;
 const CANONICAL_SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+const AVATAR_BUCKET = 'profile-avatars';
+const AVATAR_SIZE = 512;
+const AVATAR_MAX_SOURCE_BYTES = 8 * 1024 * 1024;
+const DEFAULT_AVATAR = '/favicon.ico';
 
 export function deriveTopPickSlugs(rows) {
   return new Set(
@@ -116,6 +120,37 @@ function resolveProfileDisplayName(user, profile) {
   return 'Member';
 }
 
+function resolveAvatarUrl(user, profile) {
+  const candidates = [
+    profile?.avatar_url,
+    user?.user_metadata?.avatar_url,
+    user?.user_metadata?.picture
+  ];
+
+  for (const candidate of candidates) {
+    const value = String(candidate || '').trim();
+    if (!value) continue;
+    if (/^https:\/\//i.test(value) || value.startsWith('/')) return value;
+  }
+
+  return DEFAULT_AVATAR;
+}
+
+function renderAvatar(user, profile, cacheBust = false) {
+  const avatar = document.getElementById('profileAvatar');
+  if (!avatar) return;
+
+  const baseUrl = resolveAvatarUrl(user, profile);
+  avatar.src = cacheBust && baseUrl !== DEFAULT_AVATAR
+    ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}v=${Date.now()}`
+    : baseUrl;
+
+  avatar.onerror = () => {
+    avatar.onerror = null;
+    avatar.src = DEFAULT_AVATAR;
+  };
+}
+
 function renderProfile(user, profile) {
   const displayNameEl = document.getElementById('displayName');
   const emailValueEl = document.getElementById('emailValue');
@@ -124,6 +159,7 @@ function renderProfile(user, profile) {
   if (displayNameEl) displayNameEl.textContent = resolveProfileDisplayName(user, profile);
   if (emailValueEl) emailValueEl.textContent = 'Hidden for privacy';
   if (joinDateEl) joinDateEl.textContent = formatJoinDate(profile.created_at || profile.joined_at || user.created_at);
+  renderAvatar(user, profile);
 
   const notifyNewGames = document.getElementById('notifyNewGames');
   if (notifyNewGames) notifyNewGames.checked = Boolean(profile.notify_new_games);
@@ -371,6 +407,165 @@ async function fetchTopPicks(supabaseClient, userId) {
   return Array.isArray(data) ? data : [];
 }
 
+function decodeImage(file) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('Could not read this image.'));
+    };
+    image.src = objectUrl;
+  });
+}
+
+async function buildAvatarBlob(file) {
+  if (!file) throw new Error('Choose an image first.');
+
+  const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+  if (!allowedTypes.has(String(file.type || '').toLowerCase())) {
+    throw new Error('Use a JPG, PNG or WebP image.');
+  }
+
+  if (file.size > AVATAR_MAX_SOURCE_BYTES) {
+    throw new Error('Avatar source image must be 8 MB or smaller.');
+  }
+
+  const image = await decodeImage(file);
+  const sourceWidth = Number(image.naturalWidth || image.width || 0);
+  const sourceHeight = Number(image.naturalHeight || image.height || 0);
+  if (!sourceWidth || !sourceHeight) throw new Error('Could not read this image.');
+
+  const side = Math.min(sourceWidth, sourceHeight);
+  const sourceX = Math.max(0, (sourceWidth - side) / 2);
+  const sourceY = Math.max(0, (sourceHeight - side) / 2);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = AVATAR_SIZE;
+  canvas.height = AVATAR_SIZE;
+  const context = canvas.getContext('2d', { alpha: false });
+  if (!context) throw new Error('Image processing is unavailable in this browser.');
+
+  context.fillStyle = '#071321';
+  context.fillRect(0, 0, AVATAR_SIZE, AVATAR_SIZE);
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    side,
+    side,
+    0,
+    0,
+    AVATAR_SIZE,
+    AVATAR_SIZE
+  );
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob(resolve, 'image/webp', 0.86);
+  });
+
+  if (!blob) throw new Error('Could not prepare this avatar.');
+  return blob;
+}
+
+function setAvatarBusy(isBusy) {
+  const input = document.getElementById('avatarInput');
+  const removeButton = document.getElementById('avatarRemoveBtn');
+  const changeLabel = document.querySelector('label[for="avatarInput"]');
+
+  if (input) input.disabled = isBusy;
+  if (removeButton) removeButton.disabled = isBusy;
+  if (changeLabel) {
+    changeLabel.setAttribute('aria-disabled', isBusy ? 'true' : 'false');
+    changeLabel.classList.toggle('is-busy', isBusy);
+  }
+}
+
+async function uploadAvatar({ supabaseClient, user, profile, file, messageBox }) {
+  setAvatarBusy(true);
+  setMessage(messageBox, 'Preparing avatar…');
+
+  try {
+    const blob = await buildAvatarBlob(file);
+    const objectPath = `${user.id}/avatar.webp`;
+
+    const { error: uploadError } = await supabaseClient.storage
+      .from(AVATAR_BUCKET)
+      .upload(objectPath, blob, {
+        contentType: 'image/webp',
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicUrlData } = supabaseClient.storage
+      .from(AVATAR_BUCKET)
+      .getPublicUrl(objectPath);
+
+    const avatarUrl = String(publicUrlData?.publicUrl || '').trim();
+    if (!avatarUrl) throw new Error('Avatar upload succeeded but no public URL was returned.');
+
+    const { error: profileUpdateError } = await supabaseClient
+      .from('profiles')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', user.id);
+
+    if (profileUpdateError) throw profileUpdateError;
+
+    profile.avatar_url = avatarUrl;
+    renderAvatar(user, profile, true);
+    setMessage(messageBox, 'Avatar updated.', 'success');
+    return true;
+  } catch (error) {
+    console.error('[profile] Avatar upload failed', error, { userId: user.id });
+    setMessage(messageBox, error?.message || 'Could not upload avatar. Please try again.', 'error');
+    return false;
+  } finally {
+    const input = document.getElementById('avatarInput');
+    if (input) input.value = '';
+    setAvatarBusy(false);
+  }
+}
+
+async function removeAvatar({ supabaseClient, user, profile, messageBox }) {
+  setAvatarBusy(true);
+  setMessage(messageBox, 'Removing avatar…');
+
+  try {
+    const objectPath = `${user.id}/avatar.webp`;
+    const { error: storageError } = await supabaseClient.storage
+      .from(AVATAR_BUCKET)
+      .remove([objectPath]);
+
+    if (storageError) {
+      console.warn('[profile] Avatar object removal returned an error', storageError, { userId: user.id });
+    }
+
+    const { error: profileUpdateError } = await supabaseClient
+      .from('profiles')
+      .update({ avatar_url: null })
+      .eq('id', user.id);
+
+    if (profileUpdateError) throw profileUpdateError;
+
+    profile.avatar_url = null;
+    renderAvatar(user, profile, true);
+    setMessage(messageBox, 'Avatar removed.', 'success');
+    return true;
+  } catch (error) {
+    console.error('[profile] Avatar removal failed', error, { userId: user.id });
+    setMessage(messageBox, 'Could not remove avatar. Please try again.', 'error');
+    return false;
+  } finally {
+    setAvatarBusy(false);
+  }
+}
+
 async function savePreferences({ supabaseClient, user, messageBox }) {
   const notifyNewGames = Boolean(document.getElementById('notifyNewGames')?.checked);
   const notifyNewsletter = Boolean(document.getElementById('notifyNewsletter')?.checked);
@@ -564,6 +759,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderProfile(user, profile);
     await refreshFavourites();
     log('Profile loaded', { userId: user.id });
+
+    const avatarInput = document.getElementById('avatarInput');
+    if (avatarInput) {
+      avatarInput.addEventListener('change', async () => {
+        const [file] = Array.from(avatarInput.files || []);
+        if (!file) return;
+        await uploadAvatar({
+          supabaseClient,
+          user,
+          profile,
+          file,
+          messageBox
+        });
+      });
+    }
+
+    document.getElementById('avatarRemoveBtn')?.addEventListener('click', async () => {
+      await removeAvatar({
+        supabaseClient,
+        user,
+        profile,
+        messageBox
+      });
+    });
 
     if (prefsForm) {
       prefsForm.addEventListener('submit', async (event) => {
