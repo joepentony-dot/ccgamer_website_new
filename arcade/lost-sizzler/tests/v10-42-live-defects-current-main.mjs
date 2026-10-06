@@ -24,7 +24,9 @@ assert.doesNotMatch(bootstrap,/v10-42-attack-hold-liveness\.js/,"ordered bootstr
 assert.match(bootstrap,/v10-42-artefact-shop-stability\.js/,"ordered bootstrap must load the Banishment exchange stability owner");
 assert.match(bootstrap,/window\.addEventListener\("click",blockedStart,true\)/,"V10.42 must capture pre-ready start gestures before older document-level release handlers");
 assert.match(bootstrap,/if\(state\.ready\)\{\s*if\(target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"\)return;/,"after readiness V10.42 must narrow capture ownership to Solo/Tutorial while preserving established handlers for the other supported controls");
-assert.match(bootstrap,/state\.pendingStartId=target\.id;\s*target\.setAttribute\("aria-busy","true"\);\s*replayPendingStart\(\);/,"a Solo/Tutorial click crossing the readiness boundary must be preserved and handed to the authoritative replay path");
+assert.match(bootstrap,/state\.pendingStartId=target\.id;[\s\S]*When READY appears, click your selected adventure again so fullscreen and authored music start from a trusted input\./,"a pre-ready Solo/Tutorial click must preserve the selected adventure while requiring a second trusted click for fullscreen and authored music");
+assert.match(bootstrap,/if\(state\.ready\)\{[\s\S]*guidance\.launchSolo\(target\.id==="tutorial-zone-btn"\)/,"a ready Solo/Tutorial click must launch directly inside the trusted input task");
+assert.doesNotMatch(bootstrap,/replayPendingStart\(/,"the bootstrap must not synthesize a delayed start that can lose browser media activation");
 assert.doesNotMatch(bootstrap,/window\.removeEventListener\("click",blockedStart,true\)/,"V10.42 must not reopen the proven ready-transition click race by removing its narrow Solo/Tutorial capture owner");
 
 assert.match(main,/const p1AttackKey=e\.code==="Space"\|\|e\.code==="Numpad0"[\s\S]*if\(p1AttackKey&&p1\)[\s\S]*if\(!e\.repeat\)queueAttack\(p1\)/,"fresh keyboard FIRE from Space or Numpad0 must enter the canonical queue exactly once");
