@@ -619,6 +619,105 @@ body.page-member-hub {
 .member-notification-choice__actions { display:flex; flex-wrap:wrap; gap:6px; }
 .member-notification-choice .auth-btn { width:auto; min-height:32px; padding:6px 9px; }
 
+/* COLLAPSED ADVANCED TOOLS */
+
+.member-compact-details {
+  margin: 8px 0 0;
+  padding: 0;
+  border: 1px solid var(--member-line);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.member-compact-details > summary {
+  padding: 9px 11px;
+  color: rgba(255,255,255,.82);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  list-style-position: inside;
+}
+
+.member-compact-details > summary:hover,
+.member-compact-details > summary:focus-visible {
+  color: #fff;
+  background: rgba(var(--accent-rgb,0,221,255),.07);
+  outline: none;
+}
+
+.member-compact-details[open] > summary {
+  border-bottom: 1px solid var(--member-line);
+  color: var(--member-accent);
+}
+
+.member-compact-details__body {
+  padding: 10px;
+}
+
+.member-account-settings > .member-public-settings {
+  margin: 8px 0;
+}
+
+.member-account-settings > .profile-actions {
+  margin-top: 8px;
+}
+
+#memberCommunity {
+  margin-top: 10px;
+}
+
+html[data-ccg-page="member-hub"] .member-achievement-disclosure {
+  margin: 0;
+}
+
+html[data-ccg-page="member-hub"] .member-achievement-panel {
+  margin: 0;
+  padding: 10px;
+  border: 0;
+  background: transparent;
+}
+
+html[data-ccg-page="member-hub"] .member-achievement-panel__header {
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+html[data-ccg-page="member-hub"] .member-achievement-panel__intro {
+  margin: 4px 0 0;
+  font-size: .7rem;
+  line-height: 1.35;
+}
+
+html[data-ccg-page="member-hub"] .profile-library.member-compact-details {
+  padding: 0;
+}
+
+html[data-ccg-page="member-hub"] .profile-library.member-compact-details .profile-library__header {
+  margin-bottom: 8px;
+}
+
+html[data-ccg-page="member-hub"] .profile-library.member-compact-details .profile-library__note {
+  margin: 4px 0 0;
+  font-size: .7rem;
+}
+
+html[data-ccg-page="member-hub"] .profile-library__tabs {
+  gap: 5px;
+  margin: 8px 0;
+}
+
+html[data-ccg-page="member-hub"] .profile-library__tab {
+  min-height: 34px;
+  padding: 6px;
+  font-size: .6rem;
+}
+
+html[data-ccg-page="member-hub"] .profile-library-card {
+  padding: 8px;
+  gap: 8px;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 1050px) {
