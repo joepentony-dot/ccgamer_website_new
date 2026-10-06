@@ -26,6 +26,8 @@ const vault = read("js/ccg-c64/rom-vault.js");
 const headers = read("_headers");
 const emulation = read("emulation.html");
 const onlineLibrary = JSON.parse(read("emulator/c64/library.json"));
+const coiBootstrap = read("js/ccg-c64/coi-bootstrap.js");
+const coiWorker = read("emulator/c64/coi-service-worker.js");
 
 assert(html.includes("CCG BROWSER C64") || html.includes("CCG C64"), "CCG identity is required");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
@@ -37,6 +39,16 @@ assert(html.includes("data-media-dropzone"), "Drag-and-drop media loading must e
 assert(html.includes("data-online-library-select"), "The CCG Online Library selector must exist");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js"'), "Emulator shell must start through the COI bootstrap");
+assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
+assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
+assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
+assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
+assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
+assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
+assert(coiWorker.includes('request.mode !== "navigate"'), "COI worker must remain scoped to document navigations");
+assert(coiWorker.includes('url.pathname.startsWith(EMULATOR_SCOPE)'), "COI worker must not rewrite unrelated CCG routes");
 assert(css.includes(".ccg-c64-control-stack"), "Compact modular control-deck layout must be present");
 assert(css.includes(".ccg-c64-screen-stage"), "Large emulator display stage must be present");
 assert(css.includes("@media (max-width: 760px)"), "Mobile command-deck layout is required");
