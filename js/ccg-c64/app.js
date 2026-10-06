@@ -428,25 +428,14 @@ function handleC64Key(event, pressed) {
   if (event.code === "ShiftLeft") {
     event.preventDefault();
     shiftLeftPhysical = pressed;
-    if (pressed) machine.cia1.setKey(1, 7, true);
-    else {
-      shiftLeftPhysical = false;
-      // If a symbol key temporarily released host Shift, do not reassert it.
-      const symbolOwnsShift = [...heldMatrixKeys.values()].some((binding) => binding.symbolMapped);
-      if (!symbolOwnsShift) syncPhysicalShiftKeys();
-    }
+    machine.cia1.setKey(1, 7, pressed);
     return;
   }
 
   if (event.code === "ShiftRight") {
     event.preventDefault();
     shiftRightPhysical = pressed;
-    if (pressed) machine.cia1.setKey(6, 4, true);
-    else {
-      shiftRightPhysical = false;
-      const symbolOwnsShift = [...heldMatrixKeys.values()].some((binding) => binding.symbolMapped);
-      if (!symbolOwnsShift) syncPhysicalShiftKeys();
-    }
+    machine.cia1.setKey(6, 4, pressed);
     return;
   }
 
