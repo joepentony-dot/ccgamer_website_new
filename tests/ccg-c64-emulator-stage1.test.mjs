@@ -26,7 +26,7 @@ const vault = read("js/ccg-c64/rom-vault.js");
 const headers = read("_headers");
 const emulation = read("emulation.html");
 
-assert(html.includes("CCG OMEGA LAB"), "CCG identity is required");
+assert(html.includes("CCG BROWSER C64") || html.includes("CCG C64"), "CCG identity is required");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
 assert(html.includes('width="384" height="272"'), "Native C64 canvas dimensions must be reserved");
 assert(html.includes("webkitdirectory"), "VICE-folder ROM setup must exist");
