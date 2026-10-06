@@ -41,8 +41,10 @@ const deletionMigration = read("supabase/migrations/20260805_member_hub_deletion
   'id="memberOverview"',
   'id="memberFavourites"',
   'id="memberAchievements"',
-  'id="memberCommunity"',
   'id="memberSettings"',
+  'id="profileAvatar"',
+  'id="avatarInput"',
+  'id="avatarRemoveBtn"',
   'id="favouriteGamesList"',
   'id="prefsForm"',
   'id="logoutBtn"',
@@ -86,11 +88,12 @@ const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
 if (duplicateIds.length) problems.push(`Member Hub contains duplicate IDs: ${[...new Set(duplicateIds)].join(", ")}.`);
 
 [
-  ".member-hub-hero",
+  ".member-profile-bar",
+  ".member-avatar-editor",
   ".member-stats",
-  ".member-hub-grid",
+  ".member-dashboard-grid",
   ".member-achievements",
-  ".member-community-grid",
+  ".member-compact-details",
   ".member-account-settings"
 ].forEach((selector) => {
   requireText(css, selector, `Member Hub stylesheet is missing: ${selector}.`);
@@ -101,8 +104,6 @@ if (duplicateIds.length) problems.push(`Member Hub contains duplicate IDs: ${[..
   "ccgRecentlyViewedGamesV1",
   "memberStatFavourites",
   "memberRecentlyViewed",
-  "memberWantSuggestion",
-  "memberRecentContent",
   "memberActivityFeed",
   "MutationObserver"
 ].forEach((needle) => {
@@ -178,4 +179,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Member Hub audit passed with the restored shared library interface and tombstone-safe account synchronisation.");
+console.log("Member Hub audit passed with the compact profile layout, avatar controls, shared library interface and tombstone-safe account synchronisation.");
