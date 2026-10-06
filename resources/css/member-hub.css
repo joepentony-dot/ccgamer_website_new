@@ -908,6 +908,174 @@ html[data-ccg-page="member-hub"] .profile-library-card {
   gap: 8px;
 }
 
+/* COMPACT OVERRIDES FOR DYNAMIC MEMBER TOOLS */
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge {
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 9px;
+  margin: 8px 10px;
+  padding: 8px;
+  box-shadow: none;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__mark {
+  min-height: 78px;
+  padding: 7px;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__eyebrow {
+  margin-bottom: 3px;
+  font-size: 0.5rem;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__month {
+  font-size: 1.55rem;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__month-label,
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__title {
+  margin-top: 3px;
+  font-size: 0.64rem;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__content {
+  gap: 4px;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__message,
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__next,
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__status {
+  margin: 0;
+  font: 0.62rem/1.28 Arial, sans-serif;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__message {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__progress {
+  height: 5px;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__actions {
+  gap: 5px;
+  margin-top: 1px;
+}
+
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__actions .auth-btn,
+html[data-ccg-page="member-hub"] #memberAchievements .member-loyalty-badge__actions a {
+  min-width: 0;
+  padding: 5px 7px;
+  font-size: 0.56rem;
+}
+
+html[data-ccg-page="member-hub"] .member-account-settings > .member-public-settings.member-compact-details {
+  margin: 8px 10px;
+  padding: 0;
+}
+
+html[data-ccg-page="member-hub"] .member-public-settings .member-compact-details__body {
+  padding: 8px;
+}
+
+html[data-ccg-page="member-hub"] .member-public-settings h3,
+html[data-ccg-page="member-hub"] .member-submission-panel h3 {
+  margin-bottom: 5px;
+  font-size: 0.72rem;
+}
+
+html[data-ccg-page="member-hub"] .member-public-settings__intro,
+html[data-ccg-page="member-hub"] .member-submission-panel__intro {
+  margin-bottom: 7px;
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+html[data-ccg-page="member-hub"] .member-public-form,
+html[data-ccg-page="member-hub"] .member-submission-form {
+  gap: 7px;
+}
+
+html[data-ccg-page="member-hub"] .member-public-form__grid,
+html[data-ccg-page="member-hub"] .member-submission-form__grid {
+  gap: 7px;
+}
+
+html[data-ccg-page="member-hub"] .member-public-form label,
+html[data-ccg-page="member-hub"] .member-submission-form label {
+  gap: 4px;
+  font-size: 0.66rem;
+}
+
+html[data-ccg-page="member-hub"] .member-public-form input[type="text"],
+html[data-ccg-page="member-hub"] .member-public-form textarea,
+html[data-ccg-page="member-hub"] .member-public-form select,
+html[data-ccg-page="member-hub"] .member-submission-form input,
+html[data-ccg-page="member-hub"] .member-submission-form textarea,
+html[data-ccg-page="member-hub"] .member-submission-form select {
+  min-height: 34px;
+  padding: 6px 7px;
+}
+
+html[data-ccg-page="member-hub"] .member-public-form textarea,
+html[data-ccg-page="member-hub"] .member-submission-form textarea {
+  min-height: 66px;
+}
+
+html[data-ccg-page="member-hub"] #memberCommunity .member-submission-panel {
+  margin: 0;
+  padding: 9px;
+  border: 0;
+  background: transparent;
+}
+
+html[data-ccg-page="member-hub"] .member-custom-collections {
+  margin-top: 10px;
+  padding-top: 9px;
+}
+
+html[data-ccg-page="member-hub"] .member-custom-collections__header {
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+html[data-ccg-page="member-hub"] .member-custom-collections__manager {
+  gap: 7px;
+  margin-top: 8px;
+  padding: 8px;
+}
+
+html[data-ccg-page="member-hub"] .member-custom-collections__games {
+  gap: 6px;
+}
+
+html[data-ccg-page="member-hub"] .member-custom-collections__game {
+  gap: 8px;
+  padding: 6px 7px;
+}
+
+html[data-ccg-page="member-hub"] .member-collection-insights {
+  margin: 7px 0;
+  padding: 7px;
+}
+
+html[data-ccg-page="member-hub"] .member-collection-insights__header {
+  gap: 7px;
+  margin-bottom: 6px;
+}
+
+html[data-ccg-page="member-hub"] .member-collection-insights__stats {
+  gap: 5px;
+}
+
+html[data-ccg-page="member-hub"] .member-collection-insights__stats article {
+  gap: 2px;
+  padding: 6px;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 1050px) {
