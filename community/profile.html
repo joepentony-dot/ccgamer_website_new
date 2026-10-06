@@ -262,43 +262,53 @@
                 <div class="member-continue-grid" id="memberRecentlyViewed"></div>
               </section>
 
-              <section id="memberFavourites" class="profile-subsection member-panel member-panel--compact" aria-labelledby="memberFavouritesTitle">
-                <div class="member-panel__header">
-                  <div>
-                    <p class="member-panel__kicker">Saved games</p>
-                    <h2 class="member-panel__title" id="memberFavouritesTitle">Favourites</h2>
+              <details id="memberFavourites" class="profile-subsection member-panel member-panel--compact member-info-menu">
+                <summary class="member-info-menu__summary">
+                  <span class="member-info-menu__copy">
+                    <span class="member-panel__kicker">Saved games</span>
+                    <span class="member-panel__title">Favourites &amp; Top Picks</span>
+                  </span>
+                  <span class="member-info-menu__hint">Open saved games</span>
+                </summary>
+                <div class="member-info-menu__body">
+                  <div class="member-info-menu__toolbar">
+                    <h3 id="topPicksHeading" class="profile-top-picks-heading" hidden>Top Picks · choose up to 10</h3>
+                    <a class="member-text-button" href="/games/">Add games</a>
                   </div>
-                  <a class="member-text-button" href="/games/">Add games</a>
+                  <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
                 </div>
-                <h3 id="topPicksHeading" class="profile-top-picks-heading" hidden>Top Picks · choose up to 10</h3>
-                <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
-              </section>
+              </details>
             </div>
 
             <div class="member-dashboard-column">
-              <section id="memberReviews" class="profile-library ccg-profile-community member-panel member-panel--compact" aria-labelledby="memberReviewsTitle">
-                <div class="member-panel__header">
-                  <div>
-                    <p class="member-panel__kicker">Your contributions</p>
-                    <h2 id="memberReviewsTitle" class="member-panel__title">Ratings &amp; Reviews</h2>
+              <details id="memberReviews" class="profile-library ccg-profile-community member-panel member-panel--compact member-info-menu">
+                <summary class="member-info-menu__summary">
+                  <span class="member-info-menu__copy">
+                    <span class="member-panel__kicker">Your contributions</span>
+                    <span class="member-panel__title">Ratings &amp; Reviews</span>
+                  </span>
+                  <span class="member-info-menu__hint">Open activity</span>
+                </summary>
+                <div class="member-info-menu__body">
+                  <div class="member-info-menu__toolbar member-info-menu__toolbar--end">
+                    <a class="member-text-button" href="/games/">Rate a game</a>
                   </div>
-                  <a class="member-text-button" href="/games/">Rate a game</a>
-                </div>
-                <div class="ccg-profile-community__grid member-review-grid">
-                  <div>
-                    <h3>Recent Ratings</h3>
-                    <div id="profileCommunityRatings" class="ccg-profile-community__list" aria-live="polite">
-                      <p class="ccg-community-muted">Loading…</p>
+                  <div class="ccg-profile-community__grid member-review-grid">
+                    <div>
+                      <h3>Recent Ratings</h3>
+                      <div id="profileCommunityRatings" class="ccg-profile-community__list" aria-live="polite">
+                        <p class="ccg-community-muted">Loading…</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h3>Recent Reviews</h3>
+                      <div id="profileCommunityReviews" class="ccg-profile-community__list" aria-live="polite">
+                        <p class="ccg-community-muted">Loading…</p>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <h3>Recent Reviews</h3>
-                    <div id="profileCommunityReviews" class="ccg-profile-community__list" aria-live="polite">
-                      <p class="ccg-community-muted">Loading…</p>
-                    </div>
-                  </div>
                 </div>
-              </section>
+              </details>
 
               <details class="member-panel member-panel--compact member-achievements-menu" id="memberAchievements">
                 <summary class="member-achievements-menu__summary">
@@ -314,14 +324,14 @@
             </div>
           </div>
 
-          <section class="member-account-settings" id="memberSettings" aria-labelledby="memberSettingsTitle">
-            <div class="member-panel__header">
-              <div>
-                <p class="member-panel__kicker">Privacy &amp; preferences</p>
-                <h2 class="member-panel__title" id="memberSettingsTitle">Account Settings</h2>
-              </div>
-            </div>
-
+          <details class="member-account-settings member-info-menu" id="memberSettings">
+            <summary class="member-info-menu__summary">
+              <span class="member-info-menu__copy">
+                <span class="member-panel__kicker">Privacy &amp; preferences</span>
+                <span class="member-panel__title" id="memberSettingsTitle">Account Settings</span>
+              </span>
+              <span class="member-info-menu__hint">Open account controls</span>
+            </summary>
             <div class="member-account-grid">
               <div class="member-account-block">
                 <h3>Account</h3>
@@ -353,7 +363,7 @@
               <a class="member-text-button" href="/auth/forgot.html">Reset password</a>
               <button type="button" class="member-text-button" id="logoutBtn" data-logout>Logout</button>
             </div>
-          </section>
+          </details>
 
           <details class="member-compact-details" id="memberCommunity">
             <summary>Suggestions &amp; feedback</summary>
