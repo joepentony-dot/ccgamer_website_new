@@ -164,9 +164,26 @@
       if(target.id!=="solo-btn"&&target.id!=="tutorial-zone-btn")return;
       event.preventDefault();event.stopImmediatePropagation();
       clearPendingBusy();
-      state.pendingStartId=target.id;
+      state.pendingStartId="";
       target.setAttribute("aria-busy","true");
-      replayPendingStart();
+
+      /* Fullscreen and authored music must begin inside this real click task.
+       * Replaying the request later through a timer, microtask chain or
+       * synthetic click can lose browser media activation and leave the
+       * production soundtrack silent for the whole run. */
+      const guidance=window.CCGLostSizzlerTutorialGuidanceV123;
+      if(typeof guidance?.launchSolo!=="function"){
+        target.removeAttribute("aria-busy");
+        const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 start ownership is unavailable. Refresh the page before starting a run.";
+        return;
+      }
+      let launched;
+      try{launched=guidance.launchSolo(target.id==="tutorial-zone-btn")}
+      catch(error){
+        target.removeAttribute("aria-busy");
+        throw error;
+      }
+      Promise.resolve(launched).finally(()=>target.removeAttribute("aria-busy"));
       return;
     }
 
@@ -174,53 +191,9 @@
     clearPendingBusy();
     state.pendingStartId=target.id;
     target.setAttribute("aria-busy","true");
-    const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 systems are finishing their ordered startup. Your selected adventure will start automatically when the build is ready.";
+    const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 systems are finishing their ordered startup. When READY appears, click your selected adventure again so fullscreen and authored music start from a trusted input.";
   }
   window.addEventListener("click",blockedStart,true);
-
-  function replayPendingStart(){
-    const pendingId=state.pendingStartId;
-    if(!pendingId)return;
-    const finish=()=>{
-      if(state.pendingStartId===pendingId)state.pendingStartId="";
-      document.getElementById(pendingId)?.removeAttribute("aria-busy");
-    };
-    const retry=()=>{
-      state.pendingStartRetries+=1;
-      setTimeout(attempt,50);
-    };
-    const attempt=()=>{
-      if(state.failed){finish();return}
-      if(document.body?.dataset?.runActive==="true"){finish();return}
-      if(!state.ready){retry();return}
-      const button=document.getElementById(pendingId);
-      const legacyGatePending=window.CCGLostSizzlerReleaseGate?.state?.ready===false;
-      if(!button||!button.isConnected){retry();return}
-      if(button.disabled||legacyGatePending){retry();return}
-
-      /* Solo and Tutorial are owned by the guidance layer once the ordered
-       * bootstrap is ready. Hand the preserved intent to that owner directly:
-       * a synthetic button click can be consumed by older capture listeners,
-       * and clearing pendingStartId before a run actually starts loses the
-       * player's original choice. */
-      if(pendingId==="solo-btn"||pendingId==="tutorial-zone-btn"){
-        const guidance=window.CCGLostSizzlerTutorialGuidanceV123;
-        if(typeof guidance?.launchSolo!=="function"){retry();return}
-        let launched;
-        try{launched=guidance.launchSolo(pendingId==="tutorial-zone-btn")}catch(_){retry();return}
-        if(launched===false&&guidance.queuedLaunch!==null){finish();return}
-        Promise.resolve(launched).then(()=>{
-          if(document.body?.dataset?.runActive==="true"){finish();return}
-          retry();
-        }).catch(()=>retry());
-        return
-      }
-
-      finish();
-      button.click();
-    };
-    queueMicrotask(attempt);
-  }
 
   function prerequisiteReady(marker){
     const value=marker&&window[marker];
@@ -353,9 +326,17 @@
       observeControllerSeal();
       /* R93: current blocking CSS owns the menu; do not replay legacy R55 presentation. */
       state.ready=true;state.currentModule="";state.currentIndex=state.totalModules;announceModuleProgress("","ready");stopReleaseReadyGuard();setReleaseReady(true);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="true";
-      const note=document.getElementById("menu-note");if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Solo and Tutorial are the supported local modes; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
+      const pendingId=state.pendingStartId;
+      clearPendingBusy();
+      state.pendingStartId="";
+      const note=document.getElementById("menu-note");
+      if(pendingId){
+        const pendingButton=document.getElementById(pendingId);
+        try{pendingButton?.focus?.({preventScroll:true})}catch(_){try{pendingButton?.focus?.()}catch(__){}}
+        const label=pendingId==="tutorial-zone-btn"?"Tutorial":pendingId==="continue-save-btn"?"Resume Saved Run":pendingId==="daily-btn"?"Weekly Vault":pendingId==="split-btn"?"2 Player Split Screen":"Start Game";
+        if(note)note.textContent=`V10.42 READY — click ${label} again to begin. This fresh click is required so fullscreen and authored music start with browser permission.`;
+      }else if(note)note.textContent="V10.42 READY — fifteen dungeon floors are loaded in verified order. Solo and Tutorial are the supported local modes; Supabase account features remain available without making the core game depend on a paid multiplayer server.";
       window.dispatchEvent(new CustomEvent("ccg:v142-ready",{detail:{build:BUILD,cache:CACHE,loaded:[...state.loaded]}}));
-      replayPendingStart();
     }catch(error){
       state.failed=true;state.error=String(error?.message||error);setReleaseReady(false);stampBuild();scheduleIdentityRestamps();document.body.dataset.v142BootstrapReady="failed";
       clearPendingBusy();state.pendingStartId="";
