@@ -71,14 +71,19 @@ assert.match(warden,/const refuge=h\.v142CleansedRefuge/,"Warden refuge marker m
 assert.doesNotMatch(warden,/rgba\(100,255,162/,"green cross styling is reserved for Sanctuary, not Warden refuge");
 
 for(const page of [index,alias]){
+  assert.match(page,/DUNGEON MAP<\/h3>/,"both public game entry pages must use the concise tactical map heading");
+  assert.match(page,/radar-player/,"both public game entry pages must explain the player marker");
   assert.match(page,/radar-sanctuary/,"both public game entry pages must explain the Sanctuary marker");
   assert.match(page,/radar-key/,"both public game entry pages must explain the Key marker");
+  assert.match(page,/radar-sigil/,"both public game entry pages must explain the Sigil marker");
+  assert.match(page,/radar-shop/,"both public game entry pages must explain the Shop marker once");
+  assert.match(page,/radar-cache/,"both public game entry pages must explain the Death Cache marker");
   assert.match(page,/radar-warden/,"both public game entry pages must explain Warden markers");
-  assert.match(page,/radar-refuge/,"both public game entry pages must explain Refuge markers");
-  assert.match(page,/radar-room-legend/,"both public game entry pages must explain room colours");
+  assert.match(page,/radar-exit/,"both public game entry pages must explain the Exit marker");
+  assert.doesNotMatch(page,/class="radar-room-legend"/,"main HUD must not duplicate markers with a second room-colour legend");
+  assert.doesNotMatch(page,/radar-refuge/,"main HUD legend keeps rare refuge detail on the full map instead of overcrowding the tactical key");
 }
 
-assert.match(css,/\.radar-room-sanctuary\{background:#3c8b67\}/,"room-colour legend must identify Sanctuary");
-assert.match(css,/\.radar-room-danger\{background:#9a4552\}/,"room-colour legend must identify dangerous rooms");
+assert.match(css,/\.radar-room-legend\{display:none!important\}/,"legacy room-colour legend must remain suppressed if stale markup is encountered");
 
 console.log("Dungeon R72/R79 tactical map, truthful weapon feedback and confirmed death transition contracts passed.");
