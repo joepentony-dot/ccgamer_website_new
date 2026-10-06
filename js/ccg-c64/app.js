@@ -731,25 +731,249 @@ crtButton?.addEventListener("click", cycleCrtMode);
 sizeButton?.addEventListener("click", toggleScreenSize);
 screen?.addEventListener("pointerdown", () => screen.focus());
 
-loadMediaButton?.addEventListener("click", () => {
-  if (!running) return;
-  prgInput?.click();
-});
+const SUPPORTED_MEDIA_TYPES = new Set(["prg", "d64", "d71", "d81", "g64", "tap", "t64", "crt"]);
 
-prgInput?.addEventListener("change", async () => {
-  const file = prgInput.files?.[0];
-  prgInput.value = "";
-  if (!file || !machine || !running) return;
+function mediaTypeFromName(name) {
+  const match = String(name || "").toLowerCase().match(/\.([a-z0-9]+)$/);
+  return match && SUPPORTED_MEDIA_TYPES.has(match[1]) ? match[1] : null;
+}
 
-  try {
-    const bytes = new Uint8Array(await file.arrayBuffer());
+function decodeLibraryBase64(value) {
+  const binary = atob(String(value || ""));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+async function openMediaBytes(media) {
+  if (!media || !machine || !running) return false;
+  const name = media.name || `media.${media.type || "bin"}`;
+  const bytes = media.bytes instanceof Uint8Array ? media.bytes : new Uint8Array(media.bytes || []);
+  const type = media.type || mediaTypeFromName(name);
+  if (!type || !SUPPORTED_MEDIA_TYPES.has(type)) throw new Error("Unsupported C64 media format.");
+
+  if (type === "prg") {
     if (bytes.length < 3) throw new Error("That PRG is too small to contain a C64 load address.");
     machine.loadPRG(bytes);
     machine.injectRun();
-    if (machineState) machineState.textContent = `PRG STARTED // ${file.name.toUpperCase()}`;
-  } catch (error) {
-    if (stageNote) stageNote.textContent = error?.message || "The PRG could not be started.";
+    if (machineState) machineState.textContent = `PRG STARTED // ${name.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = `${name} loaded and RUN queued.`;
+    screen?.focus();
+    return true;
   }
+
+  if (["d64", "d71", "d81", "g64"].includes(type)) {
+    const g64 = type === "g64" || isG64(bytes);
+    const variant = g64 ? null : d64Variant(bytes.length);
+    if (!g64 && (!variant || variant.kind !== type)) {
+      throw new Error("Use a supported D64, D71, D81 or G64 disk image.");
+    }
+    if (g64 && !vault.getBytes("drive1541")) {
+      throw new Error("G64 raw-track images require the optional 1541 DOS ROM in System ROMs.");
+    }
+
+    const kind = g64 ? "g64" : variant.kind;
+    const disk = g64 ? new G64(bytes) : new D64(bytes);
+    machine.setD64(disk);
+    mountedDisk = { name, bytes: bytes.slice(), kind };
+
+    if (g64) {
+      driveMode = "true";
+      localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+    }
+
+    const useTrueDrive = driveMode === "true" &&
+      (kind === "d64" || kind === "g64") &&
+      Boolean(vault.getBytes("drive1541"));
+    machine.setTrueDrive(useTrueDrive);
+
+    if (!useTrueDrive) machine.injectLoadAndRun();
+
+    if (diskSlotStatus) {
+      const label = disk.diskName ? `${disk.diskName} // ${name}` : name;
+      diskSlotStatus.textContent = `${kind.toUpperCase()} // ${label}`;
+    }
+    if (machineState) machineState.textContent = `${kind.toUpperCase()} MOUNTED // ${name.toUpperCase()}`;
+    if (stageNote) {
+      stageNote.textContent = useTrueDrive
+        ? "Disk inserted into the cycle-driven 1541 path. Use normal C64 disk commands from the keyboard."
+        : "Disk mounted in Drive 8 and LOAD/RUN queued automatically.";
+    }
+    updateMediaControls(vault.snapshot());
+    screen?.focus();
+    return true;
+  }
+
+  if (type === "t64") {
+    const program = extractFirstT64Program(bytes);
+    machine.loadPRG(program.prg);
+    machine.injectRun();
+    mountedTape = null;
+    if (tapeSlotStatus) tapeSlotStatus.textContent = `T64 QUICK LOAD // ${program.name}`;
+    if (machineState) machineState.textContent = `T64 STARTED // ${program.name.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "The first runnable program in the T64 container was loaded and RUN was queued.";
+    updateMediaControls(vault.snapshot());
+    screen?.focus();
+    return true;
+  }
+
+  if (type === "tap") {
+    machine.loadTap(bytes);
+    machine.setTapeKey("PLAY");
+    machine.bufferKeyboardText("LOAD\r");
+    mountedTape = { name, bytes: bytes.slice(), kind: "tap" };
+    if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP // ${name}`;
+    if (machineState) machineState.textContent = `TAP MOUNTED // ${name.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "Tape mounted, PLAY latched and LOAD queued. Datasette controls remain available.";
+    updateMediaControls(vault.snapshot());
+    screen?.focus();
+    return true;
+  }
+
+  if (type === "crt") {
+    const info = machine.loadCartridge(bytes);
+    mountedCartridge = {
+      name,
+      label: info.name || name,
+      bytes: bytes.slice(),
+      kind: "crt",
+    };
+    resetAudioForMachine();
+    if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = `${info.mode.toUpperCase()} // ${mountedCartridge.label}`;
+    if (machineState) machineState.textContent = `CARTRIDGE ACTIVE // ${mountedCartridge.label.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "CRT cartridge inserted and the C64 reset through the cartridge hardware path.";
+    updateMediaControls(vault.snapshot());
+    screen?.focus();
+    return true;
+  }
+
+  return false;
+}
+
+async function queueMedia(media) {
+  if (!media?.bytes?.length) throw new Error("The selected media file is empty.");
+  const type = media.type || mediaTypeFromName(media.name);
+  if (!type) throw new Error("Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.");
+
+  pendingMedia = {
+    name: media.name || `media.${type}`,
+    type,
+    bytes: media.bytes instanceof Uint8Array ? media.bytes.slice() : new Uint8Array(media.bytes),
+  };
+
+  if (!vault.snapshot().allRequiredReady) {
+    if (stageNote) stageNote.textContent = `${pendingMedia.name} is ready. Add the three C64 system ROMs once, then it will start automatically.`;
+    showSetup();
+    return false;
+  }
+
+  if (!running) await powerOn();
+  if (!running || !machine) return false;
+
+  const queued = pendingMedia;
+  pendingMedia = null;
+  try {
+    return await openMediaBytes(queued);
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "The media could not be opened.";
+    return false;
+  }
+}
+
+async function queueMediaFile(file) {
+  if (!file) return false;
+  const type = mediaTypeFromName(file.name);
+  if (!type) {
+    if (stageNote) stageNote.textContent = "Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.";
+    return false;
+  }
+  return queueMedia({ name: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()) });
+}
+
+async function initialiseOnlineLibrary() {
+  if (!onlineLibrarySelect || !onlineLibraryStatus) return;
+  onlineLibraryStatus.textContent = "LOADING";
+  try {
+    const response = await fetch("/emulator/c64/library.json", { cache: "no-store", credentials: "same-origin" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    const entries = Array.isArray(payload?.entries) ? payload.entries : [];
+    onlineLibraryEntries = entries.filter((entry) =>
+      entry && typeof entry.id === "string" && typeof entry.title === "string" &&
+      SUPPORTED_MEDIA_TYPES.has(String(entry.format || "").toLowerCase()) &&
+      (typeof entry.url === "string" || typeof entry.dataBase64 === "string")
+    );
+
+    onlineLibrarySelect.replaceChildren();
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = onlineLibraryEntries.length ? "Choose an item…" : "No authorised media listed";
+    onlineLibrarySelect.append(placeholder);
+
+    for (const entry of onlineLibraryEntries) {
+      const option = document.createElement("option");
+      option.value = entry.id;
+      option.textContent = `${entry.title} [${String(entry.format).toUpperCase()}]`;
+      onlineLibrarySelect.append(option);
+    }
+
+    onlineLibraryStatus.textContent = onlineLibraryEntries.length ? `${onlineLibraryEntries.length} READY` : "EMPTY";
+    if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
+  } catch (error) {
+    onlineLibraryEntries = [];
+    onlineLibrarySelect.replaceChildren(new Option("Library unavailable", ""));
+    onlineLibraryStatus.textContent = "UNAVAILABLE";
+    if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
+  }
+}
+
+async function loadOnlineLibraryEntry() {
+  const id = onlineLibrarySelect?.value || "";
+  const entry = onlineLibraryEntries.find((item) => item.id === id);
+  if (!entry) return;
+
+  if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
+  if (onlineLibraryStatus) onlineLibraryStatus.textContent = "FETCHING";
+
+  try {
+    let bytes;
+    if (entry.dataBase64) {
+      bytes = decodeLibraryBase64(entry.dataBase64);
+    } else {
+      const url = new URL(entry.url, window.location.href);
+      const response = await fetch(url.href, {
+        cache: "no-store",
+        credentials: url.origin === window.location.origin ? "same-origin" : "omit",
+        mode: "cors",
+      });
+      if (!response.ok) throw new Error(`Library download failed (HTTP ${response.status}).`);
+      bytes = new Uint8Array(await response.arrayBuffer());
+    }
+
+    const type = String(entry.format).toLowerCase();
+    const filename = entry.filename || `${entry.title.replace(/[^a-z0-9._-]+/gi, "-") || "ccg-media"}.${type}`;
+    await queueMedia({ name: filename, type, bytes });
+    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "READY";
+  } catch (error) {
+    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "ERROR";
+    if (stageNote) stageNote.textContent = error?.message || "The Online Library item could not be loaded.";
+  } finally {
+    if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect?.value;
+  }
+}
+
+loadAnyMediaButton?.addEventListener("click", () => anyMediaInput?.click());
+anyMediaInput?.addEventListener("change", async () => {
+  const file = anyMediaInput.files?.[0];
+  anyMediaInput.value = "";
+  await queueMediaFile(file);
+});
+
+loadMediaButton?.addEventListener("click", () => prgInput?.click());
+prgInput?.addEventListener("change", async () => {
+  const file = prgInput.files?.[0];
+  prgInput.value = "";
+  await queueMediaFile(file);
 });
 
 window.addEventListener("keydown", (event) => handleC64Key(event, true));
@@ -774,64 +998,17 @@ document.addEventListener("fullscreenchange", () => {
   sidNode?.port.postMessage({ type: "resync" });
 });
 
-
-loadDiskButton?.addEventListener("click", () => {
-  if (!running) return;
-  diskInput?.click();
-});
-
+loadDiskButton?.addEventListener("click", () => diskInput?.click());
 diskInput?.addEventListener("change", async () => {
   const file = diskInput.files?.[0];
   diskInput.value = "";
-  if (!file || !machine || !running) return;
-
-  try {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const g64 = file.name.toLowerCase().endsWith(".g64") || isG64(bytes);
-    const variant = g64 ? null : d64Variant(bytes.length);
-    if (!g64 && !variant) throw new Error("Use a supported D64, D71, D81 or G64 disk image.");
-    if (g64 && !vault.getBytes("drive1541")) {
-      throw new Error("G64 raw-track images require the optional 1541 DOS ROM in ROM Control.");
-    }
-
-    const kind = g64 ? "g64" : variant.kind;
-    const disk = g64 ? new G64(bytes) : new D64(bytes);
-    machine.setD64(disk);
-    mountedDisk = { name: file.name, bytes: bytes.slice(), kind };
-
-    if (g64) {
-      driveMode = "true";
-      localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
-    }
-    const useTrueDrive = driveMode === "true" &&
-      (kind === "d64" || kind === "g64") &&
-      Boolean(vault.getBytes("drive1541"));
-    machine.setTrueDrive(useTrueDrive);
-
-    if (!useTrueDrive) machine.injectLoadAndRun();
-
-    if (diskSlotStatus) {
-      const label = disk.diskName ? `${disk.diskName} // ${file.name}` : file.name;
-      diskSlotStatus.textContent = `${kind.toUpperCase()} // ${label}`;
-    }
-    if (machineState) machineState.textContent = `${kind.toUpperCase()} MOUNTED // ${file.name.toUpperCase()}`;
-    if (stageNote) {
-      stageNote.textContent = useTrueDrive
-        ? "Disk inserted into the cycle-driven 1541 path. Use normal C64 disk commands from the keyboard; switch back to Fast Load for automatic LOAD/RUN."
-        : "Disk mounted in Drive 8 and LOAD/RUN queued through the virtual-drive path.";
-    }
-    updateMediaControls(vault.snapshot());
-    screen?.focus();
-  } catch (error) {
-    if (stageNote) stageNote.textContent = error?.message || "The disk image could not be mounted.";
-  }
+  await queueMediaFile(file);
 });
-
 
 driveModeButton?.addEventListener("click", () => {
   if (!running || !machine) return;
   if (!vault.getBytes("drive1541")) {
-    if (stageNote) stageNote.textContent = "True 1541 mode requires the optional 1541 DOS ROM in ROM Control.";
+    if (stageNote) stageNote.textContent = "True 1541 mode requires the optional 1541 DOS ROM in System ROMs.";
     return;
   }
   if (driveMode === "fast" && mountedDisk && !["d64", "g64"].includes(mountedDisk.kind)) {
@@ -851,41 +1028,11 @@ driveModeButton?.addEventListener("click", () => {
   screen?.focus();
 });
 
-loadTapeButton?.addEventListener("click", () => {
-  if (running) tapeInput?.click();
-});
-
+loadTapeButton?.addEventListener("click", () => tapeInput?.click());
 tapeInput?.addEventListener("change", async () => {
   const file = tapeInput.files?.[0];
   tapeInput.value = "";
-  if (!file || !machine || !running) return;
-
-  try {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const lower = file.name.toLowerCase();
-
-    if (lower.endsWith(".t64")) {
-      const program = extractFirstT64Program(bytes);
-      machine.loadPRG(program.prg);
-      machine.injectRun();
-      mountedTape = null;
-      if (tapeSlotStatus) tapeSlotStatus.textContent = `T64 QUICK LOAD // ${program.name}`;
-      if (machineState) machineState.textContent = `T64 STARTED // ${program.name.toUpperCase()}`;
-      if (stageNote) stageNote.textContent = "The first runnable PRG in the T64 container was loaded directly into the C64 and RUN was queued.";
-    } else {
-      machine.loadTap(bytes);
-      machine.setTapeKey("PLAY");
-      machine.bufferKeyboardText("LOAD\r");
-      mountedTape = { name: file.name, bytes: bytes.slice(), kind: "tap" };
-      if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP // ${file.name}`;
-      if (machineState) machineState.textContent = `TAP MOUNTED // ${file.name.toUpperCase()}`;
-      if (stageNote) stageNote.textContent = "Tape mounted, PLAY latched and LOAD queued. STOP, PLAY and REW controls remain available in the Datasette bay.";
-    }
-    updateMediaControls(vault.snapshot());
-    screen?.focus();
-  } catch (error) {
-    if (stageNote) stageNote.textContent = error?.message || "The tape image could not be loaded.";
-  }
+  await queueMediaFile(file);
 });
 
 tapePlayButton?.addEventListener("click", () => {
@@ -909,33 +1056,11 @@ tapeRewindButton?.addEventListener("click", () => {
   screen?.focus();
 });
 
-loadCartridgeButton?.addEventListener("click", () => {
-  if (running) cartridgeInput?.click();
-});
-
+loadCartridgeButton?.addEventListener("click", () => cartridgeInput?.click());
 cartridgeInput?.addEventListener("change", async () => {
   const file = cartridgeInput.files?.[0];
   cartridgeInput.value = "";
-  if (!file || !machine || !running) return;
-
-  try {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const info = machine.loadCartridge(bytes);
-    mountedCartridge = {
-      name: file.name,
-      label: info.name || file.name,
-      bytes: bytes.slice(),
-      kind: "crt",
-    };
-    resetAudioForMachine();
-    if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = `${info.mode.toUpperCase()} // ${mountedCartridge.label}`;
-    if (machineState) machineState.textContent = `CARTRIDGE ACTIVE // ${mountedCartridge.label.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = "CRT cartridge inserted and the C64 reset through the cartridge hardware path.";
-    updateMediaControls(vault.snapshot());
-    screen?.focus();
-  } catch (error) {
-    if (stageNote) stageNote.textContent = error?.message || "The cartridge image could not be loaded.";
-  }
+  await queueMediaFile(file);
 });
 
 ejectCartridgeButton?.addEventListener("click", () => {
@@ -948,6 +1073,24 @@ ejectCartridgeButton?.addEventListener("click", () => {
   updateMediaControls(vault.snapshot());
   screen?.focus();
 });
+
+mediaDropzone?.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  mediaDropzone.classList.add("is-dragover");
+});
+mediaDropzone?.addEventListener("dragleave", () => mediaDropzone.classList.remove("is-dragover"));
+mediaDropzone?.addEventListener("drop", async (event) => {
+  event.preventDefault();
+  mediaDropzone.classList.remove("is-dragover");
+  const file = event.dataTransfer?.files?.[0];
+  await queueMediaFile(file);
+});
+
+onlineLibrarySelect?.addEventListener("change", () => {
+  if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect.value;
+});
+onlineLibraryLoad?.addEventListener("click", () => { void loadOnlineLibraryEntry(); });
+void initialiseOnlineLibrary();
 
 async function saveGameVaultSlot() {
   if (!machine || !running) return;
