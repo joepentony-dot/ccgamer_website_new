@@ -9,6 +9,10 @@
 
   const state={installed:false,active:false,actions:0,movements:0,visibilitySyncs:0};
   const activePointers=new Map();
+  const HOLD_REPEAT_DELAY_MS=120;
+  const movementVectors=Object.freeze({
+    KeyW:{x:0,y:-1},KeyA:{x:-1,y:0},KeyS:{x:0,y:1},KeyD:{x:1,y:0}
+  });
   const touchCapable=()=>Boolean((navigator.maxTouchPoints||0)>0||window.matchMedia?.("(pointer: coarse)")?.matches);
   const playing=()=>{
     let live=false;
@@ -21,10 +25,44 @@
     return document.body?.dataset?.runActive==="true";
   };
 
-  function releaseMovement(button){
-    const key=button?.dataset?.key;
+  function releaseMovement(recordOrButton){
+    const record=recordOrButton?.button?recordOrButton:{button:recordOrButton,key:recordOrButton?.dataset?.key,holdTimer:0};
+    if(record.holdTimer)clearTimeout(record.holdTimer);
+    const key=record.key||record.button?.dataset?.key;
     try{if(key&&typeof input!=="undefined")input.delete(key)}catch(_){}
-    button?.classList?.remove("held");
+    record.button?.classList?.remove("held");
+  }
+
+  function beginMovement(button,event,key){
+    event?.preventDefault?.();
+    try{button?.setPointerCapture?.(event.pointerId)}catch(_){}
+    const vector=movementVectors[key];
+    const record={button,key,holdTimer:0};
+    activePointers.set(event.pointerId,record);
+    button?.classList?.add("held");
+
+    /* A quick touch is one deliberate tile step. Do not expose the keyboard-held
+     * key until the finger has remained down long enough to mean "keep moving";
+     * otherwise catch-up substeps can consume the same 50–60 ms tap twice. */
+    if(vector&&typeof p1!=="undefined"&&p1&&typeof movePlayer==="function"){
+      try{
+        p1.dir={x:vector.x,y:vector.y};
+        movePlayer(p1,vector.x,vector.y);
+        if(typeof move1!=="undefined"){
+          const delay=Math.max(1,Number(C?.player?.moveDelay||138)*(Number(p1.moveMultiplier)||1));
+          move1=Math.max(Number(move1)||0,delay);
+        }
+      }catch(_){}
+    }
+
+    record.holdTimer=setTimeout(()=>{
+      const live=activePointers.get(event.pointerId);
+      if(live!==record||!playing())return;
+      try{if(typeof input!=="undefined")input.add(key)}catch(_){}
+      record.holdTimer=0;
+    },HOLD_REPEAT_DELAY_MS);
+    state.movements++;
+    return true
   }
 
   function stopFire(button){
@@ -153,16 +191,11 @@
       if(!button||!root.contains(button)||!playing())return;
       const key=button.dataset.key;
       if(key){
-        event.preventDefault();
-        try{button.setPointerCapture?.(event.pointerId)}catch(_){}
-        activePointers.set(event.pointerId,button);
-        try{if(typeof input!=="undefined")input.add(key)}catch(_){}
-        button.classList.add("held");
-        state.movements++;
+        beginMovement(button,event,key);
         return
       }
       if(button.dataset.action){
-        activePointers.set(event.pointerId,button);
+        activePointers.set(event.pointerId,{button,key:"",holdTimer:0});
         runAction(button,event)
       }
     });
@@ -170,10 +203,12 @@
     const release=event=>{
       const captured=activePointers.get(event.pointerId);
       const target=event.target?.closest?.(".v104-touch-btn");
-      const button=captured||(target&&root.contains(target)?target:null);
+      const targetButton=target&&root.contains(target)?target:null;
+      const record=captured||(targetButton?{button:targetButton,key:targetButton.dataset.key||"",holdTimer:0}:null);
       activePointers.delete(event.pointerId);
+      const button=record?.button;
       if(!button)return;
-      if(button.dataset.key)releaseMovement(button);
+      if(record.key||button.dataset.key)releaseMovement(record);
       if(button.dataset.action==="fire")stopFire(button)
     };
     for(const type of ["pointerup","pointercancel","lostpointercapture"])root.addEventListener(type,release);
