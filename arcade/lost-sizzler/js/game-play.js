@@ -501,8 +501,8 @@ function activeMeleeDeflection(p,now=performance.now()){
 }
 function deflectEnemyProjectile(p,b,nx,ny,now=performance.now()){
   if(!activeMeleeDeflection(p,now))return false;
-  const dir=p._meleeSwingDir||p.dir||{x:0,y:0},px=Math.round(Number(p.x)||0),py=Math.round(Number(p.y)||0),bx=Math.round(Number(nx)),by=Math.round(Number(ny)),frontX=px+Math.sign(Number(dir.x)||0),frontY=py+Math.sign(Number(dir.y)||0);
-  if(!((bx===px&&by===py)||(bx===frontX&&by===frontY)))return false;
+  const dir=p._meleeSwingDir||p.dir||{x:0,y:0},px=Math.round(Number(p.x)||0),py=Math.round(Number(p.y)||0),bx=Math.round(Number(nx)),by=Math.round(Number(ny)),dx=bx-px,dy=by-py,faceX=Math.sign(Number(dir.x)||0),faceY=Math.sign(Number(dir.y)||0),atPlayer=dx===0&&dy===0,adjacent=Math.max(Math.abs(dx),Math.abs(dy))===1,inForwardArc=adjacent&&(dx*faceX+dy*faceY)>0;
+  if(!(atPlayer||inForwardArc))return false;
   b.ttl=0;
   const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.gold;
   try{S.sfx("deflect")}catch(_){}
