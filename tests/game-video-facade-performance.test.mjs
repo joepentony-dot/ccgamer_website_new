@@ -9,6 +9,7 @@ const { enhanceVideoSection } = require("../scripts/generate-video-seo.js");
 
 const shell = read("games/game.html");
 const runtime = read("js/load-single-game.js");
+const globalJs = read("js/ccg-global.js");
 const videoSeo = read("scripts/generate-video-seo.js");
 const overrides = read("scripts/apply-game-video-overrides.js");
 const gamesCss = read("resources/css/games.css");
@@ -95,4 +96,12 @@ test("canonical generator upgrades legacy iframe-only markup into one deferred f
   assert.equal((second.match(/id="game-video-facade"/g) || []).length, 1);
   assert.equal((second.match(/id="game-video-poster"/g) || []).length, 1);
   assert.equal((second.match(/class="game-video__stage"/g) || []).length, 1);
+});
+
+
+test("wheel guard follows a deferred player into its facade stage", () => {
+  assert.match(globalJs, /frame\.__ccgWheelGuardHost/);
+  assert.match(globalJs, /frame\.__ccgWheelGuardShield/);
+  assert.match(globalJs, /guarded\.delete\(frame\)/);
+  assert.match(globalJs, /previousShield\?\.remove\?\.\(\)/);
 });
