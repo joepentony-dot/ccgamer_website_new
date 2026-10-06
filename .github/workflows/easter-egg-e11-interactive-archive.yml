@@ -55,22 +55,25 @@ jobs:
           grep -q 'CCG EASTER EGG E11 INTERACTIVE ARCHIVE EXPANSION' js/ccg-global.js
           grep -q 'ccg:easter-eggs:discovered:v1' js/ccg-global.js
           grep -q 'SECRETS FOUND:' js/ccg-global.js
-          for code in bbs guru sid 1541 cracktro workbench sprite modem readerror kickstart bedrooms nightmare hubbard daglish; do
+          for code in bbs guru sid 1541 cracktro workbench sprite modem readerror kickstart bedrooms nightmare daglish; do
             grep -q "data-ccg-secret-code=\"$code\"" js/ccg-global.js
             grep -q "code: \"$code\"" js/easter-eggs/easter-egg-registry.js
           done
+          if grep -R -i -E 'hubbard' js/ccg-global.js js/easter-eggs/easter-egg-registry.js js/easter-eggs/e11-interactive-archive.js js/easter-eggs/e11 scripts/test-easter-egg-e3-registry.mjs scripts/test-easter-egg-e11-expansion.mjs; then
+            echo "Removed HUBBARD Easter egg references must not return."
+            exit 1
+          fi
           test -f resources/css/easter-eggs-e11.css
           for part in core terminals machines amiga tools demo premium; do
             test -f "resources/css/easter-eggs-e11-$part.css"
             grep -q "easter-eggs-e11-$part.css" resources/css/easter-eggs-e11.css
           done
-          if grep -R -E --exclude='bedrooms.js' --exclude='nightmare.js' --exclude='hubbard.js' --exclude='daglish.js' 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css; then
+          if grep -R -E --exclude='bedrooms.js' --exclude='nightmare.js' --exclude='daglish.js' 'https?://' js/easter-eggs/e11 js/easter-eggs/e11-interactive-archive.js resources/css/easter-eggs-e11*.css; then
             echo "E11 must remain locally implemented except for the explicitly approved Drive previews."
             exit 1
           fi
           grep -Fq 'const DRIVE_PREVIEW_URL = "https://drive.google.com/file/d/1Cy5CW7bfsFyD757lnTF3RO9ksuAvNwHb/preview";' js/easter-eggs/e11/bedrooms.js
           grep -Fq 'const DRIVE_PREVIEW_URL = "https://drive.google.com/file/d/1URmXhKAS62KjI0Pl_m4Fo595e4TS_uqa/preview";' js/easter-eggs/e11/nightmare.js
-          grep -Fq 'const DRIVE_PREVIEW_URL = "https://drive.google.com/file/d/1-anJeUpxQe8kzHDehawspQNgmhsUjjSv/preview";' js/easter-eggs/e11/hubbard.js
           grep -Fq 'const DRIVE_PREVIEW_URL = "https://drive.google.com/file/d/0Byfhj-Alj58DRk4wMllyTEpsM1U/preview?resourcekey=0-LhdiJUbhLF3gyTttcS0h0Q";' js/easter-eggs/e11/daglish.js
           if grep -E 'https?://' js/easter-eggs/e11/bedrooms.js | grep -Fv 'https://drive.google.com/file/d/1Cy5CW7bfsFyD757lnTF3RO9ksuAvNwHb/preview'; then
             echo "BEDROOMS contains an unapproved external URL."
@@ -80,21 +83,17 @@ jobs:
             echo "NIGHTMARE contains an unapproved external URL."
             exit 1
           fi
-          if grep -E 'https?://' js/easter-eggs/e11/hubbard.js | grep -Fv 'https://drive.google.com/file/d/1-anJeUpxQe8kzHDehawspQNgmhsUjjSv/preview'; then
-            echo "HUBBARD contains an unapproved external URL."
-            exit 1
-          fi
           if grep -E 'https?://' js/easter-eggs/e11/daglish.js | grep -Fv 'https://drive.google.com/file/d/0Byfhj-Alj58DRk4wMllyTEpsM1U/preview?resourcekey=0-LhdiJUbhLF3gyTttcS0h0Q'; then
             echo "DAGLISH contains an unapproved external URL."
             exit 1
           fi
-          for file in bedrooms nightmare hubbard daglish; do
+          for file in bedrooms nightmare daglish; do
             if grep -Eiq 'export=download|/view\?|allow-downloads|allow-popups|allow-top-navigation' "js/easter-eggs/e11/$file.js"; then
               echo "$file must not expose Drive download, popup, or top-navigation capabilities."
               exit 1
             fi
           done
-          if grep -Eiq '<a[ >]|href=' js/easter-eggs/e11/document-viewer.js js/easter-eggs/e11/nightmare.js js/easter-eggs/e11/hubbard.js js/easter-eggs/e11/daglish.js; then
+          if grep -Eiq '<a[ >]|href=' js/easter-eggs/e11/document-viewer.js js/easter-eggs/e11/nightmare.js js/easter-eggs/e11/daglish.js; then
             echo "Protected Drive Easter eggs must not expose direct source links."
             exit 1
           fi
