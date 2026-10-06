@@ -86,7 +86,7 @@ assert.match(controls.innerHTML,/E POTION/);
 assert.match(controls.innerHTML,/Q TORCH/);
 assert.match(controls.innerHTML,/1–6 QUICK SLOT/);
 assert.match(controls.innerHTML,/O = PLAYER 2 POTION/,'the second potion control remains explicitly Player 2 only');
-assert.equal(hubHead.textContent,'QUICK INVENTORY · PRESS 1–3 TO USE SLOT');
+assert.equal(hubHead.textContent,'QUICK INVENTORY · KEYS 1-3');
 
 assert.equal(keyHandlers.length,1,'one numbered Quick Inventory keyboard handler is installed');
 const keydown=keyHandlers[0].handler;
