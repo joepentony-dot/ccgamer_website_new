@@ -14,7 +14,7 @@ assert.ok(
 );
 
 assert.match(css,/\.ccg-game>\.tactical-zone\s*\{[\s\S]*?display:grid!important/,'sidebar uses grid layout');
-assert.match(css,/grid-template-rows:minmax\(190px,52%\) minmax\(0,1fr\)!important/,'desktop sidebar reserves separate radar and inventory rows');
+assert.match(css,/grid-template-rows:minmax\(110px,1fr\) minmax\(430px,auto\)!important/,'desktop sidebar reserves separate radar and inventory rows');
 assert.match(css,/max-height:none!important/,'old tactical sidebar height cap is removed');
 
 const radarRule=css.match(/\.ccg-game>\.tactical-zone>\.radar-card\s*\{([\s\S]*?)\}/)?.[1]||'';
