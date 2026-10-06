@@ -23,17 +23,23 @@ for(const contract of [
   'order:11!important;',
   'min-height:82px!important;',
   'html body[data-run-active="false"] #menu #tutorial-zone-btn{',
-  'order:21!important;',
+  'order:12!important;',
   'min-height:70px!important;'
 ])assert.ok(blockingCss.includes(contract),"blocking menu geometry is missing: "+contract);
 
-assert.match(baseCss,/\.mode-solo\{[^}]*background:linear-gradient/,"Solo must use its final blended colour in base CSS");
+for(const retiredSelector of ["#create-btn","#split-btn","#daily-btn","#horde-solo-btn","#horde-mode-btn","#saboteurs-mode-btn"]){
+  assert.doesNotMatch(blockingCss,new RegExp(retiredSelector.replace(/[.*+?^$\{\}()|[\]\\]/g,"\\])assert.ok(blockingCss.includes(contract),"blocking menu geometry is missing: "+contract);
+
+")),"blocking landing CSS must not retain retired mode selectors: "+retiredSelector);
+}
+
+assert.match(baseCss,/\.mode-solo\{[^}]*background:linear-gradient/,"Start Game must use its final blended colour in base CSS");
 assert.match(baseCss,/#tutorial-zone-btn\{[^}]*background:linear-gradient/,"Tutorial must use its final blended colour in base CSS");
 assert.match(baseCss,/\.save-resume\{[^}]*background:linear-gradient/,"Continue must use its final blended colour in base CSS");
-assert.doesNotMatch(baseCss,/\.mode-solo\{[^}]*background:#ffd85a!important/,"the obsolete solid yellow Solo first paint must not exist");
+assert.doesNotMatch(baseCss,/\.mode-solo\{[^}]*background:#ffd85a!important/,"the obsolete solid yellow Start Game first paint must not exist");
 assert.doesNotMatch(baseCss,/#tutorial-zone-btn\{[^}]*background:#103542!important/,"the obsolete flat Tutorial first paint must not exist");
 
-assert.match(startupCss,/html body\[data-run-active="false"\] #menu #solo-btn\{[\s\S]*?background:linear-gradient/,"Solo must have its final blended colour in blocking startup CSS");
+assert.match(startupCss,/html body\[data-run-active="false"\] #menu #solo-btn\{[\s\S]*?background:linear-gradient/,"Start Game must have its final blended colour in blocking startup CSS");
 assert.match(startupCss,/html body\[data-run-active="false"\] #menu #tutorial-zone-btn\{[\s\S]*?background:linear-gradient/,"Tutorial must have its final blended colour in blocking startup CSS");
 assert.match(startupCss,/html body\[data-run-active="false"\] #menu #continue-save-btn\{[\s\S]*?background:linear-gradient/,"Continue must have its final blended colour in blocking startup CSS");
 
