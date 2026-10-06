@@ -52,12 +52,13 @@ assert.match(voice,/if\(detail\.first\|\|after<=before\)return/,"first acquisiti
 assert.doesNotMatch(voice,/WEAPON\.\*UPGRADE\|WEAPON CACHE/,"generic Weapon Cache text must no longer imply a real upgrade");
 assert.match(voice,/WEAPON EVOLVED\|FIREARM UPGRADE COMPLETE/,"toast fallback may only recognise explicit successful upgrade copy");
 
-assert.match(render,/function radarRoomType\(/,"radar must classify discovered room types");
+assert.match(render,/function radarRoomType\(/,"room classification may remain available for map logic without becoming a second compact-HUD colour key");
 assert.match(render,/world\?\.sanctuaryRooms[\s\S]*room\.sanctuary===true[\s\S]*return"sanctuary"/,"sanctuary map classification must require the authoritative sanctuary-room registry");
-assert.match(render,/room\.dedicatedHazard\|\|room\.dangerous/,"danger rooms must receive their own map colour");
+assert.match(render,/room\.dedicatedHazard\|\|room\.dangerous/,"danger-room classification remains available to richer map logic");
 assert.match(render,/host\.enteredRoomIds/,"sanctuary icon must be gated by actual room discovery");
 assert.match(render,/drawRadarCross\(radarCtx,px\(q\),py\(q\),"#64ffa2"/,"discovered sanctuary must use the green first-aid cross");
-assert.match(render,/radarTileColour\(x,y,wall\)/,"radar tiles must use room-aware discovered colours");
+assert.match(render,/function radarTileColour\(x,y,wall\)[\s\S]*return wall\?"#292233":"#655879"/,"compact radar geometry must use one neutral floor/wall language instead of competing room colours");
+assert.doesNotMatch(render,/const floors=\{normal:"#655879",sanctuary:/,"compact radar must not restore the duplicated semantic room-colour palette");
 assert.match(render,/radarCtx\.moveTo\(px\(p\),py\(p\)-5\)/,"player marker must use a directional triangle rather than the old square");
 
 assert.match(fullMap,/function fullMapRoomType\(/,"full map must share room-type presentation");
