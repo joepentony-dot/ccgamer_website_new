@@ -80,11 +80,12 @@ try{
     await route.fulfill({status:200,headers,body:JSON.stringify(rows)});
   });
 
-  let heldModule=false;
+  let heldModule=false,releaseHeldModule=()=>{};
+  const heldModuleGate=new Promise(resolve=>{releaseHeldModule=resolve});
   await context.route("**/js/v10-42-r94-enemy-identity.js*",async route=>{
     if(!heldModule){
       heldModule=true;
-      await new Promise(resolve=>setTimeout(resolve,1200));
+      await heldModuleGate;
     }
     await route.continue();
   });
@@ -96,9 +97,14 @@ try{
 
   await page.goto(`${origin}/arcade/lost-sizzler/?trusted-music-launch=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap)&&window.CCGLostSizzlerV142Bootstrap.ready===false);
+  for(let attempt=0;attempt<100&&!heldModule;attempt++)await new Promise(resolve=>setTimeout(resolve,20));
+  assert.equal(heldModule,true,"trusted-music regression must hold an ordered module so the first Start Game click is genuinely pre-ready");
 
   const start=page.locator("#solo-btn");
   await start.click({force:true});
+  const captured=await page.evaluate(()=>({pending:window.CCGLostSizzlerV142Bootstrap?.pendingStartId||"",note:document.getElementById("menu-note")?.textContent||""}));
+  assert.equal(captured.pending,"solo-btn","the early Start Game click must be captured before startup is released");
+  releaseHeldModule();
 
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true&&window.CCGLostSizzlerReleaseGate?.state?.ready===true);
   await page.waitForTimeout(120);
@@ -131,6 +137,7 @@ try{
   await context.close();
   console.log("R107 trusted Start Game music launch passed: deferred click released, fresh click starts authored audio.");
 }finally{
+  try{releaseHeldModule?.()}catch(_){}
   await browser.close();
   for(const socket of sockets)socket.destroy();
   await new Promise(resolve=>server.close(()=>resolve()));
