@@ -41,7 +41,7 @@ async function captureViewport(page,file){
   }
 }
 
-const selectors=[".ccg-game",".player-hub",".core-stats",".hub-inventory",".hub-progress",".tactical-zone",".radar-card","#radar-canvas",".shortcut-dock","#item-shortcuts",".inventory-panel",".r71-inventory-layout","#inventory-close-top","#inventory-objective","#inventory-loadout","#inventory-list",".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip","#inventory-close",".inventory-footer-actions",".ccg-evolving-firearm","#quick-keyring-icons","#quick-level-up","#hud-health","#hud-p2","#hud-mana","#hud-weapon",...Array.from({length:6},(_,i)=>`#inventory-list .inventory-slot:nth-child(${i+1})`),...Array.from({length:8},(_,i)=>`#item-shortcuts .carried-item:nth-of-type(${i+1})`)];
+const selectors=[".ccg-game",".player-hub",".core-stats",".hub-inventory",".hub-progress",".tactical-zone",".radar-card","#radar-canvas",".shortcut-dock","#item-shortcuts",".inventory-panel",".r71-inventory-layout","#inventory-close-top","#inventory-objective","#inventory-loadout","#inventory-list",".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip","#inventory-close",".inventory-footer-actions",".ccg-evolving-firearm","#quick-keyring-icons","#quick-level-up","#hud-health","#hud-p2","#hud-mana","#hud-weapon","#hud-keys","#hud-score","#hud-room",...Array.from({length:6},(_,i)=>`#inventory-list .inventory-slot:nth-child(${i+1})`),...Array.from({length:8},(_,i)=>`#item-shortcuts .carried-item:nth-of-type(${i+1})`)];
 try{
  for(const [width,height,windowed] of [[2560,1440],[1920,1080],[1440,900],[1366,768]].flatMap(([w,h])=>[[w,h,false],[w,h,true]]).concat([[390,844,true]])){
   const label=`${width}x${height}-${windowed?"windowed":"fullscreen"}`;
@@ -68,6 +68,7 @@ try{
   const measure=()=>page.evaluate(selectors=>Object.fromEntries(selectors.map(s=>{const n=document.querySelector(s),r=n?.getBoundingClientRect();return[s,n?{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,sw:n.scrollWidth,cw:n.clientWidth,sh:n.scrollHeight,ch:n.clientHeight,iw:Number(n.width||0),ih:Number(n.height||0),display:getComputedStyle(n).display}:null]})),selectors);
   const hud=await measure();
   const radarDiag=await page.evaluate(()=>window.__CCG_RADAR_DIAGNOSTICS__?{...window.__CCG_RADAR_DIAGNOSTICS__}:null);
+  const runStats=await page.evaluate(()=>[...document.querySelectorAll(".hub-progress .run-stat")].map(node=>{const r=node.getBoundingClientRect(),value=node.querySelector("b");return{label:String(node.querySelector("span")?.textContent||""),text:String(value?.textContent||""),x:r.x,right:r.right,w:r.width,sw:Number(value?.scrollWidth||0),cw:Number(value?.clientWidth||0)}}));
 
   await captureViewport(page,path.join(artifacts,`${label}-hud.png`));
   await page.keyboard.press("Tab");
@@ -88,9 +89,12 @@ try{
     const radar=hud["#radar-canvas"],cssRatio=radar.w/Math.max(1,radar.h),bitmapRatio=radar.iw/Math.max(1,radar.ih);
     assert.ok(Math.abs(cssRatio-bitmapRatio)<.035,`${width}x${height}: radar backing bitmap must match rendered aspect ratio: ${JSON.stringify(radar)}`);
     assert.ok(Math.abs(radar.iw-radar.w)<=2&&Math.abs(radar.ih-radar.h)<=2,`${width}x${height}: radar bitmap dimensions must track the visible canvas: ${JSON.stringify(radar)}`);
-    assert.ok(radarDiag&&radarDiag.scale>=4,`${width}x${height}: tactical minimap must remain usefully zoomed around the player: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radar.h>=140,`${width}x${height}: desktop radar canvas must receive meaningful vertical space: ${JSON.stringify(radar)}`);
+    assert.ok(radarDiag&&radarDiag.scale>=16,`${width}x${height}: tactical minimap must remain strongly zoomed around the player: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radarDiag.cols<=10&&radarDiag.rows<=16,`${width}x${height}: tactical minimap must keep a compact local tile window without shrinking in tall sidebars: ${JSON.stringify(radarDiag)}`);
     assert.ok(radarDiag.mapWidth>=radarDiag.canvasWidth*.5||radarDiag.mapHeight>=radarDiag.canvasHeight*.65,`${width}x${height}: tactical minimap must occupy a useful share of its canvas: ${JSON.stringify(radarDiag)}`);
     assert.ok(separate(hud[".core-stats"],hud[".hub-inventory"])&&separate(hud[".hub-inventory"],hud[".hub-progress"]),"HUD regions must not overlap");
+    for(const row of runStats){assert.ok(row.cw>0&&row.sw<=row.cw+1,`${width}x${height}: lower-right HUD value must fit without ellipsis/obscuring (${row.label} ${row.text}): ${JSON.stringify(row)}`)}
   }
   for(const key of [".inventory-panel","#inventory-close-top"])assert.ok(inside(inventory[key],bounds),`${width}: ${key} must fit viewport`);
   const sections=[".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip",".ccg-evolving-firearm"];

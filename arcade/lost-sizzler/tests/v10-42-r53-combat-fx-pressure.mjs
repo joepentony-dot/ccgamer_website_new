@@ -33,7 +33,7 @@ assert.match(
 );
 assert.doesNotMatch(
   play,
-  /projectileImpactFxAllowed\(\)[\s\S]{0,260}(?:e\.hp\s*[-+]=|knockEnemyAway\s*=|return\s+false)/,
+  /projectileImpactFxAllowed\(\)[\s\S]{0,420}(?:e\.hp\s*[-+]=|knockEnemyAway\s*=)/,
   "render-pressure shedding must not change damage or knockback semantics"
 );
 

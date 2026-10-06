@@ -13,6 +13,7 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     bronze:"assets/audio/sfx/bronze-key-found.wav",
     dash:"assets/audio/sfx/dash.wav",
     melee:"assets/audio/sfx/melee.wav",
+    deflect:"assets/audio/sfx/blade-hit.wav",
     hazardwarn:"assets/audio/sfx/hazard-warning.wav",
     bladehit:"assets/audio/sfx/blade-hit.wav",
     enemy:"assets/audio/sfx/enemy-attack.wav",

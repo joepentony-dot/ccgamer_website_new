@@ -1,6 +1,6 @@
 function hostEnemyStep(dt){
-  const dm=PGR.difficulty(run).enemyDamage;
-  A.stepEnemies(host,world.map,allPlayers(),dt,{
+  const difficulty=PGR.difficulty(run),dm=difficulty.enemyDamage,tempo=Math.max(.55,Math.min(1.25,Number(difficulty.enemyTempo||1)));
+  A.stepEnemies(host,world.map,allPlayers(),Number(dt||0)*tempo,{
     shoot:s=>{s.power=Math.max(1,Math.round((s.power||1)*dm*(s.damageScale||1)));spawnEnemyShot(s)},
     melee:(e,target,power)=>{power=Math.max(1,Math.round(power*dm*(e.namedDamageScale||1)));const source=isDeathStalkerEnemy(e)?"Death Stalker":e.follower?.name||e.championName||window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1)})||e.kind,lp=findLocal(target.id);if(lp){const before=lp.health;hurtPlayer(lp,power,false,source);if(before>power)knockPlayerAway(lp,e)}},
     notice:(html,sound,source)=>{const audible=source&&localPlayers().some(p=>visibleTo(p,source.x,source.y));if(audible){if(sound)S.sfx(sound);say(html,sound==="flame"?"red":"gold")}},

@@ -264,7 +264,7 @@ try{
     });
     assert.equal(activeSwing.triggered,true,`the live melee controller must accept a sword attack: ${JSON.stringify(activeSwing)}`);
     assert.ok(activeSwing.at>activeSwing.previous,"a live sword attack must start the player sword animation");
-    assert.ok(activeSwing.ms>=220&&activeSwing.ms<=320,`sword swing duration must remain visible and bounded: ${activeSwing.ms}`);
+    assert.ok(activeSwing.ms>=320&&activeSwing.ms<=460,`sword swing duration must remain visible, deliberate and bounded for projectile deflection: ${activeSwing.ms}`);
     assert.ok(activeSwing.dir&&(activeSwing.dir.x||activeSwing.dir.y),`sword swing must preserve an attack direction: ${JSON.stringify(activeSwing.dir)}`);
     assert.equal(activeSwing.hasRenderer,true,"active run must install the dedicated player weapon renderer");
     await assertHealthy(state,"active solo run");
@@ -485,7 +485,7 @@ try{
     for(let step=4;step<=8;step++){
       await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").evaluate(button=>button.click());
       await state.page.waitForTimeout(180);
-      const tour=await state.page.evaluate(expected=>({step:window.CCGLostSizzlerOnboardingV120.state.step,tourVisible:!document.getElementById("ccg-tutorial-info-tour")?.classList.contains("hidden"),modalHidden:document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),cards:document.querySelectorAll("#ccg-tutorial-info-tour .tour-item").length,highlights:document.querySelectorAll(".ccg-tutorial-info-highlight").length}),step);
+      const tour=await state.page.evaluate(expected=>({step:window.CCGLostSizzlerOnboardingV120.state.step,tourVisible:!document.getElementById("ccg-tutorial-info-tour")?.classList.contains("hidden"),modalHidden:document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),cards:document.querySelectorAll("#ccg-tutorial-info-tour .tour-item").length,highlights:document.querySelectorAll(".ccg-tutorial-info-highlight,.ccg-tutorial-canvas-highlight").length}),step);
       assert.equal(tour.step,step,`information lesson ${step+1}/10 must pause on its live tour: ${JSON.stringify(tour)}`);assert.equal(tour.tourVisible,true);assert.equal(tour.modalHidden,true);assert.ok(tour.cards>=3,`lesson ${step+1}/10 needs its complete graphical examples: ${JSON.stringify(tour)}`);assert.ok(tour.highlights>=3,`lesson ${step+1}/10 needs live interface indicators: ${JSON.stringify(tour)}`);
       await state.page.locator("#ccg-tutorial-info-tour [data-tour-continue]").evaluate(button=>button.click());
       await withTimeout(state.page.waitForFunction(next=>window.CCGLostSizzlerOnboardingV120.state.step===next&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),step+1,{timeout:18000}),20000,`Tutorial stage ${step+2}/10 prompt`);

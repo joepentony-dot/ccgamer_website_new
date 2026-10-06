@@ -70,10 +70,10 @@ window.CCG_CONFIG=Object.freeze({
   },
   loot:{rarities:["COMMON","UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]},
   difficulty:{
-    CASUAL:{enemyHp:.8,enemyDamage:.75,loot:1.15,ammo:1.25,stalker:.8},
-    ARCADE:{enemyHp:1,enemyDamage:1,loot:1,ammo:1,stalker:1},
-    SIZZLER:{enemyHp:1.2,enemyDamage:1.15,loot:1.12,ammo:.92,stalker:1.12},
-    "GOLD MEDAL":{enemyHp:1.45,enemyDamage:1.35,loot:1.28,ammo:.82,stalker:1.28}
+    CASUAL:{enemyHp:.68,enemyDamage:.55,enemyTempo:.72,enemyPopulation:.70,damageGraceMs:1350,loot:1.25,ammo:1.4,stalker:.68},
+    ARCADE:{enemyHp:1,enemyDamage:1,enemyTempo:1,enemyPopulation:1,damageGraceMs:800,loot:1,ammo:1,stalker:1},
+    SIZZLER:{enemyHp:1.2,enemyDamage:1.15,enemyTempo:1,enemyPopulation:1,damageGraceMs:800,loot:1.12,ammo:.92,stalker:1.12},
+    "GOLD MEDAL":{enemyHp:1.45,enemyDamage:1.35,enemyTempo:1,enemyPopulation:1,damageGraceMs:800,loot:1.28,ammo:.82,stalker:1.28}
   },
   floors:[
     {name:"The Threshold",objective:"explore_guardian",theme:"C64_ARCHIVE"},

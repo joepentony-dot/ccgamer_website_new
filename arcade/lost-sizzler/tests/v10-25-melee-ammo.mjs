@@ -11,6 +11,7 @@ const render=read("js/game-render.js");
 const play=read("js/game-play.js");
 const touch=read("js/v10-4-patch.js");
 const loader=read("js/asset-overrides.js");
+const audio=read("js/audio.js");
 
 assert.match(loader,/const CCG_MELEE_AMMO_REV=CCG_RELEASE_REV;/,"V10.25 combat balance must inherit the current published release token");
 assert.match(loader,/v10-25-melee-ammo-balance\.js\?v=\$\{CCG_MELEE_AMMO_REV\}/,"V10.25 combat balance must be loaded directly by the enhancement queue");
@@ -39,9 +40,11 @@ assert.match(combat,/Potions no longer restore firearm ammunition/,"potions must
 assert.match(combat,/RESPAWN_AMMO=6/,"death respawn ammo must be a tiny reserve rather than a large free refill");
 assert.match(combat,/ATTACK — START WITH YOUR SWORD/,"tutorial must explain the sword-first combat model");
 assert.match(combat,/Ammo is deliberately scarce/,"tutorial must explain firearm scarcity and zero-ammo melee fallback");
+assert.match(combat,/While a sword swing is active, incoming enemy shots can be deflected/,"Tutorial must teach the active sword projectile-deflection window.");
 assert.match(combat,/gunfire or melee knockback can force them into hazards/,"tutorial must teach melee environmental knockback");
 assert.match(combat,/_meleeSwingAt=performance\.now\(\)/,"melee attacks must start a timed visible swing");
 assert.match(combat,/_meleeSwingDir=\{\.\.\.dir\}/,"the sword arc must preserve the attack direction for its full animation");
+assert.match(combat,/_meleeSwingMs=Math\.max\(320,Math\.min\(460,Number\(melee\.cooldown\|\|390\)\*\.90\)\)/,"starter sword deflection window must be long enough to use deliberately rather than only by accident");
 assert.match(render,/function drawPlayerWeapon\(p,cx,cy,d\)/,"player rendering must use a dedicated weapon renderer");
 assert.match(render,/ctx\.arc\(0,0,23,base-1\.02,angle,false\)/,"active melee attacks must draw a visible swing trail");
 assert.match(render,/ctx\.createLinearGradient\(3,-4,24,4\)/,"the equipped sword must render as a shaped highlighted blade");
@@ -51,6 +54,11 @@ assert.match(play,/function breakableFurnitureAhead\(p,d\)[\s\S]*?!row\.structur
 assert.match(play,/function canonicalMeleeAttackIfRequired\(p,d\)[\s\S]*breakableFurnitureAhead\(p,dir\)[\s\S]*melee\.meleeAttack\(p,dir\)[\s\S]*hasGun&&Number\(p\.mana\|\|0\)>0\)return null/,"canonical FIRE must slash a facing breakable before preserving firearm ownership for normal combat");
 assert.doesNotMatch(play.match(/function canonicalMeleeAttackIfRequired\(p,d\)\{[\s\S]*?\n\}/)?.[0]||"",/adjacentEnemy/,"canonical FIRE routing must never switch to melee merely because an enemy is adjacent");
 assert.match(play,/function firePlayer\(p,d\)[\s\S]*const meleeResult=canonicalMeleeAttackIfRequired\(p,d\);[\s\S]*if\(meleeResult!==null\)return meleeResult/,"canonical FIRE must preserve melee fallback even if a later owner seal removes the historical firePlayer wrapper");
+assert.match(play,/function activeMeleeDeflection\(p,now=performance\.now\(\)\)[\s\S]*p\._meleeSwingAt[\s\S]*p\._meleeSwingMs/,"incoming-shot defence must exist only during the timed active sword swing window");
+assert.match(play,/function deflectEnemyProjectile\(p,b,nx,ny,now=performance\.now\(\)\)[\s\S]*S\.sfx\("deflect"\)[\s\S]*"DEFLECT!"/,"a successful sword deflection must consume the projectile and provide dedicated sound/visual feedback");
+assert.match(play,/inForwardArc=adjacent&&\(dx\*faceX\+dy\*faceY\)>0[\s\S]*if\(!\(atPlayer\|\|inForwardArc\)\)return false/,"active sword defence must cover an incoming hit at the player plus the one-tile forward swing arc");
+assert.match(audio,/deflect:\(\)=>\{tone\(1180[\s\S]*noise\(\.045,\.045\)\}/,"sword projectile deflection must keep a dedicated metallic audio cue");
+assert.match(play,/for\(const b of enemyBullets\)[\s\S]*deflectEnemyProjectile\(lp,b,nx,ny,projectileNow\)[\s\S]*hurtPlayer/,"enemy projectiles must offer the active sword swing a deflection opportunity before player damage");
 assert.match(play,/function queueAttack\(p,requestedDirection=null\)[\s\S]*fireBuffer2=ATTACK_BUFFER_MS;else fireBuffer1=ATTACK_BUFFER_MS/,"keyboard, touch and cadence-blocked gamepad attacks must share the authoritative one-shot input buffer");
 assert.match(play,/const p1BufferedAtFrameStart=fireBuffer1>0,p2BufferedAtFrameStart=fireBuffer2>0[\s\S]*?const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*?if\(\(p1HeldAttack\|\|p1BufferedAtFrameStart\|\|fireBuffer1>0\)&&fire1<=0\)[\s\S]*?executeAuthoritativeFire\(p1,d1\(\),"buffered"\)/,"desktop ATTACK must preserve a fresh buffered tap across one long frame and execute it through the captured authoritative owner");
 assert.match(play,/p2BufferedAtFrameStart\|\|fireBuffer2>0/,"P2 buffered ATTACK must receive the same long-frame preservation as P1");

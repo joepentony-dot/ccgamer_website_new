@@ -585,6 +585,16 @@ window.CCGSystems=(()=>{
 
     // Floor identity and difficulty tuning.
     const floorInfo=PGR.floorInfo(run),diff=PGR.difficulty(run),hpFloor=1+(Math.max(1,run.floor)-1)*.12,armoured=run.modifier?.id==="ARMOURED_ENEMIES"?1.3:1,playerLevel=Math.max(1,run.playerLevelHint||1),levelSteps=playerLevel-1;
+    // Casual must reduce crowd pressure as well as per-enemy numbers. Keep every
+    // named, objective, Stalker and authored special encounter; trim only the
+    // ordinary roaming population in deterministic host order.
+    const populationScale=Math.max(.5,Math.min(1,Number(diff.enemyPopulation??1)));
+    if(populationScale<1){
+      const ordinary=(host.enemies||[]).filter(e=>e&&!e.follower&&!e.guardian&&!e.champion&&!e.deathStalker&&!e.voidStalker&&!e.spider&&!e.skeleton&&!e.furnitureEnemy);
+      const keepCount=Math.max(8,Math.ceil(ordinary.length*populationScale)),keepIds=new Set(ordinary.slice(0,keepCount).map(e=>e.id));
+      host.enemies=(host.enemies||[]).filter(e=>!ordinary.includes(e)||keepIds.has(e.id));
+      host.v142DifficultyPopulation={difficulty:String(run.difficulty||"ARCADE"),scale:populationScale,before:ordinary.length,kept:keepCount};
+    }
     if(world.rooms[world.startRoomId])world.rooms[world.startRoomId].theme=floorInfo.theme;
     for(const e of host.enemies){
       if(e.spider)e.maxHp=1;else if(e.skeleton)e.maxHp=2;else if(!e.guardian)e.maxHp=Math.max(1,Math.ceil(e.maxHp*diff.enemyHp*hpFloor*armoured));

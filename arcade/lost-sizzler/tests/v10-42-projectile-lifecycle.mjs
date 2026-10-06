@@ -16,6 +16,7 @@ assert.match(bootstrap,/v10-42-projectile-lifecycle\.js/,"ordered V10.42 bootstr
 assert.match(source,/finally\s*\{\s*sweepExpired\(bullets,"player"\);\s*sweepExpired\(enemyBullets,"enemy"\)/s,"projectile cleanup must run from a finally boundary even when hit/death callbacks fault");
 assert.match(source,/consumeImpact\(b\);\s*const owner=findLocal\(b\.owner\)/s,"enemy impacts must retire or consume piercing state before the enemy damage/death callback");
 assert.doesNotMatch(source,/fireDelay|maxProjectiles|rapidMs|firePlayer\s*=|function\s+firePlayer/,"projectile lifecycle repair must not change fire cadence, projectile allowance or the held-fire owner");
+assert.match(source,/for\(const b of enemyBullets\)[\s\S]*typeof deflectEnemyProjectile==="function"&&deflectEnemyProjectile\(lp,b,nx,ny\)[\s\S]*hurtPlayer/,"authoritative enemy projectile ownership must offer an active sword swing a deflection before player damage.");
 assert.match(gamePlay,/const p1BufferedAtFrameStart=fireBuffer1>0,p2BufferedAtFrameStart=fireBuffer2>0[\s\S]*const p1HeldAttack=isAttackHeldInput\(p1\)&&\(input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\)[\s\S]*if\(\(p1HeldAttack\|\|p1BufferedAtFrameStart\|\|fireBuffer1>0\)&&fire1<=0\)/,"canonical frame loop must retain qualified sustained desktop firing while preserving quick taps across one long frame");
 assert.doesNotMatch(gamePlay,/input\.has\("Space"\)\|\|input\.has\("Numpad0"\)\|\|fireBuffer1>0/,"projectile lifecycle must not rely on raw key presence to repeat a quick FIRE tap");
 assert.match(heldFireBrowser,/await sustainedFire\(page,"Space"\)/,"retained Chromium contract must continue exercising sustained held-Space firing on the release runtime");
@@ -42,6 +43,9 @@ const context={
   localPlayers(){return [context.p1]},
   hurtPlayer(){}
 };
+let deflectionCalls=0,enemyHurtCalls=0;
+context.deflectEnemyProjectile=()=>false;
+context.hurtPlayer=()=>{enemyHurtCalls++};
 context.window=context;
 vm.createContext(context);
 vm.runInContext(source,context,{filename:"v10-42-projectile-lifecycle.js"});
@@ -89,5 +93,15 @@ for(let tick=0;tick<2400;tick++){
 assert.ok(peak<=17,`deterministic sustained firing must remain TTL-bounded rather than grow without limit (peak ${peak})`);
 for(let tick=0;tick<24;tick++)context.stepProjectiles();
 assert.equal(context.bullets.length,0,"sustained-fire projectile pool must drain fully after firing stops");
+
+context.enemyBullets.length=0;
+context.p1.x=1;context.p1.y=0;
+enemyHurtCalls=0;deflectionCalls=0;
+context.deflectEnemyProjectile=(player,projectile,nx,ny)=>{deflectionCalls++;projectile.ttl=0;return true};
+context.enemyBullets.push({x:0,y:0,dx:1,dy:0,ttl:8,power:1,source:"ranger"});
+context.stepProjectiles();
+assert.equal(deflectionCalls,1,"authoritative projectile owner must invoke the sword-deflection hook for an incoming enemy shot.");
+assert.equal(enemyHurtCalls,0,"a deflected enemy projectile must not reach player damage.");
+assert.equal(context.enemyBullets.length,0,"a deflected enemy projectile must be retired from the authoritative collection.");
 
 console.log("Dungeon Carnage projectile lifecycle regression passed.");

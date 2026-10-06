@@ -494,6 +494,23 @@ function damageFurnitureAt(x,y,power=1,attacker=null){
   host.blockingDecor=host.blockingDecor.filter(d=>d!==blocker);if(decor)decor.destroyed=true;S.sfx("woodbreak");shake=Math.max(shake,5);const fx={type:"furniture",x:blocker.x,y:blocker.y,color:"#c89052"};onFX(fx);if(!furnitureAmbush(blocker,attacker))furnitureItem(blocker);host.revision++;return true
 }
 function projectileImpactFxAllowed(){return particles.length<620&&rings.length<96&&floaters.length<72}
+function activeMeleeDeflection(p,now=performance.now()){
+  if(!p||!p._meleeSwingAt||!p._meleeSwingMs)return false;
+  const elapsed=Number(now)-Number(p._meleeSwingAt),duration=Math.max(0,Number(p._meleeSwingMs)||0);
+  return elapsed>=0&&elapsed<=duration
+}
+function deflectEnemyProjectile(p,b,nx,ny,now=performance.now()){
+  if(!activeMeleeDeflection(p,now))return false;
+  const dir=p._meleeSwingDir||p.dir||{x:0,y:0},px=Math.round(Number(p.x)||0),py=Math.round(Number(p.y)||0),bx=Math.round(Number(nx)),by=Math.round(Number(ny)),dx=bx-px,dy=by-py,faceX=Math.sign(Number(dir.x)||0),faceY=Math.sign(Number(dir.y)||0),atPlayer=dx===0&&dy===0,adjacent=Math.max(Math.abs(dx),Math.abs(dy))===1,inForwardArc=adjacent&&(dx*faceX+dy*faceY)>0;
+  if(!(atPlayer||inForwardArc))return false;
+  b.ttl=0;
+  const col=b.style==="fire"?P.orange:b.style==="root"?P.green:b.style==="shock"?P.cyan:P.gold;
+  try{S.sfx("deflect")}catch(_){}
+  if(projectileImpactFxAllowed()){burst(bx,by,col,18,1.25);ring(bx,by,P.cyan,26)}
+  try{floatText(px,py,"DEFLECT!",P.cyan,{life:520})}catch(_){}
+  shake=Math.max(shake,2.2);
+  return true
+}
 function stepProjectiles(){
   const projectileNow=performance.now(),MAX_PROJECTILE_WALL_MS=2600;
   for(const b of bullets){if(Number.isFinite(Number(b?.__v142BornAt))&&projectileNow-Number(b.__v142BornAt)>MAX_PROJECTILE_WALL_MS)b.ttl=0;
@@ -506,7 +523,7 @@ function stepProjectiles(){
     const e=host.enemies.find(e=>e.alive&&e.x===Math.round(nx)&&e.y===Math.round(ny));if(e){const impactCol=e.deathStalker&&e.voidStalker?P.purple:b.element==="shock"?P.cyan:b.element==="fire"?P.orange:P.gold;if(projectileImpactFxAllowed()){burst(e.x,e.y,impactCol,20,1.35);ring(e.x,e.y,impactCol,28)}const owner=findLocal(b.owner)||p1;if(owner)damageEnemy(e,b.power,b.element,owner);if(b.pierce>0)b.pierce--;else b.ttl=0;continue}
     for(const lp of localPlayers())if(lp.id!==b.owner&&Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,1,true,b.ownerName||"your co-op partner",b.owner);break}
   }
-  for(const b of enemyBullets){if(Number.isFinite(Number(b?.__v142BornAt))&&projectileNow-Number(b.__v142BornAt)>MAX_PROJECTILE_WALL_MS)b.ttl=0;if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(!projectilePathClear(b,nx,ny)){b.ttl=0;continue}b.x=nx;b.y=ny;b.ttl--;if(b.style==="fire")burst(nx,ny,Math.random()<.5?P.orange:P.gold,3,.6);for(const lp of localPlayers())if(Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,Number(b.power||1),false,b.source||"enemy");const px=lp.x+b.dx,py=lp.y+b.dy;if(W.walkable(world.map,px,py,host)){lp.x=px;lp.y=py}break}}
+  for(const b of enemyBullets){if(Number.isFinite(Number(b?.__v142BornAt))&&projectileNow-Number(b.__v142BornAt)>MAX_PROJECTILE_WALL_MS)b.ttl=0;if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(!projectilePathClear(b,nx,ny)){b.ttl=0;continue}b.x=nx;b.y=ny;b.ttl--;if(b.style==="fire")burst(nx,ny,Math.random()<.5?P.orange:P.gold,3,.6);let deflected=false;for(const lp of localPlayers()){if(deflectEnemyProjectile(lp,b,nx,ny,projectileNow)){deflected=true;break}if(Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,Number(b.power||1),false,b.source||"enemy");const px=lp.x+b.dx,py=lp.y+b.dy;if(W.walkable(world.map,px,py,host)){lp.x=px;lp.y=py}break}}if(deflected)continue}
   for(let i=bullets.length-1;i>=0;i--)if(bullets[i].ttl<=0)bullets.splice(i,1);for(let i=enemyBullets.length-1;i>=0;i--)if(enemyBullets[i].ttl<=0)enemyBullets.splice(i,1)
 }
 function releaseSealedDeathRoom(roomId){
@@ -549,7 +566,7 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     return applyActiveTrapContact(p,trap,now)
   }
   if(!p||mode!=="playing"||(!environmentDamage&&p.invuln>0))return false;const damageAt=performance.now();p.__ccgLastHurtAt=damageAt;p.__ccgLastDamageAt=damageAt;p.__ccgLastDamageSource=damageSource;try{dispatchEvent(new CustomEvent("ccg:player-damage",{detail:{playerId:String(p.id||p.name||"P1"),source:damageSource,x:Number(p.x),y:Number(p.y),at:damageAt}}))}catch(_){}p.hitStunMs=Math.max(p.hitStunMs||0,C.player.hitStunMs||180);let left=n;if(!trapDamage&&p.armor>0){const a=Math.min(p.armor,left);p.armor-=a;left-=a;if(a){S.sfx("armour");floatText(p.x,p.y,"ARMOUR",P.cyan)}}if(left<=0){p.invuln=350;sync();return}
-  p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
+  p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;const damageGraceMs=Math.max(500,Number(PGR.difficulty(run)?.damageGraceMs||800));p.invuln=damageGraceMs;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
     if(/death stalker/i.test(String(source))){for(const stalker of host.enemies||[])if(stalker.alive&&stalker.deathStalker){stalker.x=Number(stalker.x0??stalker.x);stalker.y=Number(stalker.y0??stalker.y);stalker.aiState="idle";stalker.hunting=false;stalker.lastSeen=null;stalker.memoryMs=0;stalker.searchMs=0;stalker.moveCooldown=3200;stalker.attackCooldown=3200}}

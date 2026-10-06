@@ -90,7 +90,7 @@
     const cd=p===p2?fire2:fire1;if(cd>0)return false;
     const melee=meleeFor(p),dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0});
     p.dir=dir;
-    p._meleeSwingAt=performance.now();p._meleeSwingMs=Math.max(220,Math.min(320,Number(melee.cooldown||390)*.68));p._meleeSwingDir={...dir};p._meleeSwingColour=melee.colour||"#ffd85a";
+    p._meleeSwingAt=performance.now();p._meleeSwingMs=Math.max(320,Math.min(460,Number(melee.cooldown||390)*.90));p._meleeSwingDir={...dir};p._meleeSwingColour=melee.colour||"#ffd85a";
     if(p===p2)fire2=Number(melee.cooldown||390);else fire1=Number(melee.cooldown||390);
     p.emergencyRechargeMs=0;
     try{S.sfx("melee")}catch(_){}
@@ -298,7 +298,7 @@
       if(step===1){
         if(title)title.textContent="ATTACK — START WITH YOUR SWORD";
         if(copy)copy.textContent="You begin with an Archive Sword, not a gun. Press SPACE on desktop or SLASH on mobile to swing it. The tutorial advances when you make the attack.";
-        if(detail)detail.textContent="Firearms must be found or bought. Once you have one, this same attack control fires while ammunition remains. At 0 ammo it automatically switches back to your equipped melee weapon. Ammo is deliberately scarce.";
+        if(detail)detail.textContent="Firearms must be found or bought. Once you have one, this same attack control fires while ammunition remains. At 0 ammo it automatically switches back to your equipped melee weapon. While a sword swing is active, incoming enemy shots can be deflected with a metallic impact cue. Ammo is deliberately scarce.";
       }else if(step===2&&detail){detail.textContent="Dash is controlled by its cooldown and no longer consumes firearm ammunition. Use it to create space before committing to close-range sword attacks."}
       else if(step===8&&detail){detail.textContent="Enemies normally avoid traps and vortex pits, but gunfire or melee knockback can force them into hazards. Rare melee weapons do enormous damage and use a dedicated equipment slot, so they never fill your inventory."}
     },120);
