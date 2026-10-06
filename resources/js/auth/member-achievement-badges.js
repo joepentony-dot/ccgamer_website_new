@@ -117,10 +117,6 @@ function ensurePanel() {
   let panel = document.getElementById('memberAchievementPanel');
   if (panel) return panel;
 
-  const disclosure = document.createElement('details');
-  disclosure.className = 'member-achievement-disclosure member-compact-details';
-  disclosure.innerHTML = '<summary>View all achievements &amp; game badges</summary>';
-
   panel = document.createElement('article');
   panel.className = 'member-achievement-panel';
   panel.id = 'memberAchievementPanel';
@@ -128,17 +124,30 @@ function ensurePanel() {
     <div class="member-achievement-panel__header">
       <div>
         <p class="member-achievement-panel__kicker">Account achievements</p>
-        <h3 class="member-achievement-panel__title">Achievements &amp; Badges</h3>
+        <h3 class="member-achievement-panel__title">Achievement progress</h3>
         <p class="member-achievement-panel__intro">Complete all twelve milestones to earn the Commodore Completionist. Expanded milestones and C64 Dungeon Carnage achievements are tracked here too.</p>
       </div>
-      <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
+      <button type="button" class="auth-btn member-achievement-refresh" id="memberRefreshAchievements">Refresh</button>
     </div>
     <p class="member-achievement-panel__status" id="memberAchievementStatus" aria-live="polite">Checking achievements…</p>
     <div class="member-achievement-grid" id="memberAchievementGrid"></div>
   `;
 
-  disclosure.appendChild(panel);
-  section.insertBefore(disclosure, legacyGrid);
+  section.insertBefore(panel, legacyGrid);
+
+  const action = section.querySelector('.member-achievements-menu__action');
+  const syncDisclosureState = () => {
+    if (action) action.textContent = section.open ? 'Close' : 'Open';
+  };
+  if ('open' in section) {
+    syncDisclosureState();
+    section.addEventListener('toggle', syncDisclosureState);
+  }
+
+  document.querySelector('.member-hub-nav a[href="#memberAchievements"]')?.addEventListener('click', () => {
+    if ('open' in section) section.open = true;
+  });
+
   panel.querySelector('#memberRefreshAchievements')?.addEventListener('click', () => {
     void refreshAchievements({ award: true, manual: true });
   });
