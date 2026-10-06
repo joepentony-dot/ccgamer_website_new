@@ -76,7 +76,7 @@ let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
 let frameAccumulator = 0;
-let driveMode = localStorage.getItem("ccg.emulator.c64.driveMode") === "true" ? "true" : "fast";
+let driveMode = "fast"; // Always start user-facing sessions in auto-loading Fast Load mode.
 let mountedDisk = null;
 let mountedTape = null;
 let mountedCartridge = null;
@@ -296,13 +296,12 @@ function attachSessionMedia(target) {
 const heldMatrixKeys = new Map();
 let shiftLeftPhysical = false;
 let shiftRightPhysical = false;
-let syntheticShiftCount = 0;
 let gamepadConnected = false;
 
-function syncShiftKeys() {
+function setC64Shift(left, right) {
   if (!machine) return;
-  machine.cia1.setKey(1, 7, shiftLeftPhysical || syntheticShiftCount > 0);
-  machine.cia1.setKey(6, 4, shiftRightPhysical);
+  machine.cia1.setKey(1, 7, Boolean(left));
+  machine.cia1.setKey(6, 4, Boolean(right));
 }
 
 function releaseAllInput() {
@@ -310,6 +309,8 @@ function releaseAllInput() {
     for (const held of heldMatrixKeys.values()) {
       machine.cia1.setKey(held.col, held.row, false);
     }
+    setC64Shift(false, false);
+    machine.cia1.setKey(7, 2, false);
     machine.joyPort1 = 0xFF;
     gamepadJoyByte = 0xFF;
     touchJoyByte = 0xFF;
@@ -320,27 +321,99 @@ function releaseAllInput() {
   heldMatrixKeys.clear();
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
-  syntheticShiftCount = 0;
-  syncShiftKeys();
 }
 
-function eventMatrixBinding(event) {
-  const charBinding = event.key && event.key.length === 1 ? CHAR_MAP[event.key] : null;
-  if (charBinding) {
-    return {
-      col: charBinding.col,
-      row: charBinding.row,
-      syntheticShift: Boolean(charBinding.shift),
-    };
-  }
-
+function physicalMatrixBinding(event) {
   const physical = KEY_MAP[event.code] || KEY_MAP[event.key];
   if (!physical) return null;
-  return { col: physical[0], row: physical[1], syntheticShift: false };
+  return { col: physical[0], row: physical[1] };
+}
+
+function pressMatrixBinding(heldKey, binding) {
+  if (!machine || !binding) return;
+  machine.cia1.setKey(binding.col, binding.row, true);
+  heldMatrixKeys.set(heldKey, binding);
+}
+
+function pressShiftedMatrixBinding(heldKey, col, row) {
+  if (!machine) return;
+  const lShiftDown = machine.cia1.isKeyDown(1, 7);
+  const rShiftDown = machine.cia1.isKeyDown(6, 4);
+  let pressedLeftShift = false;
+  if (!lShiftDown && !rShiftDown) {
+    machine.cia1.setKey(1, 7, true);
+    pressedLeftShift = true;
+  }
+  pressMatrixBinding(heldKey, { col, row, pressedLeftShift, symbolMapped: true });
+}
+
+function pressCharacterBinding(event, heldKey) {
+  if (!machine || !event.key || event.key.length !== 1) return false;
+  const charBinding = CHAR_MAP[event.key];
+  if (!charBinding) return false;
+
+  const lShiftDown = machine.cia1.isKeyDown(1, 7);
+  const rShiftDown = machine.cia1.isKeyDown(6, 4);
+  const shiftDown = lShiftDown || rShiftDown;
+  let pressedLeftShift = false;
+  let releasedLeftShift = false;
+  let releasedRightShift = false;
+
+  // VICE-style symbolic mapping: the character typed on the host determines
+  // the C64 key. Host Shift is temporarily overridden to the state the C64
+  // symbol actually requires. On UK keyboards this is what makes Shift+8
+  // produce the C64 asterisk instead of Shift+the C64 8 key.
+  if (charBinding.shift && !shiftDown) {
+    machine.cia1.setKey(1, 7, true);
+    pressedLeftShift = true;
+  } else if (!charBinding.shift && shiftDown) {
+    if (lShiftDown) {
+      machine.cia1.setKey(1, 7, false);
+      releasedLeftShift = true;
+    }
+    if (rShiftDown) {
+      machine.cia1.setKey(6, 4, false);
+      releasedRightShift = true;
+    }
+  }
+
+  pressMatrixBinding(heldKey, {
+    col: charBinding.col,
+    row: charBinding.row,
+    symbolMapped: true,
+    pressedLeftShift,
+    releasedLeftShift,
+    releasedRightShift,
+  });
+  return true;
+}
+
+function releaseHeldMatrixBinding(event, heldKey) {
+  if (!machine) return false;
+  const binding = heldMatrixKeys.get(heldKey);
+  if (!binding) return false;
+
+  heldMatrixKeys.delete(heldKey);
+  machine.cia1.setKey(binding.col, binding.row, false);
+
+  if (binding.symbolMapped) {
+    if (binding.pressedLeftShift && !event.shiftKey) {
+      machine.cia1.setKey(1, 7, false);
+    }
+    if (binding.releasedLeftShift && event.shiftKey) {
+      machine.cia1.setKey(1, 7, true);
+    }
+    if (binding.releasedRightShift && event.shiftKey) {
+      machine.cia1.setKey(6, 4, true);
+    }
+  }
+  return true;
 }
 
 function handleC64Key(event, pressed) {
   if (!running || !machine || document.activeElement !== screen) return;
+
+  if (event.metaKey) return;
 
   if (event.code === "F12") {
     event.preventDefault();
@@ -351,45 +424,70 @@ function handleC64Key(event, pressed) {
   if (event.code === "ShiftLeft") {
     event.preventDefault();
     shiftLeftPhysical = pressed;
-    syncShiftKeys();
+    machine.cia1.setKey(1, 7, pressed);
     return;
   }
 
   if (event.code === "ShiftRight") {
     event.preventDefault();
     shiftRightPhysical = pressed;
-    syncShiftKeys();
+    machine.cia1.setKey(6, 4, pressed);
     return;
   }
 
+  // Windows AltGr is emitted as Ctrl+Alt. Once AltGraph is active, the symbol
+  // itself must reach CHAR_MAP without a phantom C64 CTRL modifier.
+  if (event.getModifierState?.("AltGraph")) {
+    machine.cia1.setKey(7, 2, false);
+    if (["ControlLeft", "ControlRight", "AltLeft", "AltRight"].includes(event.code)) return;
+  }
+
   const heldKey = event.code || `key:${event.key}`;
+
   if (pressed) {
     if (event.repeat || heldMatrixKeys.has(heldKey)) {
       if (heldMatrixKeys.has(heldKey)) event.preventDefault();
       return;
     }
 
-    const binding = eventMatrixBinding(event);
+    // C64 cursor left/up are SHIFT + cursor right/down.
+    if (event.code === "ArrowLeft") {
+      event.preventDefault();
+      pressShiftedMatrixBinding(heldKey, 0, 2);
+      return;
+    }
+    if (event.code === "ArrowUp") {
+      event.preventDefault();
+      pressShiftedMatrixBinding(heldKey, 0, 7);
+      return;
+    }
+
+    // C64 F2/F4/F6/F8 are SHIFT + F1/F3/F5/F7.
+    const shiftedFn = { F2: "F1", F4: "F3", F6: "F5", F8: "F7" };
+    if (shiftedFn[event.code]) {
+      const pos = KEY_MAP[shiftedFn[event.code]];
+      if (pos) {
+        event.preventDefault();
+        pressShiftedMatrixBinding(heldKey, pos[0], pos[1]);
+      }
+      return;
+    }
+
+    if (pressCharacterBinding(event, heldKey)) {
+      event.preventDefault();
+      return;
+    }
+
+    const binding = physicalMatrixBinding(event);
     if (!binding) return;
     event.preventDefault();
-    machine.cia1.setKey(binding.col, binding.row, true);
-    if (binding.syntheticShift) {
-      syntheticShiftCount += 1;
-      syncShiftKeys();
-    }
-    heldMatrixKeys.set(heldKey, binding);
+    pressMatrixBinding(heldKey, binding);
     return;
   }
 
-  const binding = heldMatrixKeys.get(heldKey);
-  if (!binding) return;
-  event.preventDefault();
-  machine.cia1.setKey(binding.col, binding.row, false);
-  if (binding.syntheticShift) {
-    syntheticShiftCount = Math.max(0, syntheticShiftCount - 1);
-    syncShiftKeys();
+  if (releaseHeldMatrixBinding(event, heldKey)) {
+    event.preventDefault();
   }
-  heldMatrixKeys.delete(heldKey);
 }
 
 function pollGamepad() {
@@ -1132,15 +1230,46 @@ ejectCartridgeButton?.addEventListener("click", () => {
   screen?.focus();
 });
 
-mediaDropzone?.addEventListener("dragover", (event) => {
+function dragContainsFiles(event) {
+  return Array.from(event.dataTransfer?.types || []).includes("Files");
+}
+
+function firstSupportedDroppedFile(event) {
+  return Array.from(event.dataTransfer?.files || []).find((file) => mediaTypeFromName(file.name)) || null;
+}
+
+mediaDropzone?.addEventListener("dragenter", (event) => {
+  if (!dragContainsFiles(event)) return;
   event.preventDefault();
   mediaDropzone.classList.add("is-dragover");
-});
-mediaDropzone?.addEventListener("dragleave", () => mediaDropzone.classList.remove("is-dragover"));
-mediaDropzone?.addEventListener("drop", async (event) => {
+}, { capture: true });
+
+mediaDropzone?.addEventListener("dragover", (event) => {
+  if (!dragContainsFiles(event)) return;
   event.preventDefault();
+  event.stopPropagation();
+  if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+  mediaDropzone.classList.add("is-dragover");
+}, { capture: true });
+
+mediaDropzone?.addEventListener("dragleave", (event) => {
+  if (event.relatedTarget && mediaDropzone.contains(event.relatedTarget)) return;
   mediaDropzone.classList.remove("is-dragover");
-  const file = event.dataTransfer?.files?.[0];
+}, { capture: true });
+
+mediaDropzone?.addEventListener("drop", async (event) => {
+  if (!dragContainsFiles(event)) return;
+  event.preventDefault();
+  event.stopPropagation();
+  mediaDropzone.classList.remove("is-dragover");
+
+  const file = firstSupportedDroppedFile(event);
+  if (!file) {
+    if (stageNote) stageNote.textContent = "Drop a PRG, D64, D71, D81, G64, TAP, T64 or CRT file onto the C64 screen.";
+    return;
+  }
+
+  if (stageNote) stageNote.textContent = `Dropped ${file.name}. Preparing it for automatic loading…`;
   await queueMediaFile(file);
 });
 
