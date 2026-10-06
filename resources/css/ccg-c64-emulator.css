@@ -156,12 +156,24 @@ select:focus-visible,
   margin: 0 auto;
   display: grid;
   grid-template-columns: minmax(0, 1.64fr) minmax(520px, 0.96fr);
+  grid-template-areas: "console controls";
   gap: 0.8rem;
   padding: 0.8rem 0 1rem;
   align-items: start;
 }
 
+/*
+   The installed CCG/PWA shell may inject route UI (for example a breadcrumb)
+   as a direct child of <main>. This workstation must always remain a strict
+   two-column application surface; an injected third grid item otherwise takes
+   column 1 and pushes the emulator screen into column 2.
+*/
+.ccg-c64-workspace > :not(.ccg-c64-console):not(.ccg-c64-control-stack) {
+  display: none !important;
+}
+
 .ccg-c64-console {
+  grid-area: console;
   min-width: 0;
   padding: 0.75rem;
   border: 1px solid var(--emu-line);
@@ -307,6 +319,7 @@ select:focus-visible,
 /* Right-side modular deck ----------------------------------- */
 
 .ccg-c64-control-stack {
+  grid-area: controls;
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
