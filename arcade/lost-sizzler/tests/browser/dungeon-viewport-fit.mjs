@@ -90,8 +90,8 @@ try{
     assert.ok(Math.abs(cssRatio-bitmapRatio)<.035,`${width}x${height}: radar backing bitmap must match rendered aspect ratio: ${JSON.stringify(radar)}`);
     assert.ok(Math.abs(radar.iw-radar.w)<=2&&Math.abs(radar.ih-radar.h)<=2,`${width}x${height}: radar bitmap dimensions must track the visible canvas: ${JSON.stringify(radar)}`);
     assert.ok(radar.h>=140,`${width}x${height}: desktop radar canvas must receive meaningful vertical space: ${JSON.stringify(radar)}`);
-    assert.ok(radarDiag&&radarDiag.scale>=7,`${width}x${height}: tactical minimap must remain strongly zoomed around the player: ${JSON.stringify(radarDiag)}`);
-    assert.ok(radarDiag.cols<=16&&radarDiag.rows<=12,`${width}x${height}: tactical minimap must not regress to an over-wide tile window: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radarDiag&&radarDiag.scale>=16,`${width}x${height}: tactical minimap must remain strongly zoomed around the player: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radarDiag.cols<=10&&radarDiag.rows<=16,`${width}x${height}: tactical minimap must keep a compact local tile window without shrinking in tall sidebars: ${JSON.stringify(radarDiag)}`);
     assert.ok(radarDiag.mapWidth>=radarDiag.canvasWidth*.5||radarDiag.mapHeight>=radarDiag.canvasHeight*.65,`${width}x${height}: tactical minimap must occupy a useful share of its canvas: ${JSON.stringify(radarDiag)}`);
     assert.ok(separate(hud[".core-stats"],hud[".hub-inventory"])&&separate(hud[".hub-inventory"],hud[".hub-progress"]),"HUD regions must not overlap");
     for(const row of runStats){assert.ok(row.cw>0&&row.sw<=row.cw+1,`${width}x${height}: lower-right HUD value must fit without ellipsis/obscuring (${row.label} ${row.text}): ${JSON.stringify(row)}`)}
