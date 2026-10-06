@@ -22,6 +22,10 @@
     );
   }
 
+  function isCompactHub() {
+    return Boolean(document.querySelector(".member-dashboard-grid"));
+  }
+
   function ensureNavLink() {
     const nav = document.querySelector(".member-hub-nav");
     if (!nav || nav.querySelector('a[href="#personalGameLibrary"]')) return;
@@ -58,6 +62,7 @@
   }
 
   function ensureStats() {
+    if (isCompactHub()) return;
     const stats = document.getElementById("memberOverview");
     if (!stats) return;
     addStat(stats, "memberStatPlayed", "Played");
@@ -75,11 +80,15 @@
     const parent = reviews?.parentElement || favourites?.parentElement;
     if (!parent) return null;
 
-    const section = document.createElement("section");
+    const compact = isCompactHub();
+    const section = document.createElement(compact ? "details" : "section");
     section.id = "personalGameLibrary";
-    section.className = "profile-library";
+    section.className = compact
+      ? "profile-library member-compact-details member-personal-library-details"
+      : "profile-library";
     section.setAttribute("aria-labelledby", "personalGameLibraryTitle");
-    section.innerHTML = `
+
+    const libraryContent = `
       <div class="profile-library__header">
         <div>
           <p class="member-panel__kicker">Your private collection</p>
@@ -98,6 +107,10 @@
       </div>
       <ul id="personalGameLibraryList" class="profile-library__list"></ul>
     `;
+
+    section.innerHTML = compact
+      ? `<summary><span class="member-details-summary__eyebrow">Private collection</span><span class="member-details-summary__title">My Personal Game Library</span></summary><div class="member-compact-details__body member-personal-library-body">${libraryContent}</div>`
+      : libraryContent;
 
     if (reviews?.parentElement === parent) parent.insertBefore(section, reviews);
     else if (favourites?.nextSibling) parent.insertBefore(section, favourites.nextSibling);
