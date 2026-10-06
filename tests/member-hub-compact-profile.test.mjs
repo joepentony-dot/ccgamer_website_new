@@ -8,6 +8,10 @@ const achievementCss = fs.readFileSync('resources/css/member-achievement-badges.
 const achievementJs = fs.readFileSync('resources/js/auth/member-achievement-badges.js', 'utf8');
 const profileJs = fs.readFileSync('resources/js/auth/profile-page.js', 'utf8');
 const memberHubJs = fs.readFileSync('resources/js/auth/member-hub.js', 'utf8');
+const avatarMigration = fs.readFileSync(
+  'supabase/migrations/20261006123000_add_member_profile_avatars.sql',
+  'utf8'
+);
 
 test('member hub keeps the core information sections in compact menus', () => {
   assert.match(html, /<details id="memberFavourites"/);
@@ -49,12 +53,24 @@ test('member profile exposes custom avatar controls', () => {
   assert.match(html, /JPG, PNG or WebP/);
 });
 
-test('avatar upload uses the existing protected profile avatar bucket', () => {
+test('avatar upload optimises source images before protected storage', () => {
   assert.match(profileJs, /PROFILE_AVATAR_BUCKET = 'profile-avatars'/);
-  assert.match(profileJs, /PROFILE_AVATAR_MAX_BYTES = 2 \* 1024 \* 1024/);
-  assert.match(profileJs, /\.storage\s*\n\s*\.from\(PROFILE_AVATAR_BUCKET\)/);
+  assert.match(profileJs, /PROFILE_AVATAR_SIZE = 512/);
+  assert.match(profileJs, /PROFILE_AVATAR_SOURCE_MAX_BYTES = 8 \* 1024 \* 1024/);
+  assert.match(profileJs, /canvas\.toBlob\(resolve, 'image\/webp', 0\.86\)/);
+  assert.match(profileJs, /avatar\.webp/);
+  assert.match(profileJs, /contentType: 'image\/webp'/);
   assert.match(profileJs, /avatar_url: avatarUrl/);
-  assert.match(profileJs, /Avatar must be 2 MB or smaller\./);
+});
+
+test('avatar migration constrains storage writes to the signed-in member folder', () => {
+  assert.match(avatarMigration, /'profile-avatars'/);
+  assert.match(avatarMigration, /2097152/);
+  assert.match(avatarMigration, /storage\.foldername\(name\)/);
+  assert.match(avatarMigration, /auth\.uid\(\)/);
+  assert.match(avatarMigration, /for insert\s+to authenticated/i);
+  assert.match(avatarMigration, /for update\s+to authenticated/i);
+  assert.match(avatarMigration, /for delete\s+to authenticated/i);
 });
 
 test('member preference updates no longer reference retired opt-in column', () => {
