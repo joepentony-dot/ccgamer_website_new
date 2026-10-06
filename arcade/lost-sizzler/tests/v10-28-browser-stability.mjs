@@ -298,7 +298,7 @@ try{
   }
 
   {
-    logStage("retired split-screen entry: create and navigate");
+    logStage("retired split-screen removal: create and navigate");
     const state=await newGamePage();
     await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"retired split-screen navigation");
     await waitForReady(state,"retired split-screen");
@@ -314,15 +314,11 @@ try{
         runActive:document.body.dataset.runActive
       };
     });
-    assert.equal(split.exists,true,"retired split compatibility anchor must remain available for legacy code");
-    assert.equal(split.hidden,true,"retired split compatibility anchor must stay hidden");
-    assert.equal(split.ariaHidden,"true","retired split compatibility anchor must stay aria-hidden");
-    assert.equal(split.tabIndex,-1,"retired split compatibility anchor must stay outside keyboard focus order");
-    assert.equal(split.display,"none","retired split compatibility anchor must not occupy menu layout");
-    assert.deepEqual(split.localModes,["solo","tutorial"],"R51 must expose only Solo and Tutorial as supported public modes");
+    assert.equal(split.exists,false,"R107 must remove the retired Split Screen compatibility anchor entirely");
+    assert.deepEqual(split.localModes,["solo","tutorial"],"R107 must expose only the main game and Tutorial as supported local modes");
     assert.equal(split.runActive,"false","checking the retired Split anchor must not start a run");
     await assertHealthy(state,"retired split-screen entry");
-    logStage("retired split-screen entry: complete");
+    logStage("retired split-screen removal: complete");
   }
 
   {
