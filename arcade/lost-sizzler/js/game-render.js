@@ -1367,10 +1367,10 @@ function radarRoomType(room,roomId){
   return"normal"
 }
 function radarTileColour(x,y,wall){
-  const roomId=W.roomAt(world,x,y),room=roomId>=0?world.rooms?.[roomId]:null,type=radarRoomType(room,roomId);
-  const floors={normal:"#655879",sanctuary:"#3c8b67",sigil:"#7550a0",shop:"#9a8134",danger:"#9a4552",exit:"#5d4b79",start:"#4b7886",optional:"#426f79"};
-  const walls={normal:"#292233",sanctuary:"#213b31",sigil:"#342741",shop:"#403720",danger:"#43242b",exit:"#302943",start:"#26383d",optional:"#253b40"};
-  return wall?(walls[type]||walls.normal):(floors[type]||floors.normal)
+  /* Compact HUD radar is geometry-first. Room purpose is communicated by the
+   * dedicated markers below, not by a second competing room-colour language. */
+  void x;void y;
+  return wall?"#292233":"#655879"
 }
 function drawRadarCross(ctx,x,y,colour,size=6){
   ctx.save();ctx.fillStyle=colour;ctx.strokeStyle="#f4fff8";ctx.lineWidth=1;
