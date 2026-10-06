@@ -450,7 +450,12 @@
   }
 
   function setMusicLevel(value){
-    musicLevel=Math.max(0,Math.min(.25,Number(value)||0));
+    /* The legacy engine's music level is a pre-master WebAudio gain (normally
+     * .075). Uploaded soundtrack tracks are direct HTMLMediaElement output, so
+     * applying the legacy gain 1:1 makes them unnecessarily quiet. Preserve
+     * zero/mute and the relative control while compensating for that gain stage. */
+    const legacyLevel=Math.max(0,Number(value)||0);
+    musicLevel=Math.max(0,Math.min(.45,legacyLevel*2));
     updateVolumes();
   }
 
