@@ -50,13 +50,21 @@ body[data-release-ready="false"] #menu :is(#solo-btn,#tutorial-zone-btn,#continu
     grid-column:2!important;
     grid-row:5!important;
     min-width:0!important;
-    grid-template-rows:minmax(110px,1fr) minmax(430px,auto)!important;
+    grid-template-rows:minmax(220px,.9fr) minmax(250px,1.1fr)!important;
     padding:6px!important;
     gap:6px!important;
   }
   body[data-run-active="true"] .ccg-game>.player-hub{
     grid-column:1/-1!important;
     grid-row:6!important;
+  }
+  body[data-run-active="true"] .ccg-game>.tactical-zone>.radar-card{
+    min-height:220px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.tactical-zone>.radar-card canvas{
+    height:auto!important;
+    min-height:150px!important;
+    align-self:stretch!important;
   }
 
   body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail{
