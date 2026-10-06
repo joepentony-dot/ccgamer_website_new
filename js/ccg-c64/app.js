@@ -2,6 +2,7 @@ import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickViceRoms } from "./rom-vault
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
+import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault } from "./game-vault.js";
 import { extractFirstT64Program } from "./t64.js";
 
@@ -175,6 +176,11 @@ function cloneMedia(media) {
   };
 }
 
+function createDiskFromMedia(media) {
+  if (!media?.bytes) return null;
+  return media.kind === "g64" ? new G64(media.bytes.slice()) : new D64(media.bytes.slice());
+}
+
 function currentVaultSlot() {
   const slot = Number(vaultSlot?.value || 1);
   return [1, 2, 3].includes(slot) ? slot : 1;
@@ -194,12 +200,12 @@ async function refreshVaultStatus() {
 
 function attachSessionMedia(target) {
   if (mountedCartridge?.bytes) target.loadCartridge(mountedCartridge.bytes.slice());
-  if (mountedDisk?.bytes) target.setD64(new D64(mountedDisk.bytes.slice()));
+  if (mountedDisk?.bytes) target.setD64(createDiskFromMedia(mountedDisk));
   if (mountedTape?.kind === "tap" && mountedTape.bytes) target.loadTap(mountedTape.bytes.slice());
 
   const trueDrivePossible = driveMode === "true" &&
     Boolean(vault.getBytes("drive1541")) &&
-    Boolean(mountedDisk?.kind === "d64");
+    Boolean(mountedDisk && (mountedDisk.kind === "d64" || mountedDisk.kind === "g64"));
   target.setTrueDrive(trueDrivePossible);
 }
 
@@ -665,15 +671,24 @@ diskInput?.addEventListener("change", async () => {
 
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    const variant = d64Variant(bytes.length);
-    if (!variant) throw new Error("Use a supported D64, D71 or D81 disk image.");
+    const g64 = file.name.toLowerCase().endsWith(".g64") || isG64(bytes);
+    const variant = g64 ? null : d64Variant(bytes.length);
+    if (!g64 && !variant) throw new Error("Use a supported D64, D71, D81 or G64 disk image.");
+    if (g64 && !vault.getBytes("drive1541")) {
+      throw new Error("G64 raw-track images require the optional 1541 DOS ROM in ROM Control.");
+    }
 
-    const disk = new D64(bytes);
+    const kind = g64 ? "g64" : variant.kind;
+    const disk = g64 ? new G64(bytes) : new D64(bytes);
     machine.setD64(disk);
-    mountedDisk = { name: file.name, bytes: bytes.slice(), kind: variant.kind };
+    mountedDisk = { name: file.name, bytes: bytes.slice(), kind };
 
+    if (g64) {
+      driveMode = "true";
+      localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+    }
     const useTrueDrive = driveMode === "true" &&
-      variant.kind === "d64" &&
+      (kind === "d64" || kind === "g64") &&
       Boolean(vault.getBytes("drive1541"));
     machine.setTrueDrive(useTrueDrive);
 
@@ -681,9 +696,9 @@ diskInput?.addEventListener("change", async () => {
 
     if (diskSlotStatus) {
       const label = disk.diskName ? `${disk.diskName} // ${file.name}` : file.name;
-      diskSlotStatus.textContent = `${variant.kind.toUpperCase()} // ${label}`;
+      diskSlotStatus.textContent = `${kind.toUpperCase()} // ${label}`;
     }
-    if (machineState) machineState.textContent = `${variant.kind.toUpperCase()} MOUNTED // ${file.name.toUpperCase()}`;
+    if (machineState) machineState.textContent = `${kind.toUpperCase()} MOUNTED // ${file.name.toUpperCase()}`;
     if (stageNote) {
       stageNote.textContent = useTrueDrive
         ? "Disk inserted into the cycle-driven 1541 path. Use normal C64 disk commands from the keyboard; switch back to Fast Load for automatic LOAD/RUN."
@@ -703,8 +718,8 @@ driveModeButton?.addEventListener("click", () => {
     if (stageNote) stageNote.textContent = "True 1541 mode requires the optional 1541 DOS ROM in ROM Control.";
     return;
   }
-  if (driveMode === "fast" && mountedDisk && mountedDisk.kind !== "d64") {
-    if (stageNote) stageNote.textContent = "D71 and D81 images use the virtual-drive path. True 1541 mode is available for D64 media.";
+  if (driveMode === "fast" && mountedDisk && !["d64", "g64"].includes(mountedDisk.kind)) {
+    if (stageNote) stageNote.textContent = "D71 and D81 images use the virtual-drive path. True 1541 mode is available for D64 and G64 media.";
     return;
   }
 
@@ -714,7 +729,7 @@ driveModeButton?.addEventListener("click", () => {
   updateDriveModeUi(vault.snapshot());
   if (stageNote) {
     stageNote.textContent = driveMode === "true"
-      ? "True 1541 mode enabled. Disk commands now run through the cycle-driven 1541 when D64 media is inserted."
+      ? "True 1541 mode enabled. D64 and G64 disk commands now run through the cycle-driven 1541."
       : "Fast Load mode enabled. D64/D71/D81 media use the virtual-drive route with automatic LOAD/RUN.";
   }
   screen?.focus();
