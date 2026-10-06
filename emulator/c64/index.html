@@ -144,7 +144,7 @@
         </div>
 
         <p class="ccg-c64-stage-note" data-stage-note>
-          The cycle-accurate machine/video core is now connected to this CCG command deck. SID output, full keyboard/joystick routing and the wider media bay remain under integration before release.
+          The machine/video core, physical keyboard, Port 2 gamepad path and first D64 quick-load route are connected. SID output and the remaining media/vault/mobile systems are still under integration.
         </p>
       </section>
 
@@ -156,8 +156,9 @@
 
         <div class="ccg-c64-media-slot" data-media-slot="disk">
           <span class="ccg-c64-media-slot__id">D8</span>
-          <div><strong>DISK DRIVE</strong><small>D64 / D71 / D81 / G64</small></div>
-          <button type="button" disabled>LOAD</button>
+          <div><strong>DISK DRIVE</strong><small data-disk-slot-status>D64 quick-load ready</small></div>
+          <button type="button" data-load-disk disabled>LOAD D64</button>
+          <input id="ccg-c64-disk-input" type="file" accept=".d64" hidden>
         </div>
         <div class="ccg-c64-media-slot" data-media-slot="tape">
           <span class="ccg-c64-media-slot__id">T1</span>
@@ -182,7 +183,7 @@
 
         <div class="ccg-c64-media-bay__future">
           <strong>NEXT CORE PASS</strong>
-          <span>SID AudioWorklet output, full input routing, disk/tape/cartridge loading, game vault and mobile controls will unlock here without changing this CCG layout.</span>
+          <span>SID AudioWorklet output, advanced disk/true-drive controls, tape/cartridge loading, game vault and mobile controls will unlock here without changing this CCG layout.</span>
         </div>
       </aside>
     </div>
