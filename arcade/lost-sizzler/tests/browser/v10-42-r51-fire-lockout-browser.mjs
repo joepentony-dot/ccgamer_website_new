@@ -215,7 +215,7 @@ try{
     fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
     p1.dir={x:1,y:0};
     host.blockingDecor=host.blockingDecor||[];
-    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:Number(p1.x)+1,y:Number(p1.y),type:"crate",blocking:true,structural:false});
+    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:Number(p1.x)+1,y:Number(p1.y),type:"crate",blocking:true,structural:false,hp:2,maxHp:2});
     sync();
     window.CCGLostSizzlerInventoryHudV106?.render?.();
     return{
