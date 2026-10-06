@@ -126,24 +126,16 @@ async function ensureProfileBootstrap(user, preferences = null) {
           username: fallbackUsername,
           display_name: fallbackUsername,
           role: 'user',
-          points: 0,
           bio: '',
           avatar_url: '',
+          email: user.email || null,
           created_at: new Date().toISOString(),
-          newsletter_monthly: false,
           notify_new_games: normalized.notifyNewGames,
-          notify_c64: false,
-          notify_amiga: false,
-          newsletter_opt_in: false,
-          notify_new_games_opt_in: normalized.notifyNewGames,
-          notify_platform_c64: false,
-          notify_platform_amiga: false,
           notify_newsletter: normalized.notifyNewsletter,
           notify_new_games_choice_recorded: normalized.choiceRecorded,
           notify_newsletter_choice_recorded: normalized.choiceRecorded,
           notification_preferences_updated_at: recordedAt,
-          unsub_token: generateUnsubscribeToken(),
-          email_confirmed: Boolean(user.email_confirmed_at)
+          unsub_token: generateUnsubscribeToken()
         });
 
       if (inserted.error) {
