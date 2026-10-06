@@ -29,9 +29,16 @@
 - Blur, power-off and page-hide release all held matrix/joystick/NMI state so browser focus changes cannot leave stuck C64 keys.
 - The System Rail now reports whether the active input path is keyboard or a detected Port 2 gamepad.
 
+## First disk-bay workflow — 6 October 2026
+
+- The D8 Media Bay is no longer a dead placeholder: while the machine is running it accepts a local D64 image, validates the byte length through the retained disk parser, mounts it on Drive 8 and queues LOAD/RUN.
+- This first route intentionally selects the virtual-drive fast-load path after mounting so launch behaviour is deterministic while advanced true-drive UI/qualification is still outstanding. The user's optional 1541 ROM remains retained and will be used when the later true-drive control surface is exposed.
+- The command deck reports the mounted disk name/file and returns CRT focus after selection.
+- D71/D81/G64 remain disabled rather than advertising unsupported active controls; the visible first-pass button says LOAD D64.
+
 ## Not merge-ready yet
 
-The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still integrate and qualify SID/worklet audio, disk/tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. Physical keyboard and standard gamepad Port 2 routing are now present but still require browser-level qualification. The Stage 1 shell should remain the visual contract while those systems are connected.
+The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still integrate and qualify SID/worklet audio, advanced disk/true-drive plus D71/D81/G64 support, tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. Physical keyboard, standard gamepad Port 2 routing and the first D64 quick-load route are now present but still require browser-level qualification. The Stage 1 shell should remain the visual contract while those systems are connected.
 
 ## Visual/legal rule
 
