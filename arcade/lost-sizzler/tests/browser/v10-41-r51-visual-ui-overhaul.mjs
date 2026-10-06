@@ -36,7 +36,7 @@ try{
   assert.equal(menu.styled,true);
   assert.equal(menu.panel,true);
   assert.equal(menu.guide,true);
-  assert.match(menu.soloDesc,/Five floors/);
+  assert.match(menu.soloDesc,/15 floors/i);
   assert.equal(menu.retiredCreate,false,"retired Dungeon Multiplayer entry must stay absent from the R51 menu");
   assert.equal(menu.retiredJoin,false,"retired Join Online Room action must stay absent from the R51 menu");
   assert.equal(menu.retiredRoom,false,"retired room-code input must stay absent from the R51 menu");
