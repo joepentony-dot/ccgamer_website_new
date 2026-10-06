@@ -134,6 +134,7 @@
   }
 
   function ensureStat() {
+    if (document.querySelector(".member-dashboard-grid")) return;
     const stats = document.getElementById("memberOverview");
     if (!stats || document.getElementById("memberStatCustomCollections")) return;
     const link = document.createElement("a");
