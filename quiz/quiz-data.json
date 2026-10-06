@@ -1571,7 +1571,7 @@
           "options": [
             "Commando",
             "Ikari Warriors",
-            "Gun.Smoke",
+            "Gun Smoke",
             "Who Dares Wins II"
           ],
           "correctIndex": 2,
@@ -1635,7 +1635,7 @@
             "Sapiens"
           ],
           "correctIndex": 2,
-          "imageUrl": "images/quiz/bad-game-sprites/lee-enfield.png",
+          "imageUrl": "images/quiz/bad-game-sprites/lee-enfield.webp",
           "imageAlt": "Pixel-art C64 armoured character sprite to identify",
           "pixelArt": true,
           "reveal": "Lee Enfield: Tournament of Death received 8% from Zzap!64."
@@ -1659,7 +1659,7 @@
           "id": "8-9",
           "question": "PIXEL LINE-UP 09 — Which side-scrolling oddity stars this Mountie?",
           "options": [
-            "Mountie Mick's Death Ride",
+            "Mountie Micks Death Ride",
             "Express Raider",
             "Green Beret",
             "The Train: Escape to Normandy"
@@ -3309,7 +3309,7 @@
         "options": [
           "Commando",
           "Ikari Warriors",
-          "Gun.Smoke",
+          "Gun Smoke",
           "Who Dares Wins II"
         ],
         "correctIndex": 2,
@@ -3373,7 +3373,7 @@
           "Sapiens"
         ],
         "correctIndex": 2,
-        "imageUrl": "images/quiz/bad-game-sprites/lee-enfield.png",
+        "imageUrl": "images/quiz/bad-game-sprites/lee-enfield.webp",
         "imageAlt": "Pixel-art C64 armoured character sprite to identify",
         "pixelArt": true,
         "reveal": "Lee Enfield: Tournament of Death received 8% from Zzap!64."
@@ -3397,7 +3397,7 @@
         "id": "8-9",
         "question": "PIXEL LINE-UP 09 — Which side-scrolling oddity stars this Mountie?",
         "options": [
-          "Mountie Mick's Death Ride",
+          "Mountie Micks Death Ride",
           "Express Raider",
           "Green Beret",
           "The Train: Escape to Normandy"
