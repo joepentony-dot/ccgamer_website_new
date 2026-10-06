@@ -25,13 +25,17 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 const artifacts=path.resolve(process.env.DUNGEON_VIEWPORT_ARTIFACTS||"node_modules/viewport-artifacts");
 fs.mkdirSync(artifacts,{recursive:true});
 async function captureViewport(page,file){
-  await page.evaluate(async()=>{
-    if(!document.fonts)return;
+  const fontsReady=await page.evaluate(async()=>{
+    if(!document.fonts||document.fonts.status==="loaded")return true;
     await Promise.race([document.fonts.ready,new Promise(resolve=>setTimeout(resolve,1500))]);
-    for(const face of [...document.fonts])if(face.status!=="loaded")document.fonts.delete(face);
+    return document.fonts.status==="loaded";
   });
+  if(!fontsReady){
+    console.warn("Viewport screenshot skipped because webfonts did not settle within the diagnostic window.");
+    return;
+  }
   try{
-    await page.screenshot({path:file,timeout:30000});
+    await page.screenshot({path:file,timeout:15000});
   }catch(error){
     console.warn(`Viewport screenshot skipped after bounded capture failure: ${error?.message||error}`);
   }
