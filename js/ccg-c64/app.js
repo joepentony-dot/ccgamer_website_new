@@ -715,9 +715,15 @@ finishSetup?.addEventListener("click", async () => {
 
   if (pendingMedia) {
     const media = pendingMedia;
-    pendingMedia = null;
     if (!running) await powerOn();
-    if (running && machine) await openMediaBytes(media);
+    if (running && machine) {
+      pendingMedia = null;
+      try {
+        await openMediaBytes(media);
+      } catch (error) {
+        if (stageNote) stageNote.textContent = error?.message || "The queued media could not be opened.";
+      }
+    }
   }
 
   screen?.focus();
