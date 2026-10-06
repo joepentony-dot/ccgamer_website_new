@@ -46,6 +46,8 @@
       @keyframes ccgTutorialInfoGlow{0%,100%{outline-color:#6cecff;filter:brightness(1.08)}50%{outline-color:#ffd85a;filter:brightness(1.28)}}
       body[data-tutorial-active="true"] .ccg-tutorial-info-highlight{position:relative!important;z-index:10130!important;outline:3px solid #6cecff!important;outline-offset:3px!important;box-shadow:0 0 0 6px rgba(3,2,8,.88),0 0 34px rgba(108,236,255,.68)!important;animation:ccgTutorialInfoGlow 1.25s ease-in-out infinite!important}
       body[data-tutorial-active="true"] .ccg-tutorial-info-highlight:after{content:attr(data-tutorial-callout);position:absolute;z-index:2;right:6px;top:6px;padding:5px 8px;border:1px solid #ffd85a;border-radius:6px;background:#160d21;color:#fff3b0;font:900 .68rem/1.1 monospace;letter-spacing:.06em;box-shadow:0 4px 16px rgba(0,0,0,.55);pointer-events:none}
+      body[data-tutorial-active="true"] .canvas-wrap.ccg-tutorial-canvas-highlight{position:relative!important;outline:3px solid #6cecff!important;outline-offset:-3px!important;box-shadow:inset 0 0 0 3px rgba(108,236,255,.16),inset 0 0 26px rgba(108,236,255,.12)!important;filter:none!important;animation:none!important}
+      body[data-tutorial-active="true"] .ccg-tutorial-canvas-callout{position:absolute;z-index:7;left:8px;top:8px;padding:5px 8px;border:1px solid #ffd85a;border-radius:6px;background:#160d21;color:#fff3b0;font:900 .68rem/1.1 monospace;letter-spacing:.06em;box-shadow:0 4px 16px rgba(0,0,0,.55);pointer-events:none}
       #ccg-tutorial-stage-modal{
         position:fixed!important;inset:0!important;z-index:10120!important;display:grid;place-items:center;
         padding:max(16px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
@@ -106,15 +108,32 @@
     highlightedInfoStep=-1;
     document.querySelectorAll(".ccg-tutorial-control-highlight").forEach(el=>el.classList.remove("ccg-tutorial-control-highlight"));
     document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout;if(el.dataset.tutorialWasHidden==="true"){el.classList.add("hidden");delete el.dataset.tutorialWasHidden}});
+    document.querySelectorAll(".ccg-tutorial-canvas-highlight").forEach(el=>el.classList.remove("ccg-tutorial-canvas-highlight"));
+    document.querySelectorAll(".ccg-tutorial-canvas-callout").forEach(el=>el.remove());
   }
 
   function highlightInformation(step){
     const numericStep=Math.max(0,Number(step)||0),entries=INFO_HIGHLIGHTS.get(numericStep)||[];
-    const intact=highlightedInfoStep===numericStep&&entries.length>0&&entries.every(([selector,label])=>{const node=document.querySelector(selector);return Boolean(node?.classList.contains("ccg-tutorial-info-highlight")&&node.dataset.tutorialCallout===label)});
+    const intact=highlightedInfoStep===numericStep&&entries.length>0&&entries.every(([selector,label])=>{
+      const node=document.querySelector(selector);
+      if(selector===".canvas-wrap")return Boolean(node?.classList.contains("ccg-tutorial-canvas-highlight")&&node.querySelector(".ccg-tutorial-canvas-callout")?.textContent===label);
+      return Boolean(node?.classList.contains("ccg-tutorial-info-highlight")&&node.dataset.tutorialCallout===label)
+    });
     if(intact)return;
     document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout;if(el.dataset.tutorialWasHidden==="true"){el.classList.add("hidden");delete el.dataset.tutorialWasHidden}});
+    document.querySelectorAll(".ccg-tutorial-canvas-highlight").forEach(el=>el.classList.remove("ccg-tutorial-canvas-highlight"));
+    document.querySelectorAll(".ccg-tutorial-canvas-callout").forEach(el=>el.remove());
     highlightedInfoStep=numericStep;
-    for(const [selector,label] of entries){const node=document.querySelector(selector);if(!node)continue;if(node.classList.contains("hidden")){node.dataset.tutorialWasHidden="true";node.classList.remove("hidden")}node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")}
+    for(const [selector,label] of entries){
+      const node=document.querySelector(selector);if(!node)continue;
+      if(node.classList.contains("hidden")){node.dataset.tutorialWasHidden="true";node.classList.remove("hidden")}
+      if(selector===".canvas-wrap"){
+        node.classList.add("ccg-tutorial-canvas-highlight");
+        const badge=document.createElement("span");badge.className="ccg-tutorial-canvas-callout";badge.textContent=label;node.appendChild(badge);
+        continue;
+      }
+      node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")
+    }
   }
 
   function ensureInformationTour(){let tour=document.getElementById("ccg-tutorial-info-tour");if(tour)return tour;tour=document.createElement("section");tour.id="ccg-tutorial-info-tour";tour.className="hidden";tour.setAttribute("aria-live","polite");(document.querySelector(".ccg-game")||document.body).appendChild(tour);return tour}
