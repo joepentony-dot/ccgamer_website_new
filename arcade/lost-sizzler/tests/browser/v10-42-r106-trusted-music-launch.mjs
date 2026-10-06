@@ -94,6 +94,7 @@ try{
   page.setDefaultTimeout(45000);
   const pageErrors=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
+  page.on("request",request=>{const url=request.url().toLowerCase();if(url.includes(".supabase.co/storage/v1/object/")&&url.includes("/music/"))musicRequests+=1});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?trusted-music-launch=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap)&&window.CCGLostSizzlerV142Bootstrap.ready===false);
@@ -107,10 +108,11 @@ try{
     return{
       releaseReady:document.body.dataset.releaseReady||"",
       loaderVisible:Boolean(loader&&!loader.hidden&&style?.display!=="none"),
-      bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready)
+      bootstrapReady:Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),
+      playlistOwner:Boolean(window.CCGLostSizzlerPlaylistAudio)
     };
   });
-  assert.deepEqual(blocked,{releaseReady:"false",loaderVisible:true,bootstrapReady:false},"the pre-ready menu must remain physically covered by the canonical loader");
+  assert.deepEqual(blocked,{releaseReady:"false",loaderVisible:true,bootstrapReady:false,playlistOwner:true},"the pre-ready menu must remain covered while the R110 playlist owner is already core-loaded");
   await start.dispatchEvent("click");
   const captured=await page.evaluate(()=>({pending:window.CCGLostSizzlerV142Bootstrap?.pendingStartId||"",note:document.getElementById("menu-note")?.textContent||""}));
   assert.equal(captured.pending,"solo-btn","a pre-ready Start Game request reaching the bootstrap boundary must be captured before startup is released");
@@ -134,11 +136,11 @@ try{
   await page.waitForFunction(()=>{
     const snapshot=window.CCGLostSizzlerPlaylistAudio?.getState?.();
     const slot=snapshot?.slots?.[snapshot.state];
-    return Boolean(snapshot?.started&&snapshot?.url?.includes("/assets/audio/music/")&&slot?.active===true&&slot?.paused===false);
+    return Boolean(snapshot?.started&&snapshot?.customSoundtrackOwned===true&&snapshot?.url?.includes("/music/")&&slot?.active===true&&slot?.paused===false);
   });
 
   const playing=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio.getState());
-  assert.ok(musicRequests>=1,"the fresh trusted Start Game click must request an authored soundtrack file");
+  assert.ok(musicRequests>=1,"the fresh trusted Start Game click must request an uploaded/authored soundtrack file");
   assert.ok(playing.slots[playing.state].readyState>=1,"the trusted launch gesture must prepare the selected authored media before/while playback begins");
   assert.equal(playing.fallbackActive,false,"trusted launch must not fall back to generated music");
   assert.equal(playing.adminAudioReady,true,"trusted launch must use the hydrated production soundtrack catalogue");

@@ -52,10 +52,12 @@ try{
 
   const audioState=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio?.getState?.());
   assert.ok(audioState,'Playlist diagnostics must remain available in the canonical run.');
-  assert.ok(!String(audioState.url||'').includes('supabase.co/storage/'),`Headless run must use bundled/local audio, got ${audioState.url}`);
-  assert.deepEqual(remoteMusicRequests,[],`Canonical Chromium validation must make zero Supabase Storage music requests: ${remoteMusicRequests.join('\n')}`);
+  assert.equal(audioState.customSoundtrackOwned,true,'R110 canonical run must keep uploaded production soundtrack ownership even when remote catalogue hydration is guarded.');
+  assert.equal(audioState.fallbackActive,false,'R110 canonical run must not fall back to bundled/generated basic music.');
+  assert.ok(String(audioState.url||'').includes('supabase.co/storage/')&&String(audioState.url||'').includes('/music/'),`R110 must use the release-pinned production music asset, got ${audioState.url}`);
+  assert.ok(remoteMusicRequests.length>=1,'R110 canonical Chromium run must request the release-pinned Supabase production soundtrack.');
 
-  console.log('Lost Sizzler canonical Chromium run made zero Supabase Storage music requests.');
+  console.log('Lost Sizzler canonical Chromium run kept headless catalogue hydration guarded while release-pinned production music owned playback.');
   await context.close();
 }finally{
   await browser.close();

@@ -67,6 +67,7 @@ try{
   });
   const measure=()=>page.evaluate(selectors=>Object.fromEntries(selectors.map(s=>{const n=document.querySelector(s),r=n?.getBoundingClientRect();return[s,n?{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,sw:n.scrollWidth,cw:n.clientWidth,sh:n.scrollHeight,ch:n.clientHeight,iw:Number(n.width||0),ih:Number(n.height||0),display:getComputedStyle(n).display}:null]})),selectors);
   const hud=await measure();
+  const radarDiag=await page.evaluate(()=>window.__CCG_RADAR_DIAGNOSTICS__?{...window.__CCG_RADAR_DIAGNOSTICS__}:null);
 
   await captureViewport(page,path.join(artifacts,`${label}-hud.png`));
   await page.keyboard.press("Tab");
@@ -74,7 +75,7 @@ try{
   await page.waitForTimeout(250);
   const inventory=await measure();
   await captureViewport(page,path.join(artifacts,`${label}-inventory.png`));
-  fs.writeFileSync(path.join(artifacts,`${label}.json`),JSON.stringify({hud,inventory},null,2));
+  fs.writeFileSync(path.join(artifacts,`${label}.json`),JSON.stringify({hud,inventory,radarDiag},null,2));
   const bounds={x:0,y:0,right:width,bottom:height};
   const inside=(a,b)=>a&&a.w>0&&a.x>=b.x-2&&a.y>=b.y-2&&a.right<=b.right+2&&a.bottom<=b.bottom+2;
   const separate=(a,b)=>a.right<=b.x+2||b.right<=a.x+2||a.bottom<=b.y+2||b.bottom<=a.y+2;
@@ -87,6 +88,8 @@ try{
     const radar=hud["#radar-canvas"],cssRatio=radar.w/Math.max(1,radar.h),bitmapRatio=radar.iw/Math.max(1,radar.ih);
     assert.ok(Math.abs(cssRatio-bitmapRatio)<.035,`${width}x${height}: radar backing bitmap must match rendered aspect ratio: ${JSON.stringify(radar)}`);
     assert.ok(Math.abs(radar.iw-radar.w)<=2&&Math.abs(radar.ih-radar.h)<=2,`${width}x${height}: radar bitmap dimensions must track the visible canvas: ${JSON.stringify(radar)}`);
+    assert.ok(radarDiag&&radarDiag.scale>=4,`${width}x${height}: tactical minimap must remain usefully zoomed around the player: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radarDiag.mapWidth>=radarDiag.canvasWidth*.5||radarDiag.mapHeight>=radarDiag.canvasHeight*.65,`${width}x${height}: tactical minimap must occupy a useful share of its canvas: ${JSON.stringify(radarDiag)}`);
     assert.ok(separate(hud[".core-stats"],hud[".hub-inventory"])&&separate(hud[".hub-inventory"],hud[".hub-progress"]),"HUD regions must not overlap");
   }
   for(const key of [".inventory-panel","#inventory-close-top"])assert.ok(inside(inventory[key],bounds),`${width}: ${key} must fit viewport`);
