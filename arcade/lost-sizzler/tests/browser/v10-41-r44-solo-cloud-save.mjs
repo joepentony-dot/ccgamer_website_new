@@ -114,7 +114,7 @@ try{
   assert.equal(restored.fingerprint,restored.expected,"fresh-device reconciliation must restore the exact cloud envelope locally");
   assert.ok(restored.downloads>=1,"cloud restore diagnostic must advance");
   assert.equal(restored.status,"restored","successful cloud download must publish restored status");
-  assert.match(restored.button,/Continue Solo — Floor 1/,"restored cloud save must feed the existing Continue UI");
+  assert.match(restored.button,/Continue — Floor 1/,"restored cloud save must feed the existing Continue UI");
 
   console.log("[r44 cloud] newer cloud save is deferred during active play and applied at menu");
   await page.click("#continue-save-btn");
