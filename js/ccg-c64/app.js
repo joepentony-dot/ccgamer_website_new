@@ -1224,7 +1224,8 @@ document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date()
 
 const initial = vault.restore();
 render(initial);
-if (!initial.allRequiredReady) showSetup();
+// Do not interrupt first-time visitors with a firmware modal. They can choose
+// media immediately; setup is requested only when the selected media needs booting.
 
 window.addEventListener("pagehide", () => {
   releaseAllInput();
