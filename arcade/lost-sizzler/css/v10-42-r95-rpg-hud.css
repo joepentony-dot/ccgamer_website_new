@@ -265,7 +265,7 @@ body[data-run-active="true"] .player-hub{
   max-height:112px!important;
   padding:8px 9px!important;
   gap:8px!important;
-  grid-template-columns:minmax(360px,1.08fr) minmax(330px,.96fr) minmax(390px,1.16fr)!important;
+  grid-template-columns:minmax(0,1.08fr) minmax(0,.96fr) minmax(0,1.16fr)!important;
   border-top:2px solid #8a6a3e!important;
   background:
     linear-gradient(180deg,#171119 0%,#0b080d 58%,#070509 100%)!important;
@@ -516,6 +516,28 @@ body[data-run-active="true"] .overlay .panel h2{
 }
 body[data-run-active="true"] .overlay .panel h3{
   font-family:var(--r95-rpg-font)!important;
+}
+
+/* Short/wide desktop fit: preserve every HUD block without horizontal clipping. */
+@media(max-height:900px) and (min-width:1181px){
+  body[data-run-active="true"] .player-hub{
+    height:100px!important;
+    min-height:100px!important;
+    max-height:100px!important;
+    padding:6px 7px!important;
+    gap:6px!important;
+    grid-template-columns:minmax(0,1.04fr) minmax(0,.9fr) minmax(0,1.16fr)!important;
+  }
+  body[data-run-active="true"] .player-hub .hub-stat{padding:6px 6px 15px!important}
+  body[data-run-active="true"] .player-hub .hub-stat b{margin-top:5px!important;font-size:clamp(12px,1.18vw,17px)!important}
+  body[data-run-active="true"] .player-hub .hub-inventory{padding:5px!important}
+  body[data-run-active="true"] .player-hub .hub-inventory-head{min-height:15px!important;margin-bottom:3px!important}
+  body[data-run-active="true"] .player-hub .quick-slot{height:48px!important}
+  body[data-run-active="true"] .player-hub .hub-progress{gap:4px!important;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,.48fr))!important}
+  body[data-run-active="true"] .player-hub .priority-xp{padding:6px!important}
+  body[data-run-active="true"] .xp-track{margin:5px 0 3px!important}
+  body[data-run-active="true"] .player-hub .run-stat{padding:5px 3px!important}
+  body[data-run-active="true"] .player-hub .run-stat b{margin-top:5px!important;font-size:11px!important}
 }
 
 /* Desktop compression without returning to unreadable micro-text. */
