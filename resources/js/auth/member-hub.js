@@ -476,6 +476,14 @@
   }
 
   function bindControls() {
+    document.getElementById("memberHub")?.addEventListener("click", (event) => {
+      const link = event.target.closest?.('a[href^="#"]');
+      if (!link) return;
+      const id = String(link.getAttribute("href") || "").slice(1);
+      const target = id ? document.getElementById(id) : null;
+      if (target?.tagName === "DETAILS") target.open = true;
+    });
+
     document.getElementById("preferredSystem")?.addEventListener("change", (event) => {
       writePreferredSystem(event.target.value);
     });
