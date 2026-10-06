@@ -83,13 +83,13 @@ function render(snapshot) {
 function showSetup() {
   if (!setup) return;
   setup.hidden = false;
-  document.body.style.overflow = "hidden";
+  document.body.classList.add("is-rom-setup-open");
 }
 
 function hideSetup() {
   if (!setup) return;
   setup.hidden = true;
-  document.body.style.overflow = "";
+  document.body.classList.remove("is-rom-setup-open");
 }
 
 for (const button of document.querySelectorAll("[data-open-setup]")) {

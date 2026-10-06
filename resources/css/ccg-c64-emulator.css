@@ -917,3 +917,33 @@ body.ccg-c64-lab-body {
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-lab-bg__grid { transform: none; }
 }
+
+
+.ccg-c64-legal-card {
+  width: min(900px, 100%);
+  margin: 0 auto;
+}
+
+.ccg-c64-legal-card h1,
+.ccg-c64-legal-card h2 {
+  color: #fff;
+}
+
+.ccg-c64-legal-card h2 {
+  margin: 1.35rem 0 0.35rem;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.ccg-c64-legal-card p {
+  color: var(--c64-lab-muted);
+  line-height: 1.65;
+}
+
+.ccg-c64-legal-card a {
+  color: var(--accent);
+}
+
+body.ccg-c64-lab-body.is-rom-setup-open {
+  overflow: hidden;
+}
