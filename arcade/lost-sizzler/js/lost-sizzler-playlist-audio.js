@@ -254,7 +254,7 @@
     /* Remote CDN songs are chosen once per state for this run and loop locally.
      * That preserves soundtrack variety between runs without downloading another
      * multi-megabyte Supabase MP3 every time a song reaches its end. */
-    audio.preload="metadata";
+    audio.preload=meteredRemote?"none":"metadata";
     audio.loop=meteredRemote;
     audio.volume=0;
     audio.playbackRate=1;
