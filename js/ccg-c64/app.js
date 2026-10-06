@@ -36,6 +36,7 @@ const fullscreenButton = document.querySelector("[data-fullscreen]");
 const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
+const warpLoadButton = document.querySelector("[data-warp-load]");
 const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
 const loadDiskButton = document.querySelector("[data-load-disk]");
@@ -66,9 +67,11 @@ const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
 const PAL_FRAME_MS = 1000 / 50.125;
+const WARP_LOAD_FACTOR = 4;
 let machine = null;
 let running = false;
 let paused = false;
+let warpLoadActive = false;
 let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
@@ -204,8 +207,9 @@ function powerOffAudio() {
 function toggleAudioMute() {
   if (!masterGain || !audioContext) return;
   audioMuted = !audioMuted;
-  masterGain.gain.setTargetAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime, 0.01);
-  updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
+  const silent = audioMuted || warpLoadActive || paused;
+  masterGain.gain.setTargetAtTime(silent ? 0 : 0.72, audioContext.currentTime, 0.01);
+  updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
 }
 
 function applyJoystickPort2() {
@@ -465,6 +469,12 @@ function setControlState(snapshot) {
   if (powerButton) powerButton.disabled = !canBoot;
   if (resetButton) resetButton.disabled = !running;
   if (pauseButton) pauseButton.disabled = !running;
+  if (warpLoadButton) {
+    warpLoadButton.disabled = !running || paused;
+    warpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
+    const strong = warpLoadButton.querySelector("strong");
+    if (strong) strong.textContent = warpLoadActive ? `ON · ${WARP_LOAD_FACTOR}X` : `${WARP_LOAD_FACTOR}X`;
+  }
   if (loadMediaButton) loadMediaButton.disabled = false;
   if (loadDiskButton) loadDiskButton.disabled = false;
   updateMediaControls(snapshot);
@@ -557,7 +567,7 @@ function frameLoop(now) {
   lastFrameTime = now;
 
   if (!paused) {
-    frameAccumulator += delta;
+    frameAccumulator += delta * (warpLoadActive ? WARP_LOAD_FACTOR : 1);
     let frames = 0;
     while (frameAccumulator >= PAL_FRAME_MS) {
       machine.runFrame();
@@ -576,6 +586,7 @@ function powerOff() {
   powerOffAudio();
   running = false;
   paused = false;
+  warpLoadActive = false;
   stopFrameLoop();
   machine = null;
   frameImage = null;
@@ -610,6 +621,7 @@ async function powerOn() {
     const audioReady = await wireAudioToMachine();
     running = true;
     paused = false;
+    warpLoadActive = false;
     frameImage = null;
     frameAccumulator = 0;
     lastFrameTime = 0;
@@ -634,18 +646,57 @@ function resetMachine() {
   machine.reset();
   resetAudioForMachine();
   paused = false;
+  warpLoadActive = false;
   frameAccumulator = 0;
+  lastFrameTime = 0;
+  setAudioPaused(false);
   if (machineState) machineState.textContent = "C64 RESET // RUNNING";
+  if (stageNote) stageNote.textContent = "C64 reset. Warp Load returned to normal 1× speed.";
   setControlState(vault.snapshot());
+}
+
+function setWarpLoad(value) {
+  if (!machine || !running) return;
+  warpLoadActive = Boolean(value);
+
+  // Warp is intentionally silent. The SID worklet keeps consuming its event
+  // ring while the machine advances faster than real time; when warp ends,
+  // resync before restoring audible output.
+  setAudioPaused(warpLoadActive || paused);
+  frameAccumulator = 0;
+  lastFrameTime = 0;
+
+  if (machineState) {
+    machineState.textContent = warpLoadActive
+      ? `WARP LOAD ACTIVE // ${WARP_LOAD_FACTOR}X`
+      : "C64 CORE RUNNING // VIDEO ACTIVE";
+  }
+  if (stageNote) {
+    stageNote.textContent = warpLoadActive
+      ? `Warp Load is running the C64 at up to ${WARP_LOAD_FACTOR}× speed. Audio is muted while warping; switch it off when loading has finished.`
+      : "Warp Load disabled. Normal 1× timing and SID audio restored.";
+  }
+  updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
+  setControlState(vault.snapshot());
+}
+
+function toggleWarpLoad() {
+  if (!machine || !running || paused) return;
+  setWarpLoad(!warpLoadActive);
 }
 
 function togglePause() {
   if (!machine || !running) return;
   paused = !paused;
+  if (paused && warpLoadActive) warpLoadActive = false;
   setAudioPaused(paused);
   frameAccumulator = 0;
   lastFrameTime = 0;
   if (machineState) machineState.textContent = paused ? "C64 PAUSED" : "C64 CORE RUNNING // VIDEO ACTIVE";
+  if (stageNote) stageNote.textContent = paused
+    ? "C64 paused. Warp Load has been cancelled."
+    : "C64 resumed at normal 1× speed.";
+  updateAudioUi(paused ? "PAUSED" : (audioMuted ? "MUTED" : "SID ACTIVE"));
   setControlState(vault.snapshot());
 }
 
@@ -732,6 +783,7 @@ finishSetup?.addEventListener("click", async () => {
 powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", resetMachine);
 pauseButton?.addEventListener("click", togglePause);
+warpLoadButton?.addEventListener("click", toggleWarpLoad);
 audioButton?.addEventListener("click", toggleAudioMute);
 crtButton?.addEventListener("click", cycleCrtMode);
 sizeButton?.addEventListener("click", toggleScreenSize);

@@ -463,6 +463,18 @@ select:focus-visible,
   background: rgba(116, 48, 127, 0.22);
 }
 
+.ccg-c64-button-grid button[data-warp-load][aria-pressed="true"] {
+  border-color: rgba(231, 222, 115, 0.62);
+  background: rgba(126, 117, 45, 0.2);
+  color: #fffbd0;
+  box-shadow: inset 0 0 0 1px rgba(231, 222, 115, 0.08), 0 0 16px rgba(231, 222, 115, 0.08);
+}
+
+.ccg-c64-button-grid button[data-warp-load][aria-pressed="true"] span,
+.ccg-c64-button-grid button[data-warp-load][aria-pressed="true"] strong {
+  color: #fff6a8;
+}
+
 .ccg-c64-button-grid button:hover:not(:disabled),
 .ccg-c64-media-row button:hover:not(:disabled),
 .ccg-c64-vault-row button:hover:not(:disabled),
