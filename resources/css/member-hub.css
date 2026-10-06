@@ -747,6 +747,42 @@ body.page-member-hub {
   }
 }
 
+@media (max-width: 480px) {
+  .member-hub-main {
+    width: min(100% - 10px, 1280px);
+  }
+
+  .member-profile-bar,
+  .member-panel,
+  .member-hub-main .profile-subsection,
+  .member-hub-main .profile-library,
+  .member-account-settings {
+    padding: 10px;
+  }
+
+  .member-stats {
+    gap: 5px;
+  }
+
+  .member-stat {
+    min-height: 42px;
+    padding: 6px 8px;
+  }
+
+  .member-stat__value {
+    font-size: 1rem;
+  }
+
+  .member-stat__label {
+    font-size: 0.55rem;
+  }
+
+  .member-achievement {
+    min-height: 34px;
+    padding: 5px 6px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .member-avatar-editor *,
   .member-stat,
