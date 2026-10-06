@@ -39,6 +39,10 @@ assert(app.includes("machine.cia1.setKey"), "Physical keyboard input must reach 
 assert(app.includes("machine.setRestoreNmiLine"), "RESTORE/NMI keyboard handling must be wired");
 assert(app.includes("navigator.getGamepads"), "Gamepad polling must be wired");
 assert(app.includes("machine.joyPort2 = byte"), "Gamepad input must route to C64 joystick port 2");
+assert(app.includes('import { D64, d64Variant } from "./core/media/d64.js"'), "D64 parser must be wired into the media bay");
+assert(app.includes("machine.setD64(disk)"), "Drive 8 disk mounting must reach the machine core");
+assert(app.includes("machine.injectLoadAndRun()"), "The first D64 quick-load route must queue LOAD/RUN");
+assert(html.includes("data-load-disk"), "The CCG media bay must expose its D64 load control");
 assert(html.includes("data-input-status"), "The command deck must expose live input state");
 assert(headers.includes("/emulator/c64/*"), "Emulator-specific headers are required");
 assert(headers.includes("Cross-Origin-Embedder-Policy: require-corp"), "COEP must be scoped for SharedArrayBuffer");
