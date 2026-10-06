@@ -30,7 +30,6 @@ const experiences = [
     ["kickstart", ".ccg-e11--kickstart"],
     ["bedrooms", ".ccg-e11--bedrooms"],
     ["nightmare", ".ccg-e11--nightmare"],
-    ["hubbard", ".ccg-e11--hubbard"],
     ["daglish", ".ccg-e11--daglish"],
 ];
 
@@ -243,10 +242,8 @@ async function interact(page, code) {
         if (await page.locator(".ccg-e11--bedrooms .ccg-e11__bedrooms-shield").count() !== 1) throw new Error("BEDROOMS player shield missing");
     }
 
-    if (code === "nightmare" || code === "hubbard") {
-        const expectedSrc = code === "nightmare"
-            ? "https://drive.google.com/file/d/1URmXhKAS62KjI0Pl_m4Fo595e4TS_uqa/preview"
-            : "https://drive.google.com/file/d/1-anJeUpxQe8kzHDehawspQNgmhsUjjSv/preview";
+    if (code === "nightmare") {
+        const expectedSrc = "https://drive.google.com/file/d/1URmXhKAS62KjI0Pl_m4Fo595e4TS_uqa/preview";
         const root = page.locator(".ccg-e11--" + code);
         const frame = root.locator("[data-document-frame]");
         if (await frame.count() !== 1) throw new Error(code + ": protected PDF frame missing");

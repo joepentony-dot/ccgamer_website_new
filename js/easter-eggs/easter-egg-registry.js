@@ -32,7 +32,6 @@ export const EASTER_EGG_REGISTRY = Object.freeze([
     { code: "kickstart", label: "AMIGA BOOT", category: "amiga", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E11" },
     { code: "bedrooms", label: "BEDROOMS", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "external-stream", phase: "E11" },
     { code: "nightmare", label: "C64 NIGHTMARES", category: "book", desktop: true, mobile: true, reducedMotion: "supported", runtime: "external-document", phase: "E11" },
-    { code: "hubbard", label: "ROB HUBBARD — MASTER OF MAGIC", category: "book", desktop: true, mobile: true, reducedMotion: "supported", runtime: "external-document", phase: "E11" },
     { code: "daglish", label: "DAGLISH", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "external-stream", phase: "E11" }
 ]);
 

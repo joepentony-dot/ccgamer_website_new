@@ -1615,7 +1615,6 @@ if (IS_ADMIN_PATH) {
         "kickstart": () => triggerE11("kickstart"),
         "bedrooms": () => triggerE11("bedrooms"),
         "nightmare": () => triggerE11("nightmare"),
-        "hubbard": () => triggerE11("hubbard"),
         "daglish": () => triggerE11("daglish"),
     };
 
@@ -1775,7 +1774,6 @@ if (IS_ADMIN_PATH) {
                     <li data-ccg-secret-code="kickstart">AMIGA BOOT</li>
                     <li data-ccg-secret-code="bedrooms">BEDROOMS</li>
                     <li data-ccg-secret-code="nightmare">C64 NIGHTMARES</li>
-                    <li data-ccg-secret-code="hubbard">ROB HUBBARD — MASTER OF MAGIC</li>
                     <li data-ccg-secret-code="daglish">DAGLISH</li>
                 </ul>
             </div>
