@@ -676,20 +676,15 @@ for (const input of document.querySelectorAll("[data-rom-input]")) {
   });
 }
 
-if (viceFolder) {
-  const canPickFolders = "webkitdirectory" in document.createElement("input");
-  if (!canPickFolders) {
-    viceFolder.closest(".ccg-c64-setup-step")?.setAttribute("hidden", "");
-  }
-
-  viceFolder.addEventListener("change", async () => {
-    const files = [...(viceFolder.files || [])];
-    viceFolder.value = "";
+if (romSetInput) {
+  romSetInput.addEventListener("change", async () => {
+    const files = [...(romSetInput.files || [])];
+    romSetInput.value = "";
     if (!files.length) return;
 
-    const root = files[0].webkitRelativePath?.split("/")[0] || "selected folder";
-    const found = pickViceRoms(files);
+    const found = pickRomFiles(files);
     const loaded = [];
+    const unresolved = [];
 
     for (const [key, file] of Object.entries(found)) {
       try {
@@ -698,19 +693,33 @@ if (viceFolder) {
       } catch {}
     }
 
+    for (const key of REQUIRED_ROM_KEYS) {
+      if (!vault.snapshot().entries[key]) unresolved.push(ROM_SPEC[key].label);
+    }
+
     const snapshot = vault.snapshot();
     render(snapshot);
-    if (viceMessage) {
-      viceMessage.textContent = loaded.length
-        ? `Accepted from ${root}: ${loaded.join(", ")}.`
-        : `No recognised C64 ROM set was found in ${root}.`;
+    if (romSetMessage) {
+      romSetMessage.textContent = loaded.length
+        ? `Accepted: ${loaded.join(", ")}.${unresolved.length ? ` Still needed: ${unresolved.join(", ")}.` : " System ROMs ready."}`
+        : "No recognised C64 ROM filenames were found. Use the individual slots below for unusually named files.";
     }
   });
 }
 
-finishSetup?.addEventListener("click", () => {
+closeSetupButton?.addEventListener("click", hideSetup);
+
+finishSetup?.addEventListener("click", async () => {
   if (!vault.snapshot().allRequiredReady) return;
   hideSetup();
+
+  if (pendingMedia) {
+    const media = pendingMedia;
+    pendingMedia = null;
+    if (!running) await powerOn();
+    if (running && machine) await openMediaBytes(media);
+  }
+
   screen?.focus();
 });
 
