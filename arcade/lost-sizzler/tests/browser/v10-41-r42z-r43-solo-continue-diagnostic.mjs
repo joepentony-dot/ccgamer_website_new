@@ -84,7 +84,7 @@ try{
     mode:String(mode||""),
     runFloor:Number(run?.floor)||0,
     world:Boolean(world),host:Boolean(host),p1:Boolean(p1),p2:Boolean(p2),
-    playMode:String(playMode||""),connected:Boolean(net?.connected),channel:Boolean(net?.channel),
+    playMode:String(playMode||""),networkRuntimePresent:typeof net!=="undefined",
     resumes:Number(window.CCGLostSizzlerV141R43SoloSave?.state?.resumes)||0,
     lastError:String(window.CCGLostSizzlerV141R43SoloSave?.state?.lastError||""),
     saveFloor:Number(window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.summary?.floor)||0,
@@ -93,6 +93,7 @@ try{
     activeElement:String(document.activeElement?.id||document.activeElement?.tagName||"")
   }));
 
+  assert.equal(after.networkRuntimePresent,false,"R107 Continue must remain independent of the retired network runtime");
   assert.equal(resumed,true,`LS-SOLO-008 Continue failed within 20s. before=${JSON.stringify(before)} after=${JSON.stringify(after)} pageErrors=${JSON.stringify(errors)}`);
   const restored=await page.evaluate(()=>({seed:run?.seed,score,health:p1?.health,mana:p1?.mana,x:p1?.x,y:p1?.y}));
   assert.equal(restored.seed,entry.seed,"LS-SOLO-008 diagnostic must restore the saved seed");
