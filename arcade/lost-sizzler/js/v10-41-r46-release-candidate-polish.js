@@ -62,11 +62,25 @@
   function saveStats(stats){try{localStorage.setItem(STATS_KEY,JSON.stringify(stats))}catch(_){}return stats}
   function modeStats(stats,mode){const key=safe(mode)||"unknown";return stats.modes[key]||{runs:0,wins:0,deaths:0,bestScore:0,deepestFloor:0,totalKills:0,totalPlayMs:0}}
 
-  function defaultPrefs(){return{version:1,reducedMotion:false,reducedFlashes:false,largeText:false,musicPercent:30}}
-  function loadPrefs(){try{const parsed=JSON.parse(localStorage.getItem(PREFS_KEY)||"null");return parsed&&Number(parsed.version)===1?{...defaultPrefs(),...parsed,version:1}:defaultPrefs()}catch(_){return defaultPrefs()}}
-  function savePrefs(prefs){try{localStorage.setItem(PREFS_KEY,JSON.stringify({...defaultPrefs(),...prefs,version:1}))}catch(_){}applyPrefs(prefs);return prefs}
+  function defaultPrefs(){return{version:1,reducedMotion:false,reducedFlashes:false,largeText:false,musicPercent:30,musicExplicit:false}}
+  function normalisePrefs(source){
+    const prefs={...defaultPrefs(),...(source||{}),version:1};
+    const staleSilentMusic=prefs.musicExplicit!==true&&clamp(num(prefs.musicPercent,30),0,100)===0;
+    if(staleSilentMusic)prefs.musicPercent=30;
+    return{prefs,migrated:staleSilentMusic}
+  }
+  function loadPrefs(){
+    try{
+      const parsed=JSON.parse(localStorage.getItem(PREFS_KEY)||"null");
+      if(!parsed||Number(parsed.version)!==1)return defaultPrefs();
+      const {prefs,migrated}=normalisePrefs(parsed);
+      if(migrated)localStorage.setItem(PREFS_KEY,JSON.stringify(prefs));
+      return prefs
+    }catch(_){return defaultPrefs()}
+  }
+  function savePrefs(prefs){const normalised=normalisePrefs(prefs).prefs;try{localStorage.setItem(PREFS_KEY,JSON.stringify(normalised))}catch(_){}applyPrefs(normalised);return normalised}
   function applyPrefs(source=loadPrefs()){
-    const prefs={...defaultPrefs(),...(source||{})};
+    const prefs=normalisePrefs(source).prefs;
     document.body.classList.toggle("ccg-reduced-motion",Boolean(prefs.reducedMotion));
     document.body.classList.toggle("ccg-reduced-flashes",Boolean(prefs.reducedFlashes));
     document.body.classList.toggle("ccg-large-text",Boolean(prefs.largeText));
@@ -167,7 +181,7 @@
       <label class="ccg-r46-option"><span><b>LARGER TEXT</b><small>Increases informational and menu text.</small></span><input type="checkbox" data-pref="largeText" ${prefs.largeText?"checked":""}></label>
       <label class="ccg-r46-option"><span><b>MUSIC LEVEL</b><small>Independent of the existing Sound On/Off switch.</small></span><span><input type="range" min="0" max="100" step="5" value="${clamp(num(prefs.musicPercent,30),0,100)}" data-pref="musicPercent"><b id="ccg-r46-music-value">${Math.round(clamp(num(prefs.musicPercent,30),0,100))}%</b></span></label>
     </div>`;
-    body.querySelectorAll("[data-pref]").forEach(input=>input.addEventListener("input",()=>{const next=loadPrefs(),key=input.dataset.pref;next[key]=input.type==="checkbox"?input.checked:num(input.value,30);savePrefs(next)}));
+    body.querySelectorAll("[data-pref]").forEach(input=>input.addEventListener("input",()=>{const next=loadPrefs(),key=input.dataset.pref;next[key]=input.type==="checkbox"?input.checked:num(input.value,30);if(key==="musicPercent")next.musicExplicit=true;savePrefs(next)}));
     overlay.classList.remove("hidden");state.optionsOpen=true
   }
 
