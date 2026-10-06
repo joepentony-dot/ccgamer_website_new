@@ -265,7 +265,7 @@ body[data-run-active="true"] .ccg-game>.player-hub{
   max-height:128px!important;
   padding:8px 9px!important;
   gap:8px!important;
-  grid-template-columns:minmax(0,1.05fr) minmax(0,1.2fr) minmax(0,1.05fr)!important;
+  grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr) minmax(500px,1.3fr)!important;
   border-top:2px solid #8a6a3e!important;
   background:
     linear-gradient(180deg,#171119 0%,#0b080d 58%,#070509 100%)!important;
@@ -422,7 +422,7 @@ body[data-run-active="true"] .stack-count{
 body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{
   display:grid!important;
   /* XP plus Objective, Score, dynamically-owned Gold and Floor. */
-  grid-template-columns:minmax(0,1.65fr) repeat(4,minmax(52px,.48fr))!important;
+  grid-template-columns:minmax(190px,1.45fr) repeat(4,minmax(78px,.62fr))!important;
   grid-template-rows:minmax(0,1fr)!important;
   grid-auto-rows:minmax(0,1fr)!important;
   gap:6px!important;
@@ -476,6 +476,11 @@ body[data-run-active="true"] .ccg-game>.player-hub .run-stat{
   border:1px solid #433648!important;
   background:linear-gradient(180deg,#141017,#0b080d)!important;
   text-align:center!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
 }
 body[data-run-active="true"] .ccg-game>.player-hub .run-stat span{
   color:#817686!important;
@@ -483,9 +488,15 @@ body[data-run-active="true"] .ccg-game>.player-hub .run-stat span{
   letter-spacing:.6px!important;
 }
 body[data-run-active="true"] .ccg-game>.player-hub .run-stat b{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
   margin-top:8px!important;
   color:#e2d5e5!important;
-  font:700 13px/1 var(--r95-data-font)!important;
+  font:700 clamp(10px,.78vw,13px)/1 var(--r95-data-font)!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
 }
 body[data-run-active="true"] .ccg-game>.player-hub .run-stat:nth-child(3) b{color:var(--r95-gold)!important}
 body[data-run-active="true"] .pending-level-up{
@@ -539,7 +550,7 @@ body[data-run-active="true"] .overlay .panel h3{
    * duplicate bottom keyring so the quick belt never clips below the viewport. */
   body[data-run-active="true"] .ccg-game>.player-hub #quick-keyring-icons{display:none!important}
   body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{height:32px!important}
-  body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{gap:4px!important;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,.48fr))!important}
+  body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{gap:4px!important;grid-template-columns:minmax(170px,1.35fr) repeat(4,minmax(72px,.62fr))!important}
   body[data-run-active="true"] .ccg-game>.player-hub .priority-xp{padding:6px!important}
   body[data-run-active="true"] .xp-track{margin:5px 0 3px!important}
   body[data-run-active="true"] .ccg-game>.player-hub .run-stat{padding:5px 3px!important}
