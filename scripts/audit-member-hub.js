@@ -41,8 +41,10 @@ const deletionMigration = read("supabase/migrations/20260805_member_hub_deletion
   'id="memberOverview"',
   'id="memberFavourites"',
   'id="memberAchievements"',
-  'id="memberCommunity"',
   'id="memberSettings"',
+  'id="profileAvatarInput"',
+  'id="profileAvatarChange"',
+  'id="profileAvatarRemove"',
   'id="favouriteGamesList"',
   'id="prefsForm"',
   'id="logoutBtn"',
@@ -88,10 +90,10 @@ if (duplicateIds.length) problems.push(`Member Hub contains duplicate IDs: ${[..
 [
   ".member-hub-hero",
   ".member-stats",
-  ".member-hub-grid",
+  ".member-dashboard-grid",
   ".member-achievements",
-  ".member-community-grid",
-  ".member-account-settings"
+  ".member-account-settings",
+  ".member-avatar-actions"
 ].forEach((selector) => {
   requireText(css, selector, `Member Hub stylesheet is missing: ${selector}.`);
 });
@@ -178,4 +180,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Member Hub audit passed with the restored shared library interface and tombstone-safe account synchronisation.");
+console.log("Member Hub audit passed with compact profile layout, avatar controls, shared library interface and tombstone-safe account synchronisation.");

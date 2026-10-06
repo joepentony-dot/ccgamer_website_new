@@ -3,6 +3,9 @@ import { getSupabaseClient } from './supabase-client.js';
 const DEBUG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
 const TOP_PICKS_LIMIT = 10;
 const CANONICAL_SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+const PROFILE_AVATAR_BUCKET = 'profile-avatars';
+const PROFILE_AVATAR_MAX_BYTES = 2 * 1024 * 1024;
+const PROFILE_AVATAR_FALLBACK = '/favicon.ico';
 
 export function deriveTopPickSlugs(rows) {
   return new Set(
@@ -124,6 +127,11 @@ function renderProfile(user, profile) {
   if (displayNameEl) displayNameEl.textContent = resolveProfileDisplayName(user, profile);
   if (emailValueEl) emailValueEl.textContent = 'Hidden for privacy';
   if (joinDateEl) joinDateEl.textContent = formatJoinDate(profile.created_at || profile.joined_at || user.created_at);
+
+  const avatarEl = document.getElementById('profileAvatar');
+  if (avatarEl) {
+    avatarEl.src = String(profile.avatar_url || '').trim() || PROFILE_AVATAR_FALLBACK;
+  }
 
   const notifyNewGames = document.getElementById('notifyNewGames');
   if (notifyNewGames) notifyNewGames.checked = Boolean(profile.notify_new_games);
@@ -371,6 +379,144 @@ async function fetchTopPicks(supabaseClient, userId) {
   return Array.isArray(data) ? data : [];
 }
 
+function avatarExtension(file) {
+  const mime = String(file?.type || '').toLowerCase();
+  if (mime === 'image/jpeg') return 'jpg';
+  if (mime === 'image/png') return 'png';
+  if (mime === 'image/webp') return 'webp';
+  return '';
+}
+
+async function removeStoredAvatars(supabaseClient, userId) {
+  const { data: files, error: listError } = await supabaseClient.storage
+    .from(PROFILE_AVATAR_BUCKET)
+    .list(userId, { limit: 20 });
+
+  if (listError) throw listError;
+
+  const paths = (Array.isArray(files) ? files : [])
+    .filter((file) => file?.name && file.name !== '.emptyFolderPlaceholder')
+    .map((file) => `${userId}/${file.name}`);
+
+  if (!paths.length) return;
+
+  const { error: removeError } = await supabaseClient.storage
+    .from(PROFILE_AVATAR_BUCKET)
+    .remove(paths);
+
+  if (removeError) throw removeError;
+}
+
+async function saveAvatarUrl(supabaseClient, userId, avatarUrl) {
+  const { error } = await supabaseClient
+    .from('profiles')
+    .update({ avatar_url: avatarUrl })
+    .eq('id', userId);
+
+  if (error) throw error;
+}
+
+async function uploadProfileAvatar({ supabaseClient, user, file, messageBox }) {
+  if (!file) return false;
+
+  const extension = avatarExtension(file);
+  if (!extension) {
+    setMessage(messageBox, 'Avatar must be a JPG, PNG or WebP image.', 'error');
+    return false;
+  }
+
+  if (Number(file.size || 0) > PROFILE_AVATAR_MAX_BYTES) {
+    setMessage(messageBox, 'Avatar must be 2 MB or smaller.', 'error');
+    return false;
+  }
+
+  const changeButton = document.getElementById('profileAvatarChange');
+  const removeButton = document.getElementById('profileAvatarRemove');
+  if (changeButton) changeButton.disabled = true;
+  if (removeButton) removeButton.disabled = true;
+  setMessage(messageBox, 'Uploading avatar…');
+
+  try {
+    await removeStoredAvatars(supabaseClient, user.id);
+
+    const path = `${user.id}/avatar.${extension}`;
+    const { error: uploadError } = await supabaseClient.storage
+      .from(PROFILE_AVATAR_BUCKET)
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data: publicData } = supabaseClient.storage
+      .from(PROFILE_AVATAR_BUCKET)
+      .getPublicUrl(path);
+
+    const baseUrl = String(publicData?.publicUrl || '').trim();
+    if (!baseUrl) throw new Error('Avatar URL was not returned by storage.');
+
+    const avatarUrl = `${baseUrl}?v=${Date.now()}`;
+    await saveAvatarUrl(supabaseClient, user.id, avatarUrl);
+
+    const avatarEl = document.getElementById('profileAvatar');
+    if (avatarEl) avatarEl.src = avatarUrl;
+    setMessage(messageBox, 'Avatar updated.', 'success');
+    return true;
+  } catch (error) {
+    console.error('[profile] Avatar upload failed', error, { userId: user.id });
+    setMessage(messageBox, 'Could not update avatar. Please try again.', 'error');
+    return false;
+  } finally {
+    if (changeButton) changeButton.disabled = false;
+    if (removeButton) removeButton.disabled = false;
+  }
+}
+
+async function removeProfileAvatar({ supabaseClient, user, messageBox }) {
+  const changeButton = document.getElementById('profileAvatarChange');
+  const removeButton = document.getElementById('profileAvatarRemove');
+  if (changeButton) changeButton.disabled = true;
+  if (removeButton) removeButton.disabled = true;
+  setMessage(messageBox, 'Removing avatar…');
+
+  try {
+    await removeStoredAvatars(supabaseClient, user.id);
+    await saveAvatarUrl(supabaseClient, user.id, '');
+
+    const avatarEl = document.getElementById('profileAvatar');
+    if (avatarEl) avatarEl.src = PROFILE_AVATAR_FALLBACK;
+    setMessage(messageBox, 'Avatar removed.', 'success');
+    return true;
+  } catch (error) {
+    console.error('[profile] Avatar removal failed', error, { userId: user.id });
+    setMessage(messageBox, 'Could not remove avatar. Please try again.', 'error');
+    return false;
+  } finally {
+    if (changeButton) changeButton.disabled = false;
+    if (removeButton) removeButton.disabled = false;
+  }
+}
+
+function bindAvatarControls({ supabaseClient, user, messageBox }) {
+  const input = document.getElementById('profileAvatarInput');
+  const changeButton = document.getElementById('profileAvatarChange');
+  const removeButton = document.getElementById('profileAvatarRemove');
+
+  changeButton?.addEventListener('click', () => input?.click());
+
+  input?.addEventListener('change', async () => {
+    const file = input.files?.[0] || null;
+    await uploadProfileAvatar({ supabaseClient, user, file, messageBox });
+    input.value = '';
+  });
+
+  removeButton?.addEventListener('click', async () => {
+    await removeProfileAvatar({ supabaseClient, user, messageBox });
+  });
+}
+
 async function savePreferences({ supabaseClient, user, messageBox }) {
   const notifyNewGames = Boolean(document.getElementById('notifyNewGames')?.checked);
   const notifyNewsletter = Boolean(document.getElementById('notifyNewsletter')?.checked);
@@ -562,6 +708,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     renderProfile(user, profile);
+    bindAvatarControls({ supabaseClient, user, messageBox });
     await refreshFavourites();
     log('Profile loaded', { userId: user.id });
 
