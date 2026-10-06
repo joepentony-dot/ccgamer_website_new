@@ -204,7 +204,7 @@ try{
     };
   });
   assert.equal(retiredOnlineAudit.zeroServer,true,"V10.42 zero-server release must remain authoritative for retired online entry points.");
-  assert.equal(retiredOnlineAudit.releaseModel,"zero-server-cost","Online entry retirement must remain part of the zero-server-cost release model.");
+  assert.equal(retiredOnlineAudit.releaseModel,"local-browser","Retired online entry points must remain governed by the R107 local-browser release model.");
   assert.equal(retiredOnlineAudit.onlineMultiplayer,"disabled","Online multiplayer must remain disabled in the zero-server release.");
   assert.equal(retiredOnlineAudit.createPresent,false,"Dungeon Multiplayer entry must remain physically absent from the rendered release UI.");
   assert.equal(retiredOnlineAudit.joinPresent,false,"Room-code Join must remain physically absent from the rendered release UI.");
