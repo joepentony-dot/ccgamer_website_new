@@ -264,7 +264,7 @@ try{
     });
     assert.equal(activeSwing.triggered,true,`the live melee controller must accept a sword attack: ${JSON.stringify(activeSwing)}`);
     assert.ok(activeSwing.at>activeSwing.previous,"a live sword attack must start the player sword animation");
-    assert.ok(activeSwing.ms>=220&&activeSwing.ms<=320,`sword swing duration must remain visible and bounded: ${activeSwing.ms}`);
+    assert.ok(activeSwing.ms>=320&&activeSwing.ms<=460,`sword swing duration must remain visible, deliberate and bounded for projectile deflection: ${activeSwing.ms}`);
     assert.ok(activeSwing.dir&&(activeSwing.dir.x||activeSwing.dir.y),`sword swing must preserve an attack direction: ${JSON.stringify(activeSwing.dir)}`);
     assert.equal(activeSwing.hasRenderer,true,"active run must install the dedicated player weapon renderer");
     await assertHealthy(state,"active solo run");
