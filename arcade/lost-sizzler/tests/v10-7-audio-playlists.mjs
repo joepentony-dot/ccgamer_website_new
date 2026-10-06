@@ -15,6 +15,8 @@ const baseAudio=read('arcade/lost-sizzler/js/audio.js');
 const overrides=read('arcade/lost-sizzler/js/admin-audio-overrides.js');
 const owner=read('arcade/lost-sizzler/js/asset-overrides.js');
 const admin=read('admin/js/arcade-assets.js');
+const index=read('arcade/lost-sizzler/index.html');
+const publicIndex=read('arcade/c64-dungeon-carnage/index.html');
 
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
 for(const state of ['normal','danger','sanctuary','named','stalker']){
@@ -36,9 +38,19 @@ assert(patch.includes('if(adminAudioPending())return [];'),'Packaged authored mu
 assert(patch.includes('return packagedSources(state);'),'Packaged authored tracks must remain the silence-prevention source after hydration resolves without a custom track.');
 assert(patch.includes('function startFallback(){\n    fallbackActive=false;\n    return false;'),'Legacy/generated music fallback must be disabled outright.');
 assert(!patch.includes('original.startMusic?.()'),'The advanced soundtrack owner must never invoke the legacy generated music engine.');
-assert(baseAudio.includes('productionMusicExclusive=true'),'The base audio layer must explicitly disable bundled/generated music ownership.');
-assert(baseAudio.includes('if(productionMusicExclusive)return true'),'The legacy generated music engine must remain disabled while the playlist owner controls authored tracks.');
-assert(baseAudio.includes('if(!started||productionMusicExclusive)return'),'The base startMusic path must never start bundled/default music in production.');
+assert(baseAudio.includes('productionMusicExclusive=()=>Boolean(window.__CCG_LOST_SIZZLER_PLAYLIST_AUDIO__||window.CCGLostSizzlerPlaylistAudio)'),'Base audio must yield dynamically once the playlist owner is installed.');
+assert(baseAudio.includes('if(productionMusicExclusive())return true'),'Base start must yield to the installed playlist owner.');
+assert(baseAudio.includes('if(!started||productionMusicExclusive())return'),'Base startMusic must stop owning music after playlist takeover.');
+assert(owner.includes('ccg-arcade-assets/music/lostSizzlerExploration'),'R110 must pin the approved uploaded Exploration soundtrack into the release manifest.');
+assert(owner.includes('ccg-arcade-assets/music/lostSizzlerDanger'),'R110 must pin the approved uploaded Danger soundtrack into the release manifest.');
+assert(owner.includes('ccg-arcade-assets/music/lostSizzlerSanctuary'),'R110 must pin the approved uploaded Sanctuary soundtrack into the release manifest.');
+assert(owner.includes('ccg-arcade-assets/music/lostSizzlerNamed'),'R110 must pin the approved uploaded Named soundtrack into the release manifest.');
+assert(owner.includes('ccg-arcade-assets/music/lostSizzlerStalker'),'R110 must pin the approved uploaded Stalker soundtrack into the release manifest.');
+for(const html of [index,publicIndex]){
+  const basePos=html.indexOf('js/audio.js?v=20261006r110');
+  const playlistPos=html.indexOf('js/lost-sizzler-playlist-audio.js?v=20261006r110-music-core');
+  assert(basePos>=0&&playlistPos>basePos,'R110 public entries must core-load the playlist owner immediately after base audio.');
+}
 assert(patch.includes('function retryUploadedMusicOnGesture(event)')&&patch.includes('event?.target?.closest?.("#solo-btn,#tutorial-zone-btn")'),'Mobile playback rejection and trusted launch must use an event-aware real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the soundtrack from a user gesture.');
 assert(patch.includes('window.addEventListener("ccg:run-started"'),'Authoritative run start must force a fresh playlist takeover.');
