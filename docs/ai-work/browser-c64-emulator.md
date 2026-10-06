@@ -53,6 +53,13 @@
 - Mobile now exposes an on-page Port 2 direction pad and FIRE button. Touch and standard gamepad input are merged as active-low joystick state rather than overwriting one another.
 - The physical-key held-binding key now uses the stable KeyboardEvent.code identity so releasing Shift before a symbol key cannot strand a C64 matrix key.
 
+## SID analogue path, G64 and source inventory — 6 October 2026
+
+- The CCG AudioWorklet now routes the three cycle-clocked SID voices through the retained reSID-derived transistor-level SID filter/mixer/nonlinear volume stage and the C64 external RC output filter. The earlier lightweight volume/DC placeholder has been removed.
+- The filter implementation remains JavaScript source and keeps the upstream GPL/reSID/VICE notices; no compiled SID WebAssembly payload is shipped by the CCG route.
+- G64 raw GCR track images are now supported through the retained G64 parser. Because G64 exists to preserve raw 1541 track layout and protection behavior, the CCG route requires the user's optional 1541 DOS ROM and automatically selects True 1541 mode for G64 media.
+- A CCG-specific THIRD-PARTY-NOTICES file now records the bundled GPL core/reSID/VICE provenance without claiming that unrelated upstream fonts, 3D models or third-party UI dependencies are part of the CCG build.
+
 ## Not merge-ready yet
 
 The machine/video core, SID browser audio, keyboard/gamepad/touch input, D64/D71/D81 media, optional True 1541, TAP/T64, CRT cartridge loading and three local Game Vault slots are now connected. Before merge, the remaining product work is final SID analogue-fidelity qualification, a decision on G64 support, final third-party/source inventory, deployed browser acceptance, release sitemap registration and a last Lighthouse/performance review. The Stage 1 shell remains the visual contract.
