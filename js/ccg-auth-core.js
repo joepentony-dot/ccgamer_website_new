@@ -42,6 +42,16 @@ function buildErrorInfo(error, context) {
   } else if (lower.includes('email not confirmed')) {
     category = 'credentials';
     userMessage = 'Please confirm your email before logging in.';
+  } else if (
+    lower.includes('password should be at least')
+    || lower.includes('password must be at least')
+    || lower.includes('weak password')
+    || lower.includes('weak_password')
+  ) {
+    category = 'weak_password';
+    const minimumMatch = message.match(/at least\s+(\d+)\s+characters?/i);
+    const minimum = minimumMatch ? minimumMatch[1] : '10';
+    userMessage = `Password must be at least ${minimum} characters.`;
   } else if (lower.includes('already registered') || lower.includes('user already registered')) {
     category = 'duplicate_email';
     userMessage = 'This email is already registered. Use Forgot password to reset your password.';
