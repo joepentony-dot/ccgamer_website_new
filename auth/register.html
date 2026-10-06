@@ -85,7 +85,7 @@
       const email = byId('email').value;
       const password = byId('password').value;
 
-      if (password.trim().length < 10) {
+      if (password.length < 10) {
         setMessage(message, 'Password must be at least 10 characters.', 'error');
         byId('password').focus();
         return;
