@@ -10,7 +10,7 @@
   position:relative!important;
   display:grid!important;
   grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:minmax(190px,52%) minmax(0,1fr)!important;
+  grid-template-rows:minmax(110px,1fr) minmax(430px,auto)!important;
   grid-auto-flow:row!important;
   gap:7px!important;
   padding:7px!important;
