@@ -20,6 +20,7 @@ let syncCalls=0;
 
 const player={
   bronzeKeys:1,
+  banishmentEssence:2,
   torchMs:0,
   inventorySlots:3,
   inventory:[
@@ -31,7 +32,7 @@ const player={
 
 const context={
   console,
-  window:{},
+  window:{CCGLostSizzlerV142ProceduralOverhaul:{essenceCost:()=>3}},
   mode:'playing',
   document:{
     body:{dataset:{runActive:'true'}},
@@ -64,28 +65,30 @@ const context={
 vm.createContext(context);
 vm.runInContext(source,context,{filename:'v10-6-inventory-hud-fix.js'});
 
-assert.match(target.innerHTML,/STORED ITEMS/);
+assert.match(target.innerHTML,/CARRIED ITEMS/);
 assert.match(target.innerHTML,/RESTORATION POTION/);
 assert.match(target.innerHTML,/×2/,'potion quantity is visible in the tactical inventory');
 assert.match(target.innerHTML,/primary-item-key">E<\/kbd>/,'potion keeps its dedicated E shortcut');
 assert.match(target.innerHTML,/number-item-key[^>]*>1<\/kbd>/,'potion also shows its exact Quick Inventory slot number');
 assert.match(target.innerHTML,/FLAMING TORCH/);
 assert.match(target.innerHTML,/primary-item-key">Q<\/kbd>/);
-assert.match(target.innerHTML,/TELEPORT SPELL/,'zero-count carriable item types stay visible for recognition');
-assert.match(target.innerHTML,/BANISHMENT FLASK/);
+assert.doesNotMatch(target.innerHTML,/TELEPORT SPELL/,'zero-count items must not clutter the live summary');
+assert.doesNotMatch(target.innerHTML,/BANISHMENT FLASK/,'zero-count items must not clutter the live summary');
 assert.match(target.innerHTML,/BRONZE KEY/);
-assert.match(target.innerHTML,/Automatically opens a bronze door or locked chest/);
+assert.match(target.innerHTML,/BRONZE KEYS/);
 assert.match(target.innerHTML,/primary-item-key">AUTO<\/kbd>/);
 assert.match(target.innerHTML,/data-kind="bronze"/,'bronze key has a graphical icon');
 assert.match(target.innerHTML,/EXIT SIGIL/);
-assert.equal(title.textContent,'INVENTORY & KEYS');
+assert.match(target.innerHTML,/BANISHMENT ESSENCE/);
+assert.match(target.innerHTML,/2\/3/);
+assert.equal(title.textContent,'KEYS & ITEMS');
 assert.equal(tag.textContent,'LIVE');
 assert.match(commands.innerHTML,/1–6/);
-assert.match(commands.innerHTML,/USE MATCHING SLOT/);
+assert.match(commands.innerHTML,/QUICK SLOT/);
 assert.match(controls.innerHTML,/E POTION/);
 assert.match(controls.innerHTML,/Q TORCH/);
 assert.match(controls.innerHTML,/1–6 QUICK SLOT/);
-assert.match(controls.innerHTML,/O = PLAYER 2 POTION/,'the second potion control remains explicitly Player 2 only');
+assert.doesNotMatch(controls.innerHTML,/PLAYER 2|2P ONLY|IJKL|R-CTRL/,'retired multiplayer controls must not return');
 assert.equal(hubHead.textContent,'QUICK INVENTORY · KEYS 1-3');
 
 assert.equal(keyHandlers.length,1,'one numbered Quick Inventory keyboard handler is installed');
