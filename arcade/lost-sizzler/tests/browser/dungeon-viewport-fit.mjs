@@ -63,7 +63,9 @@ try{
   const separate=(a,b)=>a.right<=b.x+2||b.right<=a.x+2||a.bottom<=b.y+2||b.bottom<=a.y+2;
   for(const key of [".player-hub",".core-stats","#hud-health","#hud-p2","#hud-mana","#hud-weapon"])assert.ok(inside(hud[key],bounds),`${width}: ${key} must be visible`);
   if(!mobile){
-    for(const key of [".hub-inventory",".hub-progress",".tactical-zone",".radar-card",".shortcut-dock","#item-shortcuts","#quick-keyring-icons"])assert.ok(inside(hud[key],bounds),`${width}: ${key} must fit viewport`);
+    for(const key of [".hub-inventory",".hub-progress",".tactical-zone",".radar-card",".shortcut-dock","#item-shortcuts"])assert.ok(inside(hud[key],bounds),`${width}: ${key} must fit viewport`);
+    if(height<=900)assert.equal(hud["#quick-keyring-icons"]?.display,"none",`${width}x${height}: duplicate bottom keyring must collapse on short desktop viewports`);
+    else assert.ok(inside(hud["#quick-keyring-icons"],bounds),`${width}: bottom keyring must fit when there is enough vertical space`);
     for(const key of [".hub-inventory",".hub-progress","#item-shortcuts"])assert.ok(hud[key].sw<=hud[key].cw+2&&hud[key].sh<=hud[key].ch+2,`${width}: ${key} clips content or needs unnecessary scrolling: ${JSON.stringify(hud[key])}`);
     assert.ok(separate(hud[".core-stats"],hud[".hub-inventory"])&&separate(hud[".hub-inventory"],hud[".hub-progress"]),"HUD regions must not overlap");
   }
