@@ -143,6 +143,7 @@ jobs:
         run: |
           set -uo pipefail
           tests=(
+            "arcade/lost-sizzler/tests/browser/dungeon-viewport-fit.mjs"
             "arcade/lost-sizzler/tests/browser/v10-42-r51-fire-lockout-browser.mjs"
             "arcade/lost-sizzler/tests/v10-6-browser.mjs"
             "arcade/lost-sizzler/tests/browser/v10-41-load-safety.mjs"
@@ -169,3 +170,11 @@ jobs:
             printf ' - %s\n' "${failures[@]}"
             exit 1
           fi
+
+      - name: Upload viewport geometry and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-viewport-fit
+          path: node_modules/viewport-artifacts/
+          if-no-files-found: ignore
