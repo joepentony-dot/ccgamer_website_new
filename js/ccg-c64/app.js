@@ -85,6 +85,10 @@ let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
 let onlineLibraryEntries = [];
+let autoStartSteps = null;
+let autoStartTypeRest = "";
+let autoStartSawBusy = false;
+let autoStartBudget = 0;
 let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
 if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
 let fixed2x = localStorage.getItem("ccg.emulator.c64.size") === "2x";
@@ -657,6 +661,97 @@ function blitMachine() {
   screenCtx.putImageData(frameImage, 0, 0);
 }
 
+function basicReady() {
+  const ram = machine?.mem?.ram;
+  return Boolean(ram && ram[0x00C6] === 0 && ram[0x00CC] === 0 && ram[0x002C] === 0x08);
+}
+
+function cancelAutoStart() {
+  autoStartSteps = null;
+  autoStartTypeRest = "";
+  autoStartSawBusy = false;
+  autoStartBudget = 0;
+}
+
+function queueAutoStart(steps) {
+  autoStartSteps = steps.slice();
+  autoStartTypeRest = "";
+  autoStartSawBusy = false;
+  autoStartBudget = 10 * 60 * 60;
+}
+
+function serviceAutoStart() {
+  if (!autoStartSteps || !machine || !running || paused) return;
+  if (autoStartBudget-- <= 0) {
+    cancelAutoStart();
+    if (stageNote) stageNote.textContent = "Automatic start timed out. The game remains mounted for manual loading.";
+    return;
+  }
+
+  const step = autoStartSteps[0];
+  if (!step) {
+    cancelAutoStart();
+    return;
+  }
+
+  if (step.ready) {
+    if (basicReady()) autoStartSteps.shift();
+  } else if (step.type !== undefined) {
+    if (autoStartTypeRest === "") autoStartTypeRest = step.type;
+    autoStartTypeRest = autoStartTypeRest.slice(machine.bufferKeyboardText(autoStartTypeRest));
+    if (autoStartTypeRest === "") autoStartSteps.shift();
+  } else if (step.loadDone) {
+    if (!basicReady()) autoStartSawBusy = true;
+    if (autoStartSawBusy && basicReady()) {
+      autoStartSawBusy = false;
+      autoStartSteps.shift();
+    }
+  } else if (step.run) {
+    try { step.run(); } catch (error) {
+      cancelAutoStart();
+      if (stageNote) stageNote.textContent = error?.message || "Automatic game start failed.";
+      return;
+    }
+    autoStartSteps.shift();
+  } else {
+    autoStartSteps.shift();
+  }
+
+  if (autoStartSteps && autoStartSteps.length === 0) cancelAutoStart();
+}
+
+async function prepareFreshGameSession() {
+  if (!machine || !running) return;
+  cancelAutoStart();
+  releaseAllInput();
+
+  mountedDisk = null;
+  mountedTape = null;
+  mountedCartridge = null;
+  driveMode = "fast";
+  localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+
+  const fresh = new C64Machine();
+  fresh.loadROMs({
+    kernal: vault.getBytes("kernal"),
+    basic: vault.getBytes("basic"),
+    charRom: vault.getBytes("charRom"),
+  });
+  const driveRom = vault.getBytes("drive1541");
+  if (driveRom) fresh.attachDrive(driveRom);
+  fresh.setTrueDrive(false);
+
+  machine = fresh;
+  paused = false;
+  warpLoadActive = false;
+  frameImage = null;
+  frameAccumulator = 0;
+  lastFrameTime = 0;
+  await wireAudioToMachine();
+  setAudioPaused(false);
+  setControlState(vault.snapshot());
+}
+
 function frameLoop(now) {
   if (!running || !machine) return;
   pollGamepad();
@@ -672,7 +767,10 @@ function frameLoop(now) {
       frameAccumulator -= PAL_FRAME_MS;
       frames += 1;
     }
-    if (frames) blitMachine();
+    if (frames) {
+      blitMachine();
+      serviceAutoStart();
+    }
   }
 
   frameHandle = requestAnimationFrame(frameLoop);
@@ -685,6 +783,7 @@ function powerOff() {
   running = false;
   paused = false;
   warpLoadActive = false;
+  cancelAutoStart();
   stopFrameLoop();
   machine = null;
   frameImage = null;
@@ -741,6 +840,7 @@ async function powerOn() {
 
 function resetMachine() {
   if (!machine || !running) return;
+  cancelAutoStart();
   machine.reset();
   resetAudioForMachine();
   paused = false;
@@ -910,10 +1010,15 @@ async function openMediaBytes(media) {
 
   if (type === "prg") {
     if (bytes.length < 3) throw new Error("That PRG is too small to contain a C64 load address.");
-    machine.loadPRG(bytes);
-    machine.injectRun();
-    if (machineState) machineState.textContent = `PRG STARTED // ${name.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = `${name} loaded and RUN queued.`;
+    queueAutoStart([
+      { ready: true },
+      { run: () => {
+        machine.loadPRG(bytes);
+        machine.injectRun();
+        if (machineState) machineState.textContent = `PRG AUTO-START // ${name.toUpperCase()}`;
+        if (stageNote) stageNote.textContent = `${name} loaded and RUN was entered automatically.`;
+      } },
+    ]);
     screen?.focus();
     return true;
   }
@@ -943,17 +1048,22 @@ async function openMediaBytes(media) {
       Boolean(vault.getBytes("drive1541"));
     machine.setTrueDrive(useTrueDrive);
 
-    if (!useTrueDrive) machine.injectLoadAndRun();
+    queueAutoStart([
+      { ready: true },
+      { type: 'LOAD"*",8,1\r' },
+      { loadDone: true },
+      { type: "RUN\r" },
+    ]);
 
     if (diskSlotStatus) {
       const label = disk.diskName ? `${disk.diskName} // ${name}` : name;
       diskSlotStatus.textContent = `${kind.toUpperCase()} // ${label}`;
     }
-    if (machineState) machineState.textContent = `${kind.toUpperCase()} MOUNTED // ${name.toUpperCase()}`;
+    if (machineState) machineState.textContent = `${kind.toUpperCase()} AUTO-START // ${name.toUpperCase()}`;
     if (stageNote) {
       stageNote.textContent = useTrueDrive
-        ? "Disk inserted into the cycle-driven 1541 path. Use normal C64 disk commands from the keyboard."
-        : "Disk mounted in Drive 8 and LOAD/RUN queued automatically.";
+        ? "Disk mounted in True 1541 mode. The emulator will wait for BASIC READY, type LOAD, wait for loading to finish, then type RUN."
+        : "Disk mounted in Fast Load mode. The emulator will automatically LOAD and RUN the first program.";
     }
     updateMediaControls(vault.snapshot());
     screen?.focus();
@@ -962,12 +1072,17 @@ async function openMediaBytes(media) {
 
   if (type === "t64") {
     const program = extractFirstT64Program(bytes);
-    machine.loadPRG(program.prg);
-    machine.injectRun();
     mountedTape = null;
-    if (tapeSlotStatus) tapeSlotStatus.textContent = `T64 QUICK LOAD // ${program.name}`;
-    if (machineState) machineState.textContent = `T64 STARTED // ${program.name.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = "The first runnable program in the T64 container was loaded and RUN was queued.";
+    queueAutoStart([
+      { ready: true },
+      { run: () => {
+        machine.loadPRG(program.prg);
+        machine.injectRun();
+        if (machineState) machineState.textContent = `T64 AUTO-START // ${program.name.toUpperCase()}`;
+        if (stageNote) stageNote.textContent = "The first runnable T64 program was loaded and RUN was entered automatically.";
+      } },
+    ]);
+    if (tapeSlotStatus) tapeSlotStatus.textContent = `T64 AUTO-START // ${program.name}`;
     updateMediaControls(vault.snapshot());
     screen?.focus();
     return true;
@@ -975,18 +1090,24 @@ async function openMediaBytes(media) {
 
   if (type === "tap") {
     machine.loadTap(bytes);
-    machine.setTapeKey("PLAY");
-    machine.bufferKeyboardText("LOAD\r");
     mountedTape = { name, bytes: bytes.slice(), kind: "tap" };
-    if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP // ${name}`;
-    if (machineState) machineState.textContent = `TAP MOUNTED // ${name.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = "Tape mounted, PLAY latched and LOAD queued. Datasette controls remain available.";
+    queueAutoStart([
+      { ready: true },
+      { type: "LOAD\r" },
+      { run: () => machine.setTapeKey("PLAY") },
+      { loadDone: true },
+      { type: "RUN\r" },
+    ]);
+    if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP AUTO-START // ${name}`;
+    if (machineState) machineState.textContent = `TAP AUTO-START // ${name.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "Tape mounted. LOAD and PLAY will be handled automatically; RUN is entered if the tape returns to BASIC.";
     updateMediaControls(vault.snapshot());
     screen?.focus();
     return true;
   }
 
   if (type === "crt") {
+    cancelAutoStart();
     const info = machine.loadCartridge(bytes);
     mountedCartridge = {
       name,
@@ -996,8 +1117,8 @@ async function openMediaBytes(media) {
     };
     resetAudioForMachine();
     if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = `${info.mode.toUpperCase()} // ${mountedCartridge.label}`;
-    if (machineState) machineState.textContent = `CARTRIDGE ACTIVE // ${mountedCartridge.label.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = "CRT cartridge inserted and the C64 reset through the cartridge hardware path.";
+    if (machineState) machineState.textContent = `CARTRIDGE AUTO-BOOT // ${mountedCartridge.label.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "CRT cartridge inserted and booted automatically through the cartridge hardware path.";
     updateMediaControls(vault.snapshot());
     screen?.focus();
     return true;
@@ -1006,7 +1127,7 @@ async function openMediaBytes(media) {
   return false;
 }
 
-async function queueMedia(media) {
+async function queueMedia(media, { freshBoot = false } = {}) {
   if (!media?.bytes?.length) throw new Error("The selected media file is empty.");
   const type = media.type || mediaTypeFromName(media.name);
   if (!type) throw new Error("Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.");
@@ -1023,8 +1144,10 @@ async function queueMedia(media) {
     return false;
   }
 
+  const wasRunning = running;
   if (!running) await powerOn();
   if (!running || !machine) return false;
+  if (freshBoot && wasRunning) await prepareFreshGameSession();
 
   const queued = pendingMedia;
   pendingMedia = null;
@@ -1036,14 +1159,14 @@ async function queueMedia(media) {
   }
 }
 
-async function queueMediaFile(file) {
+async function queueMediaFile(file, options = {}) {
   if (!file) return false;
   const type = mediaTypeFromName(file.name);
   if (!type) {
     if (stageNote) stageNote.textContent = "Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.";
     return false;
   }
-  return queueMedia({ name: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()) });
+  return queueMedia({ name: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()) }, options);
 }
 
 async function initialiseOnlineLibrary() {
@@ -1108,7 +1231,7 @@ async function loadOnlineLibraryEntry() {
 
     const type = String(entry.format).toLowerCase();
     const filename = entry.filename || `${entry.title.replace(/[^a-z0-9._-]+/gi, "-") || "ccg-media"}.${type}`;
-    await queueMedia({ name: filename, type, bytes });
+    await queueMedia({ name: filename, type, bytes }, { freshBoot: true });
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "READY";
   } catch (error) {
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "ERROR";
@@ -1122,7 +1245,7 @@ loadAnyMediaButton?.addEventListener("click", () => anyMediaInput?.click());
 anyMediaInput?.addEventListener("change", async () => {
   const file = anyMediaInput.files?.[0];
   anyMediaInput.value = "";
-  await queueMediaFile(file);
+  await queueMediaFile(file, { freshBoot: true });
 });
 
 loadMediaButton?.addEventListener("click", () => prgInput?.click());
@@ -1270,7 +1393,7 @@ mediaDropzone?.addEventListener("drop", async (event) => {
   }
 
   if (stageNote) stageNote.textContent = `Dropped ${file.name}. Preparing it for automatic loading…`;
-  await queueMediaFile(file);
+  await queueMediaFile(file, { freshBoot: true });
 });
 
 onlineLibrarySelect?.addEventListener("change", () => {
