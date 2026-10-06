@@ -344,7 +344,6 @@
 
     if (Object.hasOwn(values, "notifyNewGames")) {
       updates.notify_new_games = Boolean(values.notifyNewGames);
-      updates.notify_new_games_opt_in = Boolean(values.notifyNewGames);
       updates.notify_new_games_choice_recorded = true;
     }
 
