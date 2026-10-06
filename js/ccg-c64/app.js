@@ -1,4 +1,4 @@
-import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickViceRoms } from "./rom-vault.js";
+import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
@@ -13,8 +13,15 @@ const gameVault = new GameVault();
 const setup = document.querySelector("[data-rom-setup]");
 const finishSetup = document.querySelector("[data-finish-setup]");
 const romSummary = document.querySelector("[data-rom-summary]");
-const viceFolder = document.getElementById("ccg-vice-folder");
-const viceMessage = document.querySelector("[data-vice-message]");
+const romSetInput = document.getElementById("ccg-rom-set");
+const romSetMessage = document.querySelector("[data-rom-set-message]");
+const closeSetupButton = document.querySelector("[data-close-setup]");
+const loadAnyMediaButton = document.querySelector("[data-load-any-media]");
+const anyMediaInput = document.getElementById("ccg-c64-any-media-input");
+const mediaDropzone = document.querySelector("[data-media-dropzone]");
+const onlineLibrarySelect = document.querySelector("[data-online-library-select]");
+const onlineLibraryLoad = document.querySelector("[data-online-library-load]");
+const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
 const machineState = document.querySelector("[data-machine-state]");
 const screen = document.getElementById("ccg-c64-screen");
 // Match the upstream C64 READY presentation path: WebGL first, Canvas2D only as a fallback.
@@ -73,6 +80,8 @@ let mountedCartridge = null;
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
+let pendingMedia = null;
+let onlineLibraryEntries = [];
 let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
 if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
 let fixed2x = localStorage.getItem("ccg.emulator.c64.size") === "2x";
@@ -214,8 +223,10 @@ function updateDriveModeUi(snapshot = vault.snapshot()) {
 
 function updateMediaControls(snapshot = vault.snapshot()) {
   const active = Boolean(running && machine);
-  if (loadTapeButton) loadTapeButton.disabled = !active;
-  if (loadCartridgeButton) loadCartridgeButton.disabled = !active;
+  // File selection stays available before boot. If system ROMs are not cached,
+  // the selected media is held in memory and resumed after the one-time setup.
+  if (loadTapeButton) loadTapeButton.disabled = false;
+  if (loadCartridgeButton) loadCartridgeButton.disabled = false;
   if (ejectCartridgeButton) ejectCartridgeButton.disabled = !active || !mountedCartridge;
   if (tapePlayButton) tapePlayButton.disabled = !active || mountedTape?.kind !== "tap";
   if (tapeStopButton) tapeStopButton.disabled = !active || mountedTape?.kind !== "tap";
@@ -436,11 +447,11 @@ function drawStatus(snapshot, message = null) {
           "ROM DATA REMAINS LOCAL."
         ]
       : [
-          "FIRST BOOT CHECK",
+          "READY FOR C64 MEDIA",
           "",
-          `REQUIRED ROMS: ${snapshot.requiredReady}/3`,
+          "LOAD A D64 / TAP / PRG / CRT",
           "",
-          "OPEN ROM CONTROL TO CONTINUE."
+          `SYSTEM ROMS STORED: ${snapshot.requiredReady}/3`
         ];
 
   lines.forEach((line, index) => ctx.fillText(line, 52, 92 + index * 20));
@@ -454,8 +465,8 @@ function setControlState(snapshot) {
   if (powerButton) powerButton.disabled = !canBoot;
   if (resetButton) resetButton.disabled = !running;
   if (pauseButton) pauseButton.disabled = !running;
-  if (loadMediaButton) loadMediaButton.disabled = !running;
-  if (loadDiskButton) loadDiskButton.disabled = !running;
+  if (loadMediaButton) loadMediaButton.disabled = false;
+  if (loadDiskButton) loadDiskButton.disabled = false;
   updateMediaControls(snapshot);
   updateAudioUi();
 
@@ -497,8 +508,8 @@ function render(snapshot) {
       machineState.textContent = "ROM BANK READY // SECURE CORE HEADERS REQUIRED";
     } else {
       machineState.textContent = snapshot.allRequiredReady
-        ? "ROM BANK VERIFIED // READY TO BOOT"
-        : "WAITING FOR ROM CHECK";
+        ? "SYSTEM ROMS READY // LOAD MEDIA OR BOOT"
+        : "READY FOR MEDIA // SYSTEM ROMS NEEDED ON FIRST RUN";
     }
   }
 
