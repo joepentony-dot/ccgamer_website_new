@@ -112,6 +112,29 @@ try{
   const firstStage=await page.locator("#ccg-tutorial-stage-modal h2").textContent();
   assert.match(String(firstStage||""),/MOVE AROUND/i,"first-ever Solo start must begin Tutorial movement training");
 
+  const tutorialVisuals=await page.evaluate(()=>{
+    const room=world?.rooms?.[world?.startRoomId];
+    const canvas=document.getElementById("game"),ctx=canvas?.getContext?.("2d");
+    const colours=new Set();
+    if(ctx&&canvas?.width&&canvas?.height){
+      const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      const step=Math.max(4,Math.floor(Math.min(canvas.width,canvas.height)/48));
+      for(let y=0;y<canvas.height;y+=step){
+        for(let x=0;x<canvas.width;x+=step){
+          const i=(y*canvas.width+x)*4;
+          const key=`${data[i]>>4},${data[i+1]>>4},${data[i+2]>>4}`;
+          colours.add(key);
+          if(colours.size>24)break;
+        }
+        if(colours.size>24)break;
+      }
+    }
+    return{theme:String(room?.theme||""),tutorialZone:Boolean(room?.tutorialZone),colourBuckets:colours.size};
+  });
+  assert.equal(tutorialVisuals.tutorialZone,true,`Tutorial start room must still be the safe training zone: ${JSON.stringify(tutorialVisuals)}`);
+  assert.notEqual(tutorialVisuals.theme,"TRAINING_ARCHIVE",`Tutorial must preserve the generated dungeon theme instead of the retired blue-screen theme: ${JSON.stringify(tutorialVisuals)}`);
+  assert.ok(tutorialVisuals.colourBuckets>=8,`Tutorial canvas must contain real dungeon visual detail, not a flat blue field: ${JSON.stringify(tutorialVisuals)}`);
+
   await page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")===true);
   await page.waitForFunction(()=>Boolean(document.getElementById("ccg-tutorial-live-progress"))&&Boolean(document.querySelector("#v104-touch-controls [data-key='KeyS']")));
