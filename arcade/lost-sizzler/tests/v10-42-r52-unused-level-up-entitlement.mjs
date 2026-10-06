@@ -17,7 +17,8 @@ assert.match(version.cacheToken,/^\d{8}r\d+$/,"the retained unused level-up feat
 
 assert.match(progression,/player\.pendingLevels=\(player\.pendingLevels\|\|0\)\+1/,"every earned level must create one unused level-up entitlement");
 assert.match(progression,/player\.pendingLevels=Math\.max\(0,\(player\.pendingLevels\|\|1\)-1\)/,"applying one skill must consume one entitlement");
-assert.match(progression,/const unused=Math\.max\(0,Math\.floor\(Number\(player\.pendingLevels\)\|\|0\)\);if\(unused>0\)\{player\.pendingLevels=unused-1;lostSkill=\{name:"Unused level-up"\}\}else lostSkill=removeLastSkill\(player\)/,"a death level-loss must consume an unused entitlement before removing an already chosen skill");
+assert.match(progression,/const unused=Math\.max\(0,Math\.floor\(Number\(player\.pendingLevels\)\|\|0\)\);[\s\S]*if\(unused>0\)\{[\s\S]*player\.pendingLevels=unused-1;[\s\S]*progressionRecovery=\{targetLevel:levelBefore,pendingOnly:true/,"a death level-loss must consume an unused entitlement and record it for threshold-based restoration");
+assert.match(progression,/else\{[\s\S]*lostSkill=removeLastSkill\(player\);[\s\S]*progressionRecovery=\{targetLevel:levelBefore,pendingOnly:false,skillId:lostSkill\?\.id/,"a death level-loss without an unused entitlement must remove and record the selected skill");
 assert.match(progression,/player:checkpointClone\(player\)/,"checkpoint cloning must continue to persist the player's pendingLevels field");
 
 assert.match(core,/pendingLevels:0/,"new players must initialise the entitlement counter");
