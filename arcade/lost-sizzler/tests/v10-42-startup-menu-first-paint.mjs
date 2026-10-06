@@ -28,9 +28,7 @@ for(const contract of [
 ])assert.ok(blockingCss.includes(contract),"blocking menu geometry is missing: "+contract);
 
 for(const retiredSelector of ["#create-btn","#split-btn","#daily-btn","#horde-solo-btn","#horde-mode-btn","#saboteurs-mode-btn"]){
-  assert.doesNotMatch(blockingCss,new RegExp(retiredSelector.replace(/[.*+?^$\{\}()|[\]\\]/g,"\\])assert.ok(blockingCss.includes(contract),"blocking menu geometry is missing: "+contract);
-
-")),"blocking landing CSS must not retain retired mode selectors: "+retiredSelector);
+  assert.ok(!blockingCss.includes(retiredSelector),"blocking landing CSS must not retain retired mode selector: "+retiredSelector);
 }
 
 assert.match(baseCss,/\.mode-solo\{[^}]*background:linear-gradient/,"Start Game must use its final blended colour in base CSS");
