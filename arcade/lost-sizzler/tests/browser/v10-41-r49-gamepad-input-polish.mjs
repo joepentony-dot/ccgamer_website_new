@@ -18,7 +18,7 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   const context=await browser.newContext({viewport:{width:1600,height:900}}),page=await context.newPage();page.setDefaultTimeout(45000);const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&Boolean(window.CCGLostSizzlerV141R49GamepadInput));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&window.CCGLostSizzlerV142Bootstrap?.ready===true&&Boolean(window.CCGLostSizzlerV141R49GamepadInput),null,{timeout:90000});
 
   const menu=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerV141R49GamepadInput,button=document.getElementById("solo-btn");button.focus();
@@ -74,10 +74,10 @@ try{
     const style=getComputedStyle(button),rect=button.getBoundingClientRect();
     return{exists:true,visible:style.display!=="none"&&style.visibility!=="hidden"&&rect.width>1&&rect.height>1}
   });
-  assert.equal(retiredSplit.exists,true,"R51 keeps the inert Split Screen compatibility anchor for older startup listeners");
-  assert.equal(retiredSplit.visible,false,"R51 must keep retired Split Screen unavailable in the public menu");
+  assert.equal(retiredSplit.exists,false,"R107 must keep the retired Split Screen control physically absent from the public menu");
+  assert.equal(retiredSplit.visible,false,"an absent retired Split Screen control cannot occupy the public menu");
   assert.deepEqual(errors,[],`r49 browser test must not raise page errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r49 menu and Solo controller input passed; retired Split Screen remains hidden in R51.");
+  console.log("Lost Sizzler V10.41 r49 menu and Solo controller input passed; retired Split Screen remains absent in R107.");
   await context.close();
 }finally{
   await browser.close().catch(()=>{});for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
