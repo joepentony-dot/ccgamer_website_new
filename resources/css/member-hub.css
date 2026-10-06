@@ -682,6 +682,94 @@ body.page-member-hub {
   margin-top: 10px;
 }
 
+.member-info-menu {
+  margin: 0;
+  padding: 0 !important;
+}
+
+.member-info-menu > summary {
+  list-style: none;
+}
+
+.member-info-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.member-info-menu__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.member-info-menu__summary:hover,
+.member-info-menu__summary:focus-visible {
+  background: rgba(var(--accent-rgb, 0, 221, 255), 0.055);
+  outline: none;
+}
+
+.member-info-menu__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.member-info-menu__copy .member-panel__kicker {
+  margin: 0;
+  font-size: 0.52rem;
+}
+
+.member-info-menu__copy .member-panel__title {
+  font-size: 0.78rem;
+}
+
+.member-info-menu__hint {
+  padding: 4px 7px;
+  border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.22);
+  color: var(--member-muted);
+  font: 700 0.54rem/1.1 "Orbitron", Arial, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.member-info-menu[open] > .member-info-menu__summary {
+  border-bottom: 1px solid var(--member-line);
+  background: rgba(var(--accent-rgb, 0, 221, 255), 0.035);
+}
+
+.member-info-menu[open] > .member-info-menu__summary .member-info-menu__hint {
+  color: var(--member-accent);
+}
+
+.member-info-menu__body {
+  padding: 9px 10px 10px;
+}
+
+.member-info-menu__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+  margin-bottom: 6px;
+}
+
+.member-info-menu__toolbar--end {
+  justify-content: flex-end;
+}
+
+.member-info-menu > .member-account-grid {
+  padding: 9px 10px 0;
+}
+
+.member-info-menu > .profile-actions {
+  padding: 0 10px 10px;
+}
+
 .member-achievements-menu {
   margin: 0;
   padding: 0;
@@ -905,6 +993,15 @@ html[data-ccg-page="member-hub"] .profile-library-card {
   .ccg-profile-community__grid,
   .member-account-grid {
     grid-template-columns: 1fr;
+  }
+
+  .member-info-menu__summary {
+    min-height: 50px;
+    padding: 8px;
+  }
+
+  .member-info-menu__hint {
+    font-size: 0.5rem;
   }
 
   .member-achievements-menu__summary {
