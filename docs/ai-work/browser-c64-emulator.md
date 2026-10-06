@@ -9,8 +9,9 @@
 - Copyrighted Commodore ROMs are not included or fetched by the site.
 - GPL obligations remain mandatory. Derived source files retain applicable copyright/licence notices. The public legal page describes GPL-derived components without using upstream branding as CCG product branding.
 - `_headers` scopes COOP/COEP and gamepad permissions to `/emulator/c64/*` so SharedArrayBuffer can be enabled for the future SID AudioWorklet without imposing COEP on the rest of the CCG website.
-- `emulation.html` gains a direct Browser C64 route and the sitemap source list includes the new route.
+- `emulation.html` gains a direct Browser C64 route. Sitemap registration is intentionally deferred until the emulator is release-ready, because the permanent year/platform validator treats unrelated in-flight static-route additions as a Phase 4D contract violation.
 - Lighthouse rule: the emulator is isolated to its own route. No emulator payload is added to ordinary CCG pages beyond the small link. Stage 1 contains no iframe and no third-party runtime script.
+- Qualification repair: the initial dedicated workflow used CommonJS `require()` inside `.mjs` tests; those tests are now native ESM. The premature sitemap registry addition was removed rather than weakening the unrelated Phase 4D year/platform validator.
 - Intro loader files and `games/games.json` are untouched.
 
 ## Video-core integration — 6 October 2026

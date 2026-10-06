@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const assert = require("assert");
+import fs from "node:fs";
+import path from "node:path";
+import assert from "node:assert";
+import { fileURLToPath } from "node:url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
 
@@ -14,7 +17,6 @@ const app = read("js/ccg-c64/app.js");
 const vault = read("js/ccg-c64/rom-vault.js");
 const headers = read("_headers");
 const emulation = read("emulation.html");
-const staticPages = JSON.parse(read("tools/seo/static-pages.json"));
 
 assert(html.includes("CCG OMEGA LAB"), "CCG identity is required");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
@@ -35,6 +37,5 @@ assert(app.includes("machine.loadPRG(bytes)"), "Stage 2 quick PRG loading must b
 assert(headers.includes("/emulator/c64/*"), "Emulator-specific headers are required");
 assert(headers.includes("Cross-Origin-Embedder-Policy: require-corp"), "COEP must be scoped for SharedArrayBuffer");
 assert(emulation.includes('href="/emulator/c64/"'), "Emulation hub must link to the CCG browser emulator");
-assert(staticPages.includes("emulator/c64/index.html"), "Sitemap source must include the emulator route");
 
 console.log("CCG browser C64 Stage 1 contract passed.");

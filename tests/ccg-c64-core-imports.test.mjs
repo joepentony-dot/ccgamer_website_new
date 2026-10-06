@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const assert = require("assert");
+import fs from "node:fs";
+import path from "node:path";
+import assert from "node:assert";
+import { fileURLToPath } from "node:url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
 const coreRoot = path.join(root, "js", "ccg-c64", "core");
 
