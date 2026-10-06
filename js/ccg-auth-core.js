@@ -180,6 +180,17 @@ export async function registerUser(email, password, notificationPreferences = {}
   const { safeEmail, safePassword, error: inputError } = sanitizeEmailPassword(email, password);
   if (inputError) return { data: null, error: inputError };
 
+  if (safePassword.length < 10) {
+    return {
+      data: null,
+      error: {
+        category: 'weak_password',
+        message: 'Password must be at least 10 characters.',
+        detail: 'Registration password did not meet the 10-character minimum.'
+      }
+    };
+  }
+
   const preferences = normalizeNotificationPreferences(notificationPreferences);
 
   try {
