@@ -177,9 +177,13 @@
   const baseDecorate=SYSTEMS.decorate.bind(SYSTEMS);
   SYSTEMS.decorate=function(w,h,runState){
     const result=baseDecorate(w,h,runState);h.v142ProceduralDungeon=true;h.v142EssenceSources=[];
+    /* The hidden floor trader is the single Banishment Alchemist. Sanctuary is
+     * reserved for healing/safe-room NPCs; do not create a second merchant
+     * there or allow a later shop list to reintroduce one. */
     if(h.trader){h.trader.title="BANISHMENT ALCHEMIST";h.trader.v142Alchemist=true;h.trader.cost=Number(PD.essenceRequired)||3}
-    const sanctuary=(w.sanctuaryRooms||[]).map(id=>w.rooms?.[id]).filter(Boolean)[0];
-    if(sanctuary){const used=occupiedSet(w,h),q=roomCells(w,sanctuary,used)[0];if(q){const alchemist={id:"v142-sanctuary-alchemist",...q,roomId:sanctuary.id,active:true,cost:Number(PD.essenceRequired)||3,shopType:"alchemist",title:"BANISHMENT ALCHEMIST",scorePurchases:0,v142Alchemist:true,sold:{}};h.shops=h.shops||[];h.shops.push(alchemist);sanctuary.alchemistRoom=true}}
+    const sanctuaryIds=new Set((w.sanctuaryRooms||[]).map(Number));
+    h.shops=(h.shops||[]).filter(shop=>shop&&shop.active!==false&&!sanctuaryIds.has(Number(shop.roomId)));
+    for(const room of w.rooms||[])if(room?.sanctuary){room.alchemistRoom=false;room.traderRoom=false;room.shopRoom=false}
     return result;
   };
 
