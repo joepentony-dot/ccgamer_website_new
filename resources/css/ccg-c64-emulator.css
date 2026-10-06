@@ -521,6 +521,76 @@ body.ccg-c64-lab-body {
   border-bottom: 1px solid rgba(var(--accent-rgb),0.13);
 }
 
+.ccg-c64-media-actions,
+.ccg-c64-vault-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+.ccg-c64-media-actions button,
+.ccg-c64-vault-actions button,
+.ccg-c64-vault-actions select {
+  min-height: 30px;
+  padding: 0.36rem 0.48rem;
+  border: 1px solid var(--c64-lab-line);
+  background: rgba(var(--accent-rgb),0.055);
+  color: #fff;
+  font: inherit;
+  font-size: 0.54rem;
+  letter-spacing: 0.06em;
+}
+
+.ccg-c64-media-actions button:disabled,
+.ccg-c64-vault-actions button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ccg-c64-media-chip {
+  padding: 0.34rem 0.5rem;
+  border: 1px solid rgba(107,255,194,0.28);
+  color: #6bffc2;
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+}
+
+.ccg-c64-touch-controls {
+  display: none;
+}
+
+.ccg-c64-touch-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 52px);
+  grid-template-rows: repeat(3, 52px);
+  gap: 0.28rem;
+}
+
+.ccg-c64-touch-dpad button,
+.ccg-c64-touch-fire {
+  border: 1px solid var(--c64-lab-line-hot);
+  background: rgba(var(--accent-rgb),0.09);
+  color: #fff;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ccg-c64-touch-dpad button:nth-child(1) { grid-column: 2; grid-row: 1; }
+.ccg-c64-touch-dpad button:nth-child(2) { grid-column: 1; grid-row: 2; }
+.ccg-c64-touch-dpad span { grid-column: 2; grid-row: 2; }
+.ccg-c64-touch-dpad button:nth-child(4) { grid-column: 3; grid-row: 2; }
+.ccg-c64-touch-dpad button:nth-child(5) { grid-column: 2; grid-row: 3; }
+
+.ccg-c64-touch-fire {
+  min-width: 96px;
+  min-height: 96px;
+  border-radius: 50%;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+}
+
 .ccg-c64-media-slot__id {
   display: grid;
   place-items: center;
@@ -882,6 +952,28 @@ body.ccg-c64-lab-body {
   }
 
   .ccg-c64-command:last-child { grid-column: 1 / -1; }
+
+  .ccg-c64-touch-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(var(--accent-rgb),0.16);
+    background: rgba(4,8,24,0.48);
+  }
+
+  .ccg-c64-media-slot {
+    grid-template-columns: 35px minmax(0,1fr);
+  }
+
+  .ccg-c64-media-actions,
+  .ccg-c64-vault-actions,
+  .ccg-c64-media-chip {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
 
   .ccg-c64-crt-footer { flex-wrap: wrap; }
 

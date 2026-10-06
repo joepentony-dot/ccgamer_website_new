@@ -44,9 +44,18 @@
 - Power-off, reset and pause now have explicit audio lifecycle messages so sound cannot continue after the emulated machine has stopped.
 - This first pass intentionally does not ship the optional compiled SID WASM engine. It also does not yet reproduce the full reSID analog filter/mixer/output stage; that remains a dedicated fidelity/qualification pass rather than blocking first live sound.
 
+## Media Bay, Game Vault and mobile-control expansion — 6 October 2026
+
+- The disk bay now accepts validated D64, D71 and D81 images. D64 can switch between deterministic Fast Load and the cycle-driven True 1541 path when the user has supplied the optional 1541 DOS ROM; D71/D81 stay on the virtual-drive path because they are not 1541 media.
+- The Datasette bay now accepts TAP images with PLAY/STOP/REW transport controls and queues the normal C64 LOAD command. T64 containers use a bounded CCG-owned parser to extract the first runnable PRG for direct quick-load; unsupported or malformed containers are rejected rather than guessed.
+- The cartridge bay now accepts CRT images through the retained cartridge hardware registry and supports eject/reset lifecycle.
+- The CCG Game Vault now provides three browser-local IndexedDB save slots. A slot captures the core's restorable machine state plus the currently mounted disk, TAP and CRT bytes so restore can rebuild the matching media environment before applying the state.
+- Mobile now exposes an on-page Port 2 direction pad and FIRE button. Touch and standard gamepad input are merged as active-low joystick state rather than overwriting one another.
+- The physical-key held-binding key now uses the stable KeyboardEvent.code identity so releasing Shift before a symbol key cannot strand a C64 matrix key.
+
 ## Not merge-ready yet
 
-The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still qualify and refine SID audio fidelity, advanced disk/true-drive plus D71/D81/G64 support, tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. Physical keyboard, standard gamepad Port 2 routing and the first D64 quick-load route are now present but still require browser-level qualification. The Stage 1 shell should remain the visual contract while those systems are connected.
+The machine/video core, SID browser audio, keyboard/gamepad/touch input, D64/D71/D81 media, optional True 1541, TAP/T64, CRT cartridge loading and three local Game Vault slots are now connected. Before merge, the remaining product work is final SID analogue-fidelity qualification, a decision on G64 support, final third-party/source inventory, deployed browser acceptance, release sitemap registration and a last Lighthouse/performance review. The Stage 1 shell remains the visual contract.
 
 ## Visual/legal rule
 

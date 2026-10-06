@@ -2,8 +2,11 @@ import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickViceRoms } from "./rom-vault
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
+import { GameVault } from "./game-vault.js";
+import { extractFirstT64Program } from "./t64.js";
 
 const vault = new ROMVault();
+const gameVault = new GameVault();
 const setup = document.querySelector("[data-rom-setup]");
 const finishSetup = document.querySelector("[data-finish-setup]");
 const romSummary = document.querySelector("[data-rom-summary]");
@@ -20,6 +23,22 @@ const prgInput = document.getElementById("ccg-c64-prg-input");
 const loadDiskButton = document.querySelector("[data-load-disk]");
 const diskInput = document.getElementById("ccg-c64-disk-input");
 const diskSlotStatus = document.querySelector("[data-disk-slot-status]");
+const driveModeButton = document.querySelector("[data-drive-mode]");
+const loadTapeButton = document.querySelector("[data-load-tape]");
+const tapeInput = document.getElementById("ccg-c64-tape-input");
+const tapeSlotStatus = document.querySelector("[data-tape-slot-status]");
+const tapePlayButton = document.querySelector("[data-tape-play]");
+const tapeStopButton = document.querySelector("[data-tape-stop]");
+const tapeRewindButton = document.querySelector("[data-tape-rewind]");
+const loadCartridgeButton = document.querySelector("[data-load-cartridge]");
+const cartridgeInput = document.getElementById("ccg-c64-cartridge-input");
+const cartridgeSlotStatus = document.querySelector("[data-cartridge-slot-status]");
+const ejectCartridgeButton = document.querySelector("[data-eject-cartridge]");
+const vaultSlot = document.querySelector("[data-vault-slot]");
+const vaultSaveButton = document.querySelector("[data-vault-save]");
+const vaultLoadButton = document.querySelector("[data-vault-load]");
+const vaultClearButton = document.querySelector("[data-vault-clear]");
+const vaultStatus = document.querySelector("[data-vault-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const audioStatus = document.querySelector("[data-audio-status]");
@@ -33,6 +52,13 @@ let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
 let frameAccumulator = 0;
+let driveMode = localStorage.getItem("ccg.emulator.c64.driveMode") === "true" ? "true" : "fast";
+let mountedDisk = null;
+let mountedTape = null;
+let mountedCartridge = null;
+let gamepadJoyByte = 0xFF;
+let touchJoyByte = 0xFF;
+let touchHeldMask = 0;
 
 const SID_WORKLET_URL = "/js/ccg-c64/audio-worklet.js";
 let audioContext = null;
@@ -114,6 +140,69 @@ function toggleAudioMute() {
   updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
 }
 
+function applyJoystickPort2() {
+  if (machine) machine.joyPort2 = gamepadJoyByte & touchJoyByte;
+}
+
+function updateDriveModeUi(snapshot = vault.snapshot()) {
+  const driveAvailable = Boolean(snapshot.driveReady);
+  if (driveModeButton) {
+    driveModeButton.disabled = !running || !driveAvailable;
+    driveModeButton.textContent = driveMode === "true" ? "TRUE 1541" : "FAST LOAD";
+    driveModeButton.setAttribute("aria-pressed", driveMode === "true" ? "true" : "false");
+  }
+}
+
+function updateMediaControls(snapshot = vault.snapshot()) {
+  const active = Boolean(running && machine);
+  if (loadTapeButton) loadTapeButton.disabled = !active;
+  if (loadCartridgeButton) loadCartridgeButton.disabled = !active;
+  if (ejectCartridgeButton) ejectCartridgeButton.disabled = !active || !mountedCartridge;
+  if (tapePlayButton) tapePlayButton.disabled = !active || mountedTape?.kind !== "tap";
+  if (tapeStopButton) tapeStopButton.disabled = !active || mountedTape?.kind !== "tap";
+  if (tapeRewindButton) tapeRewindButton.disabled = !active || mountedTape?.kind !== "tap";
+  if (vaultSaveButton) vaultSaveButton.disabled = !active;
+  if (vaultLoadButton) vaultLoadButton.disabled = !active;
+  if (vaultClearButton) vaultClearButton.disabled = false;
+  updateDriveModeUi(snapshot);
+}
+
+function cloneMedia(media) {
+  if (!media) return null;
+  return {
+    ...media,
+    bytes: media.bytes ? media.bytes.slice() : null,
+  };
+}
+
+function currentVaultSlot() {
+  const slot = Number(vaultSlot?.value || 1);
+  return [1, 2, 3].includes(slot) ? slot : 1;
+}
+
+async function refreshVaultStatus() {
+  if (!vaultStatus) return;
+  try {
+    const record = await gameVault.load(currentVaultSlot());
+    vaultStatus.textContent = record
+      ? `Slot ${record.slot} saved ${new Date(record.savedAt).toLocaleString()}`
+      : `Slot ${currentVaultSlot()} empty`;
+  } catch (error) {
+    vaultStatus.textContent = error?.message || "Game Vault unavailable";
+  }
+}
+
+function attachSessionMedia(target) {
+  if (mountedCartridge?.bytes) target.loadCartridge(mountedCartridge.bytes.slice());
+  if (mountedDisk?.bytes) target.setD64(new D64(mountedDisk.bytes.slice()));
+  if (mountedTape?.kind === "tap" && mountedTape.bytes) target.loadTap(mountedTape.bytes.slice());
+
+  const trueDrivePossible = driveMode === "true" &&
+    Boolean(vault.getBytes("drive1541")) &&
+    Boolean(mountedDisk?.kind === "d64");
+  target.setTrueDrive(trueDrivePossible);
+}
+
 const heldMatrixKeys = new Map();
 let shiftLeftPhysical = false;
 let shiftRightPhysical = false;
@@ -132,6 +221,9 @@ function releaseAllInput() {
       machine.cia1.setKey(held.col, held.row, false);
     }
     machine.joyPort1 = 0xFF;
+    gamepadJoyByte = 0xFF;
+    touchJoyByte = 0xFF;
+    touchHeldMask = 0;
     machine.joyPort2 = 0xFF;
     machine.setRestoreNmiLine(false);
   }
@@ -180,7 +272,7 @@ function handleC64Key(event, pressed) {
     return;
   }
 
-  const heldKey = `${event.code}|${event.key}`;
+  const heldKey = event.code || `key:${event.key}`;
   if (pressed) {
     if (event.repeat || heldMatrixKeys.has(heldKey)) {
       if (heldMatrixKeys.has(heldKey)) event.preventDefault();
@@ -216,10 +308,11 @@ function pollGamepad() {
   const pad = Array.from(pads || []).find((entry) => entry && entry.connected);
 
   if (!pad) {
-    machine.joyPort2 = 0xFF;
+    gamepadJoyByte = 0xFF;
+    applyJoystickPort2();
     if (gamepadConnected) {
       gamepadConnected = false;
-      if (inputStatus) inputStatus.textContent = "KEYBOARD READY";
+      if (inputStatus && touchHeldMask === 0) inputStatus.textContent = "KEYBOARD READY";
     }
     return;
   }
@@ -234,7 +327,8 @@ function pollGamepad() {
   if (axisX < -0.35 || pressed(14)) byte &= ~0x04;
   if (axisX > 0.35 || pressed(15)) byte &= ~0x08;
   if (pressed(0) || pressed(1)) byte &= ~0x10;
-  machine.joyPort2 = byte;
+  gamepadJoyByte = byte;
+  applyJoystickPort2();
 
   if (!gamepadConnected) {
     gamepadConnected = true;
@@ -285,6 +379,7 @@ function setControlState(snapshot) {
   if (pauseButton) pauseButton.disabled = !running;
   if (loadMediaButton) loadMediaButton.disabled = !running;
   if (loadDiskButton) loadDiskButton.disabled = !running;
+  updateMediaControls(snapshot);
   updateAudioUi();
 
   if (powerButton) {
@@ -417,12 +512,8 @@ async function powerOn() {
     });
 
     const driveRom = vault.getBytes("drive1541");
-    if (driveRom) {
-      machine.attachDrive(driveRom);
-      machine.setTrueDrive(true);
-    } else {
-      machine.setTrueDrive(false);
-    }
+    if (driveRom) machine.attachDrive(driveRom);
+    attachSessionMedia(machine);
 
     const audioReady = await wireAudioToMachine();
     running = true;
@@ -432,7 +523,7 @@ async function powerOn() {
     lastFrameTime = 0;
     if (machineState) machineState.textContent = "C64 CORE RUNNING // VIDEO + INPUT ACTIVE";
     if (inputStatus) inputStatus.textContent = "KEYBOARD READY";
-    if (stageNote) stageNote.textContent = audioReady ? "Live machine, video, keyboard/gamepad and SID audio paths are active. Advanced media, save-state and mobile controls remain under integration." : "Machine, video and input are active. SID audio could not start in this browser session; the remaining emulator systems continue to work.";
+    if (stageNote) stageNote.textContent = audioReady ? "Machine, video, keyboard/gamepad, touch controls, SID audio, disk, tape, cartridge and Game Vault paths are active." : "Machine, video and input are active. SID audio could not start in this browser session; media and save-state systems remain available.";
     setControlState(snapshot);
     frameHandle = requestAnimationFrame(frameLoop);
     screen?.focus();
@@ -575,31 +666,282 @@ diskInput?.addEventListener("change", async () => {
   try {
     const bytes = new Uint8Array(await file.arrayBuffer());
     const variant = d64Variant(bytes.length);
-    if (!variant || variant.kind !== "d64") {
-      throw new Error("This first disk bay pass accepts standard D64 images only.");
-    }
+    if (!variant) throw new Error("Use a supported D64, D71 or D81 disk image.");
 
     const disk = new D64(bytes);
     machine.setD64(disk);
+    mountedDisk = { name: file.name, bytes: bytes.slice(), kind: variant.kind };
 
-    // The first CCG disk route deliberately uses the core's virtual-drive
-    // fast-load path so LOAD/RUN is deterministic before the later advanced
-    // true-drive controls are exposed in the Omega interface.
-    machine.setTrueDrive(false);
-    machine.injectLoadAndRun();
+    const useTrueDrive = driveMode === "true" &&
+      variant.kind === "d64" &&
+      Boolean(vault.getBytes("drive1541"));
+    machine.setTrueDrive(useTrueDrive);
+
+    if (!useTrueDrive) machine.injectLoadAndRun();
 
     if (diskSlotStatus) {
-      diskSlotStatus.textContent = disk.diskName
-        ? `${disk.diskName} // ${file.name}`
-        : file.name;
+      const label = disk.diskName ? `${disk.diskName} // ${file.name}` : file.name;
+      diskSlotStatus.textContent = `${variant.kind.toUpperCase()} // ${label}`;
     }
-    if (machineState) machineState.textContent = `D64 MOUNTED // ${file.name.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = "Disk mounted in Drive 8 and LOAD/RUN queued through the fast-load path. Advanced true-drive controls remain a later media-bay pass.";
+    if (machineState) machineState.textContent = `${variant.kind.toUpperCase()} MOUNTED // ${file.name.toUpperCase()}`;
+    if (stageNote) {
+      stageNote.textContent = useTrueDrive
+        ? "Disk inserted into the cycle-driven 1541 path. Use normal C64 disk commands from the keyboard; switch back to Fast Load for automatic LOAD/RUN."
+        : "Disk mounted in Drive 8 and LOAD/RUN queued through the virtual-drive path.";
+    }
+    updateMediaControls(vault.snapshot());
     screen?.focus();
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "The disk image could not be mounted.";
   }
 });
+
+
+driveModeButton?.addEventListener("click", () => {
+  if (!running || !machine) return;
+  if (!vault.getBytes("drive1541")) {
+    if (stageNote) stageNote.textContent = "True 1541 mode requires the optional 1541 DOS ROM in ROM Control.";
+    return;
+  }
+  if (driveMode === "fast" && mountedDisk && mountedDisk.kind !== "d64") {
+    if (stageNote) stageNote.textContent = "D71 and D81 images use the virtual-drive path. True 1541 mode is available for D64 media.";
+    return;
+  }
+
+  driveMode = driveMode === "true" ? "fast" : "true";
+  localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+  machine.setTrueDrive(driveMode === "true");
+  updateDriveModeUi(vault.snapshot());
+  if (stageNote) {
+    stageNote.textContent = driveMode === "true"
+      ? "True 1541 mode enabled. Disk commands now run through the cycle-driven 1541 when D64 media is inserted."
+      : "Fast Load mode enabled. D64/D71/D81 media use the virtual-drive route with automatic LOAD/RUN.";
+  }
+  screen?.focus();
+});
+
+loadTapeButton?.addEventListener("click", () => {
+  if (running) tapeInput?.click();
+});
+
+tapeInput?.addEventListener("change", async () => {
+  const file = tapeInput.files?.[0];
+  tapeInput.value = "";
+  if (!file || !machine || !running) return;
+
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const lower = file.name.toLowerCase();
+
+    if (lower.endsWith(".t64")) {
+      const program = extractFirstT64Program(bytes);
+      machine.loadPRG(program.prg);
+      machine.injectRun();
+      mountedTape = null;
+      if (tapeSlotStatus) tapeSlotStatus.textContent = `T64 QUICK LOAD // ${program.name}`;
+      if (machineState) machineState.textContent = `T64 STARTED // ${program.name.toUpperCase()}`;
+      if (stageNote) stageNote.textContent = "The first runnable PRG in the T64 container was loaded directly into the C64 and RUN was queued.";
+    } else {
+      machine.loadTap(bytes);
+      machine.setTapeKey("PLAY");
+      machine.bufferKeyboardText("LOAD\r");
+      mountedTape = { name: file.name, bytes: bytes.slice(), kind: "tap" };
+      if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP // ${file.name}`;
+      if (machineState) machineState.textContent = `TAP MOUNTED // ${file.name.toUpperCase()}`;
+      if (stageNote) stageNote.textContent = "Tape mounted, PLAY latched and LOAD queued. STOP, PLAY and REW controls remain available in the Datasette bay.";
+    }
+    updateMediaControls(vault.snapshot());
+    screen?.focus();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "The tape image could not be loaded.";
+  }
+});
+
+tapePlayButton?.addEventListener("click", () => {
+  if (!machine || mountedTape?.kind !== "tap") return;
+  machine.setTapeKey("PLAY");
+  if (tapeSlotStatus) tapeSlotStatus.textContent = `PLAY // ${mountedTape.name}`;
+  screen?.focus();
+});
+
+tapeStopButton?.addEventListener("click", () => {
+  if (!machine || mountedTape?.kind !== "tap") return;
+  machine.setTapeKey("STOP");
+  if (tapeSlotStatus) tapeSlotStatus.textContent = `STOP // ${mountedTape.name}`;
+  screen?.focus();
+});
+
+tapeRewindButton?.addEventListener("click", () => {
+  if (!machine || mountedTape?.kind !== "tap") return;
+  machine.rewindTape();
+  if (tapeSlotStatus) tapeSlotStatus.textContent = `REWOUND // ${mountedTape.name}`;
+  screen?.focus();
+});
+
+loadCartridgeButton?.addEventListener("click", () => {
+  if (running) cartridgeInput?.click();
+});
+
+cartridgeInput?.addEventListener("change", async () => {
+  const file = cartridgeInput.files?.[0];
+  cartridgeInput.value = "";
+  if (!file || !machine || !running) return;
+
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const info = machine.loadCartridge(bytes);
+    mountedCartridge = {
+      name: file.name,
+      label: info.name || file.name,
+      bytes: bytes.slice(),
+      kind: "crt",
+    };
+    resetAudioForMachine();
+    if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = `${info.mode.toUpperCase()} // ${mountedCartridge.label}`;
+    if (machineState) machineState.textContent = `CARTRIDGE ACTIVE // ${mountedCartridge.label.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "CRT cartridge inserted and the C64 reset through the cartridge hardware path.";
+    updateMediaControls(vault.snapshot());
+    screen?.focus();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "The cartridge image could not be loaded.";
+  }
+});
+
+ejectCartridgeButton?.addEventListener("click", () => {
+  if (!machine || !mountedCartridge) return;
+  machine.ejectCartridge();
+  resetAudioForMachine();
+  mountedCartridge = null;
+  if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = "CRT / EasyFlash ready";
+  if (machineState) machineState.textContent = "CARTRIDGE EJECTED // C64 RESET";
+  updateMediaControls(vault.snapshot());
+  screen?.focus();
+});
+
+async function saveGameVaultSlot() {
+  if (!machine || !running) return;
+  try {
+    machine.commitDriveWrites();
+    if (mountedDisk && machine.currentD64?.img) {
+      mountedDisk = { ...mountedDisk, bytes: machine.currentD64.img.slice() };
+    }
+    if (mountedTape?.kind === "tap" && machine.datasette?.hasMedia) {
+      mountedTape = { ...mountedTape, bytes: machine.exportTapBytes() };
+    }
+
+    const slot = currentVaultSlot();
+    const record = await gameVault.save(slot, {
+      format: "ccg-c64-vault",
+      version: 1,
+      driveMode,
+      state: machine.serializeState(),
+      media: {
+        disk: cloneMedia(mountedDisk),
+        tape: cloneMedia(mountedTape),
+        cartridge: cloneMedia(mountedCartridge),
+      },
+    });
+    if (vaultStatus) vaultStatus.textContent = `Slot ${slot} saved ${new Date(record.savedAt).toLocaleString()}`;
+    if (machineState) machineState.textContent = `GAME VAULT // SLOT ${slot} SAVED`;
+    screen?.focus();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "Game Vault save failed.";
+  }
+}
+
+async function loadGameVaultSlot() {
+  if (!running) return;
+  try {
+    const slot = currentVaultSlot();
+    const record = await gameVault.load(slot);
+    const payload = record?.payload;
+    if (!payload || payload.format !== "ccg-c64-vault") throw new Error(`Game Vault slot ${slot} is empty.`);
+
+    const driveRom = vault.getBytes("drive1541");
+    if (payload.state?.drive1541 && !driveRom) {
+      throw new Error("This state used True 1541 mode. Restore the optional 1541 DOS ROM first.");
+    }
+
+    stopFrameLoop();
+    setAudioPaused(true);
+
+    mountedDisk = cloneMedia(payload.media?.disk);
+    mountedTape = cloneMedia(payload.media?.tape);
+    mountedCartridge = cloneMedia(payload.media?.cartridge);
+    driveMode = payload.driveMode === "true" ? "true" : "fast";
+    localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+
+    const restored = new C64Machine();
+    restored.loadROMs({
+      kernal: vault.getBytes("kernal"),
+      basic: vault.getBytes("basic"),
+      charRom: vault.getBytes("charRom"),
+    });
+    if (driveRom) restored.attachDrive(driveRom);
+    attachSessionMedia(restored);
+    restored.restoreState(payload.state);
+
+    machine = restored;
+    running = true;
+    paused = false;
+    frameImage = null;
+    frameAccumulator = 0;
+    lastFrameTime = 0;
+    await wireAudioToMachine();
+    setAudioPaused(false);
+    setControlState(vault.snapshot());
+    blitMachine();
+    frameHandle = requestAnimationFrame(frameLoop);
+    if (machineState) machineState.textContent = `GAME VAULT // SLOT ${slot} RESTORED`;
+    if (stageNote) stageNote.textContent = "Machine state and its local disk, tape and cartridge media were restored from this browser.";
+    updateMediaControls(vault.snapshot());
+    await refreshVaultStatus();
+    screen?.focus();
+  } catch (error) {
+    if (!frameHandle && running && machine) frameHandle = requestAnimationFrame(frameLoop);
+    setAudioPaused(false);
+    if (stageNote) stageNote.textContent = error?.message || "Game Vault restore failed.";
+  }
+}
+
+vaultSaveButton?.addEventListener("click", () => { void saveGameVaultSlot(); });
+vaultLoadButton?.addEventListener("click", () => { void loadGameVaultSlot(); });
+vaultClearButton?.addEventListener("click", async () => {
+  const slot = currentVaultSlot();
+  if (!window.confirm(`Clear Game Vault slot ${slot} from this browser?`)) return;
+  try {
+    await gameVault.clear(slot);
+    await refreshVaultStatus();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "Game Vault slot could not be cleared.";
+  }
+});
+vaultSlot?.addEventListener("change", () => { void refreshVaultStatus(); });
+
+for (const button of document.querySelectorAll("[data-joy-mask]")) {
+  const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
+  const press = (event) => {
+    event.preventDefault();
+    touchHeldMask |= mask;
+    touchJoyByte = 0xFF & ~touchHeldMask;
+    applyJoystickPort2();
+    if (inputStatus) inputStatus.textContent = "TOUCH // PORT 2";
+    try { button.setPointerCapture?.(event.pointerId); } catch {}
+  };
+  const release = (event) => {
+    event.preventDefault();
+    touchHeldMask &= ~mask;
+    touchJoyByte = 0xFF & ~touchHeldMask;
+    applyJoystickPort2();
+    if (!touchHeldMask && inputStatus && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
+  };
+  button.addEventListener("pointerdown", press);
+  button.addEventListener("pointerup", release);
+  button.addEventListener("pointercancel", release);
+  button.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+void refreshVaultStatus();
 
 fullscreenButton?.addEventListener("click", async () => {
   const target = document.querySelector(".ccg-c64-console");

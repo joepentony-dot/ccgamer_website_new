@@ -38,7 +38,10 @@ jobs:
       - name: Syntax-check CCG adapter
         run: |
           node --check js/ccg-c64/app.js
+          node --check js/ccg-c64/audio-worklet.js
+          node --check js/ccg-c64/game-vault.js
           node --check js/ccg-c64/rom-vault.js
+          node --check js/ccg-c64/t64.js
 
       - name: Syntax-check vendored core
         run: find js/ccg-c64/core -type f -name '*.js' -print0 | xargs -0 -n1 node --check

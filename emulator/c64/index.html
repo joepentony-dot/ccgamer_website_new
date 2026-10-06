@@ -150,8 +150,19 @@
           </button>
         </div>
 
+        <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
+          <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
+            <button type="button" data-joy-mask="1" aria-label="Joystick up">▲</button>
+            <button type="button" data-joy-mask="4" aria-label="Joystick left">◀</button>
+            <span aria-hidden="true"></span>
+            <button type="button" data-joy-mask="8" aria-label="Joystick right">▶</button>
+            <button type="button" data-joy-mask="2" aria-label="Joystick down">▼</button>
+          </div>
+          <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
+        </div>
+
         <p class="ccg-c64-stage-note" data-stage-note>
-          The machine/video core, physical keyboard, Port 2 gamepad path, first D64 route and live SID audio path are connected. Advanced media, Game Vault and mobile systems remain under integration.
+          Machine, video, keyboard/gamepad/touch input, SID audio, disk, tape, cartridge and local Game Vault systems are connected. SID fidelity and final browser qualification remain under refinement.
         </p>
       </section>
 
@@ -163,34 +174,56 @@
 
         <div class="ccg-c64-media-slot" data-media-slot="disk">
           <span class="ccg-c64-media-slot__id">D8</span>
-          <div><strong>DISK DRIVE</strong><small data-disk-slot-status>D64 quick-load ready</small></div>
-          <button type="button" data-load-disk disabled>LOAD D64</button>
-          <input id="ccg-c64-disk-input" type="file" accept=".d64" hidden>
+          <div><strong>DISK DRIVE</strong><small data-disk-slot-status>D64 / D71 / D81 ready</small></div>
+          <div class="ccg-c64-media-actions">
+            <button type="button" data-load-disk disabled>LOAD DISK</button>
+            <button type="button" data-drive-mode aria-pressed="false" disabled>FAST LOAD</button>
+          </div>
+          <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81" hidden>
         </div>
         <div class="ccg-c64-media-slot" data-media-slot="tape">
           <span class="ccg-c64-media-slot__id">T1</span>
-          <div><strong>DATASETTE</strong><small>TAP / T64 / WAV</small></div>
-          <button type="button" disabled>LOAD</button>
+          <div><strong>DATASETTE</strong><small data-tape-slot-status>TAP / T64 ready</small></div>
+          <div class="ccg-c64-media-actions">
+            <button type="button" data-load-tape disabled>LOAD</button>
+            <button type="button" data-tape-play disabled>PLAY</button>
+            <button type="button" data-tape-stop disabled>STOP</button>
+            <button type="button" data-tape-rewind disabled>REW</button>
+          </div>
+          <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
         </div>
         <div class="ccg-c64-media-slot" data-media-slot="cart">
           <span class="ccg-c64-media-slot__id">C1</span>
-          <div><strong>CARTRIDGE</strong><small>CRT / EasyFlash</small></div>
-          <button type="button" disabled>LOAD</button>
+          <div><strong>CARTRIDGE</strong><small data-cartridge-slot-status>CRT / EasyFlash ready</small></div>
+          <div class="ccg-c64-media-actions">
+            <button type="button" data-load-cartridge disabled>LOAD CRT</button>
+            <button type="button" data-eject-cartridge disabled>EJECT</button>
+          </div>
+          <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
         </div>
         <div class="ccg-c64-media-slot" data-media-slot="sid">
           <span class="ccg-c64-media-slot__id">S1</span>
-          <div><strong>SID PLAYER</strong><small>Music playback bay</small></div>
-          <button type="button" disabled>LOAD</button>
+          <div><strong>SID ENGINE</strong><small>Live machine audio</small></div>
+          <span class="ccg-c64-media-chip">ACTIVE</span>
         </div>
-        <div class="ccg-c64-media-slot" data-media-slot="state">
+        <div class="ccg-c64-media-slot ccg-c64-media-slot--vault" data-media-slot="state">
           <span class="ccg-c64-media-slot__id">V1</span>
-          <div><strong>GAME VAULT</strong><small>Save states / local library</small></div>
-          <button type="button" disabled>OPEN</button>
+          <div><strong>GAME VAULT</strong><small data-vault-status>Checking local slots…</small></div>
+          <div class="ccg-c64-vault-actions">
+            <select data-vault-slot aria-label="Game Vault slot">
+              <option value="1">SLOT 1</option>
+              <option value="2">SLOT 2</option>
+              <option value="3">SLOT 3</option>
+            </select>
+            <button type="button" data-vault-save disabled>SAVE</button>
+            <button type="button" data-vault-load disabled>RESTORE</button>
+            <button type="button" data-vault-clear>CLEAR</button>
+          </div>
         </div>
 
         <div class="ccg-c64-media-bay__future">
-          <strong>NEXT CORE PASS</strong>
-          <span>Advanced disk/true-drive controls, tape/cartridge loading, the Game Vault and mobile controls will unlock here without changing this CCG layout.</span>
+          <strong>RELEASE FINISHING PASS</strong>
+          <span>D64/D71/D81, optional True 1541, TAP/T64, CRT cartridges, three local save-state slots and mobile touch controls are connected. G64 and final SID analogue-fidelity work remain separate qualification items.</span>
         </div>
       </aside>
     </div>
