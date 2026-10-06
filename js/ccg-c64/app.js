@@ -1,6 +1,7 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickViceRoms } from "./rom-vault.js";
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
+import { D64, d64Variant } from "./core/media/d64.js";
 
 const vault = new ROMVault();
 const setup = document.querySelector("[data-rom-setup]");
@@ -16,6 +17,9 @@ const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
 const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
+const loadDiskButton = document.querySelector("[data-load-disk]");
+const diskInput = document.getElementById("ccg-c64-disk-input");
+const diskSlotStatus = document.querySelector("[data-disk-slot-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 
@@ -199,6 +203,7 @@ function setControlState(snapshot) {
   if (resetButton) resetButton.disabled = !running;
   if (pauseButton) pauseButton.disabled = !running;
   if (loadMediaButton) loadMediaButton.disabled = !running;
+  if (loadDiskButton) loadDiskButton.disabled = !running;
 
   if (powerButton) {
     powerButton.querySelector("strong").textContent = running ? "POWER OFF" : "BOOT C64";
@@ -468,6 +473,46 @@ prgInput?.addEventListener("change", async () => {
 window.addEventListener("keydown", (event) => handleC64Key(event, true));
 window.addEventListener("keyup", (event) => handleC64Key(event, false));
 window.addEventListener("blur", releaseAllInput);
+
+
+loadDiskButton?.addEventListener("click", () => {
+  if (!running) return;
+  diskInput?.click();
+});
+
+diskInput?.addEventListener("change", async () => {
+  const file = diskInput.files?.[0];
+  diskInput.value = "";
+  if (!file || !machine || !running) return;
+
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const variant = d64Variant(bytes.length);
+    if (!variant || variant.kind !== "d64") {
+      throw new Error("This first disk bay pass accepts standard D64 images only.");
+    }
+
+    const disk = new D64(bytes);
+    machine.setD64(disk);
+
+    // The first CCG disk route deliberately uses the core's virtual-drive
+    // fast-load path so LOAD/RUN is deterministic before the later advanced
+    // true-drive controls are exposed in the Omega interface.
+    machine.setTrueDrive(false);
+    machine.injectLoadAndRun();
+
+    if (diskSlotStatus) {
+      diskSlotStatus.textContent = disk.diskName
+        ? `${disk.diskName} // ${file.name}`
+        : file.name;
+    }
+    if (machineState) machineState.textContent = `D64 MOUNTED // ${file.name.toUpperCase()}`;
+    if (stageNote) stageNote.textContent = "Disk mounted in Drive 8 and LOAD/RUN queued through the fast-load path. Advanced true-drive controls remain a later media-bay pass.";
+    screen?.focus();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "The disk image could not be mounted.";
+  }
+});
 
 fullscreenButton?.addEventListener("click", async () => {
   const target = document.querySelector(".ccg-c64-console");
