@@ -457,7 +457,7 @@ body.ccg-c64-lab-body {
 
 .ccg-c64-command-deck {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 0.45rem;
   margin-top: 0.7rem;
 }

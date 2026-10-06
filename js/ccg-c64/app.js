@@ -22,6 +22,8 @@ const diskInput = document.getElementById("ccg-c64-disk-input");
 const diskSlotStatus = document.querySelector("[data-disk-slot-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
+const audioStatus = document.querySelector("[data-audio-status]");
+const audioButton = document.querySelector("[data-audio-toggle]");
 
 const PAL_FRAME_MS = 1000 / 50.125;
 let machine = null;
@@ -32,6 +34,85 @@ let frameHandle = 0;
 let lastFrameTime = 0;
 let frameAccumulator = 0;
 
+const SID_WORKLET_URL = "/js/ccg-c64/audio-worklet.js";
+let audioContext = null;
+let sidNode = null;
+let masterGain = null;
+let audioMuted = false;
+
+function updateAudioUi(label = null) {
+  if (audioStatus && label) audioStatus.textContent = label;
+  if (audioButton) {
+    audioButton.disabled = !running || !audioContext || !sidNode;
+    const strong = audioButton.querySelector("strong");
+    if (strong) strong.textContent = audioMuted ? "UNMUTE" : "MUTE";
+  }
+}
+
+async function ensureAudioGraph() {
+  if (audioContext && sidNode && masterGain) return true;
+  const Context = window.AudioContext || window.webkitAudioContext;
+  if (!Context || !window.AudioWorkletNode) {
+    updateAudioUi("UNAVAILABLE");
+    return false;
+  }
+
+  audioContext = new Context({ sampleRate: 48000, latencyHint: "interactive" });
+  await audioContext.audioWorklet.addModule(SID_WORKLET_URL);
+  sidNode = new AudioWorkletNode(audioContext, "ccg-sid-processor", {
+    outputChannelCount: [2],
+  });
+  masterGain = audioContext.createGain();
+  masterGain.gain.value = 0;
+  sidNode.connect(masterGain);
+  masterGain.connect(audioContext.destination);
+  return true;
+}
+
+async function wireAudioToMachine() {
+  if (!machine) return false;
+  try {
+    if (!await ensureAudioGraph()) return false;
+    sidNode.port.postMessage({
+      type: "init",
+      shared: machine.sidShared,
+      is8580: machine.sidIs8580,
+    });
+    masterGain.gain.setValueAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime);
+    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+    updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
+    return true;
+  } catch (error) {
+    console.warn("[ccg-c64] SID audio unavailable:", error);
+    updateAudioUi("AUDIO ERROR");
+    return false;
+  }
+}
+
+function resetAudioForMachine() {
+  if (!sidNode || !machine) return;
+  sidNode.port.postMessage({ type: "reset", is8580: machine.sidIs8580 });
+  if (masterGain && audioContext) {
+    masterGain.gain.setValueAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime);
+  }
+}
+
+function setAudioPaused(value) {
+  sidNode?.port.postMessage({ type: "pause", paused: Boolean(value) });
+}
+
+function powerOffAudio() {
+  sidNode?.port.postMessage({ type: "power-off" });
+  if (masterGain && audioContext) masterGain.gain.setValueAtTime(0, audioContext.currentTime);
+  updateAudioUi("STANDBY");
+}
+
+function toggleAudioMute() {
+  if (!masterGain || !audioContext) return;
+  audioMuted = !audioMuted;
+  masterGain.gain.setTargetAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime, 0.01);
+  updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
+}
 
 const heldMatrixKeys = new Map();
 let shiftLeftPhysical = false;
@@ -204,6 +285,7 @@ function setControlState(snapshot) {
   if (pauseButton) pauseButton.disabled = !running;
   if (loadMediaButton) loadMediaButton.disabled = !running;
   if (loadDiskButton) loadDiskButton.disabled = !running;
+  updateAudioUi();
 
   if (powerButton) {
     powerButton.querySelector("strong").textContent = running ? "POWER OFF" : "BOOT C64";
@@ -304,6 +386,7 @@ function frameLoop(now) {
 
 function powerOff() {
   releaseAllInput();
+  powerOffAudio();
   running = false;
   paused = false;
   stopFrameLoop();
@@ -314,7 +397,7 @@ function powerOff() {
   render(vault.snapshot());
 }
 
-function powerOn() {
+async function powerOn() {
   const snapshot = vault.snapshot();
   if (!snapshot.allRequiredReady) {
     showSetup();
@@ -341,6 +424,7 @@ function powerOn() {
       machine.setTrueDrive(false);
     }
 
+    const audioReady = await wireAudioToMachine();
     running = true;
     paused = false;
     frameImage = null;
@@ -348,7 +432,7 @@ function powerOn() {
     lastFrameTime = 0;
     if (machineState) machineState.textContent = "C64 CORE RUNNING // VIDEO + INPUT ACTIVE";
     if (inputStatus) inputStatus.textContent = "KEYBOARD READY";
-    if (stageNote) stageNote.textContent = "Live machine/video core active. SID output and complete physical input/media routing are the next integration gates.";
+    if (stageNote) stageNote.textContent = audioReady ? "Live machine, video, keyboard/gamepad and SID audio paths are active. Advanced media, save-state and mobile controls remain under integration." : "Machine, video and input are active. SID audio could not start in this browser session; the remaining emulator systems continue to work.";
     setControlState(snapshot);
     frameHandle = requestAnimationFrame(frameLoop);
     screen?.focus();
@@ -365,6 +449,7 @@ function powerOn() {
 function resetMachine() {
   if (!machine || !running) return;
   machine.reset();
+  resetAudioForMachine();
   paused = false;
   frameAccumulator = 0;
   if (machineState) machineState.textContent = "C64 RESET // RUNNING";
@@ -374,6 +459,7 @@ function resetMachine() {
 function togglePause() {
   if (!machine || !running) return;
   paused = !paused;
+  setAudioPaused(paused);
   frameAccumulator = 0;
   lastFrameTime = 0;
   if (machineState) machineState.textContent = paused ? "C64 PAUSED" : "C64 CORE RUNNING // VIDEO ACTIVE";
@@ -445,9 +531,10 @@ finishSetup?.addEventListener("click", () => {
   screen?.focus();
 });
 
-powerButton?.addEventListener("click", powerOn);
+powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", resetMachine);
 pauseButton?.addEventListener("click", togglePause);
+audioButton?.addEventListener("click", toggleAudioMute);
 
 loadMediaButton?.addEventListener("click", () => {
   if (!running) return;

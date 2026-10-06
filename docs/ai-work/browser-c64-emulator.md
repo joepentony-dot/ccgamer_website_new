@@ -36,9 +36,17 @@
 - The command deck reports the mounted disk name/file and returns CRT focus after selection.
 - D71/D81/G64 remain disabled rather than advertising unsupported active controls; the visible first-pass button says LOAD D64.
 
+## First live SID audio path — 6 October 2026
+
+- The CCG command deck now starts a same-origin AudioWorklet from the Boot C64 user gesture and wires the machine's existing SharedArrayBuffer SID event stream into it.
+- The AudioWorklet is a CCG-specific adapter rather than an imported UI/runtime shell. It uses the retained GPL SID voice core, applies cycle-stamped register writes, keeps oscillator hard-sync ordering, outputs stereo browser audio and exposes a CCG Mute/Unmute control.
+- A short local prefill keeps the audio clock behind the frame-burst producer so register writes are available before playback reaches their cycle stamps.
+- Power-off, reset and pause now have explicit audio lifecycle messages so sound cannot continue after the emulated machine has stopped.
+- This first pass intentionally does not ship the optional compiled SID WASM engine. It also does not yet reproduce the full reSID analog filter/mixer/output stage; that remains a dedicated fidelity/qualification pass rather than blocking first live sound.
+
 ## Not merge-ready yet
 
-The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still integrate and qualify SID/worklet audio, advanced disk/true-drive plus D71/D81/G64 support, tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. Physical keyboard, standard gamepad Port 2 routing and the first D64 quick-load route are now present but still require browser-level qualification. The Stage 1 shell should remain the visual contract while those systems are connected.
+The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still qualify and refine SID audio fidelity, advanced disk/true-drive plus D71/D81/G64 support, tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. Physical keyboard, standard gamepad Port 2 routing and the first D64 quick-load route are now present but still require browser-level qualification. The Stage 1 shell should remain the visual contract while those systems are connected.
 
 ## Visual/legal rule
 
