@@ -127,7 +127,7 @@
     const slots=document.querySelectorAll?.("#quick-slots .quick-slot")||[];
     const capacity=Math.max(1,Number(PGR.inventoryCapacity(p1)||3));
     const head=document.querySelector(".hub-inventory-head b");
-    if(head)head.textContent=`QUICK INVENTORY · PRESS 1–${capacity} TO USE SLOT`;
+    if(head)head.textContent=`QUICK INVENTORY · KEYS 1-${capacity}`;
 
     slots.forEach((slot,index)=>{
       const slotNumber=index+1,item=p1.inventory?.[index],usable=Boolean(item&&QUICK_USE.has(item.kind)),number=slot.querySelector("b");
