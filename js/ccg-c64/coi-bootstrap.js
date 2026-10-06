@@ -60,30 +60,6 @@ function waitForState(worker, wanted, timeoutMs = 8000) {
   });
 }
 
-function waitForNestedController(timeoutMs = 8000) {
-  const current = navigator.serviceWorker.controller;
-  if (current?.scriptURL?.includes("/emulator/c64/coi-service-worker.js")) {
-    return Promise.resolve();
-  }
-
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      navigator.serviceWorker.removeEventListener("controllerchange", changed);
-      reject(new Error("Isolation service worker did not take control."));
-    }, timeoutMs);
-
-    function changed() {
-      const controller = navigator.serviceWorker.controller;
-      if (!controller?.scriptURL?.includes("/emulator/c64/coi-service-worker.js")) return;
-      clearTimeout(timer);
-      navigator.serviceWorker.removeEventListener("controllerchange", changed);
-      resolve();
-    }
-
-    navigator.serviceWorker.addEventListener("controllerchange", changed);
-  });
-}
-
 async function start() {
   if (isolated()) {
     clearReloadCount();
@@ -121,11 +97,14 @@ async function start() {
     if (registration.installing) {
       await waitForState(registration.installing, "activated");
     } else if (registration.waiting) {
-      registration.waiting.postMessage({ type: "SKIP_WAITING" });
-      await waitForState(registration.waiting, "activated");
+      const waiting = registration.waiting;
+      waiting.postMessage({ type: "SKIP_WAITING" });
+      await waitForState(waiting, "activated");
     }
 
-    await waitForNestedController();
+    // The current document was received before the nested worker could stamp
+    // COOP/COEP, so a reload is required even if clients.claim() has already
+    // changed the controller. The next navigation is inside the worker's scope.
     bumpReloadCount();
     location.reload();
   } catch (error) {
