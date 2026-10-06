@@ -28,12 +28,13 @@ assert.match(bootstrap,/if\(!versionCheckOutdated\(\)\)\{[\s\S]*?expectedBadge=`
 assert.match(guard,/ccg-lost-sizzler-cache[^\n]+content/,"cache guard must continue taking its initial token from the blocking page meta");
 assert.match(handoff,/function revision\(\)\{return String\(document\.querySelector\(\x27meta\[name="ccg-lost-sizzler-cache"\]\x27\)\?\.content/,"the historical r30 handoff must derive its module token from the canonical page cache meta");
 assert.match(handoff,/loadScript\("v10-42-bootstrap\.js","data-ccg-v142-bootstrap"\)/,"the historical handoff must continue loading the ordered V10.42 bootstrap through the derived release token");
-assert.match(bootstrap,/pendingId==="solo-btn"\|\|pendingId==="tutorial-zone-btn"/,"the ordered bootstrap must treat buffered Solo and Tutorial starts as owned launch intents");
-assert.match(bootstrap,/guidance\.launchSolo\(pendingId==="tutorial-zone-btn"\)/,"buffered Solo and Tutorial starts must hand directly to the guidance launch owner rather than relying on a synthetic click");
-assert.match(bootstrap,/if\(state\.ready\)\{[\s\S]*?target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"[\s\S]*?state\.pendingStartId=target\.id[\s\S]*?replayPendingStart\(\)/,"V10.42 must keep capture ownership for Solo/Tutorial through the ready-state transition instead of exposing a click-dispatch race");
+assert.match(bootstrap,/state\.pendingStartId=target\.id;[\s\S]*When READY appears, click your selected adventure again so fullscreen and authored music start from a trusted input\./,"the ordered bootstrap must retain a pre-ready Solo/Tutorial choice without synthesizing the launch");
+assert.match(bootstrap,/if\(state\.ready\)\{[\s\S]*guidance\.launchSolo\(target\.id==="tutorial-zone-btn"\)/,"ready Solo and Tutorial starts must hand directly to the guidance launch owner inside the trusted click task");
+assert.match(bootstrap,/if\(state\.ready\)\{[\s\S]*target\.id!=="solo-btn"&&target\.id!=="tutorial-zone-btn"[\s\S]*event\.preventDefault\(\);event\.stopImmediatePropagation\(\);[\s\S]*guidance\.launchSolo\(target\.id==="tutorial-zone-btn"\)/,"V10.42 must keep capture ownership for Solo/Tutorial through the ready-state transition and launch from the trusted click");
+assert.doesNotMatch(bootstrap,/replayPendingStart\(/,"V10.42 must not restore the synthetic replay path that can lose fullscreen and media activation");
 assert.doesNotMatch(bootstrap,/removeEventListener\("click",blockedStart,true\)/,"the V10.42 Solo/Tutorial capture owner must remain installed after readiness so a transition click cannot fall through to the legacy core handler");
 
-assert.match(bootstrap,/Promise\.resolve\(launched\)\.then\(\(\)=>\{[\s\S]*?dataset\?\.runActive==="true"[\s\S]*?finish\(\)[\s\S]*?retry\(\)/,"the ordered bootstrap must retain a buffered local start until the launch owner either activates the run or needs a retry");
+assert.match(bootstrap,/Promise\.resolve\(launched\)\.finally\(\(\)=>target\.removeAttribute\("aria-busy"\)\)/,"the ordered bootstrap must release the busy state after the trusted launch attempt completes");
 
 assert.ok(localAssets.length>=30,`expected the canonical page to expose its local script/style cache tokens, found ${localAssets.length}`);
 for(const asset of localAssets)assert.equal(asset.token,CACHE,`${asset.url} is not pinned to the current r103 cache token`);
