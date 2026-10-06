@@ -128,6 +128,10 @@ try{
   assert.equal(held.busy,"","the early Start Game button must be released once V10.42 is ready");
   assert.match(held.note,/click Start Game again/i,"the player must be told to make the fresh trusted click required for fullscreen and music");
   assert.equal(musicRequests,0,"no soundtrack request may start from the expired pre-ready click");
+  const primed=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio?.getState?.());
+  assert.ok(primed?.slots?.normal?.url?.includes("/assets/audio/music/"),"ready state must select the normal authored soundtrack before Start Game");
+  assert.equal(primed.slots.normal.paused,true,"priming may select media but must not autoplay before Start Game");
+  assert.ok(primed.slots.normal.volume>=.1,"primed authored music must have an audible non-zero level");
 
   await start.click({force:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
@@ -142,6 +146,8 @@ try{
   assert.equal(playing.fallbackActive,false,"trusted launch must not fall back to generated music");
   assert.equal(playing.adminAudioReady,true,"trusted launch must use the hydrated production soundtrack catalogue");
   assert.equal(playing.pendingGestureState,"","successful trusted launch must not leave music waiting for another gesture");
+  assert.ok(playing.slots[playing.state].volume>=.1,"live authored music must remain at an audible non-zero level");
+  assert.equal(playing.slots[playing.state].muted,false,"live authored music must not be muted");
   assert.deepEqual(pageErrors,[],`trusted launch must not raise page errors: ${pageErrors.join("\n")}`);
 
   await context.close();
