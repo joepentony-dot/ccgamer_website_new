@@ -11,6 +11,7 @@ const bootstrap=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/v10-42-bo
 const config=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/config.js'),'utf8');
 const localRuntime=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/game-local-runtime.js'),'utf8');
 const gamePlay=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/game-play.js'),'utf8');
+const systemsSource=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/systems.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 const systems={decorate(_world,host){return host}};
@@ -34,7 +35,10 @@ assert(bootstrap.indexOf('v10-42-five-depth-campaign.js')<bootstrap.indexOf('v10
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-tutorial-campaign.js'),'Floor combat balance must install before presentation-only Tutorial copy.');
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-zero-server-release.js'),'Floor combat balance must install before the production release-policy guard.');
 assert(bootstrap.indexOf('v10-42-floor-balance.js')<bootstrap.indexOf('v10-42-r1-stability.js'),'Floor combat balance must install before final V10.42 stability protection.');
-assert(config.includes('CASUAL:{enemyHp:.72,enemyDamage:.65,enemyTempo:.82,damageGraceMs:1150,loot:1.2,ammo:1.35,stalker:.72}'),'Casual must be materially lower-pressure than Arcade rather than relying only on integer-rounded damage.');
+assert(config.includes('CASUAL:{enemyHp:.68,enemyDamage:.55,enemyTempo:.72,enemyPopulation:.70,damageGraceMs:1350,loot:1.25,ammo:1.4,stalker:.68}'),'Casual must materially reduce HP, damage, attack tempo and roaming population while extending the damage grace window.');
+assert(systemsSource.includes('const populationScale=Math.max(.5,Math.min(1,Number(diff.enemyPopulation??1)))'),'Dungeon decoration must apply the selected difficulty population scale.');
+assert(systemsSource.includes('!e.follower&&!e.guardian&&!e.champion&&!e.deathStalker&&!e.voidStalker&&!e.spider&&!e.skeleton&&!e.furnitureEnemy'),'Population scaling must preserve named, objective and authored special encounters.');
+assert(systemsSource.includes('host.v142DifficultyPopulation'),'Runtime diagnostics must expose the applied Casual crowd reduction.');
 assert(localRuntime.includes('Number(dt||0)*tempo'),'Authoritative enemy AI must apply the difficulty enemyTempo multiplier.');
 assert(gamePlay.includes('PGR.difficulty(run)?.damageGraceMs||800'),'Player damage recovery must honour the longer Casual damage grace window.');
 
