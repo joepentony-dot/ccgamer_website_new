@@ -42,6 +42,16 @@ function buildErrorInfo(error, context) {
   } else if (lower.includes('email not confirmed')) {
     category = 'credentials';
     userMessage = 'Please confirm your email before logging in.';
+  } else if (
+    lower.includes('password should be at least')
+    || lower.includes('password must be at least')
+    || lower.includes('weak password')
+    || lower.includes('weak_password')
+  ) {
+    category = 'weak_password';
+    const minimumMatch = message.match(/at least\s+(\d+)\s+characters?/i);
+    const minimum = minimumMatch ? minimumMatch[1] : '10';
+    userMessage = `Password must be at least ${minimum} characters.`;
   } else if (lower.includes('already registered') || lower.includes('user already registered')) {
     category = 'duplicate_email';
     userMessage = 'This email is already registered. Use Forgot password to reset your password.';
@@ -126,24 +136,16 @@ async function ensureProfileBootstrap(user, preferences = null) {
           username: fallbackUsername,
           display_name: fallbackUsername,
           role: 'user',
-          points: 0,
           bio: '',
           avatar_url: '',
+          email: user.email || null,
           created_at: new Date().toISOString(),
-          newsletter_monthly: false,
           notify_new_games: normalized.notifyNewGames,
-          notify_c64: false,
-          notify_amiga: false,
-          newsletter_opt_in: false,
-          notify_new_games_opt_in: normalized.notifyNewGames,
-          notify_platform_c64: false,
-          notify_platform_amiga: false,
           notify_newsletter: normalized.notifyNewsletter,
           notify_new_games_choice_recorded: normalized.choiceRecorded,
           notify_newsletter_choice_recorded: normalized.choiceRecorded,
           notification_preferences_updated_at: recordedAt,
-          unsub_token: generateUnsubscribeToken(),
-          email_confirmed: Boolean(user.email_confirmed_at)
+          unsub_token: generateUnsubscribeToken()
         });
 
       if (inserted.error) {
@@ -159,7 +161,7 @@ async function ensureProfileBootstrap(user, preferences = null) {
 
 function sanitizeEmailPassword(email, password) {
   const safeEmail = clean(email);
-  const safePassword = clean(password);
+  const safePassword = String(password ?? '');
 
   if (!safeEmail || !safePassword) {
     return {
@@ -244,7 +246,7 @@ export async function sendPasswordReset(email, redirectTo) {
 }
 
 export async function updatePassword(newPassword) {
-  const safePassword = clean(newPassword);
+  const safePassword = String(newPassword ?? '');
   if (!safePassword) {
     return { error: { category: 'credentials', message: 'New password is required.', detail: 'Missing password value.' } };
   }
