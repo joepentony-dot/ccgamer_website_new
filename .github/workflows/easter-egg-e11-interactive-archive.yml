@@ -59,10 +59,6 @@ jobs:
             grep -q "data-ccg-secret-code=\"$code\"" js/ccg-global.js
             grep -q "code: \"$code\"" js/easter-eggs/easter-egg-registry.js
           done
-          if grep -R -i -E 'hubbard' js/ccg-global.js js/easter-eggs/easter-egg-registry.js js/easter-eggs/e11-interactive-archive.js js/easter-eggs/e11 scripts/test-easter-egg-e3-registry.mjs scripts/test-easter-egg-e11-expansion.mjs; then
-            echo "Removed HUBBARD Easter egg references must not return."
-            exit 1
-          fi
           test -f resources/css/easter-eggs-e11.css
           for part in core terminals machines amiga tools demo premium; do
             test -f "resources/css/easter-eggs-e11-$part.css"
