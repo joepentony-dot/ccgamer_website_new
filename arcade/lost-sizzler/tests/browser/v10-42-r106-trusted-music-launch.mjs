@@ -94,7 +94,7 @@ try{
   page.setDefaultTimeout(45000);
   const pageErrors=[];
   page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
-  page.on("request",request=>{const url=request.url();if(/\\.supabase\\.co\\/storage\\/v1\\/object\\//i.test(url)&&/\\/music\\//i.test(url))musicRequests+=1});
+  page.on("request",request=>{const url=request.url().toLowerCase();if(url.includes(".supabase.co/storage/v1/object/")&&url.includes("/music/"))musicRequests+=1});
 
   await page.goto(`${origin}/arcade/lost-sizzler/?trusted-music-launch=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap)&&window.CCGLostSizzlerV142Bootstrap.ready===false);
