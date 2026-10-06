@@ -117,6 +117,10 @@ function ensurePanel() {
   let panel = document.getElementById('memberAchievementPanel');
   if (panel) return panel;
 
+  const disclosure = document.createElement('details');
+  disclosure.className = 'member-achievement-disclosure member-compact-details';
+  disclosure.innerHTML = '<summary>View all achievements &amp; game badges</summary>';
+
   panel = document.createElement('article');
   panel.className = 'member-achievement-panel';
   panel.id = 'memberAchievementPanel';
@@ -125,7 +129,7 @@ function ensurePanel() {
       <div>
         <p class="member-achievement-panel__kicker">Account achievements</p>
         <h3 class="member-achievement-panel__title">Achievements &amp; Badges</h3>
-        <p class="member-achievement-panel__intro">Account activity and C64 Dungeon Carnage accomplishments are saved here. Complete all twelve milestones in the original Commodore set for the Commodore Completionist reward, then keep building the expanded activity milestones or conquer all five Dungeon Carnage depths for the campaign Platinum badge.</p>
+        <p class="member-achievement-panel__intro">Your account milestones and C64 Dungeon Carnage achievements are collected here.</p>
       </div>
       <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
     </div>
@@ -133,7 +137,8 @@ function ensurePanel() {
     <div class="member-achievement-grid" id="memberAchievementGrid"></div>
   `;
 
-  section.insertBefore(panel, legacyGrid);
+  disclosure.appendChild(panel);
+  section.insertBefore(disclosure, legacyGrid);
   panel.querySelector('#memberRefreshAchievements')?.addEventListener('click', () => {
     void refreshAchievements({ award: true, manual: true });
   });
