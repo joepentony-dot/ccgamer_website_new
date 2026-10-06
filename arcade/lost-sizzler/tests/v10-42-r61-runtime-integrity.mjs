@@ -22,9 +22,11 @@ assert.match(core,/tierMatch=weaponRaw\.match\(\/TIER\\s\+\(\\d\+\)\/i\)/,"HUD m
 assert.match(core,/UI\.weapon\.textContent=\x60L\$\{weaponLevel\} \$\{weaponFamily\}\x60\.toUpperCase\(\)\.slice\(0,18\)/,"HUD must expose compact weapon level plus readable family");
 assert.match(core,/UI\.weapon\.title=\x60Weapon Level \$\{weaponLevel\} · \$\{weaponRaw\}\x60/,"full weapon identity must remain available as a title");
 
-const keyHeading=inventory.indexOf('section("KEYS & QUEST ITEMS · ALWAYS VISIBLE")');
-const storedHeading=inventory.indexOf('section("STORED ITEMS · NUMBER KEYS USE THE MATCHING QUICK SLOT")');
-assert.ok(keyHeading>=0&&storedHeading>keyHeading,"key and bronze-key status must render before scrollable stored items");
-assert.match(inventory,/name:"BRONZE KEY"[\s\S]*qty:\x60×\$\{bronze\}\x60/);
+const keyHeading=inventory.indexOf('section("QUEST & KEYS")');
+const carriedHeading=inventory.indexOf('section("CARRIED ITEMS")');
+assert.ok(keyHeading>=0&&carriedHeading>keyHeading,"relevant quest/key status must render before the concise carried-item summary");
+assert.match(inventory,/if\(bronze>0\)questRows\.push\(row\(\{kind:"bronze",name:"BRONZE KEYS",qty:\x60×\$\{bronze\}\x60/,"bronze-key status must appear only while keys are actually held");
+assert.match(inventory,/if\(potions>0\)itemRows\.push/,"zero-count stored items must not force a scrolling live sidebar");
+assert.match(inventory,/if\(!rows\.length\)rows\.push\('<div class="carried-empty">/,"an empty live key/item summary must have a compact empty state");
 
 console.log("Dungeon R61 runtime-integrity and HUD contract passed.");

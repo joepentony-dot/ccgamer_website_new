@@ -10,7 +10,7 @@
   position:relative!important;
   display:grid!important;
   grid-template-columns:minmax(0,1fr)!important;
-  grid-template-rows:minmax(190px,52%) minmax(0,1fr)!important;
+  grid-template-rows:minmax(180px,1fr) auto!important;
   grid-auto-flow:row!important;
   gap:7px!important;
   padding:7px!important;
@@ -51,10 +51,37 @@
   z-index:3!important;
 }
 
-/* Shorter desktop viewports still keep both panels separate. The inventory list
- * remains scrollable, so the radar never has to surrender its own space. */
+/* The live sidebar is a summary, not a scrollable second inventory. Only active
+ * rows are rendered; compact them instead of exposing a browser-style scrollbar. */
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .item-shortcuts{
+  flex:0 0 auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:4px 0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  scrollbar-width:none!important;
+}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .item-shortcuts::-webkit-scrollbar{display:none!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-item{
+  min-height:29px!important;
+  padding:2px 3px!important;
+  grid-template-columns:22px minmax(0,1fr) auto!important;
+  gap:4px!important;
+}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-item>.item-svg-wrap,
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-item .item-art-wrap{width:22px!important;height:22px!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-copy span{display:none!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-copy b{font-size:8px!important;line-height:1.05!important;white-space:nowrap!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-meta{display:flex!important;align-items:center!important;gap:3px!important;min-width:0!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-meta strong{font-size:8px!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-section-label{padding:2px 3px!important;font-size:7px!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-empty{padding:8px 5px!important;text-align:center!important;color:#81758b!important;font-size:7px!important}
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .inventory-dock-controls{margin-top:3px!important}
+
 @media(max-height:720px){
   .ccg-game>.tactical-zone{
-    grid-template-rows:minmax(150px,44%) minmax(0,1fr)!important;
+    grid-template-rows:minmax(130px,1fr) auto!important;
   }
+  .ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock .carried-item{min-height:25px!important}
 }

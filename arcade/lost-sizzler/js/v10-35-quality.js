@@ -100,13 +100,19 @@
     return moved;
   }
 
+  function regenCellOccupied(x,y){
+    const collections=[host?.blockingDecor,host?.doors,host?.chests,host?.shops,host?.shrines,host?.switches,host?.generators,host?.items];
+    for(const list of collections)if((list||[]).some(q=>q?.active!==false&&q?.alive!==false&&Number(q.x)===Number(x)&&Number(q.y)===Number(y)))return true;
+    for(const q of [host?.rescue,host?.trader,host?.startShop,world?.start,world?.exit])if(q&&Number(q.x)===Number(x)&&Number(q.y)===Number(y))return true;
+    return false;
+  }
+
   function regenCell(room){
     const collect=margin=>{
       const candidates=[];
       for(let y=room.y+margin;y<=room.y+room.h-margin-1;y++)for(let x=room.x+margin;x<=room.x+room.w-margin-1;x++){
         if(!W.walkable(world.map,x,y,host))continue;
-        if((host.blockingDecor||[]).some(q=>q.x===x&&q.y===y))continue;
-        if((host.doors||[]).some(q=>q.x===x&&q.y===y))continue;
+        if(regenCellOccupied(x,y))continue;
         candidates.push({x,y,d:Math.hypot(x-(room.x+room.w/2),y-(room.y+room.h/2))});
       }
       candidates.sort((a,b)=>a.d-b.d);
@@ -115,11 +121,25 @@
     return collect(2)||collect(1);
   }
 
+  function validSanctuaryTile(tile){
+    if(!tile||!world||!host)return false;
+    const room=(world.rooms||[]).find(candidate=>Number(candidate?.id)===Number(tile.roomId))||null;
+    if(!room?.sanctuary)return false;
+    if(!W.walkable(world.map,Number(tile.x),Number(tile.y),host))return false;
+    return !regenCellOccupied(tile.x,tile.y);
+  }
+
   function installSanctuaryTiles(){
     if(!host)return 0;
+    const previous=new Map((host.sanctuaryRegeneration||[]).map(tile=>[Number(tile.roomId),tile]));
     host.sanctuaryRegeneration=[];
     for(const room of world?.rooms||[]){
       if(!room.sanctuary)continue;
+      const existing=previous.get(Number(room.id));
+      if(validSanctuaryTile(existing)){
+        host.sanctuaryRegeneration.push(existing);
+        continue;
+      }
       const q=regenCell(room);
       if(q)host.sanctuaryRegeneration.push({id:`sanctuary-regen-${room.id}`,...q,roomId:room.id,periodMs:3000,accumulators:{}});
     }
@@ -128,10 +148,12 @@
 
   function ensureSanctuaryTiles(){
     if(!host||!world)return 0;
-    const sanctuaryCount=(world.rooms||[]).filter(room=>room?.sanctuary).length;
-    if(!sanctuaryCount)return 0;
-    if((host.sanctuaryRegeneration||[]).length!==sanctuaryCount)return installSanctuaryTiles();
-    return host.sanctuaryRegeneration.length;
+    const sanctuaries=(world.rooms||[]).filter(room=>room?.sanctuary);
+    if(!sanctuaries.length)return 0;
+    const tiles=host.sanctuaryRegeneration||[];
+    const oneValidPerRoom=sanctuaries.every(room=>tiles.filter(tile=>Number(tile?.roomId)===Number(room.id)&&validSanctuaryTile(tile)).length===1);
+    if(!oneValidPerRoom||tiles.length!==sanctuaries.length)return installSanctuaryTiles();
+    return tiles.length;
   }
 
   function updateSanctuaryRegen(dt){

@@ -1,10 +1,10 @@
 /* The Lost Sizzler — V10.6 persistent inventory/key HUD + numbered quick slots.
  *
- * The tactical sidebar is the permanent at-a-glance inventory. Every carriable
- * item type stays visible there, including zero counts, so a newly collected
- * potion/key can never disappear into an apparently empty HUD. The bottom Quick
- * Inventory keeps the actual slot order and number keys 1–6 activate the exact
- * matching slot as an alternative to E/Q/R/B.
+ * The tactical sidebar is the permanent at-a-glance key/item summary. It shows
+ * only quest items that currently matter and carried items that actually exist,
+ * so the live HUD stays useful without becoming a second scrolling inventory.
+ * TAB remains the detailed Equipment & Inventory screen; number keys 1–6 keep
+ * the exact Quick Inventory slot mapping as an alternative to E/Q/R/B.
  */
 (()=>{
   "use strict";
@@ -49,17 +49,24 @@
 
     const potions=count("potion"),torches=count("torch"),teleports=count("teleport"),flasks=count("banishment"),artefacts=count("artefact");
     const mainKeys=Math.max(0,Number(host.keysCollected||0)),bronze=Math.max(0,Number(p1.bronzeKeys||0)),sigil=Boolean(host.exitSigilCollected);
-    const rows=[section("KEYS & QUEST ITEMS · ALWAYS VISIBLE")];
-    rows.push(row({kind:"key",name:"MAIN VAULT KEYS",qty:`${mainKeys}/${C.keyTarget}`,desc:"Floor key objective; collected automatically.",tone:"gold",empty:mainKeys===0,auto:true}));
-    rows.push(row({kind:"bronze",name:"BRONZE KEY",qty:`×${bronze}`,desc:"Automatically opens a bronze door or locked chest.",tone:"gold",empty:bronze===0,auto:true}));
-    rows.push(row({kind:"exitSigil",name:"EXIT SIGIL",qty:sigil?"HELD":"NOT HELD",desc:"Automatically unlocks the floor exit when required.",tone:"gold",empty:!sigil,auto:true}));
-    rows.push(section("STORED ITEMS · NUMBER KEYS USE THE MATCHING QUICK SLOT"));
-    rows.push(row({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,primary:"E",slots:slotsFor("potion"),desc:"Restore health. Ammo must be found separately.",tone:"green",empty:potions===0}));
-    rows.push(row({kind:"torch",name:"FLAMING TORCH",qty:Number(p1.torchMs||0)>0?`ACTIVE ${Math.ceil(Number(p1.torchMs)/1000)}s · ×${torches}`:`×${torches}`,primary:"Q",slots:slotsFor("torch"),desc:"Light the dungeon temporarily.",tone:"gold",empty:torches===0&&Number(p1.torchMs||0)<=0}));
-    rows.push(row({kind:"teleport",name:"TELEPORT SPELL",qty:`×${teleports}`,primary:"R",slots:slotsFor("teleport"),desc:"Warp to a safe explored room.",tone:"purple",empty:teleports===0}));
-    rows.push(row({kind:"banishment",name:"BANISHMENT FLASK",qty:`×${flasks}`,primary:"B",slots:slotsFor("banishment"),desc:"Destroy a nearby Death Stalker when in range.",tone:"purple",empty:flasks===0}));
-    rows.push(row({kind:"loot",name:"RARE ARTEFACT",qty:`×${artefacts}`,primary:"TRADE",desc:"Trade 3 at a shop for a Banishment Flask.",tone:"cyan",empty:artefacts===0}));
+    const essence=Math.max(0,Number(p1.banishmentEssence||0)),essenceCost=Math.max(1,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
+    const questRows=[],itemRows=[];
 
+    if(host.objective?.type==="keys"||mainKeys>0)questRows.push(row({kind:"key",name:"DOMAIN KEYS",qty:`${mainKeys}/${C.keyTarget}`,desc:"Current floor key progress.",tone:"gold",auto:true}));
+    if(bronze>0)questRows.push(row({kind:"bronze",name:"BRONZE KEYS",qty:`×${bronze}`,desc:"Optional bronze locks.",tone:"gold",auto:true}));
+    if(sigil)questRows.push(row({kind:"exitSigil",name:"EXIT SIGIL",qty:"HELD",desc:"Floor exit unlocked when required.",tone:"gold",auto:true}));
+    if(essence>0)questRows.push(row({kind:"loot",name:"BANISHMENT ESSENCE",qty:`${essence}/${essenceCost}`,desc:"Distil a Flask at the Alchemist.",tone:"purple",auto:true}));
+
+    if(potions>0)itemRows.push(row({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,primary:"E",slots:slotsFor("potion"),desc:"Restore health.",tone:"green"}));
+    if(torches>0||Number(p1.torchMs||0)>0)itemRows.push(row({kind:"torch",name:"FLAMING TORCH",qty:Number(p1.torchMs||0)>0?`ACTIVE ${Math.ceil(Number(p1.torchMs)/1000)}s · ×${torches}`:`×${torches}`,primary:"Q",slots:slotsFor("torch"),desc:"Temporary dungeon light.",tone:"gold"}));
+    if(teleports>0)itemRows.push(row({kind:"teleport",name:"TELEPORT SPELL",qty:`×${teleports}`,primary:"R",slots:slotsFor("teleport"),desc:"Warp to a safe explored room.",tone:"purple"}));
+    if(flasks>0)itemRows.push(row({kind:"banishment",name:"BANISHMENT FLASK",qty:`×${flasks}`,primary:"B",slots:slotsFor("banishment"),desc:"Banish a nearby supernatural threat.",tone:"purple"}));
+    if(artefacts>0)itemRows.push(row({kind:"loot",name:"RARE ARTEFACT",qty:`×${artefacts}`,desc:"Rare carried reward.",tone:"cyan"}));
+
+    const rows=[];
+    if(questRows.length)rows.push(section("QUEST & KEYS"),...questRows);
+    if(itemRows.length)rows.push(section("CARRIED ITEMS"),...itemRows);
+    if(!rows.length)rows.push('<div class="carried-empty">NO KEYS OR CARRIED ITEMS YET</div>');
     target.innerHTML=rows.join("");
     target.dataset.inventoryHudOwner="v106-live";
   }
@@ -127,7 +134,7 @@
     const slots=document.querySelectorAll?.("#quick-slots .quick-slot")||[];
     const capacity=Math.max(1,Number(PGR.inventoryCapacity(p1)||3));
     const head=document.querySelector(".hub-inventory-head b");
-    if(head)head.textContent=`QUICK INVENTORY · PRESS 1–${capacity} TO USE SLOT`;
+    if(head)head.textContent=`QUICK INVENTORY · KEYS 1-${capacity}`;
 
     slots.forEach((slot,index)=>{
       const slotNumber=index+1,item=p1.inventory?.[index],usable=Boolean(item&&QUICK_USE.has(item.kind)),number=slot.querySelector("b");
@@ -147,11 +154,11 @@
     if(!dock)return;
     dock.classList.add("inventory-live-dock");
     const title=head?.querySelector("h3"),tag=head?.querySelector("span");
-    if(title)title.textContent="INVENTORY & KEYS";
+    if(title)title.textContent="KEYS & ITEMS";
     if(tag)tag.textContent="LIVE";
     if(commands){
       commands.classList.add("base-controls","inventory-dock-controls");
-      commands.innerHTML='<span><kbd>TAB</kbd><b>FULL INVENTORY</b></span><span><kbd>1–6</kbd><b>USE MATCHING SLOT</b></span>';
+      commands.innerHTML='<span><kbd>TAB</kbd><b>EQUIPMENT & INVENTORY</b></span><span><kbd>1–6</kbd><b>QUICK SLOT</b></span>';
     }
   }
 
@@ -159,7 +166,7 @@
     const controls=document.querySelector("#menu .keys-help");
     if(!controls)return;
     controls.dataset.v106InventoryControls="true";
-    controls.innerHTML='<kbd>P1: WASD / ARROWS MOVE · SPACE FIRE · L-SHIFT DASH</kbd><kbd>P1 ITEMS: E POTION · Q TORCH · R TELEPORT · B BANISH · 1–6 QUICK SLOT · TAB INVENTORY</kbd><kbd>2P ONLY: IJKL MOVE · ENTER FIRE · R-CTRL DASH · O = PLAYER 2 POTION</kbd>';
+    controls.innerHTML='<kbd>WASD / ARROWS MOVE · SPACE ATTACK · L-SHIFT DASH</kbd><kbd>ITEMS: E POTION · Q TORCH · R TELEPORT · B BANISH · 1–6 QUICK SLOT · TAB EQUIPMENT & INVENTORY</kbd>';
   }
 
   function fallbackUse(item){

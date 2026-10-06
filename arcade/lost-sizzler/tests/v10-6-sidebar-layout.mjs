@@ -14,7 +14,7 @@ assert.ok(
 );
 
 assert.match(css,/\.ccg-game>\.tactical-zone\s*\{[\s\S]*?display:grid!important/,'sidebar uses grid layout');
-assert.match(css,/grid-template-rows:minmax\(190px,52%\) minmax\(0,1fr\)!important/,'desktop sidebar reserves separate radar and inventory rows');
+assert.match(css,/grid-template-rows:minmax\(180px,1fr\) auto!important/,'desktop sidebar gives the map flexible space and the concise keys/items summary only the height it needs');
 assert.match(css,/max-height:none!important/,'old tactical sidebar height cap is removed');
 
 const radarRule=css.match(/\.ccg-game>\.tactical-zone>\.radar-card\s*\{([\s\S]*?)\}/)?.[1]||'';
@@ -27,8 +27,10 @@ const inventoryRule=css.match(/\.ccg-game>\.tactical-zone>\.shortcut-dock\.inven
 assert.match(inventoryRule,/position:relative!important/,'inventory is no longer absolutely positioned over the radar');
 assert.match(inventoryRule,/inset:auto!important/,'legacy inventory offsets are neutralised');
 assert.match(inventoryRule,/grid-row:2!important/,'inventory owns the second sidebar row');
-assert.match(inventoryRule,/min-height:0!important/,'inventory can scroll inside its own row');
+assert.match(inventoryRule,/min-height:0!important/,'keys/items summary can shrink without overlapping the map');
+assert.match(css,/\.shortcut-dock\.inventory-live-dock \.item-shortcuts\{[\s\S]*?overflow:hidden!important/,'live keys/items summary must not expose an inner scrollbar');
+assert.match(css,/\.carried-copy span\{display:none!important/,'live summary hides explanatory copy that belongs in the TAB inventory');
 
-assert.match(css,/@media\(max-height:720px\)[\s\S]*grid-template-rows:minmax\(150px,44%\) minmax\(0,1fr\)!important/,'short desktop viewports keep radar and inventory separated');
+assert.match(css,/@media\(max-height:720px\)[\s\S]*grid-template-rows:minmax\(130px,1fr\) auto!important/,'short desktop viewports keep the map and concise summary separated without scrolling');
 
 console.log('Lost Sizzler tactical radar/sidebar geometry regression checks passed.');

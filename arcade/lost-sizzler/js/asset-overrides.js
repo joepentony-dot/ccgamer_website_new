@@ -97,7 +97,7 @@ const CCG_RELEASE_REV=String(document.querySelector('meta[name="ccg-lost-sizzler
 const CCG_V106_HUD_REV=CCG_RELEASE_REV;
 const CCG_V106_UI_REV=CCG_RELEASE_REV;
 const CCG_V106_SIDEBAR_REV=CCG_RELEASE_REV;
-const CCG_PLAYLIST_AUDIO_REV=CCG_RELEASE_REV;
+const CCG_PLAYLIST_AUDIO_REV=`${CCG_RELEASE_REV}-music-20261006b`;
 const CCG_PLAYER_INSIGHTS_REV=CCG_RELEASE_REV;
 const CCG_BROWSER_STABILITY_REV=CCG_RELEASE_REV;
 const CCG_DEPTH_FLOW_REV=CCG_RELEASE_REV;
@@ -109,7 +109,7 @@ const CCG_MOBILE_COMBAT_MAP_REV=CCG_RELEASE_REV;
 const CCG_GILDED_ELF_REV=CCG_RELEASE_REV;
 const CCG_RARE_EVENTS_REV=CCG_RELEASE_REV;
 const CCG_RARE_EVENTS_BALANCE_REV=CCG_RELEASE_REV;
-const CCG_ADMIN_AUDIO_REV=CCG_RELEASE_REV;
+const CCG_ADMIN_AUDIO_REV=`${CCG_RELEASE_REV}-music-20261006b`;
 const CCG_VOICE_DIRECTOR_REV=CCG_RELEASE_REV;
 const CCG_VOICE_EXPANSION_REV=CCG_RELEASE_REV;
 const CCG_EXPANSION_CHANGELOG_REV=CCG_RELEASE_REV;
@@ -192,7 +192,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   if(!document.querySelector('link[data-ccg-v106-sidebar-fix="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`;
+    link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}&ui=20261006-viewport`;
     link.dataset.ccgV106SidebarFix="true";
     document.head.appendChild(link);
   }
@@ -220,7 +220,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   if(!document.querySelector('link[data-ccg-v118-input-ui-fixes="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href=`css/v10-18-input-ui-bugfixes.css?v=${CCG_INPUT_UI_FIX_REV}`;
+    link.href=`css/v10-18-input-ui-bugfixes.css?v=${CCG_INPUT_UI_FIX_REV}&ui=20261006-viewport`;
     link.dataset.ccgV118InputUiFixes="true";
     document.head.appendChild(link);
   }
@@ -234,7 +234,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
   if(!document.querySelector('link[data-ccg-v130-polish="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href=`css/v10-30-polish.css?v=${CCG_POLISH_REV}`;
+    link.href=`css/v10-30-polish.css?v=${CCG_POLISH_REV}&ui=20261006-viewport`;
     link.dataset.ccgV130Polish="true";
     document.head.appendChild(link);
   }
@@ -281,7 +281,7 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
       [`js/v10-5-rpg-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerRpgBalanceV105"],
       [`js/v10-6-death-room-recovery.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerDeathRoomRecoveryV106"],
       [`js/v10-6-ui-polish.js?v=${CCG_V106_UI_REV}`,"ccgLostSizzlerUiV106"],
-      [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
+      [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}&ui=20261006-viewport`,"ccgLostSizzlerInventoryHudV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
       [`js/v10-6-stalker-shop-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerStalkerShopBalanceV106"],
       [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
@@ -326,9 +326,11 @@ const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
           return;
         }
         ready.then(()=>{
-          const admin=window.CCG_ADMIN_AUDIO||{},remoteSkipped=admin.remoteMediaSkipped===true,normalTracks=Array.isArray(admin.playlists?.normal)?admin.playlists.normal.length:0;
-          if(!remoteSkipped&&(admin.loadFailed===true||normalTracks<1)){
-            criticalFailures.push(`${requestedPath} did not hydrate the uploaded exploration soundtrack`);
+          const admin=window.CCG_ADMIN_AUDIO||{},remoteSkipped=admin.remoteMediaSkipped===true;
+          const requiredStates=["normal","danger","sanctuary","named","stalker"];
+          const missingStates=requiredStates.filter(state=>!Array.isArray(admin.playlists?.[state])||admin.playlists[state].length<1);
+          if(!remoteSkipped&&(admin.loadFailed===true||missingStates.length)){
+            criticalFailures.push(`${requestedPath} did not hydrate the complete uploaded soundtrack${missingStates.length?`: ${missingStates.join(", ")}`:""}`);
             settle(false);
             return;
           }

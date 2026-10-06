@@ -52,12 +52,13 @@ assert.match(voice,/if\(detail\.first\|\|after<=before\)return/,"first acquisiti
 assert.doesNotMatch(voice,/WEAPON\.\*UPGRADE\|WEAPON CACHE/,"generic Weapon Cache text must no longer imply a real upgrade");
 assert.match(voice,/WEAPON EVOLVED\|FIREARM UPGRADE COMPLETE/,"toast fallback may only recognise explicit successful upgrade copy");
 
-assert.match(render,/function radarRoomType\(/,"radar must classify discovered room types");
+assert.match(render,/function radarRoomType\(/,"room classification may remain available for map logic without becoming a second compact-HUD colour key");
 assert.match(render,/world\?\.sanctuaryRooms[\s\S]*room\.sanctuary===true[\s\S]*return"sanctuary"/,"sanctuary map classification must require the authoritative sanctuary-room registry");
-assert.match(render,/room\.dedicatedHazard\|\|room\.dangerous/,"danger rooms must receive their own map colour");
+assert.match(render,/room\.dedicatedHazard\|\|room\.dangerous/,"danger-room classification remains available to richer map logic");
 assert.match(render,/host\.enteredRoomIds/,"sanctuary icon must be gated by actual room discovery");
 assert.match(render,/drawRadarCross\(radarCtx,px\(q\),py\(q\),"#64ffa2"/,"discovered sanctuary must use the green first-aid cross");
-assert.match(render,/radarTileColour\(x,y,wall\)/,"radar tiles must use room-aware discovered colours");
+assert.match(render,/function radarTileColour\(x,y,wall\)[\s\S]*return wall\?"#292233":"#655879"/,"compact radar geometry must use one neutral floor/wall language instead of competing room colours");
+assert.doesNotMatch(render,/const floors=\{normal:"#655879",sanctuary:/,"compact radar must not restore the duplicated semantic room-colour palette");
 assert.match(render,/radarCtx\.moveTo\(px\(p\),py\(p\)-5\)/,"player marker must use a directional triangle rather than the old square");
 
 assert.match(fullMap,/function fullMapRoomType\(/,"full map must share room-type presentation");
@@ -71,14 +72,19 @@ assert.match(warden,/const refuge=h\.v142CleansedRefuge/,"Warden refuge marker m
 assert.doesNotMatch(warden,/rgba\(100,255,162/,"green cross styling is reserved for Sanctuary, not Warden refuge");
 
 for(const page of [index,alias]){
+  assert.match(page,/DUNGEON MAP<\/h3>/,"both public game entry pages must use the concise tactical map heading");
+  assert.match(page,/radar-player/,"both public game entry pages must explain the player marker");
   assert.match(page,/radar-sanctuary/,"both public game entry pages must explain the Sanctuary marker");
   assert.match(page,/radar-key/,"both public game entry pages must explain the Key marker");
+  assert.match(page,/radar-sigil/,"both public game entry pages must explain the Sigil marker");
+  assert.match(page,/radar-shop/,"both public game entry pages must explain the Shop marker once");
+  assert.match(page,/radar-cache/,"both public game entry pages must explain the Death Cache marker");
   assert.match(page,/radar-warden/,"both public game entry pages must explain Warden markers");
-  assert.match(page,/radar-refuge/,"both public game entry pages must explain Refuge markers");
-  assert.match(page,/radar-room-legend/,"both public game entry pages must explain room colours");
+  assert.match(page,/radar-exit/,"both public game entry pages must explain the Exit marker");
+  assert.doesNotMatch(page,/class="radar-room-legend"/,"main HUD must not duplicate markers with a second room-colour legend");
+  assert.doesNotMatch(page,/radar-refuge/,"main HUD legend keeps rare refuge detail on the full map instead of overcrowding the tactical key");
 }
 
-assert.match(css,/\.radar-room-sanctuary\{background:#3c8b67\}/,"room-colour legend must identify Sanctuary");
-assert.match(css,/\.radar-room-danger\{background:#9a4552\}/,"room-colour legend must identify dangerous rooms");
+assert.match(css,/\.radar-room-legend\{display:none!important\}/,"legacy room-colour legend must remain suppressed if stale markup is encountered");
 
 console.log("Dungeon R72/R79 tactical map, truthful weapon feedback and confirmed death transition contracts passed.");

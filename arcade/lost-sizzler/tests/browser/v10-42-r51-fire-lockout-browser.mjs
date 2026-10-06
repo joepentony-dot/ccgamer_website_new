@@ -50,6 +50,24 @@ try{
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1)&&Boolean(host),null,{timeout:20000});
   assert.ok(await page.evaluate(()=>Number(window.__ccgFullscreenRequests||0))>=1,"Solo launch must request fullscreen from the click gesture");
 
+  // This contract qualifies player ATTACK ownership, not enemy/hazard combat.
+  // Remove autonomous damage/movement sources so a roaming enemy or procedural
+  // hazard cannot kill, stun or move the fixture between the firearm and sword
+  // assertions. Dedicated enemy, trap and death contracts cover those systems.
+  await page.evaluate(()=>{
+    host.enemies=[];
+    host.traps=[];
+    host.hazardRooms=[];
+    if(host.stalker){host.stalker.awake=false;host.stalker.sight=false}
+    if(Array.isArray(enemyBullets))enemyBullets.length=0;
+    if(Array.isArray(hazards))hazards.length=0;
+    p1.health=p1.maxHealth;
+    p1.invuln=600000;
+    p1.hitStunMs=0;
+    p1.controlLocked=false;
+    p1.controlsLocked=false;
+  });
+
   const before=await page.evaluate(()=>{
     p1.firearmUnlocked=true;
     p1.weapon=p1.weapon||baseWeapon();

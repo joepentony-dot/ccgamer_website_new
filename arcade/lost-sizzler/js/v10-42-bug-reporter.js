@@ -430,6 +430,7 @@
         attackHold:safe(()=>window.CCGLostSizzlerV142AttackHoldLiveness?.diagnostics||null,null),
         soloStability:safe(()=>window.CCGLostSizzlerV142R18SoloPlaytestStability?.diagnostics||null,null),
         fireRecovery:safe(()=>window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics||null,null),
+        music:safe(()=>window.CCGLostSizzlerPlaylistAudio?.getState?.()||null,null),
         runtimeRepair:safe(()=>window.CCGLostSizzlerV141R29?.state||null,null),
         soloClock:safe(()=>window.CCGLostSizzlerV141R59LiveRegressionFixes?.state||null,null),
         trapStability:safe(()=>window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state||null,null),
@@ -618,7 +619,7 @@
     return report;
   }
   function formatReport(report){
-    const s=report.summary,g=s.game,p=s.player1,mem=s.puzzle,perf=s.diagnostics.performanceGovernor||{},globalPerf=s.diagnostics.globalPerformance||{},liveArrays=s.diagnostics.liveArrays||{};
+    const s=report.summary,g=s.game,p=s.player1,mem=s.puzzle,perf=s.diagnostics.performanceGovernor||{},globalPerf=s.diagnostics.globalPerformance||{},liveArrays=s.diagnostics.liveArrays||{},music=s.diagnostics.music||{};
     const lines=[
       "CCG DUNGEON CARNAGE BUG REPORT",
       `Created: ${report.createdAt}`,
@@ -628,6 +629,7 @@
       `P1: ${p?`x${p.x},y${p.y} HP ${p.health}/${p.maxHealth} AMMO ${p.mana}/${p.maxMana} ARM ${p.armor}`:"none"}`,
       `Weapon: ${p?.weapon?.name||"none"} | rating ${p?.weapon?.rating??"-"} | power ${p?.weapon?.power??"-"} | shots ${p?.weapon?.shots??"-"}`,
       `Fire state: fire1=${g.fire1} buffer=${g.fireBuffer1} projectileCD=${g.projectileCD} activeProjectiles=${g.activeProjectiles}/${g.maxProjectiles}`,
+      `Music: state=${music.state||"-"} started=${Boolean(music.started)} enabled=${Boolean(music.enabled)} uploaded=${Boolean(music.customSoundtrackOwned)} ready=${Boolean(music.adminAudioReady)} paused=${music.slots?.[music.state]?.paused??"-"} pending=${music.pendingGestureState||"none"} asset=${music.url||"none"}`,
       `Input: ${g.inputKeys.join(", ")||"none"}`,
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
@@ -756,7 +758,7 @@
     }
     const before=currentSnapshot(`keydown-${event.code}`);
     push("keydown",{code:event.code,repeat:false,mode:before.game.mode,input:before.game.inputKeys,fire1:before.game.fire1,buffer:before.game.fireBuffer1,inventoryHidden:before.panels.inventory.hidden});
-    if(["Space","KeyF","Numpad0"].includes(event.code))fireProbe(event.code,before);
+    if(["Space","Numpad0"].includes(event.code))fireProbe(event.code,before);
     if(["Tab","Escape","KeyP"].includes(event.code))setTimeout(()=>snapshotSummary(`after-${event.code}`),80);
   },true);
   addEventListener("keyup",event=>{if(interesting.has(event.code))push("keyup",{code:event.code,mode:safe(()=>String(mode),""),input:safe(()=>[...input].map(String),[])})},true);
@@ -769,7 +771,7 @@
   addEventListener("ccg:sfx",event=>push("sfx",{name:String(event.detail?.name||""),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:shop-firearm-upgrade",event=>push("shop-firearm-upgrade",{shopId:String(event.detail?.shopId||""),floor:Number(event.detail?.floor||0),beforeTier:Number(event.detail?.beforeTier||0),afterTier:Number(event.detail?.afterTier||0),price:Number(event.detail?.price||0),goldCoins:Number(event.detail?.goldCoins||0),scoreBefore:Number(event.detail?.scoreBefore||0),scoreAfter:Number(event.detail?.scoreAfter||0)}));
   addEventListener("ccg:shop-feedback",event=>push("shop-feedback",event.detail||{}));
-  addEventListener("ccg:music-state",event=>push("music-state",{reason:String(event.detail?.reason||""),state:String(event.detail?.state||""),roomMood:String(event.detail?.roomMood||""),stalkerNear:Boolean(event.detail?.stalkerNear),stalkerSight:Boolean(event.detail?.stalkerSight),namedEnemy:String(event.detail?.namedEnemy||""),asset:String(event.detail?.asset||""),useMusicAssets:Boolean(event.detail?.useMusicAssets),at:Number(event.detail?.at||0)}));
+  addEventListener("ccg:music-state",event=>push("music-state",{reason:String(event.detail?.reason||""),state:String(event.detail?.state||""),roomMood:String(event.detail?.roomMood||""),stalkerNear:Boolean(event.detail?.stalkerNear),stalkerSight:Boolean(event.detail?.stalkerSight),namedEnemy:String(event.detail?.namedEnemy||""),asset:String(event.detail?.asset||""),useMusicAssets:Boolean(event.detail?.useMusicAssets),uploaded:Boolean(event.detail?.uploaded),paused:event.detail?.paused==null?null:Boolean(event.detail.paused),pendingGestureState:String(event.detail?.pendingGestureState||""),error:String(event.detail?.error||""),at:Number(event.detail?.at||0)}));
   addEventListener("ccg:item-collected",event=>push("item-collected",{kind:String(event.detail?.kind||""),name:String(event.detail?.name||""),lootKind:String(event.detail?.lootKind||""),collector:String(event.detail?.collector||""),floor:Number(event.detail?.floor||0)}));
   addEventListener("ccg:collectible-effect",event=>push("collectible-effect",{effect:String(event.detail?.effect||""),active:Boolean(event.detail?.active),at:Number(event.detail?.at||0)}));
   document.addEventListener("click",event=>{
