@@ -67,18 +67,22 @@ try{
       xpFamily:style("#quick-level").fontFamily,
       radarFamily:style(".radar-card h3").fontFamily,
       healthMeterWidth:parseFloat(getComputedStyle(health,"::before").width),
-      bodyWidth:document.documentElement.clientWidth
+      bodyWidth:document.documentElement.clientWidth,
+      bodyScrollWidth:document.documentElement.scrollWidth,
+      viewportHeight:document.documentElement.clientHeight
     };
   });
 
-  assert.ok(desktopState.hub?.height>=108,`desktop RPG hub must retain the expanded readable height: ${JSON.stringify(desktopState.hub)}`);
+  assert.ok(desktopState.hub?.height>=96&&desktopState.hub.height<=116,`desktop RPG hub must compress to the viewport without becoming unreadable: ${JSON.stringify(desktopState.hub)}`);
+  assert.ok(desktopState.hub.bottom<=desktopState.viewportHeight+2,`desktop RPG hub must remain fully visible inside the viewport: ${JSON.stringify(desktopState)}`);
+  assert.ok(desktopState.bodyScrollWidth<=desktopState.bodyWidth+2,`desktop RPG HUD must not create horizontal page overflow: ${JSON.stringify(desktopState)}`);
   assert.ok(inside(desktopState.core,desktopState.hub),"core resources must remain inside the player hub");
   assert.ok(inside(desktopState.inventory,desktopState.hub),"quick item belt must remain inside the player hub");
   assert.ok(inside(desktopState.progress,desktopState.hub),"progression block must remain inside the player hub");
   assert.ok(noOverlap(desktopState.core,desktopState.inventory),"core resources and item belt must not overlap");
   assert.ok(noOverlap(desktopState.inventory,desktopState.progress),"item belt and progression block must not overlap");
   assert.equal(desktopState.telemetryDisplay,"none","secondary telemetry must remain demoted from the primary combat HUD");
-  assert.ok(desktopState.healthFont>=15,`health value must remain combat-readable, got ${desktopState.healthFont}px`);
+  assert.ok(desktopState.healthFont>=12,`health value must remain combat-readable after viewport compression, got ${desktopState.healthFont}px`);
   assert.ok(desktopState.healthMeterWidth>8,"live health meter must have visible width");
   assert.match(desktopState.xpFamily,/Palatino|Book Antiqua|Georgia/i,"XP heading must use the RPG display stack");
   assert.match(desktopState.radarFamily,/Palatino|Book Antiqua|Georgia/i,"tactical headings must use the RPG display stack");
