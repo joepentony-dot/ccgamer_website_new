@@ -45,11 +45,13 @@ assert(owner.includes('ccg-arcade-assets/music/lostSizzlerExploration'),'R110 mu
 assert(owner.includes('ccg-arcade-assets/music/lostSizzlerDanger'),'R110 must pin the approved uploaded Danger soundtrack into the release manifest.');
 assert(owner.includes('ccg-arcade-assets/music/lostSizzlerSanctuary'),'R110 must pin the approved uploaded Sanctuary soundtrack into the release manifest.');
 assert(owner.includes('ccg-arcade-assets/music/lostSizzlerNamed'),'R110 must pin the approved uploaded Named soundtrack into the release manifest.');
-assert(owner.includes('ccg-arcade-assets/music/lostSizzlerStalker'),'R110 must pin the approved uploaded Stalker soundtrack into the release manifest.');
+assert(owner.includes('ccg-arcade-assets/music/lostSizzlerStalker'),'R111 must preserve the R110 approved uploaded Stalker soundtrack in the release manifest.');
+assert(assets.includes('deflect:"assets/audio/sfx/blade-hit.wav"'),'Sword projectile deflection must have an authored SFX route.');
+assert(baseAudio.includes('deflect:()=>{tone(1180'),'Sword projectile deflection must retain a dedicated metallic fallback SFX.');
 for(const html of [index,publicIndex]){
-  const basePos=html.indexOf('js/audio.js?v=20261006r110');
-  const playlistPos=html.indexOf('js/lost-sizzler-playlist-audio.js?v=20261006r110');
-  assert(basePos>=0&&playlistPos>basePos,'R110 public entries must core-load the playlist owner immediately after base audio.');
+  const basePos=html.indexOf('js/audio.js?v=20261006r111');
+  const playlistPos=html.indexOf('js/lost-sizzler-playlist-audio.js?v=20261006r111');
+  assert(basePos>=0&&playlistPos>basePos,'R111 public entries must preserve the qualified playlist owner immediately after base audio.');
 }
 assert(patch.includes('function retryUploadedMusicOnGesture(event)')&&patch.includes('event?.target?.closest?.("#solo-btn,#tutorial-zone-btn")'),'Mobile playback rejection and trusted launch must use an event-aware real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the soundtrack from a user gesture.');
