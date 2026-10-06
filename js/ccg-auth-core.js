@@ -161,7 +161,7 @@ async function ensureProfileBootstrap(user, preferences = null) {
 
 function sanitizeEmailPassword(email, password) {
   const safeEmail = clean(email);
-  const safePassword = clean(password);
+  const safePassword = String(password ?? '');
 
   if (!safeEmail || !safePassword) {
     return {
@@ -246,7 +246,7 @@ export async function sendPasswordReset(email, redirectTo) {
 }
 
 export async function updatePassword(newPassword) {
-  const safePassword = clean(newPassword);
+  const safePassword = String(newPassword ?? '');
   if (!safePassword) {
     return { error: { category: 'credentials', message: 'New password is required.', detail: 'Missing password value.' } };
   }
