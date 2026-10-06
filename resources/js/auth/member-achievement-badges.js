@@ -129,7 +129,7 @@ function ensurePanel() {
       <div>
         <p class="member-achievement-panel__kicker">Account achievements</p>
         <h3 class="member-achievement-panel__title">Achievements &amp; Badges</h3>
-        <p class="member-achievement-panel__intro">Your account milestones and C64 Dungeon Carnage achievements are collected here.</p>
+        <p class="member-achievement-panel__intro">Complete all twelve milestones to earn the Commodore Completionist. Expanded milestones and C64 Dungeon Carnage achievements are tracked here too.</p>
       </div>
       <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
     </div>
