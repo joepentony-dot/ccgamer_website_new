@@ -206,252 +206,145 @@
         <section class="auth-card">
           <div id="profileMessage" class="auth-message" aria-live="polite"></div>
 
-          <section class="member-hub-hero ccg-amiga-window" aria-labelledby="memberHubTitle">
-            <div>
-              <div class="member-hub-identity">
-                <img id="profileAvatar" class="profile-avatar" src="/favicon.ico" alt="Profile avatar" />
-                <div>
-                  <p class="member-hub-kicker">Private member dashboard</p>
-                  <h1 class="member-hub-title" id="memberHubTitle">Welcome, <span id="displayName">Member</span></h1>
-                  <p class="member-hub-subtitle">Your favourites, game ratings, reviews, recent discoveries and account controls in one place.</p>
-                  <div class="member-hub-meta">
-                    <span class="member-hub-meta__item">Member since <strong id="joinDate">—</strong></span>
-                    <span class="member-hub-meta__item">Preferred system: <strong id="memberPreferredSystemLabel">C64 &amp; Amiga</strong></span>
-                    <span class="member-hub-meta__item">Community contributor</span>
-                  </div>
-                </div>
+          <section class="member-profile-bar" aria-labelledby="memberHubTitle">
+            <div class="member-avatar-editor">
+              <img id="profileAvatar" class="profile-avatar" src="/favicon.ico" alt="Profile avatar" />
+              <input id="avatarInput" class="member-avatar-editor__input" type="file" accept="image/png,image/jpeg,image/webp" />
+              <div class="member-avatar-editor__actions">
+                <label class="auth-btn member-avatar-editor__button" for="avatarInput">Change avatar</label>
+                <button type="button" class="auth-btn member-avatar-editor__button member-avatar-editor__button--quiet" id="avatarRemoveBtn">Remove</button>
               </div>
+              <span class="member-avatar-editor__hint">JPG, PNG or WebP · cropped square automatically</span>
+            </div>
 
-              <div class="member-hub-shortcuts" aria-label="Member shortcuts">
-                <a class="ccg-btn ccg-btn--neon" href="/games/">Browse Games</a>
-                <a class="ccg-btn ccg-btn--secondary" href="/games/discover/">Find Me a Game</a>
-                <a class="ccg-btn ccg-btn--secondary" href="/zzap64/">Zzap!64 Awards</a>
+            <div class="member-profile-summary">
+              <p class="member-hub-kicker">Member profile</p>
+              <h1 class="member-hub-title" id="memberHubTitle">Welcome, <span id="displayName">Member</span></h1>
+              <div class="member-hub-meta">
+                <span class="member-hub-meta__item">Joined <strong id="joinDate">—</strong></span>
+                <span class="member-hub-meta__item"><strong id="memberPreferredSystemLabel">C64 &amp; Amiga</strong></span>
               </div>
             </div>
 
-            <aside class="member-hub-completion" aria-label="Profile completion">
-              <div class="member-hub-completion__top">
-                <span>Hub setup</span>
-                <strong id="memberCompletionPercent">25%</strong>
-              </div>
-              <div class="member-hub-completion__bar" aria-hidden="true"><span class="member-hub-completion__fill" id="memberCompletionFill"></span></div>
-              <p class="member-hub-completion__note" id="memberCompletionNote">Add favourites, ratings and reviews to make this dashboard more useful.</p>
-            </aside>
+            <div class="member-profile-actions" aria-label="Member shortcuts">
+              <a class="ccg-btn ccg-btn--neon" href="/games/">Browse Games</a>
+              <a class="ccg-btn ccg-btn--secondary" href="/community/">Community</a>
+            </div>
           </section>
 
-          <nav class="member-hub-nav" aria-label="Member Hub sections">
-            <a href="#memberOverview">Overview</a>
-            <a href="#memberFavourites">Favourites</a>
-            <a href="#memberReviews">My Ratings &amp; Reviews</a>
-            <a href="#memberAchievements">Badges</a>
-            <a href="#memberCommunity">Community</a>
-            <a href="#memberSettings">Account Settings</a>
-          </nav>
-
-          <section class="member-stats" id="memberOverview" aria-label="Member game statistics">
+          <section class="member-stats" id="memberOverview" aria-label="Member statistics">
             <a class="member-stat" href="#memberFavourites"><strong class="member-stat__value" id="memberStatFavourites">0</strong><span class="member-stat__label">Favourites</span></a>
             <a class="member-stat" href="#memberFavourites"><strong class="member-stat__value" id="memberStatTopPicks">0</strong><span class="member-stat__label">Top Picks</span></a>
             <a class="member-stat" href="#memberReviews"><strong class="member-stat__value" id="memberStatRatings">0</strong><span class="member-stat__label">Ratings</span></a>
             <a class="member-stat" href="#memberReviews"><strong class="member-stat__value" id="memberStatReviews">0</strong><span class="member-stat__label">Reviews</span></a>
           </section>
 
-          <div class="member-hub-grid">
-            <section class="member-panel" aria-labelledby="memberContinueTitle">
-              <div class="member-panel__header">
-                <div>
-                  <p class="member-panel__kicker">Continue exploring</p>
-                  <h2 class="member-panel__title" id="memberContinueTitle">Recently Viewed Games</h2>
+          <div class="member-dashboard-grid">
+            <div class="member-dashboard-primary">
+              <section id="memberFavourites" class="profile-subsection member-compact-panel" aria-labelledby="memberFavouritesTitle">
+                <div class="profile-subsection__header">
+                  <div>
+                    <p class="member-panel__kicker">Saved games</p>
+                    <h2 class="profile-subsection__title" id="memberFavouritesTitle">Favourite Games</h2>
+                  </div>
+                  <a class="auth-btn member-compact-action" href="/games/">Add</a>
                 </div>
-                <button type="button" class="auth-btn" id="memberClearRecent">Clear history</button>
-              </div>
-              <div class="member-continue-grid" id="memberRecentlyViewed"></div>
-            </section>
+                <h3 id="topPicksHeading" class="profile-top-picks-heading" hidden>Top Picks — choose up to 10</h3>
+                <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
+              </section>
 
-            <section class="member-panel member-suggestion" aria-labelledby="memberSuggestionTitle">
-              <div>
-                <p class="member-panel__kicker">Join the discussion</p>
-                <h2 class="member-panel__title" id="memberSuggestionTitle">Share Your Verdict</h2>
-                <p class="member-panel__intro">Visit a game page to score it out of 10, write a review and compare opinions with other Commodore fans.</p>
-              </div>
-              <div class="member-community-card">
-                <h3>Which game deserves another look?</h3>
-                <p>Your ratings and reviews help turn the archive into a living CCG community.</p>
-              </div>
-              <a class="auth-btn" href="/games/">Choose a game to review</a>
-            </section>
+              <section id="memberReviews" class="profile-library ccg-profile-community member-compact-panel" aria-labelledby="memberReviewsTitle">
+                <div class="profile-library__header">
+                  <div>
+                    <p class="member-panel__kicker">Your verdicts</p>
+                    <h2 id="memberReviewsTitle" class="profile-library__title">Ratings &amp; Reviews</h2>
+                  </div>
+                  <a class="auth-btn member-compact-action" href="/games/">Rate game</a>
+                </div>
+                <div class="ccg-profile-community__grid">
+                  <div>
+                    <h3>Recent Ratings</h3>
+                    <div id="profileCommunityRatings" class="ccg-profile-community__list" aria-live="polite">
+                      <p class="ccg-community-muted">Loading your ratings…</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h3>Recent Reviews</h3>
+                    <div id="profileCommunityReviews" class="ccg-profile-community__list" aria-live="polite">
+                      <p class="ccg-community-muted">Loading your reviews…</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <aside class="member-dashboard-sidebar">
+              <section class="member-panel member-panel--compact" id="memberAchievements" aria-labelledby="memberAchievementsTitle">
+                <div class="member-panel__header member-panel__header--compact">
+                  <div>
+                    <p class="member-panel__kicker">Personal milestones</p>
+                    <h2 class="member-panel__title" id="memberAchievementsTitle">Member Badges</h2>
+                  </div>
+                </div>
+                <div class="member-achievements">
+                  <article class="member-achievement" id="memberBadgeC64"><span class="member-achievement__icon" aria-hidden="true">🕹️</span><strong class="member-achievement__title">C64 Explorer</strong><span class="member-achievement__progress" data-member-achievement-progress>0/12 viewed</span></article>
+                  <article class="member-achievement" id="memberBadgeAmiga"><span class="member-achievement__icon" aria-hidden="true">💾</span><strong class="member-achievement__title">Amiga Explorer</strong><span class="member-achievement__progress" data-member-achievement-progress>0/12 viewed</span></article>
+                  <article class="member-achievement" id="memberBadgeReviewer"><span class="member-achievement__icon" aria-hidden="true">💬</span><strong class="member-achievement__title">CCG Reviewer</strong><span class="member-achievement__progress" id="memberBadgeReviewerProgress">0/5 reviews</span></article>
+                  <article class="member-achievement" id="memberBadgeTopPicker"><span class="member-achievement__icon" aria-hidden="true">⭐</span><strong class="member-achievement__title">Top Picker</strong><span class="member-achievement__progress" data-member-achievement-progress>0/10 picks</span></article>
+                  <article class="member-achievement" id="memberBadgeZzap"><span class="member-achievement__icon" aria-hidden="true">🏅</span><strong class="member-achievement__title">Zzap!64 Archivist</strong><span class="member-achievement__progress" data-member-achievement-progress>Visit archive</span></article>
+                </div>
+              </section>
+
+              <details class="member-compact-details">
+                <summary>Recent activity</summary>
+                <div id="memberActivityFeed" class="member-compact-details__body"></div>
+              </details>
+
+              <details class="member-compact-details">
+                <summary>Recently viewed games</summary>
+                <div class="member-compact-details__body">
+                  <div class="member-continue-grid" id="memberRecentlyViewed"></div>
+                  <button type="button" class="auth-btn member-compact-action" id="memberClearRecent">Clear history</button>
+                </div>
+              </details>
+
+              <section class="member-account-settings member-panel--compact" id="memberSettings" aria-labelledby="memberSettingsTitle">
+                <div class="member-panel__header member-panel__header--compact">
+                  <div>
+                    <p class="member-panel__kicker">Account</p>
+                    <h2 id="memberSettingsTitle">Settings</h2>
+                  </div>
+                </div>
+
+                <div class="member-account-grid member-account-grid--single">
+                  <div class="member-account-block">
+                    <div class="profile-list member-profile-list--compact">
+                      <div class="profile-row"><span>Email</span><strong id="emailValue">Hidden for privacy</strong></div>
+                      <div class="profile-row"><span>Visibility</span><strong>Private</strong></div>
+                    </div>
+
+                    <form id="prefsForm" class="pref-grid member-pref-grid--compact">
+                      <label><input type="checkbox" id="notifyNewGames" /> New game emails</label>
+                      <label><input type="checkbox" id="notifyNewsletter" /> New CCG video &amp; Retro Special emails</label>
+                      <label><input type="checkbox" id="notifyWeeklyChallenge" /> Weekly High-Score Vault results</label>
+                      <label class="member-select-label" for="preferredSystem">Preferred system</label>
+                      <select id="preferredSystem" name="preferredSystem">
+                        <option value="both">C64 &amp; Amiga</option>
+                        <option value="c64">Commodore 64</option>
+                        <option value="amiga">Commodore Amiga</option>
+                      </select>
+                      <button type="submit" class="auth-btn">Save settings</button>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="profile-actions member-profile-actions--settings">
+                  <a class="auth-btn" href="/auth/forgot.html">Reset password</a>
+                  <button type="button" class="auth-btn" id="logoutBtn" data-logout>Logout</button>
+                </div>
+              </section>
+            </aside>
           </div>
-
-          <div class="member-hub-grid">
-            <section class="member-panel" aria-labelledby="memberUpdatesTitle">
-              <div class="member-panel__header">
-                <div>
-                  <p class="member-panel__kicker">Archive updates</p>
-                  <h2 class="member-panel__title" id="memberUpdatesTitle">New and Recently Updated</h2>
-                </div>
-              </div>
-              <div class="member-recent-content" id="memberRecentContent"></div>
-            </section>
-
-            <section class="member-panel" aria-labelledby="memberActivityTitle">
-              <div class="member-panel__header">
-                <div>
-                  <p class="member-panel__kicker">Private summary</p>
-                  <h2 class="member-panel__title" id="memberActivityTitle">Your Recent Activity</h2>
-                </div>
-              </div>
-              <div id="memberActivityFeed"></div>
-            </section>
-          </div>
-
-          <section id="memberFavourites" class="profile-subsection" aria-labelledby="memberFavouritesTitle">
-            <div class="profile-subsection__header">
-              <div>
-                <p class="member-panel__kicker">Saved to your account</p>
-                <h2 class="profile-subsection__title" id="memberFavouritesTitle">Favourite Games</h2>
-              </div>
-              <a class="auth-btn" href="/games/">Add more favourites</a>
-            </div>
-            <h3 id="topPicksHeading" class="profile-top-picks-heading" hidden>My Top Picks — choose up to 10</h3>
-            <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
-          </section>
-
-          <section id="memberReviews" class="profile-library ccg-profile-community" aria-labelledby="memberReviewsTitle">
-            <div class="profile-library__header">
-              <div>
-                <p class="member-panel__kicker">Your community contributions</p>
-                <h2 id="memberReviewsTitle" class="profile-library__title">My Ratings &amp; Reviews</h2>
-                <p class="profile-library__note">Your account-backed verdicts are collected here. Select a game to return to its page, update your score or continue the discussion.</p>
-              </div>
-              <a class="auth-btn" href="/games/">Rate another game</a>
-            </div>
-            <div class="ccg-profile-community__grid">
-              <div>
-                <h3>My Recent Ratings</h3>
-                <div id="profileCommunityRatings" class="ccg-profile-community__list" aria-live="polite">
-                  <p class="ccg-community-muted">Loading your ratings…</p>
-                </div>
-              </div>
-              <div>
-                <h3>My Recent Reviews</h3>
-                <div id="profileCommunityReviews" class="ccg-profile-community__list" aria-live="polite">
-                  <p class="ccg-community-muted">Loading your reviews…</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="member-panel member-panel--full" id="memberAchievements" aria-labelledby="memberAchievementsTitle">
-            <div class="member-panel__header">
-              <div>
-                <p class="member-panel__kicker">Personal milestones</p>
-                <h2 class="member-panel__title" id="memberAchievementsTitle">Member Badges</h2>
-                <p class="member-panel__intro">Milestones recognise your archive visits, Top Picks and contributions to the CCG community.</p>
-              </div>
-            </div>
-            <div class="member-achievements">
-              <article class="member-achievement" id="memberBadgeC64"><span class="member-achievement__icon" aria-hidden="true">🕹️</span><strong class="member-achievement__title">C64 Explorer</strong><span class="member-achievement__progress" data-member-achievement-progress>0/12 C64 games viewed</span></article>
-              <article class="member-achievement" id="memberBadgeAmiga"><span class="member-achievement__icon" aria-hidden="true">💾</span><strong class="member-achievement__title">Amiga Explorer</strong><span class="member-achievement__progress" data-member-achievement-progress>0/12 Amiga games viewed</span></article>
-              <article class="member-achievement" id="memberBadgeReviewer"><span class="member-achievement__icon" aria-hidden="true">💬</span><strong class="member-achievement__title">CCG Reviewer</strong><span class="member-achievement__progress" id="memberBadgeReviewerProgress">0/5 reviews posted</span></article>
-              <article class="member-achievement" id="memberBadgeTopPicker"><span class="member-achievement__icon" aria-hidden="true">⭐</span><strong class="member-achievement__title">Top Picker</strong><span class="member-achievement__progress" data-member-achievement-progress>0/10 Top Picks selected</span></article>
-              <article class="member-achievement" id="memberBadgeZzap"><span class="member-achievement__icon" aria-hidden="true">🏅</span><strong class="member-achievement__title">Zzap!64 Archivist</strong><span class="member-achievement__progress" data-member-achievement-progress>Visit the Zzap!64 Awards Archive</span></article>
-            </div>
-          </section>
-
-          <section class="member-panel member-panel--full" id="memberCommunity" aria-labelledby="memberCommunityTitle">
-            <div class="member-panel__header">
-              <div>
-                <p class="member-panel__kicker">Beyond the archive</p>
-                <h2 class="member-panel__title" id="memberCommunityTitle">CCG Community</h2>
-              </div>
-            </div>
-            <div class="member-community-grid">
-              <article class="member-community-card"><h3>Discord Community</h3><p>Talk Commodore, share memories and catch up with other viewers.</p><a href="https://discord.gg/83Xw9ktAn4">Open Discord</a></article>
-              <article class="member-community-card"><h3>YouTube Channel</h3><p>Watch new retrospectives, countdowns, livestreams and archive videos.</p><a href="https://www.youtube.com/@CheekyCommodoreGamer">Visit YouTube</a></article>
-              <article class="member-community-card"><h3>Support the Channel</h3><p>Patreon provides early access and behind-the-scenes posts where available.</p><a href="https://www.patreon.com/CheekyCommodoreGamer">View Patreon</a></article>
-              <article class="member-community-card"><h3>Suggest a Game</h3><p>Send a game suggestion, correction or archive note directly to CCG.</p><a href="/contact.html">Contact CCG</a></article>
-              <article class="member-community-card"><h3>Find Something New</h3><p>Use the archive filters to choose a system, year, genre or publisher.</p><a href="/games/discover/">Open Find Me a Game</a></article>
-              <article class="member-community-card"><h3>Zzap!64 Archive</h3><p>Search the Gold Medals, Silver Medals and Sizzlers from 1985–1989.</p><a href="/zzap64/">Browse Awards</a></article>
-            </div>
-          </section>
-
-          <section class="member-panel member-panel--full" aria-labelledby="memberBenefitsTitle">
-            <div class="member-panel__header">
-              <div>
-                <p class="member-panel__kicker">What membership provides</p>
-                <h2 class="member-panel__title" id="memberBenefitsTitle">Member Benefits</h2>
-              </div>
-            </div>
-            <div class="member-benefits-grid">
-              <article class="member-benefit-card">
-                <h3>Free CCG Account</h3>
-                <ul class="member-benefit-list">
-                  <li>Account-backed favourites</li>
-                  <li>Choose up to ten Top Picks</li>
-                  <li>Personal Played and ownership lists</li>
-                  <li>Separate game and video notification choices</li>
-                  <li>Private dashboard and activity summary</li>
-                </ul>
-              </article>
-              <article class="member-benefit-card">
-                <h3>Patreon Supporter</h3>
-                <ul class="member-benefit-list">
-                  <li>Early video access when posted</li>
-                  <li>Behind-the-scenes and work-in-progress updates</li>
-                  <li>Directly supports the archive and channel</li>
-                  <li>Patreon benefits remain managed on Patreon</li>
-                </ul>
-                <a href="https://www.patreon.com/CheekyCommodoreGamer">View supporter options</a>
-              </article>
-              <article class="member-benefit-card">
-                <h3>Coming in Later Phases</h3>
-                <ul class="member-benefit-list">
-                  <li>Account-synchronised personal lists</li>
-                  <li>Importable and shareable collections</li>
-                  <li>Optional public member profile</li>
-                  <li>Member suggestions and correction tracking</li>
-                </ul>
-              </article>
-            </div>
-          </section>
-
-          <section class="member-account-settings" id="memberSettings" aria-labelledby="memberSettingsTitle">
-            <div>
-              <p class="member-panel__kicker">Privacy and preferences</p>
-              <h2 id="memberSettingsTitle">Account Settings</h2>
-            </div>
-
-            <div class="member-account-grid">
-              <div class="member-account-block">
-                <h3>Private account details</h3>
-                <div class="profile-list">
-                  <div class="profile-row"><span>Email</span><strong id="emailValue">Hidden for privacy</strong></div>
-                  <div class="profile-row"><span>Profile visibility</span><strong>Private</strong></div>
-                </div>
-              </div>
-
-              <div class="member-account-block">
-                <h3>Archive preferences</h3>
-                <form id="prefsForm" class="pref-grid">
-                  <label><input type="checkbox" id="notifyNewGames" /> New game notifications</label>
-                  <label><input type="checkbox" id="notifyNewsletter" /> New CCG videos and Retro Special notifications</label>
-                  <label><input type="checkbox" id="notifyWeeklyChallenge" /> Weekly High-Score Vault results</label>
-                  <label for="preferredSystem">Preferred system</label>
-                  <select id="preferredSystem" name="preferredSystem">
-                    <option value="both">C64 &amp; Amiga</option>
-                    <option value="c64">Commodore 64</option>
-                    <option value="amiga">Commodore Amiga</option>
-                  </select>
-                  <p class="member-local-note">Preferred system is stored on this browser during Phase 1 and will move to the account in Phase 2.</p>
-                  <button type="submit" class="auth-btn">Save preferences</button>
-                </form>
-              </div>
-            </div>
-
-            <div class="profile-actions">
-              <a class="auth-btn" href="/auth/forgot.html">Reset password</a>
-              <button type="button" class="auth-btn" id="logoutBtn" data-logout>Logout</button>
-            </div>
-          </section>
         </section>
       </div>
     </main>
@@ -468,7 +361,7 @@
   <script src="/js/ccg-supabase-config.js" defer></script>
   <script src="/js/ccg-supabase-client.js" defer></script>
   <script src="/js/ccg-auth-ui.js" defer></script>
-  <script type="module" src="/resources/js/auth/profile-page.js?v=phase20b-20260806"></script>
+  <script type="module" src="/resources/js/auth/profile-page.js?v=compact-avatar-20261006"></script>
   <script src="/resources/js/auth/member-hub.js" defer></script>
   <script src="/resources/js/auth/profile-community-activity.js" defer></script>
 </body>
