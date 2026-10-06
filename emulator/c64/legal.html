@@ -21,10 +21,10 @@
       <p>The CCG command-deck interface, layout, page integration and CCG-specific presentation are modifications created for the Cheeky Commodore Gamer website.</p>
 
       <h2>GPL-derived emulator components</h2>
-      <p>Parts of the browser emulation foundation and ROM-handling approach are modified from GPL-3.0-or-later software originally copyright © 2026 Morten Øien Eriksen. Required copyright and licence notices are retained in derived source files. The modified source is distributed in the public Cheeky Commodore Gamer GitHub repository under the applicable GPL terms. <a href="https://github.com/joepentony-dot/ccgamer_website_new/tree/main/emulator/c64" target="_blank" rel="noopener noreferrer">View the CCG source tree</a>.</p>
+      <p>The emulator runtime incorporates GPL-3.0-or-later source from the public C64 READY project, copyright © 2026 Morten Øien Eriksen. This integration is pinned to upstream revision <code>a5821f95cd9b0de5a6e14807f978b30986c0b5da</code>. Required copyright and licence notices remain in the source files, while the page shell and branding are CCG modifications. <a href="https://github.com/joepentony-dot/ccgamer_website_new/tree/main/emulator/c64" target="_blank" rel="noopener noreferrer">View the CCG source tree</a>.</p>
 
       <h2>SID audio components</h2>
-      <p>The SID voice, transistor-level filter/mixer, nonlinear volume stage and external RC output model include GPL-derived material translated or derived from reSID as distributed with VICE 3.10. Applicable source-file notices identify Dag Lem, the VICE lineage and the GNU GPL v2-or-later grant. The CCG browser audio transport and command-deck integration are separate modifications in this repository. The CCG route uses the JavaScript source implementation and does not distribute the optional compiled SID WebAssembly engine.</p>
+      <p>The SID voice, transistor-level filter/mixer, nonlinear volume stage and external RC output model include GPL-derived material translated or derived from reSID as distributed with VICE 3.10. This route now uses the upstream SID AudioWorklet and its embedded WebAssembly engine, with JavaScript reSID fallback. The pinned upstream revision above is the public corresponding-source reference for the imported worklet, WebAssembly payload and Rust SID source used to build it.</p>
       <p><a href="/emulator/c64/THIRD-PARTY-NOTICES.txt">View bundled third-party/source notices</a>.</p>
 
       <h2>ROM images</h2>

@@ -38,7 +38,6 @@ jobs:
       - name: Syntax-check CCG adapter
         run: |
           node --check js/ccg-c64/app.js
-          node --check js/ccg-c64/audio-worklet.js
           node --check js/ccg-c64/game-vault.js
           node --check js/ccg-c64/rom-vault.js
           node --check js/ccg-c64/t64.js

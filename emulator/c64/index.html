@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>CCG Browser C64 Emulator | Cheeky Commodore Gamer</title>
-  <meta name="description" content="Launch the CCG Omega browser Commodore 64 workspace, supply your own ROMs locally and prepare disks, tapes, cartridges and controllers without installing a desktop emulator.">
+  <meta name="description" content="Run a cycle-accurate Commodore 64 in your browser with local ROM storage, SID audio, disks, tapes, cartridges, gamepads, touch controls and save states.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/emulator/c64/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Cheeky Commodore Gamer">
   <meta property="og:title" content="CCG Browser C64 Emulator | Cheeky Commodore Gamer">
-  <meta property="og:description" content="Launch the CCG Omega browser Commodore 64 workspace, supply your own ROMs locally and prepare disks, tapes, cartridges and controllers without installing a desktop emulator.">
+  <meta property="og:description" content="Run a cycle-accurate Commodore 64 in your browser with local ROM storage, SID audio, disks, tapes, cartridges, gamepads, touch controls and save states.">
   <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/">
   <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -21,218 +21,151 @@
   <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
-  <div class="ccg-c64-lab-bg" aria-hidden="true">
-    <span class="ccg-c64-lab-bg__grid"></span>
-    <span class="ccg-c64-lab-bg__scan"></span>
-    <span class="ccg-c64-lab-bg__flare ccg-c64-lab-bg__flare--a"></span>
-    <span class="ccg-c64-lab-bg__flare ccg-c64-lab-bg__flare--b"></span>
-  </div>
-
-  <header class="ccg-c64-lab-topbar">
-    <a class="ccg-c64-lab-brand" href="/home.html" aria-label="Cheeky Commodore Gamer home">
-      <img src="/resources/images/ccgamer-logo.png" alt="" width="72" height="50" decoding="async">
-      <span class="ccg-c64-lab-brand__copy">
-        <strong>CCG OMEGA LAB</strong>
-        <small>C64 Browser Emulator</small>
-      </span>
+  <header class="ccg-c64-topbar">
+    <a class="ccg-c64-brand" href="/home.html" aria-label="Cheeky Commodore Gamer home">
+      <img src="/resources/images/ccgamer-logo.png" alt="" width="64" height="44" decoding="async">
+      <span><strong>CCG C64</strong><b>EMULATOR.</b></span>
     </a>
-    <div class="ccg-c64-lab-topbar__status" aria-label="Emulator build status">
-      <span class="ccg-c64-led" data-lab-led="shell"></span>
-      <span>COMMAND DECK ONLINE</span>
-      <span class="ccg-c64-lab-topbar__divider" aria-hidden="true"></span>
-      <span data-core-label>CORE INTEGRATION: VIDEO + INPUT + AUDIO</span>
-    </div>
-    <nav class="ccg-c64-lab-topbar__nav" aria-label="Browser emulator links">
-      <a href="/emulation.html">Emulation Hub</a>
-      <a href="/emulator/c64/legal.html">Legal &amp; Source</a>
+    <nav class="ccg-c64-topnav" aria-label="C64 emulator navigation">
+      <a href="/emulation.html">GUIDES</a>
+      <button type="button" data-open-setup>ROMS</button>
+      <a href="/emulator/c64/legal.html">SOURCE</a>
     </nav>
   </header>
 
-  <main class="ccg-c64-lab" id="main-content" data-core-state="audio-core">
-    <section class="ccg-c64-lab-intro" aria-labelledby="ccg-c64-lab-title">
-      <div>
-        <span class="ccg-c64-eyebrow">CCG OMEGA // MACHINE BAY 64</span>
-        <h1 id="ccg-c64-lab-title">Your Commodore 64 command deck</h1>
-        <p>Supply your own C64 ROM chips once, keep them in this browser, then use the dedicated console for games, disks, tapes, cartridges, controllers and save states.</p>
+  <main class="ccg-c64-workspace" id="main-content" data-core-state="upstream-runtime">
+    <section class="ccg-c64-console" aria-label="Commodore 64 display">
+      <div class="ccg-c64-display-head">
+        <div>
+          <span class="ccg-c64-kicker">CCG BROWSER C64 // PAL</span>
+          <strong data-machine-state>WAITING FOR ROM CHECK</strong>
+        </div>
+        <div class="ccg-c64-live-state">
+          <span class="ccg-c64-led"></span>
+          <span data-input-status>KEYBOARD READY</span>
+        </div>
       </div>
-      <div class="ccg-c64-privacy-chip">
-        <strong>LOCAL-ONLY ROM STORAGE</strong>
-        <span>Selected ROM files stay in this browser. They are not uploaded to CCG.</span>
+
+      <div class="ccg-c64-screen-stage">
+        <div class="ccg-c64-screen-bezel">
+          <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" tabindex="0"></canvas>
+          <div class="ccg-c64-screen-glass" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="ccg-c64-screen-foot">
+        <span>384 × 272 SOURCE</span>
+        <span>WEBGL / CRT PRESENTER</span>
+        <span>CLICK SCREEN FOR KEYBOARD</span>
+      </div>
+
+      <p class="ccg-c64-stage-note" data-stage-note>Load your own C64 ROMs once, then press POWER.</p>
+
+      <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
+        <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
+          <button type="button" data-joy-mask="1" aria-label="Joystick up">▲</button>
+          <button type="button" data-joy-mask="4" aria-label="Joystick left">◀</button>
+          <span aria-hidden="true"></span>
+          <button type="button" data-joy-mask="8" aria-label="Joystick right">▶</button>
+          <button type="button" data-joy-mask="2" aria-label="Joystick down">▼</button>
+        </div>
+        <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
       </div>
     </section>
 
-    <div class="ccg-c64-command-grid">
-      <aside class="ccg-c64-system-rail" aria-label="System status">
-        <div class="ccg-c64-panel-heading">
-          <span>01</span>
-          <div><strong>SYSTEM RAIL</strong><small>Boot readiness</small></div>
+    <aside class="ccg-c64-control-stack" aria-label="C64 controls and media">
+      <section class="ccg-c64-panel ccg-c64-panel--status">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>STATUS</strong><em data-audio-status>STARTS ON BOOT</em></header>
+        <div class="ccg-c64-status-grid">
+          <div><span>ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
+          <div><span>1541 DOS</span><strong data-drive-status>OPTIONAL</strong></div>
+          <div><span>SID</span><strong>6581 / 8580</strong></div>
+          <div><span>VIDEO</span><strong>PAL 50 HZ</strong></div>
         </div>
-
-        <div class="ccg-c64-readout">
-          <span>ROM BANK</span>
-          <strong><span data-rom-count>0</span>/3 READY</strong>
-        </div>
-        <div class="ccg-c64-readout">
-          <span>1541 DOS</span>
-          <strong data-drive-status>OPTIONAL</strong>
-        </div>
-        <div class="ccg-c64-readout">
-          <span>STORAGE</span>
-          <strong>THIS BROWSER</strong>
-        </div>
-        <div class="ccg-c64-readout">
-          <span>INPUT</span>
-          <strong data-input-status>KEYBOARD READY</strong>
-        </div>
-        <div class="ccg-c64-readout">
-          <span>SID AUDIO</span>
-          <strong data-audio-status>STARTS ON BOOT</strong>
-        </div>
-
-        <button class="ccg-c64-rail-action" type="button" data-open-setup>
-          <span>ROM CONTROL</span>
-          <strong>OPEN SETUP</strong>
-        </button>
-        <button class="ccg-c64-rail-action" type="button" data-clear-roms>
-          <span>LOCAL STORAGE</span>
-          <strong>CLEAR ROMS</strong>
-        </button>
-        <a class="ccg-c64-rail-action ccg-c64-rail-action--link" href="/emulation.html">
-          <span>HELP &amp; GUIDES</span>
-          <strong>EMULATION HUB</strong>
-        </a>
-      </aside>
-
-      <section class="ccg-c64-console" aria-label="Commodore 64 console">
-        <div class="ccg-c64-console__top">
-          <div>
-            <span class="ccg-c64-console__label">OMEGA CRT // PAL WORKSPACE</span>
-            <strong data-machine-state>WAITING FOR ROM CHECK</strong>
-          </div>
-          <div class="ccg-c64-console__lights" aria-hidden="true">
-            <span></span><span></span><span></span>
-          </div>
-        </div>
-
-        <div class="ccg-c64-crt-shell">
-          <div class="ccg-c64-crt-frame">
-            <div class="ccg-c64-crt-glass">
-              <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" tabindex="0"></canvas>
-              <div class="ccg-c64-crt-reflection" aria-hidden="true"></div>
-            </div>
-          </div>
-          <div class="ccg-c64-crt-footer">
-            <span>384 × 272 NATIVE FRAME</span>
-            <span>PAL TARGET</span>
-            <span>CRT FILTER BAY</span>
-          </div>
-        </div>
-
-        <div class="ccg-c64-command-deck" aria-label="Machine controls">
-          <button type="button" class="ccg-c64-command ccg-c64-command--power" data-machine-power disabled>
-            <span>POWER</span><strong>BOOT C64</strong>
-          </button>
-          <button type="button" class="ccg-c64-command" data-machine-reset disabled>
-            <span>MACHINE</span><strong>RESET</strong>
-          </button>
-          <button type="button" class="ccg-c64-command" data-machine-pause disabled>
-            <span>RUN STATE</span><strong>PAUSE</strong>
-          </button>
-          <button type="button" class="ccg-c64-command" data-load-media disabled>
-            <span>QUICK MEDIA</span><strong>LOAD PRG</strong>
-          </button>
-          <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
-          <button type="button" class="ccg-c64-command" data-audio-toggle disabled>
-            <span>SID AUDIO</span><strong>MUTE</strong>
-          </button>
-          <button type="button" class="ccg-c64-command" data-fullscreen>
-            <span>DISPLAY</span><strong>FULLSCREEN</strong>
-          </button>
-        </div>
-
-        <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
-          <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
-            <button type="button" data-joy-mask="1" aria-label="Joystick up">▲</button>
-            <button type="button" data-joy-mask="4" aria-label="Joystick left">◀</button>
-            <span aria-hidden="true"></span>
-            <button type="button" data-joy-mask="8" aria-label="Joystick right">▶</button>
-            <button type="button" data-joy-mask="2" aria-label="Joystick down">▼</button>
-          </div>
-          <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
-        </div>
-
-        <p class="ccg-c64-stage-note" data-stage-note>
-          Machine, video, keyboard/gamepad/touch input, reSID-derived filter/mixer audio, disk, tape, cartridge and local Game Vault systems are connected. Final release qualification remains.
-        </p>
       </section>
 
-      <aside class="ccg-c64-media-bay" aria-label="Media bay">
-        <div class="ccg-c64-panel-heading">
-          <span>02</span>
-          <div><strong>MEDIA BAY</strong><small>Prepared for core wiring</small></div>
+      <section class="ccg-c64-panel ccg-c64-panel--controls">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROLS</strong></header>
+        <div class="ccg-c64-button-grid">
+          <button type="button" class="is-power" data-machine-power disabled><span>POWER</span><strong>BOOT C64</strong></button>
+          <button type="button" data-machine-reset disabled><span>RESET</span><strong>RESET</strong></button>
+          <button type="button" data-machine-pause disabled><span>PAUSE</span><strong>PAUSE</strong></button>
+          <button type="button" data-crt-toggle><span>CRT</span><strong>TUBE</strong></button>
+          <button type="button" data-size-toggle><span>SIZE</span><strong>FIT</strong></button>
+          <button type="button" data-fullscreen><span>DISPLAY</span><strong>FULL</strong></button>
+          <button type="button" data-load-media disabled><span>PROGRAM</span><strong>LOAD PRG</strong></button>
+          <button type="button" data-audio-toggle disabled><span>SID AUDIO</span><strong>MUTE</strong></button>
+          <button type="button" data-open-setup><span>ROM BANK</span><strong>SETUP</strong></button>
         </div>
+        <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
+      </section>
 
-        <div class="ccg-c64-media-slot" data-media-slot="disk">
-          <span class="ccg-c64-media-slot__id">D8</span>
-          <div><strong>DISK DRIVE</strong><small data-disk-slot-status>D64 / D71 / D81 / G64 ready</small></div>
-          <div class="ccg-c64-media-actions">
-            <button type="button" data-load-disk disabled>LOAD DISK</button>
-            <button type="button" data-drive-mode aria-pressed="false" disabled>FAST LOAD</button>
-          </div>
-          <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
+      <section class="ccg-c64-panel">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROL PORT 2</strong><em>GAMEPAD + TOUCH</em></header>
+        <div class="ccg-c64-port-row">
+          <span class="ccg-c64-port-dot"></span>
+          <div><strong>JOYSTICK</strong><small>Standard browser gamepad mapping</small></div>
+          <span class="ccg-c64-chip">AUTO</span>
         </div>
-        <div class="ccg-c64-media-slot" data-media-slot="tape">
-          <span class="ccg-c64-media-slot__id">T1</span>
-          <div><strong>DATASETTE</strong><small data-tape-slot-status>TAP / T64 ready</small></div>
-          <div class="ccg-c64-media-actions">
-            <button type="button" data-load-tape disabled>LOAD</button>
-            <button type="button" data-tape-play disabled>PLAY</button>
-            <button type="button" data-tape-stop disabled>STOP</button>
-            <button type="button" data-tape-rewind disabled>REW</button>
-          </div>
-          <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
-        </div>
-        <div class="ccg-c64-media-slot" data-media-slot="cart">
-          <span class="ccg-c64-media-slot__id">C1</span>
-          <div><strong>CARTRIDGE</strong><small data-cartridge-slot-status>CRT / EasyFlash ready</small></div>
-          <div class="ccg-c64-media-actions">
-            <button type="button" data-load-cartridge disabled>LOAD CRT</button>
-            <button type="button" data-eject-cartridge disabled>EJECT</button>
-          </div>
-          <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
-        </div>
-        <div class="ccg-c64-media-slot" data-media-slot="sid">
-          <span class="ccg-c64-media-slot__id">S1</span>
-          <div><strong>SID ENGINE</strong><small>Live machine audio</small></div>
-          <span class="ccg-c64-media-chip">ACTIVE</span>
-        </div>
-        <div class="ccg-c64-media-slot ccg-c64-media-slot--vault" data-media-slot="state">
-          <span class="ccg-c64-media-slot__id">V1</span>
-          <div><strong>GAME VAULT</strong><small data-vault-status>Checking local slots…</small></div>
-          <div class="ccg-c64-vault-actions">
-            <select data-vault-slot aria-label="Game Vault slot">
-              <option value="1">SLOT 1</option>
-              <option value="2">SLOT 2</option>
-              <option value="3">SLOT 3</option>
-            </select>
-            <button type="button" data-vault-save disabled>SAVE</button>
-            <button type="button" data-vault-load disabled>RESTORE</button>
-            <button type="button" data-vault-clear>CLEAR</button>
-          </div>
-        </div>
+      </section>
 
-        <div class="ccg-c64-media-bay__future">
-          <strong>RELEASE FINISHING PASS</strong>
-          <span>D64/D71/D81/G64, optional True 1541, TAP/T64, CRT cartridges, three local save-state slots and mobile touch controls are connected. The remaining work is release qualification and deployed-browser acceptance.</span>
+      <section class="ccg-c64-panel">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
+        <div class="ccg-c64-media-row">
+          <button type="button" data-load-disk disabled>LOAD DISK</button>
+          <button type="button" data-drive-mode aria-pressed="false" disabled>FAST LOAD</button>
         </div>
-      </aside>
-    </div>
+        <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
+      </section>
+
+      <section class="ccg-c64-panel">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>DATASETTE</strong><em data-tape-slot-status>TAP / T64</em></header>
+        <div class="ccg-c64-media-row ccg-c64-media-row--four">
+          <button type="button" data-load-tape disabled>LOAD</button>
+          <button type="button" data-tape-play disabled>PLAY</button>
+          <button type="button" data-tape-stop disabled>STOP</button>
+          <button type="button" data-tape-rewind disabled>REW</button>
+        </div>
+        <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
+      </section>
+
+      <section class="ccg-c64-panel">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>CARTRIDGE</strong><em data-cartridge-slot-status>CRT / EASYFLASH</em></header>
+        <div class="ccg-c64-media-row">
+          <button type="button" data-load-cartridge disabled>LOAD CRT</button>
+          <button type="button" data-eject-cartridge disabled>EJECT</button>
+        </div>
+        <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
+      </section>
+
+      <section class="ccg-c64-panel ccg-c64-panel--vault">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>GAME VAULT</strong><em data-vault-status>CHECKING…</em></header>
+        <div class="ccg-c64-vault-row">
+          <select data-vault-slot aria-label="Game Vault slot">
+            <option value="1">SLOT 1</option>
+            <option value="2">SLOT 2</option>
+            <option value="3">SLOT 3</option>
+          </select>
+          <button type="button" data-vault-save disabled>SAVE</button>
+          <button type="button" data-vault-load disabled>RESTORE</button>
+          <button type="button" data-vault-clear>CLEAR</button>
+        </div>
+      </section>
+
+      <section class="ccg-c64-panel ccg-c64-panel--rom">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>ROM CONTROL</strong><em>LOCAL BROWSER STORAGE</em></header>
+        <div class="ccg-c64-media-row">
+          <button type="button" data-open-setup>OPEN SETUP</button>
+          <button type="button" data-clear-roms>CLEAR ROMS</button>
+        </div>
+      </section>
+    </aside>
   </main>
 
-  <footer class="ccg-c64-lab-footer">
-    <span>© <span data-ccg-c64-year></span> Cheeky Commodore Gamer.</span>
-    <span>Independent Commodore fan project. ROM images are not supplied.</span>
-    <a href="/emulator/c64/legal.html">GPL source &amp; third-party notices</a>
+  <footer class="ccg-c64-footer">
+    <span>&copy; <span data-ccg-c64-year></span> Cheeky Commodore Gamer.</span>
+    <span>ROM images are not supplied. User media remains local to the browser.</span>
+    <a href="/emulator/c64/legal.html">GPL source &amp; notices</a>
   </footer>
 
   <div class="ccg-c64-setup" data-rom-setup hidden>
@@ -240,20 +173,20 @@
     <section class="ccg-c64-setup__dialog" role="dialog" aria-modal="true" aria-labelledby="ccg-rom-setup-title">
       <div class="ccg-c64-setup__header">
         <div>
-          <span class="ccg-c64-eyebrow">FIRST BOOT // ROM CONTROL</span>
+          <span class="ccg-c64-kicker">FIRST BOOT // ROM CONTROL</span>
           <h2 id="ccg-rom-setup-title">Prepare your C64 ROM bank</h2>
         </div>
-        <a href="/emulation.html" class="ccg-c64-setup__exit">Exit</a>
+        <a href="/emulation.html" class="ccg-c64-setup__exit">EXIT</a>
       </div>
 
-      <p class="ccg-c64-setup__lead">The emulator needs the original C64 KERNAL, BASIC and character ROMs. CCG does not include or download copyrighted Commodore ROMs. Files you choose are checked in your browser and stored locally for later visits.</p>
+      <p class="ccg-c64-setup__lead">The emulator needs the original C64 KERNAL, BASIC and character ROMs. CCG does not include or download copyrighted Commodore ROMs. Files you choose are checked locally and kept in this browser.</p>
 
       <div class="ccg-c64-setup__steps">
         <section class="ccg-c64-setup-step">
           <div class="ccg-c64-setup-step__number">01</div>
           <div class="ccg-c64-setup-step__body">
-            <h3>Use an existing VICE installation</h3>
-            <p>Choose the main VICE folder. The browser checks its subfolders for recognised C64 ROM filenames and sizes.</p>
+            <h3>Scan an existing VICE installation</h3>
+            <p>Choose the main VICE folder. The browser searches its subfolders for recognised C64 ROM filenames and sizes.</p>
             <label class="ccg-c64-file-trigger" for="ccg-vice-folder">SCAN VICE FOLDER</label>
             <input id="ccg-vice-folder" type="file" webkitdirectory directory multiple hidden>
             <output class="ccg-c64-setup-message" data-vice-message>Nothing scanned yet.</output>
@@ -263,8 +196,8 @@
         <section class="ccg-c64-setup-step">
           <div class="ccg-c64-setup-step__number">02</div>
           <div class="ccg-c64-setup-step__body">
-            <h3>Or load the ROM files individually</h3>
-            <p>Use your own legally obtained ROM dumps. Each slot validates the expected byte size before it is accepted.</p>
+            <h3>Or choose ROM files individually</h3>
+            <p>Each slot validates the expected byte size before it is accepted.</p>
             <div class="ccg-c64-rom-grid">
               <label class="ccg-c64-rom-slot" data-rom-card="kernal">
                 <span>KERNAL</span><strong data-rom-state="kernal">WAITING</strong><small>8,192 bytes</small>
@@ -291,14 +224,14 @@
           <div class="ccg-c64-setup-step__body">
             <h3>ROM check</h3>
             <p data-rom-summary>Three required ROMs are still needed.</p>
-            <button type="button" class="ccg-c64-ready-button" data-finish-setup disabled>ENTER COMMAND DECK</button>
+            <button type="button" class="ccg-c64-ready-button" data-finish-setup disabled>ENTER EMULATOR</button>
           </div>
         </section>
       </div>
 
       <div class="ccg-c64-setup__privacy">
-        <strong>PRIVACY CHECK</strong>
-        <span>No ROM file is posted to the website or a CCG server. The current Stage 1 implementation stores validated ROM bytes in this browser's local storage only.</span>
+        <strong>LOCAL ONLY</strong>
+        <span>No ROM file is uploaded to CCG. Validated ROM bytes remain in browser storage on this device.</span>
       </div>
     </section>
   </div>

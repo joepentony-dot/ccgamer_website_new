@@ -5,6 +5,8 @@ import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault } from "./game-vault.js";
 import { extractFirstT64Program } from "./t64.js";
+import { WebGLPresenter } from "./core/webgl-presenter.js";
+import { CRT_MODES, presetParams } from "./core/crt-params.js";
 
 const vault = new ROMVault();
 const gameVault = new GameVault();
@@ -15,6 +17,14 @@ const viceFolder = document.getElementById("ccg-vice-folder");
 const viceMessage = document.querySelector("[data-vice-message]");
 const machineState = document.querySelector("[data-machine-state]");
 const screen = document.getElementById("ccg-c64-screen");
+// Match the upstream C64 READY presentation path: WebGL first, Canvas2D only as a fallback.
+// This must run before any 2D context is requested because a canvas binds to its first context type.
+const presenter = screen ? WebGLPresenter.create(screen, screen.width, screen.height) : null;
+const screenCtx = !presenter && screen ? screen.getContext("2d") : null;
+const statusCanvas = document.createElement("canvas");
+statusCanvas.width = screen?.width || 384;
+statusCanvas.height = screen?.height || 272;
+const statusCtx = statusCanvas.getContext("2d");
 const fullscreenButton = document.querySelector("[data-fullscreen]");
 const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
@@ -44,6 +54,9 @@ const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const audioStatus = document.querySelector("[data-audio-status]");
 const audioButton = document.querySelector("[data-audio-toggle]");
+const crtButton = document.querySelector("[data-crt-toggle]");
+const sizeButton = document.querySelector("[data-size-toggle]");
+const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
 const PAL_FRAME_MS = 1000 / 50.125;
 let machine = null;
@@ -60,12 +73,48 @@ let mountedCartridge = null;
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
+let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
+if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
+let fixed2x = localStorage.getItem("ccg.emulator.c64.size") === "2x";
 
-const SID_WORKLET_URL = "/js/ccg-c64/audio-worklet.js";
+const SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js";
 let audioContext = null;
 let sidNode = null;
 let masterGain = null;
 let audioMuted = false;
+
+function applyCrtMode() {
+  const strong = crtButton?.querySelector("strong");
+  if (!presenter) {
+    if (strong) strong.textContent = "PLAIN";
+    return;
+  }
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches || false;
+  presenter.setCrt(presetParams(crtMode), { reducedMotion });
+  if (strong) strong.textContent = crtMode.toUpperCase();
+}
+
+function cycleCrtMode() {
+  const index = Math.max(0, CRT_MODES.indexOf(crtMode));
+  crtMode = CRT_MODES[(index + 1) % CRT_MODES.length];
+  localStorage.setItem("ccg.emulator.c64.crtMode", crtMode);
+  applyCrtMode();
+}
+
+function applyScreenSize() {
+  screenStage?.classList.toggle("is-2x", fixed2x);
+  const strong = sizeButton?.querySelector("strong");
+  if (strong) strong.textContent = fixed2x ? "2X" : "FIT";
+}
+
+function toggleScreenSize() {
+  fixed2x = !fixed2x;
+  localStorage.setItem("ccg.emulator.c64.size", fixed2x ? "2x" : "fit");
+  applyScreenSize();
+}
+
+applyCrtMode();
+applyScreenSize();
 
 function updateAudioUi(label = null) {
   if (audioStatus && label) audioStatus.textContent = label;
@@ -86,7 +135,7 @@ async function ensureAudioGraph() {
 
   audioContext = new Context({ sampleRate: 48000, latencyHint: "interactive" });
   await audioContext.audioWorklet.addModule(SID_WORKLET_URL);
-  sidNode = new AudioWorkletNode(audioContext, "ccg-sid-processor", {
+  sidNode = new AudioWorkletNode(audioContext, "sid-processor", {
     outputChannelCount: [2],
   });
   masterGain = audioContext.createGain();
@@ -104,6 +153,7 @@ async function wireAudioToMachine() {
       type: "init",
       shared: machine.sidShared,
       is8580: machine.sidIs8580,
+      engine: "wasm",
     });
     masterGain.gain.setValueAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime);
     if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
@@ -125,11 +175,19 @@ function resetAudioForMachine() {
 }
 
 function setAudioPaused(value) {
-  sidNode?.port.postMessage({ type: "pause", paused: Boolean(value) });
+  if (!masterGain || !audioContext) return;
+  if (value) {
+    masterGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.01);
+    return;
+  }
+
+  // C64 READY keeps the SID worklet clock free-running. After a main-thread
+  // pause/stall, resync it to the machine before reopening the output gain.
+  sidNode?.port.postMessage({ type: "resync" });
+  masterGain.gain.setTargetAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime, 0.01);
 }
 
 function powerOffAudio() {
-  sidNode?.port.postMessage({ type: "power-off" });
   if (masterGain && audioContext) masterGain.gain.setValueAtTime(0, audioContext.currentTime);
   updateAudioUi("STANDBY");
 }
@@ -354,9 +412,8 @@ function pollGamepad() {
 }
 
 function drawStatus(snapshot, message = null) {
-  if (!screen) return;
-  const ctx = screen.getContext("2d");
-  if (!ctx) return;
+  if (!screen || !statusCtx) return;
+  const ctx = statusCtx;
 
   ctx.imageSmoothingEnabled = false;
   ctx.fillStyle = "#101a5b";
@@ -387,6 +444,9 @@ function drawStatus(snapshot, message = null) {
         ];
 
   lines.forEach((line, index) => ctx.fillText(line, 52, 92 + index * 20));
+
+  if (presenter) presenter.presentCanvas(statusCanvas);
+  else screenCtx?.drawImage(statusCanvas, 0, 0);
 }
 
 function setControlState(snapshot) {
@@ -467,12 +527,15 @@ function stopFrameLoop() {
 
 function blitMachine() {
   if (!machine || !screen) return;
-  const ctx = screen.getContext("2d");
-  if (!ctx) return;
+  if (presenter) {
+    presenter.present(machine.vic2.presentationBuffer());
+    return;
+  }
+  if (!screenCtx) return;
   if (!frameImage || frameImage.data.buffer !== machine.vic2.frameBuffer.buffer) {
     frameImage = new ImageData(machine.vic2.frameBuffer, screen.width, screen.height);
   }
-  ctx.putImageData(frameImage, 0, 0);
+  screenCtx.putImageData(frameImage, 0, 0);
 }
 
 function frameLoop(now) {
@@ -485,7 +548,7 @@ function frameLoop(now) {
   if (!paused) {
     frameAccumulator += delta;
     let frames = 0;
-    while (frameAccumulator >= PAL_FRAME_MS && frames < 3) {
+    while (frameAccumulator >= PAL_FRAME_MS) {
       machine.runFrame();
       frameAccumulator -= PAL_FRAME_MS;
       frames += 1;
@@ -644,6 +707,9 @@ powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", resetMachine);
 pauseButton?.addEventListener("click", togglePause);
 audioButton?.addEventListener("click", toggleAudioMute);
+crtButton?.addEventListener("click", cycleCrtMode);
+sizeButton?.addEventListener("click", toggleScreenSize);
+screen?.addEventListener("pointerdown", () => screen.focus());
 
 loadMediaButton?.addEventListener("click", () => {
   if (!running) return;
@@ -669,6 +735,24 @@ prgInput?.addEventListener("change", async () => {
 window.addEventListener("keydown", (event) => handleC64Key(event, true));
 window.addEventListener("keyup", (event) => handleC64Key(event, false));
 window.addEventListener("blur", releaseAllInput);
+
+document.addEventListener("visibilitychange", () => {
+  if (!running) return;
+  if (document.hidden) {
+    setAudioPaused(true);
+    return;
+  }
+  lastFrameTime = 0;
+  frameAccumulator = 0;
+  if (!paused) setAudioPaused(false);
+});
+
+document.addEventListener("fullscreenchange", () => {
+  if (!running || paused) return;
+  lastFrameTime = 0;
+  frameAccumulator = 0;
+  sidNode?.port.postMessage({ type: "resync" });
+});
 
 
 loadDiskButton?.addEventListener("click", () => {
