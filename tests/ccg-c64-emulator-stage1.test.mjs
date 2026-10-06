@@ -87,7 +87,7 @@ assert(app.includes("machine.injectLoadAndRun()"), "The first D64 quick-load rou
 assert(app.includes('let driveMode = "fast"'), "Each emulator visit must start in Fast Load so ordinary disk images auto-start");
 assert(app.includes("firstSupportedDroppedFile"), "Screen drop loading must choose a supported C64 media file");
 assert(app.includes('mediaDropzone?.addEventListener("drop"'), "The C64 screen stage must accept dropped game media");
-assert(app.includes("await queueMediaFile(file)"), "Dropped media must use the same automatic boot/load route as file selection");
+assert(app.includes("await queueMediaFile(file, { freshBoot: true })"), "Dropped media must use the same clean automatic boot/load route as primary file selection");
 assert(html.includes("LOAD &amp; AUTO START"), "Primary file loader must advertise automatic game start");
 assert(app.includes("function basicReady()"), "Auto-start must wait for a real BASIC READY prompt");
 assert(app.includes("function queueAutoStart(steps)"), "Auto-start must use a staged load sequence");
