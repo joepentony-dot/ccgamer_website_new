@@ -181,6 +181,17 @@ function createDiskFromMedia(media) {
   return media.kind === "g64" ? new G64(media.bytes.slice()) : new D64(media.bytes.slice());
 }
 
+function captureMutableMedia() {
+  if (!machine) return;
+  machine.commitDriveWrites();
+  if (mountedDisk && machine.currentD64?.img) {
+    mountedDisk = { ...mountedDisk, bytes: machine.currentD64.img.slice() };
+  }
+  if (mountedTape?.kind === "tap" && machine.datasette?.hasMedia) {
+    mountedTape = { ...mountedTape, bytes: machine.exportTapBytes() };
+  }
+}
+
 function currentVaultSlot() {
   const slot = Number(vaultSlot?.value || 1);
   return [1, 2, 3].includes(slot) ? slot : 1;
@@ -486,6 +497,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  captureMutableMedia();
   releaseAllInput();
   powerOffAudio();
   running = false;
@@ -836,13 +848,7 @@ ejectCartridgeButton?.addEventListener("click", () => {
 async function saveGameVaultSlot() {
   if (!machine || !running) return;
   try {
-    machine.commitDriveWrites();
-    if (mountedDisk && machine.currentD64?.img) {
-      mountedDisk = { ...mountedDisk, bytes: machine.currentD64.img.slice() };
-    }
-    if (mountedTape?.kind === "tap" && machine.datasette?.hasMedia) {
-      mountedTape = { ...mountedTape, bytes: machine.exportTapBytes() };
-    }
+    captureMutableMedia();
 
     const slot = currentVaultSlot();
     const record = await gameVault.save(slot, {
