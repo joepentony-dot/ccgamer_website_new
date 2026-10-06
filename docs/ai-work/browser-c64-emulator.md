@@ -21,9 +21,17 @@
 - Power, reset, pause and fullscreen are live. A bounded quick-load path accepts a user PRG, injects it into the running machine and starts it through the core's existing PRG run path.
 - This establishes a real emulator video boot path rather than a visual mock-up. Audio and complete physical input/media ownership remain outstanding.
 
+## Physical input integration — 6 October 2026
+
+- The CCG shell now routes focused physical keyboard input directly into the CIA1 C64 keyboard matrix using the core's retained matrix maps, including function keys and a dedicated F12 RESTORE/NMI path.
+- Browser shortcuts are not globally captured: keyboard ownership applies only while the CCG CRT canvas has focus.
+- The first connected standard gamepad is polled once per animation frame and routed to joystick Port 2 with analogue/D-pad directions and primary fire buttons. Disconnect returns the port to the active-high idle byte.
+- Blur, power-off and page-hide release all held matrix/joystick/NMI state so browser focus changes cannot leave stuck C64 keys.
+- The System Rail now reports whether the active input path is keyboard or a detected Port 2 gamepad.
+
 ## Not merge-ready yet
 
-The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still integrate and qualify SID/worklet audio, keyboard/joystick/gamepad input, disk/tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. The Stage 1 shell should remain the visual contract while those systems are connected.
+The machine/video core, power/reset/pause lifecycle and a first PRG quick-load path are now connected. Before merge, the branch must still integrate and qualify SID/worklet audio, disk/tape/cartridge loading, save-state/media storage, mobile controls, source/licence inventory and performance. Physical keyboard and standard gamepad Port 2 routing are now present but still require browser-level qualification. The Stage 1 shell should remain the visual contract while those systems are connected.
 
 ## Visual/legal rule
 
