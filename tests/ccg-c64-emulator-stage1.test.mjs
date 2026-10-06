@@ -99,6 +99,11 @@ assert(html.includes("data-audio-status"), "The command deck must expose SID aud
 assert(html.includes("data-audio-toggle"), "The command deck must expose SID mute control");
 assert(html.includes("data-crt-toggle"), "The deck must expose CRT preset switching");
 assert(html.includes("data-size-toggle"), "The deck must expose fit/2x display switching");
+assert(html.includes("data-warp-load"), "The deck must expose Warp Load");
+assert(app.includes("const WARP_LOAD_FACTOR = 4"), "Warp Load must use the qualified 4x multiplier");
+assert(app.includes("delta * (warpLoadActive ? WARP_LOAD_FACTOR : 1)"), "Warp Load must accelerate emulated time without changing the machine core");
+assert(app.includes("WARP SILENT"), "Warp Load must silence SID output while accelerated");
+assert(app.includes("sidNode?.port.postMessage({ type: \"resync\" })"), "SID resync must remain available when Warp Load returns to 1x");
 assert(app.includes("audioWorklet.addModule(SID_WORKLET_URL)"), "SID AudioWorklet module must be loaded");
 assert(app.includes('SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js"'), "The upstream-quality SID worklet path must be active");
 assert(app.includes("shared: machine.sidShared"), "SID worklet must receive the machine SharedArrayBuffer");
