@@ -27,7 +27,7 @@
   let roomMood="normal";
   let stalkerNear=false;
   let stalkerSight=false;
-  let musicLevel=.075;
+  let musicLevel=.14;
   let current=null;
   let fadingOut=null;
   let fadeTimer=null;
@@ -256,11 +256,23 @@
      * multi-megabyte Supabase MP3 every time a song reaches its end. */
     audio.preload=meteredRemote?"none":"metadata";
     audio.loop=meteredRemote;
-    audio.volume=0;
+    audio.muted=false;
+    audio.volume=targetVolume(state);
     audio.playbackRate=1;
+    audio.playsInline=true;
     const slot={audio,state,url,meteredRemote,advancing:false,armed:false,destroyed:false,playAttempt:0};
     armAdvance(slot);
     return slot;
+  }
+
+  function prepareSlotForPlay(slot){
+    if(!slot||slot.destroyed)return false;
+    try{
+      slot.audio.muted=false;
+      slot.audio.volume=targetVolume(slot.state);
+      if(Number(slot.audio.readyState||0)===0)slot.audio.load();
+      return true;
+    }catch(_){return false}
   }
 
   function ensureStateSlot(state,advance=false){
@@ -276,12 +288,27 @@
     return{slot,replaced,created:true};
   }
 
+  function primeState(state=desiredState()){
+    const normalised=normaliseState(state);
+    /* Pre-run priming is only for uploaded/custom production tracks. Packaged
+     * fallback media must remain untouched until gameplay actually starts. */
+    if(!customSources(normalised).length)return false;
+    const {slot}=ensureStateSlot(normalised,false);
+    if(!slot)return false;
+    /* Priming selects the authored track and establishes audible state without
+     * forcing a remote fetch. Metered Supabase media keeps preload="none" until
+     * the trusted Start Game gesture calls prepareSlotForPlay(). */
+    slot.audio.muted=false;
+    slot.audio.volume=targetVolume(normalised);
+    return true;
+  }
+
   function restorePreviousState(previous,next,replaced){
     destroySlot(next);
     if(previous&&previous!==next&&previous.state!==next.state&&!previous.destroyed){
       current=previous;
       current.advancing=false;
-      try{Promise.resolve(current.audio.play()).catch(()=>{})}catch(_){}
+      try{prepareSlotForPlay(current);Promise.resolve(current.audio.play()).catch(()=>{})}catch(_){}
       current.audio.volume=targetVolume(current.state);
       if(replaced&&replaced!==next&&replaced!==previous&&!replaced.destroyed)stateSlots.set(replaced.state,replaced);
       return;
@@ -306,7 +333,7 @@
       current.advancing=false;
       if(current.audio.paused){
         if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
-        try{const attempt=++current.playAttempt;Promise.resolve(current.audio.play()).then(()=>{if(current.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(current.url);stopFallback();publishMusicState("playing")}).catch(error=>{if(current.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});scheduleRetry(state)})}catch(error){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});scheduleRetry(state)}
+        try{prepareSlotForPlay(current);const attempt=++current.playAttempt;Promise.resolve(current.audio.play()).then(()=>{if(current.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(current.url);stopFallback();publishMusicState("playing")}).catch(error=>{if(current.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});scheduleRetry(state)})}catch(error){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});scheduleRetry(state)}
       }
       current.audio.volume=targetVolume(state);
       return;
@@ -325,7 +352,7 @@
       next.advancing=false;
       if(next.audio.paused){
         if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
-        try{const attempt=++next.playAttempt;Promise.resolve(next.audio.play()).then(()=>{if(next.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(next.url);stopFallback();publishMusicState("playing")}).catch(error=>{if(next.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(next.url);publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});scheduleRetry(state)})}catch(error){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(next.url);publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});scheduleRetry(state)}
+        try{prepareSlotForPlay(next);const attempt=++next.playAttempt;Promise.resolve(next.audio.play()).then(()=>{if(next.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(next.url);stopFallback();publishMusicState("playing")}).catch(error=>{if(next.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(next.url);publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});scheduleRetry(state)})}catch(error){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(next.url);publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});scheduleRetry(state)}
       }
       next.audio.volume=targetVolume(state);
       return;
@@ -339,6 +366,7 @@
     stopFallback();
     if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
     try{
+      prepareSlotForPlay(next);
       const attempt=++next.playAttempt;
       Promise.resolve(next.audio.play()).then(()=>{
         if(next.playAttempt!==attempt||current!==next)return;
@@ -370,6 +398,7 @@
     musicBus.claim("dungeon",()=>stopMusic(false));
     try{original.stopMusic?.()}catch(_){}
     fallbackActive=false;
+    primeState(desiredState());
     transition(true,false,true);
     publishMusicState("trusted-start");
     return true;
@@ -378,6 +407,7 @@
   function startMusic(){
     started=true;
     musicBus.claim("dungeon",()=>stopMusic(false));
+    primeState(desiredState());
     transition(false,false);
   }
 
@@ -424,9 +454,17 @@
     updateVolumes();
   }
 
-  function retryUploadedMusicOnGesture(){
-    if(!enabled||!started)return false;
+  function retryUploadedMusicOnGesture(event){
+    if(!enabled)return false;
     const state=desiredState();
+    if(!started){
+      const launchTarget=event?.target?.closest?.("#solo-btn,#tutorial-zone-btn");
+      if(!launchTarget)return false;
+      primeState(state);
+      const slot=stateSlots.get(state);
+      if(slot)prepareSlotForPlay(slot);
+      return Boolean(slot);
+    }
     if(!pendingGestureState&&!soundtrackOwned(state))return false;
     failures.clear();
     clearRetry();
@@ -503,7 +541,12 @@
           paused:Boolean(slot?.audio?.paused??true),
           active:slot===current,
           meteredRemote:Boolean(slot?.meteredRemote),
-          looping:Boolean(slot?.audio?.loop)
+          looping:Boolean(slot?.audio?.loop),
+          readyState:Number(slot?.audio?.readyState||0),
+          networkState:Number(slot?.audio?.networkState||0),
+          volume:Number(slot?.audio?.volume||0),
+          muted:Boolean(slot?.audio?.muted),
+          errorCode:Number(slot?.audio?.error?.code||0)
         }];
       }))
     }),
@@ -517,7 +560,10 @@
   window.addEventListener("ccg:admin-audio-ready",event=>{
     failures.clear();
     clearRetry();
-    if(started&&enabled)transition(false,false);
+    if(started&&enabled){
+      primeState(desiredState());
+      transition(false,false);
+    }
     event?.stopImmediatePropagation?.();
   });
 

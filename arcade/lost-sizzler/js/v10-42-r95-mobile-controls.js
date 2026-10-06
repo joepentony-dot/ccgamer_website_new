@@ -8,6 +8,7 @@
   window.__CCG_DUNGEON_R95_MOBILE_CONTROLS__=true;
 
   const state={installed:false,active:false,actions:0,movements:0,visibilitySyncs:0};
+  const activePointers=new Map();
   const touchCapable=()=>Boolean((navigator.maxTouchPoints||0)>0||window.matchMedia?.("(pointer: coarse)")?.matches);
   const playing=()=>{
     let live=false;
@@ -154,21 +155,32 @@
       if(key){
         event.preventDefault();
         try{button.setPointerCapture?.(event.pointerId)}catch(_){}
+        activePointers.set(event.pointerId,button);
         try{if(typeof input!=="undefined")input.add(key)}catch(_){}
         button.classList.add("held");
         state.movements++;
         return
       }
-      if(button.dataset.action)runAction(button,event)
+      if(button.dataset.action){
+        activePointers.set(event.pointerId,button);
+        runAction(button,event)
+      }
     });
 
     const release=event=>{
-      const button=event.target?.closest?.(".v104-touch-btn");
-      if(!button||!root.contains(button))return;
+      const captured=activePointers.get(event.pointerId);
+      const target=event.target?.closest?.(".v104-touch-btn");
+      const button=captured||(target&&root.contains(target)?target:null);
+      activePointers.delete(event.pointerId);
+      if(!button)return;
       if(button.dataset.key)releaseMovement(button);
       if(button.dataset.action==="fire")stopFire(button)
     };
     for(const type of ["pointerup","pointercancel","lostpointercapture"])root.addEventListener(type,release);
+    /* Pointer capture normally keeps release events on the button, but browsers
+     * can retarget a touch end when layout changes during the gesture. The
+     * window fallback closes that ownership gap without changing hold-to-move. */
+    for(const type of ["pointerup","pointercancel"])window.addEventListener(type,release,true);
 
     const observer=new MutationObserver(sync);
     observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active","data-tutorial-active"]});
