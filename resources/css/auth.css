@@ -67,6 +67,14 @@ body {
   color: var(--auth-text);
 }
 
+.auth-field-help {
+  display: block;
+  margin-top: 6px;
+  color: var(--auth-muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
 .password-wrap {
   display: flex;
   align-items: center;
