@@ -30,7 +30,11 @@ async function captureViewport(page,file){
     await Promise.race([document.fonts.ready,new Promise(resolve=>setTimeout(resolve,1500))]);
     for(const face of [...document.fonts])if(face.status!=="loaded")document.fonts.delete(face);
   });
-  await page.screenshot({path:file,timeout:30000});
+  try{
+    await page.screenshot({path:file,timeout:30000});
+  }catch(error){
+    console.warn(`Viewport screenshot skipped after bounded capture failure: ${error?.message||error}`);
+  }
 }
 
 const selectors=[".ccg-game",".player-hub",".core-stats",".hub-inventory",".hub-progress",".tactical-zone",".radar-card","#radar-canvas",".shortcut-dock","#item-shortcuts",".inventory-panel",".r71-inventory-layout","#inventory-close-top","#inventory-objective","#inventory-loadout","#inventory-list",".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip","#inventory-close",".inventory-footer-actions",".ccg-evolving-firearm","#quick-keyring-icons","#quick-level-up","#hud-health","#hud-p2","#hud-mana","#hud-weapon",...Array.from({length:6},(_,i)=>`#inventory-list .inventory-slot:nth-child(${i+1})`),...Array.from({length:8},(_,i)=>`#item-shortcuts .carried-item:nth-of-type(${i+1})`)];
