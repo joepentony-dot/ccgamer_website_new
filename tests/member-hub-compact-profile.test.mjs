@@ -18,16 +18,19 @@ test('member hub is reduced to the compact core sections', () => {
     assert.match(html, new RegExp(`id="${id}"`));
   }
 
-  assert.doesNotMatch(html, /id="memberCommunity"/);
+  assert.match(html, /<details class="member-compact-details" id="memberCommunity">/);
+  assert.doesNotMatch(html, />CCG Community</);
   assert.doesNotMatch(html, /Member Benefits/);
   assert.doesNotMatch(html, /Share Your Verdict/);
   assert.doesNotMatch(html, /New and Recently Updated/);
 });
 
-test('member badge layout is deliberately compact', () => {
+test('member badge layout and advanced tools are deliberately compact', () => {
   assert.match(css, /\.member-achievements\s*\{/);
   assert.match(css, /grid-template-columns:\s*repeat\(5/);
   assert.match(css, /min-height:\s*54px/);
+  assert.match(css, /\.member-compact-details\s*\{/);
+  assert.match(css, /\.member-achievement-disclosure/);
 });
 
 test('member profile exposes custom avatar controls', () => {
