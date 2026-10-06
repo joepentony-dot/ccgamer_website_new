@@ -51,6 +51,10 @@ assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stam
 assert(coiWorker.includes('request.mode !== "navigate"'), "COI worker must remain scoped to document navigations");
 assert(coiWorker.includes('url.pathname.startsWith(EMULATOR_SCOPE)'), "COI worker must not rewrite unrelated CCG routes");
 assert(css.includes(".ccg-c64-control-stack"), "Compact modular control-deck layout must be present");
+assert(css.includes('grid-template-areas: "console controls"'), "Desktop C64 workstation must pin console and controls to named grid areas");
+assert(css.includes('.ccg-c64-workspace > :not(.ccg-c64-console):not(.ccg-c64-control-stack)'), "Injected route UI must not become a third workstation grid item");
+assert(css.includes("grid-area: console"), "C64 display must stay in the left workstation column");
+assert(css.includes("grid-area: controls"), "C64 controls must stay in the right workstation column");
 assert(css.includes(".ccg-c64-screen-stage"), "Large emulator display stage must be present");
 assert(css.includes("@media (max-width: 760px)"), "Mobile command-deck layout is required");
 assert(vault.includes("ccg.emulator.c64.rom.kernal"), "CCG-local ROM namespace is required");
