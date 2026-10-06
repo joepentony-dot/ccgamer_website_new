@@ -534,6 +534,9 @@ body[data-run-active="true"] .overlay .panel h3{
   body[data-run-active="true"] .ccg-game>.player-hub .hub-stat b{margin-top:5px!important;font-size:clamp(12px,1.18vw,17px)!important}
   body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory{padding:5px!important}
   body[data-run-active="true"] .ccg-game>.player-hub .hub-inventory-head{min-height:15px!important;margin-bottom:3px!important}
+  /* Short desktops already expose keys in the live KEYS & ITEMS sidebar. Hide the
+   * duplicate bottom keyring so the quick belt never clips below the viewport. */
+  body[data-run-active="true"] .ccg-game>.player-hub #quick-keyring-icons{display:none!important}
   body[data-run-active="true"] .ccg-game>.player-hub .quick-slot{height:32px!important}
   body[data-run-active="true"] .ccg-game>.player-hub .hub-progress{gap:4px!important;grid-template-columns:minmax(0,1.5fr) repeat(4,minmax(0,.48fr))!important}
   body[data-run-active="true"] .ccg-game>.player-hub .priority-xp{padding:6px!important}
