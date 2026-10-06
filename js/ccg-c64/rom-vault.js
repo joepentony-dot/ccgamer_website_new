@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // CCG browser C64 ROM vault.
-// Portions of the ROM validation / VICE-folder matching approach are derived
-// from GPL-3.0-or-later source Copyright © 2026 Morten Øien Eriksen.
+// Portions of the ROM validation / matching approach are derived from
+// GPL-3.0-or-later source Copyright © 2026 Morten Øien Eriksen.
 // This file is a modified implementation for the Cheeky Commodore Gamer site.
 
 export const ROM_SPEC = Object.freeze({
@@ -35,51 +35,78 @@ export const REQUIRED_ROM_KEYS = Object.freeze(
   Object.keys(ROM_SPEC).filter((key) => ROM_SPEC[key].required)
 );
 
-const VICE_MATCH = Object.freeze({
-  kernal:    { dir: "c64",    exact: "kernal-901227-03",    pattern: /^kernal([-._]|$)/i },
-  basic:     { dir: "c64",    exact: "basic-901226-01",     pattern: /^basic([-._]|$)/i },
-  charRom:   { dir: "c64",    exact: "chargen-901225-01",   pattern: /^(chargen|characters)([-._]|$)/i },
-  drive1541: { dir: "drives", exact: "dos1541ii-251968-03", pattern: /^(dos)?1541(-?ii)?([-._]|$)/i },
+const ROM_MATCH = Object.freeze({
+  kernal: {
+    exact: ["kernal-901227-03", "kernal", "kernel", "c64-kernal", "c64_kernal"],
+    pattern: /(^|[-_. ])(kernal|kernel)([-_. ]|$)/i,
+  },
+  basic: {
+    exact: ["basic-901226-01", "basic", "c64-basic", "c64_basic"],
+    pattern: /(^|[-_. ])basic([-_. ]|$)/i,
+  },
+  charRom: {
+    exact: ["chargen-901225-01", "chargen", "characters", "character", "char", "c64-chargen"],
+    pattern: /(^|[-_. ])(chargen|characters?|char)([-_. ]|$)/i,
+  },
+  drive1541: {
+    exact: ["dos1541ii-251968-03", "dos1541", "dos1541ii", "1541", "1541ii", "1541-dos"],
+    pattern: /(^|[-_. ])((dos)?1541(-?ii)?|1541[-_. ]?dos)([-_. ]|$)/i,
+  },
 });
 
-const OTHER_MACHINE_DIRS = new Set([
-  "c128", "c64dtv", "cbm-ii", "pet", "plus4", "printer", "scpu64", "vic20",
-]);
-
-function parentDirectory(file) {
-  const parts = String(file.webkitRelativePath || "").split("/");
-  return parts.length > 1 ? parts[parts.length - 2].toLowerCase() : "";
+function stem(name) {
+  return String(name || "")
+    .toLowerCase()
+    .replace(/.(bin|rom)$/i, "")
+    .trim();
 }
 
-export function pickViceRoms(files) {
+export function pickRomFiles(files) {
+  const list = [...(files || [])];
   const result = {};
+  const used = new Set();
 
-  for (const [key, matcher] of Object.entries(VICE_MATCH)) {
-    let bestFile = null;
-    let bestScore = 0;
+  for (const [key, matcher] of Object.entries(ROM_MATCH)) {
+    const spec = ROM_SPEC[key];
+    let best = null;
+    let bestScore = -1;
 
-    for (const file of files || []) {
-      const name = String(file.name || "").toLowerCase();
-      if (!ROM_SPEC[key].sizes.includes(file.size)) continue;
-      if (!matcher.pattern.test(name)) continue;
+    for (const file of list) {
+      if (!file || used.has(file) || !spec.sizes.includes(file.size)) continue;
+      const fileStem = stem(file.name);
+      let score = 0;
 
-      const dir = parentDirectory(file);
-      let score = 1;
-      if (name === matcher.exact || name === `${matcher.exact}.bin`) score += 4;
-      if (dir === matcher.dir) score += 2;
-      else if (OTHER_MACHINE_DIRS.has(dir)) score -= 3;
+      if (matcher.exact.includes(fileStem)) score += 8;
+      if (matcher.pattern.test(fileStem)) score += 4;
+
+      const path = String(file.webkitRelativePath || "").toLowerCase();
+      if (path.includes("/c64/") && key !== "drive1541") score += 1;
+      if (path.includes("/drives/") && key === "drive1541") score += 1;
 
       if (score > bestScore) {
         bestScore = score;
-        bestFile = file;
+        best = file;
       }
     }
 
-    if (bestFile) result[key] = bestFile;
+    // Unique byte sizes are safe to identify even when filenames are unusual.
+    if ((!best || bestScore <= 0) && (key === "charRom" || key === "drive1541")) {
+      best = list.find((file) => file && !used.has(file) && spec.sizes.includes(file.size)) || null;
+      bestScore = best ? 1 : -1;
+    }
+
+    if (best && bestScore > 0) {
+      result[key] = best;
+      used.add(best);
+    }
   }
 
   return result;
 }
+
+// Retained as a compatibility alias for older tests/bookmarks; the UI no longer
+// requires a VICE directory and the matcher works with any selected ROM files.
+export const pickViceRoms = pickRomFiles;
 
 function encodeBytes(bytes) {
   let binary = "";
@@ -138,6 +165,16 @@ export class ROMVault {
   async installFile(key, file) {
     if (!file) throw new Error("No file selected.");
     return this.install(key, new Uint8Array(await file.arrayBuffer()), file.name);
+  }
+
+  async installFiles(files) {
+    const matches = pickRomFiles(files);
+    const loaded = [];
+    for (const [key, file] of Object.entries(matches)) {
+      await this.installFile(key, file);
+      loaded.push(key);
+    }
+    return { loaded, snapshot: this.snapshot() };
   }
 
   clear() {
