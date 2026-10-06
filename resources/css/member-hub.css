@@ -752,6 +752,21 @@ body.page-member-hub {
   }
 }
 
+@media (max-width: 480px) {
+  .member-hub-main {
+    width: min(100% - 10px, 1320px);
+  }
+
+  .member-stats {
+    gap: 5px;
+  }
+
+  .member-stat {
+    min-height: 48px;
+    padding: 6px 8px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
