@@ -43,7 +43,7 @@
     try{
       if(!run||run.daily||!p1||p2||!world||!host)return false;
       if(String(playMode||"")!=="solo"||document.body?.dataset?.hordeSolo==="true")return false;
-      if(Boolean(net?.connected))return false;
+      if(typeof net!=="undefined"&&Boolean(net?.connected))return false;
       return true
     }catch(_){return false}
   }

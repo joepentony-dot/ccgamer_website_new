@@ -63,10 +63,10 @@ async function emitTutorialComplete(page){
 async function waitForDemoGuards(page){
   await page.waitForFunction(()=>{
     const api=window.CCGLostSizzlerV142DemoPaywall;
-    const ids=["solo-btn","split-btn","daily-btn","continue-save-btn"];
+    const ids=["solo-btn","continue-save-btn"];
     const present=ids.filter(id=>Boolean(document.getElementById(id)));
     const retired=["create-btn","join-btn","room-code","online-lobby"].some(id=>Boolean(document.getElementById(id)));
-    return document.body.dataset.v142DemoLocked==="true"&&!retired&&!document.getElementById("horde-mode-btn")&&!document.getElementById("saboteurs-mode-btn")&&present.length===4&&api?.diagnostics().guardedCount===present.length;
+    return document.body.dataset.v142DemoLocked==="true"&&!retired&&!document.getElementById("split-btn")&&!document.getElementById("daily-btn")&&!document.getElementById("horde-mode-btn")&&!document.getElementById("saboteurs-mode-btn")&&present.length===2&&api?.diagnostics().guardedCount===present.length;
   });
 }
 
@@ -105,7 +105,7 @@ try{
   assert.equal(demoAudit.demoMode,true,"Explicit demo wrapper must retain the Tutorial completion purchase boundary.");
   assert.equal(demoAudit.shown,true,"Demo Tutorial completion must present the permanent-unlock offer.");
   assert.match(demoAudit.kicker,/TUTORIAL COMPLETE/i,"Demo Tutorial completion offer must identify the completed free introduction.");
-  assert.equal(demoAudit.guarded,4,"Tutorial completion offer must retain the four supported DOM-backed paid controls until entitlement is verified.");
+  assert.equal(demoAudit.guarded,2,"Tutorial completion offer must guard the two remaining DOM-backed paid controls until entitlement is verified.");
   assert.equal(demoAudit.retiredOnlinePresent,false,"Tutorial completion boundary must not recreate retired online multiplayer controls.");
   assert.notEqual(demoAudit.runActive,"true","Tutorial completion purchase presentation must not start paid gameplay underneath the overlay.");
   assert.deepEqual(demo.pageErrors,[],`Demo Tutorial completion boundary must not raise page errors: ${demo.pageErrors.join("\n")}`);

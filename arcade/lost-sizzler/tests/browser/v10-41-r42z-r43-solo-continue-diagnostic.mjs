@@ -60,7 +60,7 @@ try{
     mode:String(mode||""),
     runFloor:Number(run?.floor)||0,
     world:Boolean(world),host:Boolean(host),p1:Boolean(p1),p2:Boolean(p2),
-    playMode:String(playMode||""),connected:Boolean(net?.connected),channel:Boolean(net?.channel),
+    playMode:String(playMode||""),connected:Boolean(typeof net!=="undefined"&&net?.connected),channel:Boolean(typeof net!=="undefined"&&net?.channel),
     resumes:Number(window.CCGLostSizzlerV141R43SoloSave?.state?.resumes)||0,
     lastError:String(window.CCGLostSizzlerV141R43SoloSave?.state?.lastError||""),
     menuHidden:Boolean(document.getElementById("menu")?.classList.contains("hidden")),

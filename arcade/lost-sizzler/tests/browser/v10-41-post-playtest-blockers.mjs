@@ -29,19 +29,19 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true&&window.CCGLostSizzlerV142ZeroServerRelease?.enabled===true);
 
   const retired=await page.evaluate(()=>({
-    onlineMultiplayer:document.body.dataset.onlineMultiplayer||"",
+    onlineAttributePresent:document.body.hasAttribute("data-online-multiplayer"),
     releaseModel:document.body.dataset.releaseModel||"",
     hordeEntryPresent:Boolean(document.getElementById("horde-mode-btn")),
     spyEntryPresent:Boolean(document.getElementById("saboteurs-mode-btn")),
     specialModeActive:Boolean(window.CCGLostSizzlerSpecialModes?.active),
     localModes:[...(window.CCGLostSizzlerV142ZeroServerRelease?.localModes||[])]
   }));
-  assert.equal(retired.onlineMultiplayer,"disabled","V10.42 production must keep online multiplayer disabled");
-  assert.equal(retired.releaseModel,"zero-server-cost","V10.42 production must advertise the zero-server release model");
+  assert.equal(retired.onlineAttributePresent,false,"V10.42 production must not retain the retired online-multiplayer state attribute");
+  assert.equal(retired.releaseModel,"local-browser","V10.42 production must advertise the supported local-browser release model");
   assert.equal(retired.hordeEntryPresent,false,"retired Horde Multiplayer entry must be absent from the production menu");
   assert.equal(retired.spyEntryPresent,false,"retired Spy Vs Spy Multiplayer entry must be absent from the production menu");
   assert.equal(retired.specialModeActive,false,"zero-server enforcement must not leave a retired special-mode controller active");
-  assert.deepEqual(retired.localModes,["solo","tutorial"],"V10.42 R51 production must expose only the supported Solo and Tutorial local modes");
+  assert.deepEqual(retired.localModes,["game","tutorial"],"V10.42 R107 production must expose only the supported game and Tutorial local modes");
 
   await page.reload({waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV141PostPlaytestStability)&&Boolean(document.getElementById("solo-btn")));

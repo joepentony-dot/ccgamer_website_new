@@ -39,7 +39,7 @@ try{
   await page.waitForFunction(()=>document.body?.dataset?.releaseReady==="true"&&document.body?.dataset?.gameReady==="true",null,{timeout:90000});
 
   const state=await page.evaluate(()=>{
-    const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const ids=["continue-save-btn","solo-btn","tutorial-zone-btn"];
     const controls=Object.fromEntries(ids.map(id=>{
       const element=document.getElementById(id);
       const style=element?getComputedStyle(element):null;
@@ -67,7 +67,7 @@ try{
     }));
     const grid=document.querySelector("#menu .game-mode-buttons");
     const domOrder=[...grid.children].filter(node=>ids.includes(String(node.id||""))).map(node=>node.id);
-    const retired=["create-btn","join-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn"].filter(id=>document.getElementById(id));
+    const retired=["create-btn","join-btn","split-btn","daily-btn","horde-solo-btn","horde-mode-btn","saboteurs-mode-btn"].filter(id=>document.getElementById(id));
     return {
       runActive:document.body?.dataset?.runActive,
       menuHidden:document.getElementById("menu")?.classList.contains("hidden")||false,
@@ -83,14 +83,12 @@ try{
   assert.deepEqual(state.retired,[],"retired online/Horde/Saboteur controls must not return to the canonical menu");
   for(const [id,control] of Object.entries(state.controls))assert.equal(control.exists,true,`${id} must remain available in the supported landing DOM`);
 
-  assert.deepEqual(state.domOrder,["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"],"legacy compatibility anchors must retain stable DOM order without becoming public actions");
+  assert.deepEqual(state.domOrder,["continue-save-btn","solo-btn","tutorial-zone-btn"],"supported landing controls must retain stable DOM order");
   assert.equal(state.controls["continue-save-btn"].order,10,"Resume Saved Run must retain its priority slot when available");
   assert.equal(state.controls["solo-btn"].order,11,"Solo must remain the first visible adventure choice");
-  assert.equal(state.controls["tutorial-zone-btn"].order,21,"Tutorial must remain the second supported choice");
+  assert.equal(state.controls["tutorial-zone-btn"].order,12,"Tutorial must remain the second supported choice");
   assert.equal(state.controls["solo-btn"].visible,true,"Solo must remain visible on the R51 landing menu");
   assert.equal(state.controls["tutorial-zone-btn"].visible,true,"Tutorial must remain visible on the R51 landing menu");
-  assert.equal(state.controls["split-btn"].visible,false,"retired Split compatibility anchor must remain hidden");
-  assert.equal(state.controls["daily-btn"].visible,false,"retired Weekly compatibility anchor must remain hidden");
   assert.ok(state.controls["tutorial-zone-btn"].top>state.controls["solo-btn"].top,"Tutorial must sit below Solo in the supported landing flow");
 
   const settledHeights={"continue-save-btn":"78px","solo-btn":"82px","tutorial-zone-btn":"70px"};
@@ -123,7 +121,7 @@ try{
   const mobileState=await mobilePage.evaluate(()=>{
     const grid=document.querySelector("#menu .game-mode-buttons");
     const gridRect=grid?.getBoundingClientRect?.();
-    const ids=["continue-save-btn","solo-btn","split-btn","tutorial-zone-btn","daily-btn"];
+    const ids=["continue-save-btn","solo-btn","tutorial-zone-btn"];
     const controls=ids.map(id=>{
       const element=document.getElementById(id),style=element?getComputedStyle(element):null,rect=element?.getBoundingClientRect?.();
       return{
