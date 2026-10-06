@@ -304,10 +304,6 @@ function setC64Shift(left, right) {
   machine.cia1.setKey(6, 4, Boolean(right));
 }
 
-function syncPhysicalShiftKeys() {
-  setC64Shift(shiftLeftPhysical, shiftRightPhysical);
-}
-
 function releaseAllInput() {
   if (machine) {
     for (const held of heldMatrixKeys.values()) {
