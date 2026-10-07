@@ -229,6 +229,13 @@
   function armAdvance(slot){
     if(slot.armed)return;
     slot.armed=true;
+    slot.audio.addEventListener("playing",()=>{
+      if(slot.destroyed||current!==slot)return;
+      if(pendingGestureState===slot.state)pendingGestureState="";
+      clearFailure(slot.url);
+      stopFallback();
+      publishMusicState("playing-event")
+    });
     if(!slot.meteredRemote){
       const advance=()=>{
         if(slot.destroyed||current!==slot||slot.advancing||!Number.isFinite(slot.audio.duration))return;
