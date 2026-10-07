@@ -109,7 +109,7 @@
   }
 
   function grantEssence(player){
-    if(!player)return 0;player.banishmentEssence=Math.max(0,Math.floor(Number(player.banishmentEssence)||0))+1;return player.banishmentEssence;
+    if(!player)return 0;const api=window.CCGLostSizzlerV142ProceduralOverhaul,before=Math.max(0,Math.floor(Number(player.banishmentEssence)||0));if(api?.awardEssence)api.awardEssence(player,1,"A defeated Warden released spectral residue",{silent:true});else player.banishmentEssence=before+1;return Math.max(0,Math.floor(Number(player.banishmentEssence)||0));
   }
 
   function wardBreakOwner(fallback=null){
@@ -133,10 +133,10 @@
     const scoreBonus=Math.max(0,SCORE_REWARD-baseScore),xpBonus=Math.max(0,XP_REWARD-baseXp);
     try{score+=scoreBonus}catch(_){}
     try{if(xpBonus>0)awardXP(player,xpBonus,`${name} defeated after its ward was broken`)}catch(_){}
-    const essenceOwner=wardBreakOwner(player),essence=grantEssence(essenceOwner),cache=spawnWardenCache(target);startAftershock(target,player);
+    const essenceOwner=wardBreakOwner(player),essenceBefore=Math.max(0,Math.floor(Number(essenceOwner?.banishmentEssence)||0)),essence=grantEssence(essenceOwner),essenceGain=Math.max(0,essence-essenceBefore),cache=spawnWardenCache(target);startAftershock(target,player);
     h.revision=(Number(h.revision)||0)+1;sfx("elite");fxBurst(target.x,target.y);
     try{floatText(target.x,target.y,`WARDEN DOWN! +${SCORE_REWARD.toLocaleString()} SCORE`,P.gold,{life:3200})}catch(_){}
-    announce(`${name.toUpperCase()} DEFEATED`,`Warden kill secured: ${SCORE_REWARD.toLocaleString()} total score, ${XP_REWARD} total XP, +1 Banishment Essence, +2 armour and an ammo refill. ${cache?"A high-tier Warden Cache has appeared at the kill site. ":""}The kill has also triggered a ${Math.round(AFTERSHOCK_MS/1000)}-second dungeon aftershock at ${AFTERSHOCK_ALERT}%+ alert, so taking the reward still carries risk. Vessel Essence: ${essence}.`,"green",12500);
+    announce(`${name.toUpperCase()} DEFEATED`,`Warden kill secured: ${SCORE_REWARD.toLocaleString()} total score, ${XP_REWARD} total XP, ${essenceGain?"+1 Banishment Essence, ":""}+2 armour and an ammo refill. ${cache?"A high-tier Warden Cache has appeared at the kill site. ":""}The kill has also triggered a ${Math.round(AFTERSHOCK_MS/1000)}-second dungeon aftershock at ${AFTERSHOCK_ALERT}%+ alert, so taking the reward still carries risk. Vessel Essence: ${essence}.`,"green",12500);
     broadcast();syncNow();return true;
   }
 
