@@ -3,11 +3,19 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-interface-consistency.js",import.meta.url),"utf8");
+const progressionSource=fs.readFileSync(new URL("../js/progression.js",import.meta.url),"utf8");
+const coreSource=fs.readFileSync(new URL("../js/game-core.js",import.meta.url),"utf8");
 const toastLog=[];
 let renderCalls=0,buyCalls=[];
 const player={inventory:[{kind:"banishment",name:"Banishment Flask"}]};
 const progression={
   inventoryLabel:item=>item?.name||item?.kind||"ITEM",
+  compactInventory(player){
+    const first=(player?.inventory||[]).find(item=>item?.kind==="banishment");
+    if(!first)return 0;
+    player.inventory=[{...first,name:"Ward-Break Charge",qty:1},...(player.inventory||[]).filter(item=>item?.kind!=="banishment")];
+    return 1
+  },
   inventoryKindCount(player,kind){return (player?.inventory||[]).filter(item=>item?.kind===kind).reduce((sum,item)=>sum+Math.max(1,Math.floor(Number(item?.qty)||1)),0)}
 };
 const cards={banishment:{removed:false},banishmentScore:{removed:false}};
@@ -62,11 +70,16 @@ assert.match(defs.find(row=>row.kind==="banishment").desc,/does not kill the War
 assert.match(defs.find(row=>row.kind==="loot").desc,/Banishment Essence/,"Rare loot guide should explain the current Vessel/Essence economy");
 assert.doesNotMatch(defs.find(row=>row.kind==="loot").desc,/Banishment Flask/,"Rare loot guide should not point to the retired Flask trade");
 
-assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge ×1","Equipment & Inventory must show the current Ward-Break Charge possession count even when it is one");
-player.inventory.push({kind:"banishment",name:"Ward-Break Charge",qty:2});
-assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge ×3","Ward-Break inventory labels must show the total number of charges in possession across stacks");
+assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge ×1","Equipment & Inventory must show the current Ward-Break slot quantity");
+player.inventory.push({kind:"banishment",name:"Ward-Break Charge",qty:25});
+assert.equal(api.wardBreakCount(),1,"Ward-Break readout must compact legacy duplicate/oversized stacks back to one carried charge");
+assert.equal(player.inventory.filter(item=>item.kind==="banishment").length,1,"Ward-Break inventory repair must leave exactly one Ward-Break slot");
+assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge ×1","Ward-Break slot label must show the repaired slot quantity rather than repeat a stale global total");
 const banishInfo=context.itemInfoDetails(player.inventory[0]);
-assert.equal(banishInfo.name,"WARD-BREAK CHARGE ×3","Inventory information must repeat the live Ward-Break possession count");
+assert.equal(banishInfo.name,"WARD-BREAK CHARGE ×1","Inventory information must show the repaired Ward-Break quantity");
+assert.match(progressionSource,/if\(original\.kind==="banishment"\)[\s\S]*name:"Ward-Break Charge",short:"WARD BREAK",qty:1/,"Canonical inventory compaction must collapse legacy Ward-Break duplicates to one charge");
+assert.match(progressionSource,/if\(item\?\.kind==="banishment"&&inv\.some\(x=>x\?\.kind==="banishment"\)\)return false/,"Inventory must refuse a second Ward-Break Charge while one is held");
+assert.match(coreSource,/function renderInventoryPanel\(\)\{if\(!p1\)return;PGR\.compactInventory\?\.\(p1\);/,"Opening Equipment & Inventory must repair split Ward-Break stacks before rendering");
 assert.match(banishInfo.why,/immunity drops/i,"Inventory information should explain why Ward Break matters");
 const artefactInfo=context.itemInfoDetails({kind:"artefact",name:"Old Artefact"});
 assert.match(artefactInfo.desc,/stored as Banishment Essence/i,"Legacy artefact information should explain Vessel conversion");
