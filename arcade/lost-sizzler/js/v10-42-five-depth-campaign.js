@@ -20,6 +20,40 @@
     const claimedDomains=runState=>Array.isArray(runState?.v142ClaimedDomains)?runState.v142ClaimedDomains:[];
     const globalKeyCount=runState=>new Set(claimedDomains(runState)).size;
     const announce=(title,text,tone="gold",duration=8500)=>{try{showToast(title,text,tone,duration)}catch(_){} };
+    const BOSS_FLOORS=Object.freeze({
+      5:Object.freeze({name:"THE CARTRIDGE MAW",hp:72,armor:10,style:"root",subtitle:"A fused vault-beast blocks the descent."}),
+      10:Object.freeze({name:"THE SID ABOMINATION",hp:118,armor:16,style:"fire",subtitle:"The furnace has grown teeth."}),
+      15:Object.freeze({name:"THE BLOOD ARCHIVIST",hp:180,armor:24,style:"shock",subtitle:"The Citadel's final keeper is waiting."})
+    });
+    function bossSpec(runState){return BOSS_FLOORS[floorNumber(runState)]||null}
+    function bossEnemy(hostState){
+      const fight=hostState?.r114BossFight;if(!fight)return null;
+      return (hostState.enemies||[]).find(enemy=>enemy?.id===fight.bossId)||null
+    }
+    function bossDefeated(hostState){const fight=hostState?.r114BossFight;if(!fight)return true;const boss=bossEnemy(hostState);return Boolean(fight.cleared||!boss||boss.alive===false)}
+    function bossCell(worldState,hostState,room){
+      const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),candidates=[];
+      for(let r=0;r<Math.max(room.w,room.h);r++)for(let y=Math.max(room.y+1,cy-r);y<=Math.min(room.y+room.h-1,cy+r);y++)for(let x=Math.max(room.x+1,cx-r);x<=Math.min(room.x+room.w-1,cx+r);x++){
+        if(worldState.map[y]?.[x]!==0)continue;
+        if((hostState.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))continue;
+        candidates.push({x,y});if(candidates.length>8)return candidates[0]
+      }
+      return candidates[0]||{x:cx,y:cy}
+    }
+    function installGrotesqueBoss(worldState,hostState,runState){
+      const floor=floorNumber(runState),spec=bossSpec(runState);if(!spec)return null;
+      const room=worldState.rooms?.[worldState.exitRoomId];if(!room)return null;
+      let boss=floor===CFG.maxFloors?(hostState.guardian||(hostState.enemies||[]).find(e=>e?.guardian&&!e.keyGuardian)):null;
+      if(!boss){
+        const q=bossCell(worldState,hostState,room);
+        boss={id:`r114-grotesque-boss-f${floor}`,...q,kind:"guardian",hp:spec.hp,maxHp:spec.hp,armor:spec.armor,maxArmor:spec.armor,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:940,chargeCooldown:1100,healCooldown:999999,flash:0,hpBarMs:0,guardian:true,ccgBoss:true}
+        hostState.enemies.push(boss)
+      }
+      Object.assign(boss,{r114GrotesqueBoss:true,r114BossFloor:floor,r114BossName:spec.name,championName:spec.name,ccgBoss:true,guardian:true,hp:spec.hp,maxHp:spec.hp,armor:spec.armor,maxArmor:spec.armor,moveSpeedScale:floor===15?1.08:floor===10?1.02:.96,attackCooldown:floor===15?700:floor===10?780:860});
+      room.r114BossRoom=true;room.dangerous=true;
+      hostState.r114BossFight={floor,roomId:room.id,bossId:boss.id,name:spec.name,style:spec.style,subtitle:spec.subtitle,triggered:false,cleared:false,phase:1,attackMs:2400,rewarded:false};
+      return hostState.r114BossFight
+    }
 
     function floorPickupSlice(seed,floor){
       const deck=API.gameDeck(seed),distribution=Array.isArray(PD.pickupDistribution)?PD.pickupDistribution:[2,2,2,2,2,2,2,2,2,2,2,1,1,1,1];
@@ -72,7 +106,7 @@
       const hostState=baseCreateHostState(worldState),runState=currentRun(),cfg=floorConfig(runState);
       if(!runState)return hostState;
       runState.v142Campaign=true;runState.v142ClaimedDomains=Array.isArray(runState.v142ClaimedDomains)?runState.v142ClaimedDomains:[];
-      configureDomainKey(hostState,runState);installFloorCollectibles(worldState,hostState,runState);
+      configureDomainKey(hostState,runState);installFloorCollectibles(worldState,hostState,runState);installGrotesqueBoss(worldState,hostState,runState);
       hostState.v142CampaignFloor=floorNumber(runState);hostState.v142CampaignFloorId=cfg?.id||`floor-${floorNumber(runState)}`;hostState.v142GlobalKeyCount=globalKeyCount(runState);
       return hostState;
     };
@@ -101,7 +135,7 @@
       for(const enemy of hostState.enemies||[]){
         enemy.v142Floor=floor;
         if(enemy.deathStalker){enemy.moveSpeedScale=Math.max(.65,Math.min(1.4,Number(cfg.deathStalkerSpeed)||1));continue}
-        if(enemy.keyGuardian)continue;
+        if(enemy.keyGuardian||enemy.r114GrotesqueBoss)continue;
         if(enemy.ccgBoss&&floor<5)continue;
         const oldMax=Math.max(1,Number(enemy.maxHp||enemy.hp)||1),next=Math.max(1,Math.round(oldMax*hpScale));enemy.maxHp=next;enemy.hp=Math.min(next,Math.max(1,Math.round(Number(enemy.hp||oldMax)*hpScale)));
         if(floor>=4&&enemy.follower){enemy.maxArmor=Math.max(1,Number(enemy.maxArmor||enemy.armor||1)+(floor===CFG.maxFloors?2:1));enemy.armor=enemy.maxArmor}
@@ -189,19 +223,27 @@
       }
       if(floor<CFG.maxFloors){
         baseUpdateObjective(hostState,runState,explorePct);
-        if(hostState.objective?.complete)ensureInterimExit(hostState,runState);else hostState.exitOpen=false;
+        const baseDone=Boolean(hostState.objective?.complete),bossDone=bossDefeated(hostState);
+        if(baseDone&&!bossDone){hostState.objective.complete=false;hostState.exitOpen=false;return false}
+        if(baseDone&&bossDone)ensureInterimExit(hostState,runState);else hostState.exitOpen=false;
         return hostState.exitOpen;
       }
       if(floor===CFG.maxFloors&&globalKeyCount(runState)<CFG.keyTarget){if(hostState.objective)hostState.objective.complete=false;hostState.exitOpen=false;return false}
       const result=baseUpdateObjective(hostState,runState,explorePct);
-      if(hostState.objective?.complete)recoverMissingFinalSigil(hostState,runState);
+      if(hostState.objective?.complete&&bossDefeated(hostState))recoverMissingFinalSigil(hostState,runState);
       return hostState.exitOpen||result;
     };
     SYSTEMS.objectiveText=function(hostState,runState,explorePct=0){
       const floor=floorNumber(runState),cfg=floorConfig(runState),domain=domainForFloor(runState),keys=globalKeyCount(runState);
       if(floor===1)return hostState.objective?.complete?`The Threshold is cleared — reach the stairs to ${PD.campaignFloors?.[1]?.name||"Floor 2"}`:`Explore the Threshold ${Math.floor(explorePct)}% / 70% and defeat its guardian`;
       if(domain){const got=claimedDomains(runState).includes(domain.id)||(Number(hostState.keysCollected)||0)>=1;return got?`FLOOR KEY SECURED — ${domain.name} • CAMPAIGN KEYS ${Math.min(CFG.keyTarget,keys||1)}/${CFG.keyTarget} • Reach the stairs`:`FLOOR KEY — Defeat ${domain.guardian} and recover ${domain.name} • CAMPAIGN KEYS ${keys}/${CFG.keyTarget}`}
-      if(floor===CFG.maxFloors&&keys<CFG.keyTarget)return `${cfg?.name||"The final Citadel"} rejects you — recover all three Keys (${keys}/${CFG.keyTarget})`;
+      if(floor===CFG.maxFloors&&keys<CFG.keyTarget)return `${cfg?.name||"The final Citadel"} rejects you — recover all three Campaign Keys (${keys}/${CFG.keyTarget})`;
+      const fight=hostState?.r114BossFight,boss=bossEnemy(hostState);
+      if(fight&&boss?.alive){
+        const base=stripInterimSigilSuffix(baseObjectiveText(hostState,runState,explorePct));
+        const baseReady=floor===CFG.maxFloors?keys>=CFG.keyTarget:Boolean(hostState.objective?.complete);
+        return baseReady?`BOSS GATE — Defeat ${fight.name} to unseal the ${floor===CFG.maxFloors?"final escape":"stairs"}`:`${cfg?.name||`FLOOR ${floor}`} — ${base} • ${fight.name} guards the descent`
+      }
       if(floor===CFG.maxFloors){const base=baseObjectiveText(hostState,runState,explorePct);return base.replace(/floor exit/gi,"final escape").replace(/EXIT SIGIL/g,"AWAKENED SIGIL")}
       const base=stripInterimSigilSuffix(baseObjectiveText(hostState,runState,explorePct));
       return hostState.objective?.complete?`${cfg?.name||`FLOOR ${floor}`} — ${base} — reach the stairs`:`${cfg?.name||`FLOOR ${floor}`} — ${base}`;
@@ -215,7 +257,7 @@
           runState.v142ClaimedDomains.push(domain.id);currentHost().v142GlobalKeyCount=globalKeyCount(runState);
         }
         const after=globalKeyCount(runState);if(after>before){
-          announce(`${domain?.name||"DUNGEON KEY"} RECOVERED`,`The Key is bound to your run. Global Key progress ${after}/${CFG.keyTarget}. Your RPG stats, relics, Vessel and rescued games carry into the next depth.`,"gold",9500);
+          announce(`${domain?.name||"DUNGEON KEY"} RECOVERED`,`The Key is bound to your run. Campaign Key progress ${after}/${CFG.keyTarget}. Your RPG stats, relics, Vessel and rescued games carry into the next depth.`,"gold",9500);
           if(after>=CFG.keyTarget&&!runState.v142AllKeysAnnounced){runState.v142AllKeysAnnounced=true;announce("THREE KEYS COMPLETE","Iron, Bone and Ash are bound to the run. Keep descending — the Blood Citadel will accept the completed set on Floor 15.","gold",11000)}
         }
         return result;
@@ -246,7 +288,7 @@
     }
     updateMenuCopy();
 
-    window.CCGLostSizzlerV142FiveDepthCampaign={version:"V10.42",floorConfig,domainForFloor,floorPickupSlice,globalKeyCount,applyFloorTheme,applyFloorBalance,ensureInterimExit,recoverMissingDomainKey,recoverMissingFinalSigil};
+    window.CCGLostSizzlerV142FiveDepthCampaign={version:"V10.42",floorConfig,domainForFloor,floorPickupSlice,globalKeyCount,bossSpec,bossEnemy,bossDefeated,installGrotesqueBoss,applyFloorTheme,applyFloorBalance,ensureInterimExit,recoverMissingDomainKey,recoverMissingFinalSigil};
     return true;
   }
 
