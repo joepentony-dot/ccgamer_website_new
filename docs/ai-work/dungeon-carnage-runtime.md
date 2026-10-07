@@ -1,3 +1,8 @@
+## R116 Ward-Break inventory correction — 7 October 2026
+
+- Ward-Break Charges are a one-at-a-time utility: legacy duplicated/oversized entries compact to one slot/one charge, new additions are refused while one is held, and inventory labels no longer repeat a stale global count across multiple slots.
+- Equipment & Inventory compacts before rendering, so affected existing runs repair on opening TAB.
+
 ## R116 runtime correction checkpoint — 7 October 2026
 
 - Cartographer's Eye UI activation path repaired without adding a parallel inventory owner.
