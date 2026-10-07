@@ -23,9 +23,11 @@
   const dungeonMode=()=>{try{const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");return special!=="horde-survivor"&&special!=="sizzler-saboteurs"}catch(_){return true}};
   const clone=value=>{try{return JSON.parse(JSON.stringify(value))}catch(_){return value&&typeof value==="object"?{...value}:value}};
   const capForFloor=floor=>FLOOR_CAP[Math.max(1,Math.min(5,Math.floor(Number(floor)||1)))]||2;
-  function stageWeapon(tier){
-    const stage=STAGES[Math.max(1,Math.min(6,Math.floor(Number(tier)||1)))]||STAGES[1];
-    return{...clone(stage),displayName:`TIER ${stage.tier} · ${stage.name}`,rarity:stage.tier>=6?"GOLD MEDAL":stage.tier>=4?"SIZZLER":stage.tier>=2?"UNCOMMON":"COMMON",colour:stage.tier>=6?"#ffd85a":stage.tier>=4?"#ff5bae":"#6cecff",ammo:1,element:"energy",mods:stage.tier>=4?["THREE-WAY"]:[],evolutionTier:stage.tier}
+  function stageWeapon(tier,pattern=""){
+    const stage=STAGES[Math.max(1,Math.min(6,Math.floor(Number(tier)||1)))]||STAGES[1],spreadOverride=String(pattern||"")==="spread"&&stage.id!=="spread";
+    const weapon={...clone(stage),displayName:`TIER ${stage.tier} · ${stage.name}`,rarity:stage.tier>=6?"GOLD MEDAL":stage.tier>=4?"SIZZLER":stage.tier>=2?"UNCOMMON":"COMMON",colour:stage.tier>=6?"#ffd85a":stage.tier>=4?"#ff5bae":"#6cecff",ammo:1,element:"energy",mods:stage.tier>=4?["THREE-WAY"]:[],evolutionTier:stage.tier};
+    if(spreadOverride){weapon.id="spread";weapon.name=`Spread Pulse ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · SPREAD PULSE`;weapon.shots=3;weapon.delay=Math.max(1.06,Number(stage.delay||1));weapon.mods=["THREE-WAY"];weapon.patternOverride="spread";weapon.desc="Rare three-way fire pattern scaled to the current floor tier cap."}
+    return weapon
   }
   function deriveTier(player){
     if(!player||player.firearmUnlocked===false)return 0;
@@ -48,8 +50,8 @@
       if(changed)state.migrations++;
       return null
     }
-    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),derived=Math.max(1,deriveTier(player)),tier=Math.min(cap,derived);
-    const canonical=stageWeapon(tier);
+    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),derived=Math.max(1,deriveTier(player)),tier=Math.min(cap,derived),pattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||"");
+    const canonical=stageWeapon(tier,pattern);
     const changed=derived!==tier||!player.weapon||Number(player.weapon.shots||1)!==canonical.shots||Number(player.weapon.power||1)!==canonical.power||Number(player.weapon.pierce||0)!==canonical.pierce||String(player.weapon.id||"")!==canonical.id||(player.ownedWeapons||[]).length!==1;
     player.weapon=canonical;player.weaponEvolutionTier=tier;player.weaponLevel=tier;player.firearmUnlocked=true;
     player.ownedWeapons=[clone(canonical)];player.activeWeaponIndex=0;
@@ -70,9 +72,16 @@
   }
   function applyPickup(player,incoming,baseEquip){
     if(!player||!dungeonMode())return baseEquip(player,incoming);
-    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor);
+    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),incomingSpread=String(incoming?.id||"").toLowerCase()==="spread"||String(incoming?.patternOverride||"")==="spread"||Array.isArray(incoming?.mods)&&incoming.mods.some(mod=>/three-way/i.test(String(mod))),incomingRarity=String(incoming?.rarity||""),rareSpread=incomingSpread&&["SIZZLER","GOLD MEDAL","ZZAP! 97%"].includes(incomingRarity);
     collapseOwnership(player);
     const tier=deriveTier(player);
+    if(rareSpread){
+      const next=Math.max(1,Math.min(cap,tier>0?tier+1:1));player.firearmUnlocked=true;player.weaponPatternOverride="spread";
+      const weapon=stageWeapon(next,"spread"),result=baseEquip(player,weapon);player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,"spread");collapseOwnership(player);
+      if(tier===0)state.acquisitions++;else if(next>tier)state.upgrades++;
+      try{S.sfx("weapon");showToast("RARE SPREAD WEAPON ACQUIRED",`${incomingRarity} Spread reward equipped as ${player.weapon.displayName} at the Floor ${floor} Tier ${cap} cap.`,"gold",8500)}catch(_){}
+      return result
+    }
     if(tier>=cap&&tier>0){
       const ammo=salvageAmmo(player,floor);
       try{stats.weapons++}catch(_){}
@@ -89,7 +98,7 @@
       return player.weapon
     }
     const next=Math.max(1,Math.min(cap,tier+1)),weapon=stageWeapon(next),first=tier===0;
-    if(first)player.firearmUnlocked=true;
+    if(first)player.firearmUnlocked=true;player.weaponPatternOverride="";
     const result=baseEquip(player,weapon);
     player.firearmUnlocked=true;player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next);collapseOwnership(player);
     if(first)state.acquisitions++;else state.upgrades++;
