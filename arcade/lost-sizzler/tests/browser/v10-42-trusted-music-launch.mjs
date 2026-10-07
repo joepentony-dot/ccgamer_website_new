@@ -1,3 +1,4 @@
+/* Durable current-behaviour contract. Extend this file for trusted-launch regressions instead of adding release-numbered duplicates. */
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import http from "node:http";
@@ -150,7 +151,7 @@ try{
   assert.deepEqual(pageErrors,[],`trusted launch must not raise page errors: ${pageErrors.join("\n")}`);
 
   await context.close();
-  console.log("R106 trusted Start Game music launch passed: deferred click released, fresh click starts authored audio.");
+  console.log("Dungeon trusted Start Game music launch passed: deferred click released, fresh click starts authored audio.");
 }finally{
   try{releaseHeldModule?.()}catch(_){}
   await browser.close();
