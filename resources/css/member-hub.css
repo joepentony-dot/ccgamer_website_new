@@ -204,7 +204,11 @@ body.page-member-hub {
 
 .member-hub-nav {
   display: flex;
+  width: 100%;
+  box-sizing: border-box;
   flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 5px;
   margin: 10px 0;
   padding: 7px;
@@ -1147,6 +1151,7 @@ html[data-ccg-page="member-hub"] .member-collection-insights__stats article {
   .member-hub-nav {
     overflow-x: auto;
     flex-wrap: nowrap;
+    justify-content: flex-start;
   }
 
   .member-hub-nav a {
