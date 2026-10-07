@@ -102,7 +102,7 @@ try{
       return{depth:chain.length,r60Layers:chain.filter(row=>row.markers.includes("__ccgV141R60CadenceSeal")).length,spyFinalLayers:chain.filter(row=>row.markers.includes("__ccgV141SpyFinal")).length,chain};
     };
     const dirs=[{dx:1,dy:0,code:"ArrowRight"},{dx:-1,dy:0,code:"ArrowLeft"},{dx:0,dy:1,code:"ArrowDown"},{dx:0,dy:-1,code:"ArrowUp"}],blocked=host.blockingDecor||[],enemies=host.enemies||[];
-    const open=(x,y)=>window.CCGWorld.walkable(world.map,x,y,host)&&!blocked.some(row=>Number(row.x)===x&&Number(row.y)===y)&&!enemies.some(row=>row?.alive&&Number(row.x)===x&&Number(row.y)===y);
+    const open=(x,y)=>window.CCGWorld.walkable(world.map,x,y,host)&&!SYS.inSanctuary(world,x,y)&&!blocked.some(row=>Number(row.x)===x&&Number(row.y)===y)&&!enemies.some(row=>row?.alive&&Number(row.x)===x&&Number(row.y)===y);
     let choice=null;
     for(let y=2;y<world.map.length-2&&!choice;y++)for(let x=2;x<world.map[y].length-2&&!choice;x++)for(const dir of dirs){if(open(x,y)&&open(x+dir.dx,y+dir.dy)&&open(x+dir.dx*2,y+dir.dy*2)){choice={x,y,...dir};break}}
     if(!choice)throw new Error("R60 Solo cadence fixture could not find a three-cell open lane");
