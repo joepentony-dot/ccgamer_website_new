@@ -378,17 +378,24 @@
         if(next.playAttempt!==attempt||current!==next)return;
         pendingGestureState=soundtrackOwned(state)?state:"";
         recordFailure(next.url);
+        /* Keep the desired production slot authoritative while playback is
+         * unavailable. Destroying it here erased the pinned Supabase identity
+         * and made diagnostics report an empty URL between bounded retries. */
+        next.advancing=false;
+        if(replaced&&replaced!==next)destroySlot(replaced);
+        if(previous&&previous!==next)pauseSlot(previous);
         publishMusicState("play-rejected");
-        restorePreviousState(previous,next,replaced);
-        if(created)scheduleRetry(state);
+        scheduleRetry(state);
       });
     }catch(_){
       if(current===next){
         pendingGestureState=soundtrackOwned(state)?state:"";
         recordFailure(next.url);
+        next.advancing=false;
+        if(replaced&&replaced!==next)destroySlot(replaced);
+        if(previous&&previous!==next)pauseSlot(previous);
         publishMusicState("play-exception");
-        restorePreviousState(previous,next,replaced);
-        if(created)scheduleRetry(state);
+        scheduleRetry(state);
       }
     }
   }
