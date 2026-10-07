@@ -1,3 +1,10 @@
+## R116 Ward-Break inventory repair — 7 October 2026
+
+- Live playtest screenshot exposed multiple Ward-Break slots all misleadingly labelled with the same global total (for example ×25).
+- Canonical inventory compaction now collapses legacy/duplicated Ward-Break entries to one carried charge and blocks a second charge while one is held; opening Equipment & Inventory runs the repair before rendering.
+- Warden UI labelling now reports the repaired selected-slot quantity instead of stamping the global total onto every slot.
+- Existing Warden interface contract extended; no new test owner added.
+
 ## R116 live playtest corrections — 7 October 2026
 
 - Active branch: `codex/dungeon-r116-cartographers-eye-use`, based on merged R115 main.
