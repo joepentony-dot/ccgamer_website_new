@@ -5,6 +5,9 @@ const patch=fs.readFileSync(new URL("../js/v10-41-sanctuary-hardening.js",import
 const quality=fs.readFileSync(new URL("../js/v10-35-quality.js",import.meta.url),"utf8");
 const procedural=fs.readFileSync(new URL("../js/v10-42-procedural-overhaul.js",import.meta.url),"utf8");
 const sanctuaryScene=fs.readFileSync(new URL("../js/v10-41-sanctuary-azalea.js",import.meta.url),"utf8");
+const play=fs.readFileSync(new URL("../js/game-play.js",import.meta.url),"utf8");
+const systems=fs.readFileSync(new URL("../js/systems.js",import.meta.url),"utf8");
+const mobileTrapBrowser=fs.readFileSync(new URL("./browser/v10-42-mobile-trap-layout-live.mjs",import.meta.url),"utf8");
 
 assert.match(patch,/\["arenas","timedRooms"\]/,"sanctuary hardening must remove arena and timed-room assignments");
 assert.match(patch,/challenge=>!ids\.has\(Number\(challenge\?\.roomId\)\)/,"sanctuary challenge filtering must be keyed to sanctuary room ids");
@@ -30,6 +33,18 @@ assert.doesNotMatch(procedural,/id:"v142-sanctuary-alchemist"/,"procedural gener
 assert.match(procedural,/sanctuaryIds=new Set/,"procedural shop finalisation must know every Sanctuary room");
 assert.match(procedural,/!sanctuaryIds\.has\(Number\(shop\.roomId\)\)/,"all active dungeon shops must be filtered out of Sanctuary rooms");
 assert.match(sanctuaryScene,/slice\(0,Math\.min\(1,dancerCandidates\.length\)\)/,"each Sanctuary must present at most one Keeper rather than a pair of lookalike NPCs");
+assert.match(play,/function updateCamping\(p,dt\)\{if\(window\.CCGLostSizzlerOnboardingV120\?\.state\?\.active\|\|SYS\.inSanctuary\(world,p\.x,p\.y\)\)\{resetCamp\(p,true\);return\}/,"anti-idle destruction must be disabled and cleared inside Sanctuary");
+assert.match(play,/SYS\.inSanctuary\(world,h\.x,h\.y\)\|\|owner&&SYS\.inSanctuary\(world,owner\.x,owner\.y\)/,"queued anti-idle explosions must be discarded when they reach a Sanctuary");
+assert.match(play,/W\.walkable\(world\.map,q\.x,q\.y,host\)&&!SYS\.inSanctuary\(world,q\.x,q\.y\)&&!host\.enemies/,"generator spawns must reject Sanctuary cells");
+assert.match(play,/if\(p&&world&&SYS\.inSanctuary\(world,p\.x,p\.y\)&&Number\(p\.health\)>0\)return false/,"Sanctuary immunity must protect active living players while preserving canonical integrity handling");
+assert.match(play,/if\(SYS\.inSanctuary\(world,target\.x,target\.y\)\)\{s\.near=false;s\.seen=false/,"Count Loadula must abandon pursuit when the target reaches Sanctuary");
+assert.match(play,/SYS\.pathStep\(world,host,s,target,false\)/,"Count Loadula pathing must respect the Sanctuary exclusion");
+assert.match(systems,/sanctuaryStructuralSafe=r=>Boolean\(r&&r\.id!==world\.startRoomId&&r\.id!==world\.exitRoomId/,"Sanctuary fallback must never claim the player start or floor exit room");
+assert.match(systems,/const sanctuaryRelocatable=r=>Boolean\(sanctuaryStructuralSafe\(r\)/,"Sanctuary fallback must retain a non-start structural fallback when ideal rooms are enemy-occupied");
+assert.match(systems,/function|const relocateSanctuaryEnemies=/,"Sanctuary fallback must relocate ordinary roaming enemies rather than abandoning Sanctuary generation");
+assert.match(systems,/!sanctuaryProtectedEnemy\(enemy\)/,"Sanctuary relocation must exclude authored or special enemies");
+assert.match(mobileTrapBrowser,/W\.walkable\(world\.map,x,y,host\)\|\|SYS\.inSanctuary\(world,x,y\)/,"synthetic mobile trap routes must reject Sanctuary origin cells");
+assert.match(mobileTrapBrowser,/W\.walkable\(world\.map,tx,ty,host\)\|\|SYS\.inSanctuary\(world,tx,ty\)/,"synthetic mobile trap routes must reject Sanctuary target cells");
 
 assert.match(patch,/ADVENTURER_SCORE_REWARD=1000/,"Lost Adventurer rescue must award 1,000 score");
 assert.match(patch,/ADVENTURER_XP_REWARD=200/,"Lost Adventurer rescue must award 200 XP");

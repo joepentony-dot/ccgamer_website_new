@@ -100,7 +100,7 @@
     if(statId==="might"&&Math.floor((after-RPG_BASE)/2)>Math.floor((before-RPG_BASE)/2))player.damageBonus=(player.damageBonus||0)+1;
     if(statId==="vitality"){player.maxHealth+=1;player.health=Math.min(player.maxHealth,player.health+1)}
     if(statId==="agility")player.moveMultiplier=(player.moveMultiplier||1)*.97;
-    if(statId==="endurance"){player.maxMana+=14;player.mana=Math.min(player.maxMana,player.mana+14);player.armor=Math.min(12,(player.armor||0)+1)}
+    if(statId==="endurance"){player.maxMana+=14;player.mana=Math.min(player.maxMana,player.mana+14);player.armor=Math.min(PROG.armourCap?.(player)||12,(player.armor||0)+1)}
     if(statId==="arcana"){if(after%3===0)player.banishmentEssenceCost=Math.max(2,essenceCost(player)-1);player.v142WardCooldownMs=Math.max(14000,30000-(after-RPG_BASE)*1800)}
     player.pendingLevels=Math.max(0,(player.pendingLevels||1)-1);player.skills=player.skills||[];player.skills.push(id);
     return{id,name:`${row.name} ${after}`,desc:`${row.name} increased to ${after}. ${row.desc}`};
@@ -187,9 +187,22 @@
     return result;
   };
 
-  function awardEssence(player,amount,source){
-    if(!player||amount<=0)return false;initRpg(player);player.banishmentEssence+=amount;const need=essenceCost(player),have=player.banishmentEssence;
-    announce("BANISHMENT ESSENCE",`${source}. Vessel ${have}/${need}${have>=need?" — a Banishment Flask can be distilled at an Alchemist.":"."}`,"purple",7600);return true;
+  function floorEssenceState(player,h=currentHost(),r=currentRun()){
+    if(!player||!h||!r)return{budget:0,awarded:0,threats:0};
+    r.v142EssenceFloorBudget=r.v142EssenceFloorBudget&&typeof r.v142EssenceFloorBudget==="object"?r.v142EssenceFloorBudget:{};
+    const key=String(Math.max(1,Number(r.floor)||1));
+    if(!r.v142EssenceFloorBudget[key]){
+      const floorNo=Math.max(1,Number(r.floor)||1),voidStalker=(h.enemies||[]).some(enemy=>enemy?.deathStalker),countActive=Boolean(C.stalker?.enabled&&floorNo>=Math.max(1,Number(C.stalker?.startFloor)||1)&&h.stalker),threats=Math.min(2,(voidStalker?1:0)+(countActive?1:0)),cost=essenceCost(player),carriedCharge=PROG.inventoryKindCount?.(player,"banishment")>0?cost:0,held=Math.min(cost,Math.max(0,Math.floor(Number(player.banishmentEssence)||0)));
+      r.v142EssenceFloorBudget[key]={budget:Math.max(0,threats*cost-carriedCharge-held),awarded:0,threats};
+    }
+    return r.v142EssenceFloorBudget[key]
+  }
+  function awardEssence(player,amount,source,options={}){
+    if(!player||amount<=0)return false;initRpg(player);const need=essenceCost(player),have=Math.min(need,Math.max(0,Math.floor(Number(player.banishmentEssence)||0)));player.banishmentEssence=have;
+    const state=floorEssenceState(player),room=Math.max(0,need-have),budget=Math.max(0,Number(state.budget||0)-Number(state.awarded||0)),add=Math.min(Math.max(0,Math.floor(Number(amount)||0)),room,budget);
+    if(add<=0)return false;
+    player.banishmentEssence=have+add;state.awarded=Math.max(0,Number(state.awarded||0))+add;
+    if(!options.silent)announce("BANISHMENT ESSENCE",`${source}. Vessel ${player.banishmentEssence}/${need}${player.banishmentEssence>=need?" — a Ward-Break Charge can be distilled at an Alchemist.":"."}`,"purple",7600);return true;
   }
 
   function scanEssenceSources(){
@@ -197,11 +210,11 @@
     for(const enemy of h.enemies||[]){
       if(enemy.alive||enemy.v142EssenceAwarded)continue;
       if(!(enemy.keyGuardian||enemy.follower||enemy.champion||enemy.guardian||enemy.ccgBoss))continue;
-      enemy.v142EssenceAwarded=true;awardEssence(player,1,`${enemy.championName||enemy.follower?.name||"A major dungeon threat"} released spectral residue`);
+      if(awardEssence(player,1,`${enemy.championName||enemy.follower?.name||"A major dungeon threat"} released spectral residue`))enemy.v142EssenceAwarded=true;
     }
-    for(const generator of h.generators||[])if(!generator.alive&&!generator.v142EssenceAwarded){generator.v142EssenceAwarded=true;awardEssence(player,1,"A corrupted dungeon anchor was cleansed")}
-    for(const shrine of h.shrines||[])if(!shrine.active&&!shrine.v142EssenceAwarded){shrine.v142EssenceAwarded=true;awardEssence(player,1,"A spent shrine released supernatural residue")}
-    for(const arena of h.arenas||[])if(arena.cleared&&!arena.v142EssenceAwarded){arena.v142EssenceAwarded=true;awardEssence(player,1,"The sealed combat chamber was cleansed")}
+    for(const generator of h.generators||[])if(!generator.alive&&!generator.v142EssenceAwarded&&awardEssence(player,1,"A corrupted dungeon anchor was cleansed"))generator.v142EssenceAwarded=true;
+    for(const shrine of h.shrines||[])if(!shrine.active&&!shrine.v142EssenceAwarded&&awardEssence(player,1,"A spent shrine released supernatural residue"))shrine.v142EssenceAwarded=true;
+    for(const arena of h.arenas||[])if(arena.cleared&&!arena.v142EssenceAwarded&&awardEssence(player,1,"The sealed combat chamber was cleansed"))arena.v142EssenceAwarded=true;
   }
 
   function applySigilPower(player,domain){
@@ -315,7 +328,7 @@
 
   function updateSigilAndRelics(){
     const player=currentPlayer(),h=currentHost(),r=currentRun();if(!player||!h||!r||currentMode()!=="playing")return;initRpg(player);const now=performance.now();
-    if(player.sigilWard&&now>=Number(player.v142WardReadyAt||0)&&player.armor<12){player.armor=Math.min(12,player.armor+1);const arcana=Math.max(0,stat(player,"arcana")-RPG_BASE),cool=Math.max(12000,Number(player.v142WardCooldownMs)||30000-arcana*1800);player.v142WardReadyAt=now+cool;announce("SIGIL WARD","The Sigil restored 1 armour.","cyan",4500)}
+    if(player.sigilWard&&now>=Number(player.v142WardReadyAt||0)&&player.armor<(PROG.armourCap?.(player)||12)){player.armor=Math.min(PROG.armourCap?.(player)||12,player.armor+1);const arcana=Math.max(0,stat(player,"arcana")-RPG_BASE),cool=Math.max(12000,Number(player.v142WardCooldownMs)||30000-arcana*1800);player.v142WardReadyAt=now+cool;announce("SIGIL WARD","The Sigil restored 1 armour.","cyan",4500)}
     if(player.sigilBind&&now>=Number(player.v142BindReadyAt||0)){
       const targets=(h.enemies||[]).filter(enemy=>enemy.alive&&enemy.deathStalker&&distance(enemy,player)<=8),countTarget=h.stalker?.awake&&distance(h.stalker,player)<=8?h.stalker:null;if(targets.length||countTarget){for(const enemy of targets){enemy.moveCooldown=Math.max(Number(enemy.moveCooldown)||0,1300);enemy.memoryMs=Math.min(Number(enemy.memoryMs)||0,1800)}if(countTarget)countTarget.stunMs=Math.max(Number(countTarget.stunMs)||0,900);player.v142BindReadyAt=now+12000;announce("SIGIL BIND","Nearby supernatural movement has been suppressed briefly.","purple",4500)}
     }
@@ -340,6 +353,8 @@
     initRpg,
     statSummary,
     attributeEffect,
-    essenceCost
+    essenceCost,
+    floorEssenceState,
+    awardEssence
   };
 })();

@@ -79,8 +79,8 @@ assert.match(procedural,/statId==="agility"\)player\.moveMultiplier=\(player\.mo
   "Agility must reduce movement delay through the canonical movement multiplier");
 assert.match(play,/C\.player\.moveDelay\*\(p1\.moveMultiplier\|\|1\)/,
   "keyboard movement must consume the Agility movement multiplier");
-assert.match(procedural,/statId==="endurance"\)\{player\.maxMana\+=14;player\.mana=Math\.min\(player\.maxMana,player\.mana\+14\);player\.armor=Math\.min\(12,\(player\.armor\|\|0\)\+1\)\}/,
-  "Endurance must increase ammunition reserve, refill ammunition and grant armour");
+assert.match(procedural,/statId==="endurance"\)\{player\.maxMana\+=14;player\.mana=Math\.min\(player\.maxMana,player\.mana\+14\);player\.armor=Math\.min\(PROG\.armourCap\?\.\(player\)\|\|12,\(player\.armor\|\|0\)\+1\)\}/,
+  "Endurance must increase ammunition reserve, refill ammunition and grant armour up to the wearable-aware armour cap");
 assert.match(procedural,/const player=currentPlayer\(\),luck=Math\.max\(0,stat\(player,"luck"\)-RPG_BASE\),boost=luck\*1\.35/,
   "Luck must feed generated chest-loot depth rather than remain display-only");
 assert.match(procedural,/const arcana=Math\.max\(0,stat\(player,"arcana"\)-RPG_BASE\),reveal=player\?\.sigilReveal\?2\+Math\.floor\(arcana\/3\):0/,

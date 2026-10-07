@@ -62,6 +62,11 @@ assert(overhaulSource.includes('PROG.skillChoices=function'),'Level-up choices m
 assert(overhaulSource.includes('PROG.applySkill=function'),'RPG attribute upgrades must have concrete gameplay effects.');
 assert(overhaulSource.includes('WORLD.createHostState=function'),'World host-state generation must be extended for Key domains and A-Z collectibles.');
 assert(overhaulSource.includes('BANISHMENT ESSENCE'),'The Banishment Essence/Vessel economy must be present.');
+assert(overhaulSource.includes('function floorEssenceState('),'Essence awards must be budgeted against supernatural threats on the current floor.');
+assert(overhaulSource.includes('Math.min(2,(voidStalker?1:0)+(countActive?1:0))'),'A floor must fund at most its Death Stalker plus Count Loadula rather than unlimited Essence farming.');
+assert(overhaulSource.includes('player.banishmentEssence=have+add'),'The Vessel must hold at most one Ward-Break Charge worth of Essence at a time.');
+assert(overhaulSource.includes('state.awarded'),'Routine Essence awards must consume a persistent per-floor allowance.');
+assert(overhaulSource.includes('if(awardEssence(player,1'),'Spent/dead Essence sources must only be consumed when the Vessel and floor budget can accept the reward.');
 assert(overhaulSource.includes('offerRelic'),'Key-domain progression must provide relic choices.');
 assert(overhaulSource.includes('beginEscape'),'Claiming the completed Sigil must start an explicit escape phase.');
 assert(overhaulSource.includes('sigilReveal')&&overhaulSource.includes('sigilWard')&&overhaulSource.includes('sigilBind'),'Reveal, Ward and Bind Sigil powers must be represented.');

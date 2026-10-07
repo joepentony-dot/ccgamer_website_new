@@ -10,6 +10,7 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 const source=read("js/v10-42-r80-wearable-equipment.js");
 const core=read("js/game-core.js");
+const proceduralOverhaul=read("js/v10-42-procedural-overhaul.js");
 const css=read("css/v10-42-r80-wearable-equipment.css");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const version=JSON.parse(read("version.json"));
@@ -25,6 +26,10 @@ assert.match(core,/id==="armour"\)\{const before=p1\.armor\|\|0,cap=PGR\.armourC
 assert.match(core,/up to your current armour limit/,"shop Armour Repair copy must describe the wearable-aware current cap");
 assert.match(read("js/progression.js"),/Armour Repair[\s\S]{0,180}Math\.min\(armourCap\(p\),p\.armor\+2\)/,"level-up Armour Repair must respect wearable-derived armour capacity");
 assert.doesNotMatch(read("js/progression.js"),/Armour Repair[\s\S]{0,180}Math\.min\(12,p\.armor\+2\)/,"level-up Armour Repair must not clamp wearable users to the base armour cap");
+assert.match(proceduralOverhaul,/statId==="endurance"[\s\S]{0,180}PROG\.armourCap\?\.\(player\)/,"Endurance armour gain must respect wearable-derived capacity.");
+assert.match(proceduralOverhaul,/player\.sigilWard[\s\S]{0,180}PROG\.armourCap\?\.\(player\)/,"Sigil WARD repair must respect wearable-derived capacity.");
+assert.doesNotMatch(proceduralOverhaul,/statId==="endurance"[\s\S]{0,180}Math\.min\(12/,"Endurance must not retain the obsolete base armour clamp.");
+assert.doesNotMatch(proceduralOverhaul,/player\.sigilWard[\s\S]{0,180}player\.armor<12/,"Sigil WARD must not stop at the obsolete base armour cap.");
 assert.match(source,/if\(!tier\.enchanted\)return base/,"secondary wearable bonuses must be reserved for Enchanted gear");
 assert.match(source,/PGR\.createDeathCache=function r114CreateDeathCacheWithWearables/,"death cache creation must strip equipped wearables into the cache");
 assert.match(source,/const cache=baseCreateDeathCache\(player,runState,x,y,\.\.\.args\),equipped=stripWearablesForDeath\(player\)/,"death cache must snapshot carried items and armour before equipped gear is stripped");

@@ -1,3 +1,31 @@
+## R116 live-playtest corrective tranche — 7 October 2026
+
+- Active draft: PR #2573 / `codex/dungeon-r116-cartographers-eye-use`; current branch head before this checkpoint: `e1505ba20ca237fce79fc2387875ea2ecf7855ad`.
+- Cartographer's Eye is now an actual inventory consumable through the existing TAB USE and numbered Quick Inventory paths.
+- Magic Sack rare shop stock remains available after purchase until the run reaches the +3 cap. Run-wide prices are 10 Gold, 15 Gold and 20 Gold for Sacks one, two and three.
+- Ward-Break Charges are now a unique carried item: duplicate/oversized legacy stacks compact to one Charge, and future insertion rejects a second Charge regardless of Magic Sack tier. This prevents the repeated `Ward-Break Charge ×25` inventory state.
+- Banishment Essence is floor-budgeted against supernatural need: at most the current floor's Death Stalker + Count Loadula requirement, minus Essence/Charge already carried in. The Vessel holds one Charge-worth at a time, preventing long-run Essence hoarding while leaving eligible sources available until the player can receive them.
+- Routine chest armour now occupies a narrow 6% band and Restoration Potions a 3% band; deliberate boss/Warden/shop/skill armour remains.
+- Sanctuary is enforced as a safe room: anti-idle destruction resets there, queued anti-idle blasts are discarded, generator spawns reject Sanctuary cells, damage is suppressed inside Sanctuary, and Count Loadula no longer bypasses Sanctuary pathing. Existing sanctuary hardening continues to expel ordinary enemies and remove sealed challenge assignments.
+- Endurance armour gain and Sigil WARD now respect wearable-derived armour capacity rather than the obsolete base cap.
+- Public playtest access/timer remains untouched.
+- Next safe action: run exact-head PR Qualification + Full Qualification and fix only genuine regressions/stale expectations exposed by this combined tranche.
+
+## R116 Ward-Break inventory repair — 7 October 2026
+
+- Live playtest screenshot exposed multiple Ward-Break slots all misleadingly labelled with the same global total (for example ×25).
+- Canonical inventory compaction now collapses legacy/duplicated Ward-Break entries to one carried charge and blocks a second charge while one is held; opening Equipment & Inventory runs the repair before rendering.
+- Warden UI labelling now reports the repaired selected-slot quantity instead of stamping the global total onto every slot.
+- Existing Warden interface contract extended; no new test owner added.
+
+## R116 live playtest corrections — 7 October 2026
+
+- Active branch: `codex/dungeon-r116-cartographers-eye-use`, based on merged R115 main.
+- Cartographer's Eye now participates in the existing inventory-use owners: TAB inventory shows USE, numbered Quick Inventory can activate it, and the carried-items panel identifies it as a live consumable.
+- Magic Sack rare shop stock is repeatable within a shop until the +3 run cap. Price is run-wide by current Sack tier: 10 Gold for the first, 15 for the second, 20 for the third; buying one does not deplete that shop's Sack stock.
+- Current live-playtest backlog being worked next on this branch: Ward-Break Charge stack corruption/duplication shown as multiple oversized stacks; reduce Banishment Essence abundance while preserving enough per floor for Death Stalker/Count Loadula needs; reduce armour pickups; make Sanctuary rooms true safe rooms with no idle-destruction blasts, monster spawning or enemy entry.
+- Preserve the deployed public playtest access boundary/timer.
+
 ## R115 rare-weapon cap verification — 7 October 2026
 
 - Audited R47 rare-at-cap logic against the explicit reward requirements. Runtime already supports: alternate rare archetype swap, same-archetype refinement up to +3, and mastered duplicate reforge to the next meaningful archetype. Only ordinary COMMON capped caches enter the ammo -> XP -> score salvage chain.

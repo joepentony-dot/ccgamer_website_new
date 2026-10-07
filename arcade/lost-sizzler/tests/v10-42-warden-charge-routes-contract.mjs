@@ -3,6 +3,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source=fs.readFileSync(new URL("../js/v10-42-warden-charge-routes.js",import.meta.url),"utf8");
+const progressionSource=fs.readFileSync(new URL("../js/progression.js",import.meta.url),"utf8");
 let tick=null;
 const toasts=[];
 const player={inventory:[],banishmentEssence:0,forceFull:false};
@@ -103,6 +104,9 @@ assert.match(api.routes[5].objective,/Floor 5 carrying at least 6 Seal Fragments
 assert.equal(api.routeStatus(1,run),"WARD ROUTE: ALCHEMIST","Floor 1 should remain the baseline Alchemist route");
 assert.equal(api.unlockRoute(1,context.host,run),false,"Floor 1 baseline should not manufacture a free field-route unlock");
 assert.equal(api.deliverRoute(1,player,run),false,"Floor 1 baseline should never deliver a free route reward");
+assert.match(progressionSource,/if\(original\.kind==="banishment"\)[\s\S]{0,420}name:"Ward-Break Charge"[\s\S]{0,260}qty:1/,"legacy duplicate/oversized Ward-Break stacks must normalise to one carried charge");
+assert.match(progressionSource,/if\(item\?\.kind==="banishment"&&inv\.some\(x=>x\?\.kind==="banishment"\)\)return false/,"inventory capacity checks must reject a second carried Ward-Break Charge");
+assert.match(progressionSource,/if\(item\?\.kind==="banishment"\)\{if\(player\.inventory\.some\(x=>x\?\.kind==="banishment"\)/,"inventory insertion must reject duplicate Ward-Break Charges regardless of Magic Sack tier");
 
 assert.ok(toasts.some(row=>/INVENTORY FULL/.test(row.title)),"Inventory-full reservation should give explicit player feedback");
 console.log("PASS v10-42 Warden charge routes contract");

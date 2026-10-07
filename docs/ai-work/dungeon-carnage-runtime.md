@@ -1,3 +1,24 @@
+## R116 runtime correction checkpoint — 7 October 2026
+
+- Current focus is qualification of one consolidated live-playtest correction branch.
+- Inventory: Cartographer's Eye USE fixed; Ward-Break is unique/non-stackable; old oversized Ward-Break states normalise to one.
+- Shops: Magic Sacks persist as rare stock and use run-wide 10/15/20 Gold pricing through the existing Gold shop owner.
+- Economy: Essence now has a per-floor supernatural-threat budget and one-Charge Vessel cap; routine armour/potion chest drops are substantially reduced.
+- Sanctuary: no anti-idle blasts, no generator spawn cells, no player damage, and Count Loadula cannot enter; existing ordinary-enemy expulsion remains active.
+- Armour-cap audit: Endurance and Sigil WARD now use wearable-aware capacity.
+- Keep PR #2573 draft until the exact current head is fully green.
+
+## R116 Ward-Break inventory correction — 7 October 2026
+
+- Ward-Break Charges are a one-at-a-time utility: legacy duplicated/oversized entries compact to one slot/one charge, new additions are refused while one is held, and inventory labels no longer repeat a stale global count across multiple slots.
+- Equipment & Inventory compacts before rendering, so affected existing runs repair on opening TAB.
+
+## R116 runtime correction checkpoint — 7 October 2026
+
+- Cartographer's Eye UI activation path repaired without adding a parallel inventory owner.
+- Magic Sack shop semantics changed to repeatable rare stock with run-wide 10/15/20 Gold pricing through the existing Dungeon Gold shop owner; +3 remains the maximum stack-cap bonus.
+- Next runtime priorities: Ward-Break stack normalisation, Essence scarcity, armour-drop scarcity and Sanctuary immunity from idle hazards/enemy spawn/entry.
+
 ## R115 rare firearm verification — 7 October 2026
 
 - Existing R47 browser coverage now proves capped same-archetype refinement, alternate-archetype swap, mastered duplicate reforge, and common-only salvage separation.
