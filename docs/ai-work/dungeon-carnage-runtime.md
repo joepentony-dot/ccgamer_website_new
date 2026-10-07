@@ -1,3 +1,8 @@
+## R115 guide contract update — 7 October 2026
+
+- Concise Dungeon Guide now retains the single-key Bronze-room chest rule.
+- Existing R54 runtime pickup-label checks remain unchanged; its obsolete long Rulebook prose snapshot now checks the current concise firearm-progression guidance instead.
+
 ## R115 Map Reveal runtime audit — 7 October 2026
 
 - Cartographer's Eye geometry reveal was already functional, but icon visibility was incomplete.

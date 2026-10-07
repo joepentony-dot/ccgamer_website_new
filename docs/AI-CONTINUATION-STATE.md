@@ -1,3 +1,10 @@
+## R115 concise-guide R54 reconciliation — 7 October 2026
+
+- Exact head `dc8214fa8de46c56e575310756fbd9b5fbf50072` cleared the death-cache wording check and next stopped in the existing R54 guide contract.
+- Restored the useful one-key bronze-room rule in the concise Keys & Map card: a chest inside a room already unlocked with a Bronze Key costs no second key.
+- R54 also required the retired long paragraph describing internal pickup-label behaviour. Runtime label assertions already remain in R54, so only that prose snapshot was replaced with a current player-facing firearm progression check.
+- No gameplay runtime was weakened or changed in this repair.
+
 ## R115 Cartographer's Eye icon-visibility repair — 7 October 2026
 
 - Audit found a real R114 integration gap: `useMapReveal()` correctly charts floor geometry and sets `host.r114MapRevealed=true`, but compact radar/full-map Sanctuary and Shop markers still required ordinary discovery, while the active Warden domain marker still required prior domain discovery.
