@@ -1,3 +1,12 @@
+## R114 qualification update — 7 October 2026 12:27 UK
+
+- Main: `0e5493a03cefbd02c29235b01035f43f9687be02` (R113 merged).
+- Active R114: draft PR #2571 / `codex/dungeon-r114-progression-challenges`; #2567 remains superseded.
+- Latest qualification defect found after the Stage 6 fix was a stale visual-overhaul source contract. R114 correctly renders bespoke grotesque bosses before the established Puny -> authored -> procedural enemy fallback chain.
+- Existing consolidated test updated in commit `91670831cd9171f93156f523f652731b00c93039` to require that boss-first order. Runtime was not weakened or changed.
+- Exact-head qualification must restart on the new checkpoint head; Chromium shards have not yet qualified this head because prior Full Qualification stopped in Node contracts.
+- Public 24-hour playtest gate/timer remains untouched.
+
 ## C64 Dungeon Carnage R114 authoritative continuation — 7 October 2026
 
 - **Authoritative merged baseline:** R113 / PR #2566 is merged to `main` at merge commit `0e5493a03cefbd02c29235b01035f43f9687be02`. Post-merge Full Qualification, Site Safety, itch.io package, Pages deployment, Production Smoke and Live Public Navigation are green.

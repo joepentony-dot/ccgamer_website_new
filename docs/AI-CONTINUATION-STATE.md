@@ -1,3 +1,12 @@
+## R114 qualification checkpoint — 7 October 2026 12:27 UK
+
+- Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02` (merged R113 / PR #2566).
+- Active vehicle remains draft PR #2571 / `codex/dungeon-r114-progression-challenges`, based directly on merged R113. Superseded #2567 remains closed and must not be revived.
+- Exact head `0bf4ae42c796710ed2e37c433725135d606c99bb` passed Mobile Trap Layout, Site Safety, Arcade Test Package, itch.io packaging, Installable/Visible PWA, SEO, Structured Data, Social Metadata and Public Code Cache, but PR Qualification and Full Qualification stopped in `v10-42-visual-overhaul-foundation.mjs` before Chromium shards.
+- Runtime inspection confirmed the renderer intentionally uses the R114 boss-first chain: bespoke grotesque boss -> Puny enemy animation -> authored dungeon sprite -> procedural pixel fallback. The existing visual-overhaul contract still required the pre-R114 Puny-first text shape.
+- The existing consolidated visual-overhaul assertion was strengthened to require the boss-first chain rather than changing correct runtime behaviour or adding another test file. Repair commit: `91670831cd9171f93156f523f652731b00c93039`.
+- Re-run exact-head PR Qualification and Full Qualification on the documentation-updated head. Keep #2571 draft until the complete same-head matrix, including Chromium shards, is green and the PR is current/mergeable.
+
 ## R114 qualification checkpoint — 7 October 2026 10:34 UK
 
 - Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02` (merged R113 / PR #2566).
