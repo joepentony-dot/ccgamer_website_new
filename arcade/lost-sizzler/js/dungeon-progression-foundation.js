@@ -19,6 +19,14 @@
   function spendGold(runState,amount){if(!runState)return false;const cost=nonNegativeInt(amount);if(!canAffordGold(runState,cost))return false;runState.gold=goldBalance(runState)-cost;return true}
   function shopGoldPrice(shop){const purchases=nonNegativeInt(shop?.goldPurchases??shop?.scorePurchases);return GOLD.shopBase+purchases*GOLD.shopStep}
   function creditGoldValue(item){if(!item||item.kind!=="credits")return 0;const explicit=Number(item.goldValue);return Number.isFinite(explicit)&&explicit>0?Math.max(1,Math.floor(explicit)):GOLD.coin}
+  function rareShopStock(shop,runState){
+    if(!shop||!runState)return{magicSack:false,mapReveal:false};
+    if(shop.r114RareStock&&typeof shop.r114RareStock==="object")return shop.r114RareStock;
+    const seed=`${runState.seed||"CCG"}|F${runState.floor||1}|${shop.id||shop.title||"SHOP"}|R114-RARE-STOCK`;
+    const random=typeof PGR.seededRandom==="function"?PGR.seededRandom(seed):Math.random;
+    shop.r114RareStock={magicSack:random()<.08,mapReveal:random()<.14};
+    return shop.r114RareStock
+  }
 
   function weaponIdentity(weapon){
     if(!weapon)return"";
@@ -239,8 +247,11 @@
     const scoreLabel=UI.shopScore.parentElement;if(scoreLabel)scoreLabel.firstChild.textContent="GOLD ";
     UI.shopArtefacts.textContent=String(artefacts);UI.shopNextPrice.textContent=String(price);
     const nextLabel=UI.shopNextPrice.parentElement;if(nextLabel)nextLabel.firstChild.textContent="NEXT GOLD PRICE ";
+    const rare=rareShopStock(activeShop,runState);
     const defs=[
       {id:"banishment",name:"BANISHMENT FLASK · ARTEFACT TRADE",kind:"banishment",price:`${C.stalker.flaskArtefacts} ARTEFACTS`,desc:"Exchange rare artefacts for one Flask. Repeat whenever you have enough artefacts.",sold:false},
+      ...(rare.magicSack?[{id:"magicSack",name:"MAGIC SACK · RARE STOCK",kind:"magicSack",price:"10 GOLD",desc:"Permanent for this run: raises every stackable inventory limit by +1. Maximum three Sacks.",sold:Boolean(sold.magicSack)||Math.max(0,Math.floor(Number(player.magicSacks)||0))>=3,maxed:Math.max(0,Math.floor(Number(player.magicSacks)||0))>=3}]:[]),
+      ...(rare.mapReveal?[{id:"mapReveal",name:"CARTOGRAPHER'S EYE · RARE STOCK",kind:"mapReveal",price:"5 GOLD",desc:"One-use Map Reveal. Reveals the whole current floor and every known map icon.",sold:Boolean(sold.mapReveal)}]:[]),
       {id:"banishmentGold",name:"BANISHMENT FLASK · GOLD",kind:"banishment",price:`${GOLD.banishment} GOLD`,desc:"Buy one Flask at this shop for a fixed Gold price. This does not raise the standard stock price.",sold:Boolean(sold.banishmentGold||sold.banishmentScore)},
       {id:"potion",name:"RESTORATION POTION",kind:"potion",price:`${price} GOLD`,desc:"Adds one Health Potion to the Potion stack.",sold:false},
       {id:"torch",name:"FLAMING TORCH",kind:"torch",price:`${price} GOLD`,desc:"Adds one Torch when inventory space allows.",sold:false},
@@ -270,21 +281,25 @@
       PGR.inventoryAdd(player,{kind:"banishment",name:"Banishment Flask",short:"BANISH"});
       S.sfx("shrine");showToast("BANISHMENT FLASK ACQUIRED",forGold?`${GOLD.banishment} Gold paid. The artefact exchange remains available.`:`${need} artefacts exchanged.`,"gold",8000);
     }else{
-      const allowed=new Set(["potion","torch","bronze","teleport","inventorySlot","ammo","armour","weapon"]);if(!allowed.has(id))return false;
-      const price=shopGoldPrice(activeShop);
+      const allowed=new Set(["potion","torch","bronze","teleport","inventorySlot","ammo","armour","weapon","magicSack","mapReveal"]);if(!allowed.has(id))return false;
+      const rarePrice=id==="magicSack"?10:id==="mapReveal"?5:0,price=rarePrice||shopGoldPrice(activeShop);
+      if(id==="magicSack"&&Math.max(0,Math.floor(Number(player.magicSacks)||0))>=3){showToast("MAGIC SACK LIMIT REACHED","You already carry the maximum +3 stack bonus.","cyan",5200);return false}
+      if((id==="magicSack"||id==="mapReveal")&&activeShop.sold[id])return false;
       if(id==="inventorySlot"&&PGR.inventoryCapacity(player)>=C.player.inventorySlots){showToast("INVENTORY FULLY EXPANDED",`All ${C.player.inventorySlots} inventory slots are already open.`,"cyan",5200);return false}
       if(id==="weapon"){
         const evolution=window.CCGLostSizzlerV142R47FirearmEvolution||null,tier=evolution?.deriveTier?.(player)||0,cap=evolution?.capForFloor?.(runState.floor||1)||0;
         if(evolution&&tier>0&&tier>=cap){showToast("FIREARM TIER CAPPED",`Your Tier ${tier} firearm is already at the Floor ${runState.floor||1} limit. Keep your Gold; the next tier unlocks deeper in the dungeon.`,"cyan",6200);return false}
       }
       if(!canAffordGold(runState,price)){showToast("NOT ENOUGH GOLD",`${id.toUpperCase()} costs ${price} Gold. You have ${goldBalance(runState)}.`,"red",6000);return false}
-      if(["potion","torch","teleport"].includes(id)&&!PGR.inventoryCanAdd(player,{kind:id})){showToast("INVENTORY FULL",`The ${id} cannot fit under its stack rule. Free or expand a slot.`,"red",6000);return false}
+      if(["potion","torch","teleport","mapReveal"].includes(id)&&!PGR.inventoryCanAdd(player,{kind:id})){showToast("INVENTORY FULL",`The ${id} cannot fit under its stack rule. Free or expand a slot.`,"red",6000);return false}
       if(!spendGold(runState,price))return false;
       let boughtName=id.toUpperCase();
       if(id==="potion"){PGR.inventoryAdd(player,{kind:"potion",name:"Restoration Potion",short:"POTION"});boughtName="Restoration Potion"}
       else if(id==="torch"){PGR.inventoryAdd(player,{kind:"torch",name:"Flaming Torch",short:"TORCH"});boughtName="Flaming Torch"}
       else if(id==="bronze"){player.bronzeKeys=nonNegativeInt(player.bronzeKeys)+1;boughtName=`Bronze Key (${player.bronzeKeys} carried)`}
       else if(id==="teleport"){PGR.inventoryAdd(player,{kind:"teleport",name:"Teleport Spell",short:"WARP"});boughtName="Teleport Spell"}
+      else if(id==="mapReveal"){PGR.inventoryAdd(player,{kind:"mapReveal",name:"Cartographer's Eye",short:"MAP"});activeShop.sold.mapReveal=true;boughtName="Cartographer's Eye"}
+      else if(id==="magicSack"){player.magicSacks=Math.min(3,Math.max(0,Math.floor(Number(player.magicSacks)||0))+1);activeShop.sold.magicSack=true;boughtName=`Magic Sack (+${player.magicSacks} stack capacity)`}
       else if(id==="inventorySlot"){player.inventorySlots=Math.min(C.player.inventorySlots,PGR.inventoryCapacity(player)+1);boughtName=`Inventory Expansion (${player.inventorySlots} slots)`}
       else if(id==="ammo"){const before=player.mana;player.mana=Math.min(player.maxMana,player.mana+50);player.ammoFlashMs=C.player.ammoFlashMs;boughtName=`Ammo Crate (+${player.mana-before})`}
       else if(id==="armour"){const before=player.armor||0;player.armor=Math.min(12,before+3);boughtName=`Armour Repair (+${player.armor-before})`}
@@ -302,8 +317,8 @@
           const weapon=PGR.generateWeapon(6+(runState.floor||1)*2,runState.floor||1,Math.random,.08);equipWeapon(player,weapon);boughtName=weapon.displayName||"Weapon Cache"
         }
       }
-      activeShop.goldPurchases=nonNegativeInt(activeShop.goldPurchases??activeShop.scorePurchases)+1;delete activeShop.scorePurchases;state.shopPurchases++;
-      S.sfx("pickup");showToast("SHOP PURCHASE",`${boughtName} purchased for ${price} Gold. Next standard item: ${shopGoldPrice(activeShop)} Gold.`,"green",7200);
+      if(id!=="magicSack"&&id!=="mapReveal")activeShop.goldPurchases=nonNegativeInt(activeShop.goldPurchases??activeShop.scorePurchases)+1;delete activeShop.scorePurchases;state.shopPurchases++;
+      S.sfx("pickup");showToast("SHOP PURCHASE",id==="magicSack"||id==="mapReveal"?`${boughtName} purchased for ${price} Gold. Rare stock is one-per-shop.`:`${boughtName} purchased for ${price} Gold. Next standard item: ${shopGoldPrice(activeShop)} Gold.`,"green",7200);
     }
     try{host.revision++;broadcastWorld();renderGoldShop();sync();syncGoldHud()}catch(_){}
     return true;
