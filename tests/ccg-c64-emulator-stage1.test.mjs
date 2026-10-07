@@ -31,6 +31,9 @@ const coiBootstrap = read("js/ccg-c64/coi-bootstrap.js");
 const coiWorker = read("emulator/c64/coi-service-worker.js");
 
 assert(html.includes("CCG BROWSER C64") || html.includes("CCG C64"), "CCG identity is required");
+assert(html.includes('class="ccg-c64-site-nav"'), "Emulator page must expose CCG site navigation");
+assert(html.includes('class="ccg-c64-back-link" href="/emulation.html"'), "Emulator page must expose a Back to Emulation control");
+assert(html.includes('href="/games/index.html"') && html.includes('href="/games/collections/index.html"') && html.includes('href="/community/"'), "Emulator navigation must include core CCG destinations");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
 assert(html.includes('width="384" height="272"'), "Native C64 canvas dimensions must be reserved");
 assert(!html.includes("webkitdirectory"), "The emulator must not force a VICE-folder scan");
@@ -51,6 +54,9 @@ assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stam
 assert(coiWorker.includes('request.mode !== "navigate"'), "COI worker must remain scoped to document navigations");
 assert(coiWorker.includes('url.pathname.startsWith(EMULATOR_SCOPE)'), "COI worker must not rewrite unrelated CCG routes");
 assert(css.includes(".ccg-c64-control-stack"), "Compact modular control-deck layout must be present");
+assert(css.includes(".ccg-c64-site-nav"), "Emulator site navigation styling must be present");
+assert(/@media \(max-width: 760px\)[\s\S]*?\.ccg-c64-site-nav\s*\{[\s\S]*?justify-content:\s*flex-start;/.test(css), "Emulator site navigation must left-scroll on narrow screens");
+assert(!css.includes(".ccg-c64-topnav a:nth-child(1)"), "Responsive emulator navigation must not hide links by brittle positional selectors");
 assert(css.includes('grid-template-areas: "console controls"'), "Desktop C64 workstation must pin console and controls to named grid areas");
 assert(css.includes('.ccg-c64-workspace > :not(.ccg-c64-console):not(.ccg-c64-control-stack)'), "Injected route UI must not become a third workstation grid item");
 assert(css.includes("grid-area: console"), "C64 display must stay in the left workstation column");
@@ -64,6 +70,9 @@ assert(vault.includes("sizes: [8192]"), "KERNAL/BASIC size validation is require
 assert(vault.includes("sizes: [4096]"), "CHARGEN size validation is required");
 assert(vault.includes("sizes: [16384, 16386]"), "1541 size validation is required");
 assert(app.includes("vault.restore()"), "Cached ROM restoration must be wired");
+assert(!app.includes("CCG OMEGA C64"), "Normal emulator startup must not show the retired CCG Omega splash");
+assert(app.includes('if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined")'), "Stored ROM banks must auto-boot the real C64 firmware");
+assert(app.includes("void powerOn();"), "Auto-boot must use the canonical machine power-on path");
 assert(!app.includes("if (!initial.allRequiredReady) showSetup()"), "First visit must not force the firmware setup modal");
 assert(app.includes("pendingMedia"), "Media selected before system ROM setup must be queued");
 assert(app.includes("queueMediaFile"), "File-first media routing must be wired");
