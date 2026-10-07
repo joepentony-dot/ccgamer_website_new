@@ -215,21 +215,22 @@ window.CCGProgression=(()=>{
     return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,progressionRecovery,xpZeroDeaths,zeroWarning,gameOver}
   }
   function createDeathCache(player,run,x,y){
-    const carried=(player.inventory||[]).filter(it=>!it.quest).map(cloneItem),kept=(player.inventory||[]).filter(it=>it.quest).map(cloneItem),games=[...(run.floorGames||[])];
-    player.inventory=kept;run.floorGames=[];
-    return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0,inventory:carried,games,score:0,xp:0,createdFloor:run.floor||1};
+    const carried=(player.inventory||[]).map(cloneItem),games=[...(run.floorGames||[])],armour=Math.max(0,Math.floor(Number(player?.armor)||0));
+    player.inventory=[];player.armor=0;run.floorGames=[];
+    return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0||armour>0,inventory:carried,games,armour,score:0,xp:0,createdFloor:run.floor||1};
   }
   function recoverDeathCache(player,run,cache){
     if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0,xp:0,levels:[],progressionRecovered:false};let recovered=0;const remaining=[];
     for(const it of cache.inventory||[]){if(inventoryAdd(player,cloneItem(it)))recovered+=itemQty(it);else remaining.push(cloneItem(it))}
     const games=[...(cache.games||[])];for(const g of games)if(!(run.floorGames||[]).includes(g))run.floorGames.push(g);
+    const cachedArmour=Math.max(0,Math.floor(Number(cache.armour)||0)),armourBefore=Math.max(0,Math.floor(Number(player?.armor)||0)),armourRoom=Math.max(0,12-armourBefore),armourRecovered=Math.min(cachedArmour,armourRoom);player.armor=armourBefore+armourRecovered;cache.armour=cachedArmour-armourRecovered;
     const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0)),cachedXP=Math.max(0,Math.floor(Number(cache.xp)||0)),xpResult=cachedXP?gainXP(player,run,cachedXP,"Death cache recovered"):{amount:0,discarded:0,levels:[],restoredProgression:[]};
     const restoredProgression=Array.isArray(xpResult.restoredProgression)?xpResult.restoredProgression:[];
-    cache.inventory=remaining;cache.games=[];cache.score=0;cache.xp=0;cache.progressionRecovery=null;cache.active=remaining.length>0;
+    cache.inventory=remaining;cache.games=[];cache.score=0;cache.xp=0;cache.progressionRecovery=null;cache.active=remaining.length>0||Math.max(0,Number(cache.armour)||0)>0;
     if(!cache.active)run.stats.deathCachesRecovered=(run.stats.deathCachesRecovered||0)+1;
     const restoredSkill=restoredProgression.find(row=>row?.skillName&&!row.pendingLevelRestored)?.skillName||null;
     const pendingLevelRestored=restoredProgression.some(row=>row?.pendingLevelRestored);
-    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),score:recoveredScore,xp:Number(xpResult.amount||0),xpDiscarded:Number(xpResult.discarded||0),levels:xpResult.levels||[],progressionRecovered:restoredProgression.length>0,restoredSkill,pendingLevelRestored,restoredLevel:(xpResult.levels||[]).length>0};
+    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),armourRecovered,armourRemaining:Math.max(0,Number(cache.armour)||0),score:recoveredScore,xp:Number(xpResult.amount||0),xpDiscarded:Number(xpResult.discarded||0),levels:xpResult.levels||[],progressionRecovered:restoredProgression.length>0,restoredSkill,pendingLevelRestored,restoredLevel:(xpResult.levels||[]).length>0};
   }
   function loseFloorProgress(player,run){const cache=createDeathCache(player,run,player?.x||0,player?.y||0);return{lostXP:0,lostItem:cache.inventory?.[0]||null,cache}}
   function persistentCollection(){try{return JSON.parse(localStorage.getItem("ccg-quest-collection")||"[]")}catch(_){return[]}}
