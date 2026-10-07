@@ -92,7 +92,7 @@ assert(app.includes('event.code === "ArrowLeft"') && app.includes('event.code ==
 assert(app.includes('F2: "F1"') && app.includes('F8: "F7"'), "VICE-style shifted function-key mapping must be retained");
 assert(app.includes('import { D64, d64Variant } from "./core/media/d64.js"'), "D64 parser must be wired into the media bay");
 assert(app.includes("machine.setD64(disk)"), "Drive 8 disk mounting must reach the machine core");
-assert(app.includes("machine.injectLoadAndRun()"), "The first D64 quick-load route must queue LOAD/RUN");
+assert(app.includes("queueAutoStart(["), "The D64 loader must use the staged auto-start queue rather than the retired direct LOAD/RUN shortcut");
 assert(app.includes('let driveMode = "fast"'), "Each emulator visit must start in Fast Load so ordinary disk images auto-start");
 assert(app.includes("firstSupportedDroppedFile"), "Screen drop loading must choose a supported C64 media file");
 assert(app.includes('mediaDropzone?.addEventListener("drop"'), "The C64 screen stage must accept dropped game media");
