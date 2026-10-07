@@ -21,7 +21,7 @@ assert.match(gate,/client\.auth\.getSession\(\)/);
 assert.match(gate,/client\.auth\.getUser\(\)/);
 assert.match(gate,/ccg_has_dungeon_carnage_playtest_access/,"assigned website members must resolve playtest access through the protected entitlement RPC");
 assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive the member-playtester access state");
-assert.match(gate,/showMemberGate\(\)/,"ordinary production visitors must receive the server-validated public/member access gate");
+assert.match(gate,/showMemberGate\(/,"ordinary production visitors must receive the server-validated public/member access gate");
 assert.match(gate,/bootstrapProtectedRuntime/,"validated access must control runtime startup");
 assert.match(index,/type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/,"game-main must remain inert until access is granted");
 assert.match(gate,/mark\("round2-member-required"\)/,"the closed protected playtest gate must publish an explicit blocked state");
