@@ -29,19 +29,29 @@
   function currentPlayer(){try{return typeof p1!=="undefined"?p1:null}catch(_){return null}}
   function luckPoints(player=currentPlayer()){return Math.max(0,Math.floor(Number(player?.rpgStats?.luck)||5)-5)}
   function wearables(player){if(!player)return{head:null,hands:null,feet:null};if(!player.wearables||typeof player.wearables!=="object"||Array.isArray(player.wearables))player.wearables={head:null,hands:null,feet:null};for(const slot of SLOT_ORDER)if(!(slot in player.wearables))player.wearables[slot]=null;return player.wearables}
-  function effectValues(slot,rarity){
+  function gearTierFor(rarity){
     const idx=rarityIndex(rarity);
-    if(slot==="head")return{sightBonus:idx>=3?2:1};
-    if(slot==="hands")return{scavengerBonus:Number((.08+idx*.04).toFixed(2))};
-    if(slot==="feet")return{moveFactor:Number((.97-idx*.01).toFixed(2))};
-    return{}
+    if(idx>=3)return{name:"ENCHANTED",armourBonus:3,enchanted:true};
+    if(idx===2)return{name:"SUPERIOR",armourBonus:2,enchanted:false};
+    if(idx===1)return{name:"RARE",armourBonus:1,enchanted:false};
+    return{name:"COMMON",armourBonus:0,enchanted:false}
+  }
+  function effectValues(slot,rarity){
+    const tier=gearTierFor(rarity),base={gearTier:tier.name,armourBonus:tier.armourBonus};
+    if(!tier.enchanted)return base;
+    if(slot==="head")return{...base,sightBonus:1};
+    if(slot==="hands")return{...base,scavengerBonus:.15};
+    if(slot==="feet")return{...base,moveFactor:.95};
+    return base
   }
   function effectText(item){
     if(!item)return"EMPTY";
-    if(item.slot==="head")return `+${Number(item.sightBonus||1)} SIGHT`;
-    if(item.slot==="hands")return `+${Math.round(Number(item.scavengerBonus||0)*100)}% AMMO PICKUPS`;
-    if(item.slot==="feet")return `${Math.round((1-Number(item.moveFactor||1))*100)}% FASTER MOVEMENT`;
-    return"PASSIVE BONUS"
+    const tier=String(item.gearTier||gearTierFor(item.rarity).name),armour=Math.max(0,Number(item.armourBonus)||0),parts=[tier];
+    if(armour)parts.push(`ARMOUR CAP +${armour}`);
+    if(Number(item.sightBonus||0)>0)parts.push(`+${Number(item.sightBonus)} SIGHT`);
+    if(Number(item.scavengerBonus||0)>0)parts.push(`+${Math.round(Number(item.scavengerBonus)*100)}% AMMO PICKUPS`);
+    if(Number(item.moveFactor||1)<1)parts.push(`${Math.round((1-Number(item.moveFactor))*100)}% FASTER MOVEMENT`);
+    return parts.join(" · ")
   }
   function makeWearable(chest,player=currentPlayer()){
     const floor=Math.max(1,Number(run?.floor||1)),depth=Math.max(0,Number(chest?.depth||0)),luck=luckPoints(player);
@@ -49,7 +59,7 @@
     const slot=SLOT_ORDER[(seed>>>5)%SLOT_ORDER.length];
     const promotionChance=Math.min(70,8+depth*3+luck*4);
     const power=Math.min(4,Math.max(0,Math.floor((floor-1)/2)+(((seed>>>11)%100)<promotionChance?1:0)));
-    const rarity=PGR.RARITY[power]||"COMMON",values=effectValues(slot,rarity),name=GEAR_NAMES[slot][power]||`${rarity} ${SLOT_LABELS[slot]}`;
+    const rarity=PGR.RARITY[power]||"COMMON",values=effectValues(slot,rarity),baseName=GEAR_NAMES[slot][power]||SLOT_LABELS[slot],name=`${values.gearTier} ${baseName}`;
     return{kind:"wearable",slot,rarity,name,short:name,...values,desc:`${SLOT_LABELS[slot]} wearable. ${effectText({slot,...values})}. Equipped gear survives floor transitions but drops into your death box when you die.`}
   }
   function qualifiesForDrop(chest,player=currentPlayer()){
@@ -155,8 +165,8 @@
   if(typeof PGR.createDeathCache==="function"){
     const baseCreateDeathCache=PGR.createDeathCache.bind(PGR);
     PGR.createDeathCache=function r114CreateDeathCacheWithWearables(player,runState,x,y,...args){
-      const equipped=stripWearablesForDeath(player),cache=baseCreateDeathCache(player,runState,x,y,...args);
-      if(equipped.length){cache.inventory=Array.isArray(cache.inventory)?cache.inventory:[];cache.inventory.push(...equipped);cache.equippedWearables=equipped.map(item=>({slot:item.deathEquippedSlot,name:item.name||"WEARABLE GEAR",rarity:item.rarity||"COMMON"}));cache.active=true}
+      const cache=baseCreateDeathCache(player,runState,x,y,...args),equipped=stripWearablesForDeath(player);
+      if(equipped.length){cache.inventory=Array.isArray(cache.inventory)?cache.inventory:[];cache.inventory.push(...equipped);cache.equippedWearables=equipped.map(item=>({slot:item.deathEquippedSlot,name:item.name||"WEARABLE GEAR",rarity:item.rarity||"COMMON",gearTier:item.gearTier||gearTierFor(item.rarity).name}));cache.active=true}
       return cache
     };
     PGR.createDeathCache.__ccgR114EquippedWearables=true;PGR.createDeathCache.__ccgOriginal=baseCreateDeathCache
@@ -295,6 +305,6 @@
   ensureStyle();
   try{renderLoadout();decorateInventory()}catch(_){}
   window.CCGLostSizzlerV142R80WearableEquipment=Object.freeze({
-    version:"V10.42-r80",state,slots:[...SLOT_ORDER],makeWearable,effectText,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
+    version:"V10.42-r80",state,slots:[...SLOT_ORDER],gearTierFor,makeWearable,effectText,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
   });
 })();
