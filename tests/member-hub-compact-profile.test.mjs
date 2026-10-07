@@ -61,3 +61,8 @@ test('member preference updates no longer reference retired opt-in column', () =
   assert.doesNotMatch(memberHubJs, /notify_new_games_opt_in/);
   assert.match(memberHubJs, /notify_new_games_choice_recorded/);
 });
+
+test('member hub section navigation stays centred on desktop and left-scrolls on narrow screens', () => {
+  assert.match(css, /\.member-hub-nav\s*\{[\s\S]*?width:\s*100%;[\s\S]*?box-sizing:\s*border-box;[\s\S]*?align-items:\s*center;[\s\S]*?justify-content:\s*center;/);
+  assert.match(css, /@media \(max-width:\s*720px\)[\s\S]*?\.member-hub-nav\s*\{[\s\S]*?overflow-x:\s*auto;[\s\S]*?flex-wrap:\s*nowrap;[\s\S]*?justify-content:\s*flex-start;/);
+});
