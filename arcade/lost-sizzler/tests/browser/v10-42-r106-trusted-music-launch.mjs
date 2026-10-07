@@ -136,7 +136,7 @@ try{
   await page.waitForFunction(()=>{
     const snapshot=window.CCGLostSizzlerPlaylistAudio?.getState?.();
     const slot=snapshot?.slots?.[snapshot.state];
-    return Boolean(snapshot?.started&&snapshot?.customSoundtrackOwned===true&&snapshot?.url?.includes("/music/")&&slot?.active===true&&slot?.paused===false);
+    return Boolean(snapshot?.started&&snapshot?.customSoundtrackOwned===true&&snapshot?.url?.includes("/music/")&&slot?.active===true&&slot?.paused===false&&slot?.readyState>=1);
   });
 
   const playing=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio.getState());

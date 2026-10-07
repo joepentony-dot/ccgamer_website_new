@@ -1,3 +1,8 @@
+## R114 Chromium update — 7 October 2026 12:34 UK
+
+- Node qualification is green on `c733abcac39ce4f6c3cc5f8a18a0d62965aa5999`; Chromium is now genuinely exercising the branch. Shard 1 found the R106 trusted-music test observing the playlist between playback activation and media metadata readiness.
+- Existing R106 contract now waits for the exact readiness condition it already asserts (`readyState >= 1`) without increasing timeout or weakening authored-music requirements. Public playtest access remains untouched.
+
 ## R114 qualification update — 7 October 2026 12:30 UK
 
 - Following the boss-render contract repair, exact-head Node qualification exposed a stale one-shot switch source assertion. R114's bridge-specific branch changed code shape but not switch semantics.

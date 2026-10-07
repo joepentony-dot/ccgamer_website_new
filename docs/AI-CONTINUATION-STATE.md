@@ -1,3 +1,9 @@
+## R114 Chromium qualification checkpoint — 7 October 2026 12:34 UK
+
+- Exact head `c733abcac39ce4f6c3cc5f8a18a0d62965aa5999` passed PR Qualification and the Full Qualification canonical Node job; Chromium discovery succeeded. Shards 5 and 6 passed, while shard 1 exposed a race in the existing R106 trusted-music launch browser contract.
+- The contract waited only for playlist ownership/active/unpaused state, then immediately asserted `readyState >= 1`. Chromium can expose active/unpaused before media metadata is ready, producing a contradictory wait/assert sequence even though the authored soundtrack request has started.
+- The existing browser contract is tightened to include `readyState >= 1` in its bounded readiness wait before asserting the same requirement. No timeout is increased and no music runtime behaviour is changed.
+
 ## R114 qualification checkpoint — 7 October 2026 12:30 UK
 
 - Exact head `b9d0fdeae0485f015809773e857ee224d1988ab2` cleared the repaired boss-first visual-overhaul contract but PR Qualification next stopped in `v10-42-visual-overhaul-switches.mjs` before Chromium smoke.
