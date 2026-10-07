@@ -86,7 +86,8 @@ assert.match(floorTrials,/target:10/,"Floor 7 crypt trial must require all ten b
 assert.match(floorTrials,/addSupplies\(worldState,hostState,runState,"torch",4,"crypt-torch"\)/,"the ten-brazier trial must guarantee enough trial torches to avoid a resource softlock");
 assert.match(floorTrials,/addSupplies\(worldState,hostState,runState,"ammo",2,"coolant-ammo"\)/,"the coolant-valve trial must provide emergency ammunition");
 assert.match(floorTrials,/addSupplies\(worldState,hostState,runState,"ammo",2,"crt-ammo"\)/,"the CRT sequence must provide emergency ammunition");
-assert.match(floorTrials,/existing&&String\(e\.id\|\|""\)\.startsWith\("crt-sequence-fail-"\)/,"CRT wrong-order punishment must be bounded to one active guard");
+assert.match(floorTrials,/const existing=\(host\.enemies\|\|\[\]\)\.some\(e=>e\.alive&&String\(e\.id\|\|""\)\.startsWith\("crt-sequence-fail-"\)\)/,"CRT wrong-order punishment must detect an existing live guard");
+assert.match(floorTrials,/if\(!existing&&typeof spawnPuzzleAmbush==="function"\)spawnPuzzleAmbush\(sw\.roomId,player,1,"crt-sequence-fail"\)/,"CRT wrong-order punishment must spawn only when no live guard exists");
 assert.match(floorTrials,/if\(!done\)\{if\(hostState\.objective\)hostState\.objective\.complete=false;hostState\.exitOpen=false;return false\}/,"unfinished required trials must keep the floor exit sealed");
 assert.match(floorTrials,/FLOOR TRIAL: \$\{trialText\(hostState\)\}/,"the mission owner must surface live trial progress");
 assert.match(floorTrials,/r115TrialReward:true/,"completed authored trials must award a high-tier Trial Cache");
