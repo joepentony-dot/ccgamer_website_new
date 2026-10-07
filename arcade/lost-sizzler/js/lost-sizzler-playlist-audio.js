@@ -337,12 +337,34 @@
     publishMusicState("transition-request",{gestureRetry:Boolean(gestureRetry),advance:Boolean(advance)});
 
     if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
-      current.advancing=false;
-      if(current.audio.paused){
+      const active=current;
+      active.advancing=false;
+      if(active.audio.paused){
         if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
-        try{prepareSlotForPlay(current);const attempt=++current.playAttempt;Promise.resolve(current.audio.play()).then(()=>{if(current.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(current.url);stopFallback();publishMusicState("playing")}).catch(error=>{if(current.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});scheduleRetry(state)})}catch(error){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});scheduleRetry(state)}
+        try{
+          prepareSlotForPlay(active);
+          const attempt=++active.playAttempt;
+          Promise.resolve(active.audio.play()).then(()=>{
+            if(active.playAttempt!==attempt||current!==active)return;
+            if(pendingGestureState===state)pendingGestureState="";
+            clearFailure(active.url);stopFallback();publishMusicState("playing")
+          }).catch(error=>{
+            if(active.playAttempt!==attempt||current!==active)return;
+            pendingGestureState=soundtrackOwned(state)?state:"";
+            recordFailure(active.url);
+            publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});
+            scheduleRetry(state)
+          })
+        }catch(error){
+          if(current===active){
+            pendingGestureState=soundtrackOwned(state)?state:"";
+            recordFailure(active.url);
+            publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});
+            scheduleRetry(state)
+          }
+        }
       }
-      current.audio.volume=targetVolume(state);
+      active.audio.volume=targetVolume(state);
       return;
     }
 
