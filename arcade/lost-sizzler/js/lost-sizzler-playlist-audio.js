@@ -349,7 +349,15 @@
     cancelFade();
     const {slot:next,replaced,created}=ensureStateSlot(state,advance);
     if(!next){
-      if(replaced&&replaced.state===state){if(current===replaced)current=null;destroySlot(replaced)}
+      /* If every authored URL is temporarily in backoff, retain the current
+       * production slot and its identity. Destroying it here made the release
+       * appear to have no soundtrack between retries even though ownership
+       * correctly remained with the pinned production catalogue. */
+      if(replaced&&replaced.state===state&&!replaced.destroyed){
+        current=replaced;
+        replaced.advancing=false;
+        pauseSlot(replaced)
+      }
       scheduleRetry(state);
       return;
     }
