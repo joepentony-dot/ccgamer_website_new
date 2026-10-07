@@ -1,3 +1,10 @@
+## R115 Tutorial contract consolidation — 7 October 2026
+
+- Exact-head Node qualification advanced through the Bronze-key contract and then stopped in the existing Tutorial campaign contract.
+- The Tutorial runtime/presentation split is intact, but the contract still snapshot-tested retired prose from before the requested concise player-facing rewrite.
+- The same existing contract now verifies stabilized lesson keys, RPG stats, Death Stalker, death cache, Sanctuary, fifteen-floor scope, weapon-cache teaching, completion state and live tour-DOM preservation without requiring obsolete sentences.
+- No Tutorial runtime owner, timeout or new test file was added.
+
 ## R115 Bronze-guide contract wording — 7 October 2026
 
 - Exact-head qualification found the concise guide already preserved the single-key Bronze room/chest rule, but the existing R54 contract checks the direct phrase `chest costs no second key`.

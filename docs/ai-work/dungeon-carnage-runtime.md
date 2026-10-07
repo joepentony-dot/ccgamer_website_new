@@ -1,3 +1,8 @@
+## R115 Tutorial qualification update — 7 October 2026
+
+- Consolidated the existing Tutorial contract away from obsolete prose snapshots and onto required player concepts + stabilized lesson keys/DOM ownership.
+- Tutorial remains the same presentation layer over the existing training runtime.
+
 ## R115 qualification wording update — 7 October 2026
 
 - KEYS & MAP now says “that chest costs no second key,” matching the existing strict player-guide regression while preserving the concise rule.
