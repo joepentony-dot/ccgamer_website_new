@@ -11,24 +11,36 @@
   const C=window.CCG_CONFIG,W=window.CCGWorld;
   if(!C||!W||typeof W.createHostState!=="function")return;
 
-  const BIOME_IDS=["threshold","iron","bone","ash","sigil"];
+  const CAMPAIGN_FLOORS=Array.isArray(C.proceduralDungeon?.campaignFloors)?C.proceduralDungeon.campaignFloors:[];
   const BREAKABLES={
     threshold:["rotted-crate","rain-barrel","fallen-statue","overgrown-pot"],
+    driveworks:["drive-rack","forge-cask","service-crate","drive-plinth"],
     iron:["armour-rack","supply-crate","forge-cask","weapon-stand"],
+    budget:["budget-crate","stock-cask","bargain-pot","clearance-stand"],
+    cartridge:["cartridge-crate","manual-box","display-stand","cartridge-plinth"],
+    tapes:["tape-crate","cassette-rack","spool-cask","storage-box"],
     bone:["burial-urn","bone-pile","root-casket","crypt-vase"],
+    demo:["demo-crate","magazine-rack","promo-stand","sample-cask"],
+    modem:["modem-crate","cable-rack","line-cask","terminal-stand"],
+    sid:["sid-crate","speaker-rack","coil-cask","chip-stand"],
     ash:["slag-pot","charred-crate","ember-brazier","ore-cask"],
-    sigil:["rune-urn","crystal-plinth","archive-cache","sigil-vessel"]
+    foundry:["forge-crate","tool-rack","slag-pot","ore-cask"],
+    scores:["score-crate","trophy-plinth","record-stand","medal-cask"],
+    crt:["crt-crate","tube-rack","signal-stand","cable-cask"],
+    citadel:["rune-urn","crystal-plinth","archive-cache","sigil-vessel"]
   };
   const REWARD_FOCUS=["equipment","artefact","dossier","supplies","coins"];
   const state={installed:false,plans:0,lastFloor:0,lastSeed:""};
   const num=(v,f=0)=>{const n=Number(v);return Number.isFinite(n)?n:f};
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const currentRun=()=>{try{return typeof run!=="undefined"?run:null}catch(_){return null}};
+  const maxFloor=()=>Math.max(1,Math.floor(num(C.maxFloors,CAMPAIGN_FLOORS.length||15)));
+  const campaignFloor=floor=>CAMPAIGN_FLOORS.find(row=>Number(row?.floor)===Number(floor))||null;
 
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return h>>>0}
   const unit=value=>hash32(value)/4294967296;
   const pick=(rows,key)=>rows[hash32(key)%rows.length];
-  const floorBiome=floor=>BIOME_IDS[clamp(Math.floor(num(floor,1)),1,5)-1]||"threshold";
+  const floorBiome=floor=>String(campaignFloor(clamp(Math.floor(num(floor,1)),1,maxFloor()))?.id||"threshold");
 
   function roomRole(room,worldState){
     const env=room?.v142Environment;
@@ -96,7 +108,7 @@
   }
 
   function planRoom(room,worldState,runState){
-    const floor=clamp(Math.floor(num(runState?.floor,1)),1,5),biome=String(room?.v142Environment?.biome||floorBiome(floor)),role=roomRole(room,worldState),rare=rareRole(room),key=`${runState?.seed||"lost-sizzler"}|F${floor}|R${room?.id??0}|${biome}|${role}|${rare}|R7`;
+    const floor=clamp(Math.floor(num(runState?.floor,1)),1,maxFloor()),biome=String(room?.v142Environment?.biome||floorBiome(floor)),role=roomRole(room,worldState),rare=rareRole(room),key=`${runState?.seed||"lost-sizzler"}|F${floor}|R${room?.id??0}|${biome}|${role}|${rare}|R7`;
     const type=pick(objectivePool(role,rare),`${key}|objective`),optional=role==="secret"||Boolean(rare)||["sanctuary","trader"].includes(role),elite=["hunt-elite","claim-elite-cache","hunt-champion","silence-crypt-guard"].includes(type);
     let risk=1+Math.floor(unit(`${key}|risk`)*3)+Math.floor((floor-1)/2)+(elite?1:0)+(optional?1:0);risk=clamp(risk,1,5);
     let rewardTier=1+Math.floor((risk-1)/2)+(optional?1:0)+(elite?1:0);rewardTier=clamp(rewardTier,1,4);
@@ -109,7 +121,7 @@
     if(!worldState?.rooms||!hostState||!runState)return hostState;
     const plans=[];
     for(const room of worldState.rooms){const plan=planRoom(room,worldState,runState);room.v142Objective=plan.objective;room.v142Breakables=plan.breakables;plans.push(plan);state.plans++}
-    const floor=clamp(Math.floor(num(runState.floor,1)),1,5),seed=String(runState.seed||"lost-sizzler");
+    const floor=clamp(Math.floor(num(runState.floor,1)),1,maxFloor()),seed=String(runState.seed||"lost-sizzler");
     hostState.v142RoomObjectives={version:"V10.42-r7",floor,biome:floorBiome(floor),seedKey:`${seed}|F${floor}|OBJECTIVES-R7`,plans};
     state.lastFloor=floor;state.lastSeed=seed;return hostState;
   }

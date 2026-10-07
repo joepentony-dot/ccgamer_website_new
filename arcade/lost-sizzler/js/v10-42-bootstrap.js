@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r113";
-  const CACHE="20261007r113";
+  const BUILD="V10.42 r117";
+  const CACHE="20261007r117";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],
@@ -40,6 +40,7 @@
     ["v10-42-stage6-zone-gameplay.js","CCGLostSizzlerV142Stage6ZoneGameplay"],
     ["v10-42-r15-npc-expansion.js","CCGLostSizzlerV142R15NpcExpansion"],
     ["v10-42-stage7-npc-merchant.js","CCGLostSizzlerV142Stage7NpcMerchant"],
+    ["v10-42-r115-floor-trials.js","CCGLostSizzlerV142R115FloorTrials"],
     ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
     ["v10-42-r46-final-visual-polish.js","CCGLostSizzlerV142R46FinalVisualPolish"],
     ["v10-42-r48-elemental-portal-presentation.js","CCGLostSizzlerV142R48ElementalPortalPresentation"],

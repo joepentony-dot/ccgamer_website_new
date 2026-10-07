@@ -229,6 +229,13 @@
   function armAdvance(slot){
     if(slot.armed)return;
     slot.armed=true;
+    slot.audio.addEventListener("playing",()=>{
+      if(slot.destroyed||current!==slot)return;
+      if(pendingGestureState===slot.state)pendingGestureState="";
+      clearFailure(slot.url);
+      stopFallback();
+      publishMusicState("playing-event")
+    });
     if(!slot.meteredRemote){
       const advance=()=>{
         if(slot.destroyed||current!==slot||slot.advancing||!Number.isFinite(slot.audio.duration))return;
@@ -330,19 +337,49 @@
     publishMusicState("transition-request",{gestureRetry:Boolean(gestureRetry),advance:Boolean(advance)});
 
     if(current?.state===state&&!advance&&!current.destroyed&&categorySources(state).includes(current.url)){
-      current.advancing=false;
-      if(current.audio.paused){
+      const active=current;
+      active.advancing=false;
+      if(active.audio.paused){
         if(!gestureRetry&&soundtrackOwned(state))pendingGestureState=state;
-        try{prepareSlotForPlay(current);const attempt=++current.playAttempt;Promise.resolve(current.audio.play()).then(()=>{if(current.playAttempt!==attempt)return;if(pendingGestureState===state)pendingGestureState="";clearFailure(current.url);stopFallback();publishMusicState("playing")}).catch(error=>{if(current.playAttempt!==attempt)return;pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});scheduleRetry(state)})}catch(error){pendingGestureState=soundtrackOwned(state)?state:"";recordFailure(current.url);publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});scheduleRetry(state)}
+        try{
+          prepareSlotForPlay(active);
+          const attempt=++active.playAttempt;
+          Promise.resolve(active.audio.play()).then(()=>{
+            if(active.playAttempt!==attempt||current!==active)return;
+            if(pendingGestureState===state)pendingGestureState="";
+            clearFailure(active.url);stopFallback();publishMusicState("playing")
+          }).catch(error=>{
+            if(active.playAttempt!==attempt||current!==active)return;
+            pendingGestureState=soundtrackOwned(state)?state:"";
+            recordFailure(active.url);
+            publishMusicState("play-rejected",{error:String(error?.message||error||"play rejected").slice(0,180)});
+            scheduleRetry(state)
+          })
+        }catch(error){
+          if(current===active){
+            pendingGestureState=soundtrackOwned(state)?state:"";
+            recordFailure(active.url);
+            publishMusicState("play-exception",{error:String(error?.message||error||"play exception").slice(0,180)});
+            scheduleRetry(state)
+          }
+        }
       }
-      current.audio.volume=targetVolume(state);
+      active.audio.volume=targetVolume(state);
       return;
     }
 
     cancelFade();
     const {slot:next,replaced,created}=ensureStateSlot(state,advance);
     if(!next){
-      if(replaced&&replaced.state===state){if(current===replaced)current=null;destroySlot(replaced)}
+      /* If every authored URL is temporarily in backoff, retain the current
+       * production slot and its identity. Destroying it here made the release
+       * appear to have no soundtrack between retries even though ownership
+       * correctly remained with the pinned production catalogue. */
+      if(replaced&&replaced.state===state&&!replaced.destroyed){
+        current=replaced;
+        replaced.advancing=false;
+        pauseSlot(replaced)
+      }
       scheduleRetry(state);
       return;
     }
@@ -378,17 +415,24 @@
         if(next.playAttempt!==attempt||current!==next)return;
         pendingGestureState=soundtrackOwned(state)?state:"";
         recordFailure(next.url);
+        /* Keep the desired production slot authoritative while playback is
+         * unavailable. Destroying it here erased the pinned Supabase identity
+         * and made diagnostics report an empty URL between bounded retries. */
+        next.advancing=false;
+        if(replaced&&replaced!==next)destroySlot(replaced);
+        if(previous&&previous!==next)pauseSlot(previous);
         publishMusicState("play-rejected");
-        restorePreviousState(previous,next,replaced);
-        if(created)scheduleRetry(state);
+        scheduleRetry(state);
       });
     }catch(_){
       if(current===next){
         pendingGestureState=soundtrackOwned(state)?state:"";
         recordFailure(next.url);
+        next.advancing=false;
+        if(replaced&&replaced!==next)destroySlot(replaced);
+        if(previous&&previous!==next)pauseSlot(previous);
         publishMusicState("play-exception");
-        restorePreviousState(previous,next,replaced);
-        if(created)scheduleRetry(state);
+        scheduleRetry(state);
       }
     }
   }
@@ -459,8 +503,15 @@
     updateVolumes();
   }
 
+  function reconcilePendingGestureState(){
+    const slot=current;
+    if(slot&&!slot.destroyed&&slot.state===desiredState()&&slot.audio.paused===false&&Number(slot.audio.readyState||0)>=1&&pendingGestureState===slot.state)pendingGestureState="";
+    return pendingGestureState
+  }
+
   function retryUploadedMusicOnGesture(event){
     if(!enabled)return false;
+    reconcilePendingGestureState();
     const state=desiredState();
     if(!started){
       const launchTarget=event?.target?.closest?.("#solo-btn,#tutorial-zone-btn");
@@ -532,7 +583,7 @@
       enabled,
       started,
       fallbackActive,
-      pendingGestureState,
+      pendingGestureState:reconcilePendingGestureState(),
       customSoundtrackOwned:customSources(desiredState()).length>0,
       soundtrackOwned:soundtrackOwned(desiredState()),
       adminAudioReady:window.CCG_ADMIN_AUDIO_READY===true,
