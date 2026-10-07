@@ -31,7 +31,7 @@ assert.match(play,/SYS\.lockRoomDoors\(host,z\.roomId,false\)/,"solving the sequ
 assert.match(play,/beginDoorOpening\(d,900\)/,"released memory-room doors must visibly reopen");
 assert.ok(play.includes("Correct sequence. The chamber doors reopen"),"solve feedback must confirm escape is restored");
 
-assert.match(render,/MEMORY VAULT LOCKED — \\${mem\\.inputIndex\\|\\|0}\\/\\${mem\\.sequence\\?\\.length\\|\\|5}/,"room overlay must show live lockdown progress against the real five- or seven-pad sequence length");
+assert.ok(render.includes("MEMORY VAULT LOCKED — ${mem.inputIndex||0}/${mem.sequence?.length||5}"),"room overlay must show live lockdown progress against the real five- or seven-pad sequence length");
 assert.match(render,/mem\.lockdownActive\?P\.red:P\.cyan/,"locked room status must be visually distinct");
 assert.match(render,/function memoryPuzzleOverviewTarget\(mem,p,v\)/,"large Memory Vaults must own a camera visibility policy");
 assert.match(render,/screenY>=marginY&&screenY<=v\.h-marginY/,"Memory Vault overview must verify that the player remains inside the visible safe frame");
