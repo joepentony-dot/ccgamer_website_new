@@ -499,8 +499,8 @@ body.quiz-focus.quiz-focus-pulse .quiz-panel--active {
 }
 
 .quiz-media img[data-pixel-art="true"] {
-    width: auto;
-    max-width: min(100%, 440px);
+    width: min(100%, 440px);
+    aspect-ratio: 4 / 3;
     max-height: min(42vh, 380px);
     align-self: center;
     padding: clamp(10px, 2vw, 18px);
