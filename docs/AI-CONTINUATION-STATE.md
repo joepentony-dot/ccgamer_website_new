@@ -1,3 +1,9 @@
+## R115 Rotten Bridge browser integration audit — 7 October 2026
+
+- Extended the existing canonical campaign browser integration test rather than adding a new test file.
+- The browser flow now exercises Floor 5 Rotten Bridge semantics through the live runtime: carried inventory blocks crossing; empty-handed crossing collapses the bridge; the dropped stash is stolen once; a Dungeon Thief spawns; firearm/ammo failsafes appear when required; non-shot switch activation is rejected; a shot rebuilds traversal; killing the thief returns the stash exactly once and a second recovery cannot duplicate it.
+- This is qualification coverage only; bridge runtime semantics were not duplicated.
+
 ## R115 legacy guide-regression consolidation — 7 October 2026
 
 - V10.6 still snapshot-tested several paragraphs removed by the concise player-facing Dungeon Guide (Death Stalker reward totals, detailed AI prose, spider/hazard counts, Sigil death-cache placement and zero-XP explanation).

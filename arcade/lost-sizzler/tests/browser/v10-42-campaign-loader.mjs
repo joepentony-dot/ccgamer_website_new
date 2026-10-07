@@ -173,6 +173,55 @@ try{
 
   assert.match(audit.menuNote,/fifteen dungeon floors/i,"Canonical menu copy must describe the fifteen-floor campaign.");
   assert.match(audit.menuNote,/persist/i,"Canonical menu copy must tell players that campaign progression persists between depths.");
+
+  await page.click("#solo-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(world)&&Boolean(host)&&Boolean(p1),null,{timeout:30000});
+
+  const bridgeAudit=await page.evaluate(()=>{
+    let bridge=null;
+    for(let i=0;i<8&&!bridge;i++){
+      run.floor=5;run.seed=`R115-BRIDGE-${i}`;run.modifier=null;startWorld(PGR.floorSeed(run),false,true);bridge=host.weightBridge||null;
+    }
+    if(!bridge)return{missing:true};
+    const b=bridge,tile=b.bridgeTiles?.[Math.floor((b.bridgeTiles?.length||1)/2)]||b.bridgeTiles?.[0];
+    p1.inventory=[{kind:"potion",name:"RESTORATION POTION",qty:1}];
+    p1.firearmUnlocked=false;p1.weapon=null;p1.weaponEvolutionTier=0;p1.ownedWeapons=[];p1.activeWeaponIndex=-1;p1.mana=0;
+    const loadedBlocked=Boolean(tile&&weightBridgeBlocks(p1,tile.x,tile.y));
+    const dropped=PGR.inventoryRemove(p1,0,1);
+    host.items.push({id:"dropped-r115-bridge-stash",x:b.entryPos.x,y:b.entryPos.y,kind:"dropped",active:true,title:"DROPPED STASH",carriedItem:{...dropped}});
+    const emptyBlocked=Boolean(tile&&weightBridgeBlocks(p1,tile.x,tile.y));
+    const xs=b.bridgeTiles.map(q=>q.x),ys=b.bridgeTiles.map(q=>q.y);
+    if(b.entranceSide==="west"){p1.x=Math.max(...xs)+1;p1.y=tile.y}
+    else if(b.entranceSide==="east"){p1.x=Math.min(...xs)-1;p1.y=tile.y}
+    else if(b.entranceSide==="north"){p1.x=tile.x;p1.y=Math.max(...ys)+1}
+    else{p1.x=tile.x;p1.y=Math.min(...ys)-1}
+    triggerWeightBridge(p1);
+    const thief=(host.enemies||[]).find(e=>e.id===b.thiefId),emergency=(host.items||[]).filter(i=>i.r114BridgeEmergency&&i.active),sw=(host.switches||[]).find(s=>s.id===b.switchId);
+    const beforeRebuild={collapsed:b.collapsed,stolen:b.stolenItems?.length||0,thiefAlive:Boolean(thief?.alive),emergencyKinds:emergency.map(i=>i.kind).sort()};
+    const unshot=activateSwitch(sw,p1,false),stillArmed=Boolean(sw?.active&&!b.rebuilt);
+    const shot=activateSwitch(sw,p1,true),rebuilt=Boolean(b.rebuilt&&!b.collapsed&&!sw.active);
+    if(thief?.alive)damageEnemy(thief,9999,"physical",p1);
+    const recovered=PGR.inventoryKindCount(p1,"potion"),afterFirst={thiefDefeated:Boolean(b.thiefDefeated),stolen:b.stolenItems?.length||0,recovered};
+    const second=recoverBridgeThiefStash(thief,p1),afterSecond=PGR.inventoryKindCount(p1,"potion");
+    return{missing:false,loadedBlocked,emptyBlocked,beforeRebuild,unshot,stillArmed,shot,rebuilt,afterFirst,second,afterSecond}
+  });
+  assert.equal(bridgeAudit.missing,false,"Floor 5 must generate the Rotten Bridge quest in the audited seed set.");
+  assert.equal(bridgeAudit.loadedBlocked,true,"Rotten Bridge must reject crossing while inventory is carried.");
+  assert.equal(bridgeAudit.emptyBlocked,false,"Rotten Bridge must allow an empty-handed crossing attempt.");
+  assert.equal(bridgeAudit.beforeRebuild.collapsed,true,"Rotten Bridge must collapse after the empty-handed crossing.");
+  assert.equal(bridgeAudit.beforeRebuild.stolen,1,"Dungeon Thief must steal the dropped bridge stash exactly once.");
+  assert.equal(bridgeAudit.beforeRebuild.thiefAlive,true,"Rotten Bridge collapse must spawn a live Dungeon Thief elsewhere on the floor.");
+  assert.deepEqual(bridgeAudit.beforeRebuild.emergencyKinds,["ammo","weapon"],"A firearm-less, ammo-empty player must receive reachable emergency weapon and ammo supplies.");
+  assert.equal(bridgeAudit.unshot,false,"Far-side rebuild switch must reject non-shot activation.");
+  assert.equal(bridgeAudit.stillArmed,true,"Rejected non-shot activation must leave the bridge switch armed.");
+  assert.equal(bridgeAudit.shot,true,"Shooting the far-side rebuild switch must activate it.");
+  assert.equal(bridgeAudit.rebuilt,true,"Successful rebuild switch activation must restore bridge traversal.");
+  assert.equal(bridgeAudit.afterFirst.thiefDefeated,true,"Killing the Dungeon Thief must complete the thief recovery state.");
+  assert.equal(bridgeAudit.afterFirst.stolen,0,"Recovered bridge stash must be removed from thief ownership.");
+  assert.equal(bridgeAudit.afterFirst.recovered,1,"Recovered bridge stash must return the stolen potion exactly once.");
+  assert.equal(bridgeAudit.second,null,"A defeated bridge thief must not permit a second recovery transaction.");
+  assert.equal(bridgeAudit.afterSecond,1,"Repeated recovery attempts must not duplicate stolen inventory.");
+
   assert.deepEqual(pageErrors,[],`Canonical V10.42 campaign startup must not raise page errors: ${pageErrors.join("\n")}`);
   assert.deepEqual(failedScripts,[],`Canonical V10.42 campaign scripts must load without same-origin request failures: ${failedScripts.join("\n")}`);
 

@@ -1,3 +1,8 @@
+## R115 Rotten Bridge end-to-end coverage — 7 October 2026
+
+- Existing campaign browser integration now exercises collapse, theft, emergency supplies, shoot-only rebuild and exact-once thief stash recovery.
+- No new browser test owner was created.
+
 ## R115 guide-entry / legacy contract update — 7 October 2026
 
 - Menu button now matches the panel: Dungeon Guide.
