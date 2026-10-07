@@ -978,6 +978,14 @@ finishSetup?.addEventListener("click", async () => {
   screen?.focus();
 });
 
+document.querySelector("[data-emulator-back]")?.addEventListener("click", () => {
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+  window.location.href = "/emulation.html";
+});
+
 powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", resetMachine);
 pauseButton?.addEventListener("click", togglePause);
@@ -1534,6 +1542,14 @@ document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date()
 
 const initial = vault.restore();
 render(initial);
+
+// Returning visitors with a complete local ROM bank should see the real C64
+// BASIC READY screen, not the CCG pre-boot status canvas. First-time visitors
+// still retain the media-first flow and are prompted for ROMs only when needed.
+if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
+  void powerOn();
+}
+
 // Do not interrupt first-time visitors with a firmware modal. They can choose
 // media immediately; setup is requested only when the selected media needs booting.
 
