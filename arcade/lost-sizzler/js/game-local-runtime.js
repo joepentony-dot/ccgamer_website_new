@@ -85,7 +85,7 @@ function equipWeapon(p,weapon){const old=p.weapon;p.weapon={...weapon};p.weaponL
 function applyLoot(loot,p){
   if(!loot)return;
   if(loot.kind==="weaponLoot")equipWeapon(p,loot.weapon);
-  else if(loot.kind==="armour"){const n=loot.amount||2;p.armor=Math.min(12,p.armor+n);S.sfx("armour");showToast(`+${n} ARMOUR`,"Armour increased.","cyan")}
+  else if(loot.kind==="armour"){const n=loot.amount||2;p.armor=Math.min(PGR.armourCap?.(p)||12,p.armor+n);S.sfx("armour");showToast(`+${n} ARMOUR`,"Armour increased.","cyan")}
   else if(loot.kind==="ammo"){const n=Math.round((loot.amount||40)*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;showToast(`+${n} AMMO`,"Ammunition added.","cyan")}
   else if(loot.kind==="potion")storeConsumable(p,{kind:"potion",name:loot.name||"Restoration Potion",short:"POTION"},loot.name||"RESTORATION POTION","Added to your inventory stack.","green");
   else if(loot.kind==="torch")storeConsumable(p,{kind:"torch",name:loot.name||"Flaming Torch",short:"TORCH"},loot.name||"FLAMING TORCH","Stored in its own slot. Press Q to light a torch.","gold");
@@ -112,7 +112,7 @@ function applyItem(i,p){
   else if(i.kind==="mapReveal")storeConsumable(p,{kind:"mapReveal",name:"Cartographer's Eye",short:"MAP"},"CARTOGRAPHER'S EYE","Stored. Use it from TAB to reveal the current floor and all map icons.","cyan");
   else if(i.kind==="magicSack"){const before=PGR.magicSackTier?.(p)||0;if(before>=3){score+=500;S.sfx("pickup");showToast("MAGIC SACK — MAXIMUM REACHED","+500 score instead. Your stack bonus is already +3.","gold",6500)}else{p.magicSacks=before+1;S.sfx("level");showToast("MAGIC SACK FOUND",`Stack limits increased across every stackable inventory slot: +${p.magicSacks} above base. Maximum bonus: +3.`,"gold",8500)}}
   else if(i.kind==="banishment")storeConsumable(p,{kind:"banishment",name:"Banishment Flask",short:"BANISH"},"BANISHMENT FLASK","Stacked in inventory. Watch for the flashing Banishment prompt near a Death Stalker or Count Loadula.","purple");
-  else if(i.kind==="armour"){p.armor=Math.min(12,p.armor+2);S.sfx("armour");showToast("+2 ARMOUR",`${who} armour increased.`,"cyan")}
+  else if(i.kind==="armour"){p.armor=Math.min(PGR.armourCap?.(p)||12,p.armor+2);S.sfx("armour");showToast("+2 ARMOUR",`${who} armour increased.`,"cyan")}
   else if(i.kind==="potion")storeConsumable(p,{kind:"potion",name:"Restoration Potion",short:"POTION"},"RESTORATION POTION","Stored. Press E to drink it.","green");
   else if(i.kind==="weapon")equipWeapon(p,resolvedPickupWeapon(i,p));
   else if(i.kind==="rapid"){p.rapidMs=12000;S.sfx("weapon");showToast("RAPID FIRE","Fire delay reduced for 12 seconds.","gold")}
