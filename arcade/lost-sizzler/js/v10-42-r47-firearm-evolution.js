@@ -23,11 +23,34 @@
   const dungeonMode=()=>{try{const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");return special!=="horde-survivor"&&special!=="sizzler-saboteurs"}catch(_){return true}};
   const clone=value=>{try{return JSON.parse(JSON.stringify(value))}catch(_){return value&&typeof value==="object"?{...value}:value}};
   const capForFloor=floor=>FLOOR_CAP[Math.max(1,Math.min(5,Math.floor(Number(floor)||1)))]||2;
+  const RARE_PATTERNS=Object.freeze(["spread","fire","shock","pierce","repeater","pulse"]);
   function stageWeapon(tier,pattern=""){
-    const stage=STAGES[Math.max(1,Math.min(6,Math.floor(Number(tier)||1)))]||STAGES[1],spreadOverride=String(pattern||"")==="spread"&&stage.id!=="spread";
+    const stage=STAGES[Math.max(1,Math.min(6,Math.floor(Number(tier)||1)))]||STAGES[1],wanted=String(pattern||"").toLowerCase();
     const weapon={...clone(stage),displayName:`TIER ${stage.tier} · ${stage.name}`,rarity:stage.tier>=6?"GOLD MEDAL":stage.tier>=4?"SIZZLER":stage.tier>=2?"UNCOMMON":"COMMON",colour:stage.tier>=6?"#ffd85a":stage.tier>=4?"#ff5bae":"#6cecff",ammo:1,element:"energy",mods:stage.tier>=4?["THREE-WAY"]:[],evolutionTier:stage.tier};
-    if(spreadOverride){weapon.id="spread";weapon.name=`Spread Pulse ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · SPREAD PULSE`;weapon.shots=3;weapon.delay=Math.max(1.06,Number(stage.delay||1));weapon.mods=["THREE-WAY"];weapon.patternOverride="spread";weapon.desc="Rare three-way fire pattern scaled to the current floor tier cap."}
+    if(!wanted||wanted===stage.id)return weapon;
+    if(wanted==="spread"){Object.assign(weapon,{id:"spread",name:`Spread Pulse ${stage.tier}`,displayName:`TIER ${stage.tier} · SPREAD PULSE`,shots:3,delay:Math.max(1.06,Number(stage.delay||1)),mods:["THREE-WAY"],patternOverride:"spread",desc:"Rare three-way fire pattern scaled to the current floor tier cap."})}
+    else if(wanted==="fire"){Object.assign(weapon,{id:"fire",name:`SID Fire Lance ${stage.tier}`,displayName:`TIER ${stage.tier} · SID FIRE LANCE`,element:"fire",shots:1,power:Math.max(2,Number(stage.power||1)+1),delay:Math.max(1.05,Number(stage.delay||1)*1.04),pierce:Math.max(1,Number(stage.pierce||0)),ttl:Math.max(20,Number(stage.ttl||18)+2),mods:["INCENDIARY","PIERCING"],patternOverride:"fire",desc:"Rare incendiary lance. Heavy single-shot fire with one point of penetration."})}
+    else if(wanted==="shock"){Object.assign(weapon,{id:"shock",name:`Shockwave Emitter ${stage.tier}`,displayName:`TIER ${stage.tier} · SHOCKWAVE EMITTER`,element:"shock",shots:8,power:Math.max(2,Number(stage.power||1)),delay:Math.max(1.18,Number(stage.delay||1)*1.12),ttl:5,pierce:0,mods:["OMNI-BURST"],patternOverride:"shock",desc:"Rare short-range eight-direction shock burst. One trigger pull still costs one ammo."})}
+    else if(wanted==="pierce"){Object.assign(weapon,{id:"pierce",name:`Piercing Beam ${stage.tier}`,displayName:`TIER ${stage.tier} · PIERCING BEAM`,shots:1,power:Math.max(2,Number(stage.power||1)),pierce:Math.max(2,Number(stage.pierce||0)+2),ttl:Math.max(21,Number(stage.ttl||18)+3),mods:["DEEP PIERCE"],patternOverride:"pierce",desc:"Rare beam pattern that cuts through multiple targets."})}
+    else if(wanted==="repeater"){Object.assign(weapon,{id:"repeater",name:`Rapid Repeater ${stage.tier}`,displayName:`TIER ${stage.tier} · RAPID REPEATER`,shots:1,delay:Math.min(.68,Math.max(.46,Number(stage.delay||1)*.72)),ttl:Math.max(18,Number(stage.ttl||18)),mods:["RAPID FIRE"],patternOverride:"repeater",desc:"Rare rapid-fire pattern scaled to the current floor tier cap."})}
+    else if(wanted==="pulse"){Object.assign(weapon,{id:"pulse",name:`Overcharged Pulse ${stage.tier}`,displayName:`TIER ${stage.tier} · OVERCHARGED PULSE`,shots:1,power:Math.max(2,Number(stage.power||1)+1),ttl:Math.max(22,Number(stage.ttl||18)+4),mods:["OVERCHARGED","LONGSHOT"],patternOverride:"pulse",desc:"Rare precision pulse with extra power and range."})}
     return weapon
+  }
+  function rareIncomingPattern(incoming){
+    const id=String(incoming?.patternOverride||incoming?.id||"").toLowerCase(),name=String(incoming?.displayName||incoming?.name||"").toLowerCase(),element=String(incoming?.element||"").toLowerCase();
+    if(RARE_PATTERNS.includes(id))return id;
+    if(/spread|three-way/.test(name))return"spread";
+    if(element==="fire"||/fire lance|incendiary|flame/.test(name))return"fire";
+    if(element==="shock"||/shockwave|shock/.test(name))return"shock";
+    if(/pierc/.test(name))return"pierce";
+    if(/repeater|rapid/.test(name))return"repeater";
+    return"pulse"
+  }
+  function nextRarePattern(current,preferred){
+    if(preferred&&preferred!==current)return preferred;
+    const start=Math.max(0,RARE_PATTERNS.indexOf(preferred||current));
+    for(let step=1;step<=RARE_PATTERNS.length;step++){const candidate=RARE_PATTERNS[(start+step)%RARE_PATTERNS.length];if(candidate!==current)return candidate}
+    return"pulse"
   }
   function deriveTier(player){
     if(!player||player.firearmUnlocked===false)return 0;
@@ -72,14 +95,19 @@
   }
   function applyPickup(player,incoming,baseEquip){
     if(!player||!dungeonMode())return baseEquip(player,incoming);
-    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),incomingSpread=String(incoming?.id||"").toLowerCase()==="spread"||String(incoming?.patternOverride||"")==="spread"||Array.isArray(incoming?.mods)&&incoming.mods.some(mod=>/three-way/i.test(String(mod))),incomingRarity=String(incoming?.rarity||""),rareSpread=incomingSpread&&["SIZZLER","GOLD MEDAL","ZZAP! 97%"].includes(incomingRarity);
+    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),incomingRarity=String(incoming?.rarity||""),incomingName=String(incoming?.displayName||incoming?.name||"Rare weapon"),rareWeapon=["SIZZLER","GOLD MEDAL","ZZAP! 97%"].includes(incomingRarity)||/\brare\b/i.test(incomingName);
     collapseOwnership(player);
     const tier=deriveTier(player);
-    if(rareSpread){
-      const next=Math.max(1,Math.min(cap,tier>0?tier+1:1));player.firearmUnlocked=true;player.weaponPatternOverride="spread";
-      const weapon=stageWeapon(next,"spread"),result=baseEquip(player,weapon);player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,"spread");collapseOwnership(player);
-      if(tier===0)state.acquisitions++;else if(next>tier)state.upgrades++;
-      try{S.sfx("weapon");showToast("RARE SPREAD WEAPON ACQUIRED",`${incomingRarity} Spread reward equipped as ${player.weapon.displayName} at the Floor ${floor} Tier ${cap} cap.`,"gold",8500)}catch(_){}
+    if(rareWeapon){
+      const preferred=rareIncomingPattern(incoming),currentPattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||player.weapon?.id||""),atCap=tier>=cap&&tier>0,pattern=atCap?nextRarePattern(currentPattern,preferred):preferred,next=Math.max(1,Math.min(cap,tier>0?tier+1:1)),rerolled=atCap&&pattern!==preferred;
+      player.firearmUnlocked=true;player.weaponPatternOverride=pattern;
+      const weapon=stageWeapon(next,pattern),result=baseEquip(player,weapon);player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,pattern);collapseOwnership(player);
+      if(tier===0)state.acquisitions++;else if(next>tier||pattern!==currentPattern)state.upgrades++;
+      try{
+        S.sfx("weapon");
+        const rerollText=rerolled?` Your current firearm already had the advertised ${preferred.toUpperCase()} pattern, so the duplicate was rerolled into ${pattern.toUpperCase()} instead.`:"";
+        showToast("RARE WEAPON INSTALLED",`${incomingRarity||"RARE"} ${incomingName} is now a real firearm upgrade: ${player.weapon.displayName} at the Floor ${floor} Tier ${cap} cap.${rerollText}`,"gold",9500)
+      }catch(_){}
       return result
     }
     if(tier>=cap&&tier>0){
@@ -135,7 +163,7 @@
         const status=load.querySelector("small");if(status)status.textContent=String(status.textContent||"").replace(/^[^•]+(?=\s•\sMAP)/,"ARCHIVE SWORD");
         panel.innerHTML=`<b>EVOLVING FIREARM · NOT ACQUIRED</b><span>ARCHIVE SWORD ACTIVE · UNLIMITED MELEE</span><small>Your first weapon pickup becomes Tier 1 Field Pulse. Floor ${floor} allows firearm progression up to Tier ${cap}.</small>`
       }else{
-        panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next weapon pickup upgrades this firearm to Tier ${tier+1}.`:`Floor ${floor} cap reached. Extra weapon pickups become ammunition${floor<5?`; Floor ${floor+1} unlocks the next tier`:"; maximum tier reached"}.`}</small>`
+        panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next weapon pickup upgrades this firearm to Tier ${tier+1}. Rare weapon families also install their advertised firing pattern.`:`Floor ${floor} cap reached. Common weapon caches become ammunition, but rare weapon rewards always install a meaningful firing pattern instead of converting to XP or score${floor<5?`; Floor ${floor+1} unlocks the next tier`:""}.`}</small>`
       }
       load.appendChild(panel);return true
     }catch(_){return false}
@@ -159,6 +187,6 @@
   document.addEventListener("ccg:floor-start",()=>{try{collapseOwnership(p1);collapseOwnership(p2)}catch(_){}},{passive:true});
 
   window.CCGLostSizzlerV142R47FirearmEvolution=Object.freeze({
-    version:"V10.42-r47-firearm-evolution",state,STAGES,FLOOR_CAP,capForFloor,stageWeapon,deriveTier,collapseOwnership,applyPickup,salvageAmmo,decorateInventory,install
+    version:"V10.42-r47-firearm-evolution",state,STAGES,FLOOR_CAP,RARE_PATTERNS,capForFloor,stageWeapon,rareIncomingPattern,nextRarePattern,deriveTier,collapseOwnership,applyPickup,salvageAmmo,decorateInventory,install
   });
 })();
