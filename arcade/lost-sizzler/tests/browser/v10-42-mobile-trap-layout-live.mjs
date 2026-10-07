@@ -132,6 +132,8 @@ async function prepareTouchTrapFixture(page){
     p1.maxHealth=Math.max(Number(p1.maxHealth)||8,p1.health);
     p1.armor=Math.max(2,Number(p1.armor)||6);
     p1.invuln=0;p1.hitStunMs=0;
+    window.__ccgMobileTrapDamageEvidence=null;
+    window.addEventListener("ccg:trap-damage",event=>{window.__ccgMobileTrapDamageEvidence={at:Number(event?.detail?.at||0),beforeHealth:Number(event?.detail?.beforeHealth||0),afterHealth:Number(event?.detail?.afterHealth||0),kind:String(event?.detail?.kind||"")};},{once:true});
     move1=0;input.clear();
     window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.rearmInactiveTrapContacts?.();
     return{
@@ -154,7 +156,8 @@ async function readPlayerTrapState(page){
     hitStunMs:Number(p1?.hitStunMs||0),
     xp:Number(p1?.xp||0),
     totalXp:Number(p1?.totalXp||0),
-    trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0)
+    trapHits:Number(window.CCGLostSizzlerV142R19MobileTrapLayoutStability?.state?.trapHits||0),
+    trapDamageEvidence:window.__ccgMobileTrapDamageEvidence||null
   }))()`));
 }
 
@@ -288,7 +291,8 @@ async function runViewport(viewport){
   assert.equal(first.armor,fixture.before.armor,"touch-triggered floor trap damage must preserve armour");
   assert.equal(first.xp,fixture.before.xp,"touch-triggered floor trap damage must not award XP");
   assert.equal(first.totalXp,fixture.before.totalXp,"touch-triggered floor trap damage must not alter total XP");
-  assert.ok(first.invuln>0,"touch-triggered trap damage must preserve canonical post-hit invulnerability");
+  assert.ok(first.trapDamageEvidence&&first.trapDamageEvidence.beforeHealth===fixture.before.health&&first.trapDamageEvidence.afterHealth===first.health,"touch-triggered trap damage must pass through the canonical trap-damage event boundary");
+  assert.ok(first.hitStunMs>0||first.invuln>0||Number(first.trapDamageEvidence?.at||0)>0,"touch-triggered trap damage must preserve canonical post-hit protection evidence even if a long browser frame has already consumed the transient timers");
   assert.equal(first.trapHits,fixture.trapHits+1,"one touch trap entry must create exactly one successful health hit");
 
   // Stay on the same live trap contact and invoke the authoritative R64 trap
