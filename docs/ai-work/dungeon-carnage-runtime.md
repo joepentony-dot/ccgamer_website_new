@@ -1,3 +1,8 @@
+## R115 rare firearm verification — 7 October 2026
+
+- Existing R47 browser coverage now proves capped same-archetype refinement, alternate-archetype swap, mastered duplicate reforge, and common-only salvage separation.
+- Runtime did not need modification.
+
 ## R115 browser qualification update — 7 October 2026
 
 - Reconciled the existing browser stability contract with the new Tutorial completion copy.

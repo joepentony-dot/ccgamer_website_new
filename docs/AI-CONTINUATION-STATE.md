@@ -1,3 +1,9 @@
+## R115 rare-weapon cap verification — 7 October 2026
+
+- Audited R47 rare-at-cap logic against the explicit reward requirements. Runtime already supports: alternate rare archetype swap, same-archetype refinement up to +3, and mastered duplicate reforge to the next meaningful archetype. Only ordinary COMMON capped caches enter the ammo -> XP -> score salvage chain.
+- Extended the existing R47 Chromium contract to exercise all three rare cases directly and verify none of them gains ammo through common salvage. Existing common-cache salvage coverage remains.
+- No new test file or weapon runtime owner was introduced.
+
 ## R115 Chromium qualification repairs — 7 October 2026
 
 - Exact head `a4f647e0f3b26211f081ff7d7f60667de9601b78` passed PR Qualification and Node contracts. Full Qualification reached all Chromium shards; shards 3/5/6 passed, while shards 1 and 4 exposed browser-test assumptions.
