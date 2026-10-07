@@ -292,7 +292,7 @@ try{
   }
 
   const sealedDeath=await page.evaluate(()=>{
-    const room=(world.rooms||[]).find(r=>r.id!==host.sigilRoomId&&(host.doors||[]).some(d=>d.type==="room"&&d.roomId===r.id));
+    const room=(world.rooms||[]).find(r=>r.id!==host.sigilRoomId&&!r.sanctuary&&!(world.sanctuaryRooms||[]).includes(r.id)&&(host.doors||[]).some(d=>d.type==="room"&&d.roomId===r.id));
     if(!room)return{ok:false,reason:"no ordinary room with doors"};
     const pos=[];
     for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0){pos.push({x,y});break}
