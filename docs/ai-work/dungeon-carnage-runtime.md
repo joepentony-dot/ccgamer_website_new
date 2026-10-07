@@ -1,3 +1,9 @@
+## R116 runtime correction checkpoint — 7 October 2026
+
+- Cartographer's Eye UI activation path repaired without adding a parallel inventory owner.
+- Magic Sack shop semantics changed to repeatable rare stock with run-wide 10/15/20 Gold pricing through the existing Dungeon Gold shop owner; +3 remains the maximum stack-cap bonus.
+- Next runtime priorities: Ward-Break stack normalisation, Essence scarcity, armour-drop scarcity and Sanctuary immunity from idle hazards/enemy spawn/entry.
+
 ## R115 rare firearm verification — 7 October 2026
 
 - Existing R47 browser coverage now proves capped same-archetype refinement, alternate-archetype swap, mastered duplicate reforge, and common-only salvage separation.
