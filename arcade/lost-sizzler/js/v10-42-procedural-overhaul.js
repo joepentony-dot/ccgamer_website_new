@@ -187,9 +187,22 @@
     return result;
   };
 
-  function awardEssence(player,amount,source){
-    if(!player||amount<=0)return false;initRpg(player);player.banishmentEssence+=amount;const need=essenceCost(player),have=player.banishmentEssence;
-    announce("BANISHMENT ESSENCE",`${source}. Vessel ${have}/${need}${have>=need?" — a Banishment Flask can be distilled at an Alchemist.":"."}`,"purple",7600);return true;
+  function floorEssenceState(player,h=currentHost(),r=currentRun()){
+    if(!player||!h||!r)return{budget:0,awarded:0,threats:0};
+    r.v142EssenceFloorBudget=r.v142EssenceFloorBudget&&typeof r.v142EssenceFloorBudget==="object"?r.v142EssenceFloorBudget:{};
+    const key=String(Math.max(1,Number(r.floor)||1));
+    if(!r.v142EssenceFloorBudget[key]){
+      const floorNo=Math.max(1,Number(r.floor)||1),voidStalker=(h.enemies||[]).some(enemy=>enemy?.deathStalker),countActive=Boolean(C.stalker?.enabled&&floorNo>=Math.max(1,Number(C.stalker?.startFloor)||1)&&h.stalker),threats=Math.min(2,(voidStalker?1:0)+(countActive?1:0)),cost=essenceCost(player),carriedCharge=PROG.inventoryKindCount?.(player,"banishment")>0?cost:0,held=Math.min(cost,Math.max(0,Math.floor(Number(player.banishmentEssence)||0)));
+      r.v142EssenceFloorBudget[key]={budget:Math.max(0,threats*cost-carriedCharge-held),awarded:0,threats};
+    }
+    return r.v142EssenceFloorBudget[key]
+  }
+  function awardEssence(player,amount,source,options={}){
+    if(!player||amount<=0)return false;initRpg(player);const need=essenceCost(player),have=Math.min(need,Math.max(0,Math.floor(Number(player.banishmentEssence)||0)));player.banishmentEssence=have;
+    const state=floorEssenceState(player),room=Math.max(0,need-have),budget=Math.max(0,Number(state.budget||0)-Number(state.awarded||0)),add=Math.min(Math.max(0,Math.floor(Number(amount)||0)),room,budget);
+    if(add<=0)return false;
+    player.banishmentEssence=have+add;state.awarded=Math.max(0,Number(state.awarded||0))+add;
+    if(!options.silent)announce("BANISHMENT ESSENCE",`${source}. Vessel ${player.banishmentEssence}/${need}${player.banishmentEssence>=need?" — a Ward-Break Charge can be distilled at an Alchemist.":"."}`,"purple",7600);return true;
   }
 
   function scanEssenceSources(){
@@ -197,11 +210,11 @@
     for(const enemy of h.enemies||[]){
       if(enemy.alive||enemy.v142EssenceAwarded)continue;
       if(!(enemy.keyGuardian||enemy.follower||enemy.champion||enemy.guardian||enemy.ccgBoss))continue;
-      enemy.v142EssenceAwarded=true;awardEssence(player,1,`${enemy.championName||enemy.follower?.name||"A major dungeon threat"} released spectral residue`);
+      if(awardEssence(player,1,`${enemy.championName||enemy.follower?.name||"A major dungeon threat"} released spectral residue`))enemy.v142EssenceAwarded=true;
     }
-    for(const generator of h.generators||[])if(!generator.alive&&!generator.v142EssenceAwarded){generator.v142EssenceAwarded=true;awardEssence(player,1,"A corrupted dungeon anchor was cleansed")}
-    for(const shrine of h.shrines||[])if(!shrine.active&&!shrine.v142EssenceAwarded){shrine.v142EssenceAwarded=true;awardEssence(player,1,"A spent shrine released supernatural residue")}
-    for(const arena of h.arenas||[])if(arena.cleared&&!arena.v142EssenceAwarded){arena.v142EssenceAwarded=true;awardEssence(player,1,"The sealed combat chamber was cleansed")}
+    for(const generator of h.generators||[])if(!generator.alive&&!generator.v142EssenceAwarded&&awardEssence(player,1,"A corrupted dungeon anchor was cleansed"))generator.v142EssenceAwarded=true;
+    for(const shrine of h.shrines||[])if(!shrine.active&&!shrine.v142EssenceAwarded&&awardEssence(player,1,"A spent shrine released supernatural residue"))shrine.v142EssenceAwarded=true;
+    for(const arena of h.arenas||[])if(arena.cleared&&!arena.v142EssenceAwarded&&awardEssence(player,1,"The sealed combat chamber was cleansed"))arena.v142EssenceAwarded=true;
   }
 
   function applySigilPower(player,domain){
@@ -340,6 +353,8 @@
     initRpg,
     statSummary,
     attributeEffect,
-    essenceCost
+    essenceCost,
+    floorEssenceState,
+    awardEssence
   };
 })();
