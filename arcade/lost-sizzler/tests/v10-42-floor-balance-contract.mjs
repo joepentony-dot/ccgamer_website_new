@@ -12,6 +12,7 @@ const config=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/config.js'),
 const localRuntime=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/game-local-runtime.js'),'utf8');
 const gamePlay=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/game-play.js'),'utf8');
 const systemsSource=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/systems.js'),'utf8');
+const progressionSource=fs.readFileSync(path.join(root,'arcade/lost-sizzler/js/progression.js'),'utf8');
 const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 const systems={decorate(_world,host){return host}};
@@ -41,6 +42,9 @@ assert(systemsSource.includes('!e.follower&&!e.guardian&&!e.champion&&!e.deathSt
 assert(systemsSource.includes('host.v142DifficultyPopulation'),'Runtime diagnostics must expose the applied Casual crowd reduction.');
 assert(localRuntime.includes('Number(dt||0)*tempo'),'Authoritative enemy AI must apply the difficulty enemyTempo multiplier.');
 assert(gamePlay.includes('PGR.difficulty(run)?.damageGraceMs||800'),'Player damage recovery must honour the longer Casual damage grace window.');
+assert(progressionSource.includes('const roll=r(),weaponCut=.34+idx*.04'),'Chest loot must derive scarce armour/potion bands from the weapon cutoff.');
+assert(progressionSource.includes('if(roll<weaponCut+.06)return{kind:"armour"'),'Routine chest armour must occupy only a six-point probability band.');
+assert(progressionSource.includes('if(roll<weaponCut+.09)return{kind:"potion"'),'Routine Restoration Potions must remain scarcer than armour rather than inheriting the old broad band.');
 
 const expectedDamage=[.80,.84,.88,.92,.96,1.00,1.04,1.08,1.12,1.16,1.20,1.23,1.26,1.29,1.32];
 for(let floor=1;floor<=15;floor++){
