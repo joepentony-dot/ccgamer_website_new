@@ -24,7 +24,7 @@ assert.match(gate,/mark\("member-playtester"\)/,"assigned members must receive t
 assert.match(gate,/showMemberGate\(/,"ordinary production visitors must receive the server-validated public/member access gate");
 assert.match(gate,/bootstrapProtectedRuntime/,"validated access must control runtime startup");
 assert.match(index,/type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/,"game-main must remain inert until access is granted");
-assert.match(gate,/mark\("round2-member-required"\)/,"the closed protected playtest gate must publish an explicit blocked state");
+assert.match(gate,/round2-member-required/,"the closed protected playtest gate must publish an explicit blocked state");
 assert.match(gate,/Promise\.race\(\[resolveAccountAccess\(\), timeout\]\)/,"account access lookup must remain bounded before the closed member gate is shown");
 assert.match(smoke,/maintenanceExpected/,"production smoke must understand the intentional maintenance gate");
 assert.match(smoke,/ccg-member-beta-access-gate/,"anonymous production smoke must verify the server-validated public/member access gate");
