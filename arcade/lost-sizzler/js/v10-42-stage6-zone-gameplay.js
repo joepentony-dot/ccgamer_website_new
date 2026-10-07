@@ -13,11 +13,21 @@
   if(!C||!W||!SYS||typeof SYS.decorate!=="function")return;
 
   const PROFILES=Object.freeze({
-    1:Object.freeze({id:"threshold",enemyKinds:["scout","ambusher","hunter"],trapKinds:["spike","shock","fire"],trapPeriod:2300,generatorScale:1.08,guardianPattern:"measured-hunt"}),
-    2:Object.freeze({id:"iron",enemyKinds:["guard","knight","charger"],trapKinds:["shock","spike","shock"],trapPeriod:2050,generatorScale:.96,guardianPattern:"armoured-advance"}),
-    3:Object.freeze({id:"bone",enemyKinds:["skeleton","ghost","root"],trapKinds:["spike","shock","spike"],trapPeriod:1920,generatorScale:.90,guardianPattern:"crypt-pressure"}),
-    4:Object.freeze({id:"ash",enemyKinds:["firebreather","charger","ranger"],trapKinds:["fire","fire","spike"],trapPeriod:1740,generatorScale:.84,guardianPattern:"ember-surge"}),
-    5:Object.freeze({id:"sigil",enemyKinds:["ranger","root","guard"],trapKinds:["shock","fire","shock"],trapPeriod:1640,generatorScale:.80,guardianPattern:"sigil-crossfire"})
+    1:Object.freeze({id:"threshold",floor:1,tier:1,enemyKinds:["scout","ambusher","hunter"],hazardKinds:["blade","arrows","embers"],hazardBase:2450,generatorScale:1.08,guardianPattern:"measured-hunt"}),
+    2:Object.freeze({id:"driveworks",floor:2,tier:1,enemyKinds:["scout","guard","hunter"],hazardKinds:["arrows","blade","arrows"],hazardBase:2380,generatorScale:1.04,guardianPattern:"drive-crossfire"}),
+    3:Object.freeze({id:"iron",floor:3,tier:1,enemyKinds:["guard","knight","charger"],hazardKinds:["blade","arrows","blade"],hazardBase:2320,generatorScale:.98,guardianPattern:"armoured-advance"}),
+    4:Object.freeze({id:"budget",floor:4,tier:2,enemyKinds:["ambusher","hunter","guard"],hazardKinds:["blade","embers","arrows"],hazardBase:2250,generatorScale:.95,guardianPattern:"vault-ambush"}),
+    5:Object.freeze({id:"cartridge",floor:5,tier:2,enemyKinds:["charger","hunter","ranger"],hazardKinds:["arrows","blade","embers"],hazardBase:2180,generatorScale:.92,guardianPattern:"cartridge-rush"}),
+    6:Object.freeze({id:"tapes",floor:6,tier:2,enemyKinds:["ambusher","ghost","ranger"],hazardKinds:["arrows","embers","blade"],hazardBase:2120,generatorScale:.90,guardianPattern:"tape-labyrinth"}),
+    7:Object.freeze({id:"bone",floor:7,tier:3,enemyKinds:["skeleton","ghost","root"],hazardKinds:["arrows","blade","arrows"],hazardBase:2060,generatorScale:.88,guardianPattern:"crypt-pressure"}),
+    8:Object.freeze({id:"demo",floor:8,tier:3,enemyKinds:["ghost","ranger","ambusher"],hazardKinds:["embers","arrows","blade"],hazardBase:2000,generatorScale:.86,guardianPattern:"demo-crossfire"}),
+    9:Object.freeze({id:"modem",floor:9,tier:3,enemyKinds:["ranger","guard","root"],hazardKinds:["arrows","blade","embers"],hazardBase:1940,generatorScale:.84,guardianPattern:"modem-pincer",unpredictable:true}),
+    10:Object.freeze({id:"sid",floor:10,tier:4,enemyKinds:["firebreather","ranger","charger"],hazardKinds:["embers","blade","arrows"],hazardBase:1880,generatorScale:.82,guardianPattern:"sid-furnace",unpredictable:true}),
+    11:Object.freeze({id:"ash",floor:11,tier:4,enemyKinds:["firebreather","charger","root"],hazardKinds:["embers","blade","embers"],hazardBase:1820,generatorScale:.80,guardianPattern:"ember-surge",unpredictable:true}),
+    12:Object.freeze({id:"foundry",floor:12,tier:4,enemyKinds:["knight","firebreather","ranger"],hazardKinds:["blade","embers","arrows"],hazardBase:1760,generatorScale:.78,guardianPattern:"foundry-crush",unpredictable:true}),
+    13:Object.freeze({id:"scores",floor:13,tier:5,enemyKinds:["skeleton","ghost","hunter"],hazardKinds:["arrows","embers","blade"],hazardBase:1710,generatorScale:.76,guardianPattern:"score-haunt",unpredictable:true}),
+    14:Object.freeze({id:"crt",floor:14,tier:5,enemyKinds:["ranger","root","ambusher"],hazardKinds:["arrows","blade","embers"],hazardBase:1670,generatorScale:.74,guardianPattern:"crt-maze",unpredictable:true}),
+    15:Object.freeze({id:"citadel",floor:15,tier:5,enemyKinds:["ranger","root","guard","firebreather"],hazardKinds:["embers","arrows","blade"],hazardBase:1620,generatorScale:.72,guardianPattern:"citadel-crossfire",unpredictable:true})
   });
 
   const TRAP_FAMILIES=Object.freeze(["fire","spike","shock"]);
@@ -25,7 +35,7 @@
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,Number(v)||0));
   const floorOf=runState=>clamp(Math.floor(Number(runState?.floor)||1),1,C.maxFloors||5);
-  const profileForFloor=floor=>PROFILES[clamp(Math.floor(Number(floor)||1),1,5)]||PROFILES[1];
+  const profileForFloor=floor=>PROFILES[clamp(Math.floor(Number(floor)||1),1,C.maxFloors||15)]||PROFILES[1];
 
   function roomFor(worldState,entity){
     if(!worldState||!entity)return null;
@@ -49,10 +59,20 @@
     if(protectedEnemy(enemy))return enemy;
     const room=roomFor(worldState,enemy),role=routeRole(room),roll=hash32(`${seed}|${enemy.id}|stage6`)%100;
     enemy.v142Zone=profile.id;enemy.v142ZoneRouteRole=role;
+    const archetypes={
+      2:{ambusher:"Vault Sneak",hunter:"Tape Hunter",guard:"Drive Guard",charger:"Cartridge Brute",ranger:"Tape Marksman",ghost:"Static Wraith"},
+      3:{skeleton:"Crypt Rattler",ghost:"Moss Wraith",root:"Grave Binder",ranger:"Modem Marksman",guard:"Line Sentinel",ambusher:"Raster Lurker"},
+      4:{firebreather:"SID Burner",charger:"Ember Brute",root:"Ash Binder",knight:"Foundry Juggernaut",ranger:"Furnace Marksman"},
+      5:{skeleton:"Score Revenant",ghost:"High-Score Wraith",hunter:"CRT Hunter",ranger:"CRT Hexer",root:"Blood Tendril",ambusher:"Raster Phantom",guard:"Citadel Sentinel",firebreather:"Blood Furnace"}
+    };
+    enemy.r114Archetype=(archetypes[profile.tier]||{})[enemy.kind]||"";
+    if(profile.tier>=3){enemy.moveSpeedScale=Math.max(.72,Number(enemy.moveSpeedScale||1)*(1+.025*(profile.tier-2)));enemy.attackCooldown=Math.max(430,Math.round(Number(enemy.attackCooldown||900)*(1-.035*(profile.tier-2))))}
+    if(profile.tier>=4&&role==="crossroads")enemy.maxArmor=Math.max(Number(enemy.maxArmor||enemy.armor||0),profile.tier-1),enemy.armor=Math.max(Number(enemy.armor||0),Math.min(enemy.maxArmor,profile.tier-1));
     // Retype only a deterministic subset of ordinary non-champion enemies.
     // Champions retain their established identity/weakness/reward ownership.
     if(!enemy.champion&&roll<46){
       enemy.kind=ordinaryKind(profile,seed,room,enemy);
+      const names=archetypes[profile.tier]||{};enemy.r114Archetype=names[enemy.kind]||enemy.r114Archetype||"";
       enemy.v142ZoneRetyped=true;
     }
     if(profile.id==="iron"&&role==="crossroads"){
@@ -209,13 +229,15 @@
   }
   function tuneHazard(hazard,profile,seed,worldState){
     if(!hazard)return hazard;
-    const room=worldState?.rooms?.[hazard.roomId]||null,role=routeRole(room),salt=hash32(`${seed}|${hazard.id}|hazard|${role}`);
-    const kinds=profile.id==="ash"?["embers","blade","embers"]:profile.id==="iron"?["blade","arrows","blade"]:profile.id==="bone"?["arrows","blade","arrows"]:profile.id==="sigil"?["arrows","embers","blade"]:["blade","arrows","embers"];
+    const room=worldState?.rooms?.[hazard.roomId]||null,role=routeRole(room),salt=hash32(`${seed}|${hazard.id}|hazard|${role}|F${profile.floor||1}`);
+    const kinds=Array.isArray(profile.hazardKinds)&&profile.hazardKinds.length?profile.hazardKinds:["blade","arrows","embers"];
     hazard.type=kinds[salt%kinds.length];
-    const base=profile.id==="ash"?2080:profile.id==="sigil"?1980:profile.id==="bone"?2220:profile.id==="iron"?2180:2450;
+    const base=Math.max(1500,Number(profile.hazardBase)||2300);
     hazard.period=Math.round(base*(role==="crossroads"?.92:1));
-    hazard.warningMs=Math.max(600,Math.round(hazard.period*.32));
-    hazard.activeMs=Math.max(500,Math.round(hazard.period*.27));
+    hazard.warningMs=Math.max(profile.unpredictable?520:600,Math.round(hazard.period*(profile.unpredictable?.29:.32)));
+    hazard.activeMs=Math.max(480,Math.round(hazard.period*(profile.unpredictable?.30:.27)));
+    hazard.r114Unpredictable=Boolean(profile.unpredictable);
+    hazard.r114PatternSeed=salt%97;
     hazard.v142Zone=profile.id;hazard.v142ZoneRouteRole=role;
     state.hazardsTuned++;return hazard;
   }
