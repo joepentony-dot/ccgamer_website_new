@@ -29,8 +29,8 @@ assert.match(source,/function equipWearable/,"wearables must have one equip tran
 assert.match(source,/function unequipWearable/,"wearables must support explicit unequip");
 assert.match(source,/PGR\.inventoryRemove\(player,index\)/,"equipping must remove the carried item from inventory");
 assert.match(source,/PGR\.inventoryAdd\(player,old\)/,"swapping must return the old equipped item to inventory");
-assert.match(source,/if\(slot==="head"\)return\{sightBonus:/,"generated Head wearables must emit the sightBonus field consumed by sight/equipment UI");
-assert.match(source,/if\(slot==="hands"\)return\{scavengerBonus:/,"generated Hands wearables must emit the scavengerBonus field consumed by ammo/equipment logic");
+assert.match(source,/if\(slot==="head"\)return\{\.\.\.base,sightBonus:/,"generated Enchanted Head wearables must preserve tier armour and emit the sightBonus field consumed by sight/equipment UI");
+assert.match(source,/if\(slot==="hands"\)return\{\.\.\.base,scavengerBonus:/,"generated Enchanted Hands wearables must preserve tier armour and emit the scavengerBonus field consumed by ammo/equipment logic");
 assert.match(source,/PGR\.effectiveSight=function r80WearableSight/,"Head equipment must affect the canonical sight calculation");
 assert.match(source,/player\.scavenger=Math\.max\(0,Number\(player\.scavenger\|\|0\)-old\+next\)/,"Hands equipment must compose with existing Scavenger progression rather than replacing it");
 assert.match(source,/player\._v105Base\.moveMultiplier=nextBase/,"Feet equipment must update the V10.5 temporary-effect base when boots change during an active movement effect");
