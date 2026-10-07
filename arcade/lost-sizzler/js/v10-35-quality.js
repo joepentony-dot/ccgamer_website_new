@@ -158,6 +158,9 @@
 
   function updateSanctuaryRegen(dt){
     ensureSanctuaryTiles();
+    const stamp=Number(host?.floorElapsed??run?.elapsed??0);
+    if(host&&Number(host._v135SanctuaryRegenStamp)===stamp)return;
+    if(host)host._v135SanctuaryRegenStamp=stamp;
     for(const tile of host?.sanctuaryRegeneration||[])for(const p of localPlayers()){
       const on=p.x===tile.x&&p.y===tile.y&&p.health>0&&p.health<p.maxHealth;
       const current=Number(tile.accumulators[p.id]||0);
@@ -391,7 +394,7 @@
   }
 
   window.CCGLostSizzlerQualityV135={
-    validateDoorAccess,expelSanctuaryEnemies,installSanctuaryTiles,ensureSanctuaryTiles,purgeCampingHazards,inSanctuary,
+    validateDoorAccess,expelSanctuaryEnemies,installSanctuaryTiles,ensureSanctuaryTiles,updateSanctuaryRegen,drawRegenTiles,purgeCampingHazards,inSanctuary,
     get assets(){return assets}
   };
 })();
