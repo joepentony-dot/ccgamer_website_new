@@ -239,7 +239,7 @@ window.CCGSystems=(()=>{
     if(run)run.torchSequence=[...seq];return seq
   }
   function memorySequenceFor(run,count=5){
-    const total=Math.max(3,Math.min(9,Math.floor(Number(count)||5)),r=PGR.seededRandom(`${run?.seed||"CCG"}-F${run?.floor||1}-V10.42-R114-MEMORY-${total}`),out=[];
+    const total=Math.max(3,Math.min(9,Math.floor(Number(count)||5))),r=PGR.seededRandom(`${run?.seed||"CCG"}-F${run?.floor||1}-V10.42-R114-MEMORY-${total}`),out=[];
     while(out.length<total){const n=Math.floor(r()*total);if(n!==out[out.length-1])out.push(n)}return out
   }
   function roomHasCoreFeature(host,roomId){
