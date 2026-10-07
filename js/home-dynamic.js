@@ -385,6 +385,11 @@ function onYouTubePlayerReady(event) {
     if (iframe?.id) {
         CCG_HOME_YT_PLAYERS.set(iframe.id, player);
     }
+    if (iframe?.dataset?.autoplayRequested === "true") {
+        pauseOtherFeaturedVideos(iframe);
+        playVideo(player);
+        iframe.dataset.autoplayRequested = "false";
+    }
 }
 
 function ensureYouTubePlayer(iframe) {
@@ -891,27 +896,37 @@ function buildVideoCard(game, systemLabel, index) {
 
     const playButton = card.querySelector('[data-ccg-video-play]');
     const iframe = card.querySelector('[data-ccg-video-iframe]');
-    const overlay = card.querySelector('.home-video-card__overlay');
-    const isMobileDevice = Boolean(isMobileViewport() || MOBILE_MEDIA?.matches || COARSE_POINTER?.matches);
-
-    if (hasVideo && iframe && isMobileDevice) {
-        iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&playsinline=1&fs=1&enablejsapi=1`;
-        iframe.dataset.loaded = "true";
-        if (overlay) {
-            overlay.style.pointerEvents = "none";
-        }
-    }
 
     if (hasVideo && playButton && iframe) {
-        playButton.onclick = () => {
-            if (!iframe.dataset.loaded) {
-                iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1&enablejsapi=1`;
-                iframe.dataset.loaded = "true";
+        const startPlayback = () => {
+            const params = new URLSearchParams({
+                rel: "0",
+                modestbranding: "1",
+                controls: "1",
+                playsinline: "1",
+                fs: "1",
+                enablejsapi: "1",
+                autoplay: "1"
+            });
+            if (window.location?.origin && window.location.origin !== "null") {
+                params.set("origin", window.location.origin);
             }
+
             card.classList.add("is-playing");
+            iframe.dataset.loaded = "true";
+            iframe.dataset.autoplayRequested = "true";
+            iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?${params.toString()}`;
+
             ensureYouTubePlayer(iframe);
-            pauseOtherFeaturedVideos(iframe);
+            const readyPlayer = CCG_HOME_YT_PLAYERS.get(iframe.id);
+            if (readyPlayer) {
+                pauseOtherFeaturedVideos(iframe);
+                playVideo(readyPlayer);
+                iframe.dataset.autoplayRequested = "false";
+            }
         };
+
+        playButton.addEventListener("click", startPlayback);
     }
 
     return card;
