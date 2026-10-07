@@ -14,6 +14,11 @@ assert.match(src,/const next=Math\.max\(1,Math\.min\(cap,tier\+1\)\)/,"first fir
 assert.match(src,/player\.ownedWeapons=\[clone\(canonical\)\]/,"only one acquired firearm may remain owned");
 assert.match(src,/WEAPON CAPPED — AMMO RESTORED/,"capped pickups must convert first to a useful ammo reward");
 assert.match(src,/WEAPON CAPPED — \+10 XP/,"full-ammo capped pickups must retain the small XP fallback");
+assert.match(src,/rareSpread=incomingSpread&&\["SIZZLER","GOLD MEDAL","ZZAP! 97%"\]\.includes\(incomingRarity\)/,"explicit rare Spread drops must bypass ordinary capped-cache salvage");
+assert.match(src,/player\.weaponPatternOverride="spread"/,"a collected rare Spread reward must persist its three-way-fire identity");
+assert.match(src,/stageWeapon\(next,"spread"\)/,"rare Spread rewards must be equipped at the highest tier permitted by the current floor cap");
+assert.match(src,/RARE SPREAD WEAPON ACQUIRED/,"rare Spread acquisition must tell the player the advertised weapon was actually equipped");
+assert.match(src,/const pattern=String\(player\.weaponPatternOverride\|\|player\.weapon\?\.patternOverride\|\|""\)/,"later normal tier upgrades must preserve an earned rare Spread pattern");
 assert.match(src,/WEAPON ACQUIRED/,"first weapon pickup must be distinguished from later upgrades");
 assert.match(src,/WEAPON EVOLVED/,"later weapon pickups must use the generic evolution label");
 assert.match(src,/ARCHIVE SWORD ACTIVE/,"Inventory must explain the pre-firearm sword state");
