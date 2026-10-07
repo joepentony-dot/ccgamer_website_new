@@ -17,7 +17,7 @@ const railFinalizer=read("js/v10-41-r29-loop-finalizer.js");
 assert.match(core,/let pendingPlayFullscreenRequest=null/,"fullscreen requests must share one in-flight browser request");
 assert.match(core,/if\(pendingPlayFullscreenRequest\)return pendingPlayFullscreenRequest/,"a launch must not duplicate a browser fullscreen request");
 assert.match(guidance,/function launchSolo\(tutorial\)[\s\S]*result=startSolo\(\)/,"Tutorial must delegate its trusted launch click directly to the canonical startSolo owner");
-assert.match(core,/async function startSolo\(\)\{const audio=S\.start\(\),fs=requestPlayFullscreen\(\);await Promise\.all\(\[audio,fs\]\);beginRun\(\)\}/,"canonical startSolo must start authored audio and request fullscreen inside the same trusted launch task before beginning the run");
+assert.match(core,/async function startSolo\(\)\{const audio=S\.start\(\),fs=requestPlayFullscreen\(\),\[,fullscreen\]=await Promise\.all\(\[audio,fs\]\);if\(!fullscreen\)return false;return beginRun\(\)\}/,"canonical startSolo must start authored audio and request fullscreen inside the same trusted launch task, refuse windowed gameplay, then begin the run");
 assert.match(css,/R51 regression guard: ordinary reports belong in a compact rail below the[\s\S]*grid-template-rows:minmax\(0,1fr\) 74px!important/,"desktop reports must reserve a lower rail beneath the dungeon");
 assert.match(css,/\.game-message-rail #pickup-toast\{[\s\S]*position:static!important/,"routine notices must be static within the message rail");
 assert.doesNotMatch(css,/R51 regression guard[\s\S]*\.pickup-toast\{[\s\S]*position:absolute!important/,"the regression guard must not restore an in-canvas overlay");

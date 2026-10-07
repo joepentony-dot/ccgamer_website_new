@@ -9,6 +9,7 @@ const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 
 const html=read("index.html");
 const main=read("js/game-main.js");
+const core=read("js/game-core.js");
 const landing=read("js/v10-41-landing-notification-polish.js");
 const geometry=read("css/v10-41-r29.css");
 const css=read("css/game.css");
@@ -20,6 +21,10 @@ assert.doesNotMatch(html,/class="shop-note"[\s\S]*id="shop-close"/,"Leave Shop m
 
 assert.ok(main.includes('$("solo-btn")?.addEventListener("click",()=>{void requestPlayFullscreen();startSolo()})'),"Start Game must request fullscreen from the click gesture");
 assert.ok(main.includes('$("tutorial-zone-btn")?.addEventListener("click",()=>{void requestPlayFullscreen()},{capture:true})'),"Tutorial launch must request fullscreen from the click gesture");
+assert.match(core,/async function startSolo\(\)\{const audio=S\.start\(\),fs=requestPlayFullscreen\(\),\[,fullscreen\]=await Promise\.all\(\[audio,fs\]\);if\(!fullscreen\)return false;return beginRun\(\)\}/,"Start Game and Tutorial must not begin a run unless fullscreen succeeds");
+assert.match(main,/resumeSavedRun=async function\(\)[\s\S]*\[,fullscreen\]=await Promise\.all\(\[audio,fs\]\);[\s\S]*if\(!fullscreen\)return false;/,"saved-run restore must remain fullscreen-gated");
+assert.match(main,/async function resumePausedRun\(\)[\s\S]*document\.fullscreenElement\?true:await requestPlayFullscreen\(\)[\s\S]*if\(!fullscreen\)return false;/,"pause resume must restore fullscreen before gameplay continues");
+assert.match(main,/fullscreenchange[\s\S]*live&&!document\.fullscreenElement[\s\S]*openPauseMenu\(\)/,"leaving browser fullscreen during a live run must pause gameplay");
 
 assert.ok(landing.includes('const rail=document.querySelector(".game-message-rail"),pickup=document.getElementById("pickup-toast")'),"major notifications must resolve the message rail owner explicitly");
 assert.ok(landing.includes("rail.insertBefore(panel,pickup)"),"major notifications must occupy the message rail before the ordinary pickup slot");

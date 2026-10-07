@@ -164,15 +164,15 @@ function tryDoor(p,x,y){
   p.bronzeKeys--;d.locked=false;stats.doors++;shake=5;
   showToast("BRONZE DOOR UNLOCKED","The lock releases. The door is opening now.","gold",8500);updateQuests();beginDoorOpening(d,1050);return false
 }
-function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
+function chestScoreReward(chest){if(chest?.weightBridgeReward)return 1500;return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
   if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
   const paidBronzeKey=Boolean(chest.locked&&!roomKeyPaid);if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;if(paidBronzeKey)try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
-  const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
+  const loot=chest.loot||(chest.weightBridgeReward?(PGR.magicSackTier?.(p)||0)<3?{kind:"magicSack",rarity:"GOLD MEDAL",name:"Magic Sack"}:{kind:"mapReveal",rarity:"GOLD MEDAL",name:"Cartographer's Eye"}:PGR.lootForChest(chest,run,Math.random)),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
-  showToast("CHEST OPENED",`Inside: ${name}. +${scoreReward.toLocaleString()} score.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",7000);
+  showToast(chest.weightBridgeReward?"TRICKSTER CACHE OPENED":"CHEST OPENED",chest.weightBridgeReward?`The far-side prize pays off: ${name}, +${scoreReward.toLocaleString()} score and a high-tier bridge reward.`:`Inside: ${name}. +${scoreReward.toLocaleString()} score.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",chest.weightBridgeReward?9000:7000);
   floatText(chest.x,chest.y,`+${scoreReward.toLocaleString()} SCORE`,P.gold,{life:2600});
   setTimeout(()=>{if(["playing","inventory"].includes(mode)){floatPickupText(p,name,col);applyLoot(loot,p)}},500);
   return true
@@ -180,10 +180,19 @@ function openChest(p,chest){
 function tryChest(p,x,y){const c=W.chestAt(host,x,y);return c?openChest(p,c):true}
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.walkable(world.map,p.x+dx,p.y,host)&&W.walkable(world.map,p.x,p.y+dy,host)}
 function activateSwitch(s,p,shot=false){
-  if(!s?.active)return false;s.active=false;s.toggled=true;const d=host.doors.find(x=>x.id===s.doorId);if(d){d.locked=false;if(s.revealSecret){d.hidden=false;d.discovered=true;stats.secrets++;run.stats.secrets++;showToast("REMOTE SECRET REVEALED","A suspicious wall elsewhere in the dungeon has opened. Shooting switches is now apparently accepted maintenance procedure.","gold",8500)}else{showToast(shot?"WALL SWITCH SHOT":"WALL SWITCH",`A remote gate begins grinding open${s.remote?" elsewhere in the dungeon":""}.`,"green",7000)}beginDoorOpening(d,s.revealSecret?1150:1050)}S.sfx(s.revealSecret?"secret":"door");host.revision++;return true
+  if(!s?.active)return false;
+  if(s.weightBridgeSwitch){
+    const b=host.weightBridge;
+    if(!shot){if(b?.collapsed)showToast("BRIDGE SWITCH — SHOOT IT","The mechanism is mounted out of reach. Fire one shot into the switch to deploy the replacement bridge.","cyan",6500);return false}
+    if(!b?.collapsed||b.rebuilt){showToast("BRIDGE MECHANISM","The old bridge has not collapsed yet.","cyan",4200);return false}
+    s.active=false;s.toggled=true;b.rebuilt=true;b.collapsed=false;b.stabilized=true;
+    S.sfx("door");shake=Math.max(shake,5);showToast("NEW BRIDGE DEPLOYED","A reinforced replacement bridge slides across the pit. You can now get back onto the floor and hunt the thief who stole your stash.","green",9000);host.revision++;updateQuests();return true
+  }
+  if(s.shotOnly&&!shot)return false;
+  s.active=false;s.toggled=true;const d=host.doors.find(x=>x.id===s.doorId);if(d){d.locked=false;if(s.revealSecret){d.hidden=false;d.discovered=true;stats.secrets++;run.stats.secrets++;showToast("REMOTE SECRET REVEALED","A suspicious wall elsewhere in the dungeon has opened. Shooting switches is now apparently accepted maintenance procedure.","gold",8500)}else{showToast(shot?"WALL SWITCH SHOT":"WALL SWITCH",`A remote gate begins grinding open${s.remote?" elsewhere in the dungeon":""}.`,"green",7000)}beginDoorOpening(d,s.revealSecret?1150:1050)}S.sfx(s.revealSecret?"secret":"door");host.revision++;return true
 }
-function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
-function triggerShrine(p){for(const s of host.shrines||[])if(s.active&&s.x===p.x&&s.y===p.y){s.active=false;run.stats.shrines++;S.sfx("shrine");const n=Math.random();if(n<.34){p.maxHealth++;p.health=Math.min(p.maxHealth,p.health+2);p.hpBarMs=3000;showToast("SHRINE OF ENDURANCE","+1 maximum health and +2 health now.","green")}else if(n<.68){p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(30,p.maxMana-8);p.mana=Math.min(p.mana,p.maxMana);showToast("CURSED FIRE BUTTON","+1 damage, but maximum ammo falls by 8. Power usually sends an invoice.","red",7200)}else{p.armor=Math.min(12,p.armor+4);run.alert=Math.min(100,run.alert+18);showToast("NOISY SHRINE","+4 armour, but the dungeon alert level jumps sharply.","gold")}}}
+function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&!s.shotOnly&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
+function triggerShrine(p){for(const s of host.shrines||[])if(s.active&&s.x===p.x&&s.y===p.y){s.active=false;run.stats.shrines++;S.sfx("shrine");const n=Math.random();if(n<.34){p.maxHealth++;p.health=Math.min(p.maxHealth,p.health+2);p.hpBarMs=3000;showToast("SHRINE OF ENDURANCE","+1 maximum health and +2 health now.","green")}else if(n<.68){p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(30,p.maxMana-8);p.mana=Math.min(p.mana,p.maxMana);showToast("CURSED FIRE BUTTON","+1 damage, but maximum ammo falls by 8. Power usually sends an invoice.","red",7200)}else{p.armor=Math.min(PGR.armourCap?.(p)||12,p.armor+4);run.alert=Math.min(100,run.alert+18);showToast("NOISY SHRINE","+4 armour, but the dungeon alert level jumps sharply.","gold")}}}
 const trapCycleHits=new Map();
 function trapCycleId(t,now=performance.now()){
   const period=Math.max(1,Number(t?.period)||1),phase=Number(t?.phase)||0;
@@ -289,19 +298,126 @@ function spawnPuzzleAmbush(roomId,p,count=3,prefix="puzzle"){
   for(let i=0;i<count&&cells.length;i++){const ix=Math.floor(Math.random()*cells.length),q=cells.splice(ix,1)[0],kind=kinds[i%kinds.length],hp=3+(run.floor||1)+Math.floor(i/2);const e={id:`${prefix}-${Date.now()}-${i}-${Math.random().toString(36).slice(2,5)}`,...q,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:{x:p.x,y:p.y},memoryMs:999999,searchMs:0,moveCooldown:240+i*40,attackCooldown:620+i*70,chargeCooldown:850,healCooldown:999999,flash:0,hpBarMs:0,puzzleSpawn:true};host.enemies.push(e);made.push(e)}host.revision++;return made.length
 }
 function triggerBloodClue(p){const c=host.bloodClue;if(!c||c.seen||md(c,p)>1)return;c.seen=true;run.torchClueSeen=true;run.torchSequence=[...(c.sequence||[])];host.revision++;S.sfx("secret");showToast("FADED BLOOD CLUE",`Four marks remain legible: ${(c.sequence||[]).join(" → ")}. It looks less like decoration and more like an instruction. TAB will keep the clue in your log.`,"red",11000);}
-function startMemoryPuzzle(p){const z=host.memoryPuzzle;if(!z||z.solved||W.roomAt(world,p.x,p.y)!==z.roomId)return false;z.phase="show";z.flashElapsed=0;z.flashTile=-1;z.inputIndex=0;z.padEntryByPlayer={};z.consoleOccupant=String(p.id||"");z.replayToken=(z.replayToken||0)+1;host.revision++;S.sfx("shrine");showToast("MEMORY PAD SEQUENCE","Watch the five numbered pads. The replay is shown once per console entry; when it finishes, repeat the pads in the same order. Step off and back onto the purple console to replay it.","cyan",10000);return true}
+function startMemoryPuzzle(p){const z=host.memoryPuzzle;if(!z||z.solved||W.roomAt(world,p.x,p.y)!==z.roomId)return false;z.phase="show";z.flashElapsed=0;z.flashTile=-1;z.inputIndex=0;z.padEntryByPlayer={};z.consoleOccupant=String(p.id||"");z.replayToken=(z.replayToken||0)+1;host.revision++;S.sfx("shrine");showToast(z.hardMode?"SEVEN-PAD MEMORY VAULT":"MEMORY PAD SEQUENCE",`Watch all ${z.sequence.length} numbered pads. The replay is shown once per console entry; when it finishes, repeat the entire sequence in the same order. Step off and back onto the purple console to replay it.`,"cyan",10000);return true}
 function solveMemoryPuzzle(p){const z=host.memoryPuzzle;if(!z||z.solved)return;z.solved=true;z.phase="solved";z.flashTile=-1;z.padEntryByPlayer={};z.lockdownActive=false;const chest=(host.chests||[]).find(c=>c.id===z.chestId);if(chest)chest.active=true;SYS.lockRoomDoors(host,z.roomId,false);const seenGroups=new Set();for(const d of host.doors||[])if(d.type==="room"&&d.roomId===z.roomId){const key=String(d.groupId||d.id||`${d.x},${d.y}`);if(seenGroups.has(key))continue;seenGroups.add(key);beginDoorOpening(d,900)}score+=500;awardXP(p,10,"Memory vault opened");S.sfx("open");showToast("MEMORY SEQUENCE SOLVED","Correct sequence. The chamber doors reopen and the reward cache rises. +500 score and +10 XP.","green",9000);host.revision++;}
 function activateMemoryTile(p,tileIndex){const z=host.memoryPuzzle;if(!z||z.solved||z.phase!=="input")return false;const expected=z.sequence[z.inputIndex];if(tileIndex===expected){z.inputIndex++;S.sfx("pickup");floatText(p.x,p.y,`${z.inputIndex}/${z.sequence.length}`,P.cyan);showToast(`MEMORY PAD ${tileIndex+1}`,`${z.inputIndex}/${z.sequence.length} correct. Keep following the replayed order.`,"cyan",2200);if(z.inputIndex>=z.sequence.length)solveMemoryPuzzle(p);else{host.revision++;}return true}z.failures=(z.failures||0)+1;z.inputIndex=0;z.phase="idle";z.flashElapsed=0;z.flashTile=-1;z.padEntryByPlayer={};const spawned=spawnPuzzleAmbush(z.roomId,p,1,"memory-fail");S.sfx("alert");showToast("WRONG MEMORY PAD",`That was not the next pad. ${spawned} wandering monster${spawned===1?"":"s"} enters the chamber. The sequence is now paused — step on the purple replay console when you are ready to try again.`,"red",9500);host.revision++;return false}
 function memoryPadEntry(p,z=host.memoryPuzzle){if(!p||!z||z.solved||z.phase!=="input")return false;z.padEntryByPlayer=z.padEntryByPlayer&&typeof z.padEntryByPlayer==="object"?z.padEntryByPlayer:{};const id=String(p.id||p.name||"P1"),tile=(z.tiles||[]).find(t=>t.x===p.x&&t.y===p.y),current=tile?Number(tile.index):-1,previous=Number.isFinite(Number(z.padEntryByPlayer[id]))?Number(z.padEntryByPlayer[id]):-1;if(current===previous)return false;z.padEntryByPlayer[id]=current;if(current<0)return false;return activateMemoryTile(p,current)}
 function triggerMemoryPuzzle(p,deliberate=false){const z=host.memoryPuzzle;if(!z||z.solved||!deliberate)return;const activator=z.activator;if(activator&&activator.x===p.x&&activator.y===p.y){if(String(z.consoleOccupant||"")!==String(p.id||""))startMemoryPuzzle(p);return}memoryPadEntry(p,z)}
-function updateMemoryPuzzle(dt){const z=host.memoryPuzzle;if(!z||z.solved)return;const roomPlayers=localPlayers().filter(p=>p&&p.health>0&&W.roomAt(world,p.x,p.y)===z.roomId),roomDoors=(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===z.roomId);if(roomPlayers.length&&roomDoors.length&&(!z.lockdownActive||roomDoors.some(d=>!d.locked||d.open||d.opening))){SYS.lockRoomDoors(host,z.roomId,true);z.lockdownActive=true;z.lockdownEntries=(z.lockdownEntries||0)+1;S.sfx("door");showToast("MEMORY VAULT LOCKDOWN","The chamber doors have sealed behind you. Complete the five-pad memory sequence to reopen every exit.","red",8500);host.revision++;}const activator=z.activator,onConsole=activator?roomPlayers.find(p=>p.x===activator.x&&p.y===activator.y):null,occupant=String(onConsole?.id||"");if(occupant&&occupant!==String(z.consoleOccupant||""))startMemoryPuzzle(onConsole);else if(!occupant&&z.consoleOccupant)z.consoleOccupant="";if(z.phase==="input"){for(const player of roomPlayers)memoryPadEntry(player,z)}if(z.phase!=="show")return;z.flashElapsed=(z.flashElapsed||0)+Math.max(0,Number(dt||0));const step=760,idx=Math.floor(z.flashElapsed/step),within=z.flashElapsed%step;z.flashTile=idx<z.sequence.length&&within<500?z.sequence[idx]:-1;if(z.flashElapsed>=z.sequence.length*step+420){z.phase="input";z.flashTile=-1;z.inputIndex=0;z.padEntryByPlayer={};for(const player of roomPlayers){const occupied=(z.tiles||[]).find(t=>t.x===player.x&&t.y===player.y),id=String(player.id||player.name||"P1");z.padEntryByPlayer[id]=occupied?Number(occupied.index):-1}S.sfx("pickup");showToast("YOUR TURN","Repeat the five numbered pads. Each new pad entry counts once. If you forget the order, step off and back onto the purple replay console — no penalty.","cyan",7600);host.revision++;}}
+function updateMemoryPuzzle(dt){const z=host.memoryPuzzle;if(!z||z.solved)return;const roomPlayers=localPlayers().filter(p=>p&&p.health>0&&W.roomAt(world,p.x,p.y)===z.roomId),roomDoors=(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===z.roomId);if(roomPlayers.length&&roomDoors.length&&(!z.lockdownActive||roomDoors.some(d=>!d.locked||d.open||d.opening))){SYS.lockRoomDoors(host,z.roomId,true);z.lockdownActive=true;z.lockdownEntries=(z.lockdownEntries||0)+1;S.sfx("door");showToast("MEMORY VAULT LOCKDOWN",`The chamber doors have sealed behind you. Complete the full ${z.sequence.length}-pad memory sequence to reopen every exit. Teleport is suppressed in this room.`,"red",9000);host.revision++;}const activator=z.activator,onConsole=activator?roomPlayers.find(p=>p.x===activator.x&&p.y===activator.y):null,occupant=String(onConsole?.id||"");if(occupant&&occupant!==String(z.consoleOccupant||""))startMemoryPuzzle(onConsole);else if(!occupant&&z.consoleOccupant)z.consoleOccupant="";if(z.phase==="input"){for(const player of roomPlayers)memoryPadEntry(player,z)}if(z.phase!=="show")return;z.flashElapsed=(z.flashElapsed||0)+Math.max(0,Number(dt||0));const step=760,idx=Math.floor(z.flashElapsed/step),within=z.flashElapsed%step;z.flashTile=idx<z.sequence.length&&within<500?z.sequence[idx]:-1;if(z.flashElapsed>=z.sequence.length*step+420){z.phase="input";z.flashTile=-1;z.inputIndex=0;z.padEntryByPlayer={};for(const player of roomPlayers){const occupied=(z.tiles||[]).find(t=>t.x===player.x&&t.y===player.y),id=String(player.id||player.name||"P1");z.padEntryByPlayer[id]=occupied?Number(occupied.index):-1}S.sfx("pickup");showToast("YOUR TURN",`Repeat all ${z.sequence.length} numbered pads. Each new pad entry counts once. If you forget the order, step off and back onto the purple replay console — no penalty.`,"cyan",7800);host.revision++;}}
 function solveSequenceTorch(p){const z=host.sequenceTorchPuzzle;if(!z||z.solved)return;z.solved=true;z.progress=z.sequence.length;for(const t of z.torches||[])t.lit=true;const chest=(host.chests||[]).find(c=>c.id===z.chestId);if(chest)chest.active=true;score+=650;awardXP(p,10,"Torch vault opened");S.sfx("open");showToast("TORCH VAULT OPEN","All four flames hold. Stone grinds aside and the vault reward is exposed. +650 score and +10 XP.","gold",9500);host.revision++;}
-function activateSequenceTorch(torch,p,shot=false){const z=host.sequenceTorchPuzzle;if(!z||z.solved||!torch)return false;const expected=z.sequence[z.progress||0];if(torch.dir===expected){torch.lit=true;z.progress=(z.progress||0)+1;S.sfx("torch");floatText(torch.x,torch.y,`${z.progress}/4`,P.gold);if(z.progress>=z.sequence.length)solveSequenceTorch(p);else{showToast(`${torch.dir} TORCH LIT`,`${z.progress}/4 correct.${shot?" Shot activated.":""}`,"gold",5200);host.revision++;}return true}z.failures=(z.failures||0)+1;z.progress=0;for(const t of z.torches||[])t.lit=false;const spawned=spawnPuzzleAmbush(z.roomId,p,1,"torch-fail");S.sfx("alert");showToast("TORCH ORDER WRONG",`${torch.dir} was not next. Every flame dies and ${spawned} wandering monster${spawned===1?"":"s"} enter the chamber. The faded blood clue from Floor 2 had the order.`,"red",10000);host.revision++;return false}
-function triggerSequenceTorch(p){const z=host.sequenceTorchPuzzle;if(!z||z.solved)return;const t=(z.torches||[]).find(t=>t.x===p.x&&t.y===p.y);if(t)activateSequenceTorch(t,p,false)}
+function activateSequenceTorch(torch,p){
+  const z=host.sequenceTorchPuzzle;if(!z||z.solved||!torch||!p)return false;
+  const playerId=String(p.id||p.name||"P1"),isLocal=localPlayers().some(lp=>lp===p||String(lp?.id||lp?.name||"")===playerId);
+  if(!isLocal||W.roomAt(world,p.x,p.y)!==z.roomId||Number(p.x)!==Number(torch.x)||Number(p.y)!==Number(torch.y))return false;
+  const expected=z.sequence[z.progress||0];
+  if(torch.dir===expected){
+    torch.lit=true;z.progress=(z.progress||0)+1;S.sfx("torch");floatText(torch.x,torch.y,`${z.progress}/${z.sequence.length}`,P.gold);
+    if(z.progress>=z.sequence.length)solveSequenceTorch(p);
+    else{showToast(`${torch.dir} TORCH LIT`,`${z.progress}/${z.sequence.length} correct. Step onto the next torch in the clue order.`,"gold",4200);host.revision++}
+    return true
+  }
+  z.failures=(z.failures||0)+1;z.progress=0;for(const t of z.torches||[])t.lit=false;
+  const punishmentAlive=(host.enemies||[]).some(e=>e?.alive&&e.puzzleSpawn&&String(e.id||"").startsWith("torch-fail-"));
+  const spawned=punishmentAlive?0:spawnPuzzleAmbush(z.roomId,p,1,"torch-fail");
+  S.sfx("alert");
+  showToast("TORCH ORDER WRONG",spawned?`${torch.dir} was not next. The sequence resets and one guardian enters the chamber. Step on the torches only; weapon fire cannot activate them. The faded blood clue from Floor 2 contains the order.`:`${torch.dir} was not next. The sequence resets. The existing puzzle guardian remains, but no additional enemy is spawned. The faded blood clue from Floor 2 contains the order.`,"red",10000);
+  host.revision++;return false
+}
+function triggerSequenceTorch(p,deliberate=false){
+  const z=host.sequenceTorchPuzzle;if(!z||z.solved||!deliberate||!p)return false;
+  z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
+  const playerId=String(p.id||p.name||"P1"),torch=(z.torches||[]).find(t=>Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y)),current=torch?String(torch.dir||""):"",previous=String(z.entryByPlayer[playerId]||"");
+  if(current===previous)return false;
+  z.entryByPlayer[playerId]=current;
+  if(!torch)return false;
+  return activateSequenceTorch(torch,p)
+}
 function weightBridgeCell(list,x,y){return (list||[]).some(q=>q.x===x&&q.y===y)}
-function weightBridgeBlocks(p,x,y){const b=host.weightBridge;if(!b)return false;if(weightBridgeCell(b.pitTiles,x,y)){S.sfx("wall");return true}if(!weightBridgeCell(b.bridgeTiles,x,y)||b.stabilized)return false;const carried=PGR.inventoryCount(p),stacks=(p.inventory||[]).length;if(carried>0){S.sfx("locked");if(!b.lastWarnAt||performance.now()-b.lastWarnAt>1600){b.lastWarnAt=performance.now();showToast("ROTTEN BRIDGE — TOO HEAVY",`It will only take your body weight. You are carrying ${carried} item${carried===1?"":"s"} across ${stacks} stack${stacks===1?"":"s"}. TAB lets you DROP them onto the floor and recover them later.`,"red",9000)}return true}b.crossingPlayer=p.id;return false}
-function triggerWeightBridge(p){const b=host.weightBridge;if(!b||b.stabilized||b.crossingPlayer!==p.id)return;const xs=(b.bridgeTiles||[]).map(q=>q.x),ys=(b.bridgeTiles||[]).map(q=>q.y),passed=b.entranceSide==="west"?p.x>Math.max(...xs):b.entranceSide==="east"?p.x<Math.min(...xs):b.entranceSide==="north"?p.y>Math.max(...ys):p.y<Math.min(...ys);if(!passed)return;b.stabilized=true;b.crossingPlayer=null;score+=350;S.sfx("open");showToast("BRIDGE STABILIZED","You crossed empty-handed. The old planks settle into the supports and will now carry you back. +350 score.","green",9000);host.revision++;}
+function bridgeThiefCell(p,b){
+  const candidates=(world.rooms||[]).filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom).map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)})).sort((a,b)=>b.dist-a.dist);
+  for(const row of candidates){const cells=puzzleFloorCells(row.room.id);if(cells.length)return cells[Math.floor(Math.random()*cells.length)]}
+  const fallback=(world.rooms||[]).find(r=>r.id!==b.roomId),cells=fallback?puzzleFloorCells(fallback.id):[];return cells[0]||{x:world.start.x,y:world.start.y}
+}
+function bridgeStashedItems(b){
+  const stolen=[];
+  for(const item of host.items||[]){
+    if(!item?.active||!item.carriedItem||!String(item.id||"").startsWith("dropped-"))continue;
+    if(W.roomAt(world,item.x,item.y)!==b.roomId)continue;
+    stolen.push({...item,carriedItem:{...item.carriedItem}});item.active=false
+  }
+  return stolen
+}
+function spawnBridgeThief(p,b){
+  const q=bridgeThiefCell(p,b),hp=18+Math.max(0,Number(run.floor||1))*2,id=`bridge-thief-${run.floor}-${Date.now()}`;
+  const thief={id,...q,kind:"ambusher",hp,maxHp:hp,armor:5,maxArmor:5,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:125,attackCooldown:650,chargeCooldown:900,healCooldown:999999,flash:0,hpBarMs:0,bridgeThief:true,championName:"Dungeon Thief",moveSpeedScale:.82};
+  host.enemies.push(thief);b.thiefId=id;return thief
+}
+function ensureBridgeSwitchAmmo(p,b){
+  if(Number(p?.mana||0)>0)return false;
+  const q=b.switchPos||b.rewardPos||{x:p.x,y:p.y},spots=[{x:q.x+1,y:q.y},{x:q.x-1,y:q.y},{x:q.x,y:q.y+1},{x:q.x,y:q.y-1},{x:p.x,y:p.y}];
+  const pos=spots.find(cell=>W.walkable(world.map,cell.x,cell.y,host))||{x:p.x,y:p.y};
+  host.items.push({id:`bridge-emergency-ammo-${Date.now()}`,...pos,kind:"ammo",active:true,title:"BRIDGE EMERGENCY AMMO",r114BridgeEmergency:true});
+  showToast("NO AMMO? THE DUNGEON IS FEELING GENEROUS","An emergency ammo pack has appeared beside the bridge mechanism. Pick it up, then shoot the switch.","cyan",9000);host.revision++;return true
+}
+function weightBridgeBlocks(p,x,y){
+  const b=host.weightBridge;if(!b)return false;
+  if(weightBridgeCell(b.pitTiles,x,y)){S.sfx("wall");return true}
+  if(!weightBridgeCell(b.bridgeTiles,x,y))return false;
+  if(b.collapsed&&!b.rebuilt){S.sfx("wall");showToast("THE BRIDGE HAS COLLAPSED","The gap is impassable. Shoot the far-side switch to deploy the replacement bridge.","red",6200);return true}
+  if(b.stabilized||b.rebuilt)return false;
+  const carried=PGR.inventoryCount(p),stacks=(p.inventory||[]).length;
+  if(carried>0){S.sfx("locked");if(!b.lastWarnAt||performance.now()-b.lastWarnAt>1600){b.lastWarnAt=performance.now();showToast("ROTTEN BRIDGE — TRAVEL LIGHT",`A valuable cache is visible on the far side, but these planks will only take your body weight. You are carrying ${carried} item${carried===1?"":"s"} across ${stacks} stack${stacks===1?"":"s"}. Drop them here with TAB, cross empty-handed, and come back for them afterwards.`,"gold",10500)}return true}
+  b.crossingPlayer=p.id;return false
+}
+function triggerWeightBridge(p){
+  const b=host.weightBridge;if(!b||b.rebuilt||b.collapsed||b.stabilized||b.crossingPlayer!==p.id)return;
+  const xs=(b.bridgeTiles||[]).map(q=>q.x),ys=(b.bridgeTiles||[]).map(q=>q.y),passed=b.entranceSide==="west"?p.x>Math.max(...xs):b.entranceSide==="east"?p.x<Math.min(...xs):b.entranceSide==="north"?p.y>Math.max(...ys):p.y<Math.min(...ys);
+  if(!passed)return;
+  b.crossed=true;b.collapsed=true;b.crossingPlayer=null;b.stolenItems=bridgeStashedItems(b);const stolenQty=b.stolenItems.reduce((n,item)=>n+Math.max(1,Number(item.carriedItem?.qty)||1),0),thief=spawnBridgeThief(p,b);
+  score+=500;S.sfx("trap");shake=Math.max(shake,9);ensureBridgeSwitchAmmo(p,b);
+  showToast("TRICK! THE BRIDGE COLLAPSES",stolenQty?`The rotten bridge drops into the pit. A Dungeon Thief grabs all ${stolenQty} item${stolenQty===1?"":"s"} you left behind and vanishes somewhere on this floor. Shoot the switch on this side to deploy a new bridge, then hunt him down.`:`The rotten bridge drops into the pit. A Dungeon Thief appears, finds your stash empty, and still bolts into the dungeon. Shoot the switch on this side to deploy a new bridge, then hunt him for his bonus loot.`,"red",12000);
+  if(thief)floatText(p.x,p.y,"THIEF!",P.red,{life:2600});host.revision++;updateQuests()
+}
 
+function bossFightState(){return host?.r114BossFight||null}
+function bossEnemyForFight(fight=bossFightState()){return fight?(host.enemies||[]).find(e=>e?.id===fight.bossId)||null:null}
+function triggerBossFight(p){
+  const fight=bossFightState(),boss=bossEnemyForFight(fight);if(!fight||fight.cleared||!boss?.alive||W.roomAt(world,p.x,p.y)!==fight.roomId)return false;
+  if(fight.triggered)return true;
+  fight.triggered=true;fight.phase=1;fight.attackMs=2200;fight.lastPhase=1;
+  SYS.lockRoomDoors(host,fight.roomId,true);boss.aiState="chase";boss.lastSeen={x:p.x,y:p.y};boss.memoryMs=999999;boss.searchMs=0;boss.moveCooldown=220;boss.attackCooldown=500;
+  S.sfx("alert");shake=Math.max(shake,8);showToast(`BOSS — ${fight.name}`,`${fight.subtitle||"The chamber seals."} Defeat it to reopen the room. Teleport is suppressed while the boss lives.`,"red",10500);host.revision++;return true
+}
+function bossBurst(fight,boss,phase){
+  const dirs=phase>=2?[[1,0],[-1,0],[0,1],[0,-1],[.707,.707],[.707,-.707],[-.707,.707],[-.707,-.707]]:[[1,0],[-1,0],[0,1],[0,-1]];
+  const style=phase>=3&&fight.floor===15?(Math.floor(performance.now()/900)%2?"fire":"shock"):fight.style||"shock",power=phase>=3?3:2,ttl=phase>=3?12:10;
+  for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
+  S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
+}
+function updateBossFight(dt){
+  const fight=bossFightState();if(!fight||fight.cleared)return;
+  const boss=bossEnemyForFight(fight);if(!boss||!boss.alive){
+    fight.cleared=true;fight.triggered=false;SYS.lockRoomDoors(host,fight.roomId,false);
+    for(const d of host.doors||[])if(d.type==="room"&&d.roomId===fight.roomId)beginDoorOpening(d,900);
+    if(!fight.rewarded){
+      fight.rewarded=true;score+=fight.floor===15?5000:2500;
+      const room=world.rooms[fight.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
+      host.chests.push({id:`r114-boss-chest-f${fight.floor}`,...q,locked:false,active:true,depth:(room.depth||0)+18,roomId:fight.roomId,r114BossReward:true});
+      if(fight.floor===5)host.items.push({id:`r114-boss-map-${Date.now()}`,x:q.x+1,y:q.y,kind:"mapReveal",active:true,title:"CARTOGRAPHER'S EYE"});
+      if(fight.floor===10)host.items.push({id:`r114-boss-sack-${Date.now()}`,x:q.x-1,y:q.y,kind:"magicSack",active:true,title:"MAGIC SACK"});
+    }
+    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":"The arena doors reopen. A high-tier boss cache has appeared.","green",10000);host.revision++;return
+  }
+  if(!fight.triggered)return;
+  const pct=Math.max(0,Number(boss.hp||0)/Math.max(1,Number(boss.maxHp||1))),phase=pct<=.30?3:pct<=.65?2:1;
+  if(phase!==fight.phase){
+    fight.phase=phase;boss.moveCooldown=Math.min(Number(boss.moveCooldown||250),phase===3?120:180);boss.attackCooldown=Math.min(Number(boss.attackCooldown||700),phase===3?430:560);
+    const target=localPlayers().find(p=>W.roomAt(world,p.x,p.y)===fight.roomId)||p1;if(target)spawnPuzzleAmbush(fight.roomId,target,phase===3?3:2,`boss-f${fight.floor}-phase${phase}`);
+    S.sfx("alert");showToast(`${fight.name} — PHASE ${phase}`,phase===3?"The boss is badly wounded and the arena pattern has intensified.":"The boss changes attack pattern and calls in reinforcements.","red",7200)
+  }
+  fight.attackMs=Math.max(-1000,Number(fight.attackMs||0)-dt);
+  if(fight.attackMs<=0){bossBurst(fight,boss,phase);fight.attackMs=phase===3?1850:phase===2?2450:3100}
+}
 function triggerBoulder(p){const b=host.boulderTrap;if(!b||b.cleared||b.triggered||W.roomAt(world,p.x,p.y)!==b.roomId)return;const da=md(p,b.start),db=md(p,b.end),from=da>=db?b.start:b.end,to=da>=db?b.end:b.start;b.x=from.x;b.y=from.y;b.target={...to};b.dx=Math.sign(to.x-from.x);b.dy=Math.sign(to.y-from.y);b.warningMs=1000;b.moveMs=0;b.active=true;b.triggered=true;S.sfx("trap");showToast("BOULDER CORRIDOR — RUN!","A stone boulder has broken loose at the far end of the hall. Keep moving and get out of its lane before it reaches you.","red",7600);host.revision++;}
 function updateBoulder(dt){const b=host.boulderTrap;if(!b?.active||b.cleared)return;if(b.warningMs>0){b.warningMs=Math.max(0,b.warningMs-dt);return}b.moveMs-=dt;if(b.moveMs>0)return;b.moveMs=b.stepMs||155;b.x+=b.dx;b.y+=b.dy;shake=Math.max(shake,3);for(const p of localPlayers())if(p.x===b.x&&p.y===b.y){hurtPlayer(p,b.damage||2,false,"rolling boulder");const nx=p.x+b.dx,ny=p.y+b.dy;if(W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}if(b.x===b.target.x&&b.y===b.target.y){b.active=false;b.cleared=true;score+=250;S.sfx("door");showToast("BOULDER CORRIDOR SURVIVED","The boulder crashes into the far wall. +250 score.","green",7000)}host.revision++}
 function triggerHauntedCorridor(p){const nest=host.spiderNest;if(!nest||(nest.corridorCells||[]).every(q=>q.x!==p.x||q.y!==p.y))return;nest.whistledPlayers=nest.whistledPlayers||[];nest.extinguishedPlayers=nest.extinguishedPlayers||[];if(!nest.whistledPlayers.includes(p.id)){nest.whistledPlayers.push(p.id);S.windWhistle?.();showToast("A WIND WHISTLES THROUGH THE STONE","A one-in-twenty haunted corridor is feeding air into a nearby Dustweb Nest. The draught can extinguish an active torch.","cyan",9000)}if(p.torchMs>0&&!nest.extinguishedPlayers.includes(p.id)){nest.extinguishedPlayers.push(p.id);p.torchMs=0;S.sfx("pssst");for(let i=0;i<26;i++)particles.push({x:p.x*C.tile+C.tile/2,y:p.y*C.tile+C.tile/2,vx:1.2+Math.random()*3.2,vy:(Math.random()-.5)*2.2,life:300+Math.random()*520,col:i%2?"#c8d7e8":"#6cecff",size:1+Math.random()*3,drag:.975});floatText(p.x,p.y,"TORCH OUT!",P.cyan);showToast("PSST — TORCH EXTINGUISHED","The windy corridor has blown out your active torch. Spare torches in your inventory are untouched.","red",8500)}host.revision++}
@@ -311,13 +427,13 @@ function movementTriggers(p,deliberate=false){
   // phase to roll over; a trap that was ACTIVE when the player entered it must
   // still commit that contact against this boundary timestamp.
   const trapBoundaryAt=performance.now(),trapBoundary=activeTrapAtPlayer(p,trapBoundaryAt);
-  triggerSwitch(p);triggerTrader(p);triggerDeathCache(p);triggerBloodClue(p);triggerMemoryPuzzle(p,deliberate);triggerSequenceTorch(p);triggerWeightBridge(p);triggerShrine(p);
+  triggerSwitch(p);triggerTrader(p);triggerDeathCache(p);triggerBloodClue(p);triggerMemoryPuzzle(p,deliberate);triggerSequenceTorch(p,deliberate);triggerWeightBridge(p);triggerShrine(p);
   try{window.CCGLostSizzlerBugReporter?.observeMovementBoundary?.(p,"before",{deliberate:Boolean(deliberate),trapBoundaryAt,trapBoundaryId:String(trapBoundary?.id||"")})}catch(_){}
   // Commit ordinary floor-trap contact through the lexical R58 owner before
   // encounter/arena activation can mutate room state on the same movement step.
   if(trapBoundary)applyActiveTrapContact(p,trapBoundary,trapBoundaryAt);
   try{window.CCGLostSizzlerBugReporter?.observeMovementBoundary?.(p,"after",{deliberate:Boolean(deliberate)})}catch(_){}
-  triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p);
+  triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBossFight(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p);
   try{window.CCGLostSizzlerStage8NpcDialogue?.onMovementBoundary?.(p)}catch(_){}
 }
 function movePlayer(p,dx,dy,dash=false){
@@ -516,7 +632,6 @@ function stepProjectiles(){
   const projectileNow=performance.now(),MAX_PROJECTILE_WALL_MS=2600;
   for(const b of bullets){if(Number.isFinite(Number(b?.__v142BornAt))&&projectileNow-Number(b.__v142BornAt)>MAX_PROJECTILE_WALL_MS)b.ttl=0;
     if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(damageFurnitureAt(nx,ny,b.power)){b.ttl=0;continue}if(!projectilePathClear(b,nx,ny)){b.ttl=0;burst(b.x,b.y,b.element==="shock"?P.cyan:b.element==="fire"?P.orange:P.gold,14,1);ring(b.x,b.y,b.element==="shock"?P.cyan:P.orange,20);S.sfx("wall");continue}b.x=nx;b.y=ny;b.ttl--;const trailCol=b.element==="fire"?P.orange:b.element==="shock"?P.cyan:b.element==="physical"?P.white:P.gold;for(let n=0;n<3;n++)particles.push({x:(nx-b.dx*(.15+n*.18))*C.tile+C.tile/2+(Math.random()-.5)*4,y:(ny-b.dy*(.15+n*.18))*C.tile+C.tile/2+(Math.random()-.5)*4,vx:-b.dx*(.4+Math.random()*.8)+(Math.random()-.5)*.5,vy:-b.dy*(.4+Math.random()*.8)+(Math.random()-.5)*.5,life:130+n*45,col:trailCol,size:1.4+n*.7,drag:.91,glow:7});
-    const puzzleTorch=(host.sequenceTorchPuzzle?.torches||[]).find(t=>t.x===Math.round(nx)&&t.y===Math.round(ny));if(puzzleTorch&&!host.sequenceTorchPuzzle?.solved){activateSequenceTorch(puzzleTorch,findLocal(b.owner)||p1,true);b.ttl=0;continue}
     const sw=(host.switches||[]).find(s=>s.active&&s.x===Math.round(nx)&&s.y===Math.round(ny));if(sw){activateSwitch(sw,findLocal(b.owner)||p1,true);b.ttl=0;continue}
     if(hitStalker(b)){b.ttl=0;continue}
     const g=(host.generators||[]).find(g=>g.alive&&g.x===Math.round(nx)&&g.y===Math.round(ny));if(g){damageGenerator(g,b.power,findLocal(b.owner)||p1);if(b.pierce>0)b.pierce--;else b.ttl=0;continue}
@@ -635,6 +750,8 @@ function updateRoomMessage(p,force){
   if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"No monster can enter this safe room. Stand on the green regeneration square to recover 1 HP every 3 seconds.","green",9000);
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
   else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
+  else if(room?.sequenceTorchRoom&&!host.sequenceTorchPuzzle?.solved){showToast("TORCH SEQUENCE PUZZLE","STEP onto the four N/E/S/W torches in the correct order. Only your footsteps count — bullets and enemies cannot activate a torch. The faded blood clue from Floor 2 contains the sequence. A wrong step resets the flames; at most one punishment guardian can be active at a time.","gold",12000)}
+  else if(room?.weightBridgeRoom&&host.weightBridge&&!host.weightBridge.crossed){showToast("ROTTEN BRIDGE — SOMETHING VALUABLE IS OVER THERE","A rare Trickster Cache is visible on the far side. The bridge will not carry inventory weight: use TAB to DROP your carried items on this side, cross empty-handed, and recover them afterwards. There is a wall switch beyond the bridge in case the mechanism fails.","gold",12000)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
   else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500);try{window.CCGLostSizzlerVoice?.say?.("trapsNearby")}catch(_){}if(p===p1){const activeRun=run,hazardRoom=r;setTimeout(()=>{try{if(run===activeRun&&mode==="playing"&&W.roomAt(world,p1.x,p1.y)===hazardRoom)window.CCGLostSizzlerVoice?.say?.("watchStep",{cooldown:0})}catch(_){}},2400)}}
   else if(room?.dangerous)showToast(`DANGER — ${th.name}`,"This room contains an active hazard, challenge or major threat. Watch the floor before charging in.","red",8500);
@@ -778,7 +895,7 @@ function update(dt){
     }
     projectileCD=0
   }else if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendCD=100}if(worldCD<=0){worldCD=350}
-  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
   updateActiveTrapContacts("simulation-post");

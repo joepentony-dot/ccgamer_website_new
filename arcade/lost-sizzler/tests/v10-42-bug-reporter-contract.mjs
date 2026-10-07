@@ -20,6 +20,10 @@ for(const owner of ["firePlayer","queueAttack","movePlayer","toggleInventory","r
 }
 assert.match(reporter,/const MAX_EVENTS=240/,"diagnostic history must remain bounded");
 assert.match(reporter,/events\.length>MAX_EVENTS/,"old diagnostics must be discarded instead of growing indefinitely");
+assert.match(reporter,/const anomalyJournal=\[\]/,"anomaly events must have an independent journal so noisy telemetry cannot evict the actual bug type");
+assert.match(reporter,/const MAX_ANOMALY_EVENTS=48/,"anomaly journal must remain bounded");
+assert.match(reporter,/row\.type\.startsWith\("ANOMALY_"\)/,"all anomaly rows must be copied into the independent journal at creation time");
+assert.match(reporter,/anomalyEvents:anomalyJournal\.slice\(-MAX_ANOMALY_EVENTS\)/,"saved reports must carry retained anomaly details separately from recent telemetry");
 assert.match(reporter,/ANOMALY_POSSIBLE_FIRE_FAILURE/,"reporter must flag a failed valid fire attempt");
 assert.match(reporter,/CCGLostSizzlerV142R58AuthoritativeFireCore\?\.trace/,"FIRE diagnostics must consult the authoritative core trace instead of relying only on net ammo/projectile counts");
 assert.match(reporter,/row\?\.stage==="shot-complete"/,"completed authoritative shots must count as successful FIRE evidence");

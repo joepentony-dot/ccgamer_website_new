@@ -819,11 +819,38 @@ function drawAuthoredDungeonEnemySprite(e,cx,cy){
 }
 window.CCGDungeonEnemyArt={mapping:DUNGEON_ENEMY_ART,draw:drawAuthoredDungeonEnemySprite};
 
+function drawGrotesqueBossSprite(e,cx,cy){
+  if(!e?.r114GrotesqueBoss)return false;
+  const floor=Math.max(1,Number(e.r114BossFloor||run?.floor||1)),late=floor>=15,mid=floor>=10,scale=late?1.18:mid?1.08:1;
+  const body=late?"#54162d":mid?"#5b2630":"#3f4b35",flesh=late?"#a33a52":mid?"#a64f39":"#71864c",dark=late?"#260814":mid?"#28100f":"#172014",glow=late?P.red:mid?P.orange:P.green;
+  ctx.save();ctx.translate(Math.round(cx),Math.round(cy+4));ctx.scale(scale,scale);ctx.imageSmoothingEnabled=false;
+  ctx.shadowColor=glow;ctx.shadowBlur=24;ctx.globalAlpha=.34;ctx.fillStyle=glow;ctx.beginPath();ctx.ellipse(0,4,42,34,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.shadowBlur=0;
+  ctx.fillStyle="rgba(0,0,0,.6)";ctx.beginPath();ctx.ellipse(0,27,38,9,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=dark;ctx.fillRect(-31,-12,62,39);ctx.fillRect(-39,-3,12,27);ctx.fillRect(27,-3,12,27);
+  ctx.fillStyle=body;ctx.fillRect(-34,-19,68,40);ctx.fillRect(-26,-29,52,16);ctx.fillRect(-42,-2,16,20);ctx.fillRect(26,-2,16,20);
+  ctx.fillStyle=flesh;ctx.fillRect(-25,-24,50,12);ctx.fillRect(-30,-8,60,21);ctx.fillRect(-36,1,12,17);ctx.fillRect(24,1,12,17);
+  ctx.fillStyle=dark;ctx.fillRect(-20,-7,40,15);ctx.fillStyle="#080709";ctx.fillRect(-17,-3,34,11);
+  ctx.fillStyle="#efe7c8";for(let x=-14;x<=10;x+=8){ctx.fillRect(x,-2,4,5);ctx.fillRect(x+3,4,4,4)}
+  ctx.fillStyle=glow;ctx.fillRect(-18,-20,8,6);ctx.fillRect(10,-20,8,6);ctx.fillStyle="#fff4cf";ctx.fillRect(-16,-19,3,3);ctx.fillRect(12,-19,3,3);
+  ctx.fillStyle=dark;
+  for(const x of [-37,-27,27,37]){ctx.fillRect(x,-28,6,14);ctx.fillRect(x+(x<0?-4:4),-34,4,10)}
+  if(mid){ctx.fillStyle=glow;ctx.fillRect(-4,-31,8,17);ctx.fillRect(-31,12,8,4);ctx.fillRect(23,12,8,4)}
+  if(late){
+    ctx.strokeStyle=glow;ctx.lineWidth=4;for(const dir of [-1,1]){ctx.beginPath();ctx.moveTo(dir*28,12);ctx.lineTo(dir*46,22);ctx.lineTo(dir*52,8);ctx.stroke();ctx.beginPath();ctx.moveTo(dir*22,17);ctx.lineTo(dir*39,34);ctx.stroke()}
+    ctx.fillStyle=P.red;ctx.fillRect(-5,14,10,8)
+  }
+  if((e.flash||0)>0){ctx.globalAlpha=.28;ctx.fillStyle="#ffffff";ctx.fillRect(-42,-34,84,68)}
+  ctx.restore();
+  const pct=Math.max(0,Math.min(1,Number(e.hp||0)/Math.max(1,Number(e.maxHp||1)))),w=96,x=Math.round(cx-w/2),y=Math.round(cy-48*scale);
+  ctx.save();ctx.fillStyle="#13070c";ctx.fillRect(x,y,w,7);ctx.strokeStyle=glow;ctx.lineWidth=1;ctx.strokeRect(x,y,w,7);ctx.fillStyle=glow;ctx.fillRect(x+1,y+1,Math.round((w-2)*pct),5);ctx.restore();
+  return true
+}
+
 function drawEnemy(e){
   if(!e.alive||!tileInRenderView(e.x,e.y,3)||!visibleTo(focus,e.x,e.y))return;const s=enemyScreen(e),f=e.follower,isDeathStalker=Boolean(e.deathStalker&&e.voidStalker),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
   if(f){const r=(C.enemy.followerLightRadius||5)*C.tile,g=ctx.createRadialGradient(cx,cy,8,cx,cy,r);g.addColorStop(0,"rgba(255,213,112,.13)");g.addColorStop(.45,"rgba(255,160,70,.05)");g.addColorStop(1,"rgba(255,140,50,0)");ctx.fillStyle=g;ctx.fillRect(s.x-r,s.y-r,r*2,r*2)}
-  if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawPunyEnemySprite(e,cx,cy)&&!drawAuthoredDungeonEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);
-  const identityName=window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1),guardianName:"FLOOR GUARDIAN"});const name=identityName||(e.exitWarden?"SIGIL WARDEN":e.guardian?"FLOOR GUARDIAN":isDeathStalker?"DEATH STALKER":e.champion?e.championName:e.treasureGoblin?"TREASURE GOBLIN":f?.name||({spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Tape Scout",hunter:"Joystick Hunter",ambusher:"Raster Ambusher",guard:"1541 Guard",ghost:"Ghost Byte",charger:"Charger",ranger:"Ranger",root:"Root Crawler",cook:"CPU Cook",firebreather:"Firebreather"}[e.kind]||"Enemy"));
+  if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawGrotesqueBossSprite(e,cx,cy)&&!drawPunyEnemySprite(e,cx,cy)&&!drawAuthoredDungeonEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);
+  const identityName=window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1),guardianName:"FLOOR GUARDIAN"});const name=e.r114BossName||identityName||e.r114Archetype||(e.exitWarden?"SIGIL WARDEN":e.guardian?"FLOOR GUARDIAN":isDeathStalker?"DEATH STALKER":e.champion?e.championName:e.treasureGoblin?"TREASURE GOBLIN":f?.name||({spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Tape Scout",hunter:"Joystick Hunter",ambusher:"Raster Ambusher",guard:"1541 Guard",ghost:"Ghost Byte",charger:"Charger",ranger:"Ranger",root:"Root Crawler",cook:"CPU Cook",firebreather:"Firebreather"}[e.kind]||"Enemy"));
   label(isDeathStalker?`${name} — INDESTRUCTIBLE`:name,s,isDeathStalker?P.red:e.exitWarden?P.gold:e.guardian?P.red:e.champion?P.cyan:f?P.gold:P.white);if(!isDeathStalker)drawTransientHealth(e,s,f?P.gold:P.white);
   if((e.hitStunMs||0)>0){ctx.font='bold 9px "Courier New"';ctx.textAlign="center";ctx.fillStyle=P.cyan;ctx.fillText("STUNNED",cx,s.y-25)}else if(e.aiState==="chase"||e.aiState==="search"){ctx.font='bold 14px "Courier New"';ctx.textAlign="center";ctx.fillStyle=e.aiState==="chase"?P.red:P.gold;ctx.fillText(e.aiState==="chase"?"!":"?",cx,s.y-25)}
   if(e.champion||e.guardian){const pct=Math.max(0,e.hp/e.maxHp);ctx.fillStyle="#1a0b12";ctx.fillRect(s.x+3,s.y+C.tile+2,C.tile-6,3);ctx.fillStyle=e.guardian?P.red:P.cyan;ctx.fillRect(s.x+3,s.y+C.tile+2,(C.tile-6)*pct,3)}
@@ -1190,10 +1217,11 @@ function drawSpecialObjects(){
     }
     if(W.roomAt(world,focus.x,focus.y)===mem.roomId&&!mem.solved){
       const room=world.rooms[mem.roomId],s=ws(Math.floor(room.x+room.w/2),room.y+1);
-      label(mem.phase==="input"?`MEMORY VAULT LOCKED — ${mem.inputIndex||0}/5 • PURPLE CONSOLE REPLAYS`:mem.phase==="show"?"MEMORY VAULT LOCKED — WATCH THE SEQUENCE":"MEMORY VAULT LOCKED — STEP ON PURPLE CONSOLE",s,mem.lockdownActive?P.red:P.cyan)
+      label(mem.phase==="input"?`MEMORY VAULT LOCKED — ${mem.inputIndex||0}/${mem.sequence?.length||5} • PURPLE CONSOLE REPLAYS`:mem.phase==="show"?`MEMORY VAULT LOCKED — WATCH ${mem.sequence?.length||5} PADS`:"MEMORY VAULT LOCKED — STEP ON PURPLE CONSOLE",s,mem.lockdownActive?P.red:P.cyan)
     }
   }
-  const tp=host.sequenceTorchPuzzle;if(tp){for(const torch of tp.torches||[]){if(!visibleTo(focus,torch.x,torch.y))continue;const s=ws(torch.x,torch.y),lit=torch.lit||tp.solved;ctx.save();ctx.fillStyle="#65452c";ctx.fillRect(s.x+C.tile/2-2,s.y+14,4,17);ctx.strokeStyle=lit?P.gold:"#6d6172";ctx.lineWidth=2;ctx.strokeRect(s.x+8,s.y+7,C.tile-16,C.tile-13);if(lit){ctx.shadowColor=P.orange;ctx.shadowBlur=16;ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(s.x+C.tile/2,s.y+16);ctx.quadraticCurveTo(s.x+C.tile/2-9,s.y+4,s.x+C.tile/2,s.y-2);ctx.quadraticCurveTo(s.x+C.tile/2+9,s.y+5,s.x+C.tile/2,s.y+16);ctx.fill()}ctx.fillStyle=lit?P.gold:P.grey;ctx.font='bold 10px "Courier New"';ctx.textAlign="center";ctx.fillText(torch.dir,s.x+C.tile/2,s.y+C.tile-5);ctx.restore();if(md(torch,focus)<=2)label(`${torch.dir} TORCH — ${lit?"LIT":"SHOOT OR TOUCH"}`,s,lit?P.gold:P.grey)}}
+  const tp=host.sequenceTorchPuzzle;if(tp){for(const torch of tp.torches||[]){if(!visibleTo(focus,torch.x,torch.y))continue;const s=ws(torch.x,torch.y),lit=torch.lit||tp.solved;ctx.save();ctx.fillStyle="#65452c";ctx.fillRect(s.x+C.tile/2-2,s.y+14,4,17);ctx.strokeStyle=lit?P.gold:"#6d6172";ctx.lineWidth=2;ctx.strokeRect(s.x+8,s.y+7,C.tile-16,C.tile-13);if(lit){ctx.shadowColor=P.orange;ctx.shadowBlur=16;ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(s.x+C.tile/2,s.y+16);ctx.quadraticCurveTo(s.x+C.tile/2-9,s.y+4,s.x+C.tile/2,s.y-2);ctx.quadraticCurveTo(s.x+C.tile/2+9,s.y+5,s.x+C.tile/2,s.y+16);ctx.fill()}ctx.fillStyle=lit?P.gold:P.grey;ctx.font='bold 10px "Courier New"';ctx.textAlign="center";ctx.fillText(torch.dir,s.x+C.tile/2,s.y+C.tile-5);ctx.restore();if(md(torch,focus)<=2)label(`${torch.dir} TORCH — ${lit?"LIT":"STEP ON"}`,s,lit?P.gold:P.grey)}}
+  if(tp&&W.roomAt(world,focus.x,focus.y)===tp.roomId&&!tp.solved){const room=world.rooms[tp.roomId],s=ws(Math.floor(room.x+room.w/2),room.y+1);label(`TORCH SEQUENCE — STEP ON TORCHES • ${tp.progress||0}/${tp.sequence?.length||4}`,s,P.gold)}
   const wb=host.weightBridge;if(wb){for(const q of wb.pitTiles||[]){if(!visibleTo(focus,q.x,q.y))continue;const s=ws(q.x,q.y);ctx.fillStyle="#020104";ctx.fillRect(s.x,s.y,C.tile,C.tile);ctx.strokeStyle="rgba(95,73,112,.32)";ctx.strokeRect(s.x+1,s.y+1,C.tile-2,C.tile-2)}for(const q of wb.bridgeTiles||[]){if(!visibleTo(focus,q.x,q.y))continue;const s=ws(q.x,q.y);ctx.fillStyle=wb.stabilized?"#725337":"#5c402d";ctx.fillRect(s.x+2,s.y+5,C.tile-4,C.tile-10);ctx.strokeStyle=wb.stabilized?P.green:"#9d7449";ctx.lineWidth=1.5;ctx.strokeRect(s.x+2,s.y+5,C.tile-4,C.tile-10);ctx.strokeStyle="rgba(20,10,7,.7)";for(let n=9;n<C.tile-6;n+=8){ctx.beginPath();ctx.moveTo(s.x+4,s.y+n);ctx.lineTo(s.x+C.tile-4,s.y+n);ctx.stroke()}}if(W.roomAt(world,focus.x,focus.y)===wb.roomId&&!wb.stabilized){const q=(wb.bridgeTiles||[])[1]||(wb.bridgeTiles||[])[0];if(q)label("ROTTEN BRIDGE — EMPTY INVENTORY ONLY",ws(q.x,q.y),P.gold)}}
 }
 function drawRescue(){
@@ -1385,8 +1413,10 @@ function renderRadarPanel(p){
   if(radarCanvasEl.width!==rw||radarCanvasEl.height!==rh){radarCanvasEl.width=rw;radarCanvasEl.height=rh}
   try{radarCtx.setTransform(1,0,0,1,0,0);radarCtx.globalAlpha=1;radarCtx.globalCompositeOperation="source-over";radarCtx.filter="none";radarCtx.shadowBlur=0;radarCtx.shadowColor="rgba(0,0,0,0)"}catch(_){}
   radarCtx.clearRect(0,0,rw,rh);radarCtx.fillStyle="#030205";radarCtx.fillRect(0,0,rw,rh);
-  const pad=6,targetTile=12,cols=Math.min(C.worldWidth,Math.max(14,Math.min(16,Math.floor(rw/targetTile)))),rows=Math.min(C.worldHeight,Math.max(12,Math.min(14,Math.floor(rh/targetTile)))),minX=Math.max(0,Math.min(C.worldWidth-cols,Math.round(p.x-cols/2))),minY=Math.max(0,Math.min(C.worldHeight-rows,Math.round(p.y-rows/2))),maxX=minX+cols,maxY=minY+rows,sc=Math.min((rw-pad*2)/cols,(rh-pad*2)/rows),mw=cols*sc,mh=rows*sc,ox=(rw-mw)/2,oy=(rh-mh)/2,ex=explored.get(p.id)||new Set(),validPoint=q=>Boolean(q&&Number.isFinite(Number(q.x))&&Number.isFinite(Number(q.y))),inside=q=>validPoint(q)&&q.x>=minX&&q.x<maxX&&q.y>=minY&&q.y<maxY,px=q=>ox+(Number(q.x)-minX)*sc,py=q=>oy+(Number(q.y)-minY)*sc;
-  try{window.__CCG_RADAR_DIAGNOSTICS__={cols,rows,scale:sc,mapWidth:mw,mapHeight:mh,canvasWidth:rw,canvasHeight:rh,minX,minY,maxX,maxY,at:performance.now()}}catch(_){}
+  const pad=6,roomId=typeof W!=="undefined"&&W?.roomAt?W.roomAt(world,p.x,p.y):-1,room=roomId>=0?world.rooms?.[roomId]:null;
+  const roomCols=room?Math.max(18,Math.min(30,Math.ceil(Number(room.w)||0)+4)):24,roomRows=room?Math.max(14,Math.min(22,Math.ceil(Number(room.h)||0)+4)):18;
+  const cols=Math.min(C.worldWidth,roomCols),rows=Math.min(C.worldHeight,roomRows),centreX=room?Number(room.x)+Number(room.w)/2:Number(p.x),centreY=room?Number(room.y)+Number(room.h)/2:Number(p.y),minX=Math.max(0,Math.min(C.worldWidth-cols,Math.round(centreX-cols/2))),minY=Math.max(0,Math.min(C.worldHeight-rows,Math.round(centreY-rows/2))),maxX=minX+cols,maxY=minY+rows,sc=Math.min((rw-pad*2)/cols,(rh-pad*2)/rows),mw=cols*sc,mh=rows*sc,ox=(rw-mw)/2,oy=(rh-mh)/2,ex=explored.get(p.id)||new Set(),validPoint=q=>Boolean(q&&Number.isFinite(Number(q.x))&&Number.isFinite(Number(q.y))),inside=q=>validPoint(q)&&q.x>=minX&&q.x<maxX&&q.y>=minY&&q.y<maxY,px=q=>ox+(Number(q.x)-minX)*sc,py=q=>oy+(Number(q.y)-minY)*sc;
+  try{window.__CCG_RADAR_DIAGNOSTICS__={cols,rows,scale:sc,mapWidth:mw,mapHeight:mh,canvasWidth:rw,canvasHeight:rh,minX,minY,maxX,maxY,roomId,roomAware:Boolean(room),roomBounds:room?{x:Number(room.x),y:Number(room.y),w:Number(room.w),h:Number(room.h)}:null,playerMarker:{worldX:Number(p.x),worldY:Number(p.y),shape:"square",count:1},at:performance.now()}}catch(_){}
   // R72: explored ground remains the only map knowledge. Room colours make the
   // radar read like a tiny version of the traversed dungeon instead of a flat grid.
   for(let y=minY;y<maxY;y++)for(let x=minX;x<maxX;x++){
@@ -1409,7 +1439,8 @@ function renderRadarPanel(p){
   for(const cache of host.deathCaches||[])if(cache.active&&inside(cache)){const cx=px(cache),cy=py(cache);radarCtx.save();radarCtx.strokeStyle="#ff6076";radarCtx.lineWidth=2;radarCtx.beginPath();radarCtx.moveTo(cx-3,cy-3);radarCtx.lineTo(cx+3,cy+3);radarCtx.moveTo(cx+3,cy-3);radarCtx.lineTo(cx-3,cy+3);radarCtx.stroke();radarCtx.restore()}
   for(const shop of host.shops||[])if(shop.active&&shop.discovered&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
-  radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.moveTo(px(p),py(p)-5);radarCtx.lineTo(px(p)+4,py(p)+4);radarCtx.lineTo(px(p)-4,py(p)+4);radarCtx.closePath();radarCtx.fill();radarCtx.stroke()
+  radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);
+  const playerCx=px(p)+sc/2,playerCy=py(p)+sc/2,playerSize=Math.max(7,Math.min(11,sc*.82));radarCtx.save();radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1.5;radarCtx.shadowColor=P.cyan;radarCtx.shadowBlur=4;radarCtx.fillRect(playerCx-playerSize/2,playerCy-playerSize/2,playerSize,playerSize);radarCtx.strokeRect(playerCx-playerSize/2-.5,playerCy-playerSize/2-.5,playerSize+1,playerSize+1);radarCtx.fillStyle="#091018";radarCtx.fillRect(playerCx-1,playerCy-1,2,2);radarCtx.restore()
 }
 function dungeonCameraZoom(v,p){
   if(p2)return 1;
@@ -1453,7 +1484,7 @@ function resizeGameCanvas(){
   const area=document.querySelector(".canvas-wrap");if(!area)return;const r=area.getBoundingClientRect(),w=Math.max(640,Math.floor(r.width)),h=Math.max(360,Math.floor(r.height));
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=false;cameras.clear()}
 }
-function syncFullscreenState(){const on=Boolean(document.fullscreenElement);if(UI.fullscreenHint)UI.fullscreenHint.classList.toggle("hidden",on);const b=$("fullscreen-btn");if(b)b.textContent=on?"EXIT FULLSCREEN":"FULLSCREEN";requestAnimationFrame(resizeGameCanvas)}
+function syncFullscreenState(){const on=Boolean(document.fullscreenElement),live=document.body.dataset.runActive==="true";if(UI.fullscreenHint)UI.fullscreenHint.classList.toggle("hidden",on);const b=$("fullscreen-btn");if(b)b.textContent=on?(live?"FULLSCREEN ON":"EXIT FULLSCREEN"):(live?"RETURN TO FULLSCREEN":"FULLSCREEN");requestAnimationFrame(resizeGameCanvas)}
 let pauseReturnMode="playing";
 function openPauseMenu(){
   if(!run||["menu","lobby","ended"].includes(mode))return false;
@@ -1464,6 +1495,6 @@ function closePauseMenu(){
   if(mode!=="paused")return false;UI.pause.classList.add("hidden");mode=pauseReturnMode&&pauseReturnMode!=="paused"?pauseReturnMode:"playing";pauseReturnMode="playing";input.clear();S.setMusicLevel(.075);return true
 }
 function pause(){if(mode==="paused")return closePauseMenu();if(mode==="playing")return openPauseMenu();return false}
-async function toggleFullscreen(){const shell=document.querySelector(".ccg-game");try{if(!document.fullscreenElement)await shell.requestFullscreen();else await document.exitFullscreen()}catch(_){showToast("FULLSCREEN UNAVAILABLE","Your browser blocked fullscreen for this session.","red")}}
+async function toggleFullscreen(){const shell=document.querySelector(".ccg-game"),live=document.body.dataset.runActive==="true";try{if(!document.fullscreenElement){const ok=await requestPlayFullscreen();if(!ok)fullscreenRequiredNotice();return ok}if(live)return true;await document.exitFullscreen();return true}catch(_){fullscreenRequiredNotice();return false}}
 function toggleSound(){S.toggle();sync()}
 function loop(t){sampleDungeonRenderPerformance(t);const dt=Math.min(45,t-last||16);last=t;if(damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500);update(dt);render();requestAnimationFrame(loop)}
