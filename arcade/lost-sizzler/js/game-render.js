@@ -1456,7 +1456,7 @@ function resizeGameCanvas(){
   const area=document.querySelector(".canvas-wrap");if(!area)return;const r=area.getBoundingClientRect(),w=Math.max(640,Math.floor(r.width)),h=Math.max(360,Math.floor(r.height));
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=false;cameras.clear()}
 }
-function syncFullscreenState(){const on=Boolean(document.fullscreenElement);if(UI.fullscreenHint)UI.fullscreenHint.classList.toggle("hidden",on);const b=$("fullscreen-btn");if(b)b.textContent=on?"EXIT FULLSCREEN":"FULLSCREEN";requestAnimationFrame(resizeGameCanvas)}
+function syncFullscreenState(){const on=Boolean(document.fullscreenElement),live=document.body.dataset.runActive==="true";if(UI.fullscreenHint)UI.fullscreenHint.classList.toggle("hidden",on);const b=$("fullscreen-btn");if(b)b.textContent=on?(live?"FULLSCREEN ON":"EXIT FULLSCREEN"):(live?"RETURN TO FULLSCREEN":"FULLSCREEN");requestAnimationFrame(resizeGameCanvas)}
 let pauseReturnMode="playing";
 function openPauseMenu(){
   if(!run||["menu","lobby","ended"].includes(mode))return false;
@@ -1467,6 +1467,6 @@ function closePauseMenu(){
   if(mode!=="paused")return false;UI.pause.classList.add("hidden");mode=pauseReturnMode&&pauseReturnMode!=="paused"?pauseReturnMode:"playing";pauseReturnMode="playing";input.clear();S.setMusicLevel(.075);return true
 }
 function pause(){if(mode==="paused")return closePauseMenu();if(mode==="playing")return openPauseMenu();return false}
-async function toggleFullscreen(){const shell=document.querySelector(".ccg-game");try{if(!document.fullscreenElement)await shell.requestFullscreen();else await document.exitFullscreen()}catch(_){showToast("FULLSCREEN UNAVAILABLE","Your browser blocked fullscreen for this session.","red")}}
+async function toggleFullscreen(){const shell=document.querySelector(".ccg-game"),live=document.body.dataset.runActive==="true";try{if(!document.fullscreenElement){const ok=await requestPlayFullscreen();if(!ok)fullscreenRequiredNotice();return ok}if(live)return true;await document.exitFullscreen();return true}catch(_){fullscreenRequiredNotice();return false}}
 function toggleSound(){S.toggle();sync()}
 function loop(t){sampleDungeonRenderPerformance(t);const dt=Math.min(45,t-last||16);last=t;if(damageFlash>0)damageFlash=Math.max(0,damageFlash-dt/500);update(dt);render();requestAnimationFrame(loop)}
