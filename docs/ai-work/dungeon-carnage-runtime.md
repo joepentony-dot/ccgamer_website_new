@@ -1,3 +1,75 @@
+## R115 rare firearm verification — 7 October 2026
+
+- Existing R47 browser coverage now proves capped same-archetype refinement, alternate-archetype swap, mastered duplicate reforge, and common-only salvage separation.
+- Runtime did not need modification.
+
+## R115 browser qualification update — 7 October 2026
+
+- Reconciled the existing browser stability contract with the new Tutorial completion copy.
+- Hardened the existing FIRE-lockout fixture so its injected breakable cannot share the target tile with a live enemy/generator.
+- Runtime behaviour is unchanged; rerun the complete exact-head matrix.
+
+## R115 Rotten Bridge end-to-end coverage — 7 October 2026
+
+- Existing campaign browser integration now exercises collapse, theft, emergency supplies, shoot-only rebuild and exact-once thief stash recovery.
+- No new browser test owner was created.
+
+## R115 guide-entry / legacy contract update — 7 October 2026
+
+- Menu button now matches the panel: Dungeon Guide.
+- Existing V10.6 regression keeps mechanical checks but no longer requires removed long-form guide paragraphs.
+
+## R115 armour-cap runtime update — 7 October 2026
+
+- Level-up Armour Repair now respects wearable-aware `armourCap(p)` instead of hard-coded 12.
+- Consolidated R80 coverage protects the path.
+
+## R115 Tutorial qualification update — 7 October 2026
+
+- Consolidated the existing Tutorial contract away from obsolete prose snapshots and onto required player concepts + stabilized lesson keys/DOM ownership.
+- Tutorial remains the same presentation layer over the existing training runtime.
+
+## R115 qualification wording update — 7 October 2026
+
+- KEYS & MAP now says “that chest costs no second key,” matching the existing strict player-guide regression while preserving the concise rule.
+
+## R115 final-floor composition audit — 7 October 2026
+
+- Fixed Floor 15 arena placement for the reused final guardian/Blood Archivist.
+- There is still one guardian/objective identity: the boss is the canonical guardian, then normal Sigil progression remains required after defeat.
+- R87 coverage now locks this composition. R54 guide heading contract updated to the new concise guide only.
+
+## R115 armour/death-cache audit — 7 October 2026
+
+- Fixed the final audited hard-coded 12-cap armour gain path: Shop Armour Repair now respects `PGR.armourCap(p1)`.
+- Verified over-cap death-cache armour is preserved as cache remainder until wearable capacity is restored; score/XP/progression payloads are exact-once.
+- Coverage remains consolidated in R80 wearable and R83 death-cache contracts.
+
+## R115 guide contract update — 7 October 2026
+
+- Concise Dungeon Guide now retains the single-key Bronze-room chest rule.
+- Existing R54 runtime pickup-label checks remain unchanged; its obsolete long Rulebook prose snapshot now checks the current concise firearm-progression guidance instead.
+
+## R115 Map Reveal runtime audit — 7 October 2026
+
+- Cartographer's Eye geometry reveal was already functional, but icon visibility was incomplete.
+- Compact radar, full map and Warden navigation now honour `host.r114MapRevealed` for intended Sanctuary/Shop/active-Warden markers while preserving ordinary discovery bookkeeping.
+- Existing R72 consolidated map contract now covers this explicit reveal path.
+
+## R115 guide qualification repair — 7 October 2026
+
+- Restored concise death-cache progression-item protection wording in the player guide.
+- Replaced the obsolete Gambler-manual assertion in the existing V10.22 contract with current player-facing guide checks for Dungeon Guide naming, Floor/Campaign Key distinction and Teleport restrictions in sealed challenges.
+- Continue exact-head qualification before any merge.
+
+## R115 authoritative runtime continuation — 7 October 2026 13:32 UK
+
+- Verified merged baseline is R114 at `abd5a3629e990aaca8d116e98a690fc2317c4e1e`.
+- Post-merge Pages, Production Smoke, Live Public Navigation, Site Safety and Full Qualification (all six Chromium shards) are green.
+- Active successor branch: `codex/dungeon-r115-guide-runtime-audit`.
+- Current work consolidates player guidance into the existing Rulebook panel and existing Tutorial presentation owner. No duplicate guide/timer/tutorial system is being introduced.
+- Preserve all R114 gameplay semantics and the server-validated public playtest boundary while continuing the remaining audits.
+
 ## R114 firearm qualification update — 7 October 2026 12:50 UK
 
 - Full Qualification reached all Chromium shards on `8cca393cd37034ceca7e25e0b9cad9c9da3254d1`; only shard 2 failed.

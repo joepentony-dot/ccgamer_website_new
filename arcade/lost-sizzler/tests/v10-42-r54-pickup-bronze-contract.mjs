@@ -34,7 +34,7 @@ assert.match(play,/chest\.locked=false/,"opened chests must clear the lock state
 
 assert.match(core,/UI\.bronze\.textContent=`BRONZE \$\{p1\.bronzeKeys\|\|0\}`/,"HUD must expose the bronze count directly");
 assert.match(html,/id="hud-bronze">BRONZE 0</,"initial HUD must identify bronze keys explicitly");
-assert.match(html,/DOORS, BRONZE KEYS &amp; SECRETS/,"rulebook must document bronze key behaviour");
+assert.match(html,/KEYS &amp; MAP/,"Dungeon Guide must document bronze key behaviour in the concise keys section");
 assert.match(html,/chest costs no second key/,"rulebook must explain the single-key room/chest rule");
 assert.match(css,/\.keys-card strong\{[^}]*overflow:visible/,"bronze count must not be clipped");
 assert.match(render,/chests:make\("assets\/pixel\/chest-sheet-v10-34\.png"\)/,"R54 renderer must request the established chest sprite sheet");

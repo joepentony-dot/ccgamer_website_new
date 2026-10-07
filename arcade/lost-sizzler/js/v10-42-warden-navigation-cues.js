@@ -36,7 +36,7 @@
   function markerState(p,r=R(),h=H(),w=W()){
     if(!p||!r||!h||!w)return[];markDomainKnowledge(p,r,h,w);
     const n=floor(r),row=floorRecord(n,r),domain=h.v142WardenDomain,markers=[];
-    if(domain&&Number(domain.floor||n)===n&&row?.domainDiscovered&&!domain.cleansed&&domain.active!==false){
+    if(domain&&Number(domain.floor||n)===n&&(row?.domainDiscovered||h.r114MapRevealed)&&!domain.cleansed&&domain.active!==false){
       const room=w.rooms?.[Number(domain.roomId)],q=centre(room);if(q)markers.push({kind:"corruption",...q,label:String(domain.profileName||"WARDEN CORRUPTION"),roomId:Number(domain.roomId)});
     }
     const refuge=h.v142CleansedRefuge;

@@ -19,6 +19,10 @@ assert.match(progression,/const carried=\(player\.inventory\|\|\[\]\)\.map\(clon
 assert.doesNotMatch(progression,/filter\(it=>!it\.quest\)/,"death cache must not leave ordinary carried quest-marked items on the player");
 assert.match(progression,/player\.inventory=\[\];player\.armor=0/,"death must strip carried items and current armour protection");
 assert.match(progression,/armourRecovered/,"death-cache recovery must restore cached armour through the canonical recovery transaction");
+assert.match(progression,/armourRoom=Math\.max\(0,armourCap\(player\)-armourBefore\),armourRecovered=Math\.min\(cachedArmour,armourRoom\)/,"death-cache armour recovery must use the player\'s current wearable-derived armour cap");
+assert.match(progression,/cache\.armour=cachedArmour-armourRecovered/,"armour above the current cap must remain in the cache instead of being discarded");
+assert.match(progression,/cache\.active=remaining\.length>0\|\|Math\.max\(0,Number\(cache\.armour\)\|\|0\)>0/,"a cache with unrecovered over-cap armour must remain active for later recovery after gear is re-equipped");
+assert.match(progression,/cache\.score=0;cache\.xp=0;cache\.progressionRecovery=null/,"score, XP and progression payloads must be consumed exactly once even when armour remains in the cache");
 assert.match(gameplay,/priorCacheLost=\(host\.deathCaches\|\|\[\]\)\.some/,"a new death must detect an unrecovered prior cache");
 assert.match(gameplay,/if\(priorCacheLost\)host\.deathCaches=\[\]/,"a second death must destroy the previous active cache");
 assert.match(gameplay,/cache\.progressionRecovery=penalty\.progressionRecovery/,"the new death cache must own the recoverable progression transaction");

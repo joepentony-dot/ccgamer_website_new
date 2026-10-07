@@ -22,7 +22,7 @@ window.CCGProgression=(()=>{
   const skills=[
     {id:"health",name:"Extra Life Bar",desc:"+1 maximum health and heal 1.",apply:p=>{p.maxHealth+=1;p.health=Math.min(p.maxHealth,p.health+1)},undo:p=>{p.maxHealth=Math.max(C.player.maxHealth,p.maxHealth-1);p.health=Math.min(p.health,p.maxHealth)}},
     {id:"ammo",name:"Bigger Magazine",desc:"+20 maximum ammo and refill 20.",apply:p=>{p.maxMana+=20;p.mana=Math.min(p.maxMana,p.mana+20)},undo:p=>{p.maxMana=Math.max(C.player.maxMana,p.maxMana-20);p.mana=Math.min(p.mana,p.maxMana)}},
-    {id:"armour",name:"Armour Repair",desc:"Gain 2 armour immediately.",apply:p=>{p.armor=Math.min(12,p.armor+2)},undo:p=>{p.armor=Math.max(0,p.armor-2)}},
+    {id:"armour",name:"Armour Repair",desc:"Gain 2 armour immediately.",apply:p=>{p.armor=Math.min(armourCap(p),p.armor+2)},undo:p=>{p.armor=Math.max(0,p.armor-2)}},
     {id:"torch",name:"Torch Mastery",desc:"Torches last 6 seconds longer.",apply:p=>{p.torchBonusMs=(p.torchBonusMs||0)+6000},undo:p=>{p.torchBonusMs=Math.max(0,(p.torchBonusMs||0)-6000)}},
     {id:"dash",name:"Combat Dash",desc:"Dashing through an enemy deals 1 damage.",apply:p=>{p.dashDamage=(p.dashDamage||0)+1},undo:p=>{p.dashDamage=Math.max(0,(p.dashDamage||0)-1)}},
     {id:"scavenger",name:"Scavenger",desc:"Ammo packs provide 20% more ammunition.",apply:p=>{p.scavenger=(p.scavenger||0)+.2},undo:p=>{p.scavenger=Math.max(0,(p.scavenger||0)-.2)}},

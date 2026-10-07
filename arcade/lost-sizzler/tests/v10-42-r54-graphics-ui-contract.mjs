@@ -20,7 +20,7 @@ const landing=read("js/v10-41-landing-notification-polish.js");
 assert.ok(html.includes(`preload" as="image" href="assets/pixel/chest-sheet-v10-34.png?v=${version.cacheToken}"`),"the authored chest sheet must be preloaded under the current release cache token");
 assert.match(html,/id="hud-bronze">BRONZE 0<\/strong>/,"the critical HUD must name the Bronze Key count explicitly");
 assert.match(html,/If a chest is inside a room you already unlocked with a bronze key,[\s\S]*costs no second key/i,"the Rulebook must explain the single-key bronze-room rule");
-assert.match(html,/Pickups now name the thing you actually collected:[\s\S]*weapon caches evolve your current firearm instead of advertising random gun names,[\s\S]*armour and XP show the amount gained,[\s\S]*health is identified as a potion,[\s\S]*ammunition shows the rounds added/i,"the Rulebook must describe evolving weapon-cache feedback");
+assert.match(html,/Firearms grow stronger as you descend,[\s\S]*rare named weapons can change or refine their firing pattern/i,"the Dungeon Guide must explain evolving and rare firearm progression without implementation detail");
 
 assert.match(core,/UI\.bronze\.textContent=\`BRONZE \$\{p1\.bronzeKeys\|\|0\}\`/,"the live HUD must show the actual Bronze Key count rather than a combined key total");
 assert.match(core,/UI\.quickKeyring\.textContent=\`MAIN \$\{host\.keysCollected\|\|0\}\/\$\{C\.keyTarget\}\$\{host\.exitSigilCollected\?" • SIGIL 1":" • SIGIL 0"\}\`/,"the secondary key line must leave Bronze Keys to the dedicated prominent counter");

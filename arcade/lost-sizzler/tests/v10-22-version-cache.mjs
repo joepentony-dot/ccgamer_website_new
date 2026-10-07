@@ -103,7 +103,9 @@ assert.match(index,/SPACE ATTACK/,"keyboard help must describe the shared firear
 assert.match(index,/M MAP/,"keyboard help must reserve M for the Solo full dungeon map");
 assert.doesNotMatch(index,/M SOUND/,"keyboard help must not advertise the retired M sound shortcut");
 assert.match(index,/essential keys or an Exit Sigil are returned safely to the floor and marked on the maps/,"published death rules must explain progression-item protection");
-assert.match(index,/THE GAMBLER/,"published rulebook must document the rare Gambler encounter");
+assert.match(index,/Dungeon Guide/,"published player help must use the concise Dungeon Guide");
+assert.match(index,/Floor Keys belong to the current floor\. Campaign Keys are longer-term discoveries/,"published guide must distinguish Floor Keys from Campaign Keys");
+assert.match(index,/Teleport cannot be used while a challenge is sealed/,"published guide must explain sealed-challenge teleport restrictions");
 
 assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must retain current compatibility branding");
 assert.doesNotMatch(legacyPolish,/keepSubtitleCurrent/,"legacy polish must not reinstall a persistent subtitle observer");

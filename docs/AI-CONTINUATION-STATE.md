@@ -1,3 +1,92 @@
+## R115 rare-weapon cap verification — 7 October 2026
+
+- Audited R47 rare-at-cap logic against the explicit reward requirements. Runtime already supports: alternate rare archetype swap, same-archetype refinement up to +3, and mastered duplicate reforge to the next meaningful archetype. Only ordinary COMMON capped caches enter the ammo -> XP -> score salvage chain.
+- Extended the existing R47 Chromium contract to exercise all three rare cases directly and verify none of them gains ammo through common salvage. Existing common-cache salvage coverage remains.
+- No new test file or weapon runtime owner was introduced.
+
+## R115 Chromium qualification repairs — 7 October 2026
+
+- Exact head `a4f647e0f3b26211f081ff7d7f60667de9601b78` passed PR Qualification and Node contracts. Full Qualification reached all Chromium shards; shards 3/5/6 passed, while shards 1 and 4 exposed browser-test assumptions.
+- Shard 1: the Tutorial completed all 10 lessons and rendered the new concise `READY FOR THE DUNGEON` final state, but the broad browser stability test still required the retired sentence “You Are Ready To Take On The Adventure!”. The existing test now verifies the current completion heading plus fifteen-floor campaign scope.
+- Shard 4: the FIRE-lockout fixture injected a breakable immediately in front of the player without clearing a live enemy/generator from that tile. Melee correctly prioritises a live enemy, making the fixture nondeterministic. The existing test now establishes an unambiguous furniture-only target before asserting contextual melee/no-ammo behaviour.
+- No gameplay runtime, timeout or new test file was changed.
+
+## R115 Rotten Bridge browser integration audit — 7 October 2026
+
+- Extended the existing canonical campaign browser integration test rather than adding a new test file.
+- The browser flow now exercises Floor 5 Rotten Bridge semantics through the live runtime: carried inventory blocks crossing; empty-handed crossing collapses the bridge; the dropped stash is stolen once; a Dungeon Thief spawns; firearm/ammo failsafes appear when required; non-shot switch activation is rejected; a shot rebuilds traversal; killing the thief returns the stash exactly once and a second recovery cannot duplicate it.
+- This is qualification coverage only; bridge runtime semantics were not duplicated.
+
+## R115 legacy guide-regression consolidation — 7 October 2026
+
+- V10.6 still snapshot-tested several paragraphs removed by the concise player-facing Dungeon Guide (Death Stalker reward totals, detailed AI prose, spider/hazard counts, Sigil death-cache placement and zero-XP explanation).
+- Runtime assertions for those mechanics remain intact; HTML assertions now check the current concise player concepts instead of retired manual prose.
+- The menu entry is also renamed from “Objectives & Rulebook” to “Dungeon Guide” to match the panel title.
+- No gameplay mechanic or runtime reward changed.
+
+## R115 wearable armour-cap repair — 7 October 2026
+
+- Continued armour-gain audit found a real remaining hard-coded base-cap path in the level-up `Armour Repair` skill.
+- It now uses canonical `armourCap(p)`, so wearable-derived capacity applies to skill repairs as well as loot, shrines and shop repairs.
+- Existing R80 coverage was extended; no new test file was added.
+
+## R115 Tutorial contract consolidation — 7 October 2026
+
+- Exact-head Node qualification advanced through the Bronze-key contract and then stopped in the existing Tutorial campaign contract.
+- The Tutorial runtime/presentation split is intact, but the contract still snapshot-tested retired prose from before the requested concise player-facing rewrite.
+- The same existing contract now verifies stabilized lesson keys, RPG stats, Death Stalker, death cache, Sanctuary, fifteen-floor scope, weapon-cache teaching, completion state and live tour-DOM preservation without requiring obsolete sentences.
+- No Tutorial runtime owner, timeout or new test file was added.
+
+## R115 Bronze-guide contract wording — 7 October 2026
+
+- Exact-head qualification found the concise guide already preserved the single-key Bronze room/chest rule, but the existing R54 contract checks the direct phrase `chest costs no second key`.
+- Player copy now uses that direct wording. Runtime and test strength are unchanged.
+
+## R115 Floor 15 boss/Sigil composition repair — 7 October 2026
+
+- Audit confirmed R114 correctly reused the canonical Floor 15 guardian as THE BLOOD ARCHIVIST, avoiding a duplicate final-completion owner, but did not move that reused guardian into the authored boss arena (the exit room).
+- The reused final guardian is now relocated to a valid boss-arena cell before the fight state is created. It remains the same `host.guardian` object, so defeating the multi-phase boss satisfies the existing guardian objective exactly once.
+- Boss completion still explicitly returns the player to the Sigil route; the boss does not award or bypass the final Sigil.
+- Existing R87 fifteen-floor campaign coverage now verifies guardian reuse, arena placement, shared boss identity and hand-off to the Sigil route.
+- The stale R54 old-Rulebook heading assertion now targets the concise KEYS & MAP guide section; all bronze runtime checks remain unchanged.
+
+## R115 wearable armour-cap / death-cache audit — 7 October 2026
+
+- Armour gain paths were audited for hard-coded base-cap behaviour. Loot, floor armour pickups and Shrine armour already use `PGR.armourCap(player)`; Shop Armour Repair was the remaining legacy `Math.min(12,...)` path.
+- Shop Armour Repair now uses the canonical wearable-aware armour cap and its player copy says "current armour limit".
+- Death-cache recovery was audited end-to-end. Canonical recovery uses the currently equipped armour cap, subtracts only the armour actually restored, leaves over-cap remainder in the still-active cache, and clears score/XP/progression payloads after the first recovery so a second visit cannot duplicate them.
+- Existing R80 and R83 consolidated contracts were extended; no new test file or recovery owner was added.
+
+## R115 concise-guide R54 reconciliation — 7 October 2026
+
+- Exact head `dc8214fa8de46c56e575310756fbd9b5fbf50072` cleared the death-cache wording check and next stopped in the existing R54 guide contract.
+- Restored the useful one-key bronze-room rule in the concise Keys & Map card: a chest inside a room already unlocked with a Bronze Key costs no second key.
+- R54 also required the retired long paragraph describing internal pickup-label behaviour. Runtime label assertions already remain in R54, so only that prose snapshot was replaced with a current player-facing firearm progression check.
+- No gameplay runtime was weakened or changed in this repair.
+
+## R115 Cartographer's Eye icon-visibility repair — 7 October 2026
+
+- Audit found a real R114 integration gap: `useMapReveal()` correctly charts floor geometry and sets `host.r114MapRevealed=true`, but compact radar/full-map Sanctuary and Shop markers still required ordinary discovery, while the active Warden domain marker still required prior domain discovery.
+- Existing render owners now consume the explicit reveal flag: Sanctuary and active Shop markers render when normally discovered OR when Cartographer's Eye has revealed the floor. Warden navigation exposes the active uncleansed domain under the same explicit reveal state.
+- Ordinary discovery state is not forged: the repair does not add rooms to `enteredRoomIds`, does not set `shop.discovered`, and does not mark the Warden domain as physically visited.
+- The existing R72 map/death contract was extended rather than adding another test file.
+
+## R115 qualification repair — 7 October 2026
+
+- Exact head `bfd776be5faa289654263fd979bb340ce33df2c7` passed package/cache/SEO/metadata checks but PR Qualification and Full Qualification stopped in the existing V10.22 published-help contract.
+- The concise Dungeon Guide had removed an important player safety rule: if a death cache is lost, essential keys or an Exit Sigil are returned safely to the floor and marked on the maps. That protection is restored in one short sentence.
+- The same legacy test also required a rare Gambler explanation. That requirement conflicts with the current instruction to keep the guide short and leave nonessential discoveries for play, so the existing contract now verifies the current Dungeon Guide, Floor Key vs Campaign Key wording and sealed-challenge Teleport rule instead.
+- No runtime behaviour, timer, playtest access or gameplay owner changed.
+
+## R115 player-facing guide / tutorial continuation — 7 October 2026 13:32 UK
+
+- R114 / PR #2571 merged safely to `main` at `abd5a3629e990aaca8d116e98a690fc2317c4e1e`.
+- Post-merge verification is green on that exact merge commit: GitHub Pages deployment, Production Smoke, Live Public Navigation, Site Safety, itch.io package, Node qualification and all six Full Qualification Chromium shards passed.
+- Fresh successor branch: `codex/dungeon-r115-guide-runtime-audit`, created directly from verified R114 `main`. Superseded #2567 and merged #2571 must not be reused as development vehicles.
+- First R115 task: replace the long implementation-heavy Objectives & Rulebook with a concise player-facing Dungeon Guide, and simplify the existing campaign Tutorial presentation copy without adding another tutorial owner.
+- Public 24-hour playtest access/timer remains untouched.
+- Remaining audit backlog after this presentation pass: Map Reveal icon visibility end-to-end; wearable armour-cap consistency; death-cache exact-once/elevated-armour recovery; bridge/thief/rebuild/ammo failsafe end-to-end; Floor 15 boss/Sigil composition; campaign objective/enemy variety; and any defects exposed by qualification/playtest telemetry.
+
 ## R114 firearm browser-contract reconciliation — 7 October 2026 12:50 UK
 
 - Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02`; active vehicle remains draft PR #2571.

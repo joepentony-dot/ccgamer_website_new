@@ -246,8 +246,11 @@ try{
     p1.weaponLevel=2;p1.mana=120;p1.maxMana=Math.max(120,Number(p1.maxMana)||0);p1.hitStunMs=0;
     fire1=0;fireBuffer1=0;projectileCD=0;bullets.length=0;input.clear();
     p1.dir={x:1,y:0};
+    const targetX=Number(p1.x)+1,targetY=Number(p1.y);
+    host.enemies=(host.enemies||[]).filter(e=>!(e?.alive&&Number(e.x)===targetX&&Number(e.y)===targetY));
+    host.generators=(host.generators||[]).filter(g=>!(g?.alive&&Number(g.x)===targetX&&Number(g.y)===targetY));
     host.blockingDecor=host.blockingDecor||[];
-    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:Number(p1.x)+1,y:Number(p1.y),type:"crate",blocking:true,structural:false,hp:2,maxHp:2});
+    host.blockingDecor.push({id:"r61-adjacent-firearm-prop",x:targetX,y:targetY,type:"crate",blocking:true,structural:false,hp:2,maxHp:2});
     sync();
     window.CCGLostSizzlerInventoryHudV106?.render?.();
     return{

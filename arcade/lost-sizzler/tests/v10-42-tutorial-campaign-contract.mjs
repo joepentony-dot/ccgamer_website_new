@@ -13,7 +13,7 @@ const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 
 assert(loader.includes('v10-42-bootstrap.js'),'Canonical late loader must hand V10.42 activation to the ordered bootstrap.');
 assert(bootstrap.includes('v10-42-tutorial-campaign.js'),'Authoritative V10.42 bootstrap must activate the campaign-aware Tutorial layer.');
-assert(source.includes('without rewriting the stabilized training runtime'),'Tutorial refresh must remain a presentation/content layer over the stabilized Training Archive runtime.');
+assert(source.includes('const STEP_COPY=new Map')&&source.includes('const TOUR_COPY=new Map'),'Tutorial refresh must remain a presentation/content layer over the stabilized Training Archive runtime.');
 
 for(const stale of [
   'THE FIVE-DEPTH CAMPAIGN',
@@ -48,18 +48,15 @@ assert(guidance.includes('ccg-tutorial-canvas-callout'),'Tutorial visual tour mu
 assert(guidance.includes('You do not need to memorise every system before starting the run')||onboarding.includes('You do not need to memorise every system before starting the run'),'Tutorial philosophy must remain contextual rather than becoming a manual dump.');
 
 for(const stat of ['Might','Vitality','Agility','Endurance','Luck','Arcana'])assert(source.includes(stat),`Tutorial must retain RPG attribute ${stat}.`);
-assert(source.includes('Warden Corruption'),'Tutorial must teach Warden Corruption language.');
-assert(source.includes('single Field Pulse weapon'),'Campaign copy must preserve the evolving-firearm model.');
-assert(source.includes('death cache'),'Campaign copy must retain death/recovery language.');
-assert(source.includes('Sanctuary is challenge-free'),'Campaign copy must explain current Sanctuary semantics.');
-assert(source.includes('full campaign now spans fifteen floors'),'Tutorial must identify the current fifteen-floor campaign scope.');
-assert(source.includes('You Are Ready To Take On The Adventure!'),'Campaign copy must preserve the established final Tutorial completion signal.');
+for(const concept of ['Death Stalker','death cache','Sanctuary','fifteen-floor','weapon caches'])assert(source.includes(concept),`Tutorial must retain current player concept: ${concept}.`);
+for(const key of ['OBJECTIVES, MAP & DISCOVERY','SURVIVAL, DEATH & RECOVERY','DOORS, CHESTS, CACHES & SOLID SCENERY','NAMED THREATS, WARDENS & THE STALKER','SHOPS, SANCTUARY & SPECIAL OPPORTUNITIES','TUTORIAL COMPLETE'])assert(source.includes(key),`Tutorial presentation must retain stabilized lesson key: ${key}.`);
+assert(source.includes('READY FOR THE DUNGEON'),'Campaign copy must retain an explicit player-facing completion state.');
 
 assert(source.includes('if(banner.dataset.v142CampaignCopy==="true")return true'),'Completion banner patch must be idempotent to avoid MutationObserver feedback loops.');
 assert(!source.includes('label.textContent="FREE INTRODUCTION COMPLETE"'),'Campaign copy must preserve the established TUTORIAL COMPLETE banner signal used by the paywall handoff.');
 assert(!/\bgrid\.innerHTML\s*=/.test(source),'Campaign copy must never assign new HTML to the stabilized information-tour grid; its live child nodes carry HUD highlight ownership.');
 assert(!/querySelector\(["']\.tour-grid["']\)\.innerHTML\s*=/.test(source),'Campaign copy must never rebuild the stabilized information-tour grid through a direct selector assignment.');
-assert(source.includes('interactive tour DOM intact'),'Tutorial source must document the live-node preservation boundary that protects lesson highlighting.');
+assert(source.includes('const p=tour.querySelector(".tour-head p")'),'Tutorial presentation must update tour copy without rebuilding the stabilized live-node grid.');
 assert(source.includes('window.CCGLostSizzlerV142TutorialCampaign=Object.freeze'),'Tutorial campaign layer must expose a stable diagnostic API.');
 
 console.log('Dungeon Carnage current-system Tutorial contract passed with five-floor legacy teaching retired.');

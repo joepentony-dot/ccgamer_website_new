@@ -134,6 +134,31 @@ try{
   assert.equal(rareSpread.evolved.id,"spread","earned rare Spread pattern must survive the next normal tier upgrade");
   assert.equal(rareSpread.evolved.shots,3,"earned rare Spread pattern must remain three-way after later evolution");
 
+
+  const rareCapCases=await page.evaluate(()=>{
+    const evolution=window.CCGLostSizzlerV142R47FirearmEvolution;
+    const rare=(id,rarity="GOLD MEDAL")=>({id,name:`${id} weapon`,displayName:`${rarity} ${id} weapon`,rarity,power:3,delay:.8,shots:id==="spread"?3:1,pierce:id==="pierce"?2:1,element:id==="fire"?"fire":"physical",mods:[],rating:99,desc:"named rare weapon"});
+    const prime=(pattern,refinement)=>{
+      run.floor=1;p1.firearmUnlocked=true;p1.weaponPatternOverride=pattern;p1.weaponRefinement=refinement;p1.weaponEvolutionTier=2;p1.weaponLevel=2;
+      p1.weapon=evolution.stageWeapon(2,pattern,refinement);p1.ownedWeapons=[evolution.stageWeapon(2,pattern,refinement)];p1.activeWeaponIndex=0;p1.mana=11;evolution.collapseOwnership(p1);
+      return Number(p1.mana||0)
+    };
+    let before=prime("spread",0);equipWeapon(p1,rare("spread"));const refine={id:p1.weapon?.id,pattern:p1.weaponPatternOverride,refinement:p1.weaponRefinement,mana:p1.mana,before,displayName:p1.weapon?.displayName};
+    before=prime("spread",2);equipWeapon(p1,rare("fire"));const variant={id:p1.weapon?.id,pattern:p1.weaponPatternOverride,refinement:p1.weaponRefinement,mana:p1.mana,before};
+    before=prime("spread",3);equipWeapon(p1,rare("spread"));const reforge={id:p1.weapon?.id,pattern:p1.weaponPatternOverride,refinement:p1.weaponRefinement,mana:p1.mana,before,displayName:p1.weapon?.displayName};
+    return{refine,variant,reforge}
+  });
+  assert.equal(rareCapCases.refine.id,"spread","capped same-archetype rare reward must remain the advertised archetype");
+  assert.equal(rareCapCases.refine.refinement,1,"capped same-archetype rare reward must refine the current firearm");
+  assert.match(rareCapCases.refine.displayName,/\+1/,"refined rare firearm must expose its refinement to the player");
+  assert.equal(rareCapCases.refine.mana,rareCapCases.refine.before,"rare same-archetype refinement must not use common ammo salvage");
+  assert.equal(rareCapCases.variant.id,"fire","capped alternate-archetype rare reward must switch to the advertised firearm archetype");
+  assert.equal(rareCapCases.variant.refinement,0,"alternate-archetype swap must begin unrefined");
+  assert.equal(rareCapCases.variant.mana,rareCapCases.variant.before,"rare alternate-archetype swap must not use common ammo salvage");
+  assert.equal(rareCapCases.reforge.pattern,"fire","master-refined duplicate rare reward must transparently reforge to the next meaningful archetype");
+  assert.equal(rareCapCases.reforge.refinement,0,"mastered duplicate reforge must reset refinement for the new archetype");
+  assert.equal(rareCapCases.reforge.mana,rareCapCases.reforge.before,"mastered rare duplicate must remain a weapon reward rather than common ammo salvage");
+
   console.log("Dungeon Carnage r47 Memory Pad and firearm evolution browser contract passed.");
   await context.close();
 }finally{
