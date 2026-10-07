@@ -7,8 +7,8 @@ const legacy=fs.readFileSync("arcade/lost-sizzler/index.html","utf8");
 const ui=fs.readFileSync("arcade/lost-sizzler/js/dungeon-public-playtest.js","utf8");
 const css=fs.readFileSync("arcade/lost-sizzler/css/dungeon-public-playtest.css","utf8");
 const migration=fs.readFileSync("supabase/migrations/20261007025945_dungeon_carnage_public_playtest_sessions.sql","utf8");
-const script="js/dungeon-public-playtest.js?v=20261007-public5m-v1";
-const style="css/dungeon-public-playtest.css?v=20261007-public5m-v1";
+const script="js/dungeon-public-playtest.js?v=20261007r112";
+const style="css/dungeon-public-playtest.css?v=20261007r112";
 
 for(const [name,html] of [["canonical",canonical],["legacy",legacy]]){
   assert(html.includes(script),name+" Dungeon page must load the public timed-playtest controller");
