@@ -199,7 +199,6 @@ jobs:
           node-version: '22'
 
       - name: Install Chromium test runtime
-        timeout-minutes: 10
         shell: bash
         run: |
           set -euo pipefail
