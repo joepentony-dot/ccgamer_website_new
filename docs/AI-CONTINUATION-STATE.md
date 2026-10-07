@@ -1,3 +1,10 @@
+## R115 Chromium qualification repairs — 7 October 2026
+
+- Exact head `a4f647e0f3b26211f081ff7d7f60667de9601b78` passed PR Qualification and Node contracts. Full Qualification reached all Chromium shards; shards 3/5/6 passed, while shards 1 and 4 exposed browser-test assumptions.
+- Shard 1: the Tutorial completed all 10 lessons and rendered the new concise `READY FOR THE DUNGEON` final state, but the broad browser stability test still required the retired sentence “You Are Ready To Take On The Adventure!”. The existing test now verifies the current completion heading plus fifteen-floor campaign scope.
+- Shard 4: the FIRE-lockout fixture injected a breakable immediately in front of the player without clearing a live enemy/generator from that tile. Melee correctly prioritises a live enemy, making the fixture nondeterministic. The existing test now establishes an unambiguous furniture-only target before asserting contextual melee/no-ammo behaviour.
+- No gameplay runtime, timeout or new test file was changed.
+
 ## R115 Rotten Bridge browser integration audit — 7 October 2026
 
 - Extended the existing canonical campaign browser integration test rather than adding a new test file.

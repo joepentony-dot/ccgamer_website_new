@@ -491,7 +491,7 @@ try{
       await withTimeout(state.page.waitForFunction(next=>window.CCGLostSizzlerOnboardingV120.state.step===next&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),step+1,{timeout:18000}),20000,`Tutorial stage ${step+2}/10 prompt`);
     }
     const finalTutorial=await state.page.evaluate(()=>({copy:document.getElementById("ccg-tutorial-stage-modal")?.innerText||"",exitButtons:document.querySelectorAll("#ccg-tutorial-stage-modal [data-stage-exit]").length,completeButtons:document.querySelectorAll("#ccg-tutorial-stage-modal [data-stage-continue]").length}));
-    assert.match(finalTutorial.copy,/You Are Ready To Take On The Adventure!/i,`final tutorial copy is incomplete: ${JSON.stringify(finalTutorial)}`);assert.deepEqual({exitButtons:finalTutorial.exitButtons,completeButtons:finalTutorial.completeButtons},{exitButtons:0,completeButtons:1},`final tutorial must have one completion action: ${JSON.stringify(finalTutorial)}`);
+    assert.match(finalTutorial.copy,/READY FOR THE DUNGEON/i,`final tutorial copy must expose the current completion state: ${JSON.stringify(finalTutorial)}`);assert.match(finalTutorial.copy,/full fifteen-floor campaign/i,`final tutorial copy must retain current campaign scope: ${JSON.stringify(finalTutorial)}`);assert.deepEqual({exitButtons:finalTutorial.exitButtons,completeButtons:finalTutorial.completeButtons},{exitButtons:0,completeButtons:1},`final tutorial must have one completion action: ${JSON.stringify(finalTutorial)}`);
     await assertHealthy(state,"active silent Tutorial");
     logStage("early Tutorial launch: complete");
   }

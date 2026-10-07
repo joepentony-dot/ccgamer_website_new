@@ -1,3 +1,9 @@
+## R115 browser qualification update — 7 October 2026
+
+- Reconciled the existing browser stability contract with the new Tutorial completion copy.
+- Hardened the existing FIRE-lockout fixture so its injected breakable cannot share the target tile with a live enemy/generator.
+- Runtime behaviour is unchanged; rerun the complete exact-head matrix.
+
 ## R115 Rotten Bridge end-to-end coverage — 7 October 2026
 
 - Existing campaign browser integration now exercises collapse, theft, emergency supplies, shoot-only rebuild and exact-once thief stash recovery.
