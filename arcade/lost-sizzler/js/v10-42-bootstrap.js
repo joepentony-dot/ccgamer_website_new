@@ -40,6 +40,7 @@
     ["v10-42-stage6-zone-gameplay.js","CCGLostSizzlerV142Stage6ZoneGameplay"],
     ["v10-42-r15-npc-expansion.js","CCGLostSizzlerV142R15NpcExpansion"],
     ["v10-42-stage7-npc-merchant.js","CCGLostSizzlerV142Stage7NpcMerchant"],
+    ["v10-42-r115-floor-trials.js","CCGLostSizzlerV142R115FloorTrials"],
     ["v10-42-r16-environment-presentation.js","CCGLostSizzlerV142R16EnvironmentPresentation"],
     ["v10-42-r46-final-visual-polish.js","CCGLostSizzlerV142R46FinalVisualPolish"],
     ["v10-42-r48-elemental-portal-presentation.js","CCGLostSizzlerV142R48ElementalPortalPresentation"],
