@@ -42,7 +42,7 @@ assert.match(renderer,/PUNY_ENEMY_ATTACK_COLUMNS=Object\.freeze\(\[4,5,6,7\]\)/,
 assert.match(renderer,/PUNY_ENEMY_HURT_COLUMNS=Object\.freeze\(\[18,19,20\]\)/,"enemy hurt state must use authored Puny frames");
 assert.match(renderer,/PUNY_ENEMY_DEATH_COLUMNS=Object\.freeze\(\[21,22,23\]\)/,"enemy death state must use authored Puny frames");
 assert.match(renderer,/ghost\.__defeatProgress=progress;if\(!drawPunyEnemySprite\(ghost,cx,cy\)&&!drawAuthoredDungeonEnemySprite\(ghost,cx,cy\)\)drawPixelEnemySprite\(ghost,cx,cy\)/,"defeat visuals must attempt authored Puny death frames before procedural fallback");
-assert.match(renderer,/if\(!drawPunyEnemySprite\(e,cx,cy\)&&!drawAuthoredDungeonEnemySprite\(e,cx,cy\)\)drawPixelEnemySprite\(e,cx,cy\)/,"live enemies must attempt richer Puny animation before procedural fallback");
+assert.match(renderer,/if\(!drawGrotesqueBossSprite\(e,cx,cy\)&&!drawPunyEnemySprite\(e,cx,cy\)&&!drawAuthoredDungeonEnemySprite\(e,cx,cy\)\)drawPixelEnemySprite\(e,cx,cy\)/,"live enemies must reserve the bespoke grotesque-boss renderer, then attempt richer Puny/authored animation before procedural fallback");
 assert.match(renderer,/chestReplacement:make\(selected\("chestSheet"\)\)/,"chest replacement must be optional and layered above the fallback");
 assert.match(renderer,/enemyAtlasAReplacement:make\(selected\("enemyAtlasA"\)\)/,"enemy atlas A replacement slot must remain optional");
 assert.match(renderer,/enemyAtlasBReplacement:make\(selected\("enemyAtlasB"\)\)/,"enemy atlas B replacement slot must remain optional");
