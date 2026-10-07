@@ -21,7 +21,7 @@ assert.match(systems,/BUDGET_BIN:\["bin","barrel"/,"barrels must be part of gene
 assert.match(render,/d\.type==="barrel"/,"barrels must have dedicated rendering");
 assert.match(play,/const meleeOnly=!\(p\.firearmUnlocked&&p\.weapon&&Number\(p\.mana\|\|0\)>0\)/,"legacy collision code must still identify its original sword-only branch before the final contact owner takes over");
 assert.match(play,/if\(meleeOnly\)[\s\S]*?p\.x=fromX;p\.y=fromY[\s\S]*?return;/,"sword users must remain adjacent without contact damage before the final contact owner takes over");
-assert.match(play,/CCGLostSizzlerOnboardingV120\?\.state\?\.active\)\{resetCamp\(p,true\);return\}/,"anti-idle explosions must be disabled during tutorial mode");
+assert.match(play,/CCGLostSizzlerOnboardingV120\?\.state\?\.active\|\|SYS\.inSanctuary\(world,p\.x,p\.y\)\)\{resetCamp\(p,true\);return\}/,"anti-idle explosions must be disabled during tutorial mode and while the player is in Sanctuary");
 assert.match(audio,/function stopAll\(\)/,"tutorial exit must be able to stop all music and effects");
 
 console.log("C64 Dungeon Carnage V10.31 furniture, melee and tutorial safety checks passed.");
