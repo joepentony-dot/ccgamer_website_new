@@ -1,3 +1,8 @@
+## R114 trusted-music race hardening — 7 October 2026 12:36 UK
+
+- Successor head `e4991121e7c4dc6db09cc8af9373c3913e7940a7` added `readyState>=1` to the bounded R106 readiness wait, but the test still took a second `getState()` snapshot afterwards. A legitimate soundtrack-category change between those operations could still make the assertion sample a newly active slot at `readyState=0`.
+- This commit preserves the exact snapshot returned by the readiness predicate and asserts that same object. No timeout, audio runtime, fallback policy or gameplay behaviour changes.
+
 ## R114 Chromium qualification checkpoint — 7 October 2026 12:34 UK
 
 - Exact head `c733abcac39ce4f6c3cc5f8a18a0d62965aa5999` passed PR Qualification and the Full Qualification canonical Node job; Chromium discovery succeeded. Shards 5 and 6 passed, while shard 1 exposed a race in the existing R106 trusted-music launch browser contract.

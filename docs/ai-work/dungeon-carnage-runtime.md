@@ -1,3 +1,7 @@
+## R114 trusted-music qualification hardening — 7 October 2026 12:36 UK
+
+- The R106 browser contract now asserts the exact authored-music state snapshot that satisfied active/unpaused/metadata-ready conditions, removing the remaining cross-state sampling race without changing runtime or timeout behaviour.
+
 ## R114 Chromium update — 7 October 2026 12:34 UK
 
 - Node qualification is green on `c733abcac39ce4f6c3cc5f8a18a0d62965aa5999`; Chromium is now genuinely exercising the branch. Shard 1 found the R106 trusted-music test observing the playlist between playback activation and media metadata readiness.

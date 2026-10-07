@@ -133,13 +133,13 @@ try{
 
   await start.click({force:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
-  await page.waitForFunction(()=>{
+  const playingHandle=await page.waitForFunction(()=>{
     const snapshot=window.CCGLostSizzlerPlaylistAudio?.getState?.();
     const slot=snapshot?.slots?.[snapshot.state];
-    return Boolean(snapshot?.started&&snapshot?.customSoundtrackOwned===true&&snapshot?.url?.includes("/music/")&&slot?.active===true&&slot?.paused===false&&slot?.readyState>=1);
+    return Boolean(snapshot?.started&&snapshot?.customSoundtrackOwned===true&&snapshot?.url?.includes("/music/")&&slot?.active===true&&slot?.paused===false&&slot?.readyState>=1)?snapshot:false;
   });
-
-  const playing=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio.getState());
+  const playing=await playingHandle.jsonValue();
+  await playingHandle.dispose();
   assert.ok(musicRequests>=1,"the fresh trusted Start Game click must request an uploaded/authored soundtrack file");
   assert.ok(playing.slots[playing.state].readyState>=1,"the trusted launch gesture must prepare the selected authored media before/while playback begins");
   assert.equal(playing.fallbackActive,false,"trusted launch must not fall back to generated music");
