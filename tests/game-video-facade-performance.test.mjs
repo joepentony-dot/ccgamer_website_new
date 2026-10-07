@@ -96,6 +96,8 @@ test("canonical generator upgrades legacy iframe-only markup into one deferred f
   assert.equal((second.match(/id="game-video-facade"/g) || []).length, 1);
   assert.equal((second.match(/id="game-video-poster"/g) || []).length, 1);
   assert.equal((second.match(/class="game-video__stage"/g) || []).length, 1);
+  assert.match(second, /<div class="game-video__stage">[\s\S]*<\/iframe>\s*<\/div>\s*<div class="game-video__actions">/i,
+    "generated legacy markup must close the deferred stage before the external video actions");
 });
 
 
