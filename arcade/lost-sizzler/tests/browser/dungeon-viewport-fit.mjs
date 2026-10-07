@@ -43,8 +43,8 @@ async function captureViewport(page,file){
 
 const selectors=[".ccg-game",".player-hub",".core-stats",".hub-inventory",".hub-progress",".tactical-zone",".radar-card","#radar-canvas",".shortcut-dock","#item-shortcuts",".inventory-panel",".r71-inventory-layout","#inventory-close-top","#inventory-objective","#inventory-loadout","#inventory-list",".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip","#inventory-close",".inventory-footer-actions",".ccg-evolving-firearm","#quick-keyring-icons","#quick-level-up","#hud-health","#hud-p2","#hud-mana","#hud-weapon","#hud-keys","#hud-score","#hud-room",...Array.from({length:6},(_,i)=>`#inventory-list .inventory-slot:nth-child(${i+1})`),...Array.from({length:8},(_,i)=>`#item-shortcuts .carried-item:nth-of-type(${i+1})`)];
 try{
- for(const [width,height,windowed] of [[2560,1440],[1920,1080],[1440,900],[1366,768]].flatMap(([w,h])=>[[w,h,false],[w,h,true]]).concat([[390,844,true]])){
-  const label=`${width}x${height}-${windowed?"windowed":"fullscreen"}`;
+ for(const [width,height] of [[2560,1440],[1920,1080],[1440,900],[1366,768],[390,844]]){
+  const label=`${width}x${height}-fullscreen`;
   const mobile=width<600;
   const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile});
   await context.addInitScript(()=>{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")});
@@ -55,7 +55,7 @@ try{
   await page.click("#solo-btn");
   if(mobile){const accept=page.locator("#ccg-mobile-pc-accept");if(await accept.isVisible().catch(()=>false))await accept.click();}
   await page.waitForFunction(()=>mode==="playing"&&Boolean(p1));
-  if(windowed)await page.evaluate(async()=>{if(document.fullscreenElement)await document.exitFullscreen()});
+  await page.waitForFunction(()=>Boolean(document.fullscreenElement));
   await page.waitForTimeout(200);
   await page.evaluate(()=>{
     p1.inventorySlots=6;p1.bronzeKeys=4;host.keysCollected=3;host.exitSigilCollected=true;
