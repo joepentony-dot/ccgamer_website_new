@@ -27,7 +27,7 @@ for select
 to authenticated
 using (
   bucket_id = 'profile-avatars'
-  and (storage.foldername(name))[1] = (select auth.uid()::text)
+  and name = (select auth.uid()::text) || '/avatar.webp'
 );
 
 create policy "Members can upload own profile avatars"
@@ -36,7 +36,7 @@ for insert
 to authenticated
 with check (
   bucket_id = 'profile-avatars'
-  and (storage.foldername(name))[1] = (select auth.uid()::text)
+  and name = (select auth.uid()::text) || '/avatar.webp'
 );
 
 create policy "Members can update own profile avatars"
@@ -45,11 +45,11 @@ for update
 to authenticated
 using (
   bucket_id = 'profile-avatars'
-  and (storage.foldername(name))[1] = (select auth.uid()::text)
+  and name = (select auth.uid()::text) || '/avatar.webp'
 )
 with check (
   bucket_id = 'profile-avatars'
-  and (storage.foldername(name))[1] = (select auth.uid()::text)
+  and name = (select auth.uid()::text) || '/avatar.webp'
 );
 
 create policy "Members can delete own profile avatars"
@@ -58,5 +58,5 @@ for delete
 to authenticated
 using (
   bucket_id = 'profile-avatars'
-  and (storage.foldername(name))[1] = (select auth.uid()::text)
+  and name = (select auth.uid()::text) || '/avatar.webp'
 );
