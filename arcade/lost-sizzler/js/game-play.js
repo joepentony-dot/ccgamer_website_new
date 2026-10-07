@@ -164,15 +164,15 @@ function tryDoor(p,x,y){
   p.bronzeKeys--;d.locked=false;stats.doors++;shake=5;
   showToast("BRONZE DOOR UNLOCKED","The lock releases. The door is opening now.","gold",8500);updateQuests();beginDoorOpening(d,1050);return false
 }
-function chestScoreReward(chest){return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
+function chestScoreReward(chest){if(chest?.weightBridgeReward)return 1500;return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
   if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
   const paidBronzeKey=Boolean(chest.locked&&!roomKeyPaid);if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;if(paidBronzeKey)try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
-  const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
+  const loot=chest.loot||(chest.weightBridgeReward?(PGR.magicSackTier?.(p)||0)<3?{kind:"magicSack",rarity:"GOLD MEDAL",name:"Magic Sack"}:{kind:"mapReveal",rarity:"GOLD MEDAL",name:"Cartographer's Eye"}:PGR.lootForChest(chest,run,Math.random)),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
   chest.rewardScore=scoreReward;score+=scoreReward;
-  showToast("CHEST OPENED",`Inside: ${name}. +${scoreReward.toLocaleString()} score.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",7000);
+  showToast(chest.weightBridgeReward?"TRICKSTER CACHE OPENED":"CHEST OPENED",chest.weightBridgeReward?`The far-side prize pays off: ${name}, +${scoreReward.toLocaleString()} score and a high-tier bridge reward.`:`Inside: ${name}. +${scoreReward.toLocaleString()} score.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",chest.weightBridgeReward?9000:7000);
   floatText(chest.x,chest.y,`+${scoreReward.toLocaleString()} SCORE`,P.gold,{life:2600});
   setTimeout(()=>{if(["playing","inventory"].includes(mode)){floatPickupText(p,name,col);applyLoot(loot,p)}},500);
   return true
@@ -180,9 +180,18 @@ function openChest(p,chest){
 function tryChest(p,x,y){const c=W.chestAt(host,x,y);return c?openChest(p,c):true}
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.walkable(world.map,p.x+dx,p.y,host)&&W.walkable(world.map,p.x,p.y+dy,host)}
 function activateSwitch(s,p,shot=false){
-  if(!s?.active)return false;s.active=false;s.toggled=true;const d=host.doors.find(x=>x.id===s.doorId);if(d){d.locked=false;if(s.revealSecret){d.hidden=false;d.discovered=true;stats.secrets++;run.stats.secrets++;showToast("REMOTE SECRET REVEALED","A suspicious wall elsewhere in the dungeon has opened. Shooting switches is now apparently accepted maintenance procedure.","gold",8500)}else{showToast(shot?"WALL SWITCH SHOT":"WALL SWITCH",`A remote gate begins grinding open${s.remote?" elsewhere in the dungeon":""}.`,"green",7000)}beginDoorOpening(d,s.revealSecret?1150:1050)}S.sfx(s.revealSecret?"secret":"door");host.revision++;return true
+  if(!s?.active)return false;
+  if(s.weightBridgeSwitch){
+    const b=host.weightBridge;
+    if(!shot){if(b?.collapsed)showToast("BRIDGE SWITCH — SHOOT IT","The mechanism is mounted out of reach. Fire one shot into the switch to deploy the replacement bridge.","cyan",6500);return false}
+    if(!b?.collapsed||b.rebuilt){showToast("BRIDGE MECHANISM","The old bridge has not collapsed yet.","cyan",4200);return false}
+    s.active=false;s.toggled=true;b.rebuilt=true;b.collapsed=false;b.stabilized=true;
+    S.sfx("door");shake=Math.max(shake,5);showToast("NEW BRIDGE DEPLOYED","A reinforced replacement bridge slides across the pit. You can now get back onto the floor and hunt the thief who stole your stash.","green",9000);host.revision++;updateQuests();return true
+  }
+  if(s.shotOnly&&!shot)return false;
+  s.active=false;s.toggled=true;const d=host.doors.find(x=>x.id===s.doorId);if(d){d.locked=false;if(s.revealSecret){d.hidden=false;d.discovered=true;stats.secrets++;run.stats.secrets++;showToast("REMOTE SECRET REVEALED","A suspicious wall elsewhere in the dungeon has opened. Shooting switches is now apparently accepted maintenance procedure.","gold",8500)}else{showToast(shot?"WALL SWITCH SHOT":"WALL SWITCH",`A remote gate begins grinding open${s.remote?" elsewhere in the dungeon":""}.`,"green",7000)}beginDoorOpening(d,s.revealSecret?1150:1050)}S.sfx(s.revealSecret?"secret":"door");host.revision++;return true
 }
-function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
+function triggerSwitch(p){for(const s of host.switches||[])if(s.active&&!s.shotOnly&&s.x===p.x&&s.y===p.y)activateSwitch(s,p,false)}
 function triggerShrine(p){for(const s of host.shrines||[])if(s.active&&s.x===p.x&&s.y===p.y){s.active=false;run.stats.shrines++;S.sfx("shrine");const n=Math.random();if(n<.34){p.maxHealth++;p.health=Math.min(p.maxHealth,p.health+2);p.hpBarMs=3000;showToast("SHRINE OF ENDURANCE","+1 maximum health and +2 health now.","green")}else if(n<.68){p.damageBonus=(p.damageBonus||0)+1;p.maxMana=Math.max(30,p.maxMana-8);p.mana=Math.min(p.mana,p.maxMana);showToast("CURSED FIRE BUTTON","+1 damage, but maximum ammo falls by 8. Power usually sends an invoice.","red",7200)}else{p.armor=Math.min(PGR.armourCap?.(p)||12,p.armor+4);run.alert=Math.min(100,run.alert+18);showToast("NOISY SHRINE","+4 armour, but the dungeon alert level jumps sharply.","gold")}}}
 const trapCycleHits=new Map();
 function trapCycleId(t,now=performance.now()){
@@ -324,8 +333,51 @@ function triggerSequenceTorch(p,deliberate=false){
   return activateSequenceTorch(torch,p)
 }
 function weightBridgeCell(list,x,y){return (list||[]).some(q=>q.x===x&&q.y===y)}
-function weightBridgeBlocks(p,x,y){const b=host.weightBridge;if(!b)return false;if(weightBridgeCell(b.pitTiles,x,y)){S.sfx("wall");return true}if(!weightBridgeCell(b.bridgeTiles,x,y)||b.stabilized)return false;const carried=PGR.inventoryCount(p),stacks=(p.inventory||[]).length;if(carried>0){S.sfx("locked");if(!b.lastWarnAt||performance.now()-b.lastWarnAt>1600){b.lastWarnAt=performance.now();showToast("ROTTEN BRIDGE — TOO HEAVY",`It will only take your body weight. You are carrying ${carried} item${carried===1?"":"s"} across ${stacks} stack${stacks===1?"":"s"}. TAB lets you DROP them onto the floor and recover them later.`,"red",9000)}return true}b.crossingPlayer=p.id;return false}
-function triggerWeightBridge(p){const b=host.weightBridge;if(!b||b.stabilized||b.crossingPlayer!==p.id)return;const xs=(b.bridgeTiles||[]).map(q=>q.x),ys=(b.bridgeTiles||[]).map(q=>q.y),passed=b.entranceSide==="west"?p.x>Math.max(...xs):b.entranceSide==="east"?p.x<Math.min(...xs):b.entranceSide==="north"?p.y>Math.max(...ys):p.y<Math.min(...ys);if(!passed)return;b.stabilized=true;b.crossingPlayer=null;score+=350;S.sfx("open");showToast("BRIDGE STABILIZED","You crossed empty-handed. The old planks settle into the supports and will now carry you back. +350 score.","green",9000);host.revision++;}
+function bridgeThiefCell(p,b){
+  const candidates=(world.rooms||[]).filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom).map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)})).sort((a,b)=>b.dist-a.dist);
+  for(const row of candidates){const cells=puzzleFloorCells(row.room.id);if(cells.length)return cells[Math.floor(Math.random()*cells.length)]}
+  const fallback=(world.rooms||[]).find(r=>r.id!==b.roomId),cells=fallback?puzzleFloorCells(fallback.id):[];return cells[0]||{x:world.start.x,y:world.start.y}
+}
+function bridgeStashedItems(b){
+  const stolen=[];
+  for(const item of host.items||[]){
+    if(!item?.active||!item.carriedItem||!String(item.id||"").startsWith("dropped-"))continue;
+    if(W.roomAt(world,item.x,item.y)!==b.roomId)continue;
+    stolen.push({...item,carriedItem:{...item.carriedItem}});item.active=false
+  }
+  return stolen
+}
+function spawnBridgeThief(p,b){
+  const q=bridgeThiefCell(p,b),hp=18+Math.max(0,Number(run.floor||1))*2,id=`bridge-thief-${run.floor}-${Date.now()}`;
+  const thief={id,...q,kind:"ambusher",hp,maxHp:hp,armor:5,maxArmor:5,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:125,attackCooldown:650,chargeCooldown:900,healCooldown:999999,flash:0,hpBarMs:0,bridgeThief:true,championName:"Dungeon Thief",moveSpeedScale:.82};
+  host.enemies.push(thief);b.thiefId=id;return thief
+}
+function ensureBridgeSwitchAmmo(p,b){
+  if(Number(p?.mana||0)>0)return false;
+  const q=b.switchPos||b.rewardPos||{x:p.x,y:p.y},spots=[{x:q.x+1,y:q.y},{x:q.x-1,y:q.y},{x:q.x,y:q.y+1},{x:q.x,y:q.y-1},{x:p.x,y:p.y}];
+  const pos=spots.find(cell=>W.walkable(world.map,cell.x,cell.y,host))||{x:p.x,y:p.y};
+  host.items.push({id:`bridge-emergency-ammo-${Date.now()}`,...pos,kind:"ammo",active:true,title:"BRIDGE EMERGENCY AMMO",r114BridgeEmergency:true});
+  showToast("NO AMMO? THE DUNGEON IS FEELING GENEROUS","An emergency ammo pack has appeared beside the bridge mechanism. Pick it up, then shoot the switch.","cyan",9000);host.revision++;return true
+}
+function weightBridgeBlocks(p,x,y){
+  const b=host.weightBridge;if(!b)return false;
+  if(weightBridgeCell(b.pitTiles,x,y)){S.sfx("wall");return true}
+  if(!weightBridgeCell(b.bridgeTiles,x,y))return false;
+  if(b.collapsed&&!b.rebuilt){S.sfx("wall");showToast("THE BRIDGE HAS COLLAPSED","The gap is impassable. Shoot the far-side switch to deploy the replacement bridge.","red",6200);return true}
+  if(b.stabilized||b.rebuilt)return false;
+  const carried=PGR.inventoryCount(p),stacks=(p.inventory||[]).length;
+  if(carried>0){S.sfx("locked");if(!b.lastWarnAt||performance.now()-b.lastWarnAt>1600){b.lastWarnAt=performance.now();showToast("ROTTEN BRIDGE — TRAVEL LIGHT",`A valuable cache is visible on the far side, but these planks will only take your body weight. You are carrying ${carried} item${carried===1?"":"s"} across ${stacks} stack${stacks===1?"":"s"}. Drop them here with TAB, cross empty-handed, and come back for them afterwards.`,"gold",10500)}return true}
+  b.crossingPlayer=p.id;return false
+}
+function triggerWeightBridge(p){
+  const b=host.weightBridge;if(!b||b.rebuilt||b.collapsed||b.stabilized||b.crossingPlayer!==p.id)return;
+  const xs=(b.bridgeTiles||[]).map(q=>q.x),ys=(b.bridgeTiles||[]).map(q=>q.y),passed=b.entranceSide==="west"?p.x>Math.max(...xs):b.entranceSide==="east"?p.x<Math.min(...xs):b.entranceSide==="north"?p.y>Math.max(...ys):p.y<Math.min(...ys);
+  if(!passed)return;
+  b.crossed=true;b.collapsed=true;b.crossingPlayer=null;b.stolenItems=bridgeStashedItems(b);const stolenQty=b.stolenItems.reduce((n,item)=>n+Math.max(1,Number(item.carriedItem?.qty)||1),0),thief=spawnBridgeThief(p,b);
+  score+=500;S.sfx("trap");shake=Math.max(shake,9);ensureBridgeSwitchAmmo(p,b);
+  showToast("TRICK! THE BRIDGE COLLAPSES",stolenQty?`The rotten bridge drops into the pit. A Dungeon Thief grabs all ${stolenQty} item${stolenQty===1?"":"s"} you left behind and vanishes somewhere on this floor. Shoot the switch on this side to deploy a new bridge, then hunt him down.`:`The rotten bridge drops into the pit. A Dungeon Thief appears, finds your stash empty, and still bolts into the dungeon. Shoot the switch on this side to deploy a new bridge, then hunt him for his bonus loot.`,"red",12000);
+  if(thief)floatText(p.x,p.y,"THIEF!",P.red,{life:2600});host.revision++;updateQuests()
+}
 
 function bossFightState(){return host?.r114BossFight||null}
 function bossEnemyForFight(fight=bossFightState()){return fight?(host.enemies||[]).find(e=>e?.id===fight.bossId)||null:null}
@@ -699,6 +751,7 @@ function updateRoomMessage(p,force){
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
   else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
   else if(room?.sequenceTorchRoom&&!host.sequenceTorchPuzzle?.solved){showToast("TORCH SEQUENCE PUZZLE","STEP onto the four N/E/S/W torches in the correct order. Only your footsteps count — bullets and enemies cannot activate a torch. The faded blood clue from Floor 2 contains the sequence. A wrong step resets the flames; at most one punishment guardian can be active at a time.","gold",12000)}
+  else if(room?.weightBridgeRoom&&host.weightBridge&&!host.weightBridge.crossed){showToast("ROTTEN BRIDGE — SOMETHING VALUABLE IS OVER THERE","A rare Trickster Cache is visible on the far side. The bridge will not carry inventory weight: use TAB to DROP your carried items on this side, cross empty-handed, and recover them afterwards. There is a wall switch beyond the bridge in case the mechanism fails.","gold",12000)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
   else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500);try{window.CCGLostSizzlerVoice?.say?.("trapsNearby")}catch(_){}if(p===p1){const activeRun=run,hazardRoom=r;setTimeout(()=>{try{if(run===activeRun&&mode==="playing"&&W.roomAt(world,p1.x,p1.y)===hazardRoom)window.CCGLostSizzlerVoice?.say?.("watchStep",{cooldown:0})}catch(_){}},2400)}}
   else if(room?.dangerous)showToast(`DANGER — ${th.name}`,"This room contains an active hazard, challenge or major threat. Watch the floor before charging in.","red",8500);
