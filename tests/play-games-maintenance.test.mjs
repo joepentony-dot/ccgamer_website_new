@@ -17,7 +17,7 @@ for (const path of [
 const ownerGate = read("js/ccg-play-maintenance-owner-gate.js");
 const dungeonVersion = JSON.parse(read("arcade/lost-sizzler/version.json"));
 const dungeonCache = String(dungeonVersion.cacheToken || "").trim();
-assert.ok(/^20261007r112$/.test(dungeonCache), "Dungeon maintenance boundary must follow the active R112 cache identity");
+assert.ok(/^20261007r113$/.test(dungeonCache), "Dungeon maintenance boundary must follow the active R113 cache identity");
 for (const path of [
   "arcade/c64-dungeon-carnage/index.html",
   "arcade/lost-sizzler/index.html"
@@ -72,4 +72,4 @@ assert.match(hub, /href="\/quiz\/pack-6\.html"/);
 assert.doesNotMatch(hub, /href="\/games\/commodore-quest\/"/);
 assert.doesNotMatch(hub, /href="\/games\/ccg-games\/cheeky-commodore-quest\/"/);
 
-console.log("Temporary play-games maintenance contract passed with closed Round 2 member runtime access.");
+console.log("Temporary play-games maintenance contract passed with protected public/member Dungeon runtime access.");

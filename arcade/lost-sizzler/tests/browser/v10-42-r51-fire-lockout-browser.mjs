@@ -34,7 +34,19 @@ try{
   await context.addInitScript(()=>{
     try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}
     Object.defineProperty(navigator,"maxTouchPoints",{configurable:true,value:1});
-    HTMLElement.prototype.requestFullscreen=function(){window.__ccgFullscreenRequests=(window.__ccgFullscreenRequests||0)+1;return Promise.resolve()};
+    window.__ccgFullscreenActive=false;
+    Object.defineProperty(document,"fullscreenElement",{configurable:true,get(){return window.__ccgFullscreenActive?document.documentElement:null}});
+    HTMLElement.prototype.requestFullscreen=function(){
+      window.__ccgFullscreenRequests=(window.__ccgFullscreenRequests||0)+1;
+      window.__ccgFullscreenActive=true;
+      queueMicrotask(()=>document.dispatchEvent(new Event("fullscreenchange")));
+      return Promise.resolve();
+    };
+    document.exitFullscreen=function(){
+      window.__ccgFullscreenActive=false;
+      queueMicrotask(()=>document.dispatchEvent(new Event("fullscreenchange")));
+      return Promise.resolve();
+    };
   });
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
@@ -300,8 +312,8 @@ try{
   assert.ok(keyHud.bronze>=0,"Bronze key status must remain visible in the live sidebar");
   assert.ok(keyHud.potion<0||keyHud.bronze<keyHud.potion,"Bronze/key status must render before stored items so it is visible without scrolling");
 
-  await page.evaluate(async()=>{await quitToMenu()});
-  await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true",null,{timeout:10000});
+  await page.evaluate(async()=>{await quitToMenu();if(document.fullscreenElement&&document.exitFullscreen)await document.exitFullscreen()});
+  await page.waitForFunction(()=>mode==="menu"&&document.body.dataset.runActive!=="true"&&!document.fullscreenElement,null,{timeout:10000});
   const beforeTutorialFullscreen=await page.evaluate(()=>Number(window.__ccgFullscreenRequests||0));
   await page.click("#tutorial-zone-btn");
   await page.waitForFunction(()=>document.body.dataset.tutorialActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});

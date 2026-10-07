@@ -57,15 +57,21 @@ function itemIconSVG(kind,label=""){
 function guideDefinitions(){return[{kind:"health",name:"HEALTH PACK",desc:itemHelp("health")},{kind:"ammo",name:"AMMO PACK",desc:itemHelp("ammo")},{kind:"potion",name:"RESTORATION POTION",desc:itemHelp("potion")},{kind:"teleport",name:"TELEPORT SPELL",desc:itemHelp("teleport")},{kind:"banishment",name:"BANISHMENT FLASK",desc:itemHelp("banishment")},{kind:"inventorySlot",name:"INVENTORY EXPANSION",desc:itemHelp("inventorySlot")},{kind:"torch",name:"FLAMING TORCH",desc:itemHelp("torch")},{kind:"armour",name:"ARMOUR",desc:itemHelp("armour")},{kind:"credits",name:"GOLD SCORE COIN",desc:itemHelp("credits")},{kind:"xpOrb",name:"XP ORB",desc:itemHelp("xpOrb")},{kind:"bronze",name:"BRONZE KEY",desc:itemHelp("bronze")},{kind:"key",name:"MAIN KEY",desc:itemHelp("key")},{kind:"exitSigil",name:"EXIT SIGIL",desc:itemHelp("exitSigil")},{kind:"weapon",name:"WEAPON",desc:itemHelp("weapon")},{kind:"rapid",name:"RAPID FIRE",desc:itemHelp("rapid")},{kind:"chest",name:"CHEST",desc:itemHelp("chest")},{kind:"shrine",name:"SHRINE",desc:itemHelp("shrine")},{kind:"game",name:"C64 GAME",desc:itemHelp("game")},{kind:"loot",name:"BANISHMENT ESSENCE",desc:`Banishment Essence is stored in your Vessel. Distil ${C.stalker.flaskArtefacts} Essence at a Banishment Alchemist to create one Banishment Flask; legacy physical Artefacts remain compatible.`}]}
 function inventoryVisualKind(it){return !it?"empty":it.kind==="artefact"?"loot":it.kind}
 let pendingPlayFullscreenRequest=null;
+function fullscreenRequiredNotice(){
+  const note=document.getElementById("menu-note");
+  if(note)note.textContent="FULLSCREEN REQUIRED — C64 Dungeon Carnage begins and resumes in fullscreen. Allow fullscreen in your browser, then try again.";
+  try{if(document.body?.dataset?.runActive==="true")showToast("FULLSCREEN REQUIRED","Continue the run by returning to fullscreen.","red",7000)}catch(_){}
+}
 function requestPlayFullscreen(){
   const shell=document.querySelector(".ccg-game");
-  if(!shell||document.fullscreenElement)return Promise.resolve(true);
+  if(document.fullscreenElement)return Promise.resolve(true);
+  if(!shell||typeof shell.requestFullscreen!=="function"){fullscreenRequiredNotice();return Promise.resolve(false)}
   if(pendingPlayFullscreenRequest)return pendingPlayFullscreenRequest;
   try{
-    const requested=Promise.resolve(shell.requestFullscreen()).then(()=>true).catch(()=>false);
-    pendingPlayFullscreenRequest=Promise.race([requested,new Promise(resolve=>setTimeout(()=>resolve(false),1000))]).finally(()=>{pendingPlayFullscreenRequest=null});
+    const requested=Promise.resolve(shell.requestFullscreen()).then(()=>Boolean(document.fullscreenElement)).catch(()=>false);
+    pendingPlayFullscreenRequest=Promise.race([requested,new Promise(resolve=>setTimeout(()=>resolve(Boolean(document.fullscreenElement)),1500))]).then(ok=>{if(!ok)fullscreenRequiredNotice();return ok}).finally(()=>{pendingPlayFullscreenRequest=null});
     return pendingPlayFullscreenRequest;
-  }catch(_){return Promise.resolve(false)}
+  }catch(_){fullscreenRequiredNotice();return Promise.resolve(false)}
 }
 function say(s,tone="purple"){UI.message.innerHTML=s}
 function logEvent(){/* The old chat-style event stream is intentionally disabled. Major information uses the coloured banner. */}
@@ -215,7 +221,7 @@ function captureFloorEntryCheckpoint(){if(!run||run.floor<=1){floorEntryCheckpoi
 function saveFloorCheckpoint(returnToMenu=false){const data=floorEntryCheckpoint||captureFloorEntryCheckpoint();if(!data)return false;const ok=PGR.saveCheckpointData(data);updateSavedRunButton();if(ok)showToast("FLOOR CHECKPOINT SAVED",`Floor ${data.floor} entry saved. Loading it later restarts this floor from its entrance state.`,"green",7500);if(returnToMenu)setTimeout(()=>quitToMenu(),180);return ok}
 function offerFloorSave(restPrompt=false){if(!run||!UI.savePanel||run.floor<=1)return false;savePromptReason=restPrompt?"rest":"entry";UI.saveTitle.textContent=restPrompt?"FIVE DEATHS — SAVE FOR ANOTHER DAY?":`FLOOR ${run.floor} CHECKPOINT`;UI.saveCopy.textContent=restPrompt?"That was five deaths on this floor. Save the floor-entry checkpoint and return when you are feeling braver, or keep going now.":"Save this floor-entry checkpoint so you can leave the game and resume from the start of this floor later.";UI.saveNow.classList.toggle("hidden",restPrompt);UI.saveContinue.textContent=restPrompt?"Continue the Run":"Continue Without Saving";UI.saveReturn.classList.toggle("hidden",!restPrompt);UI.saveNote.textContent="Checkpoint saves deliberately return you to the floor entrance; they are not mid-battle quick saves.";mode="saveprompt";input.clear();UI.savePanel.classList.remove("hidden");return true}
 function closeSavePrompt(){UI.savePanel?.classList.add("hidden");if(mode==="saveprompt")mode="playing";savePromptReason=""}
-async function resumeSavedRun(){const saved=PGR.loadCheckpoint();if(!saved||Number(saved.floor||saved.run?.floor||1)<=1){updateSavedRunButton();return false}const audio=S.start(),fs=requestPlayFullscreen();await Promise.all([audio,fs]);run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player;p2=null;playMode="solo";mode="playing";startWorld(PGR.floorSeed(run),false,true,true);floorEntryCheckpoint=saved;UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();try{window.dispatchEvent(new CustomEvent("ccg:run-started",{detail:{run,playMode,restored:true}}))}catch(_){}showToast("CHECKPOINT RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. You are back at the floor entrance with the saved loadout.`,"green",9000);sync();return true}
+async function resumeSavedRun(){const saved=PGR.loadCheckpoint();if(!saved||Number(saved.floor||saved.run?.floor||1)<=1){updateSavedRunButton();return false}const audio=S.start(),fs=requestPlayFullscreen(),[,fullscreen]=await Promise.all([audio,fs]);if(!fullscreen)return false;run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player;p2=null;playMode="solo";mode="playing";startWorld(PGR.floorSeed(run),false,true,true);floorEntryCheckpoint=saved;UI.menu.classList.add("hidden");setRunPresentation(true);S.startMusic();try{window.dispatchEvent(new CustomEvent("ccg:run-started",{detail:{run,playMode,restored:true}}))}catch(_){}showToast("CHECKPOINT RESTORED",`Floor ${run.floor}: ${PGR.floorInfo(run).name}. You are back at the floor entrance with the saved loadout.`,"green",9000);sync();return true}
 function refreshCollection(){if(UI.collection)UI.collection.textContent=`Unique C64 titles permanently saved on this device: ${PGR.persistentCollection().length}. Duplicates count once; clearing browser data resets this list.`;updateSavedRunButton()}
 function beginRun({seed=null}={}){
   const diff=UI.difficulty?.value||"ARCADE";
@@ -223,7 +229,7 @@ function beginRun({seed=null}={}){
   try{window.dispatchEvent(new CustomEvent("ccg:run-started",{detail:{run,playMode,restored:false}}))}catch(_){}
   say(`<strong>RUN STARTED.</strong> ${run.difficulty} difficulty. Floor one is comparatively polite.`,"cyan");return true
 }
-async function startSolo(){const audio=S.start(),fs=requestPlayFullscreen();await Promise.all([audio,fs]);beginRun()}
+async function startSolo(){const audio=S.start(),fs=requestPlayFullscreen(),[,fullscreen]=await Promise.all([audio,fs]);if(!fullscreen)return false;return beginRun()}
 function inventoryText(p){const slots=Array.from({length:PGR.inventoryCapacity(p)},(_,i)=>PGR.inventoryLabel(p.inventory?.[i]));return slots.map((x,i)=>`${i+1}:${x}`).join(" • ")}
 function formatRunTime(ms){const total=Math.max(0,Math.floor((ms||0)/1000)),m=Math.floor(total/60),sec=total%60;return `${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`}
 let quickSlotsRenderSignature="",itemShortcutsRenderSignature="";

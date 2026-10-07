@@ -99,12 +99,14 @@ try{
     if(document.fullscreenElement){
       try{await document.exitFullscreen()}catch(_){}
     }
+  });
+  await page.waitForFunction(()=>!document.fullscreenElement&&mode==="paused",null,{timeout:5000});
+  await page.evaluate(()=>{
     window.__ccgStage1ButtonFullscreenCalls=0;
     const shell=document.querySelector(".ccg-game");
     shell.requestFullscreen=async()=>{window.__ccgStage1ButtonFullscreenCalls++};
+    document.getElementById("fullscreen-btn")?.click();
   });
-  await page.waitForFunction(()=>!document.fullscreenElement,null,{timeout:5000});
-  await page.click("#fullscreen-btn");
   await page.waitForFunction(()=>window.__ccgStage1ButtonFullscreenCalls===1,null,{timeout:5000});
   result=await page.evaluate(()=>({
     keyFullscreenCalls:Number(window.__ccgStage1KeyFullscreenCalls||0),
@@ -112,7 +114,7 @@ try{
     retiredSpyCalls:Number(window.__ccgStage1RetiredSpyFullscreenCalls||0)
   }));
   assert.equal(result.keyFullscreenCalls,2,"both synthetic-window and focused-gameplay F paths must reach the supported fullscreen binding exactly once each");
-  assert.equal(result.buttonFullscreenCalls,1,"fullscreen button must retain the supported shell fullscreen owner");
+  assert.equal(result.buttonFullscreenCalls,1,"fullscreen button must retain the supported shell fullscreen owner and request recovery after an active run leaves fullscreen");
   assert.equal(result.retiredSpyCalls,0,"supported fullscreen controls must remain independent of retired Spy ownership");
   assert.deepEqual(errors,[],`fullscreen retirement boundary must have no uncaught browser errors: ${errors.join("\n")}`);
 

@@ -59,7 +59,8 @@ assert.match(render,/host\.enteredRoomIds/,"sanctuary icon must be gated by actu
 assert.match(render,/drawRadarCross\(radarCtx,px\(q\),py\(q\),"#64ffa2"/,"discovered sanctuary must use the green first-aid cross");
 assert.match(render,/function radarTileColour\(x,y,wall\)[\s\S]*return wall\?"#292233":"#655879"/,"compact radar geometry must use one neutral floor/wall language instead of competing room colours");
 assert.doesNotMatch(render,/const floors=\{normal:"#655879",sanctuary:/,"compact radar must not restore the duplicated semantic room-colour palette");
-assert.match(render,/radarCtx\.moveTo\(px\(p\),py\(p\)-5\)/,"player marker must use a directional triangle rather than the old square");
+assert.match(render,/const playerCx=px\(p\)\+sc\/2,playerCy=py\(p\)\+sc\/2[\s\S]*fillRect\(playerCx-playerSize\/2,playerCy-playerSize\/2,playerSize,playerSize\)/,"compact radar player marker must be one tile-centred cyan square matching the YOU legend");
+assert.doesNotMatch(render,/radarCtx\.moveTo\(px\(p\),py\(p\)-5\)/,"compact radar must not restore the ambiguous R112 triangle marker");
 
 assert.match(fullMap,/function fullMapRoomType\(/,"full map must share room-type presentation");
 assert.match(fullMap,/room\?\.sanctuary&&visited\.has/,"full map sanctuary markers must also require discovery");
