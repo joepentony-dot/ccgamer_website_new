@@ -1,3 +1,9 @@
+## R114 firearm qualification update — 7 October 2026 12:50 UK
+
+- Full Qualification reached all Chromium shards on `8cca393cd37034ceca7e25e0b9cad9c9da3254d1`; only shard 2 failed.
+- The R47 browser test incorrectly used a ZZAP! 97% Shock reward as the fixture for common tier progression and capped ammo salvage. That conflicts with R114's required rare-weapon contract: named non-common rewards preserve/refine/reforge weapon value and never use common salvage fallback.
+- The existing test now uses a COMMON cache for ordinary progression/salvage while retaining separate rare-weapon assertions. Public playtest access/timer remains untouched.
+
 ## R114 trusted-music qualification hardening — 7 October 2026 12:36 UK
 
 - The R106 browser contract now asserts the exact authored-music state snapshot that satisfied active/unpaused/metadata-ready conditions, removing the remaining cross-state sampling race without changing runtime or timeout behaviour.

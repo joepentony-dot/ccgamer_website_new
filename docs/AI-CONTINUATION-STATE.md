@@ -1,3 +1,11 @@
+## R114 firearm browser-contract reconciliation — 7 October 2026 12:50 UK
+
+- Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02`; active vehicle remains draft PR #2571.
+- Exact head `8cca393cd37034ceca7e25e0b9cad9c9da3254d1` passed PR Qualification, Node contracts, Chromium shards 1 and 3–6, and all peripheral package/cache/site/mobile/PWA checks. Full Qualification failed only in Chromium shard 2 at `v10-42-r47-memory-firearm-progression.mjs`.
+- The failing baseline fixture was a `ZZAP! 97%` Shock weapon with eight shots, but its assertions still expected the pre-R114 common-cache behaviour (single-shot normalization and capped ammo salvage). R114 intentionally preserves non-common named archetypes and forbids rare capped rewards from collapsing into ammo/XP/score, so the test fixture contradicted the requested runtime semantics.
+- The existing browser contract now uses an ordinary COMMON cache for the legacy tier/salvage progression section. The same test retains its dedicated rare Spread checks, which continue to require meaningful non-common weapon behaviour at the cap. No firearm runtime or timeout is changed.
+- Re-run the complete exact-head matrix. Do not merge until all Chromium shards and all other required checks are green on the same current head.
+
 ## R114 trusted-music race hardening — 7 October 2026 12:36 UK
 
 - Successor head `e4991121e7c4dc6db09cc8af9373c3913e7940a7` added `readyState>=1` to the bounded R106 readiness wait, but the test still took a second `getState()` snapshot afterwards. A legitimate soundtrack-category change between those operations could still make the assertion sample a newly active slot at `readyState=0`.
