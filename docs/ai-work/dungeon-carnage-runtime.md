@@ -1,3 +1,8 @@
+## R115 armour-cap runtime update — 7 October 2026
+
+- Level-up Armour Repair now respects wearable-aware `armourCap(p)` instead of hard-coded 12.
+- Consolidated R80 coverage protects the path.
+
 ## R115 Tutorial qualification update — 7 October 2026
 
 - Consolidated the existing Tutorial contract away from obsolete prose snapshots and onto required player concepts + stabilized lesson keys/DOM ownership.

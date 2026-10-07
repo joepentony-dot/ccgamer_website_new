@@ -1,3 +1,9 @@
+## R115 wearable armour-cap repair — 7 October 2026
+
+- Continued armour-gain audit found a real remaining hard-coded base-cap path in the level-up `Armour Repair` skill.
+- It now uses canonical `armourCap(p)`, so wearable-derived capacity applies to skill repairs as well as loot, shrines and shop repairs.
+- Existing R80 coverage was extended; no new test file was added.
+
 ## R115 Tutorial contract consolidation — 7 October 2026
 
 - Exact-head Node qualification advanced through the Bronze-key contract and then stopped in the existing Tutorial campaign contract.

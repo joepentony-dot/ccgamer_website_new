@@ -23,6 +23,8 @@ assert.match(source,/function gearTierFor/,"wearables must map the existing loot
 assert.match(source,/armourBonus:3,enchanted:true/,"Enchanted gear must be the best armour tier at +3");
 assert.match(core,/id==="armour"\)\{const before=p1\.armor\|\|0,cap=PGR\.armourCap\?\.\(p1\)\|\|12;p1\.armor=Math\.min\(cap,before\+3\)/,"shop Armour Repair must respect wearable-derived armour capacity instead of hard-coding 12");
 assert.match(core,/up to your current armour limit/,"shop Armour Repair copy must describe the wearable-aware current cap");
+assert.match(read("js/progression.js"),/Armour Repair[\s\S]{0,180}Math\.min\(armourCap\(p\),p\.armor\+2\)/,"level-up Armour Repair must respect wearable-derived armour capacity");
+assert.doesNotMatch(read("js/progression.js"),/Armour Repair[\s\S]{0,180}Math\.min\(12,p\.armor\+2\)/,"level-up Armour Repair must not clamp wearable users to the base armour cap");
 assert.match(source,/if\(!tier\.enchanted\)return base/,"secondary wearable bonuses must be reserved for Enchanted gear");
 assert.match(source,/PGR\.createDeathCache=function r114CreateDeathCacheWithWearables/,"death cache creation must strip equipped wearables into the cache");
 assert.match(source,/const cache=baseCreateDeathCache\(player,runState,x,y,\.\.\.args\),equipped=stripWearablesForDeath\(player\)/,"death cache must snapshot carried items and armour before equipped gear is stripped");
