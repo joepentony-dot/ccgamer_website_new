@@ -38,10 +38,14 @@ assert.doesNotMatch(floorCompleteWrapper,/skipFloor\(/,"opening the floor-clear 
 assert.match(floorCompleteWrapper,/WARDEN DOMAIN: UNRESOLVED/,"unresolved Warden status must remain actionable while the player can stay");
 assert.match(warden,/if\(baseDescendFloor\)descendFloor=function\(\)\{[\s\S]*skipFloor\(\)[\s\S]*baseDescendFloor/,"Warden debt must be committed only by actual descent");
 
-assert.match(firearm,/first\?"WEAPON ACQUIRED":"WEAPON EVOLVED"/,"evolution pickups must use generic progression labels");
-assert.match(firearm,/WEAPON CAPPED — AMMO RESTORED/,"capped weapon cache must prefer an ammo reward");
-assert.match(firearm,/WEAPON CAPPED — \+10 XP/,"full-ammo capped weapon cache must fall back to a small XP reward");
-assert.match(firearm,/WEAPON CAPPED — \+250 SCORE/,"fully capped cache must retain a final non-wasted fallback");
+assert.match(firearm,/first\?"WEAPON ACQUIRED":"WEAPON EVOLVED"/,"ordinary firearm evolution must retain generic progression labels");
+assert.match(firearm,/COMMON WEAPON CACHE — AMMO/,"only an ordinary common capped cache may prefer an ammo reward");
+assert.match(firearm,/COMMON CACHE — \+10 XP/,"only an ordinary common capped cache may fall back to a small XP reward when ammo is full");
+assert.match(firearm,/COMMON CACHE — \+250 SCORE/,"only an ordinary common capped cache may use the final score fallback");
+assert.match(firearm,/specialWeapon=\["UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"\]\.includes\(incomingRarity\)/,"all non-common weapon rewards must bypass common capped-cache salvage");
+assert.match(firearm,/RARE WEAPON REFINED/,"same-archetype rare capped weapons must refine rather than become currency");
+assert.match(firearm,/MASTERED CACHE REFORGED/,"a fully refined duplicate rare weapon must transparently reforge into another weapon archetype");
+assert.match(firearm,/Rare named weapons never use this fallback|Non-common named weapon drops always remain weapon rewards/,"rare named weapon rewards must explicitly stay out of ammo, XP and score fallback");
 assert.doesNotMatch(firearm,/FIREARM PARTS SALVAGED|FIREARM UPGRADED/,"retired misleading firearm pickup labels must remain absent");
 assert.match(local,/if\(i\.kind==="weapon"\)return evolvingWeaponMode\(\)\?"WEAPON CACHE"/,"floating weapon pickup text must not expose random gun names during firearm evolution");
 assert.match(local,/i\.loot\?\.kind==="weaponLoot"&&evolvingWeaponMode\(\)\?"WEAPON CACHE"/,"weapon-loot collection labels must remain generic during evolution");
