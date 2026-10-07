@@ -181,8 +181,24 @@ window.CCGProgression=(()=>{
     const base=({potion:3,torch:1,teleport:1,banishment:1,mapReveal:1})[item?.kind];
     return base==null?Number.POSITIVE_INFINITY:base+magicSackTier(player)
   }
-  function inventoryCanAdd(player,item){const inv=player?.inventory||[],key=stackKey(item),limit=stackLimit(item,player);return Boolean(key&&inv.some(x=>stackKey(x)===key&&itemQty(x)<limit))||inv.length<inventoryCapacity(player)}
-  function inventoryAdd(player,item){player.inventory=player.inventory||[];let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item,player);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player))return false;const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}return true}
+  function compactInventory(player){
+    if(!player)return 0;
+    const source=Array.isArray(player.inventory)?player.inventory:[],out=[];let merged=0;
+    for(const original of source){
+      if(!original)continue;
+      const key=stackKey(original),limit=stackLimit(original,player);
+      if(!key||!Number.isFinite(limit)){out.push({...original,qty:itemQty(original)});continue}
+      let remaining=itemQty(original);
+      while(remaining>0){
+        const existing=out.find(row=>stackKey(row)===key&&itemQty(row)<limit);
+        if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;merged+=add;continue}
+        const add=Math.min(remaining,limit);out.push({...original,qty:add});remaining-=add
+      }
+    }
+    player.inventory=out;return merged
+  }
+  function inventoryCanAdd(player,item){compactInventory(player);const inv=player?.inventory||[],key=stackKey(item),limit=stackLimit(item,player);return Boolean(key&&inv.some(x=>stackKey(x)===key&&itemQty(x)<limit))||inv.length<inventoryCapacity(player)}
+  function inventoryAdd(player,item){player.inventory=player.inventory||[];compactInventory(player);let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item,player);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player))return false;const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}compactInventory(player);return true}
   function inventoryRemove(player,index,amount=1){player.inventory=player.inventory||[];if(index<0||index>=player.inventory.length)return null;const it=player.inventory[index],qty=itemQty(it),take=Math.max(1,Math.min(qty,Math.floor(Number(amount)||1)));if(qty>take){it.qty=qty-take;return{...it,qty:take}}return player.inventory.splice(index,1)[0]}
   function firstInventory(player,kind){return (player.inventory||[]).findIndex(x=>x.kind===kind)}
   function inventoryCount(player){return (player?.inventory||[]).reduce((n,it)=>n+itemQty(it),0)}
@@ -259,7 +275,7 @@ window.CCGProgression=(()=>{
   function checkpointClone(value){try{return JSON.parse(JSON.stringify(value))}catch(_){return null}}
   function makeCheckpoint(run,player,player2,score,playMode="solo"){return{version:"V10.3",savedAt:Date.now(),floor:run?.floor||1,score:Math.max(0,Math.floor(score||0)),playMode,run:checkpointClone(run),player:checkpointClone(player),player2:checkpointClone(player2)}}
   function saveCheckpointData(data){if(!data)return false;try{localStorage.setItem(checkpointStorageKey,JSON.stringify(data));return true}catch(_){return false}}
-  function loadCheckpoint(){try{const data=JSON.parse(localStorage.getItem(checkpointStorageKey)||"null");return data?.version==="V10.3"&&data.run&&data.player?data:null}catch(_){return null}}
+  function loadCheckpoint(){try{const data=JSON.parse(localStorage.getItem(checkpointStorageKey)||"null");if(!(data?.version==="V10.3"&&data.run&&data.player))return null;compactInventory(data.player);if(data.player2)compactInventory(data.player2);return data}catch(_){return null}}
   function clearCheckpoint(){try{localStorage.removeItem(checkpointStorageKey)}catch(_){}return true}
   function dossierKey(){return "ccg-named-enemy-dossier-v1"}
   function readDossier(){try{return JSON.parse(localStorage.getItem(dossierKey())||"{}")||{}}catch(_){return{}}}
@@ -281,5 +297,5 @@ window.CCGProgression=(()=>{
     if(!world?.rooms?.length)return 0;let seen=0;for(const room of world.rooms.filter(r=>!r.optional)){const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);if(explored.has(`${cx},${cy}`))seen++}return seen/Math.max(1,world.rooms.filter(r=>!r.optional).length);
   }
 
-  return{makeRun,floorInfo,floorSeed,chooseFloorModifier,objectiveFor,objectiveLabel,difficulty,effectiveSight,generateWeapon,lootForChest,colourForRarity,gainXP,xpNeed,floorLevelCap,skillChoices,applySkill,removeLastSkill,inventoryCapacity,armourCap,magicSackTier,stackLimit,inventoryCanAdd,inventoryAdd,inventoryRemove,firstInventory,inventoryCount,inventoryKindCount,inventoryLabel,bankFloor,loseFloorProgress,deathDebtFor,applyDeathPenalty,createDeathCache,recoverDeathCache,persistentCollection,localDailyKey,seededRandom,recordDailyResult,dailyBest,dailyAttemptKey,hasDailyAttempt,claimDailyAttempt,makeCheckpoint,saveCheckpointData,loadCheckpoint,clearCheckpoint,readDossier,recordNamedEncounter,checkAchievements,roomCompletion,RARITY};
+  return{makeRun,floorInfo,floorSeed,chooseFloorModifier,objectiveFor,objectiveLabel,difficulty,effectiveSight,generateWeapon,lootForChest,colourForRarity,gainXP,xpNeed,floorLevelCap,skillChoices,applySkill,removeLastSkill,inventoryCapacity,armourCap,magicSackTier,stackLimit,compactInventory,inventoryCanAdd,inventoryAdd,inventoryRemove,firstInventory,inventoryCount,inventoryKindCount,inventoryLabel,bankFloor,loseFloorProgress,deathDebtFor,applyDeathPenalty,createDeathCache,recoverDeathCache,persistentCollection,localDailyKey,seededRandom,recordDailyResult,dailyBest,dailyAttemptKey,hasDailyAttempt,claimDailyAttempt,makeCheckpoint,saveCheckpointData,loadCheckpoint,clearCheckpoint,readDossier,recordNamedEncounter,checkAchievements,roomCompletion,RARITY};
 })();
