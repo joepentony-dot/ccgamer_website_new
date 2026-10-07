@@ -43,7 +43,7 @@
   function roomCells(worldState,hostState,room){
     const out=[];if(!room)return out;
     for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
-      if(worldState.map?.[y]?.[x]!==0||occupied(hostState,x,y))continue;
+      if(worldState.map?.[y]?.[x]!==0||!W.walkable(worldState.map,x,y,hostState)||occupied(hostState,x,y))continue;
       out.push({x,y,roomId:room.id})
     }
     return out
