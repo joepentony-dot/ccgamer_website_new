@@ -270,6 +270,8 @@ function sync(){
 }
 function updateQuests(){
   if(!run||!host)return;const explore=Math.round(PGR.roomCompletion(explored.get(p1?.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),q=[{id:"main",label:objective,v:host.objective?.complete?1:0,t:1},{id:"games",label:"Rescue 1 C64 game",v:stats.games,t:1},{id:"secrets",label:"Find 2 secret rooms",v:stats.secrets,t:2},{id:"champions",label:"Defeat 2 champions",v:run.stats.champions,t:2}];
+  const bridge=host.weightBridge;
+  if(bridge){const label=!bridge.crossed?"Bridge trick: cross empty-handed for the rare far-side cache":!bridge.rebuilt?"Bridge trick: shoot the far-side switch to deploy a new bridge":!bridge.thiefDefeated?"Bridge trick: find and defeat the Dungeon Thief to recover your stash":"Bridge trick complete — collect the recovered stash";q.push({id:"bridge-trick",label,v:bridge.thiefDefeated?1:0,t:1})}
   for(const x of q.slice(1))if(x.v>=x.t&&!questDone.has(x.id)){questDone.add(x.id);score+=350;showToast("SIDE QUEST COMPLETE",`${x.label} — +350 score. Side quests do not add pickup XP.`,"green")}
   UI.quests.innerHTML=q.map(x=>`<div class="${x.v>=x.t?"quest-done":""}">${x.v>=x.t?"✓ ":""}${esc(x.label)} ${x.t>1?`<b>${Math.min(x.v,x.t)}/${x.t}</b>`:""}</div>`).join("");
 }
