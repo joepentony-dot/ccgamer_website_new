@@ -1,7 +1,9 @@
 /* C64 Dungeon Carnage V10.42 r47 — single evolving firearm progression.
  * Dungeon mode only. The established sword-first start is preserved: the first
- * weapon pickup acquires Tier 1, later pickups improve that one firearm, and a
- * pickup at the current floor cap is salvaged for ammunition.
+ * weapon pickup acquires Tier 1 and later pickups improve that one firearm.
+ * Non-common named weapon rewards preserve their actual archetype at the current
+ * tier cap; capped duplicate special weapons refine/re-forge instead of becoming
+ * score or XP. Only ordinary common capped caches may be salvaged for ammunition.
  */
 (()=>{
   "use strict";
@@ -17,16 +19,28 @@
     Object.freeze({tier:6,id:"spread",name:"Tri-Pulse III",power:3,delay:.92,shots:3,pierce:1,ttl:20,rating:12,desc:"Final-floor three-way firearm with one point of penetration."})
   ]);
   const FLOOR_CAP=Object.freeze({1:2,2:3,3:4,4:5,5:6});
-  const state={installed:false,weaponInstalls:0,inventoryInstalls:0,acquisitions:0,upgrades:0,salvages:0,migrations:0};
+  const state={installed:false,weaponInstalls:0,inventoryInstalls:0,acquisitions:0,upgrades:0,reforges:0,salvages:0,migrations:0};
 
   const currentRun=()=>{try{return run||null}catch(_){return null}};
   const dungeonMode=()=>{try{const special=String(window.CCGLostSizzlerSpecialModes?.active?.type||document.body?.dataset?.specialMode||"");return special!=="horde-survivor"&&special!=="sizzler-saboteurs"}catch(_){return true}};
   const clone=value=>{try{return JSON.parse(JSON.stringify(value))}catch(_){return value&&typeof value==="object"?{...value}:value}};
   const capForFloor=floor=>FLOOR_CAP[Math.max(1,Math.min(5,Math.floor(Number(floor)||1)))]||2;
-  function stageWeapon(tier,pattern=""){
-    const stage=STAGES[Math.max(1,Math.min(6,Math.floor(Number(tier)||1)))]||STAGES[1],spreadOverride=String(pattern||"")==="spread"&&stage.id!=="spread";
+  function weaponPattern(incoming){
+    const id=String(incoming?.patternOverride||incoming?.id||"").toLowerCase();
+    if(["spread","fire","shock","pierce","repeater"].includes(id))return id;
+    if(Array.isArray(incoming?.mods)&&incoming.mods.some(mod=>/three-way/i.test(String(mod))))return"spread";
+    return"pulse"
+  }
+  function stageWeapon(tier,pattern="",refinement=0){
+    const stage=STAGES[Math.max(1,Math.min(6,Math.floor(Number(tier)||1)))]||STAGES[1],explicit=String(pattern||"").toLowerCase(),variant=explicit||stage.id||"pulse",refine=Math.max(0,Math.min(3,Math.floor(Number(refinement)||0)));
     const weapon={...clone(stage),displayName:`TIER ${stage.tier} · ${stage.name}`,rarity:stage.tier>=6?"GOLD MEDAL":stage.tier>=4?"SIZZLER":stage.tier>=2?"UNCOMMON":"COMMON",colour:stage.tier>=6?"#ffd85a":stage.tier>=4?"#ff5bae":"#6cecff",ammo:1,element:"energy",mods:stage.tier>=4?["THREE-WAY"]:[],evolutionTier:stage.tier};
-    if(spreadOverride){weapon.id="spread";weapon.name=`Spread Pulse ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · SPREAD PULSE`;weapon.shots=3;weapon.delay=Math.max(1.06,Number(stage.delay||1));weapon.mods=["THREE-WAY"];weapon.patternOverride="spread";weapon.desc="Rare three-way fire pattern scaled to the current floor tier cap."}
+    if(explicit==="spread"){weapon.id="spread";weapon.name=`Spread Pulse ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · SPREAD PULSE`;weapon.shots=3;weapon.delay=Math.max(1.02,Number(stage.delay||1));weapon.mods=["THREE-WAY"];weapon.patternOverride="spread";weapon.desc="Three-way fire pattern scaled to the current floor tier cap."}
+    else if(explicit==="fire"){weapon.id="fire";weapon.name=`SID Fire Lance ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · SID FIRE LANCE`;weapon.element="fire";weapon.shots=1;weapon.power=Math.max(2,Number(stage.power||1)+1);weapon.delay=Math.max(1.12,Number(stage.delay||1)*1.16);weapon.ttl=Number(stage.ttl||18)+2;weapon.mods=["FIRE LANCE"];weapon.patternOverride="fire";weapon.desc="Heavy fire-damage variant scaled to the current floor tier cap."}
+    else if(explicit==="shock"){weapon.id="shock";weapon.name=`Shockwave Emitter ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · SHOCKWAVE EMITTER`;weapon.element="shock";weapon.shots=8;weapon.power=Math.max(1,Number(stage.power||1));weapon.delay=Math.max(1.28,Number(stage.delay||1)*1.28);weapon.ttl=4;weapon.mods=["SHOCKWAVE"];weapon.patternOverride="shock";weapon.desc="Short-range eight-way shock variant scaled to the current floor tier cap."}
+    else if(explicit==="pierce"){weapon.id="pierce";weapon.name=`Piercing Beam ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · PIERCING BEAM`;weapon.shots=1;weapon.power=Math.max(2,Number(stage.power||1));weapon.pierce=Math.max(2,Number(stage.pierce||0));weapon.delay=Math.max(.98,Number(stage.delay||1)*1.08);weapon.mods=["PIERCING"];weapon.patternOverride="pierce";weapon.desc="Penetrating beam variant scaled to the current floor tier cap."}
+    else if(explicit==="repeater"){weapon.id="repeater";weapon.name=`Rapid Repeater ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · RAPID REPEATER`;weapon.element="physical";weapon.shots=1;weapon.power=Math.max(1,Number(stage.power||1));weapon.delay=Math.max(.48,Number(stage.delay||1)*.68);weapon.mods=["RAPID"];weapon.patternOverride="repeater";weapon.desc="Fast-fire physical variant scaled to the current floor tier cap."}
+    else if(explicit==="pulse"){weapon.patternOverride="pulse";if(stage.id==="spread"){weapon.id="pulse";weapon.name=`Heavy Pulse ${stage.tier}`;weapon.displayName=`TIER ${stage.tier} · HEAVY PULSE`;weapon.shots=1;weapon.pierce=Math.max(0,Number(stage.pierce||0));weapon.mods=[]}}
+    if(refine>0){weapon.refinement=refine;weapon.delay=Math.max(.42,Number(weapon.delay||1)*(1-refine*.04));weapon.ttl=Math.max(4,Number(weapon.ttl||18)+refine*2);if(refine>=2)weapon.pierce=Math.max(1,Number(weapon.pierce||0));weapon.mods=[...(weapon.mods||[]),`REFINED ×${refine}`];weapon.displayName+=` · +${refine}`;weapon.desc+=` Refinement ${refine}/3 improves handling and projectile reach.`}
     return weapon
   }
   function deriveTier(player){
@@ -50,8 +64,8 @@
       if(changed)state.migrations++;
       return null
     }
-    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),derived=Math.max(1,deriveTier(player)),tier=Math.min(cap,derived),pattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||"");
-    const canonical=stageWeapon(tier,pattern);
+    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),derived=Math.max(1,deriveTier(player)),tier=Math.min(cap,derived),pattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||""),refinement=Math.max(0,Math.min(3,Math.floor(Number(player.weaponRefinement)||0)));
+    const canonical=stageWeapon(tier,pattern,refinement);
     const changed=derived!==tier||!player.weapon||Number(player.weapon.shots||1)!==canonical.shots||Number(player.weapon.power||1)!==canonical.power||Number(player.weapon.pierce||0)!==canonical.pierce||String(player.weapon.id||"")!==canonical.id||(player.ownedWeapons||[]).length!==1;
     player.weapon=canonical;player.weaponEvolutionTier=tier;player.weaponLevel=tier;player.firearmUnlocked=true;
     player.ownedWeapons=[clone(canonical)];player.activeWeaponIndex=0;
@@ -72,14 +86,36 @@
   }
   function applyPickup(player,incoming,baseEquip){
     if(!player||!dungeonMode())return baseEquip(player,incoming);
-    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),incomingSpread=String(incoming?.id||"").toLowerCase()==="spread"||String(incoming?.patternOverride||"")==="spread"||Array.isArray(incoming?.mods)&&incoming.mods.some(mod=>/three-way/i.test(String(mod))),incomingRarity=String(incoming?.rarity||""),rareSpread=incomingSpread&&["SIZZLER","GOLD MEDAL","ZZAP! 97%"].includes(incomingRarity);
+    const floor=Math.max(1,Number(currentRun()?.floor||1)),cap=capForFloor(floor),incomingRarity=String(incoming?.rarity||"COMMON").toUpperCase(),incomingPattern=weaponPattern(incoming),specialWeapon=["UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"].includes(incomingRarity);
     collapseOwnership(player);
-    const tier=deriveTier(player);
-    if(rareSpread){
-      const next=Math.max(1,Math.min(cap,tier>0?tier+1:1));player.firearmUnlocked=true;player.weaponPatternOverride="spread";
-      const weapon=stageWeapon(next,"spread"),result=baseEquip(player,weapon);player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,"spread");collapseOwnership(player);
-      if(tier===0)state.acquisitions++;else if(next>tier)state.upgrades++;
-      try{S.sfx("weapon");showToast("RARE SPREAD WEAPON ACQUIRED",`${incomingRarity} Spread reward equipped as ${player.weapon.displayName} at the Floor ${floor} Tier ${cap} cap.`,"gold",8500)}catch(_){}
+    const tier=deriveTier(player),currentPattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||player.weapon?.id||"pulse").toLowerCase(),currentRefinement=Math.max(0,Math.min(3,Math.floor(Number(player.weaponRefinement)||0)));
+    if(specialWeapon){
+      let next=tier>0?Math.min(cap,tier+1):1,pattern=incomingPattern,refinement=0,action="";
+      if(tier>=cap&&tier>0){
+        next=cap;
+        if(pattern!==currentPattern){action="variant";refinement=0}
+        else if(currentRefinement<3){action="refine";refinement=currentRefinement+1}
+        else{
+          const variants=["spread","fire","pierce","repeater","shock","pulse"],ix=Math.max(0,variants.indexOf(currentPattern));
+          pattern=variants[(ix+1)%variants.length];refinement=0;action="reforge"
+        }
+      }else action=tier===0?"acquire":"upgrade";
+      player.firearmUnlocked=true;player.weaponPatternOverride=pattern;player.weaponRefinement=refinement;
+      const weapon=stageWeapon(next,pattern,refinement),result=baseEquip(player,weapon);
+      player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,pattern,refinement);collapseOwnership(player);
+      if(tier===0)state.acquisitions++;else if(next>tier)state.upgrades++;else state.reforges++;
+      try{window.dispatchEvent(new CustomEvent("ccg:firearm-evolved",{detail:{playerId:String(player?.id||player?.name||"P1"),floor,first:tier===0,beforeTier:tier,afterTier:next,weaponName:String(player.weapon?.name||player.weapon?.displayName||""),variant:pattern,refinement}}))}catch(_){}
+      try{
+        S.sfx("weapon");
+        const sourceName=String(incoming?.displayName||incoming?.name||incomingRarity+" WEAPON");
+        const title=action==="refine"?"RARE WEAPON REFINED":action==="variant"?"RARE WEAPON TYPE EQUIPPED":action==="reforge"?"MASTERED CACHE REFORGED":tier===0?"RARE WEAPON ACQUIRED":"RARE WEAPON EVOLVED";
+        const text=action==="refine"
+          ?`${sourceName} improved your ${player.weapon.displayName} at the Floor ${floor} Tier ${cap} cap. Refinement ${refinement}/3 — no score/XP conversion.`
+          :action==="reforge"
+            ?`${sourceName} matched an already master-refined weapon, so the cache was transparently reforged into ${player.weapon.displayName}. It remains a weapon reward.`
+            :`${sourceName} equipped as ${player.weapon.displayName} at Tier ${next}/${cap}. The advertised weapon archetype is retained instead of being converted into currency.`;
+        showToast(title,text,"gold",9000)
+      }catch(_){}
       return result
     }
     if(tier>=cap&&tier>0){
@@ -87,20 +123,20 @@
       try{stats.weapons++}catch(_){}
       try{
         S.sfx("pickup");
-        if(ammo>0)showToast("WEAPON CAPPED — AMMO RESTORED",`Weapon evolution is capped on Floor ${floor}. +${ammo} ammo restored.`,"cyan",7600);
+        if(ammo>0)showToast("COMMON WEAPON CACHE — AMMO",`This ordinary cache cannot improve Tier ${cap}. +${ammo} ammo restored. Non-common named weapon drops always remain weapon rewards.`,"cyan",7600);
         else{
           const xp=salvageXp(player);
-          if(xp>0)showToast("WEAPON CAPPED — +10 XP",`Ammo is already full, so the capped weapon cache has been converted into +${xp} XP.`,"cyan",7600);
-          else{try{score+=250}catch(_){}showToast("WEAPON CAPPED — +250 SCORE","Ammo and floor XP are already capped, so the cache has been converted into +250 score.","gold",7600)}
+          if(xp>0)showToast("COMMON CACHE — +10 XP",`Ammo is full, so this ordinary capped cache became +${xp} XP. Rare named weapons never use this fallback.`,"cyan",7600);
+          else{try{score+=250}catch(_){}showToast("COMMON CACHE — +250 SCORE","This ordinary capped cache had no ammo/XP room. Rare named weapons never use this fallback.","gold",7600)}
         }
       }catch(_){}
       queueMicrotask(()=>collapseOwnership(player));
       return player.weapon
     }
-    const pattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||""),next=Math.max(1,Math.min(cap,tier+1)),weapon=stageWeapon(next,pattern),first=tier===0;
+    const pattern=String(player.weaponPatternOverride||player.weapon?.patternOverride||""),refinement=Math.max(0,Math.min(3,Math.floor(Number(player.weaponRefinement)||0))),next=Math.max(1,Math.min(cap,tier+1)),weapon=stageWeapon(next,pattern,refinement),first=tier===0;
     if(first)player.firearmUnlocked=true;
     const result=baseEquip(player,weapon);
-    player.firearmUnlocked=true;player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,pattern);collapseOwnership(player);
+    player.firearmUnlocked=true;player.weaponEvolutionTier=next;player.weaponLevel=next;player.weapon=stageWeapon(next,pattern,refinement);collapseOwnership(player);
     if(first)state.acquisitions++;else state.upgrades++;
     try{window.dispatchEvent(new CustomEvent("ccg:firearm-evolved",{detail:{playerId:String(player?.id||player?.name||"P1"),floor,first,beforeTier:tier,afterTier:next,weaponName:String(player.weapon?.name||player.weapon?.displayName||"")}}))}catch(_){}
     try{
@@ -135,7 +171,7 @@
         const status=load.querySelector("small");if(status)status.textContent=String(status.textContent||"").replace(/^[^•]+(?=\s•\sMAP)/,"ARCHIVE SWORD");
         panel.innerHTML=`<b>EVOLVING FIREARM · NOT ACQUIRED</b><span>ARCHIVE SWORD ACTIVE · UNLIMITED MELEE</span><small>Your first weapon pickup becomes Tier 1 Field Pulse. Floor ${floor} allows firearm progression up to Tier ${cap}.</small>`
       }else{
-        panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next weapon pickup upgrades this firearm to Tier ${tier+1}.`:`Floor ${floor} cap reached. Extra weapon pickups become ammunition${floor<5?`; Floor ${floor+1} unlocks the next tier`:"; maximum tier reached"}.`}</small>`
+        panel.innerHTML=`<b>EVOLVING FIREARM · TIER ${tier}/6</b><span>${weapon.displayName} — ${weaponSummary(weapon)}</span><small>${tier<cap?`The next common cache advances the tier; named non-common weapons also preserve their own Fire/Spread/Pierce/Repeater/Shock pattern.`:`Floor ${floor} cap reached. Common duplicates may salvage to ammo, but non-common named weapons change type or refine the firearm instead of becoming score/XP.`}</small>`
       }
       load.appendChild(panel);return true
     }catch(_){return false}
@@ -159,6 +195,6 @@
   document.addEventListener("ccg:floor-start",()=>{try{collapseOwnership(p1);collapseOwnership(p2)}catch(_){}},{passive:true});
 
   window.CCGLostSizzlerV142R47FirearmEvolution=Object.freeze({
-    version:"V10.42-r47-firearm-evolution",state,STAGES,FLOOR_CAP,capForFloor,stageWeapon,deriveTier,collapseOwnership,applyPickup,salvageAmmo,decorateInventory,install
+    version:"V10.42-r47-firearm-evolution",state,STAGES,FLOOR_CAP,capForFloor,weaponPattern,stageWeapon,deriveTier,collapseOwnership,applyPickup,salvageAmmo,decorateInventory,install
   });
 })();

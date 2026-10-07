@@ -18,7 +18,9 @@
   const range=()=>Math.max(2,Number(C.stalker?.banishPromptDistance)||8);
   const isAlchemist=shop=>Boolean(shop&&(shop.v142Alchemist||/ALCHEMIST/i.test(String(shop.title||""))));
 
-  function wardBreakHelp(){return`Ward-Break Charge. Press B within ${range()} tiles of a sealed Death Stalker or ${String(C.stalker?.name||"Count Loadula")} to strip its supernatural immunity. The charge does not kill the Warden; finish the fight with normal weapons to cleanse its domain and earn the Warden Cache.`}
+  function wardBreakCount(player=P()){try{return Math.max(0,Math.floor(Number(PGR.inventoryKindCount?.(player,"banishment"))||0))}catch(_){return 0}}
+  function wardBreakLabel(){return`Ward-Break Charge ×${wardBreakCount()}`}
+  function wardBreakHelp(){return`Ward-Break Charge. You currently carry ${wardBreakCount()} charge${wardBreakCount()===1?"":"s"}. Press B within ${range()} tiles of a sealed Death Stalker or ${String(C.stalker?.name||"Count Loadula")} to strip its supernatural immunity. The charge does not kill the Warden; finish the fight with normal weapons to cleanse its domain and earn the Warden Cache.`}
   function essenceHelp(){return"Rare spectral residue is stored as Banishment Essence in the Vessel rather than occupying an inventory slot. Distil enough Essence at a Banishment Alchemist to create a Ward-Break Charge."}
 
   function normaliseToast(title,text){
@@ -70,14 +72,14 @@
 
   if(baseItemInfoDetails){
     itemInfoDetails=function(it,...args){const result=baseItemInfoDetails(it,...args)||{};
-      if(it?.kind==="banishment")return{...result,name:"WARD-BREAK CHARGE",desc:wardBreakHelp(),why:`WARD BREAK MATTERS: move within ${range()} tiles of a sealed Warden and press B. Its immunity drops, but you still have to win the fight.`};
+      if(it?.kind==="banishment")return{...result,name:`WARD-BREAK CHARGE ×${wardBreakCount()}`,desc:wardBreakHelp(),why:`WARD BREAK MATTERS: move within ${range()} tiles of a sealed Warden and press B. Its immunity drops, but you still have to win the fight.`};
       if(it?.kind==="artefact")return{...result,desc:essenceHelp(),why:"ESSENCE MATTERS: V10.42 stores spectral residue in the Vessel for Alchemist distillation into Ward-Break Charges."};
       return result;
     };
   }
 
   if(baseInventoryLabel){
-    PGR.inventoryLabel=function(item,...args){if(item?.kind==="banishment")return"Ward-Break Charge";return baseInventoryLabel(item,...args)};
+    PGR.inventoryLabel=function(item,...args){if(item?.kind==="banishment")return wardBreakLabel();return baseInventoryLabel(item,...args)};
   }
 
   function refreshVisibleCopy(){
@@ -88,5 +90,5 @@
   }
 
   refreshVisibleCopy();
-  window.CCGLostSizzlerV142WardenInterfaceConsistency={version:"V10.42 r3",wardBreakHelp,essenceHelp,normaliseToast,isAlchemist,retireLegacyShopCards,refreshVisibleCopy};
+  window.CCGLostSizzlerV142WardenInterfaceConsistency={version:"V10.42 r3",wardBreakCount,wardBreakLabel,wardBreakHelp,essenceHelp,normaliseToast,isAlchemist,retireLegacyShopCards,refreshVisibleCopy};
 })();

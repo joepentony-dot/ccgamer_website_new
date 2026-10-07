@@ -79,7 +79,7 @@ try{
   assert.equal(memory.phase,"idle","wrong Memory Pad input must wait for deliberate replay");
 
   const firearm=await page.evaluate(()=>{
-    const dummy={id:"shock",name:"Legacy Random Gun",displayName:"ZZAP! 97% Random Gun",rarity:"ZZAP! 97%",power:9,delay:.3,shots:8,pierce:4,element:"shock",ttl:30,mods:["legacy"],rating:99,desc:"legacy random weapon"};
+    const dummy={id:"pulse",name:"Common Weapon Cache",displayName:"Common Weapon Cache",rarity:"COMMON",power:1,delay:1,shots:1,pierce:0,element:"energy",ttl:18,mods:[],rating:1,desc:"ordinary common progression cache"};
     const rows=[];
     const snap=label=>rows.push({label,floor:run.floor,tier:p1.weaponEvolutionTier,name:p1.weapon?.name,power:p1.weapon?.power,shots:p1.weapon?.shots,pierce:p1.weapon?.pierce,owned:(p1.ownedWeapons||[]).length,mana:p1.mana});
     p1.firearmUnlocked=false;p1.weapon=null;p1.weaponEvolutionTier=0;p1.ownedWeapons=[];p1.activeWeaponIndex=-1;p1.mana=0;

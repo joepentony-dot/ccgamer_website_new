@@ -1,3 +1,74 @@
+## R114 firearm qualification update — 7 October 2026 12:50 UK
+
+- Full Qualification reached all Chromium shards on `8cca393cd37034ceca7e25e0b9cad9c9da3254d1`; only shard 2 failed.
+- The R47 browser test incorrectly used a ZZAP! 97% Shock reward as the fixture for common tier progression and capped ammo salvage. That conflicts with R114's required rare-weapon contract: named non-common rewards preserve/refine/reforge weapon value and never use common salvage fallback.
+- The existing test now uses a COMMON cache for ordinary progression/salvage while retaining separate rare-weapon assertions. Public playtest access/timer remains untouched.
+
+## R114 trusted-music qualification hardening — 7 October 2026 12:36 UK
+
+- The R106 browser contract now asserts the exact authored-music state snapshot that satisfied active/unpaused/metadata-ready conditions, removing the remaining cross-state sampling race without changing runtime or timeout behaviour.
+
+## R114 Chromium update — 7 October 2026 12:34 UK
+
+- Node qualification is green on `c733abcac39ce4f6c3cc5f8a18a0d62965aa5999`; Chromium is now genuinely exercising the branch. Shard 1 found the R106 trusted-music test observing the playlist between playback activation and media metadata readiness.
+- Existing R106 contract now waits for the exact readiness condition it already asserts (`readyState >= 1`) without increasing timeout or weakening authored-music requirements. Public playtest access remains untouched.
+
+## R114 qualification update — 7 October 2026 12:30 UK
+
+- Following the boss-render contract repair, exact-head Node qualification exposed a stale one-shot switch source assertion. R114's bridge-specific branch changed code shape but not switch semantics.
+- Consolidated switch coverage now checks the shared active guard plus bridge and ordinary switch consumption separately. Continue exact-head qualification from this commit; Chromium remains unqualified until Node contracts complete.
+
+## R114 qualification update — 7 October 2026 12:27 UK
+
+- Main: `0e5493a03cefbd02c29235b01035f43f9687be02` (R113 merged).
+- Active R114: draft PR #2571 / `codex/dungeon-r114-progression-challenges`; #2567 remains superseded.
+- Latest qualification defect found after the Stage 6 fix was a stale visual-overhaul source contract. R114 correctly renders bespoke grotesque bosses before the established Puny -> authored -> procedural enemy fallback chain.
+- Existing consolidated test updated in commit `91670831cd9171f93156f523f652731b00c93039` to require that boss-first order. Runtime was not weakened or changed.
+- Exact-head qualification must restart on the new checkpoint head; Chromium shards have not yet qualified this head because prior Full Qualification stopped in Node contracts.
+- Public 24-hour playtest gate/timer remains untouched.
+
+## C64 Dungeon Carnage R114 authoritative continuation — 7 October 2026
+
+- **Authoritative merged baseline:** R113 / PR #2566 is merged to `main` at merge commit `0e5493a03cefbd02c29235b01035f43f9687be02`. Post-merge Full Qualification, Site Safety, itch.io package, Pages deployment, Production Smoke and Live Public Navigation are green.
+- **Active progression vehicle:** draft PR **#2571** / `codex/dungeon-r114-progression-challenges`, based directly on merged R113 `main`. The previous stacked #2567 is closed/superseded and must not be revived. Current branch head when this checkpoint is written will advance with this documentation commit.
+- **Public playtest:** the server-validated 24-hour YouTube playtest gate is merged and deployed. The public share token is stored only as a SHA-256 digest in Supabase; older public share passes are revoked. The shared 24-hour window begins on the first successful validation. Preserve this access boundary while R114 is developed.
+- **Qualification rule:** keep #2571 draft until its exact current head passes PR Qualification, Full Qualification including all Chromium shards, package/cache/site checks and any triggered mobile/PWA contracts. Fix genuine failures; do not weaken tests, inflate timeouts or merge stale/red heads.
+
+### R114 work already implemented and under qualification
+
+- Restoration Potions are substantially scarcer in routine floor/chest loot.
+- Magic Sacks are rare run upgrades: +1 stack capacity to every stackable inventory type, max three, with rare 10 Gold shop stock.
+- Cartographer's Eye / Map Reveal is a rare one-use utility that reveals the current floor/map intelligence, with rare 5 Gold shop stock.
+- Teleport is suppressed in sealed challenge states including Memory Vaults, active timed/arena lockdowns, Sigil lockdowns and boss arenas.
+- Floor 12 has a harder seven-pad Memory Vault; the established five-pad vault is retained. Full sequence completion is required to escape.
+- Floors 6–15 no longer clamp to Floor 5 enemy/hazard tuning. All fifteen floors have distinct progression profiles, later hazards increase and late hazard sequencing becomes less predictable.
+- Major grotesque bosses exist on Floors 5, 10 and 15 with oversized custom rendering, health bars, lockdown, phases, radial attacks, reinforcements and boss rewards.
+- Floor Key versus Campaign Keys wording has been separated.
+- Death-cache ownership now includes all carried inventory, current armour protection and equipped Head/Hands/Feet gear; equipped bonuses are removed until recovery/re-equip.
+- Wearable gear tiers use Common / Rare / Superior / Enchanted semantics: Rare +1 armour-cap bonus, Superior +2, Enchanted +3 plus its slot-specific secondary bonus.
+- Floor 4 torch sequence accepts deliberate player footsteps only; bullets and enemies cannot activate torches. Room instructions are explicit and wrong-input punishment spawning is capped.
+- Ward-Break Charge quantity is shown in Equipment & Inventory as the actual carried total.
+- Floor 5 Rotten Bridge is being converted into a trick/recovery quest: empty-handed crossing requirement, better far-side Trickster Cache, bridge collapse, Dungeon Thief stealing the dropped stash, thief relocating elsewhere on the floor, stolen-item recovery on killing the thief, shoot-only far-side rebuild switch and emergency ammo if the player has none.
+- Named non-common weapon rewards such as SID Fire Lance must remain meaningful weapon rewards at the current floor cap. They change archetype, refine or transparently reforge instead of silently falling through to ammo/XP/score consolation. Ordinary common capped caches may still use the salvage chain.
+- Existing timed-room countdown ownership is retained; do not create a competing countdown system.
+
+### Outstanding implementation / verification backlog
+
+1. **Finish #2571 qualification first.** Current known blocker at this checkpoint is test-contract drift around dynamic five/seven-pad Memory Vault text; fix the contract rather than the runtime when the runtime text is correct. Continue through any subsequent exact-head failures.
+2. **Verify Map Reveal semantics end-to-end.** Revealing the whole floor must also reveal every map icon the design intends, not merely explored geometry. Wire the explicit reveal state into icon visibility if the renderer still hides undiscovered icons.
+3. **Complete and verify the Rotten Bridge quest.** The thief must be impossible to soft-lock, stolen items must be restored exactly once on defeat, the rebuilt bridge must restore traversal, emergency ammo must be reachable/useful, the far-side reward must be materially better than an ordinary chest, and the player must be told why the bridge matters before crossing.
+4. **Complete and verify rare-weapon usefulness.** Repeated Rare SID Fire Lance or other named rare drops must never present as a rare weapon and then resolve only to score/XP/ammo. Test capped same-archetype refinement, capped alternate-archetype swap, mastered duplicate reforge and normal common-cache salvage.
+5. **Finish armour-cap consistency.** Any remaining health/armour repair paths that still hard-cap armour at 12 must respect the wearable-derived armour cap where appropriate.
+6. **Finish varied floor objectives / secondary challenges.** The fifteen-floor campaign must not feel like the same four objectives rotating. Add guaranteed, authored secondary challenges using stable existing systems before introducing fragile new owners. Later floors should require more involved combinations without creating soft-locks.
+7. **Improve later-floor enemy identity and challenge variety.** Continue distinct enemy archetypes/tactics and RPG-style environmental puzzles inspired by classic grid dungeon crawlers without copying protected content.
+8. **Validate boss/Floor 15 composition.** Ensure the Floor 15 grotesque boss and final Sigil/guardian logic cannot conflict, duplicate the same role or block completion.
+9. **Validate death-cache/equipment composition.** Recovery must be exact-once; no item, armour, XP or equipped bonus duplication. If recovered armour exceeds the base cap while gear is unequipped, the remaining protection must stay recoverable rather than disappear.
+10. **Keep the 24-hour public playtest isolated from development access.** Do not reset, extend or silently replace its server timer while R114 work is underway.
+11. **Consolidate rather than proliferate tests.** Prefer strengthening existing regression contracts over adding one `.mjs` file per defect.
+12. **After #2571 is green:** merge only the verified exact head, verify post-merge deployment/Production Smoke, then continue any still-open request from this checkpoint on a fresh current-main branch rather than reviving superseded R-series work.
+
+This section is the authoritative Dungeon Carnage continuation checkpoint for the CCG Development Hub until replaced by a newer explicit checkpoint.
+
 ## R98 fifteen-floor release-hardening candidate — 3 October 2026
 
 - **Active vehicle:** PR #2488 / `codex/dungeon-release-audit-15-floor-topology`, branched from R97 main `0e34e4e1b8e3ae242b28a37192cead7b1775cee7`. Candidate identity is **V10.42 r98 / 20261003r98**. Do not describe R98 as qualified or merged until the exact-head PR/Full Qualification matrix is green and the PR is merged.

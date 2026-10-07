@@ -238,9 +238,9 @@ window.CCGSystems=(()=>{
     for(let i=seq.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[seq[i],seq[j]]=[seq[j],seq[i]]}
     if(run)run.torchSequence=[...seq];return seq
   }
-  function memorySequenceFor(run){
-    const r=PGR.seededRandom(`${run?.seed||"CCG"}-F${run?.floor||1}-V10.42-R47-MEMORY`),out=[];
-    while(out.length<5){const n=Math.floor(r()*5);if(n!==out[out.length-1])out.push(n)}return out
+  function memorySequenceFor(run,count=5){
+    const total=Math.max(3,Math.min(9,Math.floor(Number(count)||5))),r=PGR.seededRandom(`${run?.seed||"CCG"}-F${run?.floor||1}-V10.42-R114-MEMORY-${total}`),out=[];
+    while(out.length<total){const n=Math.floor(r()*total);if(n!==out[out.length-1])out.push(n)}return out
   }
   function roomHasCoreFeature(host,roomId){
     return (host.generators||[]).some(x=>x.roomId===roomId)||host.rescue?.roomId===roomId||(host.guardian&&host.worldRef&&W.roomAt(host.worldRef,host.guardian.x,host.guardian.y)===roomId)||(host.arenas||[]).some(x=>x.roomId===roomId)||(host.timedRooms||[]).some(x=>x.roomId===roomId)
@@ -248,25 +248,19 @@ window.CCGSystems=(()=>{
   function puzzleRoomPool(world,host,rooms){
     return rooms.filter(r=>r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!roomHasCoreFeature(host,r.id))
   }
-  function memoryPadLayout(world,room,used){
-    const free=q=>Boolean(q&&world.map[q.y]?.[q.x]===0&&!used.has(cell(q.x,q.y)));
-    const layouts=[];
-    // Five pads with one clear tile between each pad. The line is deliberately
-    // kept to one side of the room so the player never has to cut diagonally
-    // through a 3x3 pressure grid.
-    for(let y=room.y+2;y<=room.y+room.h-2;y++){
-      for(let x=room.x+1;x+8<=room.x+room.w-1;x++){
-        layouts.push({axis:"horizontal",pads:[0,2,4,6,8].map(n=>({x:x+n,y}))})
-      }
-    }
-    for(let x=room.x+2;x<=room.x+room.w-2;x++){
-      for(let y=room.y+1;y+8<=room.y+room.h-1;y++){
-        layouts.push({axis:"vertical",pads:[0,2,4,6,8].map(n=>({x,y:y+n}))})
-      }
+  function memoryPadLayout(world,room,used,padCount=5){
+    const free=q=>Boolean(q&&world.map[q.y]?.[q.x]===0&&!used.has(cell(q.x,q.y))),layouts=[],count=Math.max(3,Math.min(7,Math.floor(Number(padCount)||5)));
+    if(count<=5){
+      const offsets=Array.from({length:count},(_,i)=>i*2),span=offsets[offsets.length-1]||0;
+      for(let y=room.y+2;y<=room.y+room.h-2;y++)for(let x=room.x+1;x+span<=room.x+room.w-1;x++)layouts.push({axis:"horizontal",pads:offsets.map(n=>({x:x+n,y}))});
+      for(let x=room.x+2;x<=room.x+room.w-2;x++)for(let y=room.y+1;y+span<=room.y+room.h-1;y++)layouts.push({axis:"vertical",pads:offsets.map(n=>({x,y:y+n}))})
+    }else{
+      const offsets=[[-2,-2],[0,-2],[2,-2],[-2,0],[0,0],[2,0],[0,2]];
+      for(let cy=room.y+3;cy<=room.y+room.h-3;cy++)for(let cx=room.x+3;cx<=room.x+room.w-3;cx++)layouts.push({axis:"grid",pads:offsets.map(([dx,dy])=>({x:cx+dx,y:cy+dy}))})
     }
     layouts.sort((a,b)=>{
-      const ac=a.axis==="horizontal"?(a.pads[0].y-room.y):(a.pads[0].x-room.x);
-      const bc=b.axis==="horizontal"?(b.pads[0].y-room.y):(b.pads[0].x-room.x);
+      const ac=a.axis==="horizontal"?(a.pads[0].y-room.y):a.axis==="vertical"?(a.pads[0].x-room.x):(a.pads[0].x+a.pads[0].y);
+      const bc=b.axis==="horizontal"?(b.pads[0].y-room.y):b.axis==="vertical"?(b.pads[0].x-room.x):(b.pads[0].x+b.pads[0].y);
       return ac-bc
     });
     for(const layout of layouts){
@@ -295,25 +289,38 @@ window.CCGSystems=(()=>{
     if([...pit,...bridge].some(q=>world.map[q.y]?.[q.x]!==0))return null;
     const far=q=>side==="west"?q.x>cx+2:side==="east"?q.x<cx-2:side==="north"?q.y>cy+2:q.y<cy-2;
     let reward=firstFreeCell(world,room,used,far);if(!reward){reward=firstFreeCell(world,room,used,q=>side==="west"?q.x>cx:side==="east"?q.x<cx:side==="north"?q.y>cy:q.y<cy)}if(!reward)return null;
-    for(const q of bridge)used.add(cell(q.x,q.y));used.add(cell(reward.x,reward.y));
+    const wallCandidate=q=>{
+      if(!far(q)||used.has(cell(q.x,q.y))||world.map[q.y]?.[q.x]!==0)return false;
+      return [[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>world.map[q.y+dy]?.[q.x+dx]!==0)
+    };
+    let bridgeSwitch=null;
+    for(let y=room.y+1;y<room.y+room.h&&!bridgeSwitch;y++)for(let x=room.x+1;x<room.x+room.w;x++){const q={x,y};if(!wallCandidate(q)||md(q,reward)<2)continue;bridgeSwitch={x,y};break}
+    if(!bridgeSwitch)bridgeSwitch=firstFreeCell(world,room,used,q=>far(q)&&md(q,reward)>=2);
+    if(!bridgeSwitch)return null;
+    for(const q of bridge)used.add(cell(q.x,q.y));used.add(cell(reward.x,reward.y));used.add(cell(bridgeSwitch.x,bridgeSwitch.y));
     gate.type="room";gate.locked=false;gate.hidden=false;gate.weightBridgeGate=true;
-    let chest=(host.chests||[]).find(c=>c.roomId===room.id);if(!chest){chest={id:"weight-bridge-chest",...reward,locked:false,active:true,depth:(room.depth||0)+7,roomId:room.id};host.chests.push(chest)}else{chest.x=reward.x;chest.y=reward.y;chest.locked=false;chest.active=true;chest.depth=(room.depth||0)+7}chest.weightBridgeReward=true;
-    room.weightBridgeRoom=true;return{id:"weight-bridge",roomId:room.id,entranceSide:side,pitTiles:pit,bridgeTiles:bridge,stabilized:false,crossingPlayer:null,rewardPos:{...reward},chestId:chest.id}
+    let chest=(host.chests||[]).find(c=>c.roomId===room.id);if(!chest){chest={id:"weight-bridge-chest",...reward,locked:false,active:true,depth:(room.depth||0)+15,roomId:room.id};host.chests.push(chest)}else{chest.x=reward.x;chest.y=reward.y;chest.locked=false;chest.active=true;chest.depth=(room.depth||0)+15}chest.weightBridgeReward=true;chest.r114TrickTreatReward=true;
+    const switchId="weight-bridge-rebuild-switch";
+    host.switches=host.switches||[];
+    host.switches.push({id:switchId,...bridgeSwitch,roomId:room.id,active:true,toggled:false,wallMounted:true,remote:false,shotOnly:true,weightBridgeSwitch:true});
+    room.weightBridgeRoom=true;
+    return{id:"weight-bridge",roomId:room.id,entranceSide:side,pitTiles:pit,bridgeTiles:bridge,stabilized:false,collapsed:false,rebuilt:false,crossed:false,crossingPlayer:null,rewardPos:{...reward},chestId:chest.id,switchId,switchPos:{...bridgeSwitch},entryPos:{x:gate.x,y:gate.y},stolenItems:[],thiefId:null,thiefDefeated:false,rewardClaimed:false}
   }
   function installOptionalPuzzles(world,host,run,rooms,used){
     host.bloodClue=null;host.memoryPuzzle=null;host.sequenceTorchPuzzle=null;host.weightBridge=null;const floor=run?.floor||1,seq=torchSequenceFor(run),pool=puzzleRoomPool(world,host,rooms);
     if(floor===C.dungeon.clueFloor){const room=pool[0]||rooms[0],q=room&&freeInRoom(world,room,used);if(room&&q){host.bloodClue={id:"faded-blood-clue",...q,roomId:room.id,sequence:[...seq],seen:false};room.bloodClueRoom=true}}
-    if(floor===C.dungeon.memoryPuzzleFloor){for(const room of pool){const layout=memoryPadLayout(world,room,used);if(!layout)continue;const tiles=layout.pads;for(const q of tiles)used.add(cell(q.x,q.y));used.add(cell(layout.activator.x,layout.activator.y));let reward=firstFreeCell(world,room,used,q=>!tiles.some(t=>md(t,q)<2)&&md(layout.activator,q)>=2);if(!reward)reward=centre(room);used.add(cell(reward.x,reward.y));const chest={id:"memory-puzzle-chest",...reward,locked:false,active:false,depth:(room.depth||0)+7,roomId:room.id,memoryPuzzleReward:true};host.chests.push(chest);host.memoryPuzzle={id:"memory-puzzle",roomId:room.id,tiles:tiles.map((q,i)=>({...q,index:i,label:String(i+1)})),activator:{...layout.activator},layout:layout.axis,sequence:memorySequenceFor(run),phase:"idle",flashElapsed:0,flashTile:-1,inputIndex:0,padEntryByPlayer:{},solved:false,failures:0,lockdownActive:false,lockdownEntries:0,rewardPos:{...reward},chestId:chest.id};room.memoryPuzzleRoom=true;break}}
+    const memoryPads=floor===C.dungeon.memoryPuzzleFloor?5:floor===C.dungeon.memoryPuzzleHardFloor?7:0;
+    if(memoryPads){for(const room of pool){const layout=memoryPadLayout(world,room,used,memoryPads);if(!layout)continue;const tiles=layout.pads;for(const q of tiles)used.add(cell(q.x,q.y));used.add(cell(layout.activator.x,layout.activator.y));let reward=firstFreeCell(world,room,used,q=>!tiles.some(t=>md(t,q)<2)&&md(layout.activator,q)>=2);if(!reward)reward=centre(room);used.add(cell(reward.x,reward.y));const hard=memoryPads===7,chest={id:hard?"memory-puzzle-chest-seven":"memory-puzzle-chest",...reward,locked:false,active:false,depth:(room.depth||0)+(hard?12:7),roomId:room.id,memoryPuzzleReward:true,r114HardMemory:hard};host.chests.push(chest);host.memoryPuzzle={id:hard?"memory-puzzle-seven":"memory-puzzle",roomId:room.id,tiles:tiles.map((q,i)=>({...q,index:i,label:String(i+1)})),activator:{...layout.activator},layout:layout.axis,sequence:memorySequenceFor(run,memoryPads),phase:"idle",flashElapsed:0,flashTile:-1,inputIndex:0,padEntryByPlayer:{},solved:false,failures:0,lockdownActive:false,lockdownEntries:0,rewardPos:{...reward},chestId:chest.id,hardMode:hard};room.memoryPuzzleRoom=true;room.r114HardMemory=hard;break}}
     if(floor===C.dungeon.torchPuzzleFloor){for(const room of pool){const torches=torchSetForRoom(world,room,used);if(!torches)continue;for(const q of torches)used.add(cell(q.x,q.y));let reward=firstFreeCell(world,room,used,q=>torches.every(t=>md(t,q)>2));if(!reward)continue;used.add(cell(reward.x,reward.y));const chest={id:"sequence-torch-vault",...reward,locked:false,active:false,depth:(room.depth||0)+9,roomId:room.id,torchPuzzleReward:true};host.chests.push(chest);host.sequenceTorchPuzzle={id:"sequence-torch-puzzle",roomId:room.id,sequence:[...seq],torches:torches.map(q=>({...q,lit:false})),progress:0,solved:false,failures:0,rewardPos:{...reward},chestId:chest.id};room.sequenceTorchRoom=true;break}}
     if(floor===C.dungeon.weightBridgeFloor){const choices=world.rooms.filter(r=>r.optional&&r.id!==host.sigilRoomId&&r.id!==host.trader?.roomId).map(room=>({room,gate:(host.doors||[]).find(d=>d.roomId===room.id&&!d.sigilGate)})).filter(x=>x.gate).sort((a,b)=>(b.room.depth||0)-(a.room.depth||0));for(const x of choices){const b=makeWeightBridge(world,host,x.room,x.gate,used);if(b){host.weightBridge=b;break}}}
   }
   function hazardCellState(hazard,x,y,elapsed=0){
     if(!hazard||(hazard.cells||[]).every(q=>q.x!==x||q.y!==y))return{active:false,warning:false,group:-1};
-    const period=hazard.period||2300,warningMs=hazard.warningMs||700,activeMs=hazard.activeMs||620,groups=Math.max(2,hazard.groups||2),time=Math.max(0,Number(elapsed||0)+Number(hazard.phase||0)),step=Math.floor(time/period),within=time%period,group=step%groups,cell=(hazard.cells||[]).find(q=>q.x===x&&q.y===y),selected=cell?.group===group;
+    const period=hazard.period||2300,warningMs=hazard.warningMs||700,activeMs=hazard.activeMs||620,groups=Math.max(2,hazard.groups||2),time=Math.max(0,Number(elapsed||0)+Number(hazard.phase||0)),step=Math.floor(time/period),within=time%period,seed=Math.max(0,Math.floor(Number(hazard.r114PatternSeed)||0)),group=hazard.r114Unpredictable?Math.abs((step*step+step*(3+seed%5)+seed)%groups):step%groups,cell=(hazard.cells||[]).find(q=>q.x===x&&q.y===y),selected=cell?.group===group;
     return{active:Boolean(selected&&within>=warningMs&&within<warningMs+activeMs),warning:Boolean(selected&&within<warningMs),group}
   }
   function installDedicatedHazardRooms(world,host,run,rooms,used){
-    const floor=Math.max(1,run?.floor||1),count=floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
+    const floor=Math.max(1,run?.floor||1),count=floor>=12?4:floor>=8?3:floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
     for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
     for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
     const hardHazardEligible=(room,minW=6,minH=5)=>Boolean(room&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=minW&&room.h>=minH),hazardEligible=(room,minW=8,minH=7)=>Boolean(hardHazardEligible(room,minW,minH)&&!busy.has(room.id)),reservedHazardRooms=(world.rooms||[]).filter(room=>Boolean(room?.dedicatedHazardReserved&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&room.w>=2&&room.h>=2)),reservedHazardRoomIds=new Set(reservedHazardRooms.map(room=>room.id)),primaryHazardRooms=rooms.filter(room=>!reservedHazardRoomIds.has(room.id)&&hazardEligible(room)),fallbackHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room)&&!reservedHazardRoomIds.has(room.id)&&!primaryHazardRooms.some(candidate=>candidate.id===room.id)),strictHazardRoomIds=new Set([...reservedHazardRooms,...primaryHazardRooms,...fallbackHazardRooms].map(room=>room.id)),relaxedHazardRooms=reservedHazardRooms.length+primaryHazardRooms.length+fallbackHazardRooms.length>=count?[]:(world.rooms||[]).filter(room=>hazardEligible(room,6,5)&&!strictHazardRoomIds.has(room.id)),shuffleHazardRooms=list=>list.map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),choices=[...shuffleHazardRooms(reservedHazardRooms),...shuffleHazardRooms(primaryHazardRooms),...shuffleHazardRooms(fallbackHazardRooms),...shuffleHazardRooms(relaxedHazardRooms)],types=["blade","embers","arrows"];host.hazardRooms=[];

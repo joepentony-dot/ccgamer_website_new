@@ -25,12 +25,13 @@ assert.ok(play.includes("showToast(`MEMORY PAD ${tileIndex+1}`"),"each correct p
 
 assert.match(play,/SYS\.lockRoomDoors\(host,z\.roomId,true\)/,"entering an unsolved memory room must seal its room doors");
 assert.ok(play.includes("MEMORY VAULT LOCKDOWN"),"lockdown must be explained to the player");
-assert.ok(play.includes("Complete the five-pad memory sequence to reopen every exit."),"the lock condition must be explicit");
+assert.ok(play.includes("Complete the full ${z.sequence.length}-pad memory sequence to reopen every exit"),"the lockdown explanation must state the actual five- or seven-pad requirement");
+assert.match(play,/Teleport is suppressed in this room/,"the memory lockdown must explain that Teleport cannot bypass the sealed chamber");
 assert.match(play,/SYS\.lockRoomDoors\(host,z\.roomId,false\)/,"solving the sequence must release the room doors");
 assert.match(play,/beginDoorOpening\(d,900\)/,"released memory-room doors must visibly reopen");
 assert.ok(play.includes("Correct sequence. The chamber doors reopen"),"solve feedback must confirm escape is restored");
 
-assert.ok(render.includes("MEMORY VAULT LOCKED — ${mem.inputIndex||0}/5"),"room overlay must show live lockdown progress");
+assert.ok(render.includes("MEMORY VAULT LOCKED — ${mem.inputIndex||0}/${mem.sequence?.length||5}"),"room overlay must show live lockdown progress against the real five- or seven-pad sequence length");
 assert.match(render,/mem\.lockdownActive\?P\.red:P\.cyan/,"locked room status must be visually distinct");
 assert.match(render,/function memoryPuzzleOverviewTarget\(mem,p,v\)/,"large Memory Vaults must own a camera visibility policy");
 assert.match(render,/screenY>=marginY&&screenY<=v\.h-marginY/,"Memory Vault overview must verify that the player remains inside the visible safe frame");

@@ -24,7 +24,9 @@ assert.match(systems,/\["east",world\.map\[y\]\?\.\[x\+1\]!==0\]/,"east wall adj
 assert.match(systems,/freeWallSwitchPosition\(world,room,used\)/,"generated switches must use wall-adjacent placement");
 assert.doesNotMatch(systems,/host\.items\.push\([^\n]*switch/i,"switches must not enter item/loot ownership");
 
-assert.match(play,/if\(!s\?\.active\)return false;s\.active=false;s\.toggled=true/,"switch must toggle exactly once through the active guard");
+assert.match(play,/function activateSwitch\(s,p,shot=false\)\{\s*if\(!s\?\.active\)return false;/,"switch activation must retain the one-shot active guard");
+assert.match(play,/if\(s\.weightBridgeSwitch\)[\s\S]*?s\.active=false;s\.toggled=true;/,"bridge rebuild switch must consume itself exactly once after a valid shot");
+assert.match(play,/if\(s\.shotOnly&&!shot\)return false;\s*s\.active=false;s\.toggled=true;/,"ordinary wall switch must consume itself exactly once after its activation guard");
 assert.match(play,/function triggerSwitch\(p\).*s\.active&&s\.x===p\.x&&s\.y===p\.y/s,"used switches must not reactivate");
 
 assert.match(render,/switches:make\(selected\("switchSheet","assets\/pixel\/visual-overhaul\/0x72\/lever-left\.png"\)\)/);

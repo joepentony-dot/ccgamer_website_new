@@ -9,11 +9,16 @@ const root=path.resolve(here,"..");
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 const source=read("js/v10-42-r83-death-cache-progression.js");
+const progression=read("js/progression.js");
 const gameplay=read("js/game-play.js");
 const bootstrap=read("js/v10-42-bootstrap.js");
 const version=JSON.parse(read("version.json"));
 
 assert.match(bootstrap,/v10-42-r82-rpg-death-rollback\.js[\s\S]*v10-42-r83-death-cache-progression\.js[\s\S]*v10-42-r72-map-death-feedback\.js/,"R83 must compose after RPG rollback and before death presentation");
+assert.match(progression,/const carried=\(player\.inventory\|\|\[\]\)\.map\(cloneItem\)/,"death cache must take every carried inventory item without quest-item exemptions");
+assert.doesNotMatch(progression,/filter\(it=>!it\.quest\)/,"death cache must not leave ordinary carried quest-marked items on the player");
+assert.match(progression,/player\.inventory=\[\];player\.armor=0/,"death must strip carried items and current armour protection");
+assert.match(progression,/armourRecovered/,"death-cache recovery must restore cached armour through the canonical recovery transaction");
 assert.match(gameplay,/priorCacheLost=\(host\.deathCaches\|\|\[\]\)\.some/,"a new death must detect an unrecovered prior cache");
 assert.match(gameplay,/if\(priorCacheLost\)host\.deathCaches=\[\]/,"a second death must destroy the previous active cache");
 assert.match(gameplay,/cache\.progressionRecovery=penalty\.progressionRecovery/,"the new death cache must own the recoverable progression transaction");

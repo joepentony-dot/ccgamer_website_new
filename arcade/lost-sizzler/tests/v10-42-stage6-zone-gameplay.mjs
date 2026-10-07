@@ -37,7 +37,7 @@ function runtime(){
   };
   const context={
     window:{
-      CCG_CONFIG:{maxFloors:5},
+      CCG_CONFIG:{maxFloors:15},
       CCGWorld:{
         roomAt(_world,x){return Math.max(0,Math.min(3,Math.floor(x)-1))}
       },
@@ -52,21 +52,29 @@ function runtime(){
 }
 
 const profiles=[
-  [1,"threshold"],[2,"iron"],[3,"bone"],[4,"ash"],[5,"sigil"]
+  [1,"threshold"],[2,"driveworks"],[3,"iron"],[4,"budget"],[5,"cartridge"],
+  [6,"tapes"],[7,"bone"],[8,"demo"],[9,"modem"],[10,"sid"],
+  [11,"ash"],[12,"foundry"],[13,"scores"],[14,"crt"],[15,"citadel"]
 ];
 for(const [floor,id] of profiles){
   const {context}=runtime(),api=context.window.CCGLostSizzlerV142Stage6ZoneGameplay;
   assert.equal(api.profileForFloor(floor).id,id);
 }
+{
+  const {context}=runtime(),api=context.window.CCGLostSizzlerV142Stage6ZoneGameplay;
+  assert.equal(api.profileForFloor(15).tier,5,"Floor 15 must reach the final enemy/hazard tier");
+  assert.notEqual(api.profileForFloor(6).id,api.profileForFloor(5).id,"Floor 6 must no longer clamp to the old Floor 5 profile");
+}
+
 assert.notDeepEqual(
   profiles.map(([floor])=>runtime().context.window.CCGLostSizzlerV142Stage6ZoneGameplay.profileForFloor(floor).enemyKinds.join(",")),
-  Array(5).fill("scout,ambusher,hunter"),
+  Array(15).fill("scout,ambusher,hunter"),
   "zone enemy composition pools must materially differ"
 );
 
 {
   const {context,host,world}=runtime(),api=context.window.CCGLostSizzlerV142Stage6ZoneGameplay;
-  context.window.CCGSystems.decorate(world,host,{floor:2,seed:"STAGE6-IRON"});
+  context.window.CCGSystems.decorate(world,host,{floor:3,seed:"STAGE6-IRON"});
   assert.equal(host.v142ZoneGameplay.zone,"iron");
   assert.equal(host.v142ZoneGameplay.topologyVersion,"stage5-r1");
   assert.equal(host.v142ZoneGameplay.topologyProfile,"iron-crossroads");
@@ -85,11 +93,12 @@ assert.notDeepEqual(
 
 {
   const {context,host,world}=runtime();
-  context.window.CCGSystems.decorate(world,host,{floor:4,seed:"STAGE6-ASH"});
+  context.window.CCGSystems.decorate(world,host,{floor:11,seed:"STAGE6-ASH"});
   assert.equal(host.v142ZoneGameplay.zone,"ash");
-  assert.equal(host.traps.length,0,"Ember Depths must not reintroduce retired ordinary floor traps");
-  assert.ok(["embers","blade"].includes(host.hazardRooms[0].type),"Ember Depths must bias the dedicated hazard room toward its ember/blade palette");
-  assert.ok(host.generators[0].spawnCooldown<6000,"Ember Depths must increase generator pressure through the existing cooldown");
+  assert.equal(host.traps.length,0,"Ash Depths must not reintroduce retired ordinary floor traps");
+  assert.ok(["embers","blade"].includes(host.hazardRooms[0].type),"Ash Depths must bias the dedicated hazard room toward its ember/blade palette");
+  assert.ok(host.hazardRooms[0].r114Unpredictable,"late dedicated hazards must use the less predictable pattern owner");
+  assert.ok(host.generators[0].spawnCooldown<6000,"late floors must increase generator pressure through the existing cooldown");
 }
 
 assert.doesNotMatch(source,/\.map\s*\[[^\]]+\]\s*=|carveCell|carvePath|addStage5Topology/,"Stage 6 must not become a topology owner");
