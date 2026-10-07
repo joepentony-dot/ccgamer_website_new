@@ -17,6 +17,7 @@ function enemyDefeatIdentity(e){
   if(isDeathStalkerEnemy(e))return{key:"death-stalker",name:"Death Stalker",kind:"stalker",initials:"DS",avatar:"",named:false};
   if(e?.horrorCreature)return{key:"archive-wraith",name:"Archive Wraith",kind:"ghost",initials:"AW",avatar:"",named:false};
   if(e?.exitWarden)return{key:"sigil-warden",name:e.championName||"Sigil Warden",kind:"warden",initials:"SW",avatar:"",named:false};
+  if(e?.bridgeThief)return{key:"dungeon-thief",name:"Dungeon Thief",kind:"thief",initials:"DT",avatar:"",named:false};
   if(e?.championName)return{key:`champion:${e.championName}`,name:e.championName,kind:e.kind||"champion",initials:String(e.championName).split(/\s+/).map(x=>x[0]).join("").slice(0,3).toUpperCase(),avatar:"",named:false};
   if(e?.guardian)return{key:"citadel-guardian",name:"Zzap! Citadel Guardian",kind:"guardian",initials:"ZG",avatar:"",named:false};
   if(e?.treasureGoblin)return{key:"treasure-goblin",name:"Treasure Goblin",kind:"treasure",initials:"TG",avatar:"",named:false};
@@ -28,6 +29,29 @@ function recordEnemyDefeat(e,attacker,displayName=""){
   const killerId=String(attacker?.id||displayName||"dungeon"),killerName=String(attacker?.name||displayName||"The Dungeon");let killer=row.killers.find(x=>x.id===killerId);if(!killer){killer={id:killerId,name:killerName,count:0};row.killers.push(killer)}killer.count++;
   const floor=Math.max(1,Number(run.floor||1));let floorRow=row.floors.find(x=>x.floor===floor);if(!floorRow){floorRow={floor,count:0};row.floors.push(floorRow)}floorRow.count++
 }
+function releaseBridgeThiefStash(e,attacker=p1){
+  const b=host?.weightBridge;if(!e?.bridgeThief||!b||b.thiefId!==e.id||b.thiefDefeated)return 0;
+  b.thiefDefeated=true;
+  const stolen=Array.isArray(b.stolenItems)?b.stolenItems:[];
+  const candidates=[{x:e.x,y:e.y},{x:e.x+1,y:e.y},{x:e.x-1,y:e.y},{x:e.x,y:e.y+1},{x:e.x,y:e.y-1},{x:e.x+1,y:e.y+1},{x:e.x-1,y:e.y-1}]
+    .filter(q=>W.walkable(world.map,q.x,q.y,host));
+  let dropped=0;
+  stolen.forEach((snapshot,index)=>{
+    const original=(host.items||[]).find(item=>item.id===snapshot.id),target=original||{...snapshot},q=candidates[index%candidates.length]||{x:e.x,y:e.y};
+    target.x=q.x;target.y=q.y;target.active=true;target.carriedItem={...(snapshot.carriedItem||{})};target.title=target.carriedItem.name||target.title||"STOLEN ITEM";target.bridgeThiefRecovered=true;
+    if(!original)host.items.push(target);dropped+=Math.max(1,Number(target.carriedItem.qty)||1)
+  });
+  b.stolenItems=[];
+  if(!stolen.length){
+    const loot=PGR.lootForChest({depth:14+(run.floor||1)},run,Math.random);
+    host.items.push({id:`bridge-thief-bonus-${Date.now()}`,x:e.x,y:e.y,kind:"loot",loot,active:true,title:loot.weapon?.displayName||loot.name||"THIEF'S BONUS CACHE",bridgeThiefRecovered:true})
+  }
+  host.revision++;
+  S.sfx("open");
+  showToast("DUNGEON THIEF DEFEATED",dropped?`He drops the entire stolen stash: ${dropped} item${dropped===1?"":"s"} are back on the floor here. Pick them up before leaving.`:"He had no stolen stash, so he drops a high-tier bonus cache instead.","gold",10000);
+  try{updateQuests()}catch(_){}
+  return dropped
+}
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
   if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range.","red",8500);return}
@@ -37,15 +61,16 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e))knockEnemyAway(e,attacker)}
   if(e.hp>0)return;
   e.hp=0;e.alive=false;host.revision++;run.stats.kills++;recordEnemyDefeat(e,attacker||p1);
-  let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?15000:e.spider?(e.scoreValue||15):120;
-  let xp=e.follower?250:e.spider?(e.xpValue||10):100;
-  let reason=e.exitWarden?"Sigil Warden defeated":e.guardian?"Guardian defeated":e.follower?`${e.follower.name} freed`:isDeathStalkerEnemy(e)?"Death Stalker banished":e.champion?"Champion defeated":e.spider?"Dustweb vermin destroyed":e.skeleton?"Crypt skeleton shattered":"Enemy defeated";
+  let killScore=e.bridgeThief?1000:e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?15000:e.spider?(e.scoreValue||15):120;
+  let xp=e.bridgeThief?250:e.follower?250:e.spider?(e.xpValue||10):100;
+  let reason=e.bridgeThief?"Dungeon Thief defeated":e.exitWarden?"Sigil Warden defeated":e.guardian?"Guardian defeated":e.follower?`${e.follower.name} freed`:isDeathStalkerEnemy(e)?"Death Stalker banished":e.champion?"Champion defeated":e.spider?"Dustweb vermin destroyed":e.skeleton?"Crypt skeleton shattered":"Enemy defeated";
   if(e.generatorId){const g=(host.generators||[]).find(x=>x.id===e.generatorId);if(g){g.spawnKills=(g.spawnKills||0)+1;killScore=g.spawnKills<=3?65:10;reason=g.spawnKills<=3?`Generator spawn ${g.spawnKills}/3`:`Generator spawn defeated`}}
   score+=killScore;awardXP(attacker||p1,xp,reason);try{if(e.exitWarden)window.CCGLostSizzlerVoice?.say?.("sigilWardenDefeated",{cooldown:0});else if(e.guardian)window.CCGLostSizzlerVoice?.say?.("guardianDefeated",{cooldown:0})}catch(_){}
   if(e.champion)run.stats.champions++;
   if(e.follower){stats.elites++;run.stats.namedDefeats=(run.stats.namedDefeats||0)+1;PGR.recordNamedEncounter(e.follower.name,true)}
   if(isDeathStalkerEnemy(e)){run.stats.stalkerEscapes=(run.stats.stalkerEscapes||0)+1;host.defeatedDeathStalkers=host.defeatedDeathStalkers||[];if(!host.defeatedDeathStalkers.includes(e.id))host.defeatedDeathStalkers.push(e.id);if(e.timedHunter){const tr=(host.timedRooms||[]).find(t=>t.hunterId===e.id||`death-stalker-${t.id}`===e.id);if(tr)tr.stalkerDefeated=true}}
   const fx={type:e.skeleton?"bones":"death",x:e.x,y:e.y,color:e.guardian?P.red:e.follower?P.gold:isDeathStalkerEnemy(e)?P.purple:e.champion?P.cyan:e.skeleton?"#e8dfbf":P.pink,elite:Boolean(e.follower||e.guardian||e.champion||isDeathStalkerEnemy(e)),kind:e.kind||"guardian",followerKind:e.follower?.kind||"",champion:Boolean(e.champion),guardian:Boolean(e.guardian),exitWarden:Boolean(e.exitWarden),deathStalker:Boolean(e.deathStalker),voidStalker:Boolean(e.voidStalker),facing:e.facing?{x:Number(e.facing.x||0),y:Number(e.facing.y||0)}:{x:1,y:0}};onFX(fx);
+  if(e.bridgeThief)releaseBridgeThiefStash(e,attacker||p1);
   if(e.treasureGoblin){const loot=PGR.lootForChest({depth:9},run,Math.random);host.items.push({id:`goblin-loot-${Date.now()}`,x:e.x,y:e.y,kind:"loot",loot,active:true,title:loot.name||loot.weapon?.displayName});showToast("TREASURE GOBLIN CAUGHT","It dropped something substantially better than dignity.","gold")}
   if(e.spider&&host.spiderNest&&!host.enemies.some(enemy=>enemy.alive&&enemy.spiderNestId===e.spiderNestId)){host.spiderNest.cleared=true;score+=100;showToast("DUSTWEB NEST CLEARED","The last set of legs stops moving. +100 score; each fragile spider awarded only 10 XP so the swarm cannot become a levelling shortcut.","green",8500)}
   if(e.skeleton&&host.skeletonHorde&&!host.enemies.some(enemy=>enemy.alive&&enemy.skeletonHordeId===e.skeletonHordeId)){host.skeletonHorde.cleared=true;score+=250;showToast("BONE HORDE SHATTERED","The final skeleton collapses. +250 score; this floor's single horde will not return.","green",8500)}
