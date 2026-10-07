@@ -113,9 +113,9 @@
     // Zone tuning may still adjust cadence/phase, but never retag the last
     // guaranteed FIRE, SPIKE or SHOCK into another family.
     if(trap.v142FinalFamilyGuaranteed&&TRAP_FAMILIES.includes(guaranteed))trap.kind=guaranteed;
-    else trap.kind=profile.id==="ash"&&index%2===0?"fire":profile.trapKinds[(index+salt)%profile.trapKinds.length];
+    else{const trapKinds=Array.isArray(profile.trapKinds)&&profile.trapKinds.length?profile.trapKinds:["fire","spike","shock"];trap.kind=profile.id==="ash"&&index%2===0?"fire":trapKinds[(index+salt)%trapKinds.length]}
     const roleScale=role==="crossroads"?.90:role==="alternate-route"?.94:role==="purposeful-dead-end"?1.08:1;
-    trap.period=Math.round(profile.trapPeriod*roleScale);
+    trap.period=Math.round(Math.max(1500,Number(profile.trapPeriod||profile.hazardBase||2200))*roleScale);
     trap.phase=salt%Math.max(1,trap.period);
     trap.v142Zone=profile.id;trap.v142ZoneRouteRole=role;
     state.trapsTuned++;return trap;
