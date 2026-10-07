@@ -23,8 +23,13 @@ const worldState={
   ]
 };
 const baseHost=()=>({items:[],enemies:[],chests:[],doors:[],shops:[]});
+const campaignFloors=[
+  [1,"threshold"],[2,"driveworks"],[3,"iron"],[4,"budget"],[5,"cartridge"],
+  [6,"tapes"],[7,"bone"],[8,"demo"],[9,"modem"],[10,"sid"],
+  [11,"ash"],[12,"foundry"],[13,"scores"],[14,"crt"],[15,"citadel"]
+].map(([floor,id])=>({floor,id}));
 const windowObject={
-  CCG_CONFIG:{maxFloors:5},
+  CCG_CONFIG:{maxFloors:15,proceduralDungeon:{campaignFloors}},
   CCGWorld:{createHostState(){return baseHost()}}
 };
 const sandbox={window:windowObject,console,run:runState};
@@ -66,6 +71,32 @@ assert(JSON.stringify(second.v142RoomObjectives.plans)===firstSnapshot,'Same run
 runState.seed='R7-ALTERNATE-SEED';
 const changed=windowObject.CCGWorld.createHostState(worldState);
 assert(JSON.stringify(changed.v142RoomObjectives.plans)!==firstSnapshot,'Changing the authoritative run seed must vary dungeon objective presentation and rewards.');
+
+const campaignBiomeIds=campaignFloors.map(row=>row.id);
+for(const biome of campaignBiomeIds){
+  assert(Array.isArray(api.BREAKABLES[biome])&&api.BREAKABLES[biome].length>=4,`Campaign biome ${biome} must expose its own bounded breakable-scenery pool.`);
+}
+const lateWorld=()=>({
+  startRoomId:0,exitRoomId:1,
+  rooms:[
+    {id:0,x:2,y:2,w:7,h:7},
+    {id:1,x:12,y:2,w:7,h:7}
+  ]
+});
+runState.floor=12;runState.seed='R7-FLOOR-12-SEED';
+const floor12=windowObject.CCGWorld.createHostState(lateWorld());
+assert(floor12.v142RoomObjectives.floor===12,'Floor 12 objective planning must retain the authoritative campaign floor instead of collapsing to Floor 5.');
+assert(floor12.v142RoomObjectives.biome==='foundry','Floor 12 fallback biome must come from the fifteen-floor campaign config.');
+assert(floor12.v142RoomObjectives.plans.every(plan=>plan.floor===12&&plan.saveKey.startsWith('v142-r7:F12:')),'Floor 12 room plans and save keys must preserve the real floor number.');
+assert(floor12.v142RoomObjectives.plans.every(plan=>plan.breakables.every(prop=>api.BREAKABLES.foundry.includes(prop.kind))),'Floor 12 fallback scenery must use the Pixel Foundry pool rather than Threshold scenery.');
+
+runState.floor=15;runState.seed='R7-FLOOR-15-SEED';
+const floor15=windowObject.CCGWorld.createHostState(lateWorld());
+assert(floor15.v142RoomObjectives.floor===15,'Floor 15 objective planning must retain the authoritative final campaign floor.');
+assert(floor15.v142RoomObjectives.biome==='citadel','Floor 15 fallback biome must resolve to Blood Citadel.');
+assert(floor15.v142RoomObjectives.plans.every(plan=>plan.floor===15&&plan.saveKey.startsWith('v142-r7:F15:')),'Floor 15 room plans and save keys must preserve the final campaign floor.');
+assert(floor15.v142RoomObjectives.plans.every(plan=>plan.breakables.every(prop=>api.BREAKABLES.citadel.includes(prop.kind))),'Floor 15 fallback scenery must use the Blood Citadel pool.');
+assert(floor15.v142RoomObjectives.plans[0].saveKey!==floor12.v142RoomObjectives.plans[0].saveKey,'Late-floor deterministic identity must remain distinct between Floors 12 and 15.');
 
 for(const forbidden of ['fetch(','WebSocket','EventSource','supabase.from','render.com'])assert(!source.includes(forbidden),`R7 objective runtime must remain local/browser-native and must not introduce ${forbidden}.`);
 assert(!source.includes('Math.random'),'Room objectives and breakable scenery must not consume nondeterministic gameplay RNG.');
