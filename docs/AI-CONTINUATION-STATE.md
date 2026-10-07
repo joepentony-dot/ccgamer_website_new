@@ -1,3 +1,22 @@
+## R115 successor checkpoint — 7 October 2026
+
+- **Authoritative main:** `abd5a3629e990aaca8d116e98a690fc2317c4e1e`, the merge commit for R114 / PR #2571.
+- **R114 release verification:** exact-head PR Qualification and Full Qualification were green before merge. Post-merge on `abd5a3629e990aaca8d116e98a690fc2317c4e1e`, GitHub Pages deployment, pages build/deployment, Production Smoke, Site Safety, Live Public Navigation, itch.io packaging, SEO and Full Qualification all passed; every Chromium shard passed.
+- **Active successor branch:** `codex/dungeon-r115-post-r114-hardening`, created directly from the verified R114 main. Do not revive #2567, #2570 or the merged #2571 branch for new work.
+- **Public playtest boundary:** preserve the existing server-validated 24-hour public playtest gate and its timer/token state. Do not reset or replace it during R115 work.
+
+### Highest-priority remaining backlog
+
+1. Verify Cartographer's Eye / Map Reveal end-to-end: whole-floor geometry **and intended icons** must become visible from explicit reveal state.
+2. Audit wearable-derived armour caps across every armour repair/gain path; remove inappropriate hard-coded base-cap assumptions while preserving intentional base limits.
+3. Verify death-cache exact-once behaviour for inventory, armour protection and equipped Head/Hands/Feet gear, including over-base-cap armour preservation until gear is recovered/re-equipped.
+4. End-to-end qualify the Floor 5 Rotten Bridge thief/recovery/rebuild/emergency-ammo quest and exact-once stolen-item restoration.
+5. Reconfirm rare firearm behaviour for same-archetype refinement, alternate-archetype swap, mastered reforge and common-only salvage fallback.
+6. Audit Floor 15 grotesque boss composition against Guardian/Sigil completion ownership so the two roles cannot conflict or soft-lock the campaign.
+7. Continue distinct floor quests/enemy identity/hazard variety only by consolidating stable existing systems; avoid duplicate owners.
+8. Rewrite the player-facing Objectives & Rulebook / Dungeon Guide and Tutorial to concise current-system copy, then verify desktop/mobile rendering and focused progression contracts.
+9. Do not add filler rare items; only add additional utility if it materially improves play while preserving Teleport's value.
+
 ## R114 firearm browser-contract reconciliation — 7 October 2026 12:50 UK
 
 - Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02`; active vehicle remains draft PR #2571.

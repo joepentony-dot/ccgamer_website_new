@@ -1,3 +1,10 @@
+## R115 post-R114 continuation — 7 October 2026
+
+- R114 / PR #2571 is merged to main at `abd5a3629e990aaca8d116e98a690fc2317c4e1e` and post-merge release qualification is fully green, including all Chromium shards, Pages, Production Smoke and Live Public Navigation.
+- Current development branch is `codex/dungeon-r115-post-r114-hardening`, created directly from that main.
+- R115 begins with verification/consolidation, not new parallel systems. First target: Map Reveal geometry + icon visibility end-to-end, then armour/death-cache/bridge/firearm/Floor-15 composition, followed by the concise player-facing Guide/Tutorial overhaul.
+- Existing 24-hour public playtest access remains untouched.
+
 ## R114 firearm qualification update — 7 October 2026 12:50 UK
 
 - Full Qualification reached all Chromium shards on `8cca393cd37034ceca7e25e0b9cad9c9da3254d1`; only shard 2 failed.
