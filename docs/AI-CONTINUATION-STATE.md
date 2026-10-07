@@ -1,3 +1,10 @@
+## R115 wearable armour-cap / death-cache audit — 7 October 2026
+
+- Armour gain paths were audited for hard-coded base-cap behaviour. Loot, floor armour pickups and Shrine armour already use `PGR.armourCap(player)`; Shop Armour Repair was the remaining legacy `Math.min(12,...)` path.
+- Shop Armour Repair now uses the canonical wearable-aware armour cap and its player copy says "current armour limit".
+- Death-cache recovery was audited end-to-end. Canonical recovery uses the currently equipped armour cap, subtracts only the armour actually restored, leaves over-cap remainder in the still-active cache, and clears score/XP/progression payloads after the first recovery so a second visit cannot duplicate them.
+- Existing R80 and R83 consolidated contracts were extended; no new test file or recovery owner was added.
+
 ## R115 concise-guide R54 reconciliation — 7 October 2026
 
 - Exact head `dc8214fa8de46c56e575310756fbd9b5fbf50072` cleared the death-cache wording check and next stopped in the existing R54 guide contract.

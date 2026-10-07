@@ -1,3 +1,9 @@
+## R115 armour/death-cache audit — 7 October 2026
+
+- Fixed the final audited hard-coded 12-cap armour gain path: Shop Armour Repair now respects `PGR.armourCap(p1)`.
+- Verified over-cap death-cache armour is preserved as cache remainder until wearable capacity is restored; score/XP/progression payloads are exact-once.
+- Coverage remains consolidated in R80 wearable and R83 death-cache contracts.
+
 ## R115 guide contract update — 7 October 2026
 
 - Concise Dungeon Guide now retains the single-key Bronze-room chest rule.
