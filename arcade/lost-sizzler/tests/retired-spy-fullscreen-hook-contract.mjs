@@ -14,7 +14,8 @@ assert.doesNotMatch(main,/CCGLostSizzlerV141R32SpyLoader/,"supported keyboard ha
 assert.doesNotMatch(main,/handleSpyFullscreenKey/,"supported keyboard handling must not dispatch fullscreen through retired Spy ownership");
 assert.match(main,/if\(e\.code==="KeyF"\)\{\s*toggleFullscreen\(\);return\s*\}/,"F must remain directly owned by the supported fullscreen handler");
 assert.match(main,/\$\("fullscreen-btn"\)\?\.addEventListener\("click",toggleFullscreen\)/,"fullscreen button must retain the same supported owner");
-assert.match(render,/async function toggleFullscreen\(\)\{const shell=document\.querySelector\("\.ccg-game"\);try\{if\(!document\.fullscreenElement\)await shell\.requestFullscreen\(\);else await document\.exitFullscreen\(\)\}/,"supported fullscreen owner must still request/exit browser fullscreen directly");
+assert.match(render,/async function toggleFullscreen\(\)\{const shell=document\.querySelector\("\.ccg-game"\),live=document\.body\.dataset\.runActive==="true";try\{if\(!document\.fullscreenElement\)\{const ok=await requestPlayFullscreen\(\)/,"supported fullscreen owner must restore browser fullscreen through the authoritative request helper");
+assert.match(render,/if\(live\)return true;await document\.exitFullscreen\(\)/,"active gameplay must not deliberately exit fullscreen through the game control");
 
 assert.match(render,/const preferred=1\.2;/,"desktop fullscreen Solo must use the slightly wider 1.2x preferred camera");
 assert.match(render,/const fit=Math\.min\(v\.w\/roomPixelW,v\.h\/roomPixelH,preferred\)/,"fullscreen zoom must yield to current-room fit instead of cropping room edges");
