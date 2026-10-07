@@ -60,8 +60,11 @@ for(const [floor,id] of profiles){
   const {context}=runtime(),api=context.window.CCGLostSizzlerV142Stage6ZoneGameplay;
   assert.equal(api.profileForFloor(floor).id,id);
 }
-assert.equal(context.window.CCGLostSizzlerV142Stage6ZoneGameplay.profileForFloor(15).tier,5,"Floor 15 must reach the final enemy/hazard tier");
-assert.notEqual(context.window.CCGLostSizzlerV142Stage6ZoneGameplay.profileForFloor(6).id,context.window.CCGLostSizzlerV142Stage6ZoneGameplay.profileForFloor(5).id,"Floor 6 must no longer clamp to the old Floor 5 profile");
+{
+  const api=runtime().context.window.CCGLostSizzlerV142Stage6ZoneGameplay;
+  assert.equal(api.profileForFloor(15).tier,5,"Floor 15 must reach the final enemy/hazard tier");
+  assert.notEqual(api.profileForFloor(6).id,api.profileForFloor(5).id,"Floor 6 must no longer clamp to the old Floor 5 profile");
+}
 
 assert.notDeepEqual(
   profiles.map(([floor])=>runtime().context.window.CCGLostSizzlerV142Stage6ZoneGameplay.profileForFloor(floor).enemyKinds.join(",")),
