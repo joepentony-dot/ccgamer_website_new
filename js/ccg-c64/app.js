@@ -539,7 +539,7 @@ function drawStatus(snapshot, message = null) {
   ctx.fillRect(22, 20, screen.width - 44, screen.height - 40);
   ctx.fillStyle = "#101a5b";
   ctx.font = "18px monospace";
-  ctx.fillText("CCG OMEGA C64", 52, 58);
+  ctx.fillText("COMMODORE 64", 52, 58);
   ctx.font = "12px monospace";
 
   const lines = message
@@ -1534,6 +1534,13 @@ document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date()
 
 const initial = vault.restore();
 render(initial);
+
+// Once the required ROM bank is present, the emulator should behave like a
+// switched-on C64: boot the real firmware immediately and arrive at BASIC READY.
+// First-time visitors without ROMs still see the local setup/status canvas.
+if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
+  void powerOn();
+}
 // Do not interrupt first-time visitors with a firmware modal. They can choose
 // media immediately; setup is requested only when the selected media needs booting.
 
