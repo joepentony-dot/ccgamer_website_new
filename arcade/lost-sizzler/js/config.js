@@ -26,7 +26,7 @@ window.CCG_CONFIG=Object.freeze({
     banishVulnerableMs:12000,banishHpBase:8,flaskArtefacts:3,essenceRequired:3,banishedRespawnMs:30000,banishPromptDistance:8
   },
   camping:{graceMs:60000,warningMs:650,blastIntervalMs:650,resetDistance:6,zoneRadius:3,blastRadius:.35,damage:1,directBlastEvery:2},
-  dungeon:{minLeaf:18,maxLeaf:32,roomMargin:3,targetRooms:34,maxLockedBranches:8,chestCount:10,secretRooms:3,secretPassages:2,sanctuaryRooms:2,wallTorchRooms:5,trapCount:20,generatorCount:3,generatorSpawnCap:3,sigilDefendersMin:3,standardEnemyTarget:44,ammoPacks:12,furnitureMin:5,furnitureMax:9,grandHallCount:1,boulderFloor:4,clueFloor:2,memoryPuzzleFloor:3,torchPuzzleFloor:4,weightBridgeFloor:5},
+  dungeon:{minLeaf:18,maxLeaf:32,roomMargin:3,targetRooms:34,maxLockedBranches:8,chestCount:10,secretRooms:3,secretPassages:2,sanctuaryRooms:2,wallTorchRooms:5,trapCount:20,generatorCount:3,generatorSpawnCap:3,sigilDefendersMin:3,standardEnemyTarget:44,ammoPacks:12,furnitureMin:5,furnitureMax:9,grandHallCount:1,boulderFloor:4,clueFloor:2,memoryPuzzleFloor:3,memoryPuzzleHardFloor:12,torchPuzzleFloor:4,weightBridgeFloor:5},
   proceduralDungeon:{
     enabled:true,
     version:"V10.42",
