@@ -21,4 +21,4 @@ Add a separate test only when the behaviour has a genuinely different runtime bo
 
 ## Consolidation
 
-When a newer contract fully supersedes an older release-numbered or diagnostic-only test, fold any unique assertions into the durable contract, update workflow references, then delete the superseded file. Diagnostic scripts that only print state should not remain in the mandatory regression matrix once an asserting contract covers the same behaviour.
+When a newer contract fully supersedes an older release-numbered or diagnostic-only test, fold any unique assertions into the durable contract, update workflow references, then delete the superseded file. When a durable contract is renamed, update every workflow and manifest reference in the same change so CI cannot retain a stale path. Diagnostic scripts that only print state should not remain in the mandatory regression matrix once an asserting contract covers the same behaviour.
