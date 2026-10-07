@@ -10,7 +10,7 @@ assert.match(src,/Tri-Pulse I/);
 assert.match(src,/shots:3/);
 assert.match(src,/if\(!player\|\|player\.firearmUnlocked===false\)return 0/,"sword-first players must remain at firearm tier zero");
 assert.match(src,/player\.weapon=null;player\.weaponEvolutionTier=0;player\.weaponLevel=0;player\.ownedWeapons=\[\];player\.activeWeaponIndex=-1/,"locked sword-first state must not be converted into a firearm");
-assert.match(src,/const next=Math\.max\(1,Math\.min\(cap,tier\+1\)\)/,"first firearm pickup must start at Tier 1");
+assert.match(src,/next=Math\.max\(1,Math\.min\(cap,tier\+1\)\)/,"ordinary first firearm pickup must still start at Tier 1 even when a persistent weapon-pattern override is supported");
 assert.match(src,/player\.ownedWeapons=\[clone\(canonical\)\]/,"only one acquired firearm may remain owned");
 assert.match(src,/WEAPON CAPPED — AMMO RESTORED/,"capped pickups must convert first to a useful ammo reward");
 assert.match(src,/WEAPON CAPPED — \+10 XP/,"full-ammo capped pickups must retain the small XP fallback");
