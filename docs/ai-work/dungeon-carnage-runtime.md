@@ -1,3 +1,8 @@
+## R114 qualification update — 7 October 2026 12:30 UK
+
+- Following the boss-render contract repair, exact-head Node qualification exposed a stale one-shot switch source assertion. R114's bridge-specific branch changed code shape but not switch semantics.
+- Consolidated switch coverage now checks the shared active guard plus bridge and ordinary switch consumption separately. Continue exact-head qualification from this commit; Chromium remains unqualified until Node contracts complete.
+
 ## R114 qualification update — 7 October 2026 12:27 UK
 
 - Main: `0e5493a03cefbd02c29235b01035f43f9687be02` (R113 merged).

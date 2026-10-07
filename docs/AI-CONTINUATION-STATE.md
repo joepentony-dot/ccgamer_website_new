@@ -1,3 +1,9 @@
+## R114 qualification checkpoint — 7 October 2026 12:30 UK
+
+- Exact head `b9d0fdeae0485f015809773e857ee224d1988ab2` cleared the repaired boss-first visual-overhaul contract but PR Qualification next stopped in `v10-42-visual-overhaul-switches.mjs` before Chromium smoke.
+- Runtime inspection confirmed one-shot switch ownership is intact: `activateSwitch()` begins with the active guard, the R114 bridge rebuild switch consumes itself only after a valid shot/collapsed-bridge state, and the ordinary wall-switch path also sets `active=false` / `toggled=true` once. The old test required the guard and ordinary toggle assignment to be adjacent, which is no longer true because the bridge branch sits between them.
+- The existing consolidated switch test is being strengthened on this commit to assert the active guard, bridge one-shot transition and ordinary one-shot transition separately. No gameplay code or timeout is being changed.
+
 ## R114 qualification checkpoint — 7 October 2026 12:27 UK
 
 - Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02` (merged R113 / PR #2566).
