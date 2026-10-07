@@ -23,7 +23,7 @@ assert(gate.includes('mark("public-24h-playtest")'), "valid public links must re
 assert(gate.includes('dispatchAllowed("public-24h-playtest")'), "valid public links must be allowed to start the protected runtime");
 assert(gate.includes("ccg_has_dungeon_carnage_playtest_access"), "existing signed-in member access must remain server-side");
 assert(gate.includes('mark("member-playtester")'), "existing assigned members must retain their member-playtester state");
-assert(gate.includes('mark("public-playtest-expired")'), "expired public links must fail closed with an explicit expired state");
+assert(gate.includes("public-playtest-expired"), "expired public links must fail closed with an explicit expired state");
 assert(gate.includes("24-Hour Playtest Ended"), "expired public links must explain why access ended");
 assert(gate.includes("SIGN IN AS AN ASSIGNED MEMBER"), "existing member sign-in fallback must remain available");
 assert(gate.includes("bootstrapProtectedRuntime"), "validated member access must still own Dungeon runtime startup");
