@@ -105,10 +105,10 @@ async function prepareTouchTrapFixture(page){
     let route=null;
     for(let y=2;y<world.map.length-2&&!route;y++){
       for(let x=2;x<world.map[y].length-2&&!route;x++){
-        if(world.map[y]?.[x]!==0||!W.walkable(world.map,x,y,host))continue;
+        if(world.map[y]?.[x]!==0||!W.walkable(world.map,x,y,host)||SYS.inSanctuary(world,x,y))continue;
         for(const dir of dirs){
           const tx=x+dir.dx,ty=y+dir.dy;
-          if(world.map[ty]?.[tx]!==0||!W.walkable(world.map,tx,ty,host))continue;
+          if(world.map[ty]?.[tx]!==0||!W.walkable(world.map,tx,ty,host)||SYS.inSanctuary(world,tx,ty))continue;
           if((tx===world.exit?.x&&ty===world.exit?.y)||(x===world.exit?.x&&y===world.exit?.y))continue;
           route={x,y,targetX:tx,targetY:ty,...dir};
           break;
