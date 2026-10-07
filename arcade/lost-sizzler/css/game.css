@@ -731,6 +731,7 @@ body[data-special-mode="sizzler-saboteurs"] .radar-card::after{content:"SPY VS S
 
 
 /* R112 — room-scale map follow-up, one-screen Shop and visible timed-chamber clock. */
+.v102-mission{grid-template-columns:auto minmax(0,1fr) auto!important}
 .timed-chamber-countdown{
   justify-self:end;
   padding:4px 9px;
