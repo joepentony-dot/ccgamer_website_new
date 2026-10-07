@@ -13,6 +13,8 @@
   const REPEAT_KEY_SAMPLE_MS=250;
   const STYLE_PATH="css/v10-42-bug-reporter.css";
   const events=[];
+  const anomalyJournal=[];
+  const MAX_ANOMALY_EVENTS=48;
   const trapObservations=new Map();
   const trapChecks=new Set();
   const duplicateTrapTiles=new Set();
@@ -44,8 +46,13 @@
     return String(value);
   };
   function push(type,detail={}){
-    events.push({at:nowIso(),ms:Math.round(performance.now()),type:String(type),detail:compact(detail)});
+    const row={at:nowIso(),ms:Math.round(performance.now()),type:String(type),detail:compact(detail)};
+    events.push(row);
     if(events.length>MAX_EVENTS)events.splice(0,events.length-MAX_EVENTS);
+    if(row.type.startsWith("ANOMALY_")){
+      anomalyJournal.push(row);
+      if(anomalyJournal.length>MAX_ANOMALY_EVENTS)anomalyJournal.splice(0,anomalyJournal.length-MAX_ANOMALY_EVENTS);
+    }
   }
   function confirmTrapDamageSignal(signal){
     if(signal?.type!=="trap"||signal.confirmed===true)return signal;
@@ -611,6 +618,7 @@
       createdAt:nowIso(),reason,
       summary:current,
       anomalies:state.anomalies,
+      anomalyEvents:anomalyJournal.slice(-MAX_ANOMALY_EVENTS),
       recentEvents:events.slice(-MAX_EVENTS)
     };
     state.lastReport=report;state.reports++;
@@ -639,7 +647,7 @@
       `Trap rearm: exits=${s.diagnostics.trapStability?.contactExitRearms??"-"} totalRearms=${s.diagnostics.trapStability?.rearms??"-"} cycleRearms=${s.diagnostics.trapStability?.cycleRearms??"-"}`,
       `Recorded anomalies: ${report.anomalies}`
     ];
-    const anomalyEvents=report.recentEvents.filter(event=>String(event.type||"").startsWith("ANOMALY_"));
+    const anomalyEvents=Array.isArray(report.anomalyEvents)&&report.anomalyEvents.length?report.anomalyEvents:report.recentEvents.filter(event=>String(event.type||"").startsWith("ANOMALY_"));
     if(anomalyEvents.length){
       lines.push("","ANOMALY EVENTS");
       for(const event of anomalyEvents){
