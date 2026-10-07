@@ -48,8 +48,9 @@ async function fullscreenKeyDoesNotFire(page){
     fullscreen:Boolean(document.fullscreenElement),
     attackIntents:Number(window.CCGLostSizzlerV142R20LiveRegressionStability?.diagnostics?.attackIntents||0)
   }));
+  assert.equal(before.fullscreen,true,"active Dungeon gameplay must already be fullscreen");
   await page.keyboard.press("f");
-  await page.waitForFunction(previous=>Boolean(document.fullscreenElement)!==previous,before.fullscreen,{timeout:5000});
+  await page.waitForTimeout(250);
   const after=await page.evaluate(()=>({
     mana:Number(p1.mana),
     fullscreen:Boolean(document.fullscreenElement),
@@ -59,13 +60,13 @@ async function fullscreenKeyDoesNotFire(page){
     mode:String(mode),
     active:String(document.body.dataset.runActive||"")
   }));
-  assert.equal(after.fullscreen,!before.fullscreen,"F must toggle browser fullscreen during active gameplay");
-  assert.equal(after.mana,beforeMana,"F fullscreen must not spend ammunition");
-  assert.equal(after.attackIntents,before.attackIntents,"F fullscreen must not increment attack intents");
-  assert.equal(after.held,false,"F fullscreen must not hold canonical Space");
-  assert.equal(after.keyFHeld,false,"F fullscreen must not enter held-attack ownership");
-  assert.equal(after.mode,"playing","fullscreen F must leave gameplay active");
-  assert.equal(after.active,"true","fullscreen F must not deactivate the run");
+  assert.equal(after.fullscreen,true,"F must not deliberately drop an active run out of fullscreen");
+  assert.equal(after.mana,beforeMana,"F fullscreen control must not spend ammunition");
+  assert.equal(after.attackIntents,before.attackIntents,"F fullscreen control must not increment attack intents");
+  assert.equal(after.held,false,"F fullscreen control must not hold canonical Space");
+  assert.equal(after.keyFHeld,false,"F fullscreen control must not enter held-attack ownership");
+  assert.equal(after.mode,"playing","F fullscreen control must leave gameplay active");
+  assert.equal(after.active,"true","F fullscreen control must not deactivate the run");
 }
 
 try{
