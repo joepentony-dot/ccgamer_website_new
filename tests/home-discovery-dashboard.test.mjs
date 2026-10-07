@@ -43,3 +43,15 @@ test("home dashboard release advances the public code cache", () => {
     const sw = read("service-worker.js");
     assert.match(sw, /CODE_CACHE_VERSION = "20\d{2}-\d{2}-\d{2}-public-code-v[0-9]+"/);
 });
+
+
+test("featured gameplay video buttons deterministically start the embed", () => {
+    const js = read("js/home-dynamic.js");
+
+    assert.match(js, /playButton\.addEventListener\("click", startPlayback\)/);
+    assert.match(js, /autoplay: "1"/);
+    assert.match(js, /iframe\.dataset\.autoplayRequested = "true"/);
+    assert.match(js, /card\.classList\.add\("is-playing"\)/);
+    assert.match(js, /playVideo\(player\)/);
+    assert.doesNotMatch(js, /if \(hasVideo && iframe && isMobileDevice\)/);
+});
