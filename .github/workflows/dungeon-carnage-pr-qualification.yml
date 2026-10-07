@@ -91,7 +91,6 @@ jobs:
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$BASE_REF"
           added="$(git diff --diff-filter=A --name-only "origin/$BASE_REF...HEAD" -- arcade/lost-sizzler/tests | grep -E 'arcade/lost-sizzler/tests/(browser/)?v[0-9]+-[0-9]+-r[0-9]+-.*\.mjs
-        run: |
           set -euo pipefail
           for test in arcade/lost-sizzler/tests/*.mjs; do
             case "$(basename "$test")" in
