@@ -406,7 +406,7 @@
   }
 
   installHelpers();
-  window.CCGDungeonProgressionFoundation={ready:false,state,GOLD,goldBalance,ensureRunGold,canAffordGold,earnGold,spendGold,shopGoldPrice,creditGoldValue,weaponIdentity,cloneWeapon,normaliseWeaponOwnership,rememberWeapon,equipOwnedWeapon,awardTreasureBatGold,installRuntime,renderGoldShop,buyGoldShopItem};
+  window.CCGDungeonProgressionFoundation={ready:false,state,GOLD,goldBalance,ensureRunGold,canAffordGold,earnGold,spendGold,shopGoldPrice,magicSackGoldPrice,creditGoldValue,weaponIdentity,cloneWeapon,normaliseWeaponOwnership,rememberWeapon,equipOwnedWeapon,awardTreasureBatGold,installRuntime,renderGoldShop,buyGoldShopItem};
   if(document.body?.dataset?.releaseReady==="true")queueMicrotask(installRuntime);
   else addEventListener("ccg:v142-ready",installRuntime,{once:true});
   const fallback=setInterval(()=>{if(state.runtimeInstalled||document.body?.dataset?.releaseReady!=="true")return;if(installRuntime())clearInterval(fallback)},120);
