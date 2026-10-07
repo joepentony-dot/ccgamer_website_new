@@ -108,17 +108,34 @@
   }
 
   function regenCell(room){
-    const collect=margin=>{
+    const centreX=room.x+room.w/2,centreY=room.y+room.h/2;
+    const collect=(margin,ignoreOptionalDecor=false)=>{
       const candidates=[];
       for(let y=room.y+margin;y<=room.y+room.h-margin-1;y++)for(let x=room.x+margin;x<=room.x+room.w-margin-1;x++){
-        if(!W.walkable(world.map,x,y,host))continue;
-        if(regenCellOccupied(x,y))continue;
-        candidates.push({x,y,d:Math.hypot(x-(room.x+room.w/2),y-(room.y+room.h/2))});
+        if(world?.map?.[y]?.[x]!==0)continue;
+        if(!ignoreOptionalDecor&&regenCellOccupied(x,y))continue;
+        if(ignoreOptionalDecor){
+          const hardCollections=[host?.doors,host?.chests,host?.shops,host?.shrines,host?.switches,host?.generators,host?.items];
+          if(hardCollections.some(list=>(list||[]).some(q=>q?.active!==false&&q?.alive!==false&&Number(q.x)===Number(x)&&Number(q.y)===Number(y))))continue;
+          if([host?.rescue,host?.trader,host?.startShop,world?.start,world?.exit].some(q=>q&&Number(q.x)===Number(x)&&Number(q.y)===Number(y)))continue;
+        }else if(!W.walkable(world.map,x,y,host))continue;
+        candidates.push({x,y,d:Math.hypot(x-centreX,y-centreY)});
       }
       candidates.sort((a,b)=>a.d-b.d);
       return candidates[0]||null;
     };
-    return collect(2)||collect(1);
+    const ordinary=collect(2)||collect(1);
+    if(ordinary)return ordinary;
+
+    // A Sanctuary healing tile is mandatory gameplay, while lake/furniture
+    // dressing is optional. If decoration consumed every valid floor cell,
+    // reclaim the safest central cell without moving progression objects.
+    const fallback=collect(1,true);
+    if(!fallback)return null;
+    const matches=(q)=>Number(q?.x)===Number(fallback.x)&&Number(q?.y)===Number(fallback.y);
+    if(host?.blockingDecor)host.blockingDecor=host.blockingDecor.filter(q=>!matches(q)||!["sanctuaryLake","table","roundChair","chair","barrel","crate","pedestal","statue","chestPile","bookcase","tapeStack"].includes(String(q?.type||"")));
+    if(world?.decor)world.decor=world.decor.filter(q=>!matches(q)||!["sanctuaryLake","table","roundChair","chair","barrel","crate","pedestal","statue","chestPile","bookcase","tapeStack"].includes(String(q?.type||"")));
+    return W.walkable(world.map,fallback.x,fallback.y,host)?fallback:null;
   }
 
   function validSanctuaryTile(tile){
@@ -141,7 +158,11 @@
         continue;
       }
       const q=regenCell(room);
-      if(q)host.sanctuaryRegeneration.push({id:`sanctuary-regen-${room.id}`,...q,roomId:room.id,periodMs:3000,accumulators:{}});
+      if(!q){
+        try{console.error(`[Lost Sizzler] Sanctuary ${room.id} has no valid regeneration cell after mandatory repair`)}catch(_){}
+        continue;
+      }
+      host.sanctuaryRegeneration.push({id:`sanctuary-regen-${room.id}`,...q,roomId:room.id,periodMs:3000,accumulators:{}});
     }
     return host.sanctuaryRegeneration.length;
   }
