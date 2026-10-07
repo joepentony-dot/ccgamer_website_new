@@ -1,3 +1,12 @@
+## R117 runtime/qualification checkpoint — 7 October 2026 23:33 UK
+
+- Active PR #2593 on `codex/dungeon-r117-release-reconciliation-20261007`; initial qualification head `4a4912f426a093e50bb70c1400f04b59edf37889`, based on `main` `c56a5c20b2bed4da6446d2eb96498a4ce4e1dab0`. R117 is not merged or qualified.
+- New authored Floor 6–15 trials use existing switch/arena/timed/combat owners and the existing R7 objective planner; release identity is R117 in this PR.
+- Exact initial head: PR Qualification and five Chromium shards passed; Full Qualification shard 3 failed in R59's hazard contact movement fixture (3000ms wait). Do not increase timeout; select genuinely traversable target and verify keyboard/focus/input before rerun.
+- Unresolved P1 runtime review: `roomCells()` in `v10-42-r115-floor-trials.js` may place mandatory relays/braziers on `hostState.blockingDecor` because it only checks raw map 0. Require canonical `W.walkable(worldState.map,x,y,hostState)` for candidate selection; extend existing R87 test to cover unwalkable decor. Do not merge before repair and full exact-head requalification.
+- A second review comment about CRT guard regex does not match the observed source/test shape; Node qualification passed. Verify against current head rather than weakening the guard contract.
+- Keep public playtest gate/timer and merged R113–R116 systems untouched.
+
 ## R116 runtime correction checkpoint — 7 October 2026
 
 - Current focus is qualification of one consolidated live-playtest correction branch.
