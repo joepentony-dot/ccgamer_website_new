@@ -1190,7 +1190,7 @@ function drawSpecialObjects(){
     }
     if(W.roomAt(world,focus.x,focus.y)===mem.roomId&&!mem.solved){
       const room=world.rooms[mem.roomId],s=ws(Math.floor(room.x+room.w/2),room.y+1);
-      label(mem.phase==="input"?`MEMORY VAULT LOCKED — ${mem.inputIndex||0}/5 • PURPLE CONSOLE REPLAYS`:mem.phase==="show"?"MEMORY VAULT LOCKED — WATCH THE SEQUENCE":"MEMORY VAULT LOCKED — STEP ON PURPLE CONSOLE",s,mem.lockdownActive?P.red:P.cyan)
+      label(mem.phase==="input"?`MEMORY VAULT LOCKED — ${mem.inputIndex||0}/${mem.sequence?.length||5} • PURPLE CONSOLE REPLAYS`:mem.phase==="show"?`MEMORY VAULT LOCKED — WATCH ${mem.sequence?.length||5} PADS`:"MEMORY VAULT LOCKED — STEP ON PURPLE CONSOLE",s,mem.lockdownActive?P.red:P.cyan)
     }
   }
   const tp=host.sequenceTorchPuzzle;if(tp){for(const torch of tp.torches||[]){if(!visibleTo(focus,torch.x,torch.y))continue;const s=ws(torch.x,torch.y),lit=torch.lit||tp.solved;ctx.save();ctx.fillStyle="#65452c";ctx.fillRect(s.x+C.tile/2-2,s.y+14,4,17);ctx.strokeStyle=lit?P.gold:"#6d6172";ctx.lineWidth=2;ctx.strokeRect(s.x+8,s.y+7,C.tile-16,C.tile-13);if(lit){ctx.shadowColor=P.orange;ctx.shadowBlur=16;ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(s.x+C.tile/2,s.y+16);ctx.quadraticCurveTo(s.x+C.tile/2-9,s.y+4,s.x+C.tile/2,s.y-2);ctx.quadraticCurveTo(s.x+C.tile/2+9,s.y+5,s.x+C.tile/2,s.y+16);ctx.fill()}ctx.fillStyle=lit?P.gold:P.grey;ctx.font='bold 10px "Courier New"';ctx.textAlign="center";ctx.fillText(torch.dir,s.x+C.tile/2,s.y+C.tile-5);ctx.restore();if(md(torch,focus)<=2)label(`${torch.dir} TORCH — ${lit?"LIT":"SHOOT OR TOUCH"}`,s,lit?P.gold:P.grey)}}
