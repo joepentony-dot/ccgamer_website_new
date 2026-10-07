@@ -12,6 +12,8 @@ const configSource=read("arcade/lost-sizzler/js/config.js");
 const worldSource=read("arcade/lost-sizzler/js/world.js");
 const campaignSource=read("arcade/lost-sizzler/js/v10-42-five-depth-campaign.js");
 const balanceSource=read("arcade/lost-sizzler/js/v10-42-floor-balance.js");
+const gameplaySource=read("arcade/lost-sizzler/js/game-play.js");
+const renderSource=read("arcade/lost-sizzler/js/game-render.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 
@@ -35,6 +37,12 @@ assert.match(balanceSource,/floor===C\.maxFloors&&named/,"final named-enemy tuni
 assert.deepEqual(Array.from(C.proceduralDungeon.keyDomains,row=>Number(row.floor)),[3,7,11],"Iron, Bone and Ash must be spaced across the longer campaign");
 assert.equal(C.proceduralDungeon.pickupDistribution.length,15,"A-Z collectible distribution must cover all fifteen floors");
 assert.equal(C.proceduralDungeon.pickupDistribution.reduce((sum,n)=>sum+n,0),26,"A-Z collectible campaign must still contain exactly 26 slots");
+assert.match(gameplaySource,/function triggerSequenceTorch\(p,deliberate=false\)[\s\S]*!deliberate/,"Floor 4 torch sequence must accept only deliberate player movement");
+assert.match(gameplaySource,/isLocal=localPlayers\(\)\.some/,"torch input must verify a real local player owns the step");
+assert.doesNotMatch(gameplaySource,/puzzleTorch[\s\S]{0,240}activateSequenceTorch/,"player projectiles must never activate sequence torches");
+assert.match(gameplaySource,/punishmentAlive=.*torch-fail-/,"torch puzzle failure punishment must be capped while an existing punishment enemy is alive");
+assert.match(gameplaySource,/TORCH SEQUENCE PUZZLE[\s\S]*Only your footsteps count/,"entering the torch room must explain the player-only interaction");
+assert.match(renderSource,/TORCH — \$\{lit\?"LIT":"STEP ON"\}/,"torch labels must instruct STEP ON rather than shooting");
 for(const html of [canonical,alias]){
   assert.match(html,/fifteen procedural floors/i,"public metadata must advertise the fifteen-floor campaign");
   assert.match(html,/15-FLOOR RUN/,"public menu must advertise the fifteen-floor run");
