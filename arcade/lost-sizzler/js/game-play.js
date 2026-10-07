@@ -302,6 +302,45 @@ function weightBridgeCell(list,x,y){return (list||[]).some(q=>q.x===x&&q.y===y)}
 function weightBridgeBlocks(p,x,y){const b=host.weightBridge;if(!b)return false;if(weightBridgeCell(b.pitTiles,x,y)){S.sfx("wall");return true}if(!weightBridgeCell(b.bridgeTiles,x,y)||b.stabilized)return false;const carried=PGR.inventoryCount(p),stacks=(p.inventory||[]).length;if(carried>0){S.sfx("locked");if(!b.lastWarnAt||performance.now()-b.lastWarnAt>1600){b.lastWarnAt=performance.now();showToast("ROTTEN BRIDGE — TOO HEAVY",`It will only take your body weight. You are carrying ${carried} item${carried===1?"":"s"} across ${stacks} stack${stacks===1?"":"s"}. TAB lets you DROP them onto the floor and recover them later.`,"red",9000)}return true}b.crossingPlayer=p.id;return false}
 function triggerWeightBridge(p){const b=host.weightBridge;if(!b||b.stabilized||b.crossingPlayer!==p.id)return;const xs=(b.bridgeTiles||[]).map(q=>q.x),ys=(b.bridgeTiles||[]).map(q=>q.y),passed=b.entranceSide==="west"?p.x>Math.max(...xs):b.entranceSide==="east"?p.x<Math.min(...xs):b.entranceSide==="north"?p.y>Math.max(...ys):p.y<Math.min(...ys);if(!passed)return;b.stabilized=true;b.crossingPlayer=null;score+=350;S.sfx("open");showToast("BRIDGE STABILIZED","You crossed empty-handed. The old planks settle into the supports and will now carry you back. +350 score.","green",9000);host.revision++;}
 
+function bossFightState(){return host?.r114BossFight||null}
+function bossEnemyForFight(fight=bossFightState()){return fight?(host.enemies||[]).find(e=>e?.id===fight.bossId)||null:null}
+function triggerBossFight(p){
+  const fight=bossFightState(),boss=bossEnemyForFight(fight);if(!fight||fight.cleared||!boss?.alive||W.roomAt(world,p.x,p.y)!==fight.roomId)return false;
+  if(fight.triggered)return true;
+  fight.triggered=true;fight.phase=1;fight.attackMs=2200;fight.lastPhase=1;
+  SYS.lockRoomDoors(host,fight.roomId,true);boss.aiState="chase";boss.lastSeen={x:p.x,y:p.y};boss.memoryMs=999999;boss.searchMs=0;boss.moveCooldown=220;boss.attackCooldown=500;
+  S.sfx("alert");shake=Math.max(shake,8);showToast(`BOSS — ${fight.name}`,`${fight.subtitle||"The chamber seals."} Defeat it to reopen the room. Teleport is suppressed while the boss lives.`,"red",10500);host.revision++;return true
+}
+function bossBurst(fight,boss,phase){
+  const dirs=phase>=2?[[1,0],[-1,0],[0,1],[0,-1],[.707,.707],[.707,-.707],[-.707,.707],[-.707,-.707]]:[[1,0],[-1,0],[0,1],[0,-1]];
+  const style=phase>=3&&fight.floor===15?(Math.floor(performance.now()/900)%2?"fire":"shock"):fight.style||"shock",power=phase>=3?3:2,ttl=phase>=3?12:10;
+  for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
+  S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
+}
+function updateBossFight(dt){
+  const fight=bossFightState();if(!fight||fight.cleared)return;
+  const boss=bossEnemyForFight(fight);if(!boss||!boss.alive){
+    fight.cleared=true;fight.triggered=false;SYS.lockRoomDoors(host,fight.roomId,false);
+    for(const d of host.doors||[])if(d.type==="room"&&d.roomId===fight.roomId)beginDoorOpening(d,900);
+    if(!fight.rewarded){
+      fight.rewarded=true;score+=fight.floor===15?5000:2500;
+      const room=world.rooms[fight.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
+      host.chests.push({id:`r114-boss-chest-f${fight.floor}`,...q,locked:false,active:true,depth:(room.depth||0)+18,roomId:fight.roomId,r114BossReward:true});
+      if(fight.floor===5)host.items.push({id:`r114-boss-map-${Date.now()}`,x:q.x+1,y:q.y,kind:"mapReveal",active:true,title:"CARTOGRAPHER'S EYE"});
+      if(fight.floor===10)host.items.push({id:`r114-boss-sack-${Date.now()}`,x:q.x-1,y:q.y,kind:"magicSack",active:true,title:"MAGIC SACK"});
+    }
+    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":"The arena doors reopen. A high-tier boss cache has appeared.","green",10000);host.revision++;return
+  }
+  if(!fight.triggered)return;
+  const pct=Math.max(0,Number(boss.hp||0)/Math.max(1,Number(boss.maxHp||1))),phase=pct<=.30?3:pct<=.65?2:1;
+  if(phase!==fight.phase){
+    fight.phase=phase;boss.moveCooldown=Math.min(Number(boss.moveCooldown||250),phase===3?120:180);boss.attackCooldown=Math.min(Number(boss.attackCooldown||700),phase===3?430:560);
+    const target=localPlayers().find(p=>W.roomAt(world,p.x,p.y)===fight.roomId)||p1;if(target)spawnPuzzleAmbush(fight.roomId,target,phase===3?3:2,`boss-f${fight.floor}-phase${phase}`);
+    S.sfx("alert");showToast(`${fight.name} — PHASE ${phase}`,phase===3?"The boss is badly wounded and the arena pattern has intensified.":"The boss changes attack pattern and calls in reinforcements.","red",7200)
+  }
+  fight.attackMs=Math.max(-1000,Number(fight.attackMs||0)-dt);
+  if(fight.attackMs<=0){bossBurst(fight,boss,phase);fight.attackMs=phase===3?1850:phase===2?2450:3100}
+}
 function triggerBoulder(p){const b=host.boulderTrap;if(!b||b.cleared||b.triggered||W.roomAt(world,p.x,p.y)!==b.roomId)return;const da=md(p,b.start),db=md(p,b.end),from=da>=db?b.start:b.end,to=da>=db?b.end:b.start;b.x=from.x;b.y=from.y;b.target={...to};b.dx=Math.sign(to.x-from.x);b.dy=Math.sign(to.y-from.y);b.warningMs=1000;b.moveMs=0;b.active=true;b.triggered=true;S.sfx("trap");showToast("BOULDER CORRIDOR — RUN!","A stone boulder has broken loose at the far end of the hall. Keep moving and get out of its lane before it reaches you.","red",7600);host.revision++;}
 function updateBoulder(dt){const b=host.boulderTrap;if(!b?.active||b.cleared)return;if(b.warningMs>0){b.warningMs=Math.max(0,b.warningMs-dt);return}b.moveMs-=dt;if(b.moveMs>0)return;b.moveMs=b.stepMs||155;b.x+=b.dx;b.y+=b.dy;shake=Math.max(shake,3);for(const p of localPlayers())if(p.x===b.x&&p.y===b.y){hurtPlayer(p,b.damage||2,false,"rolling boulder");const nx=p.x+b.dx,ny=p.y+b.dy;if(W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}if(b.x===b.target.x&&b.y===b.target.y){b.active=false;b.cleared=true;score+=250;S.sfx("door");showToast("BOULDER CORRIDOR SURVIVED","The boulder crashes into the far wall. +250 score.","green",7000)}host.revision++}
 function triggerHauntedCorridor(p){const nest=host.spiderNest;if(!nest||(nest.corridorCells||[]).every(q=>q.x!==p.x||q.y!==p.y))return;nest.whistledPlayers=nest.whistledPlayers||[];nest.extinguishedPlayers=nest.extinguishedPlayers||[];if(!nest.whistledPlayers.includes(p.id)){nest.whistledPlayers.push(p.id);S.windWhistle?.();showToast("A WIND WHISTLES THROUGH THE STONE","A one-in-twenty haunted corridor is feeding air into a nearby Dustweb Nest. The draught can extinguish an active torch.","cyan",9000)}if(p.torchMs>0&&!nest.extinguishedPlayers.includes(p.id)){nest.extinguishedPlayers.push(p.id);p.torchMs=0;S.sfx("pssst");for(let i=0;i<26;i++)particles.push({x:p.x*C.tile+C.tile/2,y:p.y*C.tile+C.tile/2,vx:1.2+Math.random()*3.2,vy:(Math.random()-.5)*2.2,life:300+Math.random()*520,col:i%2?"#c8d7e8":"#6cecff",size:1+Math.random()*3,drag:.975});floatText(p.x,p.y,"TORCH OUT!",P.cyan);showToast("PSST — TORCH EXTINGUISHED","The windy corridor has blown out your active torch. Spare torches in your inventory are untouched.","red",8500)}host.revision++}
@@ -317,7 +356,7 @@ function movementTriggers(p,deliberate=false){
   // encounter/arena activation can mutate room state on the same movement step.
   if(trapBoundary)applyActiveTrapContact(p,trapBoundary,trapBoundaryAt);
   try{window.CCGLostSizzlerBugReporter?.observeMovementBoundary?.(p,"after",{deliberate:Boolean(deliberate)})}catch(_){}
-  triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p);
+  triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBossFight(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p);
   try{window.CCGLostSizzlerStage8NpcDialogue?.onMovementBoundary?.(p)}catch(_){}
 }
 function movePlayer(p,dx,dy,dash=false){
@@ -778,7 +817,7 @@ function update(dt){
     }
     projectileCD=0
   }else if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendCD=100}if(worldCD<=0){worldCD=350}
-  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
   updateActiveTrapContacts("simulation-post");
