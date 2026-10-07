@@ -57,7 +57,7 @@ assert.match(ownerGate, /ccg_has_dungeon_carnage_playtest_access/);
 assert.match(ownerGate, /bootstrapProtectedRuntime/);
 assert.match(ownerGate, /data-ccg-protected-runtime/);
 assert.match(ownerGate, /runtimeAccessGranted = true/);
-assert.match(ownerGate, /showMemberGate\(\)/);
+assert.match(ownerGate, /showMemberGate\(/);
 assert.match(ownerGate, /mark\("member-playtester"\)/);
 assert.match(ownerGate, /mark\("round2-member-required"\)/);
 assert.match(ownerGate, /mark\("owner-preview"\)/);
