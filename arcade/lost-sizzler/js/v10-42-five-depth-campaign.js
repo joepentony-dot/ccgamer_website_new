@@ -1,4 +1,4 @@
-/* C64 Dungeon Carnage V10.42 — fifteen-floor campaign, global Keys and floor balance. */
+/* C64 Dungeon Carnage V10.42 — fifteen-floor campaign, campaign Keys and floor balance. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_FIVE_DEPTH_CAMPAIGN__)return;
@@ -200,7 +200,7 @@
     SYSTEMS.objectiveText=function(hostState,runState,explorePct=0){
       const floor=floorNumber(runState),cfg=floorConfig(runState),domain=domainForFloor(runState),keys=globalKeyCount(runState);
       if(floor===1)return hostState.objective?.complete?`The Threshold is cleared — reach the stairs to ${PD.campaignFloors?.[1]?.name||"Floor 2"}`:`Explore the Threshold ${Math.floor(explorePct)}% / 70% and defeat its guardian`;
-      if(domain){const got=claimedDomains(runState).includes(domain.id)||(Number(hostState.keysCollected)||0)>=1;return got?`${domain.name} SECURED — global Keys ${Math.min(CFG.keyTarget,keys||1)}/${CFG.keyTarget}; reach the stairs`:`Defeat ${domain.guardian} and recover ${domain.name} — global Keys ${keys}/${CFG.keyTarget}`}
+      if(domain){const got=claimedDomains(runState).includes(domain.id)||(Number(hostState.keysCollected)||0)>=1;return got?`FLOOR KEY SECURED — ${domain.name} • CAMPAIGN KEYS ${Math.min(CFG.keyTarget,keys||1)}/${CFG.keyTarget} • Reach the stairs`:`FLOOR KEY — Defeat ${domain.guardian} and recover ${domain.name} • CAMPAIGN KEYS ${keys}/${CFG.keyTarget}`}
       if(floor===CFG.maxFloors&&keys<CFG.keyTarget)return `${cfg?.name||"The final Citadel"} rejects you — recover all three Keys (${keys}/${CFG.keyTarget})`;
       if(floor===CFG.maxFloors){const base=baseObjectiveText(hostState,runState,explorePct);return base.replace(/floor exit/gi,"final escape").replace(/EXIT SIGIL/g,"AWAKENED SIGIL")}
       const base=stripInterimSigilSuffix(baseObjectiveText(hostState,runState,explorePct));
@@ -235,7 +235,7 @@
 
     if(typeof sync==="function"){
       const baseSync=sync;
-      sync=function(...args){const result=baseSync(...args),runState=currentRun(),hostState=currentHost(),player=currentPlayer();if(!runState||!hostState)return result;ensureInterimExit(hostState,runState);const keys=globalKeyCount(runState),floor=floorNumber(runState),cfg=floorConfig(runState);if(UI?.keys)UI.keys.textContent=`${keys}/${CFG.keyTarget}`;if(UI?.room)UI.room.textContent=`F${floor}/${CFG.maxFloors}`;if(UI?.quickKeyring)UI.quickKeyring.textContent=`KEYS ${keys}/${CFG.keyTarget} • ${claimedDomains(runState).map(id=>id.toUpperCase()).join(" · ")||"NONE"}${hostState.exitSigilCollected&&floor===CFG.maxFloors?" • SIGIL":""}`;if(UI?.mission)UI.mission.textContent=SYSTEMS.objectiveText(hostState,runState,Math.round(window.CCGProgression.roomCompletion(explored.get(player?.id)||new Set(),world)*100));return result};
+      sync=function(...args){const result=baseSync(...args),runState=currentRun(),hostState=currentHost(),player=currentPlayer();if(!runState||!hostState)return result;ensureInterimExit(hostState,runState);const keys=globalKeyCount(runState),floor=floorNumber(runState),cfg=floorConfig(runState);if(UI?.keys)UI.keys.textContent=`${keys}/${CFG.keyTarget}`;if(UI?.room)UI.room.textContent=`F${floor}/${CFG.maxFloors}`;if(UI?.quickKeyring)UI.quickKeyring.textContent=`CAMPAIGN KEYS ${keys}/${CFG.keyTarget} • ${claimedDomains(runState).map(id=>id.toUpperCase()).join(" · ")||"NONE"}${hostState.exitSigilCollected&&floor===CFG.maxFloors?" • SIGIL":""}`;if(UI?.mission)UI.mission.textContent=SYSTEMS.objectiveText(hostState,runState,Math.round(window.CCGProgression.roomCompletion(explored.get(player?.id)||new Set(),world)*100));return result};
     }
 
     function updateMenuCopy(){
