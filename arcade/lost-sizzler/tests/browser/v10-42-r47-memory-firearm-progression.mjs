@@ -79,7 +79,7 @@ try{
   assert.equal(memory.phase,"idle","wrong Memory Pad input must wait for deliberate replay");
 
   const firearm=await page.evaluate(()=>{
-    const dummy={id:"shock",name:"Legacy Random Gun",displayName:"ZZAP! 97% Random Gun",rarity:"ZZAP! 97%",power:9,delay:.3,shots:8,pierce:4,element:"shock",ttl:30,mods:["legacy"],rating:99,desc:"legacy random weapon"};
+    const dummy={id:"pulse",name:"Ordinary Weapon Cache",displayName:"COMMON Weapon Cache",rarity:"COMMON",power:1,delay:1,shots:1,pierce:0,element:"energy",ttl:18,mods:[],rating:1,desc:"ordinary weapon cache"};
     const rows=[];
     const snap=label=>rows.push({label,floor:run.floor,tier:p1.weaponEvolutionTier,name:p1.weapon?.name,power:p1.weapon?.power,shots:p1.weapon?.shots,pierce:p1.weapon?.pierce,owned:(p1.ownedWeapons||[]).length,mana:p1.mana});
     p1.firearmUnlocked=false;p1.weapon=null;p1.weaponEvolutionTier=0;p1.ownedWeapons=[];p1.activeWeaponIndex=-1;p1.mana=0;
@@ -133,6 +133,22 @@ try{
   assert.equal(rareSpread.evolved.tier,3,"next floor must still allow normal tier progression");
   assert.equal(rareSpread.evolved.id,"spread","earned rare Spread pattern must survive the next normal tier upgrade");
   assert.equal(rareSpread.evolved.shots,3,"earned rare Spread pattern must remain three-way after later evolution");
+
+  const rareFireLance=await page.evaluate(()=>{
+    const evolution=window.CCGLostSizzlerV142R47FirearmEvolution,rare={id:"fire",name:"SID Fire Lance",displayName:"SIZZLER SID Fire Lance",rarity:"SIZZLER",power:4,delay:1.2,shots:1,pierce:1,element:"fire",mods:["INCENDIARY"],rating:20,desc:"Rare SID fire weapon"};
+    run.floor=3;p1.firearmUnlocked=true;p1.weaponPatternOverride="pulse";p1.weaponEvolutionTier=evolution.capForFloor(3);p1.weaponLevel=p1.weaponEvolutionTier;p1.weapon=evolution.stageWeapon(p1.weaponEvolutionTier,"pulse");p1.ownedWeapons=[p1.weapon];p1.activeWeaponIndex=0;p1.mana=p1.maxMana;
+    const before={tier:p1.weaponEvolutionTier,mana:p1.mana,totalXp:p1.totalXp||0};
+    equipWeapon(p1,rare);
+    return{before,after:{tier:p1.weaponEvolutionTier,id:p1.weapon?.id,pattern:p1.weaponPatternOverride,element:p1.weapon?.element,displayName:p1.weapon?.displayName,mana:p1.mana,totalXp:p1.totalXp||0,power:p1.weapon?.power,pierce:p1.weapon?.pierce}}
+  });
+  assert.equal(rareFireLance.after.tier,rareFireLance.before.tier,"rare SID Fire Lance at the floor cap must remain at the legal tier");
+  assert.equal(rareFireLance.after.id,"fire","rare SID Fire Lance must install the Fire Lance pattern instead of becoming salvage");
+  assert.equal(rareFireLance.after.pattern,"fire","rare SID Fire Lance identity must persist on the evolving firearm");
+  assert.equal(rareFireLance.after.element,"fire","rare SID Fire Lance must retain fire damage");
+  assert.match(rareFireLance.after.displayName,/SID FIRE LANCE/,"the equipped reward must still be recognisable as a SID Fire Lance");
+  assert.equal(rareFireLance.after.mana,rareFireLance.before.mana,"capped rare SID Fire Lance must not be converted into ammunition");
+  assert.equal(rareFireLance.after.totalXp,rareFireLance.before.totalXp,"capped rare SID Fire Lance must not be converted into XP");
+  assert.ok(rareFireLance.after.power>=2&&rareFireLance.after.pierce>=1,"rare SID Fire Lance must provide a meaningful distinct weapon profile");
 
   console.log("Dungeon Carnage r47 Memory Pad and firearm evolution browser contract passed.");
   await context.close();
