@@ -503,8 +503,15 @@
     updateVolumes();
   }
 
+  function reconcilePendingGestureState(){
+    const slot=current;
+    if(slot&&!slot.destroyed&&slot.state===desiredState()&&slot.audio.paused===false&&Number(slot.audio.readyState||0)>=1&&pendingGestureState===slot.state)pendingGestureState="";
+    return pendingGestureState
+  }
+
   function retryUploadedMusicOnGesture(event){
     if(!enabled)return false;
+    reconcilePendingGestureState();
     const state=desiredState();
     if(!started){
       const launchTarget=event?.target?.closest?.("#solo-btn,#tutorial-zone-btn");
@@ -576,7 +583,7 @@
       enabled,
       started,
       fallbackActive,
-      pendingGestureState,
+      pendingGestureState:reconcilePendingGestureState(),
       customSoundtrackOwned:customSources(desiredState()).length>0,
       soundtrackOwned:soundtrackOwned(desiredState()),
       adminAudioReady:window.CCG_ADMIN_AUDIO_READY===true,
