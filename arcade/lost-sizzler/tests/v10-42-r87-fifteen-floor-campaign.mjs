@@ -15,6 +15,8 @@ const balanceSource=read("arcade/lost-sizzler/js/v10-42-floor-balance.js");
 const gameplaySource=read("arcade/lost-sizzler/js/game-play.js");
 const localRuntimeSource=read("arcade/lost-sizzler/js/game-local-runtime.js");
 const renderSource=read("arcade/lost-sizzler/js/game-render.js");
+const floorTrials=read("arcade/lost-sizzler/js/v10-42-r115-floor-trials.js");
+const bootstrap=read("arcade/lost-sizzler/js/v10-42-bootstrap.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
 
@@ -53,6 +55,23 @@ assert.match(localRuntimeSource,/function releaseBridgeThiefStash/,"defeating th
 assert.match(localRuntimeSource,/target\.bridgeThiefRecovered=true/,"the entire stolen stash must be reactivated as recoverable floor items when the thief dies");
 assert.match(renderSource,/BRIDGE COLLAPSED — SHOOT THE FAR-SIDE SWITCH/,"collapsed bridge state must be visually explained in-world");
 assert.match(renderSource,/BRIDGE SWITCH — SHOOT TO DEPLOY/,"the rebuild switch must be labelled as a shooting interaction");
+assert.match(bootstrap,/v10-42-r115-floor-trials\.js","CCGLostSizzlerV142R115FloorTrials"/,"R115 floor trials must load through the ordered canonical bootstrap");
+for(const [floor,id] of [[6,"tape-relays"],[7,"crypt-braziers"],[8,"arena-lockdown"],[9,"timed-lockdown"],[11,"coolant-valves"],[13,"high-score-hunt"],[14,"crt-sequence"]]){
+  assert.match(floorTrials,new RegExp(`${floor}:Object\\.freeze\\(\\{id:"${id}"`),`Floor ${floor} must own its distinct R115 trial identity`)
+}
+assert.match(floorTrials,/target:10/,"Floor 7 crypt trial must require all ten braziers");
+assert.match(floorTrials,/addSupplies\(worldState,hostState,runState,"torch",4,"crypt-torch"\)/,"the ten-brazier trial must guarantee enough trial torches to avoid a resource softlock");
+assert.match(floorTrials,/addSupplies\(worldState,hostState,runState,"ammo",2,"coolant-ammo"\)/,"the coolant-valve trial must provide emergency ammunition");
+assert.match(floorTrials,/addSupplies\(worldState,hostState,runState,"ammo",2,"crt-ammo"\)/,"the CRT sequence must provide emergency ammunition");
+assert.match(floorTrials,/existing&&String\(e\.id\|\|""\)\.startsWith\("crt-sequence-fail-"\)/,"CRT wrong-order punishment must be bounded to one active guard");
+assert.match(floorTrials,/if\(!done\)\{if\(hostState\.objective\)hostState\.objective\.complete=false;hostState\.exitOpen=false;return false\}/,"unfinished required trials must keep the floor exit sealed");
+assert.match(floorTrials,/FLOOR TRIAL: \$\{trialText\(hostState\)\}/,"the mission owner must surface live trial progress");
+assert.match(floorTrials,/r115TrialReward:true/,"completed authored trials must award a high-tier Trial Cache");
+assert.match(floorTrials,/score\+=1000/,"completed authored trials must also award a meaningful score bonus");
+assert.match(floorTrials,/ACTIVE TORCH REQUIRED/,"crypt braziers must visually explain the required interaction");
+assert.match(floorTrials,/COOLANT VALVE \$\{sw\.r115TrialIndex\+1\} — \$\{sw\.toggled\?"OPEN":"SHOOT"\}/,"coolant valves must visually instruct the player to shoot them");
+assert.match(floorTrials,/CRT RELAY \$\{sw\.r115TrialIndex\+1\} — \$\{sw\.toggled\?"CALIBRATED":"SHOOT"\}/,"CRT relays must show their number and interaction");
+
 
 for(const html of [canonical,alias]){
   assert.match(html,/fifteen procedural floors/i,"public metadata must advertise the fifteen-floor campaign");
