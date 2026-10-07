@@ -457,12 +457,18 @@ window.CCGSystems=(()=>{
     const secretOrOptionalDoorRooms=new Set((host.doors||[]).filter(door=>door&&(door.type==="secret"||door.type==="bronze"||door.hidden)).map(door=>Number(door.roomId)).filter(id=>id>=0));
     const rewardChestRooms=new Set((host.chests||[]).filter(chest=>chest?.active!==false).map(chest=>Number(chest.roomId)).filter(id=>id>=0));
     const reservedSanctuaryRooms=new Set([host.trader?.roomId,host.startShop?.roomId].map(Number).filter(id=>Number.isFinite(id)&&id>=0));
-    const sanctuaryEligible=r=>Boolean(r&&!r.optional&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!occupiedEnemyRooms.has(r.id)&&!secretOrOptionalDoorRooms.has(Number(r.id))&&!rewardChestRooms.has(Number(r.id))&&!reservedSanctuaryRooms.has(Number(r.id)));
-    const sanctuaryCandidates=featureRooms.filter(sanctuaryEligible);
-    const sanctuaryPool=sanctuaryCandidates.slice(-Math.min(12,sanctuaryCandidates.length));
-    const sanctuaryTarget=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,sanctuaryPool.length));
+    const sanctuarySafeBase=r=>Boolean(r&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!occupiedEnemyRooms.has(r.id)&&!reservedSanctuaryRooms.has(Number(r.id)));
+    const sanctuaryEligible=r=>Boolean(sanctuarySafeBase(r)&&!r.optional&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!secretOrOptionalDoorRooms.has(Number(r.id))&&!rewardChestRooms.has(Number(r.id)));
+    const sanctuaryDesired=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,Math.max(0,(world.rooms||[]).length-1)));
+    const sanctuaryPool=[];
+    const addSanctuaryCandidates=list=>{for(const room of list||[]){if(sanctuaryPool.length>=sanctuaryDesired)break;if(room&&sanctuarySafeBase(room)&&!sanctuaryPool.some(candidate=>candidate.id===room.id))sanctuaryPool.push(room)}};
+    addSanctuaryCandidates(featureRooms.filter(sanctuaryEligible).slice(-Math.min(12,featureRooms.length)));
+    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&!r.optional&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!secretOrOptionalDoorRooms.has(Number(r.id))));
+    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&r.id!==world.startRoomId&&r.id!==world.exitRoomId));
+    addSanctuaryCandidates([world.rooms?.[world.exitRoomId],world.rooms?.[world.startRoomId]]);
+    const sanctuaryTarget=Math.min(sanctuaryDesired,sanctuaryPool.length);
     for(let i=0;i<sanctuaryTarget;i++){
-      const room=sanctuaryPool[(i*3+1)%sanctuaryPool.length];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
+      const room=sanctuaryPool[i];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
       for(const q of wallTorchPositions(room))world.wallLights.push({...q,roomId:room.id,radius:10,permanent:true,kind:"sanctuary"});
     }
     const activeFeatureRooms=featureRooms.filter(room=>!room.sanctuary);
