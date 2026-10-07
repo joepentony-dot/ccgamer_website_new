@@ -149,6 +149,52 @@ select:focus-visible,
   background: rgba(141, 130, 255, 0.11);
 }
 
+.ccg-c64-site-nav {
+  position: relative;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.52rem clamp(0.8rem, 2vw, 1.35rem);
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(120, 126, 231, 0.18);
+  background: rgba(5, 7, 25, 0.94);
+  scrollbar-width: thin;
+}
+
+.ccg-c64-site-nav a,
+.ccg-c64-site-nav button {
+  flex: 0 0 auto;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.48rem 0.72rem;
+  border: 1px solid rgba(74, 80, 157, 0.8);
+  border-radius: 7px;
+  background: rgba(15, 18, 50, 0.86);
+  color: #d6d7f7;
+  text-decoration: none;
+  font-family: var(--ccg-font-mono, "Courier New", monospace);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.ccg-c64-site-nav a:hover,
+.ccg-c64-site-nav button:hover {
+  border-color: var(--emu-accent);
+  color: #fff;
+  background: rgba(141, 130, 255, 0.14);
+}
+
+.ccg-c64-site-nav .ccg-c64-back {
+  border-color: rgba(213, 104, 219, 0.55);
+  color: #ffd6ff;
+}
+
 /* Main workstation ------------------------------------------ */
 
 .ccg-c64-workspace {
