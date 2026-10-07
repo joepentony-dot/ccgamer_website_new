@@ -63,11 +63,11 @@ test('avatar upload optimises source images before protected storage', () => {
   assert.match(profileJs, /avatar_url: avatarUrl/);
 });
 
-test('avatar migration constrains storage writes to the signed-in member folder', () => {
+test('avatar migration constrains storage access to the signed-in member avatar object', () => {
   assert.match(avatarMigration, /'profile-avatars'/);
   assert.match(avatarMigration, /2097152/);
-  assert.match(avatarMigration, /storage\.foldername\(name\)/);
-  assert.match(avatarMigration, /auth\.uid\(\)/);
+  assert.match(avatarMigration, /name = \(select auth\.uid\(\)::text\) \|\| '\/avatar\.webp'/);
+  assert.equal((avatarMigration.match(/name = \(select auth\.uid\(\)::text\) \|\| '\/avatar\.webp'/g) || []).length, 5);
   assert.match(avatarMigration, /for insert\s+to authenticated/i);
   assert.match(avatarMigration, /for update\s+to authenticated/i);
   assert.match(avatarMigration, /for delete\s+to authenticated/i);
