@@ -102,10 +102,10 @@ window.CCGProgression=(()=>{
   function lootForChest(chest,run,r=Math.random){
     const depth=chest.depth||0,bonus=run?.modifier?.id==="DOUBLE_TREASURE"?.18:0;
     const rarity=rollRarity(depth,run?.floor||1,r,bonus),idx=rarityIndex(rarity);
-    const roll=r();
-    if(roll<.34+idx*.04)return{kind:"weaponLoot",weapon:generateWeapon(depth,run?.floor||1,r,bonus),rarity};
-    if(roll<.52)return{kind:"armour",amount:2+idx,rarity,name:`${rarity} Armour Plate`};
-    if(roll<.58)return{kind:"potion",amount:1,rarity,name:`${rarity} Restoration Potion`};
+    const roll=r(),weaponCut=.34+idx*.04;
+    if(roll<weaponCut)return{kind:"weaponLoot",weapon:generateWeapon(depth,run?.floor||1,r,bonus),rarity};
+    if(roll<weaponCut+.06)return{kind:"armour",amount:2+idx,rarity,name:`${rarity} Armour Plate`};
+    if(roll<weaponCut+.09)return{kind:"potion",amount:1,rarity,name:`${rarity} Restoration Potion`};
     if(roll<.76)return{kind:"ammo",amount:38+idx*10,rarity,name:`${rarity} Ammo Cache`};
     if(roll<.84)return{kind:"torch",rarity,name:`${rarity} Flaming Torch`};
     if(roll<.89)return{kind:"teleport",rarity,name:`${rarity} Teleport Spell`};
