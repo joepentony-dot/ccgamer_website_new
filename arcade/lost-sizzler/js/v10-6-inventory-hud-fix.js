@@ -13,7 +13,7 @@
 
   const html=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const icon=(kind,label)=>typeof itemIconSVG==="function"?itemIconSVG(kind,label):"";
-  const QUICK_USE=new Set(["potion","torch","teleport","banishment"]);
+  const QUICK_USE=new Set(["potion","torch","teleport","banishment","mapReveal"]);
   const PRIMARY_KEYS={potion:"E",torch:"Q",teleport:"R",banishment:"B"};
   const spyOwnsHud=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"||run?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
 
@@ -47,7 +47,7 @@
     const target=document.getElementById("item-shortcuts");
     if(!target||typeof p1==="undefined"||!p1||typeof host==="undefined"||!host)return;
 
-    const potions=count("potion"),torches=count("torch"),teleports=count("teleport"),flasks=count("banishment"),artefacts=count("artefact");
+    const potions=count("potion"),torches=count("torch"),teleports=count("teleport"),flasks=count("banishment"),mapReveals=count("mapReveal"),artefacts=count("artefact");
     const mainKeys=Math.max(0,Number(host.keysCollected||0)),bronze=Math.max(0,Number(p1.bronzeKeys||0)),sigil=Boolean(host.exitSigilCollected);
     const essence=Math.max(0,Number(p1.banishmentEssence||0)),essenceCost=Math.max(1,Number(window.CCGLostSizzlerV142ProceduralOverhaul?.essenceCost?.(p1)||3));
     const questRows=[],itemRows=[];
@@ -61,6 +61,7 @@
     if(torches>0||Number(p1.torchMs||0)>0)itemRows.push(row({kind:"torch",name:"FLAMING TORCH",qty:Number(p1.torchMs||0)>0?`ACTIVE ${Math.ceil(Number(p1.torchMs)/1000)}s · ×${torches}`:`×${torches}`,primary:"Q",slots:slotsFor("torch"),desc:"Temporary dungeon light.",tone:"gold"}));
     if(teleports>0)itemRows.push(row({kind:"teleport",name:"TELEPORT SPELL",qty:`×${teleports}`,primary:"R",slots:slotsFor("teleport"),desc:"Warp to a safe explored room.",tone:"purple"}));
     if(flasks>0)itemRows.push(row({kind:"banishment",name:"BANISHMENT FLASK",qty:`×${flasks}`,primary:"B",slots:slotsFor("banishment"),desc:"Banish a nearby supernatural threat.",tone:"purple"}));
+    if(mapReveals>0)itemRows.push(row({kind:"mapReveal",name:"CARTOGRAPHER\'S EYE",qty:`×${mapReveals}`,slots:slotsFor("mapReveal"),desc:"Reveal the entire current floor and its map icons.",tone:"cyan"}));
     if(artefacts>0)itemRows.push(row({kind:"loot",name:"RARE ARTEFACT",qty:`×${artefacts}`,desc:"Rare carried reward.",tone:"cyan"}));
 
     const rows=[];
@@ -175,6 +176,7 @@
     if(item.kind==="torch"&&typeof useUtility==="function"){useUtility(p1);return true}
     if(item.kind==="teleport"&&typeof useTeleport==="function"){useTeleport(p1);return true}
     if(item.kind==="banishment"&&typeof useBanishment==="function"){useBanishment(p1);return true}
+    if(item.kind==="mapReveal"&&typeof useMapReveal==="function"){useMapReveal(p1);return true}
     return false;
   }
 
