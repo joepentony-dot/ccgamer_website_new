@@ -113,7 +113,7 @@ assert.equal(mapSlot.prevented,true);
 assert.equal(mapSlot.stopped,true);
 
 context.sync();
-assert.match(target.innerHTML,/CARTOGRAPHER'S EYE/,'live carried-items panel must show Cartographer\'s Eye');
+assert.match(target.innerHTML,/CARTOGRAPHER&#39;S EYE/,'live carried-items panel must show Cartographer\'s Eye');
 assert.match(target.innerHTML,/number-item-key[^>]*>3<\/kbd>/,'Cartographer\'s Eye must show its exact numbered quick-slot key');
 assert.equal(syncCalls,1,'the existing sync function remains intact');
 
