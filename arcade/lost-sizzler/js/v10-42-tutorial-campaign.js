@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.42 — campaign-aware Tutorial presentation without rewriting the stabilized training runtime. */
+/* C64 Dungeon Carnage V10.42 — concise campaign-aware Tutorial presentation. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V142_TUTORIAL_CAMPAIGN__)return;
@@ -6,57 +6,57 @@
 
   const STEP_COPY=new Map([
     ["OBJECTIVES, MAP & DISCOVERY",{
-      title:"READ THE DUNGEON AS YOU DISCOVER IT",
-      copy:"The campaign is built around exploration rather than a fully revealed map. Follow the current objective, learn each floor's colour and room language, and let discovered markers build a useful picture of where you have actually been.",
-      detail:"Sanctuary, shops, Warden Corruption and other important symbols belong in the legend once they are relevant. The full campaign now spans fifteen floors, so the tutorial teaches the systems you carry through the entire run rather than asking you to memorise a fixed route."
+      title:"FOLLOW THE FLOOR OBJECTIVE",
+      copy:"Check the HUD for the current goal, then use the map and radar to keep your bearings as rooms are discovered.",
+      detail:"Important places such as Sanctuary, shops and special threats become easier to track once you find them."
     }],
     ["SURVIVAL, DEATH & RECOVERY",{
-      title:"SURVIVAL & RPG GROWTH",
-      copy:"Health and armour keep you alive, while Might, Vitality, Agility, Endurance, Luck and Arcana shape the character you carry deeper into the dungeon.",
-      detail:"Death can remove XP, levels and their stat benefits. One recoverable death cache owns the intended lost XP/items; recovering it before another death restores what that cache still owns."
+      title:"STAY ALIVE & BUILD YOUR CHARACTER",
+      copy:"Health, armour and equipment keep you alive. Levelling lets you shape Might, Vitality, Agility, Endurance, Luck and Arcana.",
+      detail:"If you die, look for your death cache. It can contain lost items, armour protection and equipped gear."
     }],
     ["DOORS, CHESTS, CACHES & SOLID SCENERY",{
-      title:"LOOT, LOCKS & THE EVOLVING FIREARM",
-      copy:"Bronze locks reward exploration, chests carry loot and equipment, and weapon caches improve the single Field Pulse weapon rather than spawning a collection of unrelated guns.",
-      detail:"WEAPON UPGRADED must mean a real gameplay improvement. Smashable furniture blocks movement until destroyed; decorative background scenery should never mislead you into treating it as a usable object."
+      title:"LOOT, LOCKS & WEAPONS",
+      copy:"Bronze keys open optional locks. Chests hold loot and equipment, while weapon caches improve or alter your current firearm.",
+      detail:"Solid furniture blocks movement until smashed. Rare named weapons stay meaningful even when your current firearm is already at the floor limit."
     }],
     ["NAMED THREATS, WARDENS & THE STALKER",{
-      title:"THREATS, WARDENS & BANISHMENT",
-      copy:"Named champions, Wardens and supernatural threats have different jobs in the dungeon. Warden Corruption marks a protected domain threat; the Death Stalker requires Banishment progression rather than ordinary firepower alone.",
-      detail:"Major enemies should have rewards worth the risk. Their name, sprite, behaviour and reward identity must agree so you can learn them through play instead of memorising exceptions."
+      title:"KNOW THE BIG THREATS",
+      copy:"Named champions, Wardens and the Death Stalker need different tactics. Watch their introductions and learn how each threat behaves.",
+      detail:"The Death Stalker cannot be killed with normal attacks. A lit torch drives it away; Banishment can destroy it permanently."
     }],
     ["SHOPS, SANCTUARY & SPECIAL OPPORTUNITIES",{
-      title:"BUILD YOUR RUN",
-      copy:"Shops, Sanctuary, gambling, relics, equipment and rare events strengthen a longer RPG run. The tutorial gives you the foundation; deeper services are explained when you first meet them.",
-      detail:"Sanctuary is challenge-free, cannot be sealed by arena or timed-room logic, and can receive rescued Lost Adventurers. Shops and other services should be useful choices rather than menu clutter."
+      title:"USE WHAT THE DUNGEON OFFERS",
+      copy:"Shops, Sanctuary, equipment and rare events can strengthen a run. Explore first, then decide where your Gold and supplies matter most.",
+      detail:"Sanctuary gives you a safe place to recover. Other services explain themselves when you discover them."
     }],
     ["TUTORIAL COMPLETE",{
-      title:"FOUNDATION COMPLETE",
-      copy:"You Are Ready To Take On The Adventure! You have learned the controls and the dungeon's core language without being given the whole game in advance.",
-      detail:"The full campaign introduces weapon evolution, equipment, shops, Sanctuary, death recovery, Wardens and deeper RPG choices in context. Replay Tutorial at any time if you want a refresher."
+      title:"READY FOR THE DUNGEON",
+      copy:"You have learned the essentials. The full fifteen-floor campaign will introduce tougher enemies, new challenges and deeper progression as you descend.",
+      detail:"Replay the Tutorial whenever you want a refresher."
     }]
   ]);
 
   const TOUR_COPY=new Map([
     ["READ THE MAP, NOT A SPOILER SHEET",{
       title:"FOLLOW THE CURRENT OBJECTIVE",
-      copy:"Use the objective and discovered map together. The map should become more useful as you explore, not reveal rooms, Sanctuary or services you have never found.",
-      items:[["◎","OBJECTIVE","What matters on this floor"],["⌖","DISCOVERED MAP","Traversed geometry and known markers"],["+","SANCTUARY","Appears after discovery"],["W","WARDEN CORRUPTION","Protected domain threat"]]
+      copy:"Use the HUD, map and radar together. Explore to reveal routes and useful markers.",
+      items:[["◎","OBJECTIVE","Current floor goal"],["⌖","MAP","Rooms you have discovered"],["+","SANCTUARY","Safe recovery"],["W","WARDEN","Major floor threat"]]
     }],
     ["READ SOLIDITY, LOOT & UPGRADES",{
-      title:"UNDERSTAND LOOT & WEAPON EVOLUTION",
-      copy:"Optional locks reward exploration. Chests provide loot and gear, while a weapon cache evolves your existing Field Pulse and reports whether it upgraded, evolved or reached its cap.",
-      items:[["BK","BRONZE","Optional locks"],["▣","CHEST","Loot and equipment"],["UP","WEAPON CACHE","Improves the evolving firearm"],["▥","SOLID SCENERY","Blocks until smashed"]]
+      title:"UNDERSTAND LOOT & WEAPONS",
+      copy:"Open chests, search optional rooms and improve your equipment. Weapon caches strengthen or change your current firearm.",
+      items:[["BK","BRONZE KEY","Optional locks"],["▣","CHEST","Loot and equipment"],["UP","WEAPON CACHE","Improves your firearm"],["▥","SOLID SCENERY","Smash to clear"]]
     }],
     ["READ THE THREAT, NOT JUST THE HEALTH BAR",{
-      title:"UNDERSTAND THREAT & BANISHMENT",
-      copy:"Standard enemies, named champions, Wardens and the Death Stalker are deliberately different problems. Learn their role from their introduction, behaviour and reward.",
-      items:[["♟","STANDARD THREAT","Normal combat pressure"],["★","NAMED CHAMPION","Stronger identity and reward"],["W","WARDEN","Protected domain threat"],["S","DEATH STALKER","Requires Banishment progression"]]
+      title:"LEARN EACH THREAT",
+      copy:"Ordinary enemies, named champions, Wardens and the Death Stalker behave differently. Watch how they move and attack.",
+      items:[["♟","ENEMY","Standard threat"],["★","CHAMPION","Stronger enemy"],["W","WARDEN","Major threat"],["S","DEATH STALKER","Torch or Banishment"]]
     }],
     ["USE SERVICES WHEN YOU FIND THEM",{
-      title:"BUILD YOUR RUN THROUGH DISCOVERY",
-      copy:"Shops, Sanctuary, gambling, equipment, relics and rare events should appear as useful discoveries. The game explains each service when it matters rather than making you study a manual first.",
-      items:[["$","SHOP","Supplies and upgrades"],["+","SANCTUARY","Challenge-free refuge"],["EQ","EQUIPMENT","Wearable gameplay modifiers"],["?","SPECIAL EVENT","Contextual opportunity"]]
+      title:"BUILD YOUR RUN",
+      copy:"Shops, Sanctuary, equipment and rare events can give you an edge. Use them when they suit your run.",
+      items:[["$","SHOP","Supplies and upgrades"],["+","SANCTUARY","Safe recovery"],["EQ","EQUIPMENT","Wearable bonuses"],["?","EVENT","Something unusual"]]
     }]
   ]);
 
@@ -84,14 +84,6 @@
     const data=TOUR_COPY.get(String(heading.textContent||"").trim().toUpperCase());if(!data)return false;
     heading.textContent=data.title;
     const p=tour.querySelector(".tour-head p");if(p)p.textContent=data.copy;
-    /*
-      Do not replace .tour-grid or any of its children here. The stabilized
-      Tutorial runtime owns those live nodes and associates them with the HUD,
-      mission strip and Dungeon Radar targets highlighted during lesson 5.
-      Rebuilding the grid with innerHTML destroys that identity and leaves the
-      information tour with fewer live highlights. V10.42 therefore changes
-      campaign explanation copy only and leaves the interactive tour DOM intact.
-    */
     tour.dataset.v142CampaignCopy="true";return true;
   }
   function patchCompletionBanner(){
@@ -99,7 +91,7 @@
     const title=String(banner.querySelector("b")?.textContent||"").trim().toUpperCase();if(title!=="TUTORIAL COMPLETE")return false;
     if(banner.dataset.v142CampaignCopy==="true")return true;
     const copy=banner.querySelector("span");
-    if(copy)copy.textContent="You have finished the free Tutorial. The full campaign continues with evolving weapons, RPG progression, equipment, discovered services, Sanctuary, Wardens, death recovery and deeper dungeon objectives.";
+    if(copy)copy.textContent="Tutorial complete. The full campaign adds tougher enemies, evolving weapons, equipment, shops, Sanctuary, Wardens, death recovery and deeper floor challenges.";
     banner.dataset.v142CampaignCopy="true";return true;
   }
   function patchAll(){patchStageModal();patchRail();patchTour();patchCompletionBanner()}

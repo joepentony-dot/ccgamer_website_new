@@ -1,3 +1,12 @@
+## R115 player-facing guide / tutorial continuation — 7 October 2026 13:32 UK
+
+- R114 / PR #2571 merged safely to `main` at `abd5a3629e990aaca8d116e98a690fc2317c4e1e`.
+- Post-merge verification is green on that exact merge commit: GitHub Pages deployment, Production Smoke, Live Public Navigation, Site Safety, itch.io package, Node qualification and all six Full Qualification Chromium shards passed.
+- Fresh successor branch: `codex/dungeon-r115-guide-runtime-audit`, created directly from verified R114 `main`. Superseded #2567 and merged #2571 must not be reused as development vehicles.
+- First R115 task: replace the long implementation-heavy Objectives & Rulebook with a concise player-facing Dungeon Guide, and simplify the existing campaign Tutorial presentation copy without adding another tutorial owner.
+- Public 24-hour playtest access/timer remains untouched.
+- Remaining audit backlog after this presentation pass: Map Reveal icon visibility end-to-end; wearable armour-cap consistency; death-cache exact-once/elevated-armour recovery; bridge/thief/rebuild/ammo failsafe end-to-end; Floor 15 boss/Sigil composition; campaign objective/enemy variety; and any defects exposed by qualification/playtest telemetry.
+
 ## R114 firearm browser-contract reconciliation — 7 October 2026 12:50 UK
 
 - Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02`; active vehicle remains draft PR #2571.

@@ -1,3 +1,11 @@
+## R115 authoritative runtime continuation — 7 October 2026 13:32 UK
+
+- Verified merged baseline is R114 at `abd5a3629e990aaca8d116e98a690fc2317c4e1e`.
+- Post-merge Pages, Production Smoke, Live Public Navigation, Site Safety and Full Qualification (all six Chromium shards) are green.
+- Active successor branch: `codex/dungeon-r115-guide-runtime-audit`.
+- Current work consolidates player guidance into the existing Rulebook panel and existing Tutorial presentation owner. No duplicate guide/timer/tutorial system is being introduced.
+- Preserve all R114 gameplay semantics and the server-validated public playtest boundary while continuing the remaining audits.
+
 ## R114 firearm qualification update — 7 October 2026 12:50 UK
 
 - Full Qualification reached all Chromium shards on `8cca393cd37034ceca7e25e0b9cad9c9da3254d1`; only shard 2 failed.
