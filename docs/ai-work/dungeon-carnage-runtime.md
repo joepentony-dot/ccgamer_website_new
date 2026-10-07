@@ -1,3 +1,9 @@
+## R115 guide qualification repair — 7 October 2026
+
+- Restored concise death-cache progression-item protection wording in the player guide.
+- Replaced the obsolete Gambler-manual assertion in the existing V10.22 contract with current player-facing guide checks for Dungeon Guide naming, Floor/Campaign Key distinction and Teleport restrictions in sealed challenges.
+- Continue exact-head qualification before any merge.
+
 ## R115 authoritative runtime continuation — 7 October 2026 13:32 UK
 
 - Verified merged baseline is R114 at `abd5a3629e990aaca8d116e98a690fc2317c4e1e`.

@@ -1,3 +1,10 @@
+## R115 qualification repair — 7 October 2026
+
+- Exact head `bfd776be5faa289654263fd979bb340ce33df2c7` passed package/cache/SEO/metadata checks but PR Qualification and Full Qualification stopped in the existing V10.22 published-help contract.
+- The concise Dungeon Guide had removed an important player safety rule: if a death cache is lost, essential keys or an Exit Sigil are returned safely to the floor and marked on the maps. That protection is restored in one short sentence.
+- The same legacy test also required a rare Gambler explanation. That requirement conflicts with the current instruction to keep the guide short and leave nonessential discoveries for play, so the existing contract now verifies the current Dungeon Guide, Floor Key vs Campaign Key wording and sealed-challenge Teleport rule instead.
+- No runtime behaviour, timer, playtest access or gameplay owner changed.
+
 ## R115 player-facing guide / tutorial continuation — 7 October 2026 13:32 UK
 
 - R114 / PR #2571 merged safely to `main` at `abd5a3629e990aaca8d116e98a690fc2317c4e1e`.
