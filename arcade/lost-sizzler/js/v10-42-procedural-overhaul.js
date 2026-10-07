@@ -100,7 +100,7 @@
     if(statId==="might"&&Math.floor((after-RPG_BASE)/2)>Math.floor((before-RPG_BASE)/2))player.damageBonus=(player.damageBonus||0)+1;
     if(statId==="vitality"){player.maxHealth+=1;player.health=Math.min(player.maxHealth,player.health+1)}
     if(statId==="agility")player.moveMultiplier=(player.moveMultiplier||1)*.97;
-    if(statId==="endurance"){player.maxMana+=14;player.mana=Math.min(player.maxMana,player.mana+14);player.armor=Math.min(12,(player.armor||0)+1)}
+    if(statId==="endurance"){player.maxMana+=14;player.mana=Math.min(player.maxMana,player.mana+14);player.armor=Math.min(PROG.armourCap?.(player)||12,(player.armor||0)+1)}
     if(statId==="arcana"){if(after%3===0)player.banishmentEssenceCost=Math.max(2,essenceCost(player)-1);player.v142WardCooldownMs=Math.max(14000,30000-(after-RPG_BASE)*1800)}
     player.pendingLevels=Math.max(0,(player.pendingLevels||1)-1);player.skills=player.skills||[];player.skills.push(id);
     return{id,name:`${row.name} ${after}`,desc:`${row.name} increased to ${after}. ${row.desc}`};
@@ -328,7 +328,7 @@
 
   function updateSigilAndRelics(){
     const player=currentPlayer(),h=currentHost(),r=currentRun();if(!player||!h||!r||currentMode()!=="playing")return;initRpg(player);const now=performance.now();
-    if(player.sigilWard&&now>=Number(player.v142WardReadyAt||0)&&player.armor<12){player.armor=Math.min(12,player.armor+1);const arcana=Math.max(0,stat(player,"arcana")-RPG_BASE),cool=Math.max(12000,Number(player.v142WardCooldownMs)||30000-arcana*1800);player.v142WardReadyAt=now+cool;announce("SIGIL WARD","The Sigil restored 1 armour.","cyan",4500)}
+    if(player.sigilWard&&now>=Number(player.v142WardReadyAt||0)&&player.armor<(PROG.armourCap?.(player)||12)){player.armor=Math.min(PROG.armourCap?.(player)||12,player.armor+1);const arcana=Math.max(0,stat(player,"arcana")-RPG_BASE),cool=Math.max(12000,Number(player.v142WardCooldownMs)||30000-arcana*1800);player.v142WardReadyAt=now+cool;announce("SIGIL WARD","The Sigil restored 1 armour.","cyan",4500)}
     if(player.sigilBind&&now>=Number(player.v142BindReadyAt||0)){
       const targets=(h.enemies||[]).filter(enemy=>enemy.alive&&enemy.deathStalker&&distance(enemy,player)<=8),countTarget=h.stalker?.awake&&distance(h.stalker,player)<=8?h.stalker:null;if(targets.length||countTarget){for(const enemy of targets){enemy.moveCooldown=Math.max(Number(enemy.moveCooldown)||0,1300);enemy.memoryMs=Math.min(Number(enemy.memoryMs)||0,1800)}if(countTarget)countTarget.stunMs=Math.max(Number(countTarget.stunMs)||0,900);player.v142BindReadyAt=now+12000;announce("SIGIL BIND","Nearby supernatural movement has been suppressed briefly.","purple",4500)}
     }
