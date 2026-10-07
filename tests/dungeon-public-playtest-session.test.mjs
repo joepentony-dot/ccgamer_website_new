@@ -22,6 +22,9 @@ assert(ui.includes("ccg_complete_dungeon_carnage_public_playtest"),"five-minute 
 assert(ui.includes("ccg_mark_dungeon_carnage_public_playtest_feedback"),"successful feedback must be counted");
 assert(ui.includes("CONTACT_SCRIPT_URL"),"feedback must route through the existing CCG contact delivery service");
 assert(ui.includes("C64 DUNGEON CARNAGE · COMING SOON"),"five-minute lockout must present the Coming Soon state");
+assert(ui.includes('/auth/register.html'),"post-test screen must offer CCG website registration");
+assert(ui.includes("https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"),"post-test screen must reuse the live CCG PayPal support destination");
+assert(ui.includes("Support is completely optional"),"post-test support prompt must state that contributions are optional");
 assert(ui.includes('url.searchParams.delete("utm_source")'),"shared/feedback URLs must strip UTM source attribution");
 assert(!ui.toLowerCase().includes("chatgpt"),"public playtest controller must contain no ChatGPT wording");
 assert(css.includes("#ccg-public-playtest-end"),"public end-state UI must be styled");
