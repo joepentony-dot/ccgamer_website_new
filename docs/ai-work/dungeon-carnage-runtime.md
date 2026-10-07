@@ -1,3 +1,9 @@
+## R115 Map Reveal runtime audit — 7 October 2026
+
+- Cartographer's Eye geometry reveal was already functional, but icon visibility was incomplete.
+- Compact radar, full map and Warden navigation now honour `host.r114MapRevealed` for intended Sanctuary/Shop/active-Warden markers while preserving ordinary discovery bookkeeping.
+- Existing R72 consolidated map contract now covers this explicit reveal path.
+
 ## R115 guide qualification repair — 7 October 2026
 
 - Restored concise death-cache progression-item protection wording in the player guide.

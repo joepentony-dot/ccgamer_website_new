@@ -1425,9 +1425,9 @@ function renderRadarPanel(p){
     if(!wall&&sc>=3.1){radarCtx.fillStyle="rgba(255,255,255,.035)";radarCtx.fillRect(px({x,y})+.5,py({x,y})+.5,Math.max(.5,sc-1),Math.max(.5,sc-1))}
   }
   const trail=playerTrails.get(p.id)||[];radarCtx.fillStyle="rgba(108,236,255,.5)";for(let i=Math.max(0,trail.length-420);i<trail.length;i+=3){const q=trail[i];if(inside(q)&&ex.has(`${Math.round(q.x)},${Math.round(q.y)}`))radarCtx.fillRect(px(q),py(q),Math.max(1.2,sc*.72),Math.max(1.2,sc*.72))}
-  const visited=new Set((host.enteredRoomIds||[]).map(Number)),sanctuaryIds=new Set((world.sanctuaryRooms||[]).map(Number));
+  const revealAll=Boolean(host?.r114MapRevealed),visited=new Set((host.enteredRoomIds||[]).map(Number)),sanctuaryIds=new Set((world.sanctuaryRooms||[]).map(Number));
   for(const room of world.rooms||[]){
-    if(!room?.sanctuary||!sanctuaryIds.has(Number(room.id))||!visited.has(Number(room.id)))continue;
+    if(!room?.sanctuary||!sanctuaryIds.has(Number(room.id))||(!visited.has(Number(room.id))&&!revealAll))continue;
     const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};if(inside(q))drawRadarCross(radarCtx,px(q),py(q),"#64ffa2",5)
   }
   // Radar knowledge is earned, never globally revealed.
@@ -1437,7 +1437,7 @@ function renderRadarPanel(p){
   const gateNav=Boolean(host.exitSigilCollected&&host.radarSigilGateSeen),marker=gateNav?host.radarSigilGateSeen:(!host.exitSigilCollected?host.radarSigilSeen:null),legend=document.getElementById("radar-sigil-label");if(legend)legend.textContent=gateNav?"SIGIL GATE":"SIGIL";
   if(marker&&inside(marker)){const q=marker;radarCtx.save();radarCtx.fillStyle=gateNav?P.purple:P.gold;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1;radarCtx.beginPath();radarCtx.moveTo(px(q),py(q)-5);radarCtx.lineTo(px(q)+5,py(q));radarCtx.lineTo(px(q),py(q)+5);radarCtx.lineTo(px(q)-5,py(q));radarCtx.closePath();radarCtx.fill();radarCtx.stroke();if(gateNav){radarCtx.fillStyle=P.white;radarCtx.fillRect(px(q)-1,py(q)-3,2,6)}radarCtx.restore()}
   for(const cache of host.deathCaches||[])if(cache.active&&inside(cache)){const cx=px(cache),cy=py(cache);radarCtx.save();radarCtx.strokeStyle="#ff6076";radarCtx.lineWidth=2;radarCtx.beginPath();radarCtx.moveTo(cx-3,cy-3);radarCtx.lineTo(cx+3,cy+3);radarCtx.moveTo(cx+3,cy-3);radarCtx.lineTo(cx-3,cy+3);radarCtx.stroke();radarCtx.restore()}
-  for(const shop of host.shops||[])if(shop.active&&shop.discovered&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}
+  for(const shop of host.shops||[])if(shop.active&&(shop.discovered||revealAll)&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
   radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);
   const playerCx=px(p)+sc/2,playerCy=py(p)+sc/2,playerSize=Math.max(7,Math.min(11,sc*.82));radarCtx.save();radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1.5;radarCtx.shadowColor=P.cyan;radarCtx.shadowBlur=4;radarCtx.fillRect(playerCx-playerSize/2,playerCy-playerSize/2,playerSize,playerSize);radarCtx.strokeRect(playerCx-playerSize/2-.5,playerCy-playerSize/2-.5,playerSize+1,playerSize+1);radarCtx.fillStyle="#091018";radarCtx.fillRect(playerCx-1,playerCy-1,2,2);radarCtx.restore()

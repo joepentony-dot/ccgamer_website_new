@@ -122,7 +122,7 @@
     if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height}
     context.imageSmoothingEnabled=false;
     context.fillStyle="#020104";context.fillRect(0,0,width,height);
-    const ex=exploredSet();
+    const ex=exploredSet(),revealAll=Boolean(host?.r114MapRevealed);
 
     for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
       if(!ex.has(`${x},${y}`))continue;
@@ -143,9 +143,9 @@
       if(item.kind==="exitSigil"&&(visibleKnowledge(ex,item)||host?.radarSigilSeen))drawMarker(context,item,"#b978ff","diamond");
     }
 
-    const visited=new Set((host?.enteredRoomIds||[]).map(Number));for(const room of world.rooms||[])if(room?.sanctuary&&visited.has(Number(room.id))){const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};drawMarker(context,q,"#64ffa2","plus")}
+    const visited=new Set((host?.enteredRoomIds||[]).map(Number));for(const room of world.rooms||[])if(room?.sanctuary&&(visited.has(Number(room.id))||revealAll)){const q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};drawMarker(context,q,"#64ffa2","plus")}
     for(const cache of host?.deathCaches||[])if(cache?.active)drawMarker(context,cache,"#ff6076","cross");
-    for(const shop of host?.shops||[])if(shop?.active&&shop?.discovered)drawMarker(context,shop,"#ffd85a","square");
+    for(const shop of host?.shops||[])if(shop?.active&&(shop?.discovered||revealAll))drawMarker(context,shop,"#ffd85a","square");
     try{for(const marker of window.CCGLostSizzlerV142WardenNavigationCues?.markerState?.(p1)||[]){const colour=marker.kind==="refuge"?"#8deeff":marker.kind==="cache"?"#ffd85a":marker.kind==="broken-warden"?"#ff5270":"#e260ff",shape=marker.kind==="refuge"?"ring":marker.kind==="broken-warden"?"cross":marker.kind==="corruption"?"diamond":"square";drawMarker(context,marker,colour,shape)}}catch(_){}
 
     for(const marker of host?.progressionRecoveryMarkers||[]){

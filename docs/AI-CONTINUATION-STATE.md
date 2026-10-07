@@ -1,3 +1,10 @@
+## R115 Cartographer's Eye icon-visibility repair — 7 October 2026
+
+- Audit found a real R114 integration gap: `useMapReveal()` correctly charts floor geometry and sets `host.r114MapRevealed=true`, but compact radar/full-map Sanctuary and Shop markers still required ordinary discovery, while the active Warden domain marker still required prior domain discovery.
+- Existing render owners now consume the explicit reveal flag: Sanctuary and active Shop markers render when normally discovered OR when Cartographer's Eye has revealed the floor. Warden navigation exposes the active uncleansed domain under the same explicit reveal state.
+- Ordinary discovery state is not forged: the repair does not add rooms to `enteredRoomIds`, does not set `shop.discovered`, and does not mark the Warden domain as physically visited.
+- The existing R72 map/death contract was extended rather than adding another test file.
+
 ## R115 qualification repair — 7 October 2026
 
 - Exact head `bfd776be5faa289654263fd979bb340ce33df2c7` passed package/cache/SEO/metadata checks but PR Qualification and Full Qualification stopped in the existing V10.22 published-help contract.

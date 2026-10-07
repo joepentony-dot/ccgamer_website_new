@@ -9,6 +9,7 @@ const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 const bootstrap=read("js/v10-42-bootstrap.js");
 const gameplay=read("js/game-play.js");
+const localRuntime=read("js/game-local-runtime.js");
 const render=read("js/game-render.js");
 const fullMap=read("js/v10-41-solo-full-map.js");
 const warden=read("js/v10-42-warden-navigation-cues.js");
@@ -55,7 +56,10 @@ assert.match(voice,/WEAPON EVOLVED\|FIREARM UPGRADE COMPLETE/,"toast fallback ma
 assert.match(render,/function radarRoomType\(/,"room classification may remain available for map logic without becoming a second compact-HUD colour key");
 assert.match(render,/world\?\.sanctuaryRooms[\s\S]*room\.sanctuary===true[\s\S]*return"sanctuary"/,"sanctuary map classification must require the authoritative sanctuary-room registry");
 assert.match(render,/room\.dedicatedHazard\|\|room\.dangerous/,"danger-room classification remains available to richer map logic");
-assert.match(render,/host\.enteredRoomIds/,"sanctuary icon must be gated by actual room discovery");
+assert.match(localRuntime,/host\.r114MapRevealed=true/,"Cartographer's Eye activation must publish one explicit whole-floor reveal state");
+assert.match(render,/const revealAll=Boolean\(host\?\.r114MapRevealed\)/,"compact radar must honour explicit Cartographer's Eye reveal state");
+assert.match(render,/\(!visited\.has\(Number\(room\.id\)\)&&!revealAll\)/,"sanctuary icon must remain discovery-gated unless Cartographer's Eye reveals the floor");
+assert.match(render,/shop\.active&&\(shop\.discovered\|\|revealAll\)/,"shop icons must be visible after explicit whole-floor reveal without mutating shop discovery");
 assert.match(render,/drawRadarCross\(radarCtx,px\(q\),py\(q\),"#64ffa2"/,"discovered sanctuary must use the green first-aid cross");
 assert.match(render,/function radarTileColour\(x,y,wall\)[\s\S]*return wall\?"#292233":"#655879"/,"compact radar geometry must use one neutral floor/wall language instead of competing room colours");
 assert.doesNotMatch(render,/const floors=\{normal:"#655879",sanctuary:/,"compact radar must not restore the duplicated semantic room-colour palette");
@@ -63,13 +67,16 @@ assert.match(render,/const playerCx=px\(p\)\+sc\/2,playerCy=py\(p\)\+sc\/2[\s\S]
 assert.doesNotMatch(render,/radarCtx\.moveTo\(px\(p\),py\(p\)-5\)/,"compact radar must not restore the ambiguous R112 triangle marker");
 
 assert.match(fullMap,/function fullMapRoomType\(/,"full map must share room-type presentation");
-assert.match(fullMap,/room\?\.sanctuary&&visited\.has/,"full map sanctuary markers must also require discovery");
+assert.match(fullMap,/const ex=exploredSet\(\),revealAll=Boolean\(host\?\.r114MapRevealed\)/,"full map must consume the same explicit whole-floor reveal state");
+assert.match(fullMap,/room\?\.sanctuary&&\(visited\.has\(Number\(room\.id\)\)\|\|revealAll\)/,"full map sanctuary markers must allow explicit Cartographer's Eye reveal");
+assert.match(fullMap,/shop\?\.active&&\(shop\?\.discovered\|\|revealAll\)/,"full map shop markers must allow explicit Cartographer's Eye reveal");
 assert.match(fullMap,/drawMarker\(context,q,"#64ffa2","plus"\)/,"full map sanctuary must use a green plus");
 assert.match(fullMap,/CCGLostSizzlerV142WardenNavigationCues\?\.markerState/,"full map must include current Warden navigation markers");
 assert.match(fullMap,/shape==="triangle"/,"full map marker renderer must support the player triangle");
 assert.match(fullMap,/drawMarker\(context,p1,"#6cecff","triangle","YOU"\)/,"full map player marker must not fall back to the legacy square");
 assert.match(fullMapCss,/ccg-map-player\{[^}]*clip-path:polygon\(50% 0,100% 100%,0 100%\)/,"full map legend must show the same triangle player symbol");
 assert.match(warden,/const refuge=h\.v142CleansedRefuge/,"Warden refuge marker must come from the real cleansed refuge state, not a legacy checkpoint");
+assert.match(warden,/row\?\.domainDiscovered\|\|h\.r114MapRevealed/,"Cartographer's Eye must reveal the active Warden domain marker without fabricating ordinary discovery");
 assert.doesNotMatch(warden,/rgba\(100,255,162/,"green cross styling is reserved for Sanctuary, not Warden refuge");
 
 for(const page of [index,alias]){
