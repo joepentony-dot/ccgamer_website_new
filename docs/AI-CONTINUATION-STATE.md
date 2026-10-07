@@ -1,3 +1,11 @@
+## R115 Floor 15 boss/Sigil composition repair — 7 October 2026
+
+- Audit confirmed R114 correctly reused the canonical Floor 15 guardian as THE BLOOD ARCHIVIST, avoiding a duplicate final-completion owner, but did not move that reused guardian into the authored boss arena (the exit room).
+- The reused final guardian is now relocated to a valid boss-arena cell before the fight state is created. It remains the same `host.guardian` object, so defeating the multi-phase boss satisfies the existing guardian objective exactly once.
+- Boss completion still explicitly returns the player to the Sigil route; the boss does not award or bypass the final Sigil.
+- Existing R87 fifteen-floor campaign coverage now verifies guardian reuse, arena placement, shared boss identity and hand-off to the Sigil route.
+- The stale R54 old-Rulebook heading assertion now targets the concise KEYS & MAP guide section; all bronze runtime checks remain unchanged.
+
 ## R115 wearable armour-cap / death-cache audit — 7 October 2026
 
 - Armour gain paths were audited for hard-coded base-cap behaviour. Loot, floor armour pickups and Shrine armour already use `PGR.armourCap(player)`; Shop Armour Repair was the remaining legacy `Math.min(12,...)` path.

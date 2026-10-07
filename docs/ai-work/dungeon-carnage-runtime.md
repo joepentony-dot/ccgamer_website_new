@@ -1,3 +1,9 @@
+## R115 final-floor composition audit — 7 October 2026
+
+- Fixed Floor 15 arena placement for the reused final guardian/Blood Archivist.
+- There is still one guardian/objective identity: the boss is the canonical guardian, then normal Sigil progression remains required after defeat.
+- R87 coverage now locks this composition. R54 guide heading contract updated to the new concise guide only.
+
 ## R115 armour/death-cache audit — 7 October 2026
 
 - Fixed the final audited hard-coded 12-cap armour gain path: Shop Armour Repair now respects `PGR.armourCap(p1)`.

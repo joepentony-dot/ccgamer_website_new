@@ -44,6 +44,9 @@
       const floor=floorNumber(runState),spec=bossSpec(runState);if(!spec)return null;
       const room=worldState.rooms?.[worldState.exitRoomId];if(!room)return null;
       let boss=floor===CFG.maxFloors?(hostState.guardian||(hostState.enemies||[]).find(e=>e?.guardian&&!e.keyGuardian)):null;
+      if(floor===CFG.maxFloors&&boss){
+        const q=bossCell(worldState,hostState,room);boss.x=q.x;boss.y=q.y;boss.rx=q.x;boss.ry=q.y;
+      }
       if(!boss){
         const q=bossCell(worldState,hostState,room);
         boss={id:`r114-grotesque-boss-f${floor}`,...q,kind:"guardian",hp:spec.hp,maxHp:spec.hp,armor:spec.armor,maxArmor:spec.armor,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:940,chargeCooldown:1100,healCooldown:999999,flash:0,hpBarMs:0,guardian:true,ccgBoss:true}

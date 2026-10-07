@@ -48,6 +48,10 @@ assert.equal(floors[14].theme,"BLOOD_CITADEL","Floor 15 must end in the danger-r
 assert.match(worldSource,/BLOOD_CITADEL:\{name:"Blood Citadel",floor:"#24090d"/,"world palette must define the authored danger-red final theme");
 assert.match(campaignSource,/function applyFloorTheme\(/,"campaign must actively apply each floor's primary theme to generated rooms");
 assert.match(campaignSource,/floor===CFG\.maxFloors/,"final Sigil ownership must follow the configured maximum floor rather than hard-coded Floor 5");
+assert.match(campaignSource,/let boss=floor===CFG\.maxFloors\?\(hostState\.guardian\|\|\(hostState\.enemies\|\|\[\]\)\.find\(e=>e\?\.guardian&&!e\.keyGuardian\)\):null/,"Floor 15 grotesque boss must reuse the canonical final guardian instead of creating a competing completion owner");
+assert.match(campaignSource,/if\(floor===CFG\.maxFloors&&boss\)\{[\s\S]*?bossCell\(worldState,hostState,room\);boss\.x=q\.x;boss\.y=q\.y;boss\.rx=q\.x;boss\.ry=q\.y/,"the reused Floor 15 guardian must be placed inside the authored boss arena");
+assert.match(campaignSource,/hostState\.r114BossFight=\{floor,roomId:room\.id,bossId:boss\.id/,"boss-fight state must reference that same guardian identity");
+assert.match(gameplaySource,/The Blood Citadel's final keeper is down\. Finish the Sigil route and escape\./,"Floor 15 boss completion must hand progression back to the Sigil route rather than bypass it");
 assert.match(balanceSource,/floor===C\.maxFloors&&named/,"final named-enemy tuning must move with the configured final floor");
 assert.deepEqual(Array.from(C.proceduralDungeon.keyDomains,row=>Number(row.floor)),[3,7,11],"Iron, Bone and Ash must be spaced across the longer campaign");
 assert.equal(C.proceduralDungeon.pickupDistribution.length,15,"A-Z collectible distribution must cover all fifteen floors");
