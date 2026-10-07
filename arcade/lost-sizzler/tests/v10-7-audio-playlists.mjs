@@ -17,6 +17,8 @@ const owner=read('arcade/lost-sizzler/js/asset-overrides.js');
 const admin=read('admin/js/arcade-assets.js');
 const index=read('arcade/lost-sizzler/index.html');
 const publicIndex=read('arcade/c64-dungeon-carnage/index.html');
+const version=JSON.parse(read('arcade/lost-sizzler/version.json'));
+const releaseToken=String(version.cacheToken||'');
 
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
 for(const state of ['normal','danger','sanctuary','named','stalker']){
@@ -49,9 +51,9 @@ assert(owner.includes('ccg-arcade-assets/music/lostSizzlerStalker'),'R111 must p
 assert(assets.includes('deflect:"assets/audio/sfx/blade-hit.wav"'),'Sword projectile deflection must have an authored SFX route.');
 assert(baseAudio.includes('deflect:()=>{tone(1180'),'Sword projectile deflection must retain a dedicated metallic fallback SFX.');
 for(const html of [index,publicIndex]){
-  const basePos=html.indexOf('js/audio.js?v=20261006r111');
-  const playlistPos=html.indexOf('js/lost-sizzler-playlist-audio.js?v=20261006r111');
-  assert(basePos>=0&&playlistPos>basePos,'R111 public entries must preserve the qualified playlist owner immediately after base audio.');
+  const basePos=html.indexOf(`js/audio.js?v=${releaseToken}`);
+  const playlistPos=html.indexOf(`js/lost-sizzler-playlist-audio.js?v=${releaseToken}`);
+  assert(basePos>=0&&playlistPos>basePos,'Current public entries must preserve the qualified playlist owner immediately after base audio.');
 }
 assert(patch.includes('function retryUploadedMusicOnGesture(event)')&&patch.includes('event?.target?.closest?.("#solo-btn,#tutorial-zone-btn")'),'Mobile playback rejection and trusted launch must use an event-aware real-gesture recovery path.');
 assert(patch.includes('window.addEventListener("touchstart",retryUploadedMusicOnGesture,{capture:true,passive:true})'),'Touch-first mobile playback must retry the soundtrack from a user gesture.');
