@@ -1,9 +1,9 @@
-/* CCG owner + closed-member Round 2 beta gate for C64 Dungeon Carnage.
+/* CCG owner/member gate + server-validated public 24-hour playtest pass.
  *
- * Production remains closed to ordinary visitors while the beta is active.
- * The signed-in Cheeky Commodore Gamer admin profile is allowed through and
- * the frozen Round 2 website-member cohort is admitted from its normal account.
- * New members and the retired invited-tester code path are not admitted.
+ * Production remains protected by default. Owner and eligible member access
+ * continue to work, while the current public share token can temporarily admit
+ * anyone for one shared 24-hour window. The public window is enforced by
+ * Supabase and begins on the first successful token validation.
  */
 (function () {
   "use strict";
@@ -14,6 +14,8 @@
   const OWNER_DISPLAY_NAME = "cheeky commodore gamer";
   const OWNER_ROLE = "admin";
   const AUTH_TIMEOUT_MS = 5000;
+  const PUBLIC_PLAYTEST_PARAM = "playtest";
+  const PUBLIC_PLAYTEST_SESSION_KEY = "ccg_dungeon_public_playtest_token";
   const PROTECTED_RUNTIME_TYPE = "application/ccg-protected-runtime";
   let runtimeAccessGranted = false;
   let runtimeBoundaryReached = false;
@@ -198,6 +200,39 @@
     }
   }
 
+  function publicPlaytestToken() {
+    let token = "";
+    try {
+      token = new URLSearchParams(window.location.search).get(PUBLIC_PLAYTEST_PARAM) || "";
+      token = String(token).trim();
+      if (token) sessionStorage.setItem(PUBLIC_PLAYTEST_SESSION_KEY, token);
+      if (!token) token = String(sessionStorage.getItem(PUBLIC_PLAYTEST_SESSION_KEY) || "").trim();
+    } catch (_error) {
+      token = "";
+    }
+    return token;
+  }
+
+  async function resolvePublicPlaytestAccess() {
+    const token = publicPlaytestToken();
+    if (!token) return null;
+
+    const client = await getSupabaseClient();
+    if (!client || typeof client.rpc !== "function") return null;
+
+    try {
+      const result = await client.rpc("ccg_validate_dungeon_carnage_public_playtest", {
+        p_token: token
+      });
+      if (result?.error) return { allowed: false, reason: "validation_error" };
+      const data = result?.data;
+      if (data && typeof data === "object") return data;
+      return { allowed: data === true, reason: data === true ? "public_24h_playtest" : "invalid_or_expired" };
+    } catch (_error) {
+      return { allowed: false, reason: "validation_error" };
+    }
+  }
+
   async function resolveAccountAccess() {
     const client = await getSupabaseClient();
     if (!client?.auth) return null;
@@ -238,8 +273,9 @@
       && profile.banned !== true;
   }
 
-  function showMemberGate() {
-    mark("round2-member-required");
+  function showMemberGate(publicReason = "") {
+    const publicEnded = publicReason === "expired";
+    mark(publicEnded ? "public-playtest-expired" : "round2-member-required");
     if (document.getElementById("ccg-member-beta-access-gate")) return;
 
     const gate = document.createElement("div");
@@ -263,10 +299,10 @@
       '#ccg-member-beta-exit{border:1px solid rgba(255,255,255,.18);color:#d4cee0;}',
       '</style>',
       '<div id="ccg-member-beta-access-card">',
-      '<span class="ccg-kicker">C64 DUNGEON CARNAGE · BETA ROUND 2</span>',
-      '<h1 id="ccg-member-beta-access-title">Current Members Only</h1>',
-      '<p>Round 2 is a closed one-week beta for website members who were already registered when this round opened.</p>',
-      '<p class="ccg-round2-note">The cohort is now locked. New sign-ups and previous tester codes cannot be added to this testing round.</p>',
+      '<span class="ccg-kicker">C64 DUNGEON CARNAGE · PLAYTEST</span>',
+      '<h1 id="ccg-member-beta-access-title">' + (publicEnded ? '24-Hour Playtest Ended' : 'Current Members Only') + '</h1>',
+      '<p>' + (publicEnded ? 'This public YouTube playtest link has completed its shared 24-hour test window.' : 'The public game remains protected outside an active share window.') + '</p>',
+      '<p class="ccg-round2-note">' + (publicEnded ? 'The same link cannot restart or extend the timer. Owner and currently eligible member access remain separately protected.' : 'Sign in if you already have assigned member access.') + '</p>',
       '<div class="ccg-actions">',
       '<a id="ccg-member-beta-signin" href="/auth/login.html?returnTo=' + returnTo + '">SIGN IN AS AN ASSIGNED MEMBER</a>',
       '<a id="ccg-member-beta-exit" href="' + MAINTENANCE_DESTINATION + '">Return to CCG Games</a>',
@@ -288,6 +324,31 @@
     }
 
     mark(snapshotOwnerHint() ? "checking-owner" : "checking");
+
+    const sharedToken = publicPlaytestToken();
+    let publicReason = "";
+    if (sharedToken) {
+      let publicTimeoutId = 0;
+      try {
+        const timeout = new Promise((resolve) => {
+          publicTimeoutId = window.setTimeout(() => resolve(null), AUTH_TIMEOUT_MS);
+        });
+        const access = await Promise.race([resolvePublicPlaytestAccess(), timeout]);
+        if (access?.allowed === true) {
+          mark("public-24h-playtest");
+          window.dispatchEvent(new CustomEvent("ccg:public-playtest-access-granted", {
+            detail: { allowed: true, expiresAt: access.expires_at || null }
+          }));
+          dispatchAllowed("public-24h-playtest");
+          return;
+        }
+        publicReason = String(access?.reason || "");
+      } catch (_error) {
+        publicReason = "validation_error";
+      } finally {
+        if (publicTimeoutId) window.clearTimeout(publicTimeoutId);
+      }
+    }
 
     let timeoutId = 0;
     try {
@@ -311,18 +372,20 @@
         return;
       }
     } catch (_error) {
-      // Account resolution failed; Round 2 remains closed and fails safely.
+      // Account resolution failed; protected runtime remains closed.
     } finally {
       if (timeoutId) window.clearTimeout(timeoutId);
     }
 
-    showMemberGate();
+    showMemberGate(publicReason === "expired" ? "expired" : "");
   }
 
   window.CCGPlayMaintenanceOwnerGate = Object.freeze({
     check: checkAccess,
     isOwnerProfile: isOwnerProfile,
     resolveAccountAccess: resolveAccountAccess,
+    resolvePublicPlaytestAccess: resolvePublicPlaytestAccess,
+    publicPlaytestToken: publicPlaytestToken,
     maintenanceDestination: MAINTENANCE_DESTINATION,
     runtimeBoundaryReady: runtimeBoundaryReady,
     runtimeParserBootComplete: runtimeParserBootComplete
