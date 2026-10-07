@@ -110,9 +110,12 @@ assert.ok(["head","hands","feet"].includes(generated.slot));
 assert.ok(generated.name);
 assert.ok(api.effectText(generated).length>3);
 
-assert.deepEqual(api.gearTierFor("UNCOMMON"),{name:"RARE",armourBonus:1,enchanted:false});
-assert.deepEqual(api.gearTierFor("SIZZLER"),{name:"SUPERIOR",armourBonus:2,enchanted:false});
-assert.deepEqual(api.gearTierFor("GOLD MEDAL"),{name:"ENCHANTED",armourBonus:3,enchanted:true});
+for(const [rarity,name,armourBonus,enchanted] of [["UNCOMMON","RARE",1,false],["SIZZLER","SUPERIOR",2,false],["GOLD MEDAL","ENCHANTED",3,true]]){
+  const tier=api.gearTierFor(rarity);
+  assert.equal(tier.name,name);
+  assert.equal(tier.armourBonus,armourBonus);
+  assert.equal(tier.enchanted,enchanted);
+}
 const enchantedHead=api.makeWearable({id:"enchanted-head-search",depth:12},{rpgStats:{luck:10}});
 assert.ok(["COMMON","RARE","SUPERIOR","ENCHANTED"].includes(enchantedHead.gearTier));
 if(enchantedHead.gearTier==="ENCHANTED")assert.ok(/SIGHT|AMMO PICKUPS|FASTER MOVEMENT/.test(api.effectText(enchantedHead)),"Enchanted wearables must add a secondary slot bonus");
