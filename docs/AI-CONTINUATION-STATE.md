@@ -1,3 +1,11 @@
+## R117 qualification checkpoint — 7 October 2026 23:33 UK
+
+- Authoritative main: `c56a5c20b2bed4da6446d2eb96498a4ce4e1dab0`. Active PR #2593 / `codex/dungeon-r117-release-reconciliation-20261007` at head `4a4912f426a093e50bb70c1400f04b59edf37889`, 15 ahead and 0 behind main; NOT merge-ready.
+- Exact-head PR Qualification, Node contracts, Chromium shards 1/2/4/5/6, packaging, site safety, cache, mobile/PWA, metadata and SEO passed. Full Qualification FAILED in Chromium shard 3: R59 live-encounter trap-contact fixture timed out waiting for movement onto a hazard tile.
+- P1 review finding: Floor 7/relay trial cell selection checks the map but not `hostState.blockingDecor`, allowing required nodes on unwalkable structural decor. Repair the existing R115 trial director to require canonical `W.walkable(worldState.map,x,y,hostState)` before selecting a node, and extend the existing R87 campaign regression.
+- Another review comment about the CRT existing-guard regex appears inconsistent with the current code and green Node contract; verify before altering tests.
+- Inspect the R59 fixture's selected target for `W.walkable` and player input state before changing runtime or timeouts. Do not merge a red head or touch the server-validated public playtest timer.
+
 ## R116 live-playtest corrective tranche — 7 October 2026
 
 - Active draft: PR #2573 / `codex/dungeon-r116-cartographers-eye-use`; current branch head before this checkpoint: `e1505ba20ca237fce79fc2387875ea2ecf7855ad`.
