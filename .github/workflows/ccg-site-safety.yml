@@ -107,6 +107,7 @@ jobs:
           node --check admin/js/content-publisher-status-reconciler.js
           node --check admin/js/content-publisher-source-preflight.mjs
           node --check resources/js/auth/profile-lists.js
+          node --check resources/js/auth/profile-page.js
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
           node --check resources/js/auth/member-community.js
@@ -213,6 +214,9 @@ jobs:
 
       - name: Run Member Hub audit
         run: node scripts/audit-member-hub.js
+
+      - name: Run Member Hub compact profile contract
+        run: node --test tests/member-hub-compact-profile.test.mjs
 
       - name: Run Member Community audit
         run: node scripts/audit-member-community.js
