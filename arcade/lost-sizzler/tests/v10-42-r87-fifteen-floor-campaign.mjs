@@ -13,6 +13,7 @@ const worldSource=read("arcade/lost-sizzler/js/world.js");
 const campaignSource=read("arcade/lost-sizzler/js/v10-42-five-depth-campaign.js");
 const balanceSource=read("arcade/lost-sizzler/js/v10-42-floor-balance.js");
 const gameplaySource=read("arcade/lost-sizzler/js/game-play.js");
+const localRuntimeSource=read("arcade/lost-sizzler/js/game-local-runtime.js");
 const renderSource=read("arcade/lost-sizzler/js/game-render.js");
 const canonical=read("arcade/lost-sizzler/index.html");
 const alias=read("arcade/c64-dungeon-carnage/index.html");
@@ -43,6 +44,16 @@ assert.doesNotMatch(gameplaySource,/puzzleTorch[\s\S]{0,240}activateSequenceTorc
 assert.match(gameplaySource,/punishmentAlive=.*torch-fail-/,"torch puzzle failure punishment must be capped while an existing punishment enemy is alive");
 assert.match(gameplaySource,/TORCH SEQUENCE PUZZLE[\s\S]*Only your footsteps count/,"entering the torch room must explain the player-only interaction");
 assert.match(renderSource,/TORCH — \$\{lit\?"LIT":"STEP ON"\}/,"torch labels must instruct STEP ON rather than shooting");
+assert.match(gameplaySource,/TRICK! THE BRIDGE COLLAPSES/,"the weight bridge must collapse after the empty-handed crossing");
+assert.match(gameplaySource,/function spawnBridgeThief/,"bridge trick must spawn a Dungeon Thief elsewhere on the floor");
+assert.match(gameplaySource,/BRIDGE SWITCH — SHOOT IT/,"the far-side rebuild switch must explicitly require a shot");
+assert.match(gameplaySource,/BRIDGE EMERGENCY AMMO/,"the bridge puzzle must spawn emergency ammunition when the player reaches the switch dry");
+assert.match(gameplaySource,/bridgeStashedItems/,"items dropped for the weight bridge must become the thief's stolen stash rather than remaining safely behind");
+assert.match(localRuntimeSource,/function releaseBridgeThiefStash/,"defeating the Dungeon Thief must have an authoritative stash-release owner");
+assert.match(localRuntimeSource,/target\.bridgeThiefRecovered=true/,"the entire stolen stash must be reactivated as recoverable floor items when the thief dies");
+assert.match(renderSource,/BRIDGE COLLAPSED — SHOOT THE FAR-SIDE SWITCH/,"collapsed bridge state must be visually explained in-world");
+assert.match(renderSource,/BRIDGE SWITCH — SHOOT TO DEPLOY/,"the rebuild switch must be labelled as a shooting interaction");
+
 for(const html of [canonical,alias]){
   assert.match(html,/fifteen procedural floors/i,"public metadata must advertise the fifteen-floor campaign");
   assert.match(html,/15-FLOOR RUN/,"public menu must advertise the fifteen-floor run");
