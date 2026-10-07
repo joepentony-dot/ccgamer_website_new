@@ -35,7 +35,7 @@ assert.match(sanctuaryScene,/slice\(0,Math\.min\(1,dancerCandidates\.length\)\)/
 assert.match(play,/function updateCamping\(p,dt\)\{if\(window\.CCGLostSizzlerOnboardingV120\?\.state\?\.active\|\|SYS\.inSanctuary\(world,p\.x,p\.y\)\)\{resetCamp\(p,true\);return\}/,"anti-idle destruction must be disabled and cleared inside Sanctuary");
 assert.match(play,/SYS\.inSanctuary\(world,h\.x,h\.y\)\|\|owner&&SYS\.inSanctuary\(world,owner\.x,owner\.y\)/,"queued anti-idle explosions must be discarded when they reach a Sanctuary");
 assert.match(play,/W\.walkable\(world\.map,q\.x,q\.y,host\)&&!SYS\.inSanctuary\(world,q\.x,q\.y\)&&!host\.enemies/,"generator spawns must reject Sanctuary cells");
-assert.match(play,/if\(p&&world&&SYS\.inSanctuary\(world,p\.x,p\.y\)\)return false/,"Sanctuary occupants must be immune to hostile and environmental damage");
+assert.match(play,/if\(p&&world&&SYS\.inSanctuary\(world,p\.x,p\.y\)&&Number\(p\.health\)>0\)return false/,"Sanctuary immunity must protect active living players while preserving canonical integrity handling");
 assert.match(play,/if\(SYS\.inSanctuary\(world,target\.x,target\.y\)\)\{s\.near=false;s\.seen=false/,"Count Loadula must abandon pursuit when the target reaches Sanctuary");
 assert.match(play,/SYS\.pathStep\(world,host,s,target,false\)/,"Count Loadula pathing must respect the Sanctuary exclusion");
 assert.match(systems,/sanctuaryStructuralSafe=r=>Boolean\(r&&r\.id!==world\.startRoomId&&r\.id!==world\.exitRoomId/,"Sanctuary fallback must never claim the player start or floor exit room");
