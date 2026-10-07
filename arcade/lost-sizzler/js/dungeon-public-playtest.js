@@ -251,7 +251,16 @@
           <button type="submit" class="ccg-public-playtest-primary">SEND FEEDBACK TO CCG</button>
           <p class="ccg-public-playtest-feedback-result" data-feedback-result>Your feedback is sent directly to the Cheeky Commodore Gamer contact system.</p>
         </form>
-        <a class="ccg-public-playtest-secondary" style="display:block;text-decoration:none" href="/games/ccg-games/">RETURN TO CCG GAMES</a>
+        <section class="ccg-public-playtest-next" aria-label="Stay involved with Dungeon Carnage">
+          <h2>Want To Stay Involved?</h2>
+          <p>Create a free CCG website account to stay connected with the site, or make an optional PayPal contribution if you would like to help support the continued development of Dungeon Carnage and CCG.</p>
+          <div class="ccg-public-playtest-next-actions">
+            <a class="ccg-public-playtest-primary ccg-public-playtest-link" href="/auth/register.html">JOIN THE CCG WEBSITE</a>
+            <a class="ccg-public-playtest-secondary ccg-public-playtest-link" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer">SUPPORT DEVELOPMENT VIA PAYPAL</a>
+          </div>
+          <small>Support is completely optional and does not affect access to the normal CCG website.</small>
+        </section>
+        <a class="ccg-public-playtest-secondary ccg-public-playtest-return" href="/games/ccg-games/">RETURN TO CCG GAMES</a>
       </section>`;
     document.body.appendChild(wrap);
     document.documentElement.classList.add("ccg-public-playtest-locked");
