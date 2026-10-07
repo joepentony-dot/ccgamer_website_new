@@ -7,6 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
+const release=JSON.parse(fs.readFileSync(path.join(repo,"arcade/lost-sizzler/version.json"),"utf8")),expectedBuild=String(release.build||""),expectedCache=String(release.cacheToken||"");
 const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".jpg":"image/jpeg",".ogg":"audio/ogg",".mp3":"audio/mpeg",".wav":"audio/wav"};
 const sockets=new Set();
 const server=http.createServer((req,res)=>{
@@ -142,11 +143,11 @@ try{
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap&&document.body,null,{timeout:20000});
   await page.waitForFunction(()=>window.CCGLostSizzlerV142Bootstrap?.ready===true||window.CCGLostSizzlerV142Bootstrap?.failed===true,null,{timeout:90000});
   const boot=await page.evaluate(()=>({ready:CCGLostSizzlerV142Bootstrap.ready,failed:CCGLostSizzlerV142Bootstrap.failed,error:CCGLostSizzlerV142Bootstrap.error||"",build:CCGLostSizzlerV142Bootstrap.build,cache:CCGLostSizzlerV142Bootstrap.cache,metaBuild:document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content,metaCache:document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content,ordered:[...document.querySelectorAll('script[data-ccg-v142-ordered="true"]')].map(s=>s.src)}));
-  assert.equal(boot.failed,false,`r111 ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"r111 ordered bootstrap must complete");
-  assert.equal(boot.build,"V10.42 r111");assert.equal(boot.cache,"20261006r111");assert.equal(boot.metaBuild,"V10.42 r111");assert.equal(boot.metaCache,"20261006r111");
-  assert.ok(boot.ordered.length>=30,"r111 bootstrap must load the complete ordered V10.42 chain");
-  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")==="20261006r111"),"every ordered V10.42 module must use the r111 cache token");
-  assert.ok(v142Requests.some(src=>src.includes("v10-42-projectile-lifecycle.js?v=20261006r111")),"expected R111 projectile lifecycle asset was not requested");
+  assert.equal(boot.failed,false,`current ordered bootstrap failed: ${boot.error}`);assert.equal(boot.ready,true,"current ordered bootstrap must complete");
+  assert.equal(boot.build,expectedBuild);assert.equal(boot.cache,expectedCache);assert.equal(boot.metaBuild,expectedBuild);assert.equal(boot.metaCache,expectedCache);
+  assert.ok(boot.ordered.length>=30,"current bootstrap must load the complete ordered V10.42 chain");
+  assert.ok(boot.ordered.every(src=>new URL(src).searchParams.get("v")===expectedCache),"every ordered V10.42 module must use the live release cache token");
+  assert.ok(v142Requests.some(src=>src.includes(`v10-42-projectile-lifecycle.js?v=${expectedCache}`)),"expected current projectile lifecycle asset was not requested");
   assert.equal(await page.evaluate(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.ownsBoundary?.()===true),true,"#2118 lifecycle owner must be authoritative before play");
 
   await page.evaluate(()=>{const hb=window.__ccgEnduranceHeartbeat={frames:0,stalls:0,maxGap:0,last:0};const beat=t=>{if(hb.last){const gap=t-hb.last;hb.maxGap=Math.max(hb.maxGap,gap);if(gap>300)hb.stalls++}hb.last=t;hb.frames++;requestAnimationFrame(beat)};requestAnimationFrame(beat)});
