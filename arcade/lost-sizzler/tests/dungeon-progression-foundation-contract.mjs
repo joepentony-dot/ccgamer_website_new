@@ -35,6 +35,10 @@ assert.equal(F.spendGold(run,2),false);assert.equal(run.gold,1,"failed spend is 
 assert.equal(F.shopGoldPrice({}),2);
 assert.equal(F.shopGoldPrice({goldPurchases:1}),3);
 assert.equal(F.shopGoldPrice({scorePurchases:2}),4,"legacy shop purchase count migrates to the linear Gold ladder");
+assert.equal(F.magicSackGoldPrice({magicSacks:0}),10,"first Magic Sack costs 10 Gold");
+assert.equal(F.magicSackGoldPrice({magicSacks:1}),15,"second Magic Sack costs 15 Gold across floors/shops");
+assert.equal(F.magicSackGoldPrice({magicSacks:2}),20,"third Magic Sack costs 20 Gold across floors/shops");
+assert.equal(F.magicSackGoldPrice({magicSacks:3}),25,"price function remains monotonic even once the +3 cap blocks further purchases");
 assert.equal(F.creditGoldValue({kind:"credits"}),1);
 assert.equal(F.creditGoldValue({kind:"credits",goldValue:3}),3);
 
@@ -60,6 +64,9 @@ assert.equal(F.awardTreasureBatGold(bat,batRun),0);
 assert.equal(batRun.gold,5,"Treasure Bat Gold is single-award");
 
 assert.match(source,/id:\"bronze\",name:\"BRONZE KEY\"/,"Bronze Key is purchasable");
+assert.match(source,/price:`\\$\\{magicSackGoldPrice\\(player\\)\\} GOLD`/,"Magic Sack shop card must show the run-wide escalating Gold price");
+assert.doesNotMatch(source,/activeShop\\.sold\\.magicSack=true/,"Magic Sack stock must not deplete after purchase");
+assert.match(source,/id===\"magicSack\"\\?magicSackGoldPrice\\(player\\)/,"Magic Sack purchase must charge the same escalating Gold price shown in the shop");
 assert.match(source,/spendGold\(runState,price\)/,"standard shop stock spends Gold");
 assert.doesNotMatch(source,/score\s*-=/,"foundation never spends Score");
 assert.match(source,/ownedWeapons/);
