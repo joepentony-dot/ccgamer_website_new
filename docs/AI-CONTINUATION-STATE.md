@@ -1,3 +1,8 @@
+## R115 Bronze-guide contract wording — 7 October 2026
+
+- Exact-head qualification found the concise guide already preserved the single-key Bronze room/chest rule, but the existing R54 contract checks the direct phrase `chest costs no second key`.
+- Player copy now uses that direct wording. Runtime and test strength are unchanged.
+
 ## R115 Floor 15 boss/Sigil composition repair — 7 October 2026
 
 - Audit confirmed R114 correctly reused the canonical Floor 15 guardian as THE BLOOD ARCHIVIST, avoiding a duplicate final-completion owner, but did not move that reused guardian into the authored boss arena (the exit room).

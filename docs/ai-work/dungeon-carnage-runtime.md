@@ -1,3 +1,7 @@
+## R115 qualification wording update — 7 October 2026
+
+- KEYS & MAP now says “that chest costs no second key,” matching the existing strict player-guide regression while preserving the concise rule.
+
 ## R115 final-floor composition audit — 7 October 2026
 
 - Fixed Floor 15 arena placement for the reused final guardian/Blood Archivist.
