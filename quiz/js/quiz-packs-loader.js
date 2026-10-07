@@ -230,6 +230,9 @@
                     options,
                     correctIndex: clampIndex(correct, options.length),
                     imageUrl: q.imageUrl || q.image || '',
+                    imageAlt: q.imageAlt || '',
+                    pixelArt: q.pixelArt === true,
+                    reveal: q.reveal || '',
                     audioUrl: resolveQuestionAudio(q, localPack),
                     videoUrl: q.videoUrl || q.video || '',
                     gameName: q.gameName || ''

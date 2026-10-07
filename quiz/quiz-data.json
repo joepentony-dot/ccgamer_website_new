@@ -8,7 +8,7 @@
       "type": "multiple-choice",
       "difficulty": "Medium",
       "description": "",
-      "icon": "\ud83e\udde0\u2753",
+      "icon": "🧠❓",
       "questionCount": 20,
       "enabled": true,
       "config": {},
@@ -83,7 +83,7 @@
           "question": "Bungeling Empire publisher",
           "options": [
             "Electronic Arts",
-            "Br\u00f8derbund",
+            "Brøderbund",
             "Melbourne House",
             "Accolade"
           ],
@@ -243,7 +243,7 @@
       "type": "multiple-choice",
       "difficulty": "Medium",
       "description": "",
-      "icon": "\ud83d\udc41\ufe0f\ud83d\uddbc\ufe0f",
+      "icon": "👁️🖼️",
       "questionCount": 20,
       "enabled": true,
       "config": {},
@@ -251,7 +251,7 @@
         {
           "question": "Which Game Is This",
           "options": [
-            "Wizard\u2019s Crown",
+            "Wizard’s Crown",
             "Archon",
             "Battle Chess",
             "Conquest of the New World"
@@ -290,7 +290,7 @@
             "Defender Of The Crown",
             "Barbarian",
             "Champions of Krynn",
-            "King\u2019s Bounty"
+            "King’s Bounty"
           ],
           "correctIndex": 0,
           "imageUrl": "images/quiz/defender-of-the-crown-07.png",
@@ -336,7 +336,7 @@
           "question": "Which Game Is This",
           "options": [
             "Hero Of The Golden Talisman",
-            "Montezuma\u2019s Revenge",
+            "Montezuma’s Revenge",
             "Impossible Mission",
             "The Last Ninja"
           ],
@@ -498,7 +498,7 @@
       "type": "multiple-choice",
       "difficulty": "Medium",
       "description": "",
-      "icon": "\ud83c\udfb5\ud83d\udd79\ufe0f",
+      "icon": "🎵🕹️",
       "questionCount": 20,
       "enabled": true,
       "config": {},
@@ -555,7 +555,7 @@
           "question": "Name That Game",
           "options": [
             "Skate Or Die",
-            "720\u00b0",
+            "720°",
             "California Games",
             "Hypersports"
           ],
@@ -736,8 +736,8 @@
           "options": [
             "Hawkeye",
             "Turrican",
-            "Flimbo\u2019s Quest",
-            "Hunter\u2019s Moon"
+            "Flimbo’s Quest",
+            "Hunter’s Moon"
           ],
           "correctIndex": 0,
           "audioUrl": "audio/quiz/sid-hawkeye.mp3",
@@ -753,7 +753,7 @@
       "type": "multiple-choice",
       "difficulty": "Medium",
       "description": "",
-      "icon": "\ud83c\udfb5\ud83d\udcbe",
+      "icon": "🎵💾",
       "questionCount": 20,
       "enabled": true,
       "config": {},
@@ -1008,7 +1008,7 @@
       "type": "multiple-choice",
       "difficulty": "Medium",
       "description": "",
-      "icon": "\ud83c\udfb5",
+      "icon": "🎵",
       "questionCount": 20,
       "enabled": true,
       "config": {},
@@ -1521,6 +1521,321 @@
           "correctIndex": 0
         }
       ]
+    },
+    {
+      "id": 8,
+      "slug": "bad-game-sprites",
+      "title": "Bad Game Sprites",
+      "name": "Bad Game Sprites",
+      "type": "multiple-choice",
+      "difficulty": "Hard",
+      "description": "Pixel Line-Up: identify 20 C64 games from a single sprite. A rogues' gallery of infamous, low-scoring, odd-looking and occasionally unfairly maligned releases.",
+      "icon": "🕵️‍♂️🕹️",
+      "questionCount": 20,
+      "enabled": true,
+      "config": {},
+      "questions": [
+        {
+          "id": "8-1",
+          "question": "PIXEL LINE-UP 01 — Which C64 game is this sprite from?",
+          "options": [
+            "Final Fight",
+            "Double Dragon",
+            "Target Renegade",
+            "Golden Axe"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "images/quiz/bad-game-sprites/final-fight.png",
+          "imageAlt": "Pixel-art C64 fighter sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave the C64 conversion 22%."
+        },
+        {
+          "id": "8-2",
+          "question": "PIXEL LINE-UP 02 — Name the game behind these schoolyard suspects.",
+          "options": [
+            "EastEnders",
+            "Grange Hill",
+            "Neighbours",
+            "The Young Ones"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "images/quiz/bad-game-sprites/grange-hill.png",
+          "imageAlt": "Pixel-art C64 character sprites to identify",
+          "pixelArt": true,
+          "reveal": "Commodore User gave Grange Hill 1/10; Lemon64 lists a 16% magazine average."
+        },
+        {
+          "id": "8-3",
+          "question": "PIXEL LINE-UP 03 — Which C64 shooter sent this cowboy into battle?",
+          "options": [
+            "Commando",
+            "Ikari Warriors",
+            "Gun Smoke",
+            "Who Dares Wins II"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "images/quiz/bad-game-sprites/gun-smoke.png",
+          "imageAlt": "Pixel-art C64 cowboy sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave Gun.Smoke 15%; Lemon64 lists an 18% magazine average."
+        },
+        {
+          "id": "8-4",
+          "question": "PIXEL LINE-UP 04 — Which cartoon licence does this sprite belong to?",
+          "options": [
+            "Danger Mouse in Double Trouble",
+            "Count Duckula",
+            "Hong Kong Phooey",
+            "Inspector Gadget"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "images/quiz/bad-game-sprites/inspector-gadget.png",
+          "imageAlt": "Pixel-art C64 cartoon character sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave the Melbourne House Inspector Gadget release 9%."
+        },
+        {
+          "id": "8-5",
+          "question": "PIXEL LINE-UP 05 — Which 2000 AD hero is hiding in these pixels?",
+          "options": [
+            "Rogue Trooper",
+            "Judge Dredd",
+            "Dan Dare: Pilot of the Future",
+            "Batman: The Caped Crusader"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "images/quiz/bad-game-sprites/judge-dredd.png",
+          "imageAlt": "Pixel-art C64 comic-book hero sprite to identify",
+          "pixelArt": true,
+          "reveal": "The 1986 Melbourne House Judge Dredd received 13% from Zzap!64."
+        },
+        {
+          "id": "8-6",
+          "question": "PIXEL LINE-UP 06 — Which arcade conversion produced this running hero?",
+          "options": [
+            "Rygar",
+            "Rastan",
+            "Black Tiger",
+            "Karnov"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "images/quiz/bad-game-sprites/karnov.png",
+          "imageAlt": "Pixel-art C64 arcade hero sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave Karnov 13%."
+        },
+        {
+          "id": "8-7",
+          "question": "PIXEL LINE-UP 07 — Which game is this heavily armoured gentleman from?",
+          "options": [
+            "Lee Enfield: Space Ace",
+            "Bob Winner",
+            "Lee Enfield",
+            "Sapiens"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "images/quiz/bad-game-sprites/lee-enfield.webp",
+          "imageAlt": "Pixel-art C64 armoured character sprite to identify",
+          "pixelArt": true,
+          "reveal": "Lee Enfield: Tournament of Death received 8% from Zzap!64."
+        },
+        {
+          "id": "8-8",
+          "question": "PIXEL LINE-UP 08 — Which cycling game does this rider belong to?",
+          "options": [
+            "BMX Simulator",
+            "Milk Race",
+            "Tour de France",
+            "Kikstart II"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "images/quiz/bad-game-sprites/milk-race.png",
+          "imageAlt": "Pixel-art C64 cyclist sprite to identify",
+          "pixelArt": true,
+          "reveal": "A divisive one: Your Commodore gave Milk Race 10/10, while Zzap!64 gave it 34%."
+        },
+        {
+          "id": "8-9",
+          "question": "PIXEL LINE-UP 09 — Which side-scrolling oddity stars this Mountie?",
+          "options": [
+            "Mountie Micks Death Ride",
+            "Express Raider",
+            "Green Beret",
+            "The Train: Escape to Normandy"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "images/quiz/bad-game-sprites/mountie-micks-death-ride.png",
+          "imageAlt": "Pixel-art C64 Mountie sprite to identify",
+          "pixelArt": true,
+          "reveal": "Commodore User gave Mountie Mick's Death Ride 1/10."
+        },
+        {
+          "id": "8-10",
+          "question": "PIXEL LINE-UP 10 — Which martial-arts game owns this tiny ninja?",
+          "options": [
+            "Ninja",
+            "The Way of the Tiger",
+            "Ninja Master",
+            "Yie Ar Kung-Fu"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "images/quiz/bad-game-sprites/ninja-master.png",
+          "imageAlt": "Pixel-art C64 ninja sprite to identify",
+          "pixelArt": true,
+          "reveal": "Commodore User scored The Ninja Master 0/10."
+        },
+        {
+          "id": "8-11",
+          "question": "PIXEL LINE-UP 11 — Which game sent this curious figure into Videoland?",
+          "options": [
+            "Lazy Jones",
+            "Alice in Videoland",
+            "Chickin Chase",
+            "Clowns"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "images/quiz/bad-game-sprites/alice-in-videoland.png",
+          "imageAlt": "Pixel-art C64 character sprite to identify",
+          "pixelArt": true,
+          "reveal": "Not every suspect was universally panned: Lemon64 lists a 67% magazine average for Alice in Videoland."
+        },
+        {
+          "id": "8-12",
+          "question": "PIXEL LINE-UP 12 — Which wrestling game produced this magnificent specimen?",
+          "options": [
+            "Tag Team Wrestling",
+            "Championship Wrestling",
+            "American Tag Team Wrestling",
+            "WWF WrestleMania"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "images/quiz/bad-game-sprites/american-tag-team-wrestling.png",
+          "imageAlt": "Pixel-art C64 wrestler sprite to identify",
+          "pixelArt": true,
+          "reveal": "Lemon64 lists American Tag-Team Wrestling as a 1992 Zeppelin Games wrestling release."
+        },
+        {
+          "id": "8-13",
+          "question": "PIXEL LINE-UP 13 — Which movie tie-in does this trio belong to?",
+          "options": [
+            "Big Trouble in Little China",
+            "The Way of the Exploding Fist",
+            "Kung-Fu Master",
+            "Yie Ar Kung-Fu"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "images/quiz/bad-game-sprites/big-trouble-in-little-china.png",
+          "imageAlt": "Pixel-art C64 movie tie-in character sprites to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave Big Trouble in Little China 34%; Commodore User gave it 3/10."
+        },
+        {
+          "id": "8-14",
+          "question": "PIXEL LINE-UP 14 — Which budget game unleashed this elderly menace?",
+          "options": [
+            "Jack the Nipper",
+            "Bionic Granny",
+            "Everyone's a Wally",
+            "Herbert's Dummy Run"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "images/quiz/bad-game-sprites/bionic-granny.png",
+          "imageAlt": "Pixel-art C64 granny sprite to identify",
+          "pixelArt": true,
+          "reveal": "Lemon64 currently lists Bionic Granny with a 1.54/10 user rating."
+        },
+        {
+          "id": "8-15",
+          "question": "PIXEL LINE-UP 15 — Which platform game does this pirate belong to?",
+          "options": [
+            "Blagger",
+            "Son of Blagger",
+            "Chuckie Egg II",
+            "Booty"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "images/quiz/bad-game-sprites/booty.png",
+          "imageAlt": "Pixel-art C64 pirate sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave Booty 16%, although other magazines were much kinder."
+        },
+        {
+          "id": "8-16",
+          "question": "PIXEL LINE-UP 16 — Which single-screen platformer is this miner from?",
+          "options": [
+            "China Miner",
+            "Manic Miner",
+            "Miner 2049er",
+            "Chuckie Egg"
+          ],
+          "correctIndex": 0,
+          "imageUrl": "images/quiz/bad-game-sprites/china-miner.png",
+          "imageAlt": "Pixel-art C64 miner sprite to identify",
+          "pixelArt": true,
+          "reveal": "Plot twist: Lemon64 lists a 90% magazine average for China Miner."
+        },
+        {
+          "id": "8-17",
+          "question": "PIXEL LINE-UP 17 — Which circus game is responsible for this performer?",
+          "options": [
+            "Circus Charlie",
+            "Circus Games",
+            "Circus Circus",
+            "Clowns"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "images/quiz/bad-game-sprites/circus-circus.png",
+          "imageAlt": "Pixel-art C64 circus performer sprite to identify",
+          "pixelArt": true,
+          "reveal": "Lemon64's game list currently puts Circus Circus at roughly 2.2/10 from users."
+        },
+        {
+          "id": "8-18",
+          "question": "PIXEL LINE-UP 18 — Which Stallone movie tie-in is this sprite from?",
+          "options": [
+            "Rambo: First Blood Part II",
+            "Predator",
+            "Cobra",
+            "Platoon"
+          ],
+          "correctIndex": 2,
+          "imageUrl": "images/quiz/bad-game-sprites/cobra.png",
+          "imageAlt": "Pixel-art C64 action hero sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave Cobra 13%; Lemon64 lists a 20% magazine average."
+        },
+        {
+          "id": "8-19",
+          "question": "PIXEL LINE-UP 19 — Which movie licence put this detective on the C64?",
+          "options": [
+            "The Untouchables",
+            "Dick Tracy",
+            "Hudson Hawk",
+            "RoboCop 2"
+          ],
+          "correctIndex": 1,
+          "imageUrl": "images/quiz/bad-game-sprites/dick-tracy.png",
+          "imageAlt": "Pixel-art C64 detective sprite to identify",
+          "pixelArt": true,
+          "reveal": "Commodore Format and Zzap!64 both gave Dick Tracy 11%."
+        },
+        {
+          "id": "8-20",
+          "question": "PIXEL LINE-UP 20 — One last suspect: which beat-'em-up is this?",
+          "options": [
+            "Final Fight",
+            "Target Renegade",
+            "Golden Axe",
+            "Double Dragon"
+          ],
+          "correctIndex": 3,
+          "imageUrl": "images/quiz/bad-game-sprites/double-dragon.png",
+          "imageAlt": "Pixel-art C64 beat-em-up sprite to identify",
+          "pixelArt": true,
+          "reveal": "Zzap!64 gave the original C64 Double Dragon conversion 15%."
+        }
+      ]
     }
   ],
   "questions": {
@@ -1595,7 +1910,7 @@
         "question": "Bungeling Empire publisher",
         "options": [
           "Electronic Arts",
-          "Br\u00f8derbund",
+          "Brøderbund",
           "Melbourne House",
           "Accolade"
         ],
@@ -1750,7 +2065,7 @@
       {
         "question": "Which Game Is This",
         "options": [
-          "Wizard\u2019s Crown",
+          "Wizard’s Crown",
           "Archon",
           "Battle Chess",
           "Conquest of the New World"
@@ -1789,7 +2104,7 @@
           "Defender Of The Crown",
           "Barbarian",
           "Champions of Krynn",
-          "King\u2019s Bounty"
+          "King’s Bounty"
         ],
         "correctIndex": 0,
         "imageUrl": "images/quiz/defender-of-the-crown-07.png",
@@ -1835,7 +2150,7 @@
         "question": "Which Game Is This",
         "options": [
           "Hero Of The Golden Talisman",
-          "Montezuma\u2019s Revenge",
+          "Montezuma’s Revenge",
           "Impossible Mission",
           "The Last Ninja"
         ],
@@ -2041,7 +2356,7 @@
         "question": "Name That Game",
         "options": [
           "Skate Or Die",
-          "720\u00b0",
+          "720°",
           "California Games",
           "Hypersports"
         ],
@@ -2222,8 +2537,8 @@
         "options": [
           "Hawkeye",
           "Turrican",
-          "Flimbo\u2019s Quest",
-          "Hunter\u2019s Moon"
+          "Flimbo’s Quest",
+          "Hunter’s Moon"
         ],
         "correctIndex": 0,
         "audioUrl": "audio/quiz/sid-hawkeye.mp3",
@@ -2955,6 +3270,308 @@
           "Katakis"
         ],
         "correctIndex": 0
+      }
+    ],
+    "8": [
+      {
+        "id": "8-1",
+        "question": "PIXEL LINE-UP 01 — Which C64 game is this sprite from?",
+        "options": [
+          "Final Fight",
+          "Double Dragon",
+          "Target Renegade",
+          "Golden Axe"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/bad-game-sprites/final-fight.png",
+        "imageAlt": "Pixel-art C64 fighter sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave the C64 conversion 22%."
+      },
+      {
+        "id": "8-2",
+        "question": "PIXEL LINE-UP 02 — Name the game behind these schoolyard suspects.",
+        "options": [
+          "EastEnders",
+          "Grange Hill",
+          "Neighbours",
+          "The Young Ones"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/bad-game-sprites/grange-hill.png",
+        "imageAlt": "Pixel-art C64 character sprites to identify",
+        "pixelArt": true,
+        "reveal": "Commodore User gave Grange Hill 1/10; Lemon64 lists a 16% magazine average."
+      },
+      {
+        "id": "8-3",
+        "question": "PIXEL LINE-UP 03 — Which C64 shooter sent this cowboy into battle?",
+        "options": [
+          "Commando",
+          "Ikari Warriors",
+          "Gun Smoke",
+          "Who Dares Wins II"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bad-game-sprites/gun-smoke.png",
+        "imageAlt": "Pixel-art C64 cowboy sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave Gun.Smoke 15%; Lemon64 lists an 18% magazine average."
+      },
+      {
+        "id": "8-4",
+        "question": "PIXEL LINE-UP 04 — Which cartoon licence does this sprite belong to?",
+        "options": [
+          "Danger Mouse in Double Trouble",
+          "Count Duckula",
+          "Hong Kong Phooey",
+          "Inspector Gadget"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/bad-game-sprites/inspector-gadget.png",
+        "imageAlt": "Pixel-art C64 cartoon character sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave the Melbourne House Inspector Gadget release 9%."
+      },
+      {
+        "id": "8-5",
+        "question": "PIXEL LINE-UP 05 — Which 2000 AD hero is hiding in these pixels?",
+        "options": [
+          "Rogue Trooper",
+          "Judge Dredd",
+          "Dan Dare: Pilot of the Future",
+          "Batman: The Caped Crusader"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/bad-game-sprites/judge-dredd.png",
+        "imageAlt": "Pixel-art C64 comic-book hero sprite to identify",
+        "pixelArt": true,
+        "reveal": "The 1986 Melbourne House Judge Dredd received 13% from Zzap!64."
+      },
+      {
+        "id": "8-6",
+        "question": "PIXEL LINE-UP 06 — Which arcade conversion produced this running hero?",
+        "options": [
+          "Rygar",
+          "Rastan",
+          "Black Tiger",
+          "Karnov"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/bad-game-sprites/karnov.png",
+        "imageAlt": "Pixel-art C64 arcade hero sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave Karnov 13%."
+      },
+      {
+        "id": "8-7",
+        "question": "PIXEL LINE-UP 07 — Which game is this heavily armoured gentleman from?",
+        "options": [
+          "Lee Enfield: Space Ace",
+          "Bob Winner",
+          "Lee Enfield",
+          "Sapiens"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bad-game-sprites/lee-enfield.webp",
+        "imageAlt": "Pixel-art C64 armoured character sprite to identify",
+        "pixelArt": true,
+        "reveal": "Lee Enfield: Tournament of Death received 8% from Zzap!64."
+      },
+      {
+        "id": "8-8",
+        "question": "PIXEL LINE-UP 08 — Which cycling game does this rider belong to?",
+        "options": [
+          "BMX Simulator",
+          "Milk Race",
+          "Tour de France",
+          "Kikstart II"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/bad-game-sprites/milk-race.png",
+        "imageAlt": "Pixel-art C64 cyclist sprite to identify",
+        "pixelArt": true,
+        "reveal": "A divisive one: Your Commodore gave Milk Race 10/10, while Zzap!64 gave it 34%."
+      },
+      {
+        "id": "8-9",
+        "question": "PIXEL LINE-UP 09 — Which side-scrolling oddity stars this Mountie?",
+        "options": [
+          "Mountie Micks Death Ride",
+          "Express Raider",
+          "Green Beret",
+          "The Train: Escape to Normandy"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/bad-game-sprites/mountie-micks-death-ride.png",
+        "imageAlt": "Pixel-art C64 Mountie sprite to identify",
+        "pixelArt": true,
+        "reveal": "Commodore User gave Mountie Mick's Death Ride 1/10."
+      },
+      {
+        "id": "8-10",
+        "question": "PIXEL LINE-UP 10 — Which martial-arts game owns this tiny ninja?",
+        "options": [
+          "Ninja",
+          "The Way of the Tiger",
+          "Ninja Master",
+          "Yie Ar Kung-Fu"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bad-game-sprites/ninja-master.png",
+        "imageAlt": "Pixel-art C64 ninja sprite to identify",
+        "pixelArt": true,
+        "reveal": "Commodore User scored The Ninja Master 0/10."
+      },
+      {
+        "id": "8-11",
+        "question": "PIXEL LINE-UP 11 — Which game sent this curious figure into Videoland?",
+        "options": [
+          "Lazy Jones",
+          "Alice in Videoland",
+          "Chickin Chase",
+          "Clowns"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/bad-game-sprites/alice-in-videoland.png",
+        "imageAlt": "Pixel-art C64 character sprite to identify",
+        "pixelArt": true,
+        "reveal": "Not every suspect was universally panned: Lemon64 lists a 67% magazine average for Alice in Videoland."
+      },
+      {
+        "id": "8-12",
+        "question": "PIXEL LINE-UP 12 — Which wrestling game produced this magnificent specimen?",
+        "options": [
+          "Tag Team Wrestling",
+          "Championship Wrestling",
+          "American Tag Team Wrestling",
+          "WWF WrestleMania"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bad-game-sprites/american-tag-team-wrestling.png",
+        "imageAlt": "Pixel-art C64 wrestler sprite to identify",
+        "pixelArt": true,
+        "reveal": "Lemon64 lists American Tag-Team Wrestling as a 1992 Zeppelin Games wrestling release."
+      },
+      {
+        "id": "8-13",
+        "question": "PIXEL LINE-UP 13 — Which movie tie-in does this trio belong to?",
+        "options": [
+          "Big Trouble in Little China",
+          "The Way of the Exploding Fist",
+          "Kung-Fu Master",
+          "Yie Ar Kung-Fu"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/bad-game-sprites/big-trouble-in-little-china.png",
+        "imageAlt": "Pixel-art C64 movie tie-in character sprites to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave Big Trouble in Little China 34%; Commodore User gave it 3/10."
+      },
+      {
+        "id": "8-14",
+        "question": "PIXEL LINE-UP 14 — Which budget game unleashed this elderly menace?",
+        "options": [
+          "Jack the Nipper",
+          "Bionic Granny",
+          "Everyone's a Wally",
+          "Herbert's Dummy Run"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/bad-game-sprites/bionic-granny.png",
+        "imageAlt": "Pixel-art C64 granny sprite to identify",
+        "pixelArt": true,
+        "reveal": "Lemon64 currently lists Bionic Granny with a 1.54/10 user rating."
+      },
+      {
+        "id": "8-15",
+        "question": "PIXEL LINE-UP 15 — Which platform game does this pirate belong to?",
+        "options": [
+          "Blagger",
+          "Son of Blagger",
+          "Chuckie Egg II",
+          "Booty"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/bad-game-sprites/booty.png",
+        "imageAlt": "Pixel-art C64 pirate sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave Booty 16%, although other magazines were much kinder."
+      },
+      {
+        "id": "8-16",
+        "question": "PIXEL LINE-UP 16 — Which single-screen platformer is this miner from?",
+        "options": [
+          "China Miner",
+          "Manic Miner",
+          "Miner 2049er",
+          "Chuckie Egg"
+        ],
+        "correctIndex": 0,
+        "imageUrl": "images/quiz/bad-game-sprites/china-miner.png",
+        "imageAlt": "Pixel-art C64 miner sprite to identify",
+        "pixelArt": true,
+        "reveal": "Plot twist: Lemon64 lists a 90% magazine average for China Miner."
+      },
+      {
+        "id": "8-17",
+        "question": "PIXEL LINE-UP 17 — Which circus game is responsible for this performer?",
+        "options": [
+          "Circus Charlie",
+          "Circus Games",
+          "Circus Circus",
+          "Clowns"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bad-game-sprites/circus-circus.png",
+        "imageAlt": "Pixel-art C64 circus performer sprite to identify",
+        "pixelArt": true,
+        "reveal": "Lemon64's game list currently puts Circus Circus at roughly 2.2/10 from users."
+      },
+      {
+        "id": "8-18",
+        "question": "PIXEL LINE-UP 18 — Which Stallone movie tie-in is this sprite from?",
+        "options": [
+          "Rambo: First Blood Part II",
+          "Predator",
+          "Cobra",
+          "Platoon"
+        ],
+        "correctIndex": 2,
+        "imageUrl": "images/quiz/bad-game-sprites/cobra.png",
+        "imageAlt": "Pixel-art C64 action hero sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave Cobra 13%; Lemon64 lists a 20% magazine average."
+      },
+      {
+        "id": "8-19",
+        "question": "PIXEL LINE-UP 19 — Which movie licence put this detective on the C64?",
+        "options": [
+          "The Untouchables",
+          "Dick Tracy",
+          "Hudson Hawk",
+          "RoboCop 2"
+        ],
+        "correctIndex": 1,
+        "imageUrl": "images/quiz/bad-game-sprites/dick-tracy.png",
+        "imageAlt": "Pixel-art C64 detective sprite to identify",
+        "pixelArt": true,
+        "reveal": "Commodore Format and Zzap!64 both gave Dick Tracy 11%."
+      },
+      {
+        "id": "8-20",
+        "question": "PIXEL LINE-UP 20 — One last suspect: which beat-'em-up is this?",
+        "options": [
+          "Final Fight",
+          "Target Renegade",
+          "Golden Axe",
+          "Double Dragon"
+        ],
+        "correctIndex": 3,
+        "imageUrl": "images/quiz/bad-game-sprites/double-dragon.png",
+        "imageAlt": "Pixel-art C64 beat-em-up sprite to identify",
+        "pixelArt": true,
+        "reveal": "Zzap!64 gave the original C64 Double Dragon conversion 15%."
       }
     ]
   }
