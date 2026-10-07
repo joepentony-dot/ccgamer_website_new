@@ -8,6 +8,7 @@ const sanctuaryScene=fs.readFileSync(new URL("../js/v10-41-sanctuary-azalea.js",
 const play=fs.readFileSync(new URL("../js/game-play.js",import.meta.url),"utf8");
 const systems=fs.readFileSync(new URL("../js/systems.js",import.meta.url),"utf8");
 const mobileTrapBrowser=fs.readFileSync(new URL("./browser/v10-42-mobile-trap-layout-live.mjs",import.meta.url),"utf8");
+const r60SoloIntegrity=fs.readFileSync(new URL("./browser/v10-41-r60-solo-live-integrity.mjs",import.meta.url),"utf8");
 
 assert.match(patch,/\["arenas","timedRooms"\]/,"sanctuary hardening must remove arena and timed-room assignments");
 assert.match(patch,/challenge=>!ids\.has\(Number\(challenge\?\.roomId\)\)/,"sanctuary challenge filtering must be keyed to sanctuary room ids");
@@ -45,6 +46,7 @@ assert.match(systems,/function|const relocateSanctuaryEnemies=/,"Sanctuary fallb
 assert.match(systems,/!sanctuaryProtectedEnemy\(enemy\)/,"Sanctuary relocation must exclude authored or special enemies");
 assert.match(mobileTrapBrowser,/W\.walkable\(world\.map,x,y,host\)\|\|SYS\.inSanctuary\(world,x,y\)/,"synthetic mobile trap routes must reject Sanctuary origin cells");
 assert.match(mobileTrapBrowser,/W\.walkable\(world\.map,tx,ty,host\)\|\|SYS\.inSanctuary\(world,tx,ty\)/,"synthetic mobile trap routes must reject Sanctuary target cells");
+assert.match(r60SoloIntegrity,/CCGWorld\.walkable\(world\.map,x,y,host\)&&!window\.CCGSystems\.inSanctuary\(world,x,y\)/,"R60 synthetic movement/trap lane must reject Sanctuary cells");
 
 assert.match(patch,/ADVENTURER_SCORE_REWARD=1000/,"Lost Adventurer rescue must award 1,000 score");
 assert.match(patch,/ADVENTURER_XP_REWARD=200/,"Lost Adventurer rescue must award 200 XP");
