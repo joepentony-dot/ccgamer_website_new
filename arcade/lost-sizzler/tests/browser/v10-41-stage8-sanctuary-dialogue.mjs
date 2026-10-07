@@ -40,8 +40,10 @@ try{
   const result=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerStage8NpcDialogue;
     const depth=(source,marker)=>{const seen=new Set();let current=source,count=0;while(typeof current==="function"&&!seen.has(current)){if(current[marker])count++;seen.add(current);current=current.__ccgOriginal}return count};
-    const room=world.rooms.find(candidate=>candidate?.sanctuary);
+    const sanctuaryRooms=world.rooms.filter(candidate=>candidate?.sanctuary),regenTiles=host.sanctuaryRegeneration||[],missingRegen=sanctuaryRooms.filter(candidate=>regenTiles.filter(tile=>Number(tile?.roomId)===Number(candidate.id)).length!==1).map(candidate=>candidate.id);
+    const room=sanctuaryRooms[0];
     if(!room)return{missingSanctuary:true};
+    if(missingRegen.length)return{missingRegen,sanctuaryCount:sanctuaryRooms.length,regenCount:regenTiles.length};
     let tile=null;
     for(let y=room.y;y<=room.y+room.h&&!tile;y++)for(let x=room.x;x<=room.x+room.w;x++)if(W.walkable(world.map,x,y,host)){tile={x,y};break}
     if(!tile)return{missingTile:true,roomId:room.id};
@@ -65,6 +67,7 @@ try{
   });
 
   assert.notEqual(result.missingSanctuary,true,"generated Solo floor must expose the existing sanctuary-room contract");
+  assert.deepEqual(result.missingRegen,undefined,"every generated Sanctuary must contain exactly one health-restoration square");
   assert.notEqual(result.missingTile,true,"existing sanctuary room must contain a walkable tile");
   assert.match(result.first.title,/^SANCTUARY — /,"canonical sanctuary title must remain owned by updateRoomMessage");
   assert.match(result.first.body,/No monster can enter this safe room\./,"canonical sanctuary safety guidance must remain present");
