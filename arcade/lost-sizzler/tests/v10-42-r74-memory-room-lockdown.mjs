@@ -25,7 +25,7 @@ assert.ok(play.includes("showToast(`MEMORY PAD ${tileIndex+1}`"),"each correct p
 
 assert.match(play,/SYS\.lockRoomDoors\(host,z\.roomId,true\)/,"entering an unsolved memory room must seal its room doors");
 assert.ok(play.includes("MEMORY VAULT LOCKDOWN"),"lockdown must be explained to the player");
-assert.match(play,/Complete the full \\${z\\.sequence\\.length}-pad memory sequence to reopen every exit/,"the lockdown explanation must state the actual five- or seven-pad requirement");
+assert.ok(play.includes("Complete the full ${z.sequence.length}-pad memory sequence to reopen every exit"),"the lockdown explanation must state the actual five- or seven-pad requirement");
 assert.match(play,/Teleport is suppressed in this room/,"the memory lockdown must explain that Teleport cannot bypass the sealed chamber");
 assert.match(play,/SYS\.lockRoomDoors\(host,z\.roomId,false\)/,"solving the sequence must release the room doors");
 assert.match(play,/beginDoorOpening\(d,900\)/,"released memory-room doors must visibly reopen");
