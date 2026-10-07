@@ -64,7 +64,7 @@ assert.equal(F.awardTreasureBatGold(bat,batRun),0);
 assert.equal(batRun.gold,5,"Treasure Bat Gold is single-award");
 
 assert.match(source,/id:\"bronze\",name:\"BRONZE KEY\"/,"Bronze Key is purchasable");
-assert.match(source,/price:`\\$\\{magicSackGoldPrice\\(player\\)\\} GOLD`/,"Magic Sack shop card must show the run-wide escalating Gold price");
+assert.match(source,/price:`\$\{magicSackGoldPrice\(player\)\} GOLD`/,"Magic Sack shop card must show the run-wide escalating Gold price");
 assert.doesNotMatch(source,/activeShop\\.sold\\.magicSack=true/,"Magic Sack stock must not deplete after purchase");
 assert.match(source,/id===\"magicSack\"\\?magicSackGoldPrice\\(player\\)/,"Magic Sack purchase must charge the same escalating Gold price shown in the shop");
 assert.match(source,/spendGold\(runState,price\)/,"standard shop stock spends Gold");
