@@ -4,16 +4,16 @@ function assert(condition,message){if(!condition)throw new Error(message)}
 
 const canonical=fs.readFileSync("arcade/c64-dungeon-carnage/index.html","utf8");
 const legacy=fs.readFileSync("arcade/lost-sizzler/index.html","utf8");
-const ui=fs.readFileSync("js/ccg-dungeon-public-playtest.js","utf8");
-const css=fs.readFileSync("resources/css/dungeon-public-playtest.css","utf8");
+const ui=fs.readFileSync("arcade/lost-sizzler/js/dungeon-public-playtest.js","utf8");
+const css=fs.readFileSync("arcade/lost-sizzler/css/dungeon-public-playtest.css","utf8");
 const migration=fs.readFileSync("supabase/migrations/20261007025945_dungeon_carnage_public_playtest_sessions.sql","utf8");
-const script="/js/ccg-dungeon-public-playtest.js?v=20261007-public5m-v1";
-const style="/resources/css/dungeon-public-playtest.css?v=20261007-public5m-v1";
+const script="js/dungeon-public-playtest.js?v=20261007-public5m-v1";
+const style="css/dungeon-public-playtest.css?v=20261007-public5m-v1";
 
 for(const [name,html] of [["canonical",canonical],["legacy",legacy]]){
   assert(html.includes(script),name+" Dungeon page must load the public timed-playtest controller");
   assert(html.includes(style),name+" Dungeon page must load the public timed-playtest stylesheet");
-  assert(html.indexOf("ccg-play-maintenance-owner-gate.js")<html.indexOf("ccg-dungeon-public-playtest.js"),name+" page must install the validated access gate before the timed UI listener");
+  assert(html.indexOf("ccg-play-maintenance-owner-gate.js")<html.indexOf("dungeon-public-playtest.js"),name+" page must install the validated access gate before the timed UI listener");
 }
 assert(ui.includes('const PLAY_SECONDS=300'),"personal gameplay allowance must be exactly five minutes");
 assert(ui.includes('attributeFilter:["data-run-active"]'),"five-minute clock must wait for actual gameplay run state");
