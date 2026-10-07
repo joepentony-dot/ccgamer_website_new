@@ -186,6 +186,12 @@ window.CCGProgression=(()=>{
     const source=Array.isArray(player.inventory)?player.inventory:[],out=[];let merged=0;
     for(const original of source){
       if(!original)continue;
+      if(original.kind==="banishment"){
+        const quantity=itemQty(original),existing=out.find(row=>row?.kind==="banishment");
+        if(existing){merged+=quantity;continue}
+        out.push({...original,name:"Ward-Break Charge",short:"WARD BREAK",qty:1});
+        merged+=Math.max(0,quantity-1);continue
+      }
       const key=stackKey(original),limit=stackLimit(original,player);
       if(!key||!Number.isFinite(limit)){out.push({...original,qty:itemQty(original)});continue}
       let remaining=itemQty(original);
@@ -197,8 +203,8 @@ window.CCGProgression=(()=>{
     }
     player.inventory=out;return merged
   }
-  function inventoryCanAdd(player,item){compactInventory(player);const inv=player?.inventory||[],key=stackKey(item),limit=stackLimit(item,player);return Boolean(key&&inv.some(x=>stackKey(x)===key&&itemQty(x)<limit))||inv.length<inventoryCapacity(player)}
-  function inventoryAdd(player,item){player.inventory=player.inventory||[];compactInventory(player);let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item,player);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player))return false;const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}compactInventory(player);return true}
+  function inventoryCanAdd(player,item){compactInventory(player);const inv=player?.inventory||[];if(item?.kind==="banishment"&&inv.some(x=>x?.kind==="banishment"))return false;const key=stackKey(item),limit=stackLimit(item,player);return Boolean(key&&inv.some(x=>stackKey(x)===key&&itemQty(x)<limit))||inv.length<inventoryCapacity(player)}
+  function inventoryAdd(player,item){player.inventory=player.inventory||[];compactInventory(player);if(item?.kind==="banishment"){if(player.inventory.some(x=>x?.kind==="banishment")||player.inventory.length>=inventoryCapacity(player))return false;player.inventory.push({...item,name:"Ward-Break Charge",short:"WARD BREAK",qty:1});return true}let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item,player);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player))return false;const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}compactInventory(player);return true}
   function inventoryRemove(player,index,amount=1){player.inventory=player.inventory||[];if(index<0||index>=player.inventory.length)return null;const it=player.inventory[index],qty=itemQty(it),take=Math.max(1,Math.min(qty,Math.floor(Number(amount)||1)));if(qty>take){it.qty=qty-take;return{...it,qty:take}}return player.inventory.splice(index,1)[0]}
   function firstInventory(player,kind){return (player.inventory||[]).findIndex(x=>x.kind===kind)}
   function inventoryCount(player){return (player?.inventory||[]).reduce((n,it)=>n+itemQty(it),0)}
