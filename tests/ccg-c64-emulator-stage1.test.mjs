@@ -38,6 +38,8 @@ assert(html.includes('id="ccg-rom-set"') && html.includes("multiple"), "Direct m
 assert(html.includes("data-load-any-media"), "A file-first C64 media loader must exist");
 assert(html.includes("data-media-dropzone"), "Drag-and-drop media loading must exist");
 assert(html.includes("data-online-library-select"), "The CCG Online Library selector must exist");
+assert(html.includes("data-emulator-back"), "The emulator route must expose a visible Back control");
+assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
 assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js"'), "Emulator shell must start through the COI bootstrap");
@@ -64,6 +66,9 @@ assert(vault.includes("sizes: [8192]"), "KERNAL/BASIC size validation is require
 assert(vault.includes("sizes: [4096]"), "CHARGEN size validation is required");
 assert(vault.includes("sizes: [16384, 16386]"), "1541 size validation is required");
 assert(app.includes("vault.restore()"), "Cached ROM restoration must be wired");
+assert(app.includes('if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined")'), "Cached system ROMs must auto-boot the real C64 on page load");
+assert(app.includes("void powerOn();"), "Cached-ROM startup must invoke the real C64 power-on path");
+assert(app.includes('document.querySelector("[data-emulator-back]")'), "Back navigation must be wired in the emulator application");
 assert(!app.includes("if (!initial.allRequiredReady) showSetup()"), "First visit must not force the firmware setup modal");
 assert(app.includes("pendingMedia"), "Media selected before system ROM setup must be queued");
 assert(app.includes("queueMediaFile"), "File-first media routing must be wired");
