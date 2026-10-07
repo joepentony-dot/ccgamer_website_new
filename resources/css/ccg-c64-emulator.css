@@ -149,6 +149,50 @@ select:focus-visible,
   background: rgba(141, 130, 255, 0.11);
 }
 
+.ccg-c64-site-nav {
+  position: relative;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem clamp(0.6rem, 2vw, 1.2rem);
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(120, 126, 231, 0.18);
+  background: rgba(5, 7, 24, 0.9);
+  scrollbar-width: thin;
+}
+
+.ccg-c64-site-nav a {
+  flex: 0 0 auto;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(120, 126, 231, 0.22);
+  border-radius: 7px;
+  color: #c9c9ef;
+  background: rgba(14, 17, 47, 0.72);
+  text-decoration: none;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.ccg-c64-site-nav a:hover,
+.ccg-c64-site-nav a[aria-current="page"] {
+  color: #fff;
+  border-color: var(--emu-accent);
+  background: rgba(141, 130, 255, 0.11);
+}
+
+.ccg-c64-site-nav .ccg-c64-back-link {
+  color: #fff;
+  border-color: rgba(84, 232, 255, 0.45);
+}
+
 /* Main workstation ------------------------------------------ */
 
 .ccg-c64-workspace {
@@ -1122,7 +1166,16 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     font-size: 0.52rem;
   }
 
-  .ccg-c64-topnav a:nth-child(1) { display: none; }
+  .ccg-c64-site-nav {
+    justify-content: flex-start;
+    padding-inline: 0.45rem;
+  }
+
+  .ccg-c64-site-nav a {
+    min-height: 31px;
+    padding: 0.38rem 0.52rem;
+    font-size: 0.56rem;
+  }
 
   .ccg-c64-workspace {
     width: calc(100% - 0.5rem);
