@@ -18,6 +18,15 @@ try{
  await page.waitForFunction(()=>document.body.dataset.v142BootstrapReady==="true"&&Boolean(window.CCGLostSizzlerV142R55ShopFeedback));
  await page.locator("#solo-btn").click({noWaitAfter:true});await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&String(mode)==="playing");
  await page.evaluate(()=>{const shop=host?.shops?.[0]||host?.trader;if(!shop)throw new Error("shop fixture missing");openShop(shop,p1);score=0;if(run)run.gold=0;renderShop()});
+ const fit=await page.evaluate(()=>{const panel=document.querySelector(".shop-panel-card"),grid=document.getElementById("shop-items"),cards=[...grid.querySelectorAll(".shop-item")],pr=panel.getBoundingClientRect();return{clientHeight:panel.clientHeight,scrollHeight:panel.scrollHeight,cardCount:cards.length,gridColumns:getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length,allInside:cards.every(card=>{const r=card.getBoundingClientRect();return r.top>=pr.top-1&&r.bottom<=pr.bottom+1})}});
+ assert.ok(fit.cardCount>=7,`shop fixture unexpectedly exposed only ${fit.cardCount} stock cards`);
+ assert.equal(fit.gridColumns,4,`desktop Shop must render four compact columns, got ${fit.gridColumns}`);
+ assert.ok(fit.scrollHeight<=fit.clientHeight+1,`desktop Shop must not require an outer scrollbar: ${JSON.stringify(fit)}`);
+ assert.equal(fit.allInside,true,`every Shop item must remain visible in the one-screen panel: ${JSON.stringify(fit)}`);
+ await page.keyboard.press("Escape");await page.waitForFunction(()=>document.getElementById("shop-panel")?.classList.contains("hidden")&&String(mode)==="playing");
+ await page.keyboard.press("Tab");await page.waitForFunction(()=>!document.getElementById("inventory-panel")?.classList.contains("hidden")&&String(mode)==="inventory");
+ await page.keyboard.press("Escape");await page.waitForFunction(()=>document.getElementById("inventory-panel")?.classList.contains("hidden")&&String(mode)==="playing");
+ await page.evaluate(()=>{const shop=host?.shops?.[0]||host?.trader;openShop(shop,p1);score=0;if(run)run.gold=0;renderShop()});
  await page.locator('[data-shop-buy="potion"]').click();
  await page.waitForFunction(()=>!document.getElementById("shop-status")?.classList.contains("hidden"));
  let status=await page.locator("#shop-status").innerText();assert.match(status,/NOT ENOUGH GOLD/i);

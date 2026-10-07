@@ -240,7 +240,7 @@ addEventListener("keydown",e=>{
     if(UI.support&&!UI.support.classList.contains("hidden")){UI.support.classList.add("hidden");return}
     if(UI.shop&&!UI.shop.classList.contains("hidden")){closeShop();return}
     if(UI.savePanel&&!UI.savePanel.classList.contains("hidden")){if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt();return}
-    if(mode==="inventory"){toggleInventory();pause();return}
+    if(mode==="inventory"){e.preventDefault();toggleInventory();return}
     if(mode==="playing"||mode==="paused"){pause();return}
   }
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){if(mode==="paused")resumePausedRun();else pause();return}

@@ -116,6 +116,24 @@ try{
     else assert.equal(row.owned,1,`${row.label} retained more than one firearm`);
   }
 
+  const rareSpread=await page.evaluate(()=>{
+    const evolution=window.CCGLostSizzlerV142R47FirearmEvolution,rare={id:"spread",name:"Spread Gun",displayName:"GOLD MEDAL Spread Gun",rarity:"GOLD MEDAL",power:3,delay:.8,shots:3,pierce:1,element:"physical",mods:["THREE-WAY"],rating:99,desc:"Rare Spread reward"};
+    run.floor=1;p1.firearmUnlocked=true;p1.weaponPatternOverride="";p1.weaponEvolutionTier=2;p1.weaponLevel=2;p1.weapon=evolution.stageWeapon(2);p1.ownedWeapons=[evolution.stageWeapon(2)];p1.activeWeaponIndex=0;p1.mana=0;
+    evolution.collapseOwnership(p1);const beforeMana=p1.mana;equipWeapon(p1,rare);
+    const capped={floor:run.floor,tier:p1.weaponEvolutionTier,id:p1.weapon?.id,shots:p1.weapon?.shots,pattern:p1.weaponPatternOverride,mana:p1.mana,beforeMana,displayName:p1.weapon?.displayName};
+    run.floor=2;equipWeapon(p1,{id:"pulse",name:"Normal Cache",displayName:"Normal Cache",rarity:"COMMON",power:1,delay:1,shots:1,pierce:0,element:"energy",mods:[],rating:1,desc:"ordinary cache"});
+    const evolved={floor:run.floor,tier:p1.weaponEvolutionTier,id:p1.weapon?.id,shots:p1.weapon?.shots,pattern:p1.weaponPatternOverride,displayName:p1.weapon?.displayName};
+    return{capped,evolved}
+  });
+  assert.equal(rareSpread.capped.tier,2,"Floor 1 rare Spread reward must respect the Tier 2 cap");
+  assert.equal(rareSpread.capped.id,"spread","GOLD Spread reward must equip a Spread-pattern firearm instead of being salvaged");
+  assert.equal(rareSpread.capped.shots,3,"advertised Spread reward must actually fire three shots");
+  assert.equal(rareSpread.capped.pattern,"spread","rare Spread identity must be stored on the evolving firearm");
+  assert.equal(rareSpread.capped.mana,rareSpread.capped.beforeMana,"rare Spread reward at the cap must not be silently converted into ammo");
+  assert.equal(rareSpread.evolved.tier,3,"next floor must still allow normal tier progression");
+  assert.equal(rareSpread.evolved.id,"spread","earned rare Spread pattern must survive the next normal tier upgrade");
+  assert.equal(rareSpread.evolved.shots,3,"earned rare Spread pattern must remain three-way after later evolution");
+
   console.log("Dungeon Carnage r47 Memory Pad and firearm evolution browser contract passed.");
   await context.close();
 }finally{

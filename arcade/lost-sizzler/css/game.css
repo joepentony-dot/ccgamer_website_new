@@ -728,3 +728,71 @@ body[data-special-mode="sizzler-saboteurs"] .radar-card::after{content:"SPY VS S
   .shop-status b{font-size:11px}
   .shop-status span{font-size:10px}
 }
+
+
+/* R112 — room-scale map follow-up, one-screen Shop and visible timed-chamber clock. */
+.v102-mission{grid-template-columns:auto minmax(0,1fr) auto!important}
+.timed-chamber-countdown{
+  justify-self:end;
+  padding:4px 9px;
+  border:1px solid var(--red);
+  background:#260a12;
+  color:#fff0f2;
+  font-weight:900;
+  font-size:10px;
+  letter-spacing:.05em;
+  white-space:nowrap;
+  box-shadow:0 0 14px rgba(255,104,104,.16);
+}
+@media(min-width:901px){
+  #shop-panel{padding:8px!important}
+  .shop-panel-card{
+    width:min(1240px,96vw)!important;
+    max-height:calc(100dvh - 16px)!important;
+    overflow:hidden!important;
+    padding:12px 14px!important;
+  }
+  .shop-panel-head{margin:0 0 5px!important;padding:5px 0 7px!important}
+  .shop-panel-head h2{font-size:clamp(20px,1.8vw,28px)!important}
+  .shop-kicker{font-size:8px!important}
+  #shop-copy{margin:4px 0!important;font-size:10px!important;line-height:1.25!important}
+  .shop-controls{margin:4px 0 6px!important;font-size:8px!important}
+  .shop-controls kbd{padding:2px 5px!important;font-size:7px!important}
+  .shop-wallet{gap:6px!important;margin:5px 0 6px!important}
+  .shop-wallet span{padding:5px 7px!important;font-size:8px!important}
+  .shop-wallet b{margin-top:2px!important;font-size:13px!important}
+  .shop-status{margin:5px 0 6px!important;padding:6px 8px!important}
+  .shop-status b{margin-bottom:2px!important;font-size:9px!important}
+  .shop-status span{font-size:8px!important;line-height:1.2!important}
+  .shop-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;margin:6px 0!important}
+  .shop-item{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:6px!important;
+    min-height:112px!important;
+    padding:6px!important;
+    align-items:start!important;
+  }
+  .shop-item-icon{width:36px!important;height:36px!important}
+  .shop-item-icon .item-svg-wrap{width:28px!important;height:28px!important}
+  .shop-item h3{font-size:10px!important;line-height:1.05!important}
+  .shop-item .price{font-size:8px!important;line-height:1.1!important;margin-top:2px}
+  .shop-item p{
+    min-height:2.45em;
+    margin:3px 0!important;
+    font-size:8px!important;
+    line-height:1.2!important;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .shop-item button{margin-top:3px!important;padding:6px 7px!important;font-size:8px!important;line-height:1.05!important}
+  .shop-note{margin:5px 0 0!important;font-size:7.5px!important;line-height:1.25!important}
+  .shop-close-top{min-width:116px!important;padding:7px 10px!important;font-size:9px!important}
+}
+@media(max-height:760px) and (min-width:901px){
+  .shop-panel-card{padding:8px 10px!important}
+  .shop-item{min-height:94px!important}
+  .shop-item p{-webkit-line-clamp:1;min-height:1.2em}
+  .shop-note{display:none!important}
+}

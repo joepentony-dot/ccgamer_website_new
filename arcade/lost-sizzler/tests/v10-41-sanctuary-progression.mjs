@@ -16,9 +16,16 @@ assert.match(patch,/door\.type==="secret"\|\|door\.sigilGate\|\|door\.sigilAnnex
 assert.match(quality,/if\(room\.sanctuary\)continue/,"sanctuary enemy expulsion must remain active");
 assert.match(quality,/host\.sanctuaryRegeneration/,"sanctuary regeneration tiles must remain installed");
 assert.match(quality,/function regenCellOccupied\(/,"sanctuary healing placement must reject cells already occupied by gameplay objects");
+assert.match(quality,/const fallback=collect\(1,true\)/,"a Sanctuary must reclaim a safe floor cell if optional scenery otherwise consumes every healing position");
+assert.match(quality,/sanctuaryLake.*table.*roundChair.*chair.*barrel.*crate/s,"mandatory Sanctuary healing must take priority over optional room dressing only");
+assert.match(quality,/return W\.walkable\(world\.map,fallback\.x,fallback\.y,host\)\?fallback:null/,"the repaired Sanctuary square must still be genuinely walkable after optional scenery is removed");
 assert.match(quality,/host\?\.shops/,"sanctuary healing placement must not hide beneath a shop");
 assert.match(quality,/function validSanctuaryTile\(/,"sanctuary healing tiles must be revalidated after later room decoration");
 assert.match(quality,/periodMs:3000/,"sanctuary healing must remain +1 HP on the established three-second cadence");
+assert.match(quality,/updateSanctuaryRegen,drawRegenTiles/,"sanctuary regeneration update and rendering must remain callable by the late sanctuary scene owner");
+assert.match(sanctuaryScene,/CCGLostSizzlerQualityV135\?\.ensureSanctuaryTiles/,"sanctuary scene construction must guarantee a regeneration square before optional scenery is laid out");
+assert.match(sanctuaryScene,/CCGLostSizzlerQualityV135\?\.drawRegenTiles/,"sanctuary scene rendering must keep the green health square visible even if an older draw wrapper is displaced");
+assert.match(sanctuaryScene,/CCGLostSizzlerQualityV135\?\.updateSanctuaryRegen/,"sanctuary scene runtime must keep the +1 HP\/3 sec owner alive after late update composition");
 assert.doesNotMatch(procedural,/id:"v142-sanctuary-alchemist"/,"procedural generation must not spawn a second Alchemist inside a Sanctuary");
 assert.match(procedural,/sanctuaryIds=new Set/,"procedural shop finalisation must know every Sanctuary room");
 assert.match(procedural,/!sanctuaryIds\.has\(Number\(shop\.roomId\)\)/,"all active dungeon shops must be filtered out of Sanctuary rooms");

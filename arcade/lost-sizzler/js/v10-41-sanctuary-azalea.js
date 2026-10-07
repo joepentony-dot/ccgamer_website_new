@@ -119,6 +119,7 @@
 
   function buildScenes(){
     if(!world||!host)return 0;
+    try{window.CCGLostSizzlerQualityV135?.ensureSanctuaryTiles?.()}catch(_){}
     clearOldLakeCollision();
     const scenes=[];
     for(const room of world.rooms||[]){if(!room?.sanctuary)continue;const scene=sceneFor(room);if(scene)scenes.push(scene)}
@@ -192,6 +193,7 @@
 
   function drawScenes(){
     for(const scene of host?.sanctuaryScenes||[]){drawSunlight(scene);drawLake(scene);scene.trees.forEach(drawTree);scene.dancers.forEach(drawDancer)}
+    try{window.CCGLostSizzlerQualityV135?.drawRegenTiles?.()}catch(_){}
   }
 
   function updateGreetings(){
@@ -238,7 +240,7 @@
       const result=original.apply(this,arguments);
       try{
         const runtime=window.CCGLostSizzlerModeRuntime;
-        if(!runtime||runtime.inFamily?.("dungeon")===true){updateGreetings();enforceLakeSafety(false)}
+        if(!runtime||runtime.inFamily?.("dungeon")===true){updateGreetings();enforceLakeSafety(false);window.CCGLostSizzlerQualityV135?.updateSanctuaryRegen?.(Number(dt)||0)}
       }catch(_){}
       return result
     };

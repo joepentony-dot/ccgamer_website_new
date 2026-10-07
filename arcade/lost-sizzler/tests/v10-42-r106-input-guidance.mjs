@@ -11,6 +11,8 @@ const main=read("js/game-main.js");
 const onboarding=read("js/v10-20-onboarding-safety.js");
 const guidance=read("js/v10-23-tutorial-guidance.js");
 const gamepad=read("js/v10-41-r49-gamepad-input-polish.js");
+const gameplay=read("js/game-play.js");
+const html=read("index.html");
 
 assert.match(main,/const DOUBLE_TAP_DASH_MS=280/,"double-tap dash window must remain explicit");
 assert.match(main,/function maybeDoubleTapDash\(player,code,now=performance\.now\(\)\)/,"canonical keyboard/controller direction path must own double-tap dash");
@@ -38,5 +40,12 @@ assert.match(guidance,/Joypad detected: stick\/D-pad moves, A attacks, Select\/V
 
 assert.doesNotMatch(guidance,/void requestPlayFullscreen\(\);\s*result=startSolo\(\)/,"tutorial/start guidance must not consume the trusted click on fullscreen before the soundtrack starts");
 assert.match(guidance,/result=startSolo\(\)/,"Game and Tutorial must still route through canonical startSolo audio/fullscreen ordering");
+
+assert.match(html,/id="timed-chamber-countdown"[^>]*role="timer"/,"Timed Chamber must expose a persistent visible countdown in the Quest strip");
+assert.match(gameplay,/function timedChamberCountdown\(t=null\)/,"Timed Chamber runtime must own a persistent countdown updater");
+assert.match(gameplay,/Math\.ceil\(Number\(active\.timeLeft\|\|0\)\/1000\)/,"Timed Chamber countdown must show remaining whole seconds");
+assert.match(gameplay,/TIMED CHAMBER · \$\{seconds\}s/,"Timed Chamber countdown must use a player-readable seconds label");
+assert.match(gameplay,/timedChamberCountdown\(null\).*TIMED CHALLENGE FAILED/s,"leaving a Timed Chamber must remove the countdown immediately");
+assert.match(gameplay,/t\.cleared=true;t\.triggered=false;active=null[\s\S]*timedChamberCountdown\(null\)/,"clearing a Timed Chamber must stop and remove the countdown");
 
 console.log("Dungeon R106 double-tap dash and controller-aware tutorial contract passed.");
