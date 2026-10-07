@@ -1,3 +1,8 @@
+## R115 guide-entry / legacy contract update — 7 October 2026
+
+- Menu button now matches the panel: Dungeon Guide.
+- Existing V10.6 regression keeps mechanical checks but no longer requires removed long-form guide paragraphs.
+
 ## R115 armour-cap runtime update — 7 October 2026
 
 - Level-up Armour Repair now respects wearable-aware `armourCap(p)` instead of hard-coded 12.

@@ -1,3 +1,10 @@
+## R115 legacy guide-regression consolidation — 7 October 2026
+
+- V10.6 still snapshot-tested several paragraphs removed by the concise player-facing Dungeon Guide (Death Stalker reward totals, detailed AI prose, spider/hazard counts, Sigil death-cache placement and zero-XP explanation).
+- Runtime assertions for those mechanics remain intact; HTML assertions now check the current concise player concepts instead of retired manual prose.
+- The menu entry is also renamed from “Objectives & Rulebook” to “Dungeon Guide” to match the panel title.
+- No gameplay mechanic or runtime reward changed.
+
 ## R115 wearable armour-cap repair — 7 October 2026
 
 - Continued armour-gain audit found a real remaining hard-coded base-cap path in the level-up `Armour Repair` skill.
