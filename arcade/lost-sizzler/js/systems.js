@@ -289,10 +289,22 @@ window.CCGSystems=(()=>{
     if([...pit,...bridge].some(q=>world.map[q.y]?.[q.x]!==0))return null;
     const far=q=>side==="west"?q.x>cx+2:side==="east"?q.x<cx-2:side==="north"?q.y>cy+2:q.y<cy-2;
     let reward=firstFreeCell(world,room,used,far);if(!reward){reward=firstFreeCell(world,room,used,q=>side==="west"?q.x>cx:side==="east"?q.x<cx:side==="north"?q.y>cy:q.y<cy)}if(!reward)return null;
-    for(const q of bridge)used.add(cell(q.x,q.y));used.add(cell(reward.x,reward.y));
+    const wallCandidate=q=>{
+      if(!far(q)||used.has(cell(q.x,q.y))||world.map[q.y]?.[q.x]!==0)return false;
+      return [[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>world.map[q.y+dy]?.[q.x+dx]!==0)
+    };
+    let bridgeSwitch=null;
+    for(let y=room.y+1;y<room.y+room.h&&!bridgeSwitch;y++)for(let x=room.x+1;x<room.x+room.w;x++){const q={x,y};if(!wallCandidate(q)||md(q,reward)<2)continue;bridgeSwitch={x,y};break}
+    if(!bridgeSwitch)bridgeSwitch=firstFreeCell(world,room,used,q=>far(q)&&md(q,reward)>=2);
+    if(!bridgeSwitch)return null;
+    for(const q of bridge)used.add(cell(q.x,q.y));used.add(cell(reward.x,reward.y));used.add(cell(bridgeSwitch.x,bridgeSwitch.y));
     gate.type="room";gate.locked=false;gate.hidden=false;gate.weightBridgeGate=true;
-    let chest=(host.chests||[]).find(c=>c.roomId===room.id);if(!chest){chest={id:"weight-bridge-chest",...reward,locked:false,active:true,depth:(room.depth||0)+7,roomId:room.id};host.chests.push(chest)}else{chest.x=reward.x;chest.y=reward.y;chest.locked=false;chest.active=true;chest.depth=(room.depth||0)+7}chest.weightBridgeReward=true;
-    room.weightBridgeRoom=true;return{id:"weight-bridge",roomId:room.id,entranceSide:side,pitTiles:pit,bridgeTiles:bridge,stabilized:false,crossingPlayer:null,rewardPos:{...reward},chestId:chest.id}
+    let chest=(host.chests||[]).find(c=>c.roomId===room.id);if(!chest){chest={id:"weight-bridge-chest",...reward,locked:false,active:true,depth:(room.depth||0)+15,roomId:room.id};host.chests.push(chest)}else{chest.x=reward.x;chest.y=reward.y;chest.locked=false;chest.active=true;chest.depth=(room.depth||0)+15}chest.weightBridgeReward=true;chest.r114TrickTreatReward=true;
+    const switchId="weight-bridge-rebuild-switch";
+    host.switches=host.switches||[];
+    host.switches.push({id:switchId,...bridgeSwitch,roomId:room.id,active:true,toggled:false,wallMounted:true,remote:false,shotOnly:true,weightBridgeSwitch:true});
+    room.weightBridgeRoom=true;
+    return{id:"weight-bridge",roomId:room.id,entranceSide:side,pitTiles:pit,bridgeTiles:bridge,stabilized:false,collapsed:false,rebuilt:false,crossed:false,crossingPlayer:null,rewardPos:{...reward},chestId:chest.id,switchId,switchPos:{...bridgeSwitch},entryPos:{x:gate.x,y:gate.y},stolenItems:[],thiefId:null,thiefDefeated:false,rewardClaimed:false}
   }
   function installOptionalPuzzles(world,host,run,rooms,used){
     host.bloodClue=null;host.memoryPuzzle=null;host.sequenceTorchPuzzle=null;host.weightBridge=null;const floor=run?.floor||1,seq=torchSequenceFor(run),pool=puzzleRoomPool(world,host,rooms);
