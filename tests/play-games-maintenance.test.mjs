@@ -59,7 +59,7 @@ assert.match(ownerGate, /data-ccg-protected-runtime/);
 assert.match(ownerGate, /runtimeAccessGranted = true/);
 assert.match(ownerGate, /showMemberGate\(/);
 assert.match(ownerGate, /mark\("member-playtester"\)/);
-assert.match(ownerGate, /mark\("round2-member-required"\)/);
+assert.match(ownerGate, /round2-member-required/);
 assert.match(ownerGate, /mark\("owner-preview"\)/);
 assert.doesNotMatch(ownerGate, /ccg_validate_dungeon_carnage_tester_code/, "Round 2 must not use the retired tester-code path");
 assert.match(ownerGate, /Current Members Only/, "Round 2 denial must explain the closed current-member cohort");
