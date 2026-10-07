@@ -43,6 +43,8 @@ assert.match(systems,/sanctuaryStructuralSafe=r=>Boolean\(r&&r\.id!==world\.star
 assert.match(systems,/const sanctuaryRelocatable=r=>Boolean\(sanctuaryStructuralSafe\(r\)/,"Sanctuary fallback must retain a non-start structural fallback when ideal rooms are enemy-occupied");
 assert.match(systems,/function|const relocateSanctuaryEnemies=/,"Sanctuary fallback must relocate ordinary roaming enemies rather than abandoning Sanctuary generation");
 assert.match(systems,/!sanctuaryProtectedEnemy\(enemy\)/,"Sanctuary relocation must exclude authored or special enemies");
+assert.match(mobileTrapBrowser,/W\.walkable\(world\.map,x,y,host\)\|\|SYS\.inSanctuary\(world,x,y\)/,"synthetic mobile trap routes must reject Sanctuary origin cells");
+assert.match(mobileTrapBrowser,/W\.walkable\(world\.map,tx,ty,host\)\|\|SYS\.inSanctuary\(world,tx,ty\)/,"synthetic mobile trap routes must reject Sanctuary target cells");
 
 assert.match(patch,/ADVENTURER_SCORE_REWARD=1000/,"Lost Adventurer rescue must award 1,000 score");
 assert.match(patch,/ADVENTURER_XP_REWARD=200/,"Lost Adventurer rescue must award 200 XP");
