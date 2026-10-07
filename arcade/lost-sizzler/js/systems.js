@@ -457,18 +457,35 @@ window.CCGSystems=(()=>{
     const secretOrOptionalDoorRooms=new Set((host.doors||[]).filter(door=>door&&(door.type==="secret"||door.type==="bronze"||door.hidden)).map(door=>Number(door.roomId)).filter(id=>id>=0));
     const rewardChestRooms=new Set((host.chests||[]).filter(chest=>chest?.active!==false).map(chest=>Number(chest.roomId)).filter(id=>id>=0));
     const reservedSanctuaryRooms=new Set([host.trader?.roomId,host.startShop?.roomId].map(Number).filter(id=>Number.isFinite(id)&&id>=0));
-    const sanctuarySafeBase=r=>Boolean(r&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!occupiedEnemyRooms.has(r.id)&&!reservedSanctuaryRooms.has(Number(r.id)));
-    const sanctuaryEligible=r=>Boolean(sanctuarySafeBase(r)&&!r.optional&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!secretOrOptionalDoorRooms.has(Number(r.id))&&!rewardChestRooms.has(Number(r.id)));
-    const sanctuaryDesired=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,Math.max(0,(world.rooms||[]).length-1)));
+    const sanctuaryProtectedEnemy=enemy=>Boolean(enemy&&(enemy.follower||enemy.guardian||enemy.ccgBoss||enemy.deathStalker||enemy.voidStalker||enemy.lostAdventurer||enemy.sigilDefender||enemy.treasureGoblin));
+    const sanctuaryStructuralSafe=r=>Boolean(r&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sigilRoom&&!r.dedicatedHazardReserved&&!reservedSanctuaryRooms.has(Number(r.id)));
+    const sanctuarySafeBase=r=>Boolean(sanctuaryStructuralSafe(r)&&!occupiedEnemyRooms.has(r.id));
+    const sanctuaryEligible=r=>Boolean(sanctuarySafeBase(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))&&!rewardChestRooms.has(Number(r.id)));
+    const sanctuaryRelocatable=r=>Boolean(sanctuaryStructuralSafe(r)&&!(host.enemies||[]).some(enemy=>enemy?.alive!==false&&W.roomAt(world,enemy.x,enemy.y)===r.id&&sanctuaryProtectedEnemy(enemy)));
+    const sanctuaryDesired=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,Math.max(0,(world.rooms||[]).length-2)));
     const sanctuaryPool=[];
-    const addSanctuaryCandidates=list=>{for(const room of list||[]){if(sanctuaryPool.length>=sanctuaryDesired)break;if(room&&sanctuarySafeBase(room)&&!sanctuaryPool.some(candidate=>candidate.id===room.id))sanctuaryPool.push(room)}};
+    const addSanctuaryCandidates=(list,allowOccupied=false)=>{for(const room of list||[]){if(sanctuaryPool.length>=sanctuaryDesired)break;if(room&&(allowOccupied?sanctuaryRelocatable(room):sanctuarySafeBase(room))&&!sanctuaryPool.some(candidate=>candidate.id===room.id))sanctuaryPool.push(room)}};
     addSanctuaryCandidates(featureRooms.filter(sanctuaryEligible).slice(-Math.min(12,featureRooms.length)));
-    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&!r.optional&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!secretOrOptionalDoorRooms.has(Number(r.id))));
-    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&r.id!==world.startRoomId&&r.id!==world.exitRoomId));
-    addSanctuaryCandidates([world.rooms?.[world.exitRoomId],world.rooms?.[world.startRoomId]]);
+    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))));
+    addSanctuaryCandidates(featureRooms.filter(sanctuarySafeBase));
+    addSanctuaryCandidates((world.rooms||[]).filter(r=>sanctuaryRelocatable(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))),true);
+    addSanctuaryCandidates((world.rooms||[]).filter(sanctuaryRelocatable),true);
     const sanctuaryTarget=Math.min(sanctuaryDesired,sanctuaryPool.length);
+    const relocateSanctuaryEnemies=room=>{
+      const movers=(host.enemies||[]).filter(enemy=>enemy?.alive!==false&&W.roomAt(world,enemy.x,enemy.y)===room.id&&!sanctuaryProtectedEnemy(enemy));
+      if(!movers.length)return;
+      const targets=(world.rooms||[]).filter(candidate=>candidate&&candidate.id!==room.id&&candidate.id!==world.startRoomId&&candidate.id!==world.exitRoomId&&!candidate.sanctuary&&!candidate.sigilRoom&&!candidate.dedicatedHazardReserved&&!reservedSanctuaryRooms.has(Number(candidate.id)));
+      for(const enemy of movers){
+        const old=cell(enemy.x,enemy.y);let destination=null;
+        for(const target of targets){destination=firstFreeCell(world,target,used);if(destination)break}
+        if(!destination)continue;
+        used.delete(old);used.add(cell(destination.x,destination.y));
+        enemy.x=destination.x;enemy.y=destination.y;enemy.rx=destination.x;enemy.ry=destination.y;
+        if(enemy.x0!=null)enemy.x0=destination.x;if(enemy.y0!=null)enemy.y0=destination.y;
+      }
+    };
     for(let i=0;i<sanctuaryTarget;i++){
-      const room=sanctuaryPool[i];if(!room)continue;room.sanctuary=true;world.sanctuaryRooms.push(room.id);
+      const room=sanctuaryPool[i];if(!room)continue;relocateSanctuaryEnemies(room);room.sanctuary=true;world.sanctuaryRooms.push(room.id);
       for(const q of wallTorchPositions(room))world.wallLights.push({...q,roomId:room.id,radius:10,permanent:true,kind:"sanctuary"});
     }
     const activeFeatureRooms=featureRooms.filter(room=>!room.sanctuary);
