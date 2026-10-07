@@ -1,3 +1,11 @@
+## R114 qualification checkpoint — 7 October 2026 10:34 UK
+
+- Authoritative main remains `0e5493a03cefbd02c29235b01035f43f9687be02` (merged R113 / PR #2566).
+- Active vehicle remains draft PR #2571 / `codex/dungeon-r114-progression-challenges`, based directly on that main. #2567 remains superseded and must not be revived.
+- Previous exact head `3212242229bcbec432d5f8e81b228ba0f2b5818b` passed Mobile Trap Layout, PWA, Site Safety, Arcade package, itch.io package, SEO, structured-data, social-metadata and public-cache checks. PR Qualification and Full Qualification both stopped in the existing R87 fifteen-floor campaign source contract.
+- Runtime inspection confirmed the far-side bridge chest is marked with both `weightBridgeReward=true` and `r114TrickTreatReward=true`; the failing R87 assertion only accepted object-literal `r114TrickTreatReward:true`. The existing consolidated R87 test was repaired to accept either assignment or object-literal syntax without weakening the required marker. Commit: `e53f9fe6be4d5848600253fcc05876c4ffe47c0c`.
+- #2571 must receive a fresh exact-head PR Qualification and Full Qualification matrix after this commit. Do not merge on the older green checks. Continue through subsequent genuine failures, preserving the public 24-hour playtest boundary and the full R114/player-facing guide backlog recorded below.
+
 ## C64 Dungeon Carnage R114 authoritative continuation — 7 October 2026
 
 - **Authoritative merged baseline:** R113 / PR #2566 is merged to `main` at merge commit `0e5493a03cefbd02c29235b01035f43f9687be02`. Post-merge Full Qualification, Site Safety, itch.io package, Pages deployment, Production Smoke and Live Public Navigation are green.
