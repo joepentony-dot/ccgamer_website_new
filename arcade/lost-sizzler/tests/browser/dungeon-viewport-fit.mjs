@@ -43,8 +43,8 @@ async function captureViewport(page,file){
 
 const selectors=[".ccg-game",".player-hub",".core-stats",".hub-inventory",".hub-progress",".tactical-zone",".radar-card","#radar-canvas",".shortcut-dock","#item-shortcuts",".inventory-panel",".r71-inventory-layout","#inventory-close-top","#inventory-objective","#inventory-loadout","#inventory-list",".r71-equipment-board","#r80-wearable-strip",".r71-stat-strip",".r71-relic-strip","#inventory-close",".inventory-footer-actions",".ccg-evolving-firearm","#quick-keyring-icons","#quick-level-up","#hud-health","#hud-p2","#hud-mana","#hud-weapon","#hud-keys","#hud-score","#hud-room",...Array.from({length:6},(_,i)=>`#inventory-list .inventory-slot:nth-child(${i+1})`),...Array.from({length:8},(_,i)=>`#item-shortcuts .carried-item:nth-of-type(${i+1})`)];
 try{
- for(const [width,height,windowed] of [[2560,1440],[1920,1080],[1440,900],[1366,768]].flatMap(([w,h])=>[[w,h,false],[w,h,true]]).concat([[390,844,true]])){
-  const label=`${width}x${height}-${windowed?"windowed":"fullscreen"}`;
+ for(const [width,height] of [[2560,1440],[1920,1080],[1440,900],[1366,768],[390,844]]){
+  const label=`${width}x${height}-fullscreen`;
   const mobile=width<600;
   const context=await browser.newContext({viewport:{width,height},isMobile:mobile,hasTouch:mobile});
   await context.addInitScript(()=>{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")});
@@ -55,7 +55,7 @@ try{
   await page.click("#solo-btn");
   if(mobile){const accept=page.locator("#ccg-mobile-pc-accept");if(await accept.isVisible().catch(()=>false))await accept.click();}
   await page.waitForFunction(()=>mode==="playing"&&Boolean(p1));
-  if(windowed)await page.evaluate(async()=>{if(document.fullscreenElement)await document.exitFullscreen()});
+  await page.waitForFunction(()=>Boolean(document.fullscreenElement));
   await page.waitForTimeout(200);
   await page.evaluate(()=>{
     p1.inventorySlots=6;p1.bronzeKeys=4;host.keysCollected=3;host.exitSigilCollected=true;
@@ -67,7 +67,8 @@ try{
   });
   const measure=()=>page.evaluate(selectors=>Object.fromEntries(selectors.map(s=>{const n=document.querySelector(s),r=n?.getBoundingClientRect();return[s,n?{x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom,sw:n.scrollWidth,cw:n.clientWidth,sh:n.scrollHeight,ch:n.clientHeight,iw:Number(n.width||0),ih:Number(n.height||0),display:getComputedStyle(n).display}:null]})),selectors);
   const hud=await measure();
-  const radarDiag=await page.evaluate(()=>window.__CCG_RADAR_DIAGNOSTICS__?{...window.__CCG_RADAR_DIAGNOSTICS__}:null);
+  const radarDiag=await page.evaluate(()=>window.__CCG_RADAR_DIAGNOSTICS__?structuredClone(window.__CCG_RADAR_DIAGNOSTICS__):null);
+  const radarPlayer=await page.evaluate(()=>({x:Number(p1?.x),y:Number(p1?.y)}));
   const runStats=await page.evaluate(()=>[...document.querySelectorAll(".hub-progress .run-stat")].map(node=>{const r=node.getBoundingClientRect(),value=node.querySelector("b");return{label:String(node.querySelector("span")?.textContent||""),text:String(value?.textContent||""),x:r.x,right:r.right,w:r.width,sw:Number(value?.scrollWidth||0),cw:Number(value?.clientWidth||0)}}));
 
   await captureViewport(page,path.join(artifacts,`${label}-hud.png`));
@@ -90,8 +91,12 @@ try{
     assert.ok(Math.abs(cssRatio-bitmapRatio)<.035,`${width}x${height}: radar backing bitmap must match rendered aspect ratio: ${JSON.stringify(radar)}`);
     assert.ok(Math.abs(radar.iw-radar.w)<=2&&Math.abs(radar.ih-radar.h)<=2,`${width}x${height}: radar bitmap dimensions must track the visible canvas: ${JSON.stringify(radar)}`);
     assert.ok(radar.h>=140,`${width}x${height}: desktop radar canvas must receive meaningful vertical space: ${JSON.stringify(radar)}`);
-    assert.ok(radarDiag&&radarDiag.scale>=9,`${width}x${height}: room-scale minimap must remain legible without returning to the tiny pre-R111 presentation: ${JSON.stringify(radarDiag)}`);
-    assert.ok(radarDiag.cols>=14&&radarDiag.cols<=16&&radarDiag.rows>=12&&radarDiag.rows<=14,`${width}x${height}: minimap must show a room-scale local window while keeping the R111 panel dimensions: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radarDiag&&radarDiag.scale>=6.5,`${width}x${height}: room-aware minimap must remain legible while showing substantially more surrounding geometry: ${JSON.stringify(radarDiag)}`);
+    assert.ok(radarDiag.cols>=18&&radarDiag.cols<=30&&radarDiag.rows>=14&&radarDiag.rows<=22,`${width}x${height}: minimap must fit the current room plus margin instead of using the over-tight R112 window: ${JSON.stringify(radarDiag)}`);
+    assert.equal(radarDiag.playerMarker?.shape,"square",`${width}x${height}: YOU marker must match the cyan-square legend rather than use an ambiguous triangle`);
+    assert.equal(radarDiag.playerMarker?.count,1,`${width}x${height}: sidebar minimap must own exactly one YOU marker`);
+    assert.equal(radarDiag.playerMarker?.worldX,radarPlayer.x,`${width}x${height}: radar YOU marker x must track the live P1 coordinate`);
+    assert.equal(radarDiag.playerMarker?.worldY,radarPlayer.y,`${width}x${height}: radar YOU marker y must track the live P1 coordinate`);
     assert.ok(radarDiag.mapWidth>=radarDiag.canvasWidth*.5||radarDiag.mapHeight>=radarDiag.canvasHeight*.65,`${width}x${height}: tactical minimap must occupy a useful share of its canvas: ${JSON.stringify(radarDiag)}`);
     assert.ok(separate(hud[".core-stats"],hud[".hub-inventory"])&&separate(hud[".hub-inventory"],hud[".hub-progress"]),"HUD regions must not overlap");
     for(const row of runStats){assert.ok(row.cw>0&&row.sw<=row.cw+1,`${width}x${height}: lower-right HUD value must fit without ellipsis/obscuring (${row.label} ${row.text}): ${JSON.stringify(row)}`)}

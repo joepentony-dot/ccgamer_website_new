@@ -149,7 +149,10 @@ try{
   await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
   await context.addInitScript(()=>{
     try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}
-    HTMLElement.prototype.requestFullscreen=function(){return Promise.resolve()};
+    window.__ccgFullscreenActive=false;
+    Object.defineProperty(document,"fullscreenElement",{configurable:true,get(){return window.__ccgFullscreenActive?document.documentElement:null}});
+    HTMLElement.prototype.requestFullscreen=function(){window.__ccgFullscreenActive=true;queueMicrotask(()=>document.dispatchEvent(new Event("fullscreenchange")));return Promise.resolve()};
+    document.exitFullscreen=function(){window.__ccgFullscreenActive=false;queueMicrotask(()=>document.dispatchEvent(new Event("fullscreenchange")));return Promise.resolve()};
   });
   const page=await context.newPage();page.setDefaultTimeout(90000);
   const pageErrors=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
