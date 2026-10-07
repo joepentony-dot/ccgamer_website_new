@@ -4,6 +4,7 @@ import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 
 const source=fs.readFileSync(fileURLToPath(new URL('../js/v10-6-inventory-hud-fix.js',import.meta.url)),'utf8');
+const coreSource=fs.readFileSync(fileURLToPath(new URL('../js/game-core.js',import.meta.url)),'utf8');
 
 const classList={add(){},toggle(){}};
 const target={innerHTML:'',dataset:{}};
@@ -103,7 +104,17 @@ const slot3=eventFor('Digit3');keydown(slot3);
 assert.deepEqual(usedSlots,[0],'trade-only artefacts are not consumed by a number key');
 assert.match(toasts.at(-1).text,/cannot be activated/i);
 
+assert.match(source,/QUICK_USE=new Set\(\["potion","torch","teleport","banishment","mapReveal"\]\)/,'Cartographer\'s Eye must be a numbered quick-use item');
+assert.match(coreSource,/\["potion","torch","teleport","banishment","mapReveal"\]\.includes\(it\.kind\)/,'TAB inventory must render USE for Cartographer\'s Eye');
+player.inventory[2]={kind:'mapReveal',name:"Cartographer's Eye",qty:1};
+const mapSlot=eventFor('Digit3');keydown(mapSlot);
+assert.deepEqual(usedSlots,[0,2],"Cartographer's Eye must activate through its numbered Quick Inventory slot");
+assert.equal(mapSlot.prevented,true);
+assert.equal(mapSlot.stopped,true);
+
 context.sync();
+assert.match(target.innerHTML,/CARTOGRAPHER'S EYE/,'live carried-items panel must show Cartographer\'s Eye');
+assert.match(target.innerHTML,/number-item-key[^>]*>3<\/kbd>/,'Cartographer\'s Eye must show its exact numbered quick-slot key');
 assert.equal(syncCalls,1,'the existing sync function remains intact');
 
 console.log('Lost Sizzler live inventory and numbered Quick Inventory regression checks passed.');
