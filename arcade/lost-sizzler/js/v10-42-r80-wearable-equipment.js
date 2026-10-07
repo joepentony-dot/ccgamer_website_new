@@ -50,7 +50,7 @@
     const promotionChance=Math.min(70,8+depth*3+luck*4);
     const power=Math.min(4,Math.max(0,Math.floor((floor-1)/2)+(((seed>>>11)%100)<promotionChance?1:0)));
     const rarity=PGR.RARITY[power]||"COMMON",values=effectValues(slot,rarity),name=GEAR_NAMES[slot][power]||`${rarity} ${SLOT_LABELS[slot]}`;
-    return{kind:"wearable",slot,rarity,name,short:name,...values,desc:`${SLOT_LABELS[slot]} wearable. ${effectText({slot,...values})}. Equipped clothing is retained through normal deaths and floor transitions.`}
+    return{kind:"wearable",slot,rarity,name,short:name,...values,desc:`${SLOT_LABELS[slot]} wearable. ${effectText({slot,...values})}. Equipped gear survives floor transitions but drops into your death box when you die.`}
   }
   function qualifiesForDrop(chest,player=currentPlayer()){
     if(!chest||chest.v142R80WearableProcessed)return false;
@@ -144,6 +144,24 @@
   PGR.effectiveSight.__ccgV142R80Wearables=true;
   PGR.effectiveSight.__ccgOriginal=baseSight;
 
+  function stripWearablesForDeath(player){
+    const slots=wearables(player),dropped=[];
+    for(const slot of SLOT_ORDER){
+      const item=slots[slot];if(!item)continue;
+      clearSlotEffect(player,slot);dropped.push({...item,deathEquippedSlot:slot});slots[slot]=null
+    }
+    return dropped
+  }
+  if(typeof PGR.createDeathCache==="function"){
+    const baseCreateDeathCache=PGR.createDeathCache.bind(PGR);
+    PGR.createDeathCache=function r114CreateDeathCacheWithWearables(player,runState,x,y,...args){
+      const equipped=stripWearablesForDeath(player),cache=baseCreateDeathCache(player,runState,x,y,...args);
+      if(equipped.length){cache.inventory=Array.isArray(cache.inventory)?cache.inventory:[];cache.inventory.push(...equipped);cache.equippedWearables=equipped.map(item=>({slot:item.deathEquippedSlot,name:item.name||"WEARABLE GEAR",rarity:item.rarity||"COMMON"}));cache.active=true}
+      return cache
+    };
+    PGR.createDeathCache.__ccgR114EquippedWearables=true;PGR.createDeathCache.__ccgOriginal=baseCreateDeathCache
+  }
+
   if(typeof preservePlayer==="function"){
     const basePreserve=preservePlayer;
     preservePlayer=function r80PreserveWearables(old,...args){
@@ -171,7 +189,7 @@
 
   if(typeof itemHelp==="function"){
     const baseItemHelp=itemHelp;
-    itemHelp=function r80ItemHelp(kind,...args){return kind==="wearable"?"Wearable equipment. Use EQUIP in TAB to place it in its matching Head, Hands or Feet slot. Equipped gear stays with you through normal deaths.":baseItemHelp(kind,...args)};
+    itemHelp=function r80ItemHelp(kind,...args){return kind==="wearable"?"Wearable equipment. Use EQUIP in TAB to place it in its matching Head, Hands or Feet slot. Equipped gear drops into your death box on death and must be recovered and re-equipped.":baseItemHelp(kind,...args)};
   }
   if(typeof collectedName==="function"){
     const baseCollectedName=collectedName;
@@ -277,6 +295,6 @@
   ensureStyle();
   try{renderLoadout();decorateInventory()}catch(_){}
   window.CCGLostSizzlerV142R80WearableEquipment=Object.freeze({
-    version:"V10.42-r80",state,slots:[...SLOT_ORDER],makeWearable,effectText,equipWearable,unequipWearable,qualifiesForDrop,wearables
+    version:"V10.42-r80",state,slots:[...SLOT_ORDER],makeWearable,effectText,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
   });
 })();
