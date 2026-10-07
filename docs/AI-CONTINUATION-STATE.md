@@ -1,3 +1,11 @@
+## R116 live playtest corrections — 7 October 2026
+
+- Active branch: `codex/dungeon-r116-cartographers-eye-use`, based on merged R115 main.
+- Cartographer's Eye now participates in the existing inventory-use owners: TAB inventory shows USE, numbered Quick Inventory can activate it, and the carried-items panel identifies it as a live consumable.
+- Magic Sack rare shop stock is repeatable within a shop until the +3 run cap. Price is run-wide by current Sack tier: 10 Gold for the first, 15 for the second, 20 for the third; buying one does not deplete that shop's Sack stock.
+- Current live-playtest backlog being worked next on this branch: Ward-Break Charge stack corruption/duplication shown as multiple oversized stacks; reduce Banishment Essence abundance while preserving enough per floor for Death Stalker/Count Loadula needs; reduce armour pickups; make Sanctuary rooms true safe rooms with no idle-destruction blasts, monster spawning or enemy entry.
+- Preserve the deployed public playtest access boundary/timer.
+
 ## R115 rare-weapon cap verification — 7 October 2026
 
 - Audited R47 rare-at-cap logic against the explicit reward requirements. Runtime already supports: alternate rare archetype swap, same-archetype refinement up to +3, and mastered duplicate reforge to the next meaningful archetype. Only ordinary COMMON capped caches enter the ammo -> XP -> score salvage chain.
