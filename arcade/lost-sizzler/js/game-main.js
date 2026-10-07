@@ -80,8 +80,8 @@ function installFloorCheckpointContinuity(){
   resumeSavedRun=async function(){
     const saved=PGR.loadCheckpoint(),floor=Number(saved?.floor||saved?.run?.floor||0);
     if(!saved||floor<1){updateSavedRunButton();return false}
-    const audio=S.start(),fs=requestPlayFullscreen();
-    await Promise.all([audio,fs]);
+    const audio=S.start(),fs=requestPlayFullscreen(),[,fullscreen]=await Promise.all([audio,fs]);
+    if(!fullscreen)return false;
     run=saved.run;score=Math.max(0,Number(saved.score)||0);p1=saved.player;p2=null;playMode="solo";mode="playing";
     startWorld(PGR.floorSeed(run),false,true,true);
     floorEntryCheckpoint=saved;
@@ -173,8 +173,10 @@ function installInventoryAttackResumeBoundary(){
 }
 installInventoryAttackResumeBoundary();
 
-function resumePausedRun(){
+async function resumePausedRun(){
   if(mode!=="paused")return false;
+  const fullscreen=document.fullscreenElement?true:await requestPlayFullscreen();
+  if(!fullscreen)return false;
   clearPauseAttackCadence("handler-before-resume");
   const resumed=pause(true);
   if(mode!=="paused"){settlePauseAttackCadence("handler-after-resume");return true}
@@ -273,7 +275,16 @@ function scheduleGameResize(){
 }
 window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__=scheduleGameResize;
 addEventListener("resize",scheduleGameResize,{passive:true});
-document.addEventListener("fullscreenchange",()=>{syncFullscreenState();scheduleGameResize()});
+document.addEventListener("fullscreenchange",()=>{
+  syncFullscreenState();scheduleGameResize();
+  const live=document.body.dataset.runActive==="true"&&Boolean(run);
+  const resumeButton=document.getElementById("resume-btn");
+  if(live&&!document.fullscreenElement&&!["menu","ended"].includes(mode)){
+    openPauseMenu();
+    if(resumeButton)resumeButton.textContent="Return to Fullscreen";
+    fullscreenRequiredNotice();
+  }else if(document.fullscreenElement&&resumeButton)resumeButton.textContent="Continue";
+});
 if(window.ResizeObserver){
   const resizeTarget=document.querySelector(".canvas-wrap")||document.querySelector(".game-area");
   if(resizeTarget){
