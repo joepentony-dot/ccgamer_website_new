@@ -56,13 +56,54 @@ async function openSecretMenu(page, mobile) {
 async function interact(page, code) {
     if (code === "bbs") {
         if (await page.locator(".ccg-e11--bbs .ccg-e11__bbs-status").count() !== 1) throw new Error("Premium BBS status panel missing");
+        if (await page.locator(".ccg-e11--bbs .ccg-e11__bbs-sidebar").count() !== 1) throw new Error("BBS Super-Node sidebar missing");
+        if (await page.locator(".ccg-e11--bbs [data-bbs-shortcut]").count() < 6) throw new Error("BBS Super-Node shortcuts missing");
+
         const input = page.locator(".ccg-e11--bbs [data-terminal-input]");
+
         await input.fill("HELP");
         await input.press("Enter");
         await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("CCG-BBS COMMAND DIRECTORY"));
-        await input.fill("FILES C64");
+
+        await input.fill("BOARDS");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("MESSAGE BASES"));
+
+        await input.fill("READ C64 3");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("SID LAB DOOR"));
+
+        await input.fill("POST C64 AUTOMATED TEST");
+        await input.press("Enter");
+        await input.fill("HELLO FROM THE E11 QUALIFICATION.");
+        await input.press("Enter");
+        await input.fill(".");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("POSTED TO C64"));
+
+        await input.fill("SEARCH SID");
         await input.press("Enter");
         await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("SID-LAB.PRG"));
+
+        await input.fill("MAIL LIST");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("ELECTRONIC MAILBOX"));
+
+        await input.fill("THEME AMBER");
+        await input.press("Enter");
+        const theme = await page.locator(".ccg-e11--bbs").getAttribute("data-bbs-theme");
+        if (theme !== "amber") throw new Error("BBS terminal theme did not switch to amber");
+
+        await input.fill("TRIVIA");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("QUESTION 1/5"));
+        await input.fill("B");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("QUESTION 2/5"));
+        await input.fill("TRIVIA QUIT");
+        await input.press("Enter");
+        await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("TRIVIA DOOR CLOSED"));
+
         await input.fill("PRIVATE");
         await input.press("Enter");
         await page.waitForFunction(() => document.querySelector(".ccg-e11--bbs")?.textContent.includes("LEVEL 1541"));
