@@ -6,8 +6,11 @@ const play=fs.readFileSync(new URL("js/game-play.js",root),"utf8");
 const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
 
 assert.match(systems,/function memoryPadLayout/);
-assert.match(systems,/[0,2,4,6,8]/,"memory pads must be separated by safe floor cells");
-assert.match(systems,/Math\.floor\(r\(\)\*5\)/,"memory sequence must target exactly five pads");
+assert.match(systems,/[0,2,4,6,8]/,"five-pad memory layouts must retain safe spacing");
+assert.match(systems,/memoryPuzzleHardFloor/,"the later campaign must own a separate hard memory-vault floor");
+assert.match(systems,/const memoryPads=floor===C\.dungeon\.memoryPuzzleFloor\?5:floor===C\.dungeon\.memoryPuzzleHardFloor\?7:0/,"memory-vault owner must select five pads early and seven pads later");
+assert.match(systems,/Math\.floor\(r\(\)\*total\)/,"memory sequence generation must target the configured five- or seven-pad total");
+assert.match(systems,/\[-2,-2\],\[0,-2\],\[2,-2\],\[-2,0\],\[0,0\],\[2,0\],\[0,2\]/,"seven-pad vault must use a spaced late-game grid rather than overlapping pads");
 assert.doesNotMatch(systems,/findClearSquare\(world,room,used,3\)/,"legacy 3x3 memory grid must be retired");
 assert.match(systems,/activator:\{\.\.\.layout\.activator\}/);
 assert.match(systems,/label:String\(i\+1\)/);
