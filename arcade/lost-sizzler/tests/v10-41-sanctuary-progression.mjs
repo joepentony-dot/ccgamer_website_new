@@ -7,6 +7,7 @@ const procedural=fs.readFileSync(new URL("../js/v10-42-procedural-overhaul.js",i
 const sanctuaryScene=fs.readFileSync(new URL("../js/v10-41-sanctuary-azalea.js",import.meta.url),"utf8");
 const play=fs.readFileSync(new URL("../js/game-play.js",import.meta.url),"utf8");
 const systems=fs.readFileSync(new URL("../js/systems.js",import.meta.url),"utf8");
+const mobileTrapBrowser=fs.readFileSync(new URL("./browser/v10-42-mobile-trap-layout-live.mjs",import.meta.url),"utf8");
 
 assert.match(patch,/\["arenas","timedRooms"\]/,"sanctuary hardening must remove arena and timed-room assignments");
 assert.match(patch,/challenge=>!ids\.has\(Number\(challenge\?\.roomId\)\)/,"sanctuary challenge filtering must be keyed to sanctuary room ids");
