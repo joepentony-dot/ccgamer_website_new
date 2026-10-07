@@ -190,7 +190,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
     body = body.replace(heading, `${heading}\n            ${descriptionHtml}`);
   }
 
-  const iframeRe = /<iframe\b[^>]*\bid=(["'])game-video-embed\1[^>]*>/i;
+  const iframeRe = /<iframe\b[^>]*\bid=(["\'])game-video-embed\1[^>]*>[\s\S]*?<\/iframe>/i;
   const iframeMatch = body.match(iframeRe);
   if (iframeMatch) {
     let iframe = iframeMatch[0];
