@@ -6,7 +6,10 @@ const source=fs.readFileSync(new URL("../js/v10-42-warden-interface-consistency.
 const toastLog=[];
 let renderCalls=0,buyCalls=[];
 const player={inventory:[{kind:"banishment",name:"Banishment Flask"}]};
-const progression={inventoryLabel:item=>item?.name||item?.kind||"ITEM"};
+const progression={
+  inventoryLabel:item=>item?.name||item?.kind||"ITEM",
+  inventoryKindCount(player,kind){return (player?.inventory||[]).filter(item=>item?.kind===kind).reduce((sum,item)=>sum+Math.max(1,Math.floor(Number(item?.qty)||1)),0)}
+};
 const cards={banishment:{removed:false},banishmentScore:{removed:false}};
 const shopItems={querySelector(selector){const match=selector.match(/data-shop-buy="([^"]+)"/),id=match?.[1];if(!id||!cards[id])return null;return{closest:()=>({remove:()=>{cards[id].removed=true}})}}};
 const tip={textContent:"Death Stalker: trade 3 artefacts or pay 10,000 score at a shop for a Flask.",innerHTML:""};
@@ -59,9 +62,11 @@ assert.match(defs.find(row=>row.kind==="banishment").desc,/does not kill the War
 assert.match(defs.find(row=>row.kind==="loot").desc,/Banishment Essence/,"Rare loot guide should explain the current Vessel/Essence economy");
 assert.doesNotMatch(defs.find(row=>row.kind==="loot").desc,/Banishment Flask/,"Rare loot guide should not point to the retired Flask trade");
 
-assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge","Legacy saved banishment items should display the current Ward-Break name");
+assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge ×1","Equipment & Inventory must show the current Ward-Break Charge possession count even when it is one");
+player.inventory.push({kind:"banishment",name:"Ward-Break Charge",qty:2});
+assert.equal(progression.inventoryLabel(player.inventory[0]),"Ward-Break Charge ×3","Ward-Break inventory labels must show the total number of charges in possession across stacks");
 const banishInfo=context.itemInfoDetails(player.inventory[0]);
-assert.equal(banishInfo.name,"WARD-BREAK CHARGE","Inventory information should rename legacy banishment items");
+assert.equal(banishInfo.name,"WARD-BREAK CHARGE ×3","Inventory information must repeat the live Ward-Break possession count");
 assert.match(banishInfo.why,/immunity drops/i,"Inventory information should explain why Ward Break matters");
 const artefactInfo=context.itemInfoDetails({kind:"artefact",name:"Old Artefact"});
 assert.match(artefactInfo.desc,/stored as Banishment Essence/i,"Legacy artefact information should explain Vessel conversion");

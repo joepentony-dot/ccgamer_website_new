@@ -18,6 +18,13 @@ assert.match(version.cacheToken,/^\d{8}r\d+$/,"feature contract requires a valid
 
 assert.match(bootstrap,/v10-42-r71-equipment-inventory\.js[\s\S]*v10-42-r80-wearable-equipment\.js[\s\S]*v10-42-r72-map-death-feedback\.js/,"R80 wearables must load after the R71 inventory owner and before later presentation modules");
 assert.match(source,/const SLOT_ORDER=\["head","hands","feet"\]/,"wearables must expose genuine Head, Hands and Feet slots");
+assert.match(source,/function gearTierFor/,"wearables must map the existing loot rarity stream into RPG armour tiers");
+assert.match(source,/armourBonus:3,enchanted:true/,"Enchanted gear must be the best armour tier at +3");
+assert.match(source,/if\(!tier\.enchanted\)return base/,"secondary wearable bonuses must be reserved for Enchanted gear");
+assert.match(source,/PGR\.createDeathCache=function r114CreateDeathCacheWithWearables/,"death cache creation must strip equipped wearables into the cache");
+assert.match(source,/const cache=baseCreateDeathCache\(player,runState,x,y,\.\.\.args\),equipped=stripWearablesForDeath\(player\)/,"death cache must snapshot carried items and armour before equipped gear is stripped");
+
+
 assert.match(source,/function equipWearable/,"wearables must have one equip transaction");
 assert.match(source,/function unequipWearable/,"wearables must support explicit unequip");
 assert.match(source,/PGR\.inventoryRemove\(player,index\)/,"equipping must remove the carried item from inventory");
@@ -75,7 +82,12 @@ const context={
       effectiveSight:()=>5,
       inventoryAdd,
       inventoryRemove,
-      inventoryCanAdd:player=>(player.inventory||[]).length<6
+      inventoryCanAdd:player=>(player.inventory||[]).length<6,
+      createDeathCache(player){
+        const inventory=(player.inventory||[]).map(item=>({...item})),armour=Math.max(0,Number(player.armor||0));
+        player.inventory=[];player.armor=0;
+        return{inventory,armour,active:inventory.length>0||armour>0}
+      }
     }
   },
   document:{
@@ -96,6 +108,13 @@ assert.equal(generated.kind,"wearable");
 assert.ok(["head","hands","feet"].includes(generated.slot));
 assert.ok(generated.name);
 assert.ok(api.effectText(generated).length>3);
+
+assert.deepEqual(api.gearTierFor("UNCOMMON"),{name:"RARE",armourBonus:1,enchanted:false});
+assert.deepEqual(api.gearTierFor("SIZZLER"),{name:"SUPERIOR",armourBonus:2,enchanted:false});
+assert.deepEqual(api.gearTierFor("GOLD MEDAL"),{name:"ENCHANTED",armourBonus:3,enchanted:true});
+const enchantedHead=api.makeWearable({id:"enchanted-head-search",depth:12},{rpgStats:{luck:10}});
+assert.ok(["COMMON","RARE","SUPERIOR","ENCHANTED"].includes(enchantedHead.gearTier));
+if(enchantedHead.gearTier==="ENCHANTED")assert.ok(/SIGHT|AMMO PICKUPS|FASTER MOVEMENT/.test(api.effectText(enchantedHead)),"Enchanted wearables must add a secondary slot bonus");
 
 const lowLuck={rpgStats:{luck:5}};
 const highLuck={rpgStats:{luck:10}};
@@ -146,5 +165,15 @@ assert.equal(context.window.CCGProgression.effectiveSight(player,context.run),6)
 assert.equal(api.unequipWearable(player,"hands"),true);
 assert.equal(player.wearables.hands,null);
 assert.equal(Number(player.scavenger.toFixed(2)),.20,"unequipping gloves must restore the pre-gear Scavenger value");
+
+player.armor=9;
+const deathCache=context.window.CCGProgression.createDeathCache(player,{floor:4},12,8);
+assert.equal(player.armor,0,"death must strip current armour protection");
+assert.equal(player.inventory.length,0,"death must move all carried inventory into the cache");
+assert.equal(player.wearables.head,null,"death must remove equipped Head gear");
+assert.equal(player.wearables.feet,null,"death must remove equipped Feet gear");
+assert.ok(deathCache.inventory.some(item=>item.kind==="wearable"&&item.deathEquippedSlot==="head"),"death cache must contain equipped Head gear");
+assert.ok(deathCache.inventory.some(item=>item.kind==="wearable"&&item.deathEquippedSlot==="feet"),"death cache must contain equipped Feet gear");
+assert.equal(deathCache.armour,9,"death cache must retain the armour protection snapshot");
 
 console.log("Dungeon R80 genuine wearable equipment contract passed.");

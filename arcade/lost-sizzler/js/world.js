@@ -440,7 +440,7 @@ window.CCGWorld=(()=>{
     while(keyRooms.length<C.keyTarget)keyRooms.push(openRooms[keyRooms.length]);
     keyRooms.forEach((room,i)=>{const p=pickInRoom(w,room,used);items.push({id:`key${i}`,...p,kind:"key",active:true})});
 
-    const cycle=["health","credits","torch","armour","potion","weapon","rapid","xpOrb","teleport","health","credits","torch","armour","potion","weapon","credits"];
+    const cycle=["health","credits","torch","armour","weapon","rapid","xpOrb","teleport","health","credits","torch","armour","ammo","weapon","credits","rapid","armour","potion","ammo","credits"];
     for(let i=0;i<42;i++){const p=pick(w,used,9,false);items.push({id:`p${i}`,...p,kind:cycle[i%cycle.length],active:true})}
     const collectibleCount=1+(w.random()<.4?1:0);
     for(let i=0;i<collectibleCount;i++){const p=pick(w,used,9,false);items.push({id:`game${i}`,...p,kind:"game",title:C.c64Loot[(floor*97+i*211)%C.c64Loot.length],active:true})}
@@ -449,7 +449,7 @@ window.CCGWorld=(()=>{
     // Bronze keys are balanced after every lock, puzzle and reward chest has been installed.
     // Do not seed speculative spares here: surplus keys made later floors feel cluttered.
 
-    const chestRewards=["weapon","armour","potion","torch","health","rapid","health","weapon","armour","potion","torch","ammo","weapon","armour"];
+    const chestRewards=["weapon","armour","ammo","torch","health","rapid","health","weapon","armour","potion","torch","ammo","weapon","armour"];
     const chests=[];
     let ci=0;
     for(const r of w.rooms.filter(r=>r.optional)){
