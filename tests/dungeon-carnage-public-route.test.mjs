@@ -13,6 +13,22 @@ const canonicalOwner=read("arcade/lost-sizzler/js/v10-18-input-ui-bugfixes.js");
 const packageBuilder=read("scripts/build-c64-dungeon-carnage-itch-package.mjs");
 const oldGameEntry=read("games/the-lost-sizzler/index.html");
 const oldQuestEntry=read("games/ccg-games/cheeky-commodore-quest/index.html");
+const publicEntry=read("arcade/c64-dungeon-carnage/index.html");
+const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
+const releaseCache="20261008r118";
+assert.equal(version.build,"V10.42 r118","R118 public release must display the newly merged artwork generation");
+assert.equal(version.cacheToken,releaseCache,"R118 must trigger a fresh client cache boundary");
+for(const [name,page] of [["source",index],["public",publicEntry]]){
+  assert.ok(page.includes('<meta name="ccg-lost-sizzler-build" content="V10.42 r118">'),name+" build metadata must match the R118 release");
+  assert.ok(page.includes('<meta name="ccg-lost-sizzler-cache" content="'+releaseCache+'">'),name+" must agree with R118 cache token");
+  assert.ok(page.includes('<summary>Latest Build Changes · V10.42 R118</summary>'),name+" player changelog must display the R118 art pass");
+  assert.ok(page.includes("flickering animated wall torches")&&page.includes("rotating gold-score coins"),name+" public changelog must describe the shipped animation");
+  assert.ok(!page.includes("20261007r117"),name+" must not reference pre-R118 scripts or CSS");
+  for(const script of ["js/v10-41-cache-guard.js","js/version-check.js","js/asset-overrides.js","js/game-render.js"]){
+    assert.ok(page.includes(script+"?v="+releaseCache),name+" must load fresh "+script+" code rather than cached R117");
+  }
+}
+
 
 const canonical="/arcade/c64-dungeon-carnage/";
 const legacy="/arcade/lost-sizzler/";
