@@ -90,7 +90,7 @@
           "assets/pixel/user-r118/vampire-move.png"
         ],
         "provenance": "assets/pixel/user-r118/PROVENANCE.md",
-        "status": "Four 0x72 CC0 wall-torch frames, one source-pixel matched Niji CC0 gold key and one byte-identical 0x72 II CC0 crate active. Other candidates not runtime-wired. No paid or noncommercial-only assets.",
+        "status": "Four 0x72 CC0 wall-torch frames, Niji CC0 gold key, 0x72 II CC0 crate and Kenney Tiny Dungeon CC0 barrel active. Other candidates not runtime wired. No paid or noncommercial-only assets.",
         "excludedUnknownRightsArchive": "Dungeon tileset(1).zip",
         "activeCrateSprite": "assets/pixel/user-r118/cc0-crate-0x72-ii.png",
         "sources": {
@@ -122,8 +122,25 @@
               24
             ],
             "license": "CC0-1.0"
+          },
+          "activeBarrelSprite": {
+            "creator": "Kenney",
+            "url": "https://kenney.nl/assets/tiny-dungeon",
+            "license": "CC0-1.0",
+            "sourceRelease": "Tiny Dungeon 1.0",
+            "sourceSpriteIndex": "tile_0082.png",
+            "sourceMirrorUrl": "https://github.com/selinyilmazz/playable-ad-generator/blob/main/public/assets/packs/tiny-dungeon/objects/barrel.png",
+            "sourceMirrorAttribution": "https://github.com/selinyilmazz/playable-ad-generator/blob/main/public/assets/packs/tiny-dungeon/ATTRIBUTION.md",
+            "sourceMirrorGitBlobSHA": "78f95bceab167e05e7e058c818b97360868fbdbc",
+            "sourcePNG_SHA256": "2efb31e30cd6f1527329fe5d7704e41c65a8376d498bf93372f46155600420c9",
+            "dimensionsPx": [
+              16,
+              16
+            ],
+            "provenanceNote": "Original creator licensed CC0. File retrieved from named curated public GitHub mirror; its original Kenney tile index is documented by mirror. Mirror binary has not been independently matched to original Kenney ZIP."
           }
-        }
+        },
+        "activeBarrelSprite": "assets/pixel/user-r118/kenney-tiny-dungeon-barrel.png"
       }
     },
     "visualOverhaulProvenance": "assets/pixel/user-r118/PROVENANCE.md"
