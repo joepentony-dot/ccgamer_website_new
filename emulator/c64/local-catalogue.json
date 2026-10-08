@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "policy": "Names and formats are provided as local import slots only. CCG does not host, download or transfer these copyrighted game images.",
+  "entries": [
+    {
+      "id": "preset:bruce-lee-trilogy",
+      "title": "Bruce Lee Trilogy",
+      "format": "crt",
+      "filename": "bruce-lee-trilogy.crt"
+    },
+    {
+      "id": "preset:forbidden-forest",
+      "title": "Forbidden Forest",
+      "format": "d64",
+      "filename": "forbidden-forest.d64"
+    },
+    {
+      "id": "preset:paradroid",
+      "title": "Paradroid",
+      "format": "d64",
+      "filename": "paradroid.d64"
+    },
+    {
+      "id": "preset:uridium",
+      "title": "Uridium",
+      "format": "d64",
+      "filename": "uridium.d64"
+    },
+    {
+      "id": "preset:master-of-magic",
+      "title": "Master of Magic",
+      "format": "d64",
+      "filename": "Master_of_magic.d64"
+    }
+  ]
+}
