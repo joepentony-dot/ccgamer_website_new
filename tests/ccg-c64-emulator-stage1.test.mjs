@@ -107,7 +107,7 @@ assert(app.includes("prepareFreshGameSession()"), "Primary file loading must be 
 assert(app.includes("queueMediaFile(file, { freshBoot: true })"), "Primary file and drop routes must request a clean auto-start session");
 assert(app.includes("{ type: 'LOAD\"*\",8,1\\r' }"), "Disk auto-start must enter LOAD wildcard on device 8");
 assert(app.includes('{ type: "RUN\\r" }'), "Disk/tape auto-start must enter RUN after loading");
-assert(html.includes("AUTO LOAD"), "The emulator UI must advertise screen drop auto-loading");
+assert(html.includes("AUTO START") && html.includes("DRAG &amp; DROP"), "The emulator UI must advertise screen drop auto-start");
 assert(html.includes("data-load-disk"), "The CCG media bay must expose its disk load control");
 assert(html.includes('accept=".d64,.d71,.d81,.g64"'), "Disk bay must expose D64/D71/D81/G64 workflows");
 assert(app.includes("new G64(bytes)"), "G64 raw-track media must be wired");
