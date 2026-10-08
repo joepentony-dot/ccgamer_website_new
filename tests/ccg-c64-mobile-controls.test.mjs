@@ -38,8 +38,9 @@ assert(css.includes("font-size: 16px") &&
 assert(app.includes("window.visualViewport?.addEventListener(\"resize\"") &&
   app.includes("positionLibrarySuggestions()"),
   "Suggestions must reposition when the phone keyboard changes the visible viewport");
-assert(app.includes("document.fullscreenElement !== mobileGameConsole") &&
-  app.includes('document.fullscreenElement !== screenStage'),
+assert(app.includes("document.fullscreenElement === mobileGameConsole") &&
+  app.includes('document.fullscreenElement === screenStage') &&
+  app.includes("const desktopFit = !hasTouchScreen()"),
   "Touch fullscreen must fit the game aspect ratio without changing desktop fullscreen");
 
 function slice(from, to) {
