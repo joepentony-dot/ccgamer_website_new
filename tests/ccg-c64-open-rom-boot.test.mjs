@@ -18,4 +18,8 @@ const matrix=Array.from(r.subarray(0x400,0x400+80)).map(v=>String.fromCharCode(v
 console.log("first 80 screen codes:",Array.from(r.subarray(0x400,0x400+80)).join(","));
 console.log("mapped:",matrix);
 assert.equal(machine.ready,true);
+const readyScreen = Array.from(r.subarray(0x0400, 0x0400+1000)).map(v=>v>=1&&v<=26 ? String.fromCharCode(v+64) : String.fromCharCode(v)).join("");
+assert(readyScreen.includes("OPEN ROMS"), "An actual ROM executed and painted its startup screen");
+assert(readyScreen.includes("READY"), "The emulated BASIC screen must reach READY");
+console.log("Open ROM booted to genuine READY, keyboard buffer", r[0xc6], "BASIC pointer",r[0x2c].toString(16));
 console.log("Open ROM real CPU boot smoke finished");
