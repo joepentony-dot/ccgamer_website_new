@@ -1304,7 +1304,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
    Preserve every existing control, but arrange the deck in six compact rows.
    Do not lock scrolling when browser zoom/short-height layouts require it.
 */
-@media (min-width: 1101px) {
+@media (min-width: 960px) {
   .ccg-c64-topbar {
     min-height: 54px;
     padding-block: 0.38rem;
@@ -1333,6 +1333,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-workspace {
+    display: grid;
     width: min(1880px, calc(100% - 0.8rem));
     grid-template-columns: minmax(0, 1.5fr) minmax(500px, 1fr);
     gap: 0.5rem;
@@ -1341,6 +1342,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-console {
+    margin-bottom: 0;
     padding: 0.46rem;
   }
 
@@ -1470,7 +1472,17 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
 
 /* Small monitors and high zoom must retain access to every button.
    Scaling the emulator up should never cut off inputs or trap the scroll. */
-@media (min-width: 1101px) and (max-height: 700px) {
+@media (min-width: 960px) and (max-height: 700px) {
+  .ccg-c64-control-stack { gap: 0.26rem; }
+  .ccg-c64-panel { padding: 0.25rem 0.4rem; }
+  .ccg-c64-panel-title { margin-bottom: 0.2rem; padding-bottom: 0.2rem; }
+  .ccg-c64-button-grid button { min-height: 33px; }
+  .ccg-c64-media-row button,
+  .ccg-c64-vault-row button,
+  .ccg-c64-vault-row select { min-height: 27px; }
+  .ccg-c64-status-grid > div { padding: 0.18rem 0.35rem; }
+  .ccg-c64-stage-note { font-size: 0.59rem; }
+
   .ccg-c64-screen-stage {
     height: max(250px, calc(100dvh - 255px));
   }
