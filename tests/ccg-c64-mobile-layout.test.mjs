@@ -32,4 +32,11 @@ assert(css.includes("grid-template-columns: minmax(0, 1fr) minmax(176px, 33%)"),
 assert(css.includes(".ccg-c64-screen-stage:fullscreen"),
   "Existing desktop fullscreen picture must be preserved");
 assert(css.includes("min-height: 44px"), "Touch controls must have accessible tap targets");
+for (const fn of ["F1", "F3", "F5", "F7"]) {
+  assert(html.includes(`data-c64-fkey="${fn}"`), `Mobile on-screen C64 ${fn} key required`);
+  assert(app.includes(`KEY_MAP[code]`), "On-screen function keys must use real CIA matrix bindings");
+}
+assert(css.includes(".ccg-c64-touch-fkeys button"), "Function-key targets must be sized for touch");
+assert(app.includes("MIN_TOUCH_FUNCTION_KEY_MS = 120"), "Rapid taps must survive the C64 keyboard scan");
+assert(app.includes("touchFunctionKeyHolds.clear()"), "Function keys must release on blur or reset");
 console.log("PASS C64 phone portrait/landscape and touch fullscreen responsive source contracts.");
