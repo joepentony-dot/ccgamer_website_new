@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import { C64Machine } from "../js/ccg-c64/core/machine.js";
 import { readBundledOpenRoms } from "../js/ccg-c64/open-rom-bundle.js";
+import { singleLineSysTarget } from "../js/ccg-c64/prg-autostart.js";
 
 const roms=readBundledOpenRoms();
 assert.equal(roms.kernal.length,8192);
@@ -35,10 +36,13 @@ for(const entry of catalogue.entries.slice(0,4)){
   for(let i=0;i<80;i++)m.runFrame();
   const before=Array.from(m.mem.ram.subarray(0x400,0x7e8)).join(",");
   m.loadPRG(prg);
-  // Diagnostic: this BASIC stub has SYS(2064); try sending SYS2064
-  // directly instead of asking the replacement BASIC to parse RUN.
-  if (entry.title === "10th Frame") m.injectSys(2064);
+  // Exercise the same bounded SYS-stub detection used by the live LOAD
+  // route on the same real firmware/CPU combination.
+  const sysTarget = singleLineSysTarget(prg);
+  if (sysTarget !== null) m.injectSys(sysTarget);
   else m.injectRun();
+  console.log("AUTO-START",entry.title,sysTarget === null ? "RUN" : "SYS "+sysTarget);
+  if (entry.title === "10th Frame") assert.equal(sysTarget,2064);
   for(let i=0;i<125;i++)m.runFrame();
   const after=Array.from(m.mem.ram.subarray(0x400,0x7e8)).join(",");
   console.log("PRG test",entry.title,"prg bytes",prg.length,"start",prg[0]|(prg[1]<<8),
