@@ -32,4 +32,23 @@ assert.equal(new ROMVault(storage).restore().requiredReady,3,"Real user's firmwa
 vault.clear();
 assert.equal(vault.snapshot().requiredReady,0);
 assert.equal(vault.useBundledOpenRoms(roms),true);
-console.log("PASS no-setup Open ROM fallback, original ROM priority and no mixed firmware.");
+vault.clear();
+
+// Incomplete original uploads must not block the real READY screen on return.
+// The user's partial original set must remain in localStorage and recover on
+// the next manual original firmware addition.
+vault.install("kernal",new Uint8Array(8192),"saved-original-kernal");
+const pending=new ROMVault(storage);
+assert.equal(pending.restore().requiredReady,1);
+assert.equal(pending.useBundledOpenRoms(roms),true);
+assert.equal(pending.snapshot().requiredReady,3);
+assert.equal(pending.usingBundledOpenRoms(),true);
+assert.equal(new ROMVault(storage).restore().requiredReady,1,
+  "Session-only fallback must not erase partially uploaded original ROMs");
+pending.install("basic",new Uint8Array(8192),"saved-original-basic");
+assert.equal(pending.snapshot().requiredReady,2);
+assert.equal(pending.snapshot().entries.kernal.name,"saved-original-kernal");
+assert.equal(pending.usingBundledOpenRoms(),false);
+pending.install("charRom",new Uint8Array(4096),"saved-original-chargen");
+assert.equal(pending.snapshot().requiredReady,3);
+console.log("PASS no-setup Open ROM fallback, partial original ROM preservation, no mixed firmware.");
