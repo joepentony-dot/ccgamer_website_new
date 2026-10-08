@@ -40,6 +40,11 @@ for(const entry of catalogue.entries.slice(0,4)){
   console.log("PRG test",entry.title,"prg bytes",prg.length,"start",prg[0]|(prg[1]<<8),
     "screenChanged",before!==after,"C6",m.mem.ram[0xC6],
     "CPU",String(m.cpu.pc??m.cpu.PC??"?"),"head bytes",Array.from(prg.slice(0,24)));
+  const screenRows = Array.from({length: 14}, (_, y) => {
+    return Array.from(m.mem.ram.subarray(0x400+y*40,0x400+(y+1)*40))
+      .map(v => v>=1&&v<=26?String.fromCharCode(v+64):v===32?" ":v===46?".":"_").join("");
+  });
+  console.log("AFTER LOAD "+entry.title+":", JSON.stringify(screenRows));
   assert.equal(m.ready,true,"CPU must remain active after game load");
 }
 console.log("Open ROM representative PRG probes completed");
