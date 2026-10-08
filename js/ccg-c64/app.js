@@ -1,4 +1,5 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
+import { readBundledOpenRoms } from "./open-rom-bundle.js";
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
@@ -125,6 +126,7 @@ let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
+let initialPowerOn = null;
 let onlineLibraryEntries = [];
 let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
@@ -1506,12 +1508,13 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   };
 
   if (!vault.snapshot().allRequiredReady) {
-    if (stageNote) stageNote.textContent = `${pendingMedia.name} is ready. Add the three C64 system ROMs once, then it will start automatically.`;
+    if (stageNote) stageNote.textContent = `${pendingMedia.name} is ready. This browser needs a complete system ROM set before it can play.`;
     showSetup();
     return false;
   }
 
   const wasRunning = running;
+  if (!running && initialPowerOn) await initialPowerOn;
   if (!running) await powerOn();
   if (!running || !machine) return false;
   if (freshBoot && wasRunning) await prepareFreshGameSession();
@@ -2136,17 +2139,38 @@ fullscreenButton?.addEventListener("click", async () => {
 document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date().getFullYear()));
 
 const initial = vault.restore();
-render(initial);
-
-// Returning visitors with a complete local ROM bank should see the real C64
-// BASIC READY screen, not the CCG pre-boot status canvas. First-time visitors
-// still retain the media-first flow and are prompted for ROMs only when needed.
-if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
-  void powerOn();
+let openRomFallbackError = null;
+if (!initial.allRequiredReady && initial.requiredReady === 0) {
+  try {
+    // Boot actual 6510/KERNAL/BASIC firmware, not an imitation READY canvas.
+    // The matched LGPL Open ROMs are a compatibility fallback only; a
+    // visitor's previously supplied original ROMs always take precedence.
+    vault.useBundledOpenRoms(readBundledOpenRoms());
+  } catch (error) {
+    openRomFallbackError = error;
+    console.warn("[ccg-c64] Built-in Open ROMs are unavailable:", error);
+  }
+}
+const startupRoms = vault.snapshot();
+render(startupRoms);
+if (startupRoms.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
+  // Avoid two simultaneous power-on sessions if a game is selected before
+  // the automatic READY-screen startup has finished attaching SID audio.
+  initialPowerOn = powerOn();
+  if (vault.usingBundledOpenRoms()) {
+    initialPowerOn.then(() => {
+      if (!running) return;
+      if (stageNote) stageNote.textContent =
+        "Open-source Open ROMs are running. This is a real emulated BASIC READY screen, " +
+        "but some games require original Commodore ROMs. SYSTEM ROMS lets you use your own set.";
+    });
+  }
+} else if (openRomFallbackError && stageNote) {
+  stageNote.textContent = "The built-in open-source ROMs could not start. Open SYSTEM ROMS to add your own.";
 }
 
-// Do not interrupt first-time visitors with a firmware modal. They can choose
-// media immediately; setup is requested only when the selected media needs booting.
+// User-installed original firmware remains an opt-in full-compatibility option.
+// The firmware setup is never opened merely for visiting the page.
 
 window.addEventListener("pagehide", () => {
   releaseAllInput();
