@@ -18,7 +18,7 @@ technical knowledge can extract its contents; this build does not contain
 Supabase credentials, service-role tokens or entitlement systems.
 
 The app launches a read-only local server bound only to 127.0.0.1 on a random
-port and a 192-bit random path token. It supports byte-range requests for large
+port, retaining root-relative game asset URLs. It supports byte-range requests for large
 MP3 and OGG voice sprites. External game network traffic is blocked by the
 Electron session. Allowed external links open in the user's browser only when
 they belong to the explicit trusted-host list.
