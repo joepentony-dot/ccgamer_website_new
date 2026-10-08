@@ -176,11 +176,16 @@ assert(app.includes("onlineLibraryPanel.hidden = onlineLibraryEntries.length ===
 
 // Verify actual shipped game bytes, not merely dropdown labels or broken
 // external download links. Git blob hashes pin the exact developer releases.
-const gameNotices = read("emulator/c64/media/LICENCES.txt");
-assert(onlineLibrary.entries.length >= 3, "Approved Online Library must contain playable games, not placeholder items");
-assert(onlineLibrary.entries.some((entry) => entry.id === "snake64"), "Snake must be included");
-assert(onlineLibrary.entries.some((entry) => entry.id === "8bit-island"), "8 Bit Island must be included");
-assert(onlineLibrary.entries.some((entry) => entry.id === "meteor-storm"), "Meteor Storm must be included");
+for (const retiredName of ["snake64.prg", "8bit-island.prg", "meteor-storm.prg"]) {
+  assert(!fs.existsSync(path.join(root, "emulator/c64/media", retiredName)),
+    "A user-rejected preloaded game must not remain publicly downloadable: " + retiredName);
+}
+assert(onlineLibrary.entries.every((entry) =>
+  !["snake64", "8bit-island", "meteor-storm"].includes(entry.id)),
+  "Removed game titles must not return to the public Online Library");
+const gameNotices = onlineLibrary.entries.length
+  ? read("emulator/c64/media/LICENCES.txt") : "";
+
 const seenGameIds = new Set();
 for (const entry of onlineLibrary.entries) {
   assert(!seenGameIds.has(entry.id), "Duplicate approved game ID: " + entry.id);
