@@ -13,13 +13,23 @@ const app = read("js/ccg-c64/app.js");
 const css = read("resources/css/ccg-c64-emulator.css");
 const html = read("emulator/c64/index.html");
 const ciaSource = read("js/ccg-c64/core/cia.js");
-const { KEY_MAP, CHAR_MAP } = await import("data:text/javascript," + encodeURIComponent(ciaSource));
+const { KEY_MAP, CHAR_MAP, CIA } = await import("data:text/javascript," + encodeURIComponent(ciaSource));
 
 assert(html.includes("DRAG &amp; DROP A GAME HERE — AUTO START"), "The screen must advertise drag-and-drop auto-start");
 assert(html.includes("id=\"ccg-c64-drop-instructions\""), "The drop instructions must be accessible");
 assert(html.includes("aria-describedby=\"ccg-c64-drop-instructions\""), "The display must reference drop instructions");
 assert(html.includes("<strong>MAX</strong>"), "The Warp Load button must advertise MAX");
 assert(css.includes("position: relative;"), "Drop overlay must be anchored to the screen");
+assert(css.includes("visibility: hidden;") &&
+  css.includes(".ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint"),
+  "Drop hint must be hidden during play and visible only during a drag");
+assert(html.includes("data-joystick-swap"), "Port swapping must have a visible button");
+assert(html.includes("data-joystick-port"), "Port selection must be visible");
+assert(html.includes("data-emulator-speed"), "Actual PAL speed must be measurable");
+assert(!html.includes(">SOURCE</a>"), "Prominent source navigation must be omitted");
+assert(html.includes('href="/emulator/c64/legal.html"'), "GPL source access must remain available");
+assert(app.includes("function fitScreenToStage()") && app.includes("new ResizeObserver(fitScreenToStage)"),
+  "FIT must respond to measured display area and browser resize");
 assert(css.includes("grid-template-areas:"), "Desktop control deck must declare explicit areas");
 assert(css.includes('"vault vault vault vault vault vault"'), "Vault controls must be available without collapsing");
 assert(css.includes("grid-template-columns: repeat(5, minmax(0, 1fr))"), "Ten primary actions must fit in two rows");
@@ -37,9 +47,14 @@ const last = app.indexOf("function pollGamepad()", first);
 assert(first >= 0 && last > first, "Keyboard handler block must be present");
 const keys = new Map();
 const keyId = (col, row) => col + ":" + row;
+const actualCIA = new CIA(1);
 const cia1 = {
-  setKey(col, row, down) { if (down) keys.set(keyId(col, row), true); else keys.delete(keyId(col, row)); },
-  isKeyDown(col, row) { return keys.has(keyId(col, row)); },
+  setKey(col, row, down) {
+    if (down) keys.set(keyId(col, row), true);
+    else keys.delete(keyId(col, row));
+    actualCIA.setKey(col, row, down);
+  },
+  isKeyDown(col, row) { return actualCIA.isKeyDown(col, row); },
 };
 const canvas = { closest: () => null };
 const button = { closest: (selector) => selector.includes("button") ? button : null };
@@ -51,6 +66,7 @@ const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  inputStatus: { textContent: "" },
 });
 vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
 function event(code, key, opts = {}) {
@@ -92,6 +108,15 @@ keyTest("F7", "F7", 0, 3);
 keyTest("ArrowRight", "ArrowRight", 0, 2);
 keyTest("ArrowDown", "ArrowDown", 0, 7);
 keyTest("KeyA", "a", 1, 2);
+keyTest("KeyS", "s", 1, 5);
+actualCIA.portADir = 0xff;
+actualCIA.portA = 0xff & ~(1 << 1);
+down("KeyS", "s");
+assert.equal(actualCIA.read(0x01) & (1 << 5), 0,
+  "A game selecting CIA column 1 must see physical S on row 5");
+up("KeyS", "s");
+assert.notEqual(actualCIA.read(0x01) & (1 << 5), 0,
+  "CIA column/row must release after S keyup");
 
 // F2/F4/F6/F8 are shifted physical C64 F1/F3/F5/F7.
 for (const [code, col, row] of [
@@ -118,6 +143,14 @@ assert(!keys.has(keyId(1, 7)));
 down("F12", "F12"); assert.equal(machine.restore, true);
 up("F12", "F12"); assert.equal(machine.restore, false);
 context.document.activeElement = button;
+const start = down("KeyS", "s", { target: button });
+assert(start.prevented && keys.has(keyId(1, 5)),
+  "S must start the game even while a toolbar button holds focus");
+up("KeyS", "s", { target: button });
+assert(!keys.has(keyId(1, 5)), "S must release while button holds focus");
+const fn = down("F1", "F1", { target: button });
+assert(fn.prevented && keys.has(keyId(0, 4)), "F1 must reach the game while button holds focus");
+up("F1", "F1", { target: button });
 const blocked = down("Space", " ", { target: button });
 assert(!blocked.prevented && !keys.has(keyId(7, 4)), "Toolbar buttons must keep native keyboard operation");
 context.document.activeElement = canvas;
@@ -146,7 +179,8 @@ const frameContext = vm.createContext({
   performance: { now: () => ticks++ * 0.5 },
   pollGamepad() {}, serviceAutoStart() {}, blitMachine() {},
   autoStartSteps: null, requestAnimationFrame: () => 1,
-  frameHandle: 0,
+  frameHandle: 0, speedSampleTime: 0, speedSampleFrames: 0,
+  emulatorSpeedStatus: { textContent: "", title: "" },
 });
 vm.runInContext(app.slice(frameStart, frameEnd) + "\nglobalThis.runTick = frameLoop;", frameContext);
 frameContext.runTick(1000);
@@ -158,4 +192,4 @@ frameContext.lastFrameTime = 1000;
 frameContext.runTick(1020);
 assert.equal(runs - warpRuns, 1, "Normal mode must retain near-50Hz PAL speed");
 
-console.log("C64 keyboard, VICE keys, Shift+8, toolbar focus, drag target and MAX Warp tests passed.");
+console.log("C64 keyboard S/CIA, VICE keys, focused-toolbar recovery, drag overlay, FIT and MAX Warp tests passed.");
