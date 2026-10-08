@@ -2113,8 +2113,18 @@ void refreshVaultStatus();
 fullscreenButton?.addEventListener("click", async () => {
   if (!screenStage) return;
   try {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else await screenStage.requestFullscreen({ navigationUI: "hide" });
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else {
+      // A mobile fullscreen picture alone removes the on-screen joystick.
+      // Fullscreen the console instead, keeping D-pad and FIRE usable.
+      const touchLayout = window.matchMedia?.("(max-width: 760px)")?.matches ||
+        window.matchMedia?.("(pointer: coarse)")?.matches;
+      const fullscreenTarget = touchLayout
+        ? document.querySelector(".ccg-c64-console") || screenStage
+        : screenStage;
+      await fullscreenTarget.requestFullscreen({ navigationUI: "hide" });
+    }
     fitScreenToStage();
     screen?.focus();
   } catch (error) {
