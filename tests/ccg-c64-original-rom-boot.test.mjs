@@ -82,6 +82,17 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   let firstBasicEntry = null, firstEaLoop = null, firstScreenWrite = null;
   const sampledCycles = [];
   const screenClearCalls = [], basicColdCalls = [], screenOutputCalls = [];
+  const nmiTransitions = [], acceptedNmis = [];
+  const originalNmiSource = machine._setNmiSource.bind(machine);
+  machine._setNmiSource = (source,asserted) => {
+    if(nmiTransitions.length < 16) nmiTransitions.push({frame:frames,source,asserted,pc:machine.cpu.pc.toString(16),cia2:{mask:machine.cia2.icrMask,status:machine.cia2.icrStatus,irq:machine.cia2.irqState},prev:{...machine._nmiSources}});
+    return originalNmiSource(source,asserted);
+  };
+  const originalAccept = machine.cpu.onInterruptAccept;
+  machine.cpu.onInterruptAccept = (kind) => {
+    if(kind==='nmi' && acceptedNmis.length<16) acceptedNmis.push({frame:frames,pc:machine.cpu.pc.toString(16),sources:{...machine._nmiSources},cia2:{mask:machine.cia2.icrMask,status:machine.cia2.icrStatus,irq:machine.cia2.irqState}});
+    originalAccept?.(kind);
+  };
   const stackSnapshot = (cpu) => ({frame:frames,pc:cpu.pc.toString(16),a:cpu.a,x:cpu.x,y:cpu.y,sp:cpu.sp,stack:Array.from(machine.mem.ram.slice(0x100+cpu.sp+1, 0x100+Math.min(0xff,cpu.sp+13))).map(n=>n.toString(16).padStart(2,'0'))});
   const origClock = machine.cpu.clock;
   machine.cpu.clock = function () {
@@ -144,7 +155,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
     const ram = machine.mem.ram;
     console.log("BASIC execution statistics", JSON.stringify({
       basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,firstBasicEntry,firstEaLoop,firstScreenWrite,
-      screenClearCalls,basicColdCalls,screenOutputCalls,
+      screenClearCalls,basicColdCalls,screenOutputCalls,nmiTransitions,acceptedNmis,
       eaInstr:[...eaInstr.entries()].sort((a,b)=>b[1]-a[1]).slice(0,45).map(([pc,count])=>[pc.toString(16),count]),
       eaClrRows:[...eaClrRows.entries()].sort((a,b)=>a[0]-b[0]),
       sampleY,
