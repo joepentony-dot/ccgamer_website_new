@@ -53,6 +53,13 @@ jobs:
       - name: Check function key touch controls
         run: node tests/ccg-c64-function-keys.test.mjs
 
+      - name: Verify consolidated C64 mobile game selection and touch keys
+        run: node tests/ccg-c64-mobile-consolidation.test.mjs
+
+      - name: Render C64 layout at phone and desktop viewports
+        timeout-minutes: 5
+        run: node tests/ccg-c64-mobile-rendered.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 

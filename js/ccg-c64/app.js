@@ -45,6 +45,9 @@ statusCanvas.width = screen?.width || 384;
 statusCanvas.height = screen?.height || 272;
 const statusCtx = statusCanvas.getContext("2d");
 const fullscreenButton = document.querySelector("[data-fullscreen]");
+const mobileFullscreenButton = document.querySelector("[data-mobile-fullscreen]");
+const mobileFullscreenExit = document.querySelector("[data-mobile-fullscreen-exit]");
+const mobileGameConsole = document.querySelector(".ccg-c64-console");
 const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
@@ -85,6 +88,29 @@ const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
+
+// Move the existing library immediately under the C64 display on phones.
+// Its original DOM position and listeners remain intact for desktop.
+const libraryDesktopPosition = document.createComment("CCG desktop game library position");
+if (onlineLibraryPanel?.parentNode) {
+  onlineLibraryPanel.parentNode.insertBefore(libraryDesktopPosition, onlineLibraryPanel);
+}
+const mobileLibraryViewport = window.matchMedia(
+  "(max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px)"
+);
+function positionMobileGameLibrary() {
+  if (!onlineLibraryPanel || !screenStage || !controlsDeck) return;
+  const consolePanel = screenStage.closest(".ccg-c64-console");
+  if (mobileLibraryViewport.matches && consolePanel) {
+    if (onlineLibraryPanel.parentNode !== consolePanel) {
+      screenStage.insertAdjacentElement("afterend", onlineLibraryPanel);
+    }
+  } else if (libraryDesktopPosition.parentNode && onlineLibraryPanel.parentNode !== controlsDeck) {
+    libraryDesktopPosition.parentNode.insertBefore(onlineLibraryPanel, libraryDesktopPosition.nextSibling);
+  }
+}
+positionMobileGameLibrary();
+mobileLibraryViewport.addEventListener("change", positionMobileGameLibrary);
 
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
@@ -430,6 +456,7 @@ function attachSessionMedia(target) {
 }
 
 const heldMatrixKeys = new Map();
+const touchVirtualKeyHolds = new Map();
 // Buttons hold genuine CIA1 matrix keys; never synthesise browser KeyboardEvents.
 const touchFunctionKeyHolds = new Map();
 let shiftLeftPhysical = false;
@@ -443,6 +470,11 @@ function setC64Shift(left, right) {
 }
 
 function releaseAllInput() {
+  for (const [button, held] of touchVirtualKeyHolds) {
+    if (held.timer) clearTimeout(held.timer);
+    button.classList.remove("is-pressed");
+  }
+  touchVirtualKeyHolds.clear();
   for (const [button, held] of touchFunctionKeyHolds) {
     if (held.timer) clearTimeout(held.timer);
     button.classList.remove("is-pressed");
@@ -585,11 +617,12 @@ function handleC64Key(event, pressed) {
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
   // Text fields and dropdowns keep their native keyboard, as do ENTER/SPACE
   // for activating a focused button or link. The ROM setup remains modal.
+  const virtualInput = event.ccgVirtual === true;
   const nativeActivation = ["Enter", "NumpadEnter", "Space"].includes(event.code) &&
     (usesNativeKeyboard(event.target) || usesNativeKeyboard(document.activeElement));
-  if (pressed && (setup?.hidden === false ||
+  if (pressed && (setup?.hidden === false || (!virtualInput && (
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
-    nativeActivation)) return;
+    nativeActivation)))) return;
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -1578,11 +1611,26 @@ function selectOnlineLibraryEntry(id) {
   onlineLibraryLoadButton?.focus();
 }
 
+function positionLibrarySuggestions() {
+  if (!onlineLibrarySearch || !onlineLibrarySuggestions || onlineLibrarySuggestions.hidden) return;
+  const rect = onlineLibrarySearch.getBoundingClientRect();
+  const viewport = window.visualViewport;
+  const top = viewport?.offsetTop ?? 0;
+  const bottom = top + (viewport?.height ?? window.innerHeight);
+  const spaceBelow = Math.max(0, bottom - rect.bottom);
+  const spaceAbove = Math.max(0, rect.top - top);
+  const flip = spaceBelow < 210 && spaceAbove > spaceBelow;
+  onlineLibrarySuggestions.classList.toggle("is-drop-up", flip);
+  onlineLibrarySuggestions.style.setProperty("--ccg-suggest-height",
+    `${Math.max(80, Math.min(320, (flip ? spaceAbove : spaceBelow) - 28))}px`);
+}
+
 function setLibrarySuggestionsOpen(open) {
   const show = Boolean(open && !onlineLibraryLoadingGame &&
     onlineLibraryEntries.length && onlineLibrarySearch?.value.trim());
   if (onlineLibrarySuggestions) onlineLibrarySuggestions.hidden = !show;
   if (onlineLibrarySearch) onlineLibrarySearch.setAttribute("aria-expanded", String(show));
+  if (show) requestAnimationFrame(positionLibrarySuggestions);
   onlineLibraryPanel?.classList.toggle("is-suggesting", show);
   if (!show) {
     activeLibrarySuggestionIndex = -1;
@@ -1762,6 +1810,10 @@ async function loadSelectedLibraryEntry() {
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
       queued ? "GAME STARTED" : pendingMedia ? "ROM SETUP" : "LOAD FAILED";
+    if (queued && typeof mobileLibraryViewport !== "undefined" && mobileLibraryViewport.matches) {
+      onlineLibrarySearch?.blur();
+      screenStage?.scrollIntoView?.({ block: "start", behavior: "smooth" });
+    }
   } catch (error) {
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOAD FAILED";
     if (stageNote) stageNote.textContent = error?.message || "This game could not be started.";
@@ -1805,6 +1857,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 document.addEventListener("fullscreenchange", () => {
+  syncMobileFullscreenUi();
   fitScreenToStage();
   if (!running || paused) return;
   lastFrameTime = 0;
@@ -1948,6 +2001,13 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 });
 
 onlineLibraryRetryButton?.addEventListener("click", () => { void initialiseOnlineLibrary(); });
+window.visualViewport?.addEventListener("resize", positionLibrarySuggestions);
+window.visualViewport?.addEventListener("scroll", positionLibrarySuggestions);
+window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
+  positionMobileGameLibrary();
+  positionLibrarySuggestions();
+  fitScreenToStage();
+}));
 onlineLibrarySearch?.addEventListener("input", () => {
   // Any edit invalidates the previous choice. The LOAD GAME button must not
   // accidentally start an old selection when the visible query has changed.
@@ -2172,8 +2232,96 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
 
 void refreshVaultStatus();
 
+// Secondary mobile keys share the physical keyboard's CIA matrix route.
+// A 120ms minimum press allows the emulated 50 Hz keyboard scan to register taps.
+const MIN_TOUCH_VIRTUAL_KEY_MS = 120;
+for (const button of document.querySelectorAll("[data-c64-virtual-key]")) {
+  const code = button.getAttribute("data-c64-virtual-key");
+  const key = code === "Space" ? " " : code.startsWith("Key") ? code.slice(3).toLowerCase()
+    : code.startsWith("Digit") ? code.slice(5) : code;
+  const virtualEvent = () => ({
+    code, key, ccgVirtual: true, repeat: false,
+    shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
+    target: screen, getModifierState: () => false, preventDefault() {},
+  });
+  const release = (force = false) => {
+    const held = touchVirtualKeyHolds.get(button);
+    if (!held) return;
+    const remaining = MIN_TOUCH_VIRTUAL_KEY_MS - (performance.now() - held.started);
+    if (!force && remaining > 0) {
+      if (!held.timer) held.timer = setTimeout(() => release(true), remaining);
+      return;
+    }
+    if (held.timer) clearTimeout(held.timer);
+    touchVirtualKeyHolds.delete(button);
+    button.classList.remove("is-pressed");
+    handleC64Key(virtualEvent(), false);
+  };
+  button.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    if (!running || !machine || paused || setup?.hidden === false || touchVirtualKeyHolds.has(button)) return;
+    touchVirtualKeyHolds.set(button, { started: performance.now(), timer: null });
+    handleC64Key(virtualEvent(), true);
+    button.classList.add("is-pressed");
+    try { button.setPointerCapture?.(event.pointerId); } catch {}
+  });
+  for (const name of ["pointerup", "pointercancel"]) {
+    button.addEventListener(name, event => { event.preventDefault(); release(); });
+  }
+  button.addEventListener("lostpointercapture", () => release());
+  button.addEventListener("click", event => {
+    if (event.detail !== 0 || !running || !machine || paused) return;
+    handleC64Key(virtualEvent(), true);
+    setTimeout(() => handleC64Key(virtualEvent(), false), MIN_TOUCH_VIRTUAL_KEY_MS);
+  });
+  button.addEventListener("contextmenu", event => event.preventDefault());
+}
+
+function syncMobileFullscreenUi() {
+  const active = Boolean(mobileGameConsole?.classList.contains("is-mobile-theater") ||
+    document.fullscreenElement === mobileGameConsole);
+  if (mobileFullscreenExit) mobileFullscreenExit.hidden = !active;
+  if (mobileFullscreenButton) mobileFullscreenButton.textContent =
+    active ? "EXIT FULLSCREEN" : "PLAY FULLSCREEN";
+  document.body.classList.toggle("ccg-c64-mobile-playing", active);
+}
+
+async function toggleMobileFullscreen() {
+  if (!mobileGameConsole) return;
+  if (mobileGameConsole.classList.contains("is-mobile-theater")) {
+    mobileGameConsole.classList.remove("is-mobile-theater");
+  } else if (document.fullscreenElement) {
+    await document.exitFullscreen();
+  } else {
+    try {
+      if (!mobileGameConsole.requestFullscreen) throw new Error("Fullscreen API unavailable");
+      await mobileGameConsole.requestFullscreen({ navigationUI: "hide" });
+    } catch {
+      // iPhone Safari and embedded browsers may not offer element fullscreen.
+      // Keep the emulator and touch controls together in a reversible overlay.
+      mobileGameConsole.classList.add("is-mobile-theater");
+    }
+  }
+  syncMobileFullscreenUi();
+  requestAnimationFrame(fitScreenToStage);
+}
+mobileFullscreenButton?.addEventListener("click", () => { void toggleMobileFullscreen(); });
+mobileFullscreenExit?.addEventListener("click", () => { void toggleMobileFullscreen(); });
+window.addEventListener("keydown", event => {
+  if (event.key === "Escape" && mobileGameConsole?.classList.contains("is-mobile-theater")) {
+    event.preventDefault();
+    void toggleMobileFullscreen();
+  }
+});
+
+
+
 fullscreenButton?.addEventListener("click", async () => {
   if (!screenStage) return;
+  if (mobileLibraryViewport.matches) {
+    await toggleMobileFullscreen();
+    return;
+  }
   try {
     if (document.fullscreenElement) {
       await document.exitFullscreen();

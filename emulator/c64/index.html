@@ -55,12 +55,17 @@
         </div>
       </div>
 
+      <button type="button" class="ccg-c64-mobile-exit" data-mobile-fullscreen-exit hidden aria-label="Exit fullscreen C64 game">EXIT FULLSCREEN</button>
       <div class="ccg-c64-screen-stage" data-media-dropzone>
         <div class="ccg-c64-screen-bezel">
           <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" aria-describedby="ccg-c64-drop-instructions" tabindex="0"></canvas>
           <div class="ccg-c64-screen-glass" aria-hidden="true"></div>
         </div>
         <div class="ccg-c64-drop-hint" aria-hidden="true">DRAG &amp; DROP A GAME HERE — AUTO START</div>
+      </div>
+
+      <div class="ccg-c64-mobile-actions">
+        <button type="button" data-mobile-fullscreen aria-label="Play C64 in phone fullscreen">PLAY FULLSCREEN</button>
       </div>
 
       <div class="ccg-c64-screen-foot">
@@ -87,6 +92,26 @@
         </div>
         <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
       </div>
+      <details class="ccg-c64-touch-extra" data-touch-extra-keys>
+        <summary>MORE C64 KEYS</summary>
+        <div class="ccg-c64-extra-key-grid" role="group" aria-label="Additional Commodore 64 keys">
+          <button type="button" data-c64-virtual-key="F2">F2</button>
+          <button type="button" data-c64-virtual-key="F4">F4</button>
+          <button type="button" data-c64-virtual-key="F6">F6</button>
+          <button type="button" data-c64-virtual-key="F8">F8</button>
+          <button type="button" data-c64-virtual-key="Enter">RETURN</button>
+          <button type="button" data-c64-virtual-key="Space">SPACE</button>
+          <button type="button" data-c64-virtual-key="F9">RUN/STOP</button>
+          <button type="button" data-c64-virtual-key="F12">RESTORE</button>
+          <button type="button" data-c64-virtual-key="Digit1">1</button>
+          <button type="button" data-c64-virtual-key="Digit2">2</button>
+          <button type="button" data-c64-virtual-key="Digit3">3</button>
+          <button type="button" data-c64-virtual-key="Digit4">4</button>
+          <button type="button" data-c64-virtual-key="KeyS">S</button>
+          <button type="button" data-c64-virtual-key="KeyY">Y</button>
+          <button type="button" data-c64-virtual-key="KeyN">N</button>
+        </div>
+      </details>
     </section>
 
     <aside class="ccg-c64-control-stack" aria-label="C64 controls and media">
