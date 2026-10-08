@@ -14,22 +14,22 @@ const PROJECT="lcslgxpgmttaexsorxik";
 const BUCKET="ccg-arcade-assets";
 const REMOTE="https://"+PROJECT+".supabase.co/storage/v1/object/public/"+BUCKET+"/music/";
 export const TRACKS=Object.freeze([
-  ["lostSizzlerDanger","1787411621547-0-combat-01.mp3",3360888],
-  ["lostSizzlerDanger","1787411622953-1-combat-03.mp3",3999864],
-  ["lostSizzlerDanger","1787411636390-14-combat-02.mp3",5665656],
-  ["lostSizzlerExploration","1787411626645-5-exploration-01.mp3",7227773],
-  ["lostSizzlerExploration","1787411628149-6-exploration-02.mp3",4186493],
-  ["lostSizzlerExploration","1787411629062-7-exploration-03.mp3",6875261],
-  ["lostSizzlerExploration","1787411630429-8-exploration-04.mp3",4794749],
-  ["lostSizzlerExploration","1787411631439-9-exploration-05.mp3",5446781],
-  ["lostSizzlerNamed","1787411632588-10-named-01.mp3",5085047],
-  ["lostSizzlerNamed","1787411633643-11-named-02.mp3",3331703],
-  ["lostSizzlerNamed","1787411637581-15-named-03.mp3",5134967],
-  ["lostSizzlerSanctuary","1787411634411-12-sanctuary-01.mp3",5025147],
-  ["lostSizzlerSanctuary","1787411635463-13-sanctuary-02.mp3",4168059],
-  ["lostSizzlerStalker","1787411624060-2-count-loadula-01.mp3",2001535],
-  ["lostSizzlerStalker","1787411624977-3-count-loadula-02.mp3",1946239],
-  ["lostSizzlerStalker","1787411625578-4-count-loadula-03.mp3",3982975]
+  ["lostSizzlerDanger","1787411621547-0-combat-01.mp3",3360888,"179b6d0e6f3b0c1e1ec0b74c2b43f6d6"],
+  ["lostSizzlerDanger","1787411622953-1-combat-03.mp3",3999864,"1c6d67528d1fd1a93b6ae937c04fe4de"],
+  ["lostSizzlerDanger","1787411636390-14-combat-02.mp3",5665656,"265f40fbf060c5f6f870229fcf6741ab"],
+  ["lostSizzlerExploration","1787411626645-5-exploration-01.mp3",7227773,"8102f0627c612f49e252e8919e91e1aa"],
+  ["lostSizzlerExploration","1787411628149-6-exploration-02.mp3",4186493,"b21ecdc8dcd864a7a6231090866aa568"],
+  ["lostSizzlerExploration","1787411629062-7-exploration-03.mp3",6875261,"8bf8a43198626d1e51fe1bfd7846054f"],
+  ["lostSizzlerExploration","1787411630429-8-exploration-04.mp3",4794749,"f4948c31fd2d35c4a66d3798033ef626"],
+  ["lostSizzlerExploration","1787411631439-9-exploration-05.mp3",5446781,"ba9a90727c301366b8e3e9af6dfc9760"],
+  ["lostSizzlerNamed","1787411632588-10-named-01.mp3",5085047,"4192818ce6c1556b142c16ae1f8b1f9a"],
+  ["lostSizzlerNamed","1787411633643-11-named-02.mp3",3331703,"6a8c9573ef2a3608a4e886fef87e0d60"],
+  ["lostSizzlerNamed","1787411637581-15-named-03.mp3",5134967,"bdd06fb65c441c42171d9fbd9fadfd66"],
+  ["lostSizzlerSanctuary","1787411634411-12-sanctuary-01.mp3",5025147,"08075a84439f6762763807713de90cb2"],
+  ["lostSizzlerSanctuary","1787411635463-13-sanctuary-02.mp3",4168059,"51c9fd613dd95be82eb10ac4bc339a05"],
+  ["lostSizzlerStalker","1787411624060-2-count-loadula-01.mp3",2001535,"72e704f231e03f45dff255f6756e7b98"],
+  ["lostSizzlerStalker","1787411624977-3-count-loadula-02.mp3",1946239,"402a45c1c17d9598f5f7b8713a7a685c"],
+  ["lostSizzlerStalker","1787411625578-4-count-loadula-03.mp3",3982975,"f3758bddb5267fec3b5e81e22766c5c8"]
 ]);
 export function remapMusicUrls(source){
   let patched=source;
@@ -59,7 +59,7 @@ async function findOriginal(folder,category,name){
   }
   throw new Error("Original MP3 not found: "+name);
 }
-async function verifyMp3(file,expected){
+async function verifyMp3(file,expected,storageEtag){
   const stat=await regularFile(file);
   if(stat.size!==expected)throw new Error("File size mismatch; refusing substitute MP3: "+path.basename(file)+" ("+stat.size+" != "+expected+")");
   const f=await fs.open(file,"r");
@@ -70,6 +70,12 @@ async function verifyMp3(file,expected){
       throw new Error("Not an MP3 header: "+path.basename(file));
     }
   }finally{await f.close()}
+  // The live Storage inventory still exposes the original object ETag.
+  // On these single-part objects it is an MD5-style 32-hex fingerprint;
+  // reject mismatches rather than accepting same-size replacement audio.
+  const data=await fs.readFile(file);
+  const observed=crypto.createHash("md5").update(data).digest("hex");
+  if(observed!==storageEtag)throw new Error("Original Supabase fingerprint mismatch: "+path.basename(file));
   return stat.size;
 }
 async function run(game,music){
@@ -84,10 +90,10 @@ async function run(game,music){
   if(manifest.schema!=="ccg-c64-dungeon-carnage-itch-package-v1")throw new Error("Only canonical staged Dungeon package supported");
   if(manifest.originalMusic)throw new Error("Original soundtrack already installed; do not inject twice");
   const patched=remapMusicUrls(original),verified=[];
-  for(const [category,name,size] of TRACKS){
+  for(const [category,name,size,storageEtag] of TRACKS){
     const file=await findOriginal(source,category,name);
-    await verifyMp3(file,size);
-    verified.push({category,name,size,file,relative:"assets/audio/music/originals/"+category+"/"+name});
+    await verifyMp3(file,size,storageEtag);
+    verified.push({category,name,size,storageEtag,file,relative:"assets/audio/music/originals/"+category+"/"+name});
   }
   const bytes=verified.reduce((sum,t)=>sum+t.size,0);
   if(verified.length!==16||bytes!==72233137)throw new Error("Original soundtrack inventory mismatch");
@@ -103,7 +109,7 @@ async function run(game,music){
     source:"Owner recovered 16 original Supabase objects; validated exact stored object sizes and MP3 header",
     originalSupabaseBucket:BUCKET,
     count:verified.length,bytes,
-    tracks:verified.map(({category,name,size,relative,sha256})=>({category,name,bytes:size,path:relative,sha256}))
+    tracks:verified.map(({category,name,size,storageEtag,relative,sha256})=>({category,name,bytes:size,storageEtag,path:relative,sha256}))
   };
   const provenancePath="assets/audio/music/originals/RECOVERED-MUSIC-MANIFEST.json";
   await fs.writeFile(path.join(stage,...provenancePath.split("/")),JSON.stringify(provenance,null,2)+"\n","utf8");
