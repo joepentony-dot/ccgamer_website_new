@@ -67,8 +67,31 @@
       "r85PropCrate": "assets/pixel/visual-overhaul/r85/prop-crate.svg",
       "r85PropBarrel": "assets/pixel/visual-overhaul/r85/prop-barrel.svg",
       "r85PropBookcase": "assets/pixel/visual-overhaul/r85/prop-bookcase.svg",
-      "r85PropConsole": "assets/pixel/visual-overhaul/r85/prop-console.svg"
-    }
+      "r85PropConsole": "assets/pixel/visual-overhaul/r85/prop-console.svg",
+      "r118FloorTile1": "assets/pixel/user-r118/floor-1.png",
+      "r118FloorTile2": "assets/pixel/user-r118/floor-2.png",
+      "r118FloorTile3": "assets/pixel/user-r118/floor-3.png",
+      "r118FloorTile4": "assets/pixel/user-r118/floor-4.png",
+      "r118PropBarrel": "assets/pixel/user-r118/prop-barrel.png",
+      "r118PropBookcase": "assets/pixel/user-r118/prop-bookcase.png",
+      "r118PickupArmour": "assets/pixel/user-r118/pickup-armour.png",
+      "r118SpikeInactive": "assets/pixel/user-r118/spike-inactive.png",
+      "r118SpikeActive": "assets/pixel/user-r118/spike-active.png",
+      "r118FireplaceFrames": [
+        "assets/pixel/user-r118/fireplace-0.png",
+        "assets/pixel/user-r118/fireplace-1.png",
+        "assets/pixel/user-r118/fireplace-2.png",
+        "assets/pixel/user-r118/fireplace-3.png",
+        "assets/pixel/user-r118/fireplace-4.png"
+      ],
+      "r118TorchSconceFrames": [
+        "assets/pixel/user-r118/torch-sconce-0.png",
+        "assets/pixel/user-r118/torch-sconce-1.png",
+        "assets/pixel/user-r118/torch-sconce-2.png",
+        "assets/pixel/user-r118/torch-sconce-3.png"
+      ]
+    },
+    "visualOverhaulProvenance": "assets/pixel/user-r118/PROVENANCE.md"
   },
   "music": {
     "categories": [
