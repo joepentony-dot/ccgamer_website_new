@@ -334,6 +334,8 @@ const bezel = { style: { width: "" } };
 let desktop = true;
 const fitContext = vm.createContext({
   screenStage: fitStage, screenBezel: bezel, displayExpanded: false,
+  mobileGameConsole: { classList: { contains() { return false; } } },
+  hasTouchScreen() { return false; },
   document: { fullscreenElement: null },
   window: {
     matchMedia() { return { matches: desktop }; },
