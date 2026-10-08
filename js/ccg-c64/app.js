@@ -1545,7 +1545,7 @@ function updateSelectedLibraryGame() {
   if (onlineLibraryLoadButton) {
     onlineLibraryLoadButton.hidden = !selected;
     onlineLibraryLoadButton.disabled = !selected || onlineLibraryLoadingGame;
-    onlineLibraryLoadButton.textContent = onlineLibraryLoadingGame ? "LOADING..." : "LOAD GAME";
+    onlineLibraryLoadButton.textContent = onlineLibraryLoadingGame ? "LOADING..." : "LOAD";
   }
   if (selected && onlineLibraryCount) {
     onlineLibraryCount.textContent =
@@ -1641,7 +1641,7 @@ function refreshOnlineLibrarySuggestions({ open = false } = {}) {
       : `${filtered.total} MATCH${filtered.total === 1 ? "" : "ES"}`;
   if (onlineLibraryCount) onlineLibraryCount.textContent =
     filtered.total
-      ? "Select a game, then click LOAD GAME."
+      ? "Select a game, then click LOAD."
       : "No matches for that title.";
 
   setLibrarySuggestionsOpen(open);
