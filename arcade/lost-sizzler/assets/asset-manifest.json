@@ -76,7 +76,7 @@
           "assets/pixel/user-r118/wall-torch-2.png",
           "assets/pixel/user-r118/wall-torch-3.png"
         ],
-        "activeKeyCandidate": "assets/pixel/user-r118/extended-gold-key.png",
+        "activeKeyCandidate": null,
         "stagedNotWired": [
           "assets/pixel/user-r118/floor-stairs.png",
           "assets/pixel/user-r118/monster-dark-knight.png",
@@ -90,7 +90,7 @@
           "assets/pixel/user-r118/vampire-move.png"
         ],
         "provenance": "assets/pixel/user-r118/PROVENANCE.md",
-        "status": "Key and wall torch currently selected; verify exact key lineage before release. Other sprites not runtime-wired.",
+        "status": "Four licensed wall-torch frames selected; extended gold key quarantined pending exact extraction provenance. Remaining candidates not runtime-wired.",
         "excludedUnknownRightsArchive": "Dungeon tileset(1).zip"
       }
     },
