@@ -7,6 +7,7 @@ import { GameVault } from "./game-vault.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
+import { PACK_ROOT, PACK_CATALOG_URL, parsePackedCatalog, filterCatalog, loadPackedGameBytes } from "./game-catalog.js";
 
 const vault = new ROMVault();
 const gameVault = new GameVault();
@@ -21,8 +22,15 @@ const anyMediaInput = document.getElementById("ccg-c64-any-media-input");
 const mediaDropzone = document.querySelector("[data-media-dropzone]");
 const onlineLibraryPanel = document.querySelector(".ccg-c64-panel--library");
 const controlsDeck = document.querySelector(".ccg-c64-control-stack");
-const onlineLibrarySelect = document.querySelector("[data-online-library-select]");
-const onlineLibraryLoad = document.querySelector("[data-online-library-load]");
+const onlineLibrarySearch = document.querySelector("[data-online-library-search]");
+const onlineLibraryGrid = document.querySelector("[data-online-library-grid]");
+const onlineLibraryLetters = document.querySelector("[data-library-letters]");
+const onlineLibraryCount = document.querySelector("[data-library-result-count]");
+const onlineLibraryFormats = document.querySelector(".ccg-c64-library-formats");
+const onlineLibraryPages = document.querySelector("[data-library-pages]");
+const onlineLibraryPageText = document.querySelector("[data-library-page-indicator]");
+const onlineLibraryPrevious = document.querySelector("[data-library-previous]");
+const onlineLibraryNext = document.querySelector("[data-library-next]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
 const onlineLibraryDisks = document.querySelector("[data-online-library-disks]");
 const onlineLibraryDiskSelect = document.querySelector("[data-online-library-disk-select]");
@@ -116,6 +124,12 @@ let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
 let onlineLibraryEntries = [];
+let onlineLibraryQuery = "";
+let onlineLibraryFormat = "all";
+let onlineLibraryLetter = "all";
+let onlineLibraryPage = 0;
+let onlineLibraryLoadingGame = false;
+const onlineLibraryPackCache = new Map();
 let autoStartSteps = null;
 let autoStartTypeRest = "";
 let autoStartSawBusy = false;
@@ -1491,98 +1505,164 @@ async function queueMediaFile(file, options = {}) {
   return queueMedia({ name: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()) }, options);
 }
 
-async function initialiseOnlineLibrary() {
-  if (!onlineLibrarySelect || !onlineLibraryStatus) return;
-  onlineLibraryStatus.textContent = "LOADING";
-  try {
-    const response = await fetch("/emulator/c64/library.json", { cache: "no-store", credentials: "same-origin" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const payload = await response.json();
-    const entries = Array.isArray(payload?.entries) ? payload.entries : [];
-    // Entries must be deliberately approved for public redistribution.
-    // An empty or missing library never displays a useless test-game slot.
-    onlineLibraryEntries = entries.filter((entry) =>
-      entry && entry.approved === true &&
-      typeof entry.id === "string" && typeof entry.title === "string" &&
-      typeof entry.license === "string" && entry.license.trim() &&
-      SUPPORTED_MEDIA_TYPES.has(String(entry.format || "").toLowerCase()) &&
-      ((typeof entry.url === "string" && entry.url.startsWith("/emulator/c64/media/")) ||
-        (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0))
-    );
-    if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
-    controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
-
-    onlineLibrarySelect.replaceChildren();
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = onlineLibraryEntries.length ? "Choose an item…" : "No authorised media listed";
-    onlineLibrarySelect.append(placeholder);
-
-    for (const entry of onlineLibraryEntries) {
-      const option = document.createElement("option");
-      option.value = entry.id;
-      option.textContent = `${entry.title} [${String(entry.format).toUpperCase()}]`;
-      onlineLibrarySelect.append(option);
-    }
-
-    onlineLibraryStatus.textContent = onlineLibraryEntries.length ? `${onlineLibraryEntries.length} READY` : "EMPTY";
-    if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
-  } catch (error) {
-    onlineLibraryEntries = [];
-    if (onlineLibraryPanel) onlineLibraryPanel.hidden = true;
-    controlsDeck?.classList.remove("has-online-library");
-    onlineLibrarySelect.replaceChildren(new Option("Library unavailable", ""));
-    onlineLibraryStatus.textContent = "UNAVAILABLE";
-    if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
+function refreshOnlineLibraryCards() {
+  if (!onlineLibraryGrid || !onlineLibraryLetters) return;
+  const filtered = filterCatalog(onlineLibraryEntries, {
+    query: onlineLibraryQuery, format: onlineLibraryFormat,
+    letter: onlineLibraryLetter, page: onlineLibraryPage,
+  });
+  onlineLibraryPage = filtered.page;
+  onlineLibraryGrid.replaceChildren();
+  for (const entry of filtered.games) {
+    const card = document.createElement("article");
+    card.className = "ccg-c64-game-card";
+    const title = document.createElement("strong");
+    title.className = "ccg-c64-game-title";
+    title.textContent = entry.title;
+    const foot = document.createElement("div");
+    foot.className = "ccg-c64-game-card-foot";
+    const media = document.createElement("span");
+    media.className = "ccg-c64-game-type";
+    media.textContent = String(entry.format).toUpperCase();
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "ccg-c64-game-launch";
+    button.dataset.playGame = entry.id;
+    button.textContent = "PLAY";
+    button.disabled = onlineLibraryLoadingGame;
+    button.setAttribute("aria-label", "Play " + entry.title);
+    foot.append(media, button);
+    card.append(title, foot);
+    onlineLibraryGrid.append(card);
   }
+  if (!filtered.games.length) {
+    const none = document.createElement("p");
+    none.className = "ccg-c64-library-empty";
+    none.textContent = "No games match this search. Try another title or A-Z filter.";
+    onlineLibraryGrid.append(none);
+  }
+  if (onlineLibraryCount) {
+    const start = filtered.total ? filtered.page * 36 + 1 : 0;
+    const end = Math.min(filtered.total, (filtered.page + 1) * 36);
+    onlineLibraryCount.textContent = `${start}-${end} OF ${filtered.total} GAMES`;
+  }
+  if (onlineLibraryPages) onlineLibraryPages.hidden = filtered.pages <= 1;
+  if (onlineLibraryPageText) onlineLibraryPageText.textContent =
+    `PAGE ${filtered.page + 1} / ${filtered.pages}`;
+  if (onlineLibraryPrevious) onlineLibraryPrevious.disabled = filtered.page <= 0;
+  if (onlineLibraryNext) onlineLibraryNext.disabled = filtered.page >= filtered.pages - 1;
+  onlineLibraryLetters.querySelectorAll("button[data-library-letter]").forEach((button) => {
+    button.setAttribute("aria-pressed", button.dataset.libraryLetter === onlineLibraryLetter ? "true" : "false");
+  });
+  onlineLibraryFormats?.querySelectorAll("button[data-library-format]").forEach((button) => {
+    button.setAttribute("aria-pressed", button.dataset.libraryFormat === onlineLibraryFormat ? "true" : "false");
+  });
 }
 
-async function loadOnlineLibraryEntry() {
-  const id = onlineLibrarySelect?.value || "";
+async function initialiseOnlineLibrary() {
+  if (!onlineLibraryGrid || !onlineLibraryStatus || !onlineLibraryLetters) return;
+  onlineLibraryStatus.textContent = "SCANNING";
+  onlineLibraryLetters.replaceChildren();
+  for (const letter of ["all", "0-9", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"]) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.libraryLetter = letter;
+    button.textContent = letter === "all" ? "ALL" : letter;
+    button.setAttribute("aria-pressed", letter === "all" ? "true" : "false");
+    onlineLibraryLetters.append(button);
+  }
+
+  let regular = [];
+  try {
+    const response = await fetch("/emulator/c64/library.json", {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (response.ok) {
+      const data = await response.json();
+      regular = (Array.isArray(data?.entries) ? data.entries : []).filter((entry) =>
+        entry && entry.approved === true &&
+        typeof entry.id === "string" && typeof entry.title === "string" &&
+        typeof entry.license === "string" && entry.license.trim() &&
+        SUPPORTED_MEDIA_TYPES.has(String(entry.format || "").toLowerCase()) &&
+        ((typeof entry.url === "string" && entry.url.startsWith("/emulator/c64/media/")) ||
+          (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0)));
+    }
+  } catch (_) { /* Optional direct-file catalogue may be empty. */ }
+
+  let packed = [];
+  try {
+    const response = await fetch(PACK_CATALOG_URL, {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (response.ok) {
+      const data = parsePackedCatalog(await response.json());
+      // Never show launch buttons for a partially uploaded pack collection.
+      // A failed HEAD leaves the public catalogue hidden until all packs arrive.
+      const available = await Promise.all(data.packs.map(async (pack) => {
+        const head = await fetch(PACK_ROOT + pack.file, {
+          method: "HEAD", cache: "no-store", credentials: "same-origin",
+        });
+        if (!head.ok || /text\/html/i.test(head.headers.get("content-type") || "")) return false;
+        const reported = Number(head.headers.get("content-length") || 0);
+        return !reported || reported === pack.bytes;
+      }));
+      if (available.every(Boolean)) packed = data.entries;
+    }
+  } catch (_) { /* Keep the existing C64 upload controls working when packs are absent. */ }
+
+  onlineLibraryEntries = [...regular, ...packed];
+  if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
+  controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
+  onlineLibraryStatus.textContent = onlineLibraryEntries.length
+    ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
+  refreshOnlineLibraryCards();
+}
+
+async function loadOnlineLibraryEntry(id) {
+  if (onlineLibraryLoadingGame) return;
   const entry = onlineLibraryEntries.find((item) => item.id === id);
   if (!entry) return;
-
-  if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
-  if (onlineLibraryStatus) onlineLibraryStatus.textContent = "FETCHING";
+  onlineLibraryLoadingGame = true;
+  if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOADING GAME";
+  refreshOnlineLibraryCards();
 
   try {
     let bytes;
-    if (entry.dataBase64) {
+    if (entry.packed) {
+      bytes = await loadPackedGameBytes(entry, onlineLibraryPackCache);
+    } else if (entry.dataBase64) {
       bytes = decodeLibraryBase64(entry.dataBase64);
     } else {
       const url = new URL(entry.url, window.location.href);
+      if (url.origin !== window.location.origin || !url.pathname.startsWith("/emulator/c64/media/")) {
+        throw new Error("Game media must be hosted on the CCG website.");
+      }
       const response = await fetch(url.href, {
-        cache: "no-store",
-        credentials: url.origin === window.location.origin ? "same-origin" : "omit",
-        mode: "cors",
+        cache: "no-store", credentials: "same-origin",
       });
-      if (!response.ok) throw new Error(`Library download failed (HTTP ${response.status}).`);
+      if (!response.ok) throw new Error(`Game file is unavailable (HTTP ${response.status}).`);
       bytes = new Uint8Array(await response.arrayBuffer());
     }
 
     const type = String(entry.format).toLowerCase();
-    const filename = entry.filename || `${entry.title.replace(/[^a-z0-9._-]+/gi, "-") || "ccg-media"}.${type}`;
-    const sides = onlineDiskSides(entry);
-    const firstKey = type === "d64" || type === "d71" || type === "d81" || type === "g64"
+    const filename = entry.filename || `${entry.title.replace(/[^a-z0-9._-]+/gi, "-") || "ccg-game"}.${type}`;
+    const firstKey = ["d64", "d71", "d81", "g64"].includes(type)
       ? `library:${entry.id}:0` : null;
-    // Only commit this library selection after the new game is accepted.
     activeLibraryEntryId = entry.id;
     activeLibraryDiskIndex = 0;
     const queued = await queueMedia({
       name: filename, type, bytes, sourceKey: firstKey,
     }, { freshBoot: true });
-    // queued=false also covers ROM setup pending; the selected game is resumed
-    // after the player installs their own C64 system ROMs.
-    if (!queued && !pendingMedia) {
-      activeLibraryEntryId = null;
-    }
+    if (!queued && !pendingMedia) activeLibraryEntryId = null;
     updateOnlineDiskUi();
-    if (onlineLibraryStatus) onlineLibraryStatus.textContent = queued ? "READY" : "ROM SETUP";
+    if (onlineLibraryStatus) onlineLibraryStatus.textContent =
+      queued ? "GAME STARTED" : pendingMedia ? "ROM SETUP" : "LOAD FAILED";
   } catch (error) {
-    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "ERROR";
-    if (stageNote) stageNote.textContent = error?.message || "The Online Library item could not be loaded.";
+    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOAD FAILED";
+    if (stageNote) stageNote.textContent = error?.message || "This game could not be started.";
   } finally {
-    if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect?.value;
+    onlineLibraryLoadingGame = false;
+    refreshOnlineLibraryCards();
   }
 }
 
@@ -1760,10 +1840,37 @@ mediaDropzone?.addEventListener("drop", async (event) => {
   await queueMediaFile(file, { freshBoot: true });
 });
 
-onlineLibrarySelect?.addEventListener("change", () => {
-  if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect.value;
+onlineLibrarySearch?.addEventListener("input", () => {
+  onlineLibraryQuery = onlineLibrarySearch.value;
+  onlineLibraryPage = 0;
+  refreshOnlineLibraryCards();
 });
-onlineLibraryLoad?.addEventListener("click", () => { void loadOnlineLibraryEntry(); });
+onlineLibraryFormats?.addEventListener("click", (event) => {
+  const format = event.target.closest("button[data-library-format]")?.dataset.libraryFormat;
+  if (!format) return;
+  onlineLibraryFormat = format;
+  onlineLibraryPage = 0;
+  refreshOnlineLibraryCards();
+});
+onlineLibraryLetters?.addEventListener("click", (event) => {
+  const letter = event.target.closest("button[data-library-letter]")?.dataset.libraryLetter;
+  if (!letter) return;
+  onlineLibraryLetter = letter;
+  onlineLibraryPage = 0;
+  refreshOnlineLibraryCards();
+});
+onlineLibraryGrid?.addEventListener("click", (event) => {
+  const id = event.target.closest("button[data-play-game]")?.dataset.playGame;
+  if (id) void loadOnlineLibraryEntry(id);
+});
+onlineLibraryPrevious?.addEventListener("click", () => {
+  onlineLibraryPage -= 1;
+  refreshOnlineLibraryCards();
+});
+onlineLibraryNext?.addEventListener("click", () => {
+  onlineLibraryPage += 1;
+  refreshOnlineLibraryCards();
+});
 onlineLibraryDiskSwapButton?.addEventListener("click", () => { void swapOnlineLibraryDisk(); });
 void initialiseOnlineLibrary();
 
