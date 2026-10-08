@@ -44,7 +44,7 @@ jobs:
           test -s resources/images/games/boxes-3d/fire-king.webp
           grep -q 'https://www.cheekycommodoregamer.co.uk/games/fire-king/' games/fire-king/index.html
           grep -q '9Wlh2bEIRWM' games/fire-king/index.html
-          grep -q '1Pj7XeGHm3Oo84wAd5gNVcp-2zHj25Kyc' games/fire-king/index.html
+          node -e 'const g=require("./games/games.json").find(x=>x.slug==="fire-king"); if(!g || !String(g.pdf).includes("1Pj7XeGHm3Oo84wAd5gNVcp-2zHj25Kyc")) process.exit(1)'
           if ! git diff --quiet -- games/games.json index.html home.html resources/css/intro.css js/index-intro.js; then
             echo "::error::Publishing modified protected source or intro files"
             exit 1
