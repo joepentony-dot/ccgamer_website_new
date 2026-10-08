@@ -59,4 +59,26 @@ for(const entry of catalogue.entries.slice(0,4)){
   }
   assert.equal(m.ready,true,"CPU must remain active after game load");
 }
+// A real CPU execution check is required: screen changes from typing RUN/SYS
+// are NOT sufficient proof that LOAD started a game.
+const sysGame = new Uint8Array([
+  0x01,0x08, 0x0b,0x08, 0x0a,0x00, 0x9e,0x32,0x30,0x36,0x34,0x00,
+  0x00,0x00, 0x00,0x00,0x00,
+  0xee,0x20,0xd0, 0x4c,0x10,0x08,
+]);
+assert.equal(singleLineSysTarget(sysGame),2064);
+const sysMachine=new C64Machine();
+sysMachine.loadROMs(roms);
+for(let i=0;i<80;i++) sysMachine.runFrame();
+assert.equal(sysMachine.mem.ram[0x2c],8,"Synthetic game requires BASIC READY");
+sysMachine.loadPRG(sysGame);
+sysMachine.injectSys(2064);
+let executedSysGame=false;
+for(let i=0;i<200;i++) {
+  sysMachine.runFrame();
+  if(sysMachine.cpu.pc>=0x0810 && sysMachine.cpu.pc<=0x0816) executedSysGame=true;
+}
+assert(executedSysGame, "Actual SYS game code at $0810 must execute, not just print SYS on READY");
+console.log("PASS: real open-ROM CPU executed a selected SYS-style PRG");
+
 console.log("Open ROM representative PRG probes completed");
