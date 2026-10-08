@@ -132,6 +132,14 @@ jobs:
           Get-ChildItem $root -Filter '*.exe' | Select-Object Name,Length
           Get-Content "$root/SHA256SUMS.txt"
 
+      - name: Real Windows executable runtime smoke
+        working-directory: desktop/dungeon-carnage/windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node windows-runtime-smoke.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Upload private owner preview artifacts
         uses: actions/upload-artifact@v4
         with:
