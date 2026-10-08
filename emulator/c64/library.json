@@ -1,5 +1,66 @@
 {
   "version": 1,
-  "policy": "The public library lists only game files for which public redistribution permission is confirmed. Players may load their own legally obtained D64, CRT, PRG, TAP or other supported C64 media using LOAD & AUTO START.",
-  "entries": []
+  "policy": "Contains only games explicitly authorised for redistribution by the Cheeky Commodore Gamer website owner. Full C64 system firmware remains user-supplied. Each hosted image is checked against its supplied SHA-256.",
+  "entries": [
+    {
+      "id": "forbidden-forest",
+      "title": "Forbidden Forest",
+      "filename": "forbidden-forest.d64",
+      "format": "d64",
+      "description": "Disk game; auto-LOAD/RUN on selection.",
+      "url": "/emulator/c64/media/forbidden-forest.d64",
+      "bytes": 174848,
+      "sha256": "540701ccff2b57927f795b922ade006d2bb687f75a7af65dce44eae232bcfdea",
+      "license": "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
+      "approved": true
+    },
+    {
+      "id": "paradroid",
+      "title": "Paradroid",
+      "filename": "paradroid.d64",
+      "format": "d64",
+      "description": "Disk game; auto-LOAD/RUN on selection.",
+      "url": "/emulator/c64/media/paradroid.d64",
+      "bytes": 174848,
+      "sha256": "3c31e9cd4426d6665afd9d17a7dec13bc2bec9e14fc5d2158eedc7c8a6c89439",
+      "license": "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
+      "approved": true
+    },
+    {
+      "id": "uridium",
+      "title": "Uridium",
+      "filename": "uridium.d64",
+      "format": "d64",
+      "description": "Disk game; auto-LOAD/RUN on selection.",
+      "url": "/emulator/c64/media/uridium.d64",
+      "bytes": 174848,
+      "sha256": "841aeb992636a0a9b8133dcc2b11c5153124cb0398cce0c4d142a03590bd61c5",
+      "license": "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
+      "approved": true
+    },
+    {
+      "id": "master-of-magic",
+      "title": "Master of Magic",
+      "filename": "Master_of_magic.d64",
+      "format": "d64",
+      "description": "Disk game; auto-LOAD/RUN on selection.",
+      "url": "/emulator/c64/media/Master_of_magic.d64",
+      "bytes": 174848,
+      "sha256": "7d4fb707a47ea2716018b1ff8658cfded6beeb75388e2fc877da44dd560f5838",
+      "license": "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
+      "approved": true
+    },
+    {
+      "id": "bruce-lee-trilogy",
+      "title": "Bruce Lee Trilogy",
+      "filename": "bruce-lee-trilogy.crt",
+      "format": "crt",
+      "description": "Magic Desk cartridge; automatically boots when loaded.",
+      "url": "/emulator/c64/media/bruce-lee-trilogy.crt",
+      "bytes": 131392,
+      "sha256": "6462a7562dcb539da2a6bfb843235dd70ffb2817403ea99efc350669b9e62999",
+      "license": "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
+      "approved": true
+    }
+  ]
 }
