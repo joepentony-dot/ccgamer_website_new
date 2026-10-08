@@ -828,6 +828,11 @@ select:disabled {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
   gap: 0.42rem;
+  max-height: min(420px, 58vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding-right: 0.15rem;
 }
 .ccg-c64-game-card {
   display: flex;
