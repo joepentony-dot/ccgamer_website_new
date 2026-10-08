@@ -109,8 +109,13 @@
             <p class="ccg-c64-library-match-count" data-library-match-count></p>
           </div>
         </div>
-        <p id="ccg-c64-library-search-help" class="ccg-c64-library-result-count"
-          data-library-result-count role="status" aria-live="polite">Type a game title to see suggestions.</p>
+        <div class="ccg-c64-library-confirm">
+          <p id="ccg-c64-library-search-help" class="ccg-c64-library-result-count"
+            data-library-result-count role="status" aria-live="polite">Type a title, then select a game.</p>
+          <button type="button" class="ccg-c64-library-load"
+            data-online-library-load hidden disabled
+            aria-label="Load selected C64 game">LOAD GAME</button>
+        </div>
         <div class="ccg-c64-library-row ccg-c64-library-disks" data-online-library-disks hidden>
           <select data-online-library-disk-select aria-label="Choose replacement disk for the current game"></select>
           <button type="button" data-online-library-disk-swap disabled title="Insert another disk without restarting the game">SWAP DISK</button>
