@@ -2,7 +2,7 @@
 "use strict";
 
 import assert from "node:assert/strict";
-import { createHash, webcrypto } from "node:crypto";
+import { createHash } from "node:crypto";
 import {
   parsePackedCatalog, filterCatalog, loadPackedGameBytes,
   PACK_CATALOG_URL, PACK_ROOT, GAME_PAGE_SIZE,
@@ -52,8 +52,6 @@ corrupt.recordCount = 2;
 assert.throws(() => parsePackedCatalog(corrupt), /invalid/i);
 
 const savedFetch = globalThis.fetch;
-const savedCrypto = globalThis.crypto;
-globalThis.crypto = webcrypto;
 let fetchCount = 0;
 globalThis.fetch = async (url) => {
   assert.equal(url, PACK_ROOT + "pack-00.bin");
@@ -72,6 +70,5 @@ try {
   }, cache), /bounds/i);
 } finally {
   globalThis.fetch = savedFetch;
-  globalThis.crypto = savedCrypto;
 }
 console.log("CCG C64 searchable game catalogue, filtering, pagination, pack caching and SHA-256 checks passed.");
