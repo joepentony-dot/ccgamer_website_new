@@ -56,6 +56,9 @@ jobs:
       - name: Verify Bruce Lee cartridge replaces the old packed PRG listing
         run: node --test tests/ccg-c64-bruce-lee-library.test.mjs
 
+      - name: Verify private local ROM export and mobile import
+        run: node --test tests/ccg-c64-local-rom-transfer.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
