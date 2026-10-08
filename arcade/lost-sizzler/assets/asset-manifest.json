@@ -162,6 +162,39 @@
         },
         "activeBarrelSprite": "assets/pixel/user-r118/kenney-tiny-dungeon-barrel.png",
         "activePillarSprite": "assets/pixel/user-r118/cc0-column-0x72-ii.png"
+      },
+      "r118FreeCommercial": {
+        "status": "Animated Pixel_Poem v2.0 free-commercial 16x16 gold-score coin graphics enabled; fallback to established R85 gold SVG. Separate from the R118 CC0-only group.",
+        "creator": "Pixel_Poem",
+        "source": "https://pixel-poem.itch.io/dungeon-assetpuck",
+        "license": "Creator permits free and commercial game projects and modification; no standalone asset-pack distribution.",
+        "evidence": "https://pixel-poem.itch.io/dungeon-assetpuck/comments?after=22",
+        "originalArchive": "2D Pixel Dungeon Asset Pack v2.0.zip",
+        "originalArchiveSHA256": "efb5711728cd031b14d1333ad71329d2622bf9f11853a7cb7d216326e1d33f9d",
+        "originalPaths": [
+          "2D Pixel Dungeon Asset Pack/items and trap_animation/coin/coin_1.png",
+          "2D Pixel Dungeon Asset Pack/items and trap_animation/coin/coin_2.png",
+          "2D Pixel Dungeon Asset Pack/items and trap_animation/coin/coin_3.png",
+          "2D Pixel Dungeon Asset Pack/items and trap_animation/coin/coin_4.png"
+        ],
+        "originalSHA256": [
+          "7e5956295c3b484f1d8dc3cc4d620538fe666bd23492a329e485c2a634df5989",
+          "7bfb1fe833ae9da9097edf914fd78a43f72421fb633913020f41bf9286025755",
+          "0f54e2f2b5a71b6a03a61addf7aa0752bddc2abb50c8d24b5b4ece77d1de2370",
+          "7bfb1fe833ae9da9097edf914fd78a43f72421fb633913020f41bf9286025755"
+        ],
+        "activeCreditCoinFrames": [
+          "assets/pixel/user-r118/pixel-poem-credit-coin-0.png",
+          "assets/pixel/user-r118/pixel-poem-credit-coin-1.png",
+          "assets/pixel/user-r118/pixel-poem-credit-coin-2.png",
+          "assets/pixel/user-r118/pixel-poem-credit-coin-1.png"
+        ],
+        "importedDistinctFrames": 3,
+        "sourceDimensionsPx": [
+          16,
+          16
+        ],
+        "note": "The fourth original frame is byte-identical to the second and reuses it instead of bundling a duplicate. Visual pickup art only; all existing item logic unchanged. R85 gold SVG remains the runtime fallback."
       }
     },
     "visualOverhaulProvenance": "assets/pixel/user-r118/PROVENANCE.md"
