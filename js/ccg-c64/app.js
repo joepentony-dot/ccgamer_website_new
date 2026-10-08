@@ -430,6 +430,8 @@ function attachSessionMedia(target) {
 }
 
 const heldMatrixKeys = new Map();
+// Buttons hold genuine CIA1 matrix keys; never synthesise browser KeyboardEvents.
+const touchFunctionKeyHolds = new Map();
 let shiftLeftPhysical = false;
 let shiftRightPhysical = false;
 let gamepadConnected = false;
@@ -441,6 +443,12 @@ function setC64Shift(left, right) {
 }
 
 function releaseAllInput() {
+  for (const [button, held] of touchFunctionKeyHolds) {
+    if (held.timer) clearTimeout(held.timer);
+    button.classList.remove("is-pressed");
+    machine?.cia1.setKey(held.col, held.row, false);
+  }
+  touchFunctionKeyHolds.clear();
   if (machine) {
     for (const held of heldMatrixKeys.values()) {
       machine.cia1.setKey(held.col, held.row, false);
@@ -533,7 +541,11 @@ function releaseHeldMatrixBinding(event, heldKey) {
   if (!binding) return false;
 
   heldMatrixKeys.delete(heldKey);
-  machine.cia1.setKey(binding.col, binding.row, false);
+  // If the same C64 key is also held on the touchscreen, leave it pressed.
+  if (![...touchFunctionKeyHolds.values()].some(held =>
+      held.col === binding.col && held.row === binding.row)) {
+    machine.cia1.setKey(binding.col, binding.row, false);
+  }
   if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
 
   if (binding.symbolMapped) {
@@ -2106,6 +2118,56 @@ for (const button of document.querySelectorAll("[data-joy-mask]")) {
   button.addEventListener("pointerup", release);
   button.addEventListener("pointercancel", release);
   button.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+// On phones, make short taps long enough for the C64 keyboard scan to see them.
+// Pointer capture and cancellation ensure a released F-key never remains stuck.
+const MIN_TOUCH_FUNCTION_KEY_MS = 120;
+for (const button of document.querySelectorAll("[data-c64-fkey]")) {
+  const code = button.getAttribute("data-c64-fkey");
+  const matrix = KEY_MAP[code];
+  if (!matrix) continue;
+  const [col, row] = matrix;
+
+  const releaseKey = (force = false) => {
+    const held = touchFunctionKeyHolds.get(button);
+    if (!held) return;
+    const remaining = MIN_TOUCH_FUNCTION_KEY_MS - (performance.now() - held.started);
+    if (!force && remaining > 0) {
+      if (!held.timer) held.timer = setTimeout(() => releaseKey(true), remaining);
+      return;
+    }
+    if (held.timer) clearTimeout(held.timer);
+    touchFunctionKeyHolds.delete(button);
+    button.classList.remove("is-pressed");
+    // Do not release the matrix bit while a physical keyboard holds it down.
+    if (![...heldMatrixKeys.values()].some(key => key.col === col && key.row === row)) {
+      machine?.cia1.setKey(col, row, false);
+    }
+    if (inputStatus && !touchFunctionKeyHolds.size) inputStatus.textContent = "KEYBOARD READY";
+  };
+
+  button.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    if (!running || !machine || paused || setup?.hidden === false) return;
+    const prior = touchFunctionKeyHolds.get(button);
+    if (prior?.timer) clearTimeout(prior.timer);
+    touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
+    machine.cia1.setKey(col, row, true);
+    keyboardPriorityUntil = performance.now() + 1200;
+    applyJoystickInput();
+    button.classList.add("is-pressed");
+    if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
+    try { button.setPointerCapture?.(event.pointerId); } catch {}
+  });
+  for (const eventName of ["pointerup", "pointercancel"]) {
+    button.addEventListener(eventName, event => {
+      event.preventDefault();
+      releaseKey();
+    });
+  }
+  button.addEventListener("lostpointercapture", () => releaseKey());
+  button.addEventListener("contextmenu", event => event.preventDefault());
 }
 
 void refreshVaultStatus();
