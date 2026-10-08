@@ -153,6 +153,23 @@ assert(fn.prevented && keys.has(keyId(0, 4)), "F1 must reach the game while butt
 up("F1", "F1", { target: button });
 const blocked = down("Space", " ", { target: button });
 assert(!blocked.prevented && !keys.has(keyId(7, 4)), "Toolbar buttons must keep native keyboard operation");
+const hiddenFileInput = {
+  tagName: "INPUT", type: "file",
+  closest(selector) { return selector.includes("input") ? this : null; },
+};
+context.document.activeElement = hiddenFileInput;
+const afterLoad = down("KeyS", "s", { target: hiddenFileInput });
+assert(afterLoad.prevented && keys.has(keyId(1, 5)),
+  "Hidden file chooser must not block S after loading a disk");
+up("KeyS", "s", { target: hiddenFileInput });
+const textField = {
+  tagName: "INPUT", type: "text",
+  closest(selector) { return selector.includes("input") ? this : null; },
+};
+context.document.activeElement = textField;
+const insideTextField = down("KeyS", "s", { target: textField });
+assert(!insideTextField.prevented && !keys.has(keyId(1, 5)),
+  "Visible text input must retain its native keyboard");
 context.document.activeElement = canvas;
 context.setup.hidden = false;
 assert(!down("F1", "F1").prevented, "ROM setup must keep keyboard input");
