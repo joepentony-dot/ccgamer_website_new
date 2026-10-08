@@ -1997,6 +1997,38 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-rom-slot { min-height: 62px; }
 }
 
+/* Mobile first-visit flow: C64 display -> searchable library -> touch play
+   controls -> optional file uploads. The actual panel is moved by app.js;
+   desktop two-column layout and all existing joystick bindings are unchanged. */
+@media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .ccg-c64-console > .ccg-c64-screen-foot,
+  .ccg-c64-console > .ccg-c64-stage-note {
+    display: none;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library {
+    width: 100%;
+    min-width: 0;
+    margin: 0.42rem 0 0;
+    padding: 0.55rem;
+    border-radius: 8px;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library.is-suggesting {
+    z-index: 90;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library .ccg-c64-panel-title {
+    min-height: 0;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+  .ccg-c64-console > .ccg-c64-touch-controls {
+    margin-top: 0.3rem;
+  }
+  /* Touch fullscreen is for playing the game, not selecting another title. */
+  .ccg-c64-console:fullscreen > .ccg-c64-panel--library {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
