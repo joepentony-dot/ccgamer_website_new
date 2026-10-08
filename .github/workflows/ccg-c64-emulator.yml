@@ -32,6 +32,9 @@ jobs:
       - name: Check CCG shell and ROM contract
         run: node tests/ccg-c64-emulator-stage1.test.mjs
 
+      - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
+        run: node tests/ccg-c64-keyboard-warp.test.mjs
+
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
 

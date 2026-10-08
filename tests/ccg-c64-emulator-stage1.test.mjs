@@ -107,7 +107,7 @@ assert(app.includes("prepareFreshGameSession()"), "Primary file loading must be 
 assert(app.includes("queueMediaFile(file, { freshBoot: true })"), "Primary file and drop routes must request a clean auto-start session");
 assert(app.includes("{ type: 'LOAD\"*\",8,1\\r' }"), "Disk auto-start must enter LOAD wildcard on device 8");
 assert(app.includes('{ type: "RUN\\r" }'), "Disk/tape auto-start must enter RUN after loading");
-assert(html.includes("AUTO LOAD"), "The emulator UI must advertise screen drop auto-loading");
+assert(html.includes("AUTO START") && html.includes("DRAG &amp; DROP"), "The emulator UI must advertise screen drop auto-start");
 assert(html.includes("data-load-disk"), "The CCG media bay must expose its disk load control");
 assert(html.includes('accept=".d64,.d71,.d81,.g64"'), "Disk bay must expose D64/D71/D81/G64 workflows");
 assert(app.includes("new G64(bytes)"), "G64 raw-track media must be wired");
@@ -131,8 +131,10 @@ assert(html.includes("data-audio-toggle"), "The command deck must expose SID mut
 assert(html.includes("data-crt-toggle"), "The deck must expose CRT preset switching");
 assert(html.includes("data-size-toggle"), "The deck must expose fit/2x display switching");
 assert(html.includes("data-warp-load"), "The deck must expose Warp Load");
-assert(app.includes("const WARP_LOAD_FACTOR = 4"), "Warp Load must use the qualified 4x multiplier");
-assert(app.includes("delta * (warpLoadActive ? WARP_LOAD_FACTOR : 1)"), "Warp Load must accelerate emulated time without changing the machine core");
+assert(app.includes("const WARP_FRAME_BUDGET_MS = 12"), "Warp Load must be bounded by a real-time budget");
+assert(app.includes("const WARP_MAX_FRAMES_PER_TICK = 1024"), "Warp Load must retain a runaway-frame safety guard");
+assert(app.includes("performance.now() - start < WARP_FRAME_BUDGET_MS"), "Warp must use as many emulated frames as the device can sustain, not a fixed 4x speed");
+assert(app.includes("frameAccumulator += delta"), "Normal PAL-timed playback must remain unchanged when Warp is off");
 assert(app.includes("WARP SILENT"), "Warp Load must silence SID output while accelerated");
 assert(app.includes("sidNode?.port.postMessage({ type: \"resync\" })"), "SID resync must remain available when Warp Load returns to 1x");
 assert(app.includes("audioWorklet.addModule(SID_WORKLET_URL)"), "SID AudioWorklet module must be loaded");

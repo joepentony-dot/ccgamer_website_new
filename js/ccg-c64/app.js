@@ -67,7 +67,10 @@ const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 
 const PAL_FRAME_MS = 1000 / 50.125;
-const WARP_LOAD_FACTOR = 4;
+// Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
+// Keep a little time for rendering, real keyboard events and browser accessibility.
+const WARP_FRAME_BUDGET_MS = 12;
+const WARP_MAX_FRAMES_PER_TICK = 1024;
 let machine = null;
 let running = false;
 let paused = false;
@@ -414,10 +417,22 @@ function releaseHeldMatrixBinding(event, heldKey) {
   return true;
 }
 
-function handleC64Key(event, pressed) {
-  if (!running || !machine || document.activeElement !== screen) return;
+function usesNativeKeyboard(target) {
+  return Boolean(target?.closest?.(
+    'input, textarea, select, button, a, summary, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"], [role="button"]'
+  ));
+}
 
-  if (event.metaKey) return;
+function handleC64Key(event, pressed) {
+  if (!running || !machine) return;
+
+  // Keyboard works while the emulator page is active, not only while its canvas
+  // has focus. Never hijack browser form navigation or ROM-setup controls.
+  if (pressed && ((!setup?.hidden) || usesNativeKeyboard(event.target) ||
+    usesNativeKeyboard(document.activeElement))) return;
+
+  // Leave operating-system/browser shortcuts alone (AltGr remains available).
+  if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
 
   if (event.code === "F12") {
     event.preventDefault();
@@ -575,7 +590,7 @@ function setControlState(snapshot) {
     warpLoadButton.disabled = !running || paused;
     warpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
     const strong = warpLoadButton.querySelector("strong");
-    if (strong) strong.textContent = warpLoadActive ? `ON · ${WARP_LOAD_FACTOR}X` : `${WARP_LOAD_FACTOR}X`;
+    if (strong) strong.textContent = warpLoadActive ? "ON · MAX" : "MAX";
   }
   if (loadMediaButton) loadMediaButton.disabled = false;
   if (loadDiskButton) loadDiskButton.disabled = false;
@@ -760,17 +775,29 @@ function frameLoop(now) {
   lastFrameTime = now;
 
   if (!paused) {
-    frameAccumulator += delta * (warpLoadActive ? WARP_LOAD_FACTOR : 1);
     let frames = 0;
-    while (frameAccumulator >= PAL_FRAME_MS) {
-      machine.runFrame();
-      frameAccumulator -= PAL_FRAME_MS;
-      frames += 1;
+    if (warpLoadActive) {
+      // Run at the fastest browser-safe rate this device can sustain. Do not
+      // throttle to a fixed PAL multiplier, or build up a huge frame backlog.
+      const start = performance.now();
+      do {
+        machine.runFrame();
+        frames++;
+        if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
+      } while (frames < WARP_MAX_FRAMES_PER_TICK &&
+        performance.now() - start < WARP_FRAME_BUDGET_MS);
+      if (autoStartSteps) serviceAutoStart();
+      frameAccumulator = 0;
+    } else {
+      frameAccumulator += delta;
+      while (frameAccumulator >= PAL_FRAME_MS) {
+        machine.runFrame();
+        frameAccumulator -= PAL_FRAME_MS;
+        frames++;
+      }
+      if (frames) serviceAutoStart();
     }
-    if (frames) {
-      blitMachine();
-      serviceAutoStart();
-    }
+    if (frames) blitMachine();
   }
 
   frameHandle = requestAnimationFrame(frameLoop);
@@ -866,12 +893,12 @@ function setWarpLoad(value) {
 
   if (machineState) {
     machineState.textContent = warpLoadActive
-      ? `WARP LOAD ACTIVE // ${WARP_LOAD_FACTOR}X`
+      ? "WARP LOAD ACTIVE // MAX SPEED"
       : "C64 CORE RUNNING // VIDEO ACTIVE";
   }
   if (stageNote) {
     stageNote.textContent = warpLoadActive
-      ? `Warp Load is running the C64 at up to ${WARP_LOAD_FACTOR}× speed. Audio is muted while warping; switch it off when loading has finished.`
+      ? "Warp Load now runs as fast as this device can sustain. SID is muted during warp; switch it off after loading."
       : "Warp Load disabled. Normal 1× timing and SID audio restored.";
   }
   updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
@@ -987,12 +1014,12 @@ document.querySelector("[data-emulator-back]")?.addEventListener("click", () => 
 });
 
 powerButton?.addEventListener("click", () => { void powerOn(); });
-resetButton?.addEventListener("click", resetMachine);
-pauseButton?.addEventListener("click", togglePause);
-warpLoadButton?.addEventListener("click", toggleWarpLoad);
-audioButton?.addEventListener("click", toggleAudioMute);
-crtButton?.addEventListener("click", cycleCrtMode);
-sizeButton?.addEventListener("click", toggleScreenSize);
+resetButton?.addEventListener("click", () => { resetMachine(); screen?.focus(); });
+pauseButton?.addEventListener("click", () => { togglePause(); screen?.focus(); });
+warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
+audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
+crtButton?.addEventListener("click", () => { cycleCrtMode(); screen?.focus(); });
+sizeButton?.addEventListener("click", () => { toggleScreenSize(); screen?.focus(); });
 screen?.addEventListener("pointerdown", () => screen.focus());
 
 const SUPPORTED_MEDIA_TYPES = new Set(["prg", "d64", "d71", "d81", "g64", "tap", "t64", "crt"]);
@@ -1266,6 +1293,9 @@ prgInput?.addEventListener("change", async () => {
 window.addEventListener("keydown", (event) => handleC64Key(event, true));
 window.addEventListener("keyup", (event) => handleC64Key(event, false));
 window.addEventListener("blur", releaseAllInput);
+document.addEventListener("focusin", (event) => {
+  if (running && usesNativeKeyboard(event.target)) releaseAllInput();
+});
 
 document.addEventListener("visibilitychange", () => {
   if (!running) return;

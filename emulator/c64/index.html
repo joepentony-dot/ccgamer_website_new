@@ -58,19 +58,19 @@
 
       <div class="ccg-c64-screen-stage" data-media-dropzone>
         <div class="ccg-c64-screen-bezel">
-          <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" tabindex="0"></canvas>
+          <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" aria-describedby="ccg-c64-drop-instructions" tabindex="0"></canvas>
           <div class="ccg-c64-screen-glass" aria-hidden="true"></div>
         </div>
-        <div class="ccg-c64-drop-hint" aria-hidden="true">DROP D64 / TAP / PRG / CRT HERE — AUTO LOAD</div>
+        <div class="ccg-c64-drop-hint" aria-hidden="true">DRAG &amp; DROP A GAME HERE — AUTO START</div>
       </div>
 
       <div class="ccg-c64-screen-foot">
         <span>384 × 272 SOURCE</span>
         <span>WEBGL / CRT PRESENTER</span>
-        <span>DROP GAME HERE — AUTO LOAD</span>
+        <span>DRAG A DISK, TAPE OR CARTRIDGE ONTO THE SCREEN</span>
       </div>
 
-      <p class="ccg-c64-stage-note" data-stage-note>Drop a C64 game onto the screen or choose a file. Fast Load is the default, so disk images mount and LOAD/RUN automatically.</p>
+      <p class="ccg-c64-stage-note" data-stage-note id="ccg-c64-drop-instructions">DRAG &amp; DROP your C64 game file onto the screen to load and start it automatically. Or use LOAD &amp; AUTO START. Accepts D64, D71, D81, G64, TAP, T64, PRG and CRT.</p>
 
       <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
         <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
@@ -90,7 +90,7 @@
         <div class="ccg-c64-quickload">
           <button type="button" class="ccg-c64-primary-load" data-load-any-media>LOAD &amp; AUTO START</button>
           <input id="ccg-c64-any-media-input" type="file" accept=".prg,.d64,.d71,.d81,.g64,.tap,.t64,.crt" hidden>
-          <p>PRG, D64, D71, D81, G64, TAP, T64 and CRT are accepted. Choosing a game here starts a fresh C64 session and automatically LOADs/RUNs it where the format allows.</p>
+          <p>Choose a PRG, disk, tape or cartridge, or drop it onto the screen. Automatic start is enabled.</p>
         </div>
       </section>
 
@@ -102,7 +102,7 @@
           </select>
           <button type="button" data-online-library-load disabled>LOAD</button>
         </div>
-        <small class="ccg-c64-library-note">CCG-hosted entries are limited to media CCG is permitted to distribute. More can be added to the library manifest without changing the emulator.</small>
+        <small class="ccg-c64-library-note">Authorised CCG-hosted game and demo files only.</small>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--status">
@@ -121,7 +121,7 @@
           <button type="button" class="is-power" data-machine-power disabled><span>POWER</span><strong>BOOT C64</strong></button>
           <button type="button" data-machine-reset disabled><span>RESET</span><strong>RESET</strong></button>
           <button type="button" data-machine-pause disabled><span>PAUSE</span><strong>PAUSE</strong></button>
-          <button type="button" data-warp-load aria-pressed="false" disabled><span>WARP LOAD</span><strong>4X</strong></button>
+          <button type="button" data-warp-load aria-pressed="false" disabled title="Run the emulator at the maximum speed this browser can sustain"><span>WARP LOAD</span><strong>MAX</strong></button>
           <button type="button" data-crt-toggle><span>CRT</span><strong>TUBE</strong></button>
           <button type="button" data-size-toggle><span>SIZE</span><strong>FIT</strong></button>
           <button type="button" data-fullscreen><span>DISPLAY</span><strong>FULL</strong></button>
@@ -132,7 +132,7 @@
         <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
       </section>
 
-      <section class="ccg-c64-panel">
+      <section class="ccg-c64-panel ccg-c64-panel--port">
         <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROL PORT 2</strong><em>GAMEPAD + TOUCH</em></header>
         <div class="ccg-c64-port-row">
           <span class="ccg-c64-port-dot"></span>
@@ -141,7 +141,7 @@
         </div>
       </section>
 
-      <section class="ccg-c64-panel">
+      <section class="ccg-c64-panel ccg-c64-panel--disk">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
         <div class="ccg-c64-media-row">
           <button type="button" data-load-disk>LOAD DISK</button>
@@ -150,7 +150,7 @@
         <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
       </section>
 
-      <section class="ccg-c64-panel">
+      <section class="ccg-c64-panel ccg-c64-panel--tape">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DATASETTE</strong><em data-tape-slot-status>TAP / T64</em></header>
         <div class="ccg-c64-media-row ccg-c64-media-row--four">
           <button type="button" data-load-tape>LOAD</button>
@@ -161,7 +161,7 @@
         <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
       </section>
 
-      <section class="ccg-c64-panel">
+      <section class="ccg-c64-panel ccg-c64-panel--cartridge">
         <header class="ccg-c64-panel-title"><span>••</span><strong>CARTRIDGE</strong><em data-cartridge-slot-status>CRT / EASYFLASH</em></header>
         <div class="ccg-c64-media-row">
           <button type="button" data-load-cartridge>LOAD CRT</button>
