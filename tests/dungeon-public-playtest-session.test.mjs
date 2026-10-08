@@ -7,8 +7,11 @@ const legacy=fs.readFileSync("arcade/lost-sizzler/index.html","utf8");
 const ui=fs.readFileSync("arcade/lost-sizzler/js/dungeon-public-playtest.js","utf8");
 const css=fs.readFileSync("arcade/lost-sizzler/css/dungeon-public-playtest.css","utf8");
 const migration=fs.readFileSync("supabase/migrations/20261007025945_dungeon_carnage_public_playtest_sessions.sql","utf8");
-const script="js/dungeon-public-playtest.js?v=20261007r117";
-const style="css/dungeon-public-playtest.css?v=20261007r117";
+const version=JSON.parse(fs.readFileSync("arcade/lost-sizzler/version.json","utf8"));
+const token=String(version.cacheToken||"");
+assert(/^\d{8}r\\d+$/.test(token),"public playtest assets must share a recognised published cache identity");
+const script="js/dungeon-public-playtest.js?v="+token;
+const style="css/dungeon-public-playtest.css?v="+token;
 
 for(const [name,html] of [["canonical",canonical],["legacy",legacy]]){
   assert(html.includes(script),name+" Dungeon page must load the public timed-playtest controller");
