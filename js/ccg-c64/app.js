@@ -1810,7 +1810,7 @@ async function loadSelectedLibraryEntry() {
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
       queued ? "GAME STARTED" : pendingMedia ? "ROM SETUP" : "LOAD FAILED";
-    if (queued && mobileLibraryViewport.matches) {
+    if (queued && typeof mobileLibraryViewport !== "undefined" && mobileLibraryViewport.matches) {
       onlineLibrarySearch?.blur();
       screenStage?.scrollIntoView?.({ block: "start", behavior: "smooth" });
     }
