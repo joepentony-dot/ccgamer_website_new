@@ -41,7 +41,7 @@ for (const hook of [
   "data-audio-toggle", "data-load-disk", "data-drive-mode", "data-load-tape",
   "data-tape-play", "data-tape-stop", "data-tape-rewind", "data-load-cartridge",
   "data-eject-cartridge", "data-vault-save", "data-vault-load", "data-vault-clear",
-  "data-open-setup", "data-clear-roms", "data-online-library-select",
+  "data-open-setup", "data-clear-roms", "data-online-library-search",
 ]) assert(html.includes(hook), "A required C64 control has disappeared: " + hook);
 
 const first = app.indexOf("const heldMatrixKeys = new Map();");
