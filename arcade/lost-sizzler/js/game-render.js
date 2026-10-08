@@ -85,7 +85,8 @@ const lostSizzlerPixelAssets=(()=>{
     propCrate:make(selected("propCrate","assets/pixel/visual-overhaul/r85/prop-crate.svg")),
     propBarrel:make(selected("propBarrel","assets/pixel/visual-overhaul/r85/prop-barrel.svg")),
     propBookcase:make(selected("propBookcase","assets/pixel/visual-overhaul/r85/prop-bookcase.svg")),
-    propConsole:make(selected("propConsole","assets/pixel/visual-overhaul/r85/prop-console.svg"))
+    propConsole:make(selected("propConsole","assets/pixel/visual-overhaul/r85/prop-console.svg")),
+    propPillar:make(selected("propPillar"))
   }
 })();
 const chestRenderDiagnostics=window.__CCG_CHEST_RENDER_DIAGNOSTICS__=window.__CCG_CHEST_RENDER_DIAGNOSTICS__||{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0};
@@ -1037,10 +1038,17 @@ function drawFurniture(){
     const propArt=d.type==="crate"?lostSizzlerPixelAssets.propCrate
       :d.type==="barrel"?lostSizzlerPixelAssets.propBarrel
       :["bookcase","shelf"].includes(d.type)?lostSizzlerPixelAssets.propBookcase
-      :["terminal","console"].includes(d.type)?lostSizzlerPixelAssets.propConsole:null;
+      :["terminal","console"].includes(d.type)?lostSizzlerPixelAssets.propConsole
+      :d.type==="pillar"?lostSizzlerPixelAssets.propPillar:null;
     const fireplaceFrames=lostSizzlerPixelAssets.fireplaceFrames||[],torchSconceFrames=lostSizzlerPixelAssets.torchSconceFrames||[];
     if(propArt?.complete&&propArt.naturalWidth){
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor="rgba(0,0,0,.52)";ctx.shadowBlur=5;
+      if(d.type==="pillar"){
+        // The plinth fills the existing blocking tile even though this 16x48
+        // source column renders narrowly. Keep the collision footprint legible.
+        ctx.save();ctx.shadowBlur=0;ctx.fillStyle="#493d41";ctx.fillRect(q.x+4,q.y+C.tile-9,C.tile-8,7);
+        ctx.fillStyle="#a99789";ctx.fillRect(q.x+5,q.y+C.tile-9,C.tile-10,2);ctx.restore();
+      }
       const fit=dungeonAssetFitRect(propArt,q.x+1,q.y+1,C.tile-2,C.tile-2,true);if(fit)ctx.drawImage(propArt,fit.x,fit.y,fit.w,fit.h);ctx.restore();
     }else if(d.type==="fireplace"&&fireplaceFrames.length===5&&fireplaceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
       const frame=fireplaceFrames[Math.floor(performance.now()/115+(h%5))%fireplaceFrames.length];
