@@ -1,46 +1,43 @@
 # Fire King (1989, Commodore 64) — guarded publication checklist
 
-This source-only branch stages the verified Fire King record in `games/games.json`. It does **not** bypass Supabase membership security and does not alter existing titles, intro files or styles.
+This branch adds exactly one C64 game to the existing GitHub-based publishing pipeline, without Supabase owner login.
 
-## Binary assets awaiting GitHub upload
+## Original artwork — committed to GitHub
 
-The owner supplied three source files in ChatGPT on 8 October 2026. The connector available to this workflow can update UTF-8 repository files but **cannot copy conversation binary attachments into GitHub**.
+Both owner-supplied WebP assets are already committed to the Fire King branch and stored at the site's established image paths:
 
-Before merging, upload and commit these exact files to this branch:
+- `resources/images/thumbnails/all/fire-king.webp` — game thumbnail, 34,398 bytes
+- `resources/images/games/boxes-3d/fire-king.webp` — original boxed-game artwork, 65,538 bytes
 
-| Destination path in the existing repository | Source | Purpose |
-|---|---|---|
-| `resources/images/thumbnails/all/fire-king.webp` | Converted from owner-supplied `fire-king.png` (460 × 215) | Game tiles, hero image and social previews |
-| `resources/images/games/boxes-3d/fire-king.webp` | Owner-supplied `fire-king.webp` | Original 3D boxed game art |
-| `resources/manuals/fireking-manual.pdf` | Owner-supplied `fireking-manual.pdf` (9 scanned pages) | Self-hosted playable manual link |
+The source binaries were SHA-verified against the owner uploads before creating Git blobs. No other existing game image was modified.
 
-The separate ChatGPT artifact `fire-king-website-assets.zip` holds these three files with their final repository paths. **Do not merge this branch until all three exist in the branch with the expected sizes/content.** Do not replace them with the Lemon64 image or a generic placeholder.
+## Game manual — original Google Drive link
 
-## One-step owner upload (no Supabase login, no Git commands)
+In keeping with existing game records, the manual is **not uploaded to GitHub**. The source record's `pdf` field points to the original Google Drive document:
 
-1. Download the `fire-king-website-assets.zip` file supplied in this ChatGPT conversation.
-2. Open https://github.com/joepentony-dot/ccgamer_website_new/pull/2597 and drag the **ZIP itself** into the Pull Request **Conversation** comment box, then click **Comment**. Do not extract it first.
-3. Notify the assistant. The prepared guarded workflow `.github/workflows/fire-king-binary-asset-import.yml` can then be re-triggered by a branch commit. It reads **only a comment made by the repository owner**, downloads exactly that ZIP, matches **all three files against immutable SHA-256 and size checks**, and commits them only to the Fire King branch. It never uploads to Supabase or writes to main.
+https://drive.google.com/file/d/1Pj7XeGHm3Oo84wAd5gNVcp-2zHj25Kyc/view?usp=drive_link
 
-This workaround is needed because the GitHub connector available in this ChatGPT session supports text-file edits but not binary attachments. The one-time ZIP stays attached to the PR as a review record.
+The owner retains the original nine-page PDF on Google Drive. **Important:** Google Drive metadata returned `shared: false` (private) when checked on 8 October 2026. The owner must use **Share → General access → Anyone with the link → Viewer** to allow website visitors to open it. Recheck publicly in a logged-out browser before final deployed acceptance. Do not claim that the PDF is publicly available until confirmed.
 
-## Record preflight
+## Identity and metadata
 
-- **Identity:** Fire King, C64, 1989, Micro Forté, Strategic Studies Group (SSG). Sources: https://www.lemon64.com/game/fire-king and original supplied manual.
-- **Credits:** Coder names from the Lemon64 Commodore 64 record. Stephen Lewis also contributed title artwork, Nick Stathopoulos painted box art, John De Margheriti and Michael Stoney are listed for music. Rob Hubbard was thanked for music-driver assistance only; he is **not** a Fire King composer.
-- **Rating:** Cheeky Commodore Gamer 5/10, reason based on the owner's narration; distinct from contemporary magazine scores.
-- **Video:** https://youtu.be/9Wlh2bEIRWM (`9Wlh2bEIRWM`). **Private on 8 October 2026**, intended to be made public the following day. The Games Publishing workflow explicitly permits private/scheduled video metadata and will refresh on later synchronisation. Do not invent publication date/duration/video title.
-- **Manual:** Set to the above **self-hosted** PDF, not the owner's private Google Drive file.
-- **Lemon:** Direct verified `https://www.lemon64.com/game/fire-king` source stored. Reliable Games Publishing will discover/import magazine reviews automatically from the verified Lemon reference. Do not substitute C64 reviews for DOS coverage.
-- **Contemporary C64 magazine facts:** The Games Machine #24 (Nov 1989) page 68, **61%**; Your Commodore #60 (Sep 1989) page 73, **50%**; INFO #29 (Nov/Dec 1989) page 75, **3.5/5**. Scans/links must be imported or checked by the established publishing pipeline. Do not mark uncached links as verified direct scans.
-- **SEO:** 131-word original factual description, 1989 C64 identity and action-RPG/arcade-adventure keywords; no false download media claim.
+- **Game:** Fire King (1989), Commodore 64
+- **Developer:** Micro Forté; **publisher:** Strategic Studies Group.
+- **Genre:** action adventure, shooting, role-playing; six selectable adventurers and simultaneous two-player play.
+- **Credits:** coding names from the matching Lemon64 C64 release; Stephen Lewis (title screen), Nick Stathopoulos (box artwork), John De Margheriti and Michael Stoney (music). Rob Hubbard receives music-driver assistance credit only, not composer credit.
+- **CCG rating:** owner's 5/10, with a personalised reason that reflects the accompanying narration.
+- **YouTube:** `https://youtu.be/9Wlh2bEIRWM`; video is private until the next day. Normal YouTube metadata synchronisation is designed to tolerate this, then refresh when public.
+- **Lemon64:** `https://www.lemon64.com/game/fire-king`
+- **Magazine research:** The Games Machine #24 (Nov 1989), page 68, 61%; Your Commodore #60 (Sep 1989), page 73, 50%; INFO #29 (Nov/Dec 1989), page 75, 3.5/5. Maintain the distinction between source index URLs and actual scanned magazine page links; do not invent scans.
+- **SEO description:** the original specific C64 description is in `games/games.json`.
 
-## Release gates
+## Publication gates
 
-1. Upload the 3 binary files to the paths above on **this branch**.
-2. Verify each file is served with status 200 from a staging build, with valid WebP and PDF signatures, and check no thumbnails elsewhere were changed.
-3. Run reliable game publishing preflight, Lemon magazine capture, generated slug page and affected year/publisher/genre indices. Do not hand-edit generated HTML.
-4. Confirm canonical URL `https://www.cheekycommodoregamer.co.uk/games/fire-king/`, two ratings (CCG vs magazines), credits, manual opening, and YouTube private-video placeholder pending publication.
-5. Merge through guarded CI; confirm all generated game pages and sitemap output are merged by the existing publishing automation and check the deployed result. No Supabase login is required for GitHub preparation.
+1. Confirm both committed WebP images display correctly and existing art remains unchanged.
+2. Run the standard Reliable Games Publishing and enrichment pipeline; create the canonical `/games/fire-king/` page and discoverability from relevant genre/publisher/1989/game-list pages and sitemap.
+3. Confirm the independent CCG 5/10 rating, Lemon-sourced magazine ratings and links, credits, manual link and YouTube embed/placeholder.
+4. Keep the private video ID in the source; do not invent its title, publication date or duration.
+5. Verify the Google Drive manual is accessible to unauthenticated visitors before considering the manual feature complete.
+6. Merge only validated changes, confirm generated page outputs have reached main, and check the live game page.
 
-**Blocking reason until these gates pass:** binary attachments remain outside GitHub. A textual game record alone would display broken artwork/manual links.
+The obsolete binary-asset ZIP handoff has been removed: the two artwork files were committed directly by GitHub Git-tree operations. Supabase admin authentication is not used.
