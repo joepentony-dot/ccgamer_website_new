@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="C64 Dungeon Carnage icon">
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#333f50"/><stop offset="1" stop-color="#12131b"/></linearGradient>
+    <linearGradient id="fire" x1="0" y1="1" x2="0" y2="0"><stop stop-color="#f05b29"/><stop offset=".58" stop-color="#ffbe4b"/><stop offset="1" stop-color="#fff2a9"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="84" fill="#101019"/>
+  <rect x="22" y="22" width="468" height="468" rx="65" fill="url(#stone)" stroke="#e9a743" stroke-width="16"/>
+  <path d="M104 432V170l64-64h176l64 64v262H104Z" fill="#141a25" stroke="#b6a07d" stroke-width="18"/>
+  <path d="M155 427V205c0-56 45-101 101-101s101 45 101 101v222H155Z" fill="#070d16" stroke="#e4c27a" stroke-width="12"/>
+  <path d="M256 132c-9 51-54 77-40 126-27-15-35-39-39-58-42 61-15 122 13 144 27 22 45 20 66 20 48 0 91-36 91-90 0-51-40-94-91-142Z" fill="url(#fire)" stroke="#d64b1b" stroke-width="5"/>
+  <path d="M252 227c-28 41-12 51-30 78-2 18 17 34 35 34 26 0 42-17 42-39 0-29-29-40-47-73Z" fill="#fff6c7"/>
+  <path d="M95 411h322v51H95z" fill="#202b3c" stroke="#c39244" stroke-width="10"/>
+  <text x="256" y="452" fill="#ffe7b6" text-anchor="middle" font-size="42" font-weight="800" font-family="DejaVu Sans,Arial,sans-serif" letter-spacing="2">C64</text>
+</svg>
