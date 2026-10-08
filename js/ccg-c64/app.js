@@ -28,6 +28,7 @@ const onlineLibrarySuggestions = document.querySelector("[data-online-library-su
 const onlineLibrarySearchWrap = document.querySelector("[data-library-search-wrap]");
 const onlineLibraryCount = document.querySelector("[data-library-result-count]");
 const onlineLibraryMatchCount = document.querySelector("[data-library-match-count]");
+const onlineLibraryRetryButton = document.querySelector("[data-online-library-retry]");
 const onlineLibraryLoadButton = document.querySelector("[data-online-library-load]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
 const onlineLibraryDisks = document.querySelector("[data-online-library-disks]");
@@ -1669,39 +1670,42 @@ async function initialiseOnlineLibrary() {
   } catch (_) { /* Optional direct-file catalogue may be empty. */ }
 
   let packed = [];
+  let packedCatalogueError = null;
   try {
     const response = await fetch(PACK_CATALOG_URL, {
       cache: "no-store", credentials: "same-origin",
     });
-    if (response.ok) {
-      const data = parsePackedCatalog(await response.json());
-      // Never show launch buttons for a partially uploaded pack collection.
-      // A failed HEAD leaves the public catalogue hidden until all packs arrive.
-      const available = await Promise.all(data.packs.map(async (pack) => {
-        const head = await fetch(PACK_ROOT + pack.file, {
-          method: "HEAD", cache: "no-store", credentials: "same-origin",
-        });
-        if (!head.ok || /text\/html/i.test(head.headers.get("content-type") || "")) return false;
-        const reported = Number(head.headers.get("content-length") || 0);
-        return !reported || reported === pack.bytes;
-      }));
-      if (available.every(Boolean)) {
-        // CCG-approved direct game uploads win over matching packed titles.
-        // This also prevents duplicates if an older pack includes those disks.
-        const directGameKeys = new Set(regular.map((entry) =>
-          `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
-        packed = data.entries.filter((entry) =>
-          !directGameKeys.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
-      }
-    }
-  } catch (_) { /* Keep the existing C64 upload controls working when packs are absent. */ }
+    if (!response.ok) throw new Error(`Blast catalogue HTTP ${response.status}`);
+    const data = parsePackedCatalog(await response.json());
+    // Do not make the entire 1,878-title library depend on eleven simultaneous
+    // HEAD requests. Some hosts/CDNs reject HEAD or report transformed lengths
+    // even while a normal GET succeeds. The catalogue is already validated at
+    // publication, and EACH downloaded pack and PRG is independently SHA-256
+    // checked by loadPackedGameBytes before it can reach the emulator.
+    const directGameKeys = new Set(regular.map((entry) =>
+      `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+    packed = data.entries.filter((entry) =>
+      !directGameKeys.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
+  } catch (error) {
+    packedCatalogueError = error;
+    // Do not silently report only "5 READY" with no indication that the
+    // additional C64 games failed to appear.
+    console.warn("[ccg-c64] Blast catalogue unavailable:", error);
+  }
 
   onlineLibraryEntries = [...regular, ...packed];
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
-  onlineLibraryStatus.textContent = onlineLibraryEntries.length
-    ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
+  onlineLibraryStatus.textContent = packedCatalogueError
+    ? `${regular.length.toLocaleString("en-GB")} READY · BLAST UNAVAILABLE`
+    : onlineLibraryEntries.length
+      ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
+  if (packedCatalogueError && onlineLibraryCount) {
+    onlineLibraryCount.textContent =
+      "Additional game catalogue unavailable. Check connection and retry.";
+  }
+  if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden = !packedCatalogueError;
   updateSelectedLibraryGame();
 }
 
@@ -1931,6 +1935,7 @@ mediaDropzone?.addEventListener("drop", async (event) => {
   await queueMediaFile(file, { freshBoot: true });
 });
 
+onlineLibraryRetryButton?.addEventListener("click", () => { void initialiseOnlineLibrary(); });
 onlineLibrarySearch?.addEventListener("input", () => {
   // Any edit invalidates the previous choice. The LOAD GAME button must not
   // accidentally start an old selection when the visible query has changed.

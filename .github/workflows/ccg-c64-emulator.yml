@@ -44,6 +44,9 @@ jobs:
       - name: Verify explicit select-then-LOAD GAME interaction
         run: node tests/ccg-c64-library-select-load.test.mjs
 
+      - name: Verify 1883-game Blast catalogue startup without HEAD
+        run: node tests/ccg-c64-library-startup.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
