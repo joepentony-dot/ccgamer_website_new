@@ -89,6 +89,32 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
 
+// The same searchable game library belongs immediately below the C64 display
+// on phones. Keep its original position and all existing listeners on desktop.
+const libraryDesktopAnchor = document.createComment("Desktop C64 game library");
+if (onlineLibraryPanel?.parentNode) {
+  onlineLibraryPanel.parentNode.insertBefore(libraryDesktopAnchor, onlineLibraryPanel);
+}
+const phoneLibraryLayout = window.matchMedia(
+  "(max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px)"
+);
+function arrangePhoneLibrary() {
+  if (!screenStage || !onlineLibraryPanel || !controlsDeck) return;
+  const consolePanel = screenStage.closest(".ccg-c64-console");
+  if (phoneLibraryLayout.matches && consolePanel) {
+    if (onlineLibraryPanel.parentNode !== consolePanel) {
+      screenStage.insertAdjacentElement("afterend", onlineLibraryPanel);
+    }
+  } else if (libraryDesktopAnchor.parentNode &&
+             onlineLibraryPanel.parentNode !== controlsDeck) {
+    libraryDesktopAnchor.parentNode.insertBefore(
+      onlineLibraryPanel, libraryDesktopAnchor.nextSibling
+    );
+  }
+}
+arrangePhoneLibrary();
+phoneLibraryLayout.addEventListener("change", arrangePhoneLibrary);
+
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
 // Keep a little time for rendering, real keyboard events and browser accessibility.

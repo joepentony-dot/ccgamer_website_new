@@ -2019,6 +2019,47 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   color: #e0d7ff;
 }
 
+/* Mobile player flow: C64 display -> game search/select/LOAD -> controls.
+   The DOM is moved by app.js; this affects no desktop elements. */
+@media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .ccg-c64-console > .ccg-c64-panel--library {
+    width: 100%;
+    min-width: 0;
+    margin: 0.45rem 0 0;
+    padding: 0.55rem;
+    border-radius: 8px;
+    grid-area: auto;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library[hidden] {
+    display: none !important;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library.is-suggesting {
+    position: relative;
+    z-index: 90;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library input[type="search"] {
+    min-height: 46px;
+    font-size: 16px;
+  }
+  /* The old named grid has an empty library row after the panel moves. */
+  .ccg-c64-control-stack,
+  .ccg-c64-control-stack.has-online-library {
+    grid-template-areas: none;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ccg-c64-control-stack > .ccg-c64-panel {
+    grid-area: auto;
+    grid-row: auto;
+  }
+  .ccg-c64-console > .ccg-c64-screen-foot,
+  .ccg-c64-console > .ccg-c64-drop-hint {
+    display: none;
+  }
+  .ccg-c64-console:fullscreen > .ccg-c64-panel--library {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
