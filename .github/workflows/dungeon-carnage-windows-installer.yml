@@ -17,8 +17,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  stage-offline-game:
+    name: Stage qualified standalone gameplay on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify canonical standalone game
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/dungeon-carnage-windows-game"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --output "$output" --source-sha "$GITHUB_SHA"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "$output"
+          test -s "$output/assets/THIRD-PARTY-ART-CREDITS.md"
+          test -s "$output/release-manifest.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-game-staged
+          path: ${{ runner.temp }}/dungeon-carnage-windows-game/
+          if-no-files-found: error
+          retention-days: 3
+
   windows-preview:
     name: Build installer and portable EXE (unsigned, test only)
+    needs: stage-offline-game
     runs-on: windows-latest
     timeout-minutes: 50
     env:
@@ -41,15 +67,17 @@ jobs:
           node --test desktop/dungeon-carnage/windows/path-guard.test.cjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Stage canonical verified offline game
+      - name: Download same-commit Linux verified game
+        uses: actions/download-artifact@v4
+        with:
+          name: dungeon-game-staged
+          path: desktop/dungeon-carnage/windows/game
+      - name: Verify Windows staging boundary
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
           $output = 'desktop/dungeon-carnage/windows/game'
-          node scripts/build-c64-dungeon-carnage-itch-package.mjs --output $output --source-sha $env:GITHUB_SHA
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify $output
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (!(Test-Path "$output/index.html")) { throw 'Missing game entry' }
           if (!(Test-Path "$output/assets/THIRD-PARTY-ART-CREDITS.md")) { throw 'Missing art provenance' }
           if (!(Test-Path "$output/release-manifest.json")) { throw 'Missing integrity manifest' }
           if (Test-Path "$output/js/ccg-supabase-config.js") { throw 'Supabase client leaked into desktop release' }
