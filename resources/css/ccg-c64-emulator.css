@@ -1866,7 +1866,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     width: 100%;
     padding: 0;
   }
-  .ccg-c64-console:fullscreen .ccg-c64-screen-bezel { width: min(100%, 100dvh * 384 / 272); max-width: 100%; }
+  .ccg-c64-console:fullscreen .ccg-c64-screen-bezel { width: 100%; max-width: 100%; }
   .ccg-c64-console:fullscreen .ccg-c64-screen-foot,
   .ccg-c64-console:fullscreen .ccg-c64-stage-note { display: none; }
   .ccg-c64-console:fullscreen .ccg-c64-touch-controls {
@@ -1882,7 +1882,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-screen-stage { min-height: 0; }
   .ccg-c64-console:fullscreen { overflow-y: auto; }
   .ccg-c64-console:fullscreen .ccg-c64-screen-bezel {
-    width: min(100%, 72dvh * 384 / 272);
+    width: min(100%, 110dvh);
   }
   .ccg-c64-console:fullscreen .ccg-c64-touch-controls {
     flex: 0 0 auto;
@@ -1904,7 +1904,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-screen-stage { height: auto; min-height: 0; }
   .ccg-c64-touch-controls { display: flex; justify-content: space-around; }
   .ccg-c64-console:fullscreen .ccg-c64-screen-bezel {
-    width: min(100%, 62dvh * 384 / 272);
+    width: min(100%, 90dvh);
   }
   .ccg-c64-console:fullscreen .ccg-c64-touch-dpad {
     grid-template-columns: repeat(3, 44px);
