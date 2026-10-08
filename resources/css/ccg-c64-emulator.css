@@ -1020,6 +1020,35 @@ select:disabled {
   letter-spacing: 0.1em;
 }
 
+/* Real C64 function keys for phones (not browser key events).
+   The same matrix bindings as a physical F1/F3/F5/F7 keyboard are used. */
+.ccg-c64-touch-fkeys {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(44px, 1fr));
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.ccg-c64-touch-fkeys button {
+  min-width: 44px;
+  min-height: 48px;
+  padding: 0.3rem;
+  border: 1px solid #7774b9;
+  border-radius: 8px;
+  background: #20234d;
+  color: #f4f0ff;
+  font: 800 0.7rem var(--ccg-font-mono, "Courier New", monospace);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+.ccg-c64-touch-fkeys button.is-pressed,
+.ccg-c64-touch-fkeys button:active {
+  border-color: #dca4ea;
+  background: #703b87;
+}
+
 /* Footer ---------------------------------------------------- */
 
 .ccg-c64-footer {
