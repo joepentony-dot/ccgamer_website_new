@@ -39,7 +39,7 @@ assert(html.includes('id="ccg-rom-set"') && html.includes("multiple"), "Direct m
 assert(html.includes("data-load-any-media"), "A file-first C64 media loader must exist");
 assert(html.includes("data-media-dropzone"), "Drag-and-drop media loading must exist");
 assert(html.includes("data-online-library-search"), "The game library needs a search box");
-assert(html.includes('data-online-library-grid" role="listbox"'),
+assert(html.includes('data-online-library-grid role="listbox"'),
   "Game suggestions must be an accessible listbox rather than a full grid");
 assert(html.includes('role="combobox"') && html.includes('aria-autocomplete="list"') &&
   html.includes('aria-expanded="false"') &&
