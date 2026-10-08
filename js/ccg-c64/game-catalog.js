@@ -82,7 +82,7 @@ export function suggestCatalogGames(entries, query, limit = 8) {
     const title = entry.title.trim().toLocaleLowerCase();
     const index = title.indexOf(text);
     if (index < 0) continue;
-    const rank = index === 0 ? 0 : /[^\\p{L}\\p{N}]/u.test(title.charAt(index - 1)) ? 1 : 2;
+    const rank = index === 0 ? 0 : /[^\p{L}\p{N}]/u.test(title.charAt(index - 1)) ? 1 : 2;
     ranked.push({ entry, rank });
   }
   ranked.sort((a, b) => a.rank - b.rank ||
