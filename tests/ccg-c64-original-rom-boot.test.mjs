@@ -77,10 +77,23 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   assert(machine.ready, "Real machine must initialise");
   const visitedPages = new Map(), visitedPCs = new Map();
   let basicInstructions = 0, pcFC = 0, pcFD = 0, pcEA = 0, pcE4 = 0;
+  let firstTapeWait = null;
   const origClock = machine.cpu.clock;
   machine.cpu.clock = function () {
     if (this.atInstructionBoundary()) {
       const pc = this.pc;
+      if (pc === 0xe4d8 && !firstTapeWait) {
+        firstTapeWait = {
+          frame: Math.floor((machine.busTraceFrame || 0)),
+          sp: this.sp, a: this.a, x: this.x, y: this.y,
+          topStack: Array.from(machine.mem.ram.slice(0x0100 + this.sp + 1, 0x0100 + this.sp + 20))
+            .map(value=>value.toString(16).padStart(2,"0")).join(" "),
+          jiffyAtStart: Array.from(machine.mem.ram.slice(0xa0,0xa3)),
+          lastKey: machine.mem.ram[0x91],
+          keyboardBuffer: machine.mem.ram[0xc6],
+          vicControl: machine.vic2?.regs?.[0x11]
+        };
+      }
       const page = pc >>> 8;
       visitedPages.set(page,(visitedPages.get(page)||0)+1);
       if (pc>=0xA000 && pc<0xC000) basicInstructions++;
@@ -108,7 +121,12 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   if (!found) {
     const ram = machine.mem.ram;
     console.log("BASIC execution statistics", JSON.stringify({
-      basicInstructions,pcFC,pcFD,pcEA,pcE4,
+      basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,
+      currentJiffy:Array.from(machine.mem.ram.slice(0xa0,0xa3)),
+      lastKey:machine.mem.ram[0x91],
+      keyboardBuffer:machine.mem.ram[0xc6],
+      currentCPU:{a:machine.cpu.a,x:machine.cpu.x,y:machine.cpu.y,sp:machine.cpu.sp},
+      screenBaseBank:machine.mem.ram[0x288],
       topPages:[...visitedPages.entries()].sort((a,b)=>b[1]-a[1]).slice(0,16).map(([page,count])=>[page.toString(16),count]),
       e4PCs:[...visitedPCs.entries()].sort((a,b)=>b[1]-a[1]).slice(0,16).map(([pc,count])=>[pc.toString(16),count]),
       irqVector:[machine.mem.ram[0x314],machine.mem.ram[0x315]],
