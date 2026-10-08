@@ -175,11 +175,14 @@ function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
   // Use every available pixel in fullscreen regardless of desktop breakpoints.
   // In the page, mobile layouts still size naturally from the canvas ratio.
-  if (document.fullscreenElement !== screenStage &&
-      document.fullscreenElement !== mobileGameConsole &&
-      !mobileGameConsole?.classList.contains("is-mobile-theater") &&
-      !window.matchMedia?.("(min-width: 960px)")?.matches &&
-      !(hasTouchScreen() && window.matchMedia?.("(orientation: landscape) and (max-width: 959px)")?.matches)) {
+  const immersive = document.fullscreenElement === screenStage ||
+    document.fullscreenElement === mobileGameConsole ||
+    mobileGameConsole?.classList.contains("is-mobile-theater");
+  const compactLandscape = hasTouchScreen() &&
+    window.matchMedia?.("(orientation: landscape) and (max-width: 959px)")?.matches;
+  const desktopFit = !hasTouchScreen() &&
+    window.matchMedia?.("(min-width: 960px)")?.matches;
+  if (!immersive && !compactLandscape && !desktopFit) {
     screenBezel.style.width = "";
     return;
   }
