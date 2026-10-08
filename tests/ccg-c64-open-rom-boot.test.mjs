@@ -34,7 +34,11 @@ for(const entry of catalogue.entries.slice(0,4)){
   const m=new C64Machine();m.loadROMs(roms);
   for(let i=0;i<80;i++)m.runFrame();
   const before=Array.from(m.mem.ram.subarray(0x400,0x7e8)).join(",");
-  m.loadPRG(prg);m.injectRun();
+  m.loadPRG(prg);
+  // Diagnostic: this BASIC stub has SYS(2064); try sending SYS2064
+  // directly instead of asking the replacement BASIC to parse RUN.
+  if (entry.title === "10th Frame") m.injectSys(2064);
+  else m.injectRun();
   for(let i=0;i<125;i++)m.runFrame();
   const after=Array.from(m.mem.ram.subarray(0x400,0x7e8)).join(",");
   console.log("PRG test",entry.title,"prg bytes",prg.length,"start",prg[0]|(prg[1]<<8),
