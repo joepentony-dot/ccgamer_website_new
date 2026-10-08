@@ -1941,6 +1941,93 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-touch-fire { width: 78px; height: 78px; }
 }
 
+/* On-screen C64 F1-F8 for phone gamers. Closed by default, so the
+   joystick and FIRE retain the available gameplay area. The popup overlays
+   controls rather than pushing the C64 image down. */
+.ccg-c64-touch-function-keys { display: none; }
+@media (max-width: 760px), (pointer: coarse) {
+  .ccg-c64-touch-controls {
+    position: relative;
+    flex-wrap: wrap;
+  }
+  .ccg-c64-touch-function-keys {
+    display: block;
+    position: relative;
+    z-index: 32;
+    flex: 1 0 100%;
+    min-width: 0;
+    text-align: right;
+    font-family: var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-touch-function-keys > summary {
+    display: inline-flex;
+    min-height: 44px;
+    min-width: 84px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: 1px solid #555b9d;
+    border-radius: 7px;
+    color: #f4edff;
+    background: #191c43;
+    font-size: 0.68rem;
+    font-weight: 800;
+    cursor: pointer;
+    list-style: none;
+    touch-action: manipulation;
+  }
+  .ccg-c64-touch-function-keys > summary::-webkit-details-marker { display: none; }
+  .ccg-c64-touch-function-keys[open] > summary {
+    background: #4f326f;
+    border-color: #b08be9;
+  }
+  .ccg-c64-touch-function-grid {
+    display: grid;
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 5px);
+    z-index: 33;
+    width: min(244px, calc(100vw - 24px));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.25rem;
+    padding: 0.45rem;
+    border: 1px solid #777ac4;
+    border-radius: 9px;
+    background: #0d1130;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.75);
+  }
+  .ccg-c64-touch-function-grid button {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    border: 1px solid #6469af;
+    border-radius: 5px;
+    color: #fff;
+    background: #242858;
+    font: 800 0.72rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .ccg-c64-touch-function-grid button:active,
+  .ccg-c64-touch-function-grid button.is-pressed {
+    background: #75439d;
+    border-color: #e2b9ff;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-function-keys {
+    flex: 0 0 auto;
+    align-self: center;
+    width: 100%;
+    text-align: center;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-function-grid {
+    right: 50%;
+    transform: translateX(50%);
+    max-width: min(244px, calc(100vw - 24px));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
