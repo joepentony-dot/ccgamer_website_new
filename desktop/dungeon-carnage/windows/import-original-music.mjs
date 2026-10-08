@@ -39,6 +39,19 @@ export function remapMusicUrls(source){
     patched=patched.split(url).join("assets/audio/music/originals/"+category+"/"+name);
   }
   if(patched.includes(REMOTE))throw new Error("Unexpected original soundtrack URL remains");
+  // The guarded R119 preview may override the playlist with bundled WAVs.
+  // When all 16 original MP3s have passed their fingerprints, remove only
+  // that known staging-only WAV override; never edit live website sources.
+  const previewMarker="/* Offline packages must play bundled tracks;";
+  if(patched.includes(previewMarker)){
+    const start=patched.indexOf(previewMarker);
+    const guard=patched.indexOf("if(window.CCGDungeonCarnageItchPackage===true){",start);
+    const end=patched.indexOf("\n}\n",guard);
+    if(guard<start||end<guard)throw new Error("Unrecognised preview WAV-override shape");
+    patched=patched.slice(0,start)+
+      "/* Owner's 16 verified original MP3 tracks now own offline playback. */"+
+      patched.slice(end+2);
+  }
   return patched;
 }
 function sha(data){return crypto.createHash("sha256").update(data).digest("hex")}
