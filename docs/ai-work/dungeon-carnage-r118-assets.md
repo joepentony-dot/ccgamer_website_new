@@ -19,3 +19,9 @@ The October asset intake is PARTIAL, not COMPLETE. KayKit, Dungeons & Pixels, Cr
 The R118 branch diverged from current main (9 commits ahead / 3 behind at the start of this pass). The old R118 Node test required rejected, unlicensed art overrides and needed correction. Exact-head PR Qualification, six Chromium shards, package/site/cache checks, visual scale and deployed acceptance remain outstanding. Do not merge or deploy until all required checks are green on the same reconciled head.
 
 This supplement records the R118 delta without overwriting unrelated items in `docs/ai-work/dungeon-carnage-master-request-audit.md`. The master file itself still requires reconciliation after the draft R118 PR has been qualified.
+
+## 8 October follow-up
+
+- Unverified extended gold-key candidate disabled in `js/asset-overrides.js` and marked inactive in `assets/asset-manifest.json`; original key artwork fallback retained. The binary remains staged for provenance investigation, not approved for release.
+- Prior CI success applied to `780aa634`, not these new commits. Re-run all required qualification checks on the final reconciled branch head before considering merge.
+- No gameplay, collision, room-generation or progression logic changed in this follow-up.
