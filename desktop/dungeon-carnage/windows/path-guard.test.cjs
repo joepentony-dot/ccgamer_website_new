@@ -39,6 +39,8 @@ test("desktop wrapper sandbox, no development console or remote game traffic",()
   assert.match(launcher,/gameServer\.listen\(GAME_PORT,"127\.0\.0\.1",resolve\)/);
   assert.doesNotMatch(launcher,/gameServer\.listen\(0,/,"Random port discards access to local save origin");
   assert.match(launcher,/EADDRINUSE/,"Port conflict must not silently move the game to a different origin");
+  assert.match(launcher,/app\.setPath\("userData",USER_DATA_PATH\)/,"Windows user data must be stable");
+  assert.match(launcher,/session\.defaultSession\.flushStorageData\(\)/,"Closing app must flush pending saves");
   assert.match(launcher,/webRequest\.onBeforeRequest/);
   assert.match(launcher,/parseRange\(req\.headers\.range,stat\.size\)/);
   assert.equal(pkg.build.asar,true);
