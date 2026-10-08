@@ -45,6 +45,9 @@ statusCanvas.width = screen?.width || 384;
 statusCanvas.height = screen?.height || 272;
 const statusCtx = statusCanvas.getContext("2d");
 const fullscreenButton = document.querySelector("[data-fullscreen]");
+const mobileFullscreenButton = document.querySelector("[data-mobile-fullscreen]");
+const mobileFullscreenExit = document.querySelector("[data-mobile-fullscreen-exit]");
+const mobileGameConsole = document.querySelector(".ccg-c64-console");
 const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
@@ -163,11 +166,18 @@ function cycleCrtMode() {
   applyCrtMode();
 }
 
+function hasTouchScreen() {
+  return Boolean(window.matchMedia?.("(pointer: coarse)")?.matches ||
+    (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0));
+}
+
 function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
   // Use every available pixel in fullscreen regardless of desktop breakpoints.
   // In the page, mobile layouts still size naturally from the canvas ratio.
   if (document.fullscreenElement !== screenStage &&
+      document.fullscreenElement !== mobileGameConsole &&
+      !mobileGameConsole?.classList.contains("is-mobile-theater") &&
       !window.matchMedia?.("(min-width: 960px)")?.matches) {
     screenBezel.style.width = "";
     return;
@@ -186,14 +196,19 @@ function fitScreenToStage() {
 function applyScreenSize() {
   workspace?.classList.toggle("is-display-expanded", displayExpanded);
   const strong = sizeButton?.querySelector("strong");
-  if (strong) strong.textContent = displayExpanded ? "NORMAL" : "EXPAND";
-  sizeButton?.setAttribute("aria-pressed", displayExpanded ? "true" : "false");
+  if (strong) strong.textContent = hasTouchScreen()
+    ? "FULL" : displayExpanded ? "NORMAL" : "EXPAND";
+  sizeButton?.setAttribute("aria-pressed", hasTouchScreen() ? "false" : displayExpanded ? "true" : "false");
   fitScreenToStage();
   // Grid reflow can change the stage dimensions after the synchronous measure.
   requestAnimationFrame(fitScreenToStage);
 }
 
 function toggleScreenSize() {
+  if (hasTouchScreen()) {
+    void toggleMobileFullscreen();
+    return;
+  }
   displayExpanded = !displayExpanded;
   localStorage.setItem("ccg.emulator.c64.size", displayExpanded ? "expanded" : "fit");
   applyScreenSize();
@@ -573,11 +588,12 @@ function handleC64Key(event, pressed) {
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
   // Text fields and dropdowns keep their native keyboard, as do ENTER/SPACE
   // for activating a focused button or link. The ROM setup remains modal.
+  const virtualInput = event.ccgVirtual === true;
   const nativeActivation = ["Enter", "NumpadEnter", "Space"].includes(event.code) &&
     (usesNativeKeyboard(event.target) || usesNativeKeyboard(document.activeElement));
-  if (pressed && (setup?.hidden === false ||
+  if (pressed && (setup?.hidden === false || (!virtualInput && (
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
-    nativeActivation)) return;
+    nativeActivation)))) return;
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -1566,11 +1582,27 @@ function selectOnlineLibraryEntry(id) {
   onlineLibraryLoadButton?.focus();
 }
 
+function positionLibrarySuggestions() {
+  if (!onlineLibrarySearch || !onlineLibrarySuggestions || onlineLibrarySuggestions.hidden) return;
+  const rect = onlineLibrarySearch.getBoundingClientRect();
+  const vv = window.visualViewport;
+  const top = vv?.offsetTop ?? 0;
+  const bottom = top + (vv?.height ?? window.innerHeight);
+  const below = Math.max(0, bottom - rect.bottom);
+  const above = Math.max(0, rect.top - top);
+  const flip = below < 210 && above > below;
+  onlineLibrarySuggestions.classList.toggle("is-drop-up", flip);
+  const available = flip ? above : below;
+  onlineLibrarySuggestions.style.setProperty("--ccg-suggest-height",
+    `${Math.max(80, Math.min(320, available - 28))}px`);
+}
+
 function setLibrarySuggestionsOpen(open) {
   const show = Boolean(open && !onlineLibraryLoadingGame &&
     onlineLibraryEntries.length && onlineLibrarySearch?.value.trim());
   if (onlineLibrarySuggestions) onlineLibrarySuggestions.hidden = !show;
   if (onlineLibrarySearch) onlineLibrarySearch.setAttribute("aria-expanded", String(show));
+  if (show) requestAnimationFrame(positionLibrarySuggestions);
   onlineLibraryPanel?.classList.toggle("is-suggesting", show);
   if (!show) {
     activeLibrarySuggestionIndex = -1;
@@ -1750,6 +1782,10 @@ async function loadSelectedLibraryEntry() {
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
       queued ? "GAME STARTED" : pendingMedia ? "ROM SETUP" : "LOAD FAILED";
+    if (queued && hasTouchScreen()) {
+      onlineLibrarySearch?.blur();
+      mobileGameConsole?.scrollIntoView?.({ block: "start", behavior: "smooth" });
+    }
   } catch (error) {
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOAD FAILED";
     if (stageNote) stageNote.textContent = error?.message || "This game could not be started.";
@@ -1793,6 +1829,8 @@ document.addEventListener("visibilitychange", () => {
 });
 
 document.addEventListener("fullscreenchange", () => {
+  syncMobileFullscreenUi();
+  requestAnimationFrame(fitScreenToStage);
   fitScreenToStage();
   if (!running || paused) return;
   lastFrameTime = 0;
@@ -1936,6 +1974,12 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 });
 
 onlineLibraryRetryButton?.addEventListener("click", () => { void initialiseOnlineLibrary(); });
+window.visualViewport?.addEventListener("resize", positionLibrarySuggestions);
+window.visualViewport?.addEventListener("scroll", positionLibrarySuggestions);
+window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
+  positionLibrarySuggestions();
+  fitScreenToStage();
+}));
 onlineLibrarySearch?.addEventListener("input", () => {
   // Any edit invalidates the previous choice. The LOAD GAME button must not
   // accidentally start an old selection when the visible query has changed.
@@ -2105,13 +2149,96 @@ for (const button of document.querySelectorAll("[data-joy-mask]")) {
   button.addEventListener("pointerdown", press);
   button.addEventListener("pointerup", release);
   button.addEventListener("pointercancel", release);
+  button.addEventListener("lostpointercapture", release);
   button.addEventListener("contextmenu", (event) => event.preventDefault());
 }
+
+// On a phone there is no physical C64 keyboard. Route the on-screen keys
+// through the existing CIA key mapping (including shifted even F-keys) and
+// release on pointer cancellation, just like a real keypress.
+for (const button of document.querySelectorAll("[data-c64-virtual-key]")) {
+  const code = button.getAttribute("data-c64-virtual-key");
+  const key = code === "Enter" ? "Enter" : code === "Space" ? " " :
+    code.startsWith("Key") ? code.slice(3).toLowerCase() :
+    code.startsWith("Digit") ? code.slice(5) : code;
+  let down = false;
+  const dispatch = (pressed) => handleC64Key({
+    code, key, ccgVirtual: true, repeat: false,
+    shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
+    target: screen, getModifierState: () => false,
+    preventDefault() {},
+  }, pressed);
+  const release = () => {
+    if (!down) return;
+    down = false;
+    dispatch(false);
+    button.classList.remove("is-pressed");
+  };
+  button.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    if (down) return;
+    down = true;
+    dispatch(true);
+    button.classList.add("is-pressed");
+    try { button.setPointerCapture?.(event.pointerId); } catch {}
+  });
+  button.addEventListener("pointerup", release);
+  button.addEventListener("pointercancel", release);
+  button.addEventListener("lostpointercapture", release);
+  button.addEventListener("click", (event) => {
+    // Keyboard and switch-access activation; pointer input was sent above.
+    if (event.detail !== 0) return;
+    dispatch(true);
+    dispatch(false);
+  });
+  button.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+function syncMobileFullscreenUi() {
+  const immersive = mobileGameConsole?.classList.contains("is-mobile-theater") ||
+    document.fullscreenElement === mobileGameConsole;
+  if (mobileFullscreenExit) mobileFullscreenExit.hidden = !immersive;
+  if (mobileFullscreenButton) mobileFullscreenButton.textContent =
+    immersive ? "EXIT FULLSCREEN" : "PLAY FULLSCREEN";
+  document.body.classList.toggle("ccg-c64-mobile-playing", Boolean(immersive));
+}
+
+async function toggleMobileFullscreen() {
+  if (!mobileGameConsole) return;
+  if (mobileGameConsole.classList.contains("is-mobile-theater")) {
+    mobileGameConsole.classList.remove("is-mobile-theater");
+  } else if (document.fullscreenElement) {
+    await document.exitFullscreen();
+  } else {
+    try {
+      if (!mobileGameConsole.requestFullscreen) throw new Error("Fullscreen API unavailable");
+      await mobileGameConsole.requestFullscreen({ navigationUI: "hide" });
+    } catch {
+      // iPhone Safari and some in-app browsers do not allow element fullscreen.
+      // An in-page immersive mode must retain the joystick and EXIT button.
+      mobileGameConsole.classList.add("is-mobile-theater");
+    }
+  }
+  syncMobileFullscreenUi();
+  requestAnimationFrame(fitScreenToStage);
+}
+mobileFullscreenButton?.addEventListener("click", () => { void toggleMobileFullscreen(); });
+mobileFullscreenExit?.addEventListener("click", () => { void toggleMobileFullscreen(); });
+window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && mobileGameConsole?.classList.contains("is-mobile-theater")) {
+    event.preventDefault();
+    void toggleMobileFullscreen();
+  }
+});
 
 void refreshVaultStatus();
 
 fullscreenButton?.addEventListener("click", async () => {
   if (!screenStage) return;
+  if (hasTouchScreen()) {
+    await toggleMobileFullscreen();
+    return;
+  }
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
     else await screenStage.requestFullscreen({ navigationUI: "hide" });
