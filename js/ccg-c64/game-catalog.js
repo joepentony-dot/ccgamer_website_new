@@ -69,6 +69,27 @@ export function filterCatalog(entries, { query = "", format = "all", letter = "a
   };
 }
 
+// Compact keyboard-friendly suggestions. No catalogue results are shown for
+// an empty query, and only a few options are rendered regardless of catalogue
+// size. Exact title prefixes rank ahead of word starts, then other matches.
+export function suggestCatalogGames(entries, query, limit = 8) {
+  const text = String(query ?? "").trim().toLocaleLowerCase();
+  if (!text) return { games: [], total: 0 };
+  const safeLimit = Number.isInteger(limit) ? Math.max(1, Math.min(20, limit)) : 8;
+  const ranked = [];
+  for (const entry of entries) {
+    if (!entry || typeof entry.title !== "string") continue;
+    const title = entry.title.trim().toLocaleLowerCase();
+    const index = title.indexOf(text);
+    if (index < 0) continue;
+    const rank = index === 0 ? 0 : /[^\\p{L}\\p{N}]/u.test(title.charAt(index - 1)) ? 1 : 2;
+    ranked.push({ entry, rank });
+  }
+  ranked.sort((a, b) => a.rank - b.rank ||
+    a.entry.title.localeCompare(b.entry.title, "en", { sensitivity: "base", numeric: true }));
+  return { total: ranked.length, games: ranked.slice(0, safeLimit).map(({ entry }) => entry) };
+}
+
 async function sha256Hex(bytes) {
   if (!globalThis.crypto?.subtle) {
     throw new Error("Secure browser hashing is required to verify game files.");
