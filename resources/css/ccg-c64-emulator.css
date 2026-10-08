@@ -1933,7 +1933,11 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-panel--library,
   .ccg-c64-panel--quickload,
   .ccg-c64-panel--controls { grid-column: 1 / -1; }
-  .ccg-c64-screen-stage { height: auto; min-height: 0; }
+  .ccg-c64-screen-stage,
+  .ccg-c64-workspace.is-display-expanded .ccg-c64-screen-stage {
+    height: auto;
+    min-height: 0;
+  }
   .ccg-c64-button-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ccg-c64-button-grid button { min-height: 48px; }
   .ccg-c64-media-row button,
