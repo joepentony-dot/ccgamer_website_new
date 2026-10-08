@@ -79,6 +79,7 @@ const context = vm.createContext({
   document: { addEventListener(name, fn) { docListeners[name] = fn; } },
   stageNote: { textContent: "" },
   onlineLibraryPackCache: new Map(),
+  hasTouchScreen() { return false; },
   onlineLibraryDiskIndex: 0,
   activeLibraryEntryId: null,
   pendingMedia: null,
