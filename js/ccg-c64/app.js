@@ -1,5 +1,6 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
 import { readBundledOpenRoms } from "./open-rom-bundle.js";
+import { singleLineSysTarget } from "./prg-autostart.js";
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
@@ -1390,13 +1391,20 @@ async function openMediaBytes(media) {
 
   if (type === "prg") {
     if (bytes.length < 3) throw new Error("That PRG is too small to contain a C64 load address.");
+    // Generic Open ROM BASIC does not parse every proprietary BASIC SYS
+    // expression exactly like Commodore BASIC v2. For an exact single-line
+    // SYS launcher, type an equivalent direct SYS number after loading.
+    // Full original ROM installations retain their ordinary RUN behaviour.
+    const sysTarget = vault.usingBundledOpenRoms()
+      ? singleLineSysTarget(bytes) : null;
     queueAutoStart([
       { ready: true },
       { run: () => {
         machine.loadPRG(bytes);
-        machine.injectRun();
+        if (sysTarget !== null) machine.injectSys(sysTarget);
+        else machine.injectRun();
         if (machineState) machineState.textContent = `PRG AUTO-START // ${name.toUpperCase()}`;
-        if (stageNote) stageNote.textContent = `${name} loaded and RUN was entered automatically.`;
+        if (stageNote) stageNote.textContent = `${name} loaded and ${sysTarget === null ? "RUN" : `SYS ${sysTarget}`} was entered automatically.`;
       } },
     ]);
     screen?.focus();
