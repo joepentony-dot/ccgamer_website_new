@@ -16,8 +16,8 @@ test("the phone search uses the existing C64 game library, not a second selector
   assert(css.includes('.ccg-c64-console:fullscreen > .ccg-c64-panel--library'));
   assert(css.includes('font-size: 16px;'));
   assert(app.includes('vault.importBundle(bundle)'), "The just-merged phone ROM transfer must remain installed");
-  assert(app.includes('data-online-library-load') === false,
-    "The real game LOAD remains owned by the existing DOM, not a duplicated handler");
+  assert.equal((html.match(/data-online-library-load/g) || []).length, 1,
+    "There must be exactly one select-then-LOAD button");
 });
 
 class Element {
