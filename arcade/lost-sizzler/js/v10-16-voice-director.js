@@ -312,6 +312,9 @@
     const priority=Number(opts.priority??44),cooldown=Math.max(0,Number(opts.cooldown??9000)),now=performance.now();
     if(!coolReady(voiceKey,cooldown,now))return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key:voiceKey,reason:"unavailable",at:now};return false}
+    // Never silence an already-playing, approved recording for a dialogue
+    // prompt that has no playable owner clip. Its subtitle remains available.
+    if(!hasApprovedRecording(voiceKey)){state.skipped++;state.lastSkipped={key:voiceKey,reason:"no-approved-recording",at:now};return false}
     if(state.active){
       // Encounter-specific recorded dialogue should take precedence over less
       // important current speech rather than being lost or replayed late.
