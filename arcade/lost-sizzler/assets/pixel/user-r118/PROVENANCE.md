@@ -80,4 +80,11 @@ Release gate unchanged: latest-head qualification, mainline reconciliation and d
 - Runtime: `images.visuals.propBarrel` now draws this licensed 16x16 sprite in the game's unchanged `barrel` decor owner. The old unidentified-rights barrel remains excluded; collision, placement, fire damage and loot handling are unchanged.
 - Regression contract pins the selected path, 16x16 dimensions, licence, curated original tile index and PNG SHA-256. Existing R85 barrel default remains available as an image-load fallback.
 
-**All three selected runtime replacements (Niji key, 0x72 crate and Kenney barrel) are free to use commercially. No paid content has been purchased or introduced.** Current PR still requires exact reconciled-head CI and visual acceptance before release.
+**All selected runtime replacements (Niji key, 0x72 crate, Kenney barrel and 0x72 II column) are free to use commercially. No paid content has been purchased or introduced.** Current PR still requires exact reconciled-head CI and visual acceptance before release.
+
+## R118 verified CC0 stone-column replacement (follow-up)
+
+- Source: 0x72 / Robert Norenberg, [DungeonTileset II v1.7](https://0x72.itch.io/dungeontileset-ii), CC0 1.0, free for commercial use and modification. Owner's original archive `0x72_DungeonTilesetII_v1.7.zip` SHA-256 `a5b23341ebc831d7798bfb9666d864a08c079bb7aed18e3cf023a27d517c1512`.
+- Binary: `0x72_DungeonTilesetII_v1.7/frames/column.png`, 16×48 PNG, SHA-256 `3fb915b96de71b6d939f434124d9c3c27831c54458a5daa5df3f447dd34c8e0e`, Git blob SHA `e152d08950cbf89bbc856544f2a68a7db0901b4f`. Imported unchanged as `assets/pixel/user-r118/cc0-column-0x72-ii.png`; exact byte match checked against the owner's original archive.
+- Runtime only: `images.visuals.propPillar` renders this asset only for existing `pillar` dungeon decorations. Aspect-preserving fitting avoids stretching the tall graphic; a drawn plinth spans most of the original blocking tile so the visual footprint remains apparent. The prior procedural pillar renders if the image is unavailable. No geometry, collision, AI, item or progression edits.
+- R118 regression contract requires the exact dimensions, PNG hash, CC0 attribution record, render owner, proportional fit and visible base. All automation must re-qualify on the newest branch head; the prior green SHA is not a release pass for this change.

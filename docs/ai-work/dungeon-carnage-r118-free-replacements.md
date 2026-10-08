@@ -57,3 +57,7 @@ Recovered original owner archives allowed immediate no-cost binary-backed intake
 - STILL SOURCE-ONLY: Other Kenney tiles, hyprv, DeadlyEssence01, elesrech, .bee and Kettoman files have not been acquired as matching local binary downloads; they have **not been added to runtime**.
 
 Use `assets/pixel/user-r118/PROVENANCE.md` and the R118 test contract for precise file fingerprints. The draft branch remains unmerged and still needs exact-current-head qualification.
+
+## Further source archive substitution — CC0 pillar
+
+The unknown-rights column artwork can now be replaced by the byte-matched original `frames/column.png` from the owner's 0x72 DungeonTileset II v1.7 ZIP (CC0-1.0), now imported as `cc0-column-0x72-ii.png`. Runtime activation is confined to `pillar` decor visuals; the retained plinth indicates its existing blocking tile. Do not substitute the old unverified `Dungeon tileset(1).zip` artwork or treat this single pillar as completion of the remaining unpaid-pack search.
