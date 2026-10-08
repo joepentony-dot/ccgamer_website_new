@@ -81,10 +81,15 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   const eaInstr = new Map(), eaClrRows = new Map(), sampleY = [];
   let firstBasicEntry = null, firstEaLoop = null, firstScreenWrite = null;
   const sampledCycles = [];
+  const screenClearCalls = [], basicColdCalls = [], screenOutputCalls = [];
+  const stackSnapshot = (cpu) => ({frame:frames,pc:cpu.pc.toString(16),a:cpu.a,x:cpu.x,y:cpu.y,sp:cpu.sp,stack:Array.from(machine.mem.ram.slice(0x100+cpu.sp+1, 0x100+Math.min(0xff,cpu.sp+13))).map(n=>n.toString(16).padStart(2,'0'))});
   const origClock = machine.cpu.clock;
   machine.cpu.clock = function () {
     if (this.atInstructionBoundary()) {
       const pc = this.pc;
+      if(pc===0xe544 && screenClearCalls.length<16) screenClearCalls.push(stackSnapshot(this));
+      if(pc===0xa67a && basicColdCalls.length<16) basicColdCalls.push(stackSnapshot(this));
+      if(pc===0xe716 && screenOutputCalls.length<16) screenOutputCalls.push(stackSnapshot(this));
       if (pc === 0xe4d8 && !firstTapeWait) {
         firstTapeWait = {
           frame: Math.floor((machine.busTraceFrame || 0)),
@@ -139,6 +144,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
     const ram = machine.mem.ram;
     console.log("BASIC execution statistics", JSON.stringify({
       basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,firstBasicEntry,firstEaLoop,firstScreenWrite,
+      screenClearCalls,basicColdCalls,screenOutputCalls,
       eaInstr:[...eaInstr.entries()].sort((a,b)=>b[1]-a[1]).slice(0,45).map(([pc,count])=>[pc.toString(16),count]),
       eaClrRows:[...eaClrRows.entries()].sort((a,b)=>a[0]-b[0]),
       sampleY,
