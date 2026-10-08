@@ -66,6 +66,7 @@ jobs:
           node tests/dungeon-carnage-r119-offline-goblin.test.mjs
           node tests/dungeon-carnage-r119-sanctuary-spacing.test.mjs
           node arcade/lost-sizzler/tests/v10-42-r119-recorded-voice-queue.mjs
+          node tests/dungeon-carnage-recorded-voice-coverage-audit.mjs
           node tests/dungeon-member-playtester-admin.test.mjs
           node tests/dungeon-tester-code-gate.test.mjs
           node tests/play-games-maintenance.test.mjs
