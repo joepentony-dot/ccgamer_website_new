@@ -53,7 +53,8 @@ test("a truncated or substituted ROM can never replace the user's existing bank"
   await assert.rejects(fetchVerifiedHostedROMs({
     fetchImpl: async url => {
       const spec = HOSTED_C64_ROMS.find(entry => url.endsWith(entry.file));
-      const bytes = files[spec.key].slice();
+      // Node Buffer.slice() aliases the source: clone before corrupting a test response.
+      const bytes = Buffer.from(files[spec.key]);
       if (spec.key === "basic") bytes[0] ^= 0xff;
       return { ok: true, arrayBuffer: async () => bytes };
     }, digestImpl,
