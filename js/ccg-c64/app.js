@@ -1156,8 +1156,19 @@ for (const button of document.querySelectorAll("[data-open-setup]")) {
 document.querySelector("[data-clear-roms]")?.addEventListener("click", () => {
   if (!window.confirm("Clear the locally stored C64 ROMs from this browser?")) return;
   if (running) powerOff();
-  render(vault.clear());
-  showSetup();
+  vault.clear();
+  try {
+    vault.useBundledOpenRoms(readBundledOpenRoms());
+  } catch (error) {
+    console.warn("[ccg-c64] Could not restore open-source fallback:", error);
+  }
+  render(vault.snapshot());
+  if (vault.snapshot().allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
+    initialPowerOn = powerOn();
+    hideSetup();
+  } else {
+    showSetup();
+  }
 });
 
 for (const input of document.querySelectorAll("[data-rom-input]")) {
@@ -1168,6 +1179,7 @@ for (const input of document.querySelectorAll("[data-rom-input]")) {
     if (!key || !file) return;
 
     try {
+      if (running && vault.usingBundledOpenRoms() && REQUIRED_ROM_KEYS.includes(key)) powerOff();
       await vault.installFile(key, file);
       render(vault.snapshot());
     } catch (error) {
@@ -1183,6 +1195,8 @@ if (romSetInput) {
     if (!files.length) return;
 
     const found = pickRomFiles(files);
+    if (running && vault.usingBundledOpenRoms() &&
+        REQUIRED_ROM_KEYS.some(key => found[key])) powerOff();
     const loaded = [];
     const unresolved = [];
 
@@ -1212,6 +1226,8 @@ closeSetupButton?.addEventListener("click", hideSetup);
 finishSetup?.addEventListener("click", async () => {
   if (!vault.snapshot().allRequiredReady) return;
   hideSetup();
+  if (!running && initialPowerOn) await initialPowerOn;
+  if (!running) await powerOn();
 
   if (pendingMedia) {
     const media = pendingMedia;
