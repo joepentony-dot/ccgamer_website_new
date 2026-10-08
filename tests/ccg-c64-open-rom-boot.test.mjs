@@ -49,6 +49,10 @@ for(const entry of catalogue.entries.slice(0,4)){
       .map(v => v>=1&&v<=26?String.fromCharCode(v+64):v===32?" ":v===46?".":"_").join("");
   });
   console.log("AFTER LOAD "+entry.title+":", JSON.stringify(screenRows));
+  if (entry.title === "10th Frame") {
+    assert(!screenRows.some(row=>row.includes("SYNTAX ERROR")),
+      "Direct SYS must not fall back to an Open ROM BASIC syntax error");
+  }
   assert.equal(m.ready,true,"CPU must remain active after game load");
 }
 console.log("Open ROM representative PRG probes completed");
