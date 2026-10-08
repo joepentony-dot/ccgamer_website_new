@@ -222,7 +222,14 @@ window.CCGAI=(()=>{
     if(retreatAndRestore(e,seen,host,map,hooks,world))return true;
     let changed=support(e,host,dt,hooks);
     if(kind(e)==="treasure"){
-      e.escapeMs=(e.escapeMs||22000)-dt;if(e.escapeMs<=0){e.alive=false;e.treasureGoblinEscaped=true;hooks.notice?.("<strong>TREASURE GOBLIN ESCAPED.</strong> Somewhere, an excellent chest is laughing at you.","search",e);return true}
+      if(seen&&!e.treasureGoblinSpotted){
+        e.treasureGoblinSpotted=true;
+        hooks.notice?.("<strong>TREASURE GOBLIN SPOTTED.</strong> Catch it before it escapes!","alert",e);
+      }
+      if(e.treasureGoblinSpotted){
+        e.escapeMs=(Number.isFinite(e.escapeMs)?e.escapeMs:22000)-dt;
+        if(e.escapeMs<=0){e.alive=false;e.treasureGoblinEscaped=true;hooks.notice?.("<strong>TREASURE GOBLIN ESCAPED.</strong> The loot is gone.","search",e);return true}
+      }
       if(seen&&e.moveCooldown<=0){const opts=DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy,dx,dy,d:Math.hypot(e.x+dx-seen.x,e.y+dy-seen.y)})).filter(q=>passable(e,host,map,q.x,q.y,world)).sort((a,b)=>b.d-a.d);if(opts[0]){e.x=opts[0].x;e.y=opts[0].y;e.facing={x:opts[0].dx,y:opts[0].dy};e.moveCooldown=C.enemy.chaseStep.treasure;return true}}
       if(e.moveCooldown<=0){const moved=randomStep(e,host,map,world);e.moveCooldown=700;return moved}return false;
     }
