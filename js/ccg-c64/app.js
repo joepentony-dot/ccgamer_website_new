@@ -86,6 +86,29 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
 
+// Move the existing library immediately under the C64 display on phones.
+// Its original DOM position and listeners remain intact for desktop.
+const libraryDesktopPosition = document.createComment("CCG desktop game library position");
+if (onlineLibraryPanel?.parentNode) {
+  onlineLibraryPanel.parentNode.insertBefore(libraryDesktopPosition, onlineLibraryPanel);
+}
+const mobileLibraryViewport = window.matchMedia(
+  "(max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px)"
+);
+function positionMobileGameLibrary() {
+  if (!onlineLibraryPanel || !screenStage || !controlsDeck) return;
+  const consolePanel = screenStage.closest(".ccg-c64-console");
+  if (mobileLibraryViewport.matches && consolePanel) {
+    if (onlineLibraryPanel.parentNode !== consolePanel) {
+      screenStage.insertAdjacentElement("afterend", onlineLibraryPanel);
+    }
+  } else if (libraryDesktopPosition.parentNode && onlineLibraryPanel.parentNode !== controlsDeck) {
+    libraryDesktopPosition.parentNode.insertBefore(onlineLibraryPanel, libraryDesktopPosition.nextSibling);
+  }
+}
+positionMobileGameLibrary();
+mobileLibraryViewport.addEventListener("change", positionMobileGameLibrary);
+
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
 // Keep a little time for rendering, real keyboard events and browser accessibility.
@@ -1578,11 +1601,26 @@ function selectOnlineLibraryEntry(id) {
   onlineLibraryLoadButton?.focus();
 }
 
+function positionLibrarySuggestions() {
+  if (!onlineLibrarySearch || !onlineLibrarySuggestions || onlineLibrarySuggestions.hidden) return;
+  const rect = onlineLibrarySearch.getBoundingClientRect();
+  const viewport = window.visualViewport;
+  const top = viewport?.offsetTop ?? 0;
+  const bottom = top + (viewport?.height ?? window.innerHeight);
+  const spaceBelow = Math.max(0, bottom - rect.bottom);
+  const spaceAbove = Math.max(0, rect.top - top);
+  const flip = spaceBelow < 210 && spaceAbove > spaceBelow;
+  onlineLibrarySuggestions.classList.toggle("is-drop-up", flip);
+  onlineLibrarySuggestions.style.setProperty("--ccg-suggest-height",
+    `${Math.max(80, Math.min(320, (flip ? spaceAbove : spaceBelow) - 28))}px`);
+}
+
 function setLibrarySuggestionsOpen(open) {
   const show = Boolean(open && !onlineLibraryLoadingGame &&
     onlineLibraryEntries.length && onlineLibrarySearch?.value.trim());
   if (onlineLibrarySuggestions) onlineLibrarySuggestions.hidden = !show;
   if (onlineLibrarySearch) onlineLibrarySearch.setAttribute("aria-expanded", String(show));
+  if (show) requestAnimationFrame(positionLibrarySuggestions);
   onlineLibraryPanel?.classList.toggle("is-suggesting", show);
   if (!show) {
     activeLibrarySuggestionIndex = -1;
@@ -1762,6 +1800,10 @@ async function loadSelectedLibraryEntry() {
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
       queued ? "GAME STARTED" : pendingMedia ? "ROM SETUP" : "LOAD FAILED";
+    if (queued && mobileLibraryViewport.matches) {
+      onlineLibrarySearch?.blur();
+      screenStage?.scrollIntoView?.({ block: "start", behavior: "smooth" });
+    }
   } catch (error) {
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOAD FAILED";
     if (stageNote) stageNote.textContent = error?.message || "This game could not be started.";
@@ -1948,6 +1990,13 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 });
 
 onlineLibraryRetryButton?.addEventListener("click", () => { void initialiseOnlineLibrary(); });
+window.visualViewport?.addEventListener("resize", positionLibrarySuggestions);
+window.visualViewport?.addEventListener("scroll", positionLibrarySuggestions);
+window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
+  positionMobileGameLibrary();
+  positionLibrarySuggestions();
+  fitScreenToStage();
+}));
 onlineLibrarySearch?.addEventListener("input", () => {
   // Any edit invalidates the previous choice. The LOAD GAME button must not
   // accidentally start an old selection when the visible query has changed.
