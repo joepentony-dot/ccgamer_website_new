@@ -48,6 +48,12 @@ const lostSizzlerPixelAssets=(()=>{
       make(selected("torchSconceFrame2")),
       make(selected("torchSconceFrame3"))
     ],
+    creditCoinFrames:[
+      make(selected("creditCoinFrame0")),
+      make(selected("creditCoinFrame1")),
+      make(selected("creditCoinFrame2")),
+      make(selected("creditCoinFrame3"))
+    ],
     enemyAtlasA:make("assets/pixel/enemy-atlas-standard-a-v10-35.png"),
     enemyAtlasB:make("assets/pixel/enemy-atlas-standard-b-v10-35.png"),
     environmentAtlas:make("assets/pixel/environment-atlas-v10-35.png"),
@@ -442,6 +448,19 @@ function itemInfo(i){if(i.kind==="loot")return["★",i.loot?.rarity==="GOLD MEDA
 function drawPickupGlyph(i,col){
   ctx.save();ctx.lineWidth=1.5;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineJoin="round";ctx.lineCap="round";
   const k=i.kind,custom=pickupOverrideImages.get(k);
+  // R118: source-audited 16x16 Pixel_Poem gold-score coins animate inside
+  // the existing pickup footprint. Never change the pickup value or collision.
+  // If any frame cannot load, the established R85 SVG remains the fallback.
+  const creditFrames=lostSizzlerPixelAssets.creditCoinFrames||[];
+  if(k==="credits"&&creditFrames.length===4&&creditFrames.every(image=>image?.complete&&image.naturalWidth===16&&image.naturalHeight===16)){
+    const tick=Math.floor(performance.now()/120);
+    ctx.save();ctx.imageSmoothingEnabled=false;
+    for(const [offset,x,y,size] of [[2,-7,6,16],[1,7,6,16],[0,0,-4,21]]){
+      const coin=creditFrames[(tick+offset)%creditFrames.length];
+      ctx.drawImage(coin,Math.round(x-size/2),Math.round(y-size/2),size,size);
+    }
+    ctx.restore();ctx.restore();return
+  }
   if(custom?.complete&&custom.naturalWidth){ctx.drawImage(custom,-15,-15,30,30);ctx.restore();return}
   if(k==="exitSigil"){
     const sigilArt=lostSizzlerPixelAssets.sigils;
