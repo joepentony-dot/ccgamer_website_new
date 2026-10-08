@@ -62,6 +62,10 @@ jobs:
       - name: Verify mobile game search directly below the C64 display
         run: node --test tests/ccg-c64-mobile-library-priority.test.mjs
 
+      - name: Render C64 mobile and desktop game library in Chromium
+        timeout-minutes: 5
+        run: node tests/ccg-c64-mobile-library-rendered.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
