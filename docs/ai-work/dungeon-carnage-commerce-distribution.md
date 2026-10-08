@@ -68,3 +68,13 @@ Public itch.io page creation, artifact upload/publication, browser launch verifi
 - 2026-09-18: #2180 and #2182 introduced later qualified runtime changes, superseding the previous package candidate. Workflow run `35390021405` produced artifact `10566350206` / SHA-256 `147782cb38cab392817b1bd4670f670ca0bcc2d51264839378d50bf229237be6` from exact #2182 head `dfce128672fd90c8edf7900b3bac3a14095e58fe`. Public itch.io publication remains blocked on live production smoke plus hands-on acceptance.
 
 - 2026-09-18: Production smoke run `35397906108` passed on deployed current main `66c2aa8441fc67961e1b3fa116da6537ea41002b`, verifying live `V10.42 r34 / 20260918r34`, `version.json`, stale-browser update prompting, feedback validation and Weekly Vault read/backend projection. Deployment, live navigation and push Load Safety also passed. External publication is now blocked only by the documented hands-on acceptance gates.
+
+
+## New Windows installer successor — 8 October 2026
+
+- **Active desktop packaging candidate:** draft PR #2617 / `feature/dungeon-carnage-windows-installer-20261008`, branched from then-current main `806d2031ba3eae275b0bc0b2c91e26c6bcbf0158`. Do not confuse this with any obsolete #1984–#1996 packaging branch.
+- Isolated `desktop/dungeon-carnage/windows` Electron wrapper uses the canonical standalone itch.io stage, ASAR archive, custom candidate icon, NSIS installer and portable EXE for Windows x64; no live site, member access, backend, intro stack or canonical game runtime changes.
+- Dedicated two-stage Windows CI first stages and verifies the canonical game on Linux (required because the existing itch package builder uses a POSIX-only `import.meta.url.pathname` conversion), then builds the branded Windows executables and checks the ASAR, provenance, SHA-256 and asset-policy boundary.
+- Packaged desktop gameplay is served over a read-only, tokenized localhost listener restricted to `127.0.0.1`; the sandboxed Electron renderer has no Node integration, external gameplay network traffic is blocked and byte-range access supports recorded voice sprites. ASAR conceals loose files but does not encrypt them or supply DRM.
+- **Release gate unchanged:** original 16 uploaded MP3 soundtrack assets are unavailable under Supabase cached-egress restriction; recording/event mapping, real Windows run/installation/uninstallation/save/audio acceptance, final approved icon, commercial artwork verification and optional code signing remain pending. CI preview artifact is not a paid release; never publish automatically.
+- Reconcile PR #2617 against current main before any merge, and require exact-head green Windows/required site checks plus owner acceptance.
