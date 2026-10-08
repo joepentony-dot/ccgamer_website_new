@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-10-05T19:07:56.035Z",
+  "updatedAt": "2026-10-08T17:32:48.060Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -1188,6 +1188,15 @@
       "uploadDate": "2023-01-24T18:30:08Z",
       "duration": "PT5M11S",
       "thumbnailUrl": "https://i.ytimg.com/vi/9So_ZnRKzd0/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "9Wlh2bEIRWM": {
+      "title": "Fire King Commodore 64 – More Than Just Another Gauntlet Clone?",
+      "description": "🕹️ Fire King (1989) – Commodore 64 Gauntlet-Style Fantasy Action RPG\nReleased in 1989, Fire King is a Commodore 64 action RPG developed by Australian studio Micro Forté and published by Strategic Studies Group (SSG). Following their earlier game Demon Stalkers, it takes the familiar top-down action of Gauntlet and expands it into a much larger fantasy adventure filled with towns, forests, dungeons, puzzles and plenty of monsters.\n\n🌐 Full game info, manual & download:\n👉 https://www.cheekycommodoregamer.co.uk/games/fire-king\n\nWith the Fire King dead and the four elemental mages scattered, the land surrounding Stormhaven Bay has fallen into danger. Choose from six adventurers, each with different strengths, armour and magical abilities, then set out to explore the countryside, uncover clues and confront the creatures threatening the kingdom.\n\nCombat revolves around your trusty crossbow, but there's considerably more to Fire King than blasting monsters. Magical scrolls, bombs, enchanted bells, special boots and hidden passages all play a part, while shops let you buy and sell useful equipment. With only seven inventory pockets, deciding what to carry becomes important, particularly when certain enemies can steal your belongings. There's also simultaneous two-player gameplay, complete with friendly fire.\n\nThe original package was unusually elaborate, containing two disks, an illustrated fold-out album, maps and the Oracle's Mystical Cypher code wheel. The wheel was used to decipher passwords between adventures, adding another layer to the game's puzzles. The Commodore 64 credits also include a special thanks to legendary SID composer Rob Hubbard for assistance with the music driver, although the game's music was credited to John De Margheriti and Michael Storey.\n\nContemporary British reviews were rather mixed, with The Games Machine awarding Fire King 61% in November 1989 and Your Commodore giving it 50% in September. In this retrospective, I revisit the combat, exploration, occasionally frustrating navigation and wonderfully ridiculous character biographies to see whether those scores were a little harsh. Any game featuring a bloke who supposedly sold the king's palace to three different hunchbacks deserves another look.\n\n💬 Did you play Fire King on the Commodore 64, and did you ever manage to finish it? How do you think it compares with Demon Stalkers and Gauntlet?\n\n▶️ PLAYLISTS\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSey1UCrWYRwQj5Ds42h36jbc\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewKgne5leO5YRPdffYn3dlX\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewKKFoYc4LxezNZP8uKcqVM\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#fireking #commodore64 #c64 #microforte #retrogaming",
+      "uploadDate": "2026-10-08T17:30:25Z",
+      "duration": "PT9M2S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/9Wlh2bEIRWM/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
