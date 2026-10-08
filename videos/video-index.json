@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 701,
-    "gameVideos": 664,
+    "total": 702,
+    "gameVideos": 665,
     "retroVideos": 37,
-    "c64GameVideos": 561,
+    "c64GameVideos": 562,
     "amigaGameVideos": 103
   },
   "items": [
@@ -9157,6 +9157,19 @@
       "platform": "Commodore 64",
       "year": 1986,
       "publisher": "Firebird"
+    },
+    {
+      "id": "9Wlh2bEIRWM",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Fire King",
+      "description": "Fire King is a 1989 Commodore 64 fantasy action adventure from Australian developer Micro Forté, published by Strategic Studies Group. Following Demon Stalkers, it takes Gauntlet-style cros…",
+      "url": "/games/fire-king/",
+      "thumbnail": "https://i.ytimg.com/vi/9Wlh2bEIRWM/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1989,
+      "publisher": "Strategic Studies Group"
     }
   ]
 }

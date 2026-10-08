@@ -286,6 +286,17 @@
     "url": "/games/developers/mastertronic/"
   },
   {
+    "name": "Micro Forté",
+    "slug": "micro-forte",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "indexable": false,
+    "url": "/games/developers/micro-forte/"
+  },
+  {
     "name": "Mogul Communications",
     "slug": "mogul-communications",
     "count": 1,
