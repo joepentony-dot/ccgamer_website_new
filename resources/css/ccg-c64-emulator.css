@@ -1784,6 +1784,331 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   border-radius: 0;
 }
 
+/* Mobile gaming: keep the desktop Omega layout untouched on mouse devices.
+   Phones/tablets need thumb-sized controls, iOS-safe input zoom, and an
+   immersive game area that includes joystick and essential C64 keys. */
+.ccg-c64-mobile-actions,
+.ccg-c64-mobile-keyboard,
+.ccg-c64-mobile-exit { display: none; }
+.ccg-c64-mobile-exit[hidden] { display: none !important; }
+.ccg-c64-library-suggestions.is-drop-up {
+  top: auto;
+  bottom: calc(100% + 5px);
+}
+#ccg-c64-library-options {
+  max-height: min(var(--ccg-suggest-height, 320px), 42dvh);
+}
+
+@media (pointer: coarse) {
+  .ccg-c64-mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.45rem 0 0;
+  }
+  .ccg-c64-mobile-actions button {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(213, 104, 219, 0.68);
+    border-radius: 8px;
+    background: #47245f;
+    color: #fff;
+    font: 800 0.72rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: manipulation;
+  }
+  .ccg-c64-mobile-actions span {
+    color: var(--emu-muted);
+    font-size: 0.7rem;
+    line-height: 1.4;
+  }
+  .ccg-c64-touch-controls {
+    display: flex;
+    margin-top: 0.4rem;
+  }
+  .ccg-c64-touch-dpad button {
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 8px;
+    font-size: 1.05rem;
+  }
+  .ccg-c64-touch-fire {
+    min-width: 76px;
+    min-height: 76px;
+  }
+  .ccg-c64-mobile-keyboard {
+    display: block;
+    margin-top: 0.4rem;
+    padding: 0.45rem;
+    border: 1px solid var(--emu-line-soft);
+    border-radius: 9px;
+    background: rgba(10, 12, 34, 0.82);
+  }
+  .ccg-c64-mobile-main-keys {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+  .ccg-c64-mobile-keyboard button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.4rem 0.22rem;
+    border: 1px solid #535791;
+    border-radius: 7px;
+    background: #191b43;
+    color: #f1f0ff;
+    font: 800 0.69rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .ccg-c64-mobile-keyboard button.is-pressed,
+  .ccg-c64-touch-dpad button:active,
+  .ccg-c64-touch-fire:active {
+    background: #6f4195;
+    border-color: #d6a4f2;
+  }
+  .ccg-c64-mobile-extra-keys { margin-top: 0.35rem; }
+  .ccg-c64-mobile-extra-keys summary {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    border: 1px solid #4a4e8c;
+    border-radius: 7px;
+    color: #d5d2ff;
+    background: rgba(77, 69, 149, 0.18);
+    font: 800 0.72rem var(--ccg-font-mono, "Courier New", monospace);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .ccg-c64-mobile-extra-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.32rem;
+    margin-top: 0.4rem;
+  }
+  .ccg-c64-screen-foot span:last-child { display: none; }
+  .ccg-c64-drop-hint { display: none; }
+  .ccg-c64-library-search-wrap > input[type="search"] {
+    min-height: 48px;
+    font-size: 16px; /* Prevent Safari focusing the search from zooming the page. */
+    line-height: 1.25;
+  }
+  .ccg-c64-library-confirm {
+    min-height: 46px;
+    flex-wrap: wrap;
+  }
+  .ccg-c64-library-load,
+  .ccg-c64-library-retry,
+  .ccg-c64-library-row select,
+  .ccg-c64-library-row button,
+  .ccg-c64-joystick-swap,
+  .ccg-c64-file-trigger,
+  .ccg-c64-setup__exit,
+  .ccg-c64-ready-button {
+    min-height: 44px;
+  }
+  .ccg-c64-library-option { min-height: 48px; }
+  .ccg-c64-library-result-count { font-size: 0.67rem; }
+  .ccg-c64-panel-title em { font-size: 0.6rem; }
+  .ccg-c64-screen-stage { overscroll-behavior: contain; }
+}
+
+@media (pointer: coarse) and (max-width: 1199px) {
+  .ccg-c64-workspace {
+    display: block;
+    width: calc(100% - 0.65rem);
+    max-width: 960px;
+  }
+  .ccg-c64-console { margin-bottom: 0.65rem; }
+  .ccg-c64-control-stack,
+  .ccg-c64-control-stack.has-online-library {
+    grid-template-areas: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ccg-c64-control-stack > .ccg-c64-panel {
+    grid-area: auto;
+    grid-row: auto;
+  }
+  .ccg-c64-panel--library,
+  .ccg-c64-panel--quickload,
+  .ccg-c64-panel--controls { grid-column: 1 / -1; }
+  .ccg-c64-screen-stage { height: auto; min-height: 0; }
+  .ccg-c64-button-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ccg-c64-button-grid button { min-height: 48px; }
+  .ccg-c64-media-row button,
+  .ccg-c64-vault-row button,
+  .ccg-c64-vault-row select { min-height: 44px; }
+}
+
+@media (pointer: coarse) and (max-width: 760px) {
+  .ccg-c64-control-stack,
+  .ccg-c64-control-stack.has-online-library {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ccg-c64-control-stack > .ccg-c64-panel { grid-column: 1; }
+  .ccg-c64-screen-bezel { max-width: 100%; }
+  .ccg-c64-screen-foot { font-size: 0.57rem; }
+  .ccg-c64-screen-foot span:nth-child(2) { display: inline; }
+  .ccg-c64-library-row { grid-template-columns: minmax(0,1fr) minmax(100px,auto); }
+  .ccg-c64-setup__dialog {
+    padding-bottom: max(0.7rem, env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+}
+
+@media (pointer: coarse) and (max-width: 360px) {
+  .ccg-c64-mobile-actions { flex-wrap: wrap; }
+  .ccg-c64-touch-controls { padding: 0.4rem; gap: 0.3rem; }
+  .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(3, 40px);
+    gap: 0.16rem;
+  }
+  .ccg-c64-touch-fire { width: 76px; height: 76px; }
+  .ccg-c64-mobile-keyboard button { font-size: 0.61rem; }
+  .ccg-c64-topnav button { padding-inline: 0.35rem; }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 959px) {
+  .ccg-c64-screen-stage { height: max(220px, min(58dvh, 430px)); }
+  .ccg-c64-screen-bezel { max-width: 100%; }
+  .ccg-c64-mobile-actions span { font-size: 0.6rem; }
+}
+
+/* Native Fullscreen targets the console on touch devices. On platforms such
+   as iPhone Safari that reject element fullscreen, an in-page fixed overlay
+   uses the same layout and retains a visible EXIT button. */
+.ccg-c64-console:fullscreen,
+.ccg-c64-console.is-mobile-theater {
+  position: fixed;
+  z-index: 220;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: max(0.4rem, env(safe-area-inset-top))
+    max(0.35rem, env(safe-area-inset-right))
+    max(0.4rem, env(safe-area-inset-bottom))
+    max(0.35rem, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  border: 0;
+  border-radius: 0;
+  background: #03040e;
+  box-shadow: none;
+  overflow: hidden;
+}
+.ccg-c64-console:fullscreen .ccg-c64-display-head,
+.ccg-c64-console.is-mobile-theater .ccg-c64-display-head,
+.ccg-c64-console:fullscreen .ccg-c64-mobile-actions,
+.ccg-c64-console.is-mobile-theater .ccg-c64-mobile-actions,
+.ccg-c64-console:fullscreen .ccg-c64-screen-foot,
+.ccg-c64-console.is-mobile-theater .ccg-c64-screen-foot,
+.ccg-c64-console:fullscreen .ccg-c64-stage-note,
+.ccg-c64-console.is-mobile-theater .ccg-c64-stage-note { display: none; }
+
+.ccg-c64-console:fullscreen .ccg-c64-screen-stage,
+.ccg-c64-console.is-mobile-theater .ccg-c64-screen-stage {
+  flex: 1 1 auto;
+  min-height: 100px;
+  height: auto;
+  padding: 0.25rem;
+  overflow: hidden;
+}
+.ccg-c64-console:fullscreen .ccg-c64-touch-controls,
+.ccg-c64-console.is-mobile-theater .ccg-c64-touch-controls {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-around;
+  margin: 0;
+  padding: 0.3rem;
+}
+.ccg-c64-console:fullscreen .ccg-c64-mobile-keyboard,
+.ccg-c64-console.is-mobile-theater .ccg-c64-mobile-keyboard {
+  display: block;
+  flex: 0 0 auto;
+  max-height: min(34dvh, 275px);
+  margin: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.ccg-c64-console:fullscreen .ccg-c64-mobile-exit,
+.ccg-c64-console.is-mobile-theater .ccg-c64-mobile-exit {
+  display: block;
+  position: absolute;
+  z-index: 10;
+  top: max(0.45rem, env(safe-area-inset-top));
+  right: max(0.45rem, env(safe-area-inset-right));
+  min-height: 44px;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #7771bc;
+  border-radius: 8px;
+  background: rgba(10, 11, 35, 0.9);
+  color: #fff;
+  font: 800 0.63rem var(--ccg-font-mono, "Courier New", monospace);
+  touch-action: manipulation;
+}
+body.ccg-c64-mobile-playing { overflow: hidden !important; }
+.ccg-c64-console.is-mobile-theater .ccg-c64-screen-bezel,
+.ccg-c64-console:fullscreen .ccg-c64-screen-bezel {
+  max-width: 100%;
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 600px) {
+  .ccg-c64-console:fullscreen,
+  .ccg-c64-console.is-mobile-theater {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(142px, 170px);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "game pad" "keys pad";
+    column-gap: 0.35rem;
+    row-gap: 0.25rem;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-screen-stage,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-screen-stage {
+    grid-area: game;
+    min-width: 0;
+    min-height: 90px;
+    height: 100%;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-controls,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-controls {
+    grid-area: pad;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    padding: 0.2rem;
+    gap: 0.2rem;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-dpad,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(3, 40px);
+    gap: 0.12rem;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-fire,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-fire {
+    width: 72px;
+    height: 72px;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-mobile-keyboard,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-mobile-keyboard {
+    grid-area: keys;
+    max-height: min(36dvh, 180px);
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-mobile-main-keys button,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-mobile-main-keys button {
+    min-height: 36px;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-mobile-extra-keys summary,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-mobile-extra-keys summary {
+    min-height: 36px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
