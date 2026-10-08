@@ -95,23 +95,22 @@
 
       <section class="ccg-c64-panel ccg-c64-panel--library" hidden aria-label="Searchable C64 game library">
         <header class="ccg-c64-panel-title"><span>••</span><strong>GAME LIBRARY</strong><em data-online-library-status>LOADING</em></header>
-        <div class="ccg-c64-library-toolbar">
-          <input type="search" data-online-library-search aria-label="Search playable C64 games" placeholder="SEARCH GAMES BY TITLE..." autocomplete="off" spellcheck="false">
-          <div class="ccg-c64-library-formats" role="group" aria-label="Filter game media">
-            <button type="button" data-library-format="all" aria-pressed="true">ALL</button>
-            <button type="button" data-library-format="prg" aria-pressed="false">PRG</button>
-            <button type="button" data-library-format="d64" aria-pressed="false">DISK</button>
-            <button type="button" data-library-format="crt" aria-pressed="false">CART</button>
+        <div class="ccg-c64-library-search-wrap" data-library-search-wrap>
+          <input type="search" id="ccg-c64-library-search" data-online-library-search
+            role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
+            aria-controls="ccg-c64-library-options" aria-expanded="false"
+            aria-describedby="ccg-c64-library-search-help"
+            aria-label="Search playable C64 games"
+            placeholder="TYPE A GAME NAME TO SEARCH..."
+            autocomplete="off" spellcheck="false">
+          <div class="ccg-c64-library-suggestions" data-online-library-suggestions hidden>
+            <div id="ccg-c64-library-options" data-online-library-grid role="listbox"
+              aria-label="Matching C64 games"></div>
+            <p class="ccg-c64-library-match-count" data-library-match-count></p>
           </div>
         </div>
-        <div class="ccg-c64-library-letters" data-library-letters role="group" aria-label="Browse C64 games alphabetically"></div>
-        <p class="ccg-c64-library-result-count" data-library-result-count>Find a C64 game to launch.</p>
-        <div class="ccg-c64-game-grid" data-online-library-grid aria-live="polite"></div>
-        <div class="ccg-c64-library-pages" data-library-pages hidden>
-          <button type="button" data-library-previous aria-label="Previous page of games">PREVIOUS</button>
-          <span data-library-page-indicator>PAGE 1 / 1</span>
-          <button type="button" data-library-next aria-label="Next page of games">NEXT</button>
-        </div>
+        <p id="ccg-c64-library-search-help" class="ccg-c64-library-result-count"
+          data-library-result-count role="status" aria-live="polite">Type a game title to see suggestions.</p>
         <div class="ccg-c64-library-row ccg-c64-library-disks" data-online-library-disks hidden>
           <select data-online-library-disk-select aria-label="Choose replacement disk for the current game"></select>
           <button type="button" data-online-library-disk-swap disabled title="Insert another disk without restarting the game">SWAP DISK</button>
