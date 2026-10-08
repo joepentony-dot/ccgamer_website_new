@@ -1,15 +1,5 @@
 {
   "version": 1,
-  "policy": "Only media that Cheeky Commodore Gamer is permitted to redistribute may be listed here.",
-  "entries": [
-    {
-      "id": "ccg-emulator-test-prg",
-      "title": "CCG Emulator Test",
-      "filename": "ccg-emulator-test.prg",
-      "format": "prg",
-      "description": "A tiny CCG-created BASIC program used to verify the Online Library loading path.",
-      "license": "CCG original test media",
-      "dataBase64": "AQghCAoAmSJDQ0cgT05MSU5FIExJQlJBUlkgUkVBRFkiAAAA"
-    }
-  ]
+  "policy": "Only genuinely redistribution-approved game or demo files may be listed. Entries require an explicit licence or written rights permission, approved: true, and a verifiable same-origin media URL. The Online Library panel remains hidden while this list is empty.",
+  "entries": []
 }
