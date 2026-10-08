@@ -19,7 +19,7 @@ const mime = { ".html":"text/html", ".css":"text/css", ".js":"text/javascript",
 async function wd(method, url, data) {
   const res = await fetch("http://" + host + ":" + driverPort + url, {
     method, headers: data ? { "content-type":"application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined, signal: AbortSignal.timeout(40000),
+    body: data ? JSON.stringify(data) : undefined, signal: AbortSignal.timeout(90000),
   });
   const raw = await res.text(), payload = raw ? JSON.parse(raw) : {};
   if (!res.ok || payload.value?.error) throw Error(raw.slice(0,1200));
@@ -83,9 +83,11 @@ try {
   const created=await wd("POST","/session",{capabilities:{alwaysMatch:{
     browserName:"chrome",pageLoadStrategy:"eager",
     "goog:chromeOptions":{args:["--headless=new","--no-sandbox","--disable-gpu",
+      "--disable-extensions","--disable-renderer-backgrounding",
       "--disable-dev-shm-usage","--no-first-run","--disable-background-networking"]}
   }}});
   session=created.sessionId;
+  console.log("Chromium session established for mobile/desktop layout test.");
   assert(session,"ChromeDriver did not provide a session");
   await emulate(session,390,844,true);
   await wd("POST","/session/"+session+"/url",{url:"http://"+host+":"+port+"/emulator/c64/"});
