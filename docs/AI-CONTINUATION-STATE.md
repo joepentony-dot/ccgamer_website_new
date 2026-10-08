@@ -966,3 +966,9 @@ In the affected workstream file, record: date/time; branch/PR and base; verified
 - The latest E11 feature head already includes the touch-drag sprite editor correction, nested-launch focus-return preservation and pending modem dial cancellation on hang-up.
 - Protected intro/home/game-source files remain outside the E11 change set.
 - Merge only after the rebuilt exact head is current with main and its full qualification is green.
+
+## C64 Dungeon Carnage R119 desktop consolidation — 8 October 2026
+
+- Latest integration vehicle: **draft PR #2624** / `integration/dungeon-r119-gameplay-audio-20261008`, based on `main` `f6043cb372dbdf6ecc438547ea92b24135c609e0`. Combines standalone #2610 (Goblin/offline fallback), #2614 (voiceover prompts) and #2617 (Windows installer), with a zero-boundary Goblin timer fix, into a candidate to run **one** exact-head full qualification matrix.
+- Preserve old draft PRs unmerged; no production website, Supabase member data, admin publishing, protected intro or existing public release path was changed. Windows Setup and Portable still preview only; original 16 owner-uploaded MP3 audio files remain restricted and missing.
+- Guarded 16-track original-MP3 import verifies original Storage ETag and sizes, but cannot run until assets are recovered. Owner manual Windows/Solo/save/recorded-voice/Goblin acceptance is not yet complete. Canonical details and checks: `docs/ai-work/dungeon-carnage-r119-windows-integration.md`.
