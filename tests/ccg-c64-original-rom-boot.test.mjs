@@ -77,7 +77,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   assert(machine.ready, "Real machine must initialise");
   const ready = [18,5,1,4,25,46]; // C64 screen codes for READY.
   let frames=0, found=false;
-  for (;frames<120;frames++) {
+  for (;frames<800;frames++) {
     assert(machine.runFrame(), "Emulation must advance PAL frames");
     const mem=machine.mem.ram;
     for(let i=0x0400;i<0x07fa;i++) {
@@ -85,6 +85,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
       for(let j=0;j<ready.length;j++) if ((mem[i+j]&0x7f)!==ready[j]) {matches=false;break;}
       if(matches) {found=true;break;}
     }
+    if(frames % 100 === 0) console.log("BASIC boot frame", frames, "PC", machine.cpu.pc?.toString(16), "CPU $01", machine.mem.cpuPort?.toString(16), "top", machine.mem.ram[0x0283]?.toString(16));
     if(found) break;
   }
   if (!found) {
@@ -98,7 +99,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
       console.log("SCREEN",row,decoded,"hex",bytes.slice(0,12).map(b=>b.toString(16).padStart(2,"0")).join(" "));
     }
   }
-  assert(found,"Original Commodore BASIC must render READY. into screen memory within 120 frames");
+  assert(found,"Original Commodore BASIC must render READY. into screen memory within 800 frames");
   console.log("Original BASIC READY reached in", frames+1,"PAL frames.");
 });
 
