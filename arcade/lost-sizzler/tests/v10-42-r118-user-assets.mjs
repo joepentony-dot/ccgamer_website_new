@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import crypto from "node:crypto";
 import vm from "node:vm";
 
 const root=new URL("../",import.meta.url);
@@ -18,8 +19,9 @@ assert(visuals&&items,"R118 override object must parse and expose image owners")
 const folder="assets/pixel/user-r118/";
 const active=[0,1,2,3].map(i=>"wall-torch-"+i+".png");
 const key="extended-gold-key.png";
+const crate="cc0-crate-0x72-ii.png";
 const staged=["floor-stairs.png","monster-dark-knight.png","monster-imp.png","monster-necromancer.png","plague-doc.png","prop-boxes-stacked.png","prop-column.png","pumpkin-dude.png","skeleton-move.png","vampire-move.png"];
-for(const name of [...active,key,...staged]){
+for(const name of [...active,key,crate,...staged]){
   const bytes=fs.readFileSync(new URL(folder+name,root));
   assert(bytes.length>100,"Missing/empty CC0 candidate: "+name);
   assert(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),"Invalid PNG signature: "+name);
@@ -27,7 +29,28 @@ for(const name of [...active,key,...staged]){
   assert(w>0&&h>0&&w<=512&&h<=512,"R118 PNG exceeds candidate size envelope: "+name+" "+w+"x"+h);
 }
 for(let i=0;i<4;i++)assert(visuals["torchSconceFrame"+i]===folder+active[i],"Verified CC0 wall torch frame not selected: "+i);
-assert(items.key===folder+key,"R118 key candidate must remain explicitly catalogued pending source-lineage acceptance");
+assert(items.key===folder+key,"Only source-matched Niji CC0 key may override the established key pickup");
+assert(visuals.propCrate===folder+crate,"Verified 0x72 DungeonTileset II crate must replace R85 default crate");
+const sha256=bytes=>crypto.createHash("sha256").update(bytes).digest("hex");
+const keyBytes=fs.readFileSync(new URL(folder+key,root));
+const crateBytes=fs.readFileSync(new URL(folder+crate,root));
+assert(keyBytes.readUInt32BE(16)===16&&keyBytes.readUInt32BE(20)===16,"Gold key must remain exactly 16x16");
+assert(crateBytes.readUInt32BE(16)===16&&crateBytes.readUInt32BE(20)===24,"New 0x72 crate must remain exactly 16x24");
+assert(sha256(keyBytes)==="3d7b2609fa1c00fa9b679799cc549058106eb03a37fbf14434111723f21d1f01","Gold key binary no longer matches provenanced atlas extraction");
+assert(sha256(crateBytes)==="e602c9be47378d5f4bd767cb7c5487928d289c887131ccd9dd5a9ebd69570db8","Crate binary no longer matches original 0x72 II archive");
+const fitStart=render.indexOf("function dungeonAssetFitRect(");
+const fitEnd=render.indexOf("\nfunction drawFurniture()",fitStart);
+assert(fitStart>=0&&fitEnd>fitStart,"Missing proportional artwork fitting function");
+const fitSandbox={window:{}};
+vm.runInNewContext(render.slice(fitStart,fitEnd)+"\nwindow.fit=dungeonAssetFitRect;",fitSandbox,{timeout:1000});
+const fit=fitSandbox.window.fit;
+const torchFit=fit({naturalWidth:14,naturalHeight:23},0,0,32,36);
+const crateFit=fit({naturalWidth:16,naturalHeight:24},0,0,38,38,true);
+assert(torchFit.w===22&&torchFit.h===36&&torchFit.x===5,"14x23 R118 torch must not be stretched to a square-ish viewport");
+assert(crateFit.w===25&&crateFit.h===38&&crateFit.y===0,"16x24 imported crate must remain proportional and bottom aligned");
+assert(render.includes("dungeonAssetFitRect(frame,q.x+4,q.y+2,C.tile-8,C.tile-4)"),"Animated torches must use proportional fit");
+assert(render.includes("dungeonAssetFitRect(propArt,q.x+1,q.y+1,C.tile-2,C.tile-2,true)"),"Props must use proportional bottom aligned fit");
+
 for(let i=1;i<=8;i++)assert(visuals["floorTile"+i]===null,"Unknown-rights R118 floor override must remain disabled: "+i);
 for(let i=0;i<4;i++)assert(visuals["spikeTrapFrame"+i]===null,"Unknown-rights R118 spike art must remain disabled: "+i);
 for(let i=0;i<5;i++)assert(visuals["fireplaceFrame"+i]===null,"Unknown-rights R118 fireplace art must remain disabled: "+i);
@@ -36,7 +59,13 @@ assert(items.armour==="assets/pixel/visual-overhaul/r85/pickup-armour.svg","Lice
 const catalogue=manifest.images?.visualOverhaul?.r118LicensedCC0;
 assert(catalogue?.license==="CC0-1.0","R118 catalogue must record CC0 licence");
 assert(JSON.stringify(catalogue.activeWallTorchFrames)===JSON.stringify(active.map(x=>folder+x)),"R118 wall torch manifest differs from runtime");
-assert(catalogue.activeKeyCandidate===folder+key,"R118 key candidate not catalogued");
+assert(catalogue.activeKeyCandidate===folder+key,"Provenanced Niji key must remain active in manifest");
+assert(catalogue.activeCrateSprite===folder+crate,"Source-verified 0x72 crate must be recorded in manifest");
+assert(catalogue.sources?.activeKeyCandidate?.cropPixelSHA256==="580342c73c73cef8dd79c2a3c99094435fc6f2e724f2ac7fac96bb6ff8f207be","Niji key pixel match must remain documented");
+assert(JSON.stringify(catalogue.sources?.activeKeyCandidate?.atlasCropPx)===JSON.stringify([320,320,16,16]),"Niji key crop identity is missing");
+assert(catalogue.sources?.activeCrateSprite?.sourcePNG_SHA256===sha256(crateBytes),"Crate provenance digest does not match source sprite");
+assert(catalogue.sources.activeKeyCandidate.license==="CC0-1.0"&&catalogue.sources.activeCrateSprite.license==="CC0-1.0","Active added artwork must retain commercial CC0 source records");
+
 assert(JSON.stringify(catalogue.stagedNotWired)===JSON.stringify(staged.map(x=>folder+x)),"R118 staged manifest differs from files");
 const excluded=["floor-1.png","floor-2.png","floor-3.png","floor-4.png","prop-barrel.png","prop-bookcase.png","pickup-armour.png","spike-inactive.png","spike-active.png","fireplace.gif","torch-sconce.gif",...Array.from({length:5},(_,i)=>"fireplace-"+i+".png"),...Array.from({length:4},(_,i)=>"torch-sconce-"+i+".png")];
 for(const name of excluded)assert(!fs.existsSync(new URL(folder+name,root)),"Unknown-rights source still bundled: "+name);
@@ -44,4 +73,4 @@ assert(render.includes('make(selected("floorTile1","assets/pixel/visual-overhaul
 assert(render.includes('make(selected("spikeTrapFrame0","assets/pixel/visual-overhaul/0x72/spikes-f0.png"))'),"Licensed trap fallback must remain");
 assert(render.includes('d.type==="fireplace"')&&render.includes('d.type==="candleSconce"'),"Procedural fireplace/sconce fallback must remain");
 assert(provenance.includes("CC0-1.0")&&provenance.includes("no README, author credit or licence file"),"Provenance must distinguish licensed and excluded sources");
-console.log("R118 licensed asset staging and unknown-rights exclusion contracts passed.");
+console.log("R118 CC0 key, crate, torches, pixel aspect fit and unknown-rights exclusion contracts passed.");
