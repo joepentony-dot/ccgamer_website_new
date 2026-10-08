@@ -42,7 +42,7 @@ for(const floor of [1,3,9,15]){
     assert.equal(sanctuaries.length,2,
       "Normal seeded floors retain both refuges: "+seed);
     assert.deepEqual([...world.sanctuaryRooms].sort((a,b)=>a-b),
-      sanctuaries.map(r=>r.id).sort((a,b)=>a-b),
+      Array.from(sanctuaries,r=>r.id).sort((a,b)=>a-b),
       "Room flags and sanctuary ID list must agree: "+seed);
     const [first,second]=sanctuaries;
     const gap=edgeGap(first,second),hops=graphHops(world,first,second);
