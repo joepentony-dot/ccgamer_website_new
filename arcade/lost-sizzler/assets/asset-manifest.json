@@ -85,12 +85,10 @@
           "assets/pixel/user-r118/plague-doc.png",
           "assets/pixel/user-r118/prop-boxes-stacked.png",
           "assets/pixel/user-r118/prop-column.png",
-          "assets/pixel/user-r118/pumpkin-dude.png",
-          "assets/pixel/user-r118/skeleton-move.png",
-          "assets/pixel/user-r118/vampire-move.png"
+          "assets/pixel/user-r118/pumpkin-dude.png"
         ],
         "provenance": "assets/pixel/user-r118/PROVENANCE.md",
-        "status": "Four original 0x72 wall-torch frames, Niji key, 0x72 II crate/column, Kenney barrel active. Two further staged 0x72 character sheets now traced to exact original CC0 pixels but intentionally not runtime-bound. Other candidates remain staged.",
+        "status": "Four 0x72 CC0 torch animation frames, Niji CC0 key, 0x72 II crate/column, Kenney barrel active. Eight other 0x72 CC0 graphics staged, including two eight-frame character atlases with exact source verified; Pixel_Poem movement sheets moved to their separate non-CC0 licence category.",
         "excludedUnknownRightsArchive": "Dungeon tileset(1).zip",
         "activeCrateSprite": "assets/pixel/user-r118/cc0-crate-0x72-ii.png",
         "sources": {
@@ -230,7 +228,7 @@
         }
       },
       "r118FreeCommercial": {
-        "status": "Animated Pixel_Poem v2.0 free-commercial 16x16 gold-score coin graphics enabled; fallback to established R85 gold SVG. Separate from the R118 CC0-only group.",
+        "status": "Pixel_Poem free-commercial coins active with R85 gold SVG fallback. Two original free commercial-use movement sheets correctly classified and staged only. Other CC0 imagery catalogued separately.",
         "creator": "Pixel_Poem",
         "source": "https://pixel-poem.itch.io/dungeon-assetpuck",
         "license": "Creator permits free and commercial game projects and modification; no standalone asset-pack distribution.",
@@ -260,7 +258,45 @@
           16,
           16
         ],
-        "note": "The fourth original frame is byte-identical to the second and reuses it instead of bundling a duplicate. Visual pickup art only; all existing item logic unchanged. R85 gold SVG remains the runtime fallback."
+        "note": "The fourth original frame is byte-identical to the second and reuses it instead of bundling a duplicate. Visual pickup art only; all existing item logic unchanged. R85 gold SVG remains the runtime fallback.",
+        "stagedNotWired": [
+          "assets/pixel/user-r118/skeleton-move.png",
+          "assets/pixel/user-r118/vampire-move.png"
+        ],
+        "stagedOriginalAnimationSheets": {
+          "skeleton-move.png": {
+            "originalArchive": "Enemy_Animations_Set.zip",
+            "archiveSHA256": "4e17a982f71f688de7c86c9fa5feb63ad2709c649281b62b46cf6ce3de900dcd",
+            "sourceMember": "Enemy_Animations_Set/enemies-skeleton1_movement.png",
+            "originalPNG_SHA256": "11ad26aaeda377fdad64aa6127e575900fd01198a36dbda6fdb19020d4d85469",
+            "dimensionsPx": [
+              320,
+              32
+            ],
+            "frameDimensionsPx": [
+              32,
+              32
+            ],
+            "frameCount": 10,
+            "status": "Byte-identical to free Pixel_Poem commercial-use archive; staged only, not runtime wired."
+          },
+          "vampire-move.png": {
+            "originalArchive": "Enemy_Animations_Set.zip",
+            "archiveSHA256": "4e17a982f71f688de7c86c9fa5feb63ad2709c649281b62b46cf6ce3de900dcd",
+            "sourceMember": "Enemy_Animations_Set/enemies-vampire_movement.png",
+            "originalPNG_SHA256": "d84afcd7da250d7f890a325970e145967168703bcb3bb6e45b2f5a7e75fc903d",
+            "dimensionsPx": [
+              256,
+              32
+            ],
+            "frameDimensionsPx": [
+              32,
+              32
+            ],
+            "frameCount": 8,
+            "status": "Byte-identical to free Pixel_Poem commercial-use archive; staged only, not runtime wired."
+          }
+        }
       }
     },
     "visualOverhaulProvenance": "assets/pixel/user-r118/PROVENANCE.md"
