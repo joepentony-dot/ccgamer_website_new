@@ -17,6 +17,9 @@ const {
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+// Fire King only: archived source links, not a copied scan or an unlicensed embed.
+const FIRE_KING_CYPHER_SECTION = "        <section id=\"fire-king-cypher\" class=\"game-section ccg-game-resource-section ccg-game-resource-section--reading\" aria-labelledby=\"fire-king-cypher-heading\">\n            <h2 id=\"fire-king-cypher-heading\" class=\"game-section__title\">The Oracle&#39;s Mystical Cypher — Fire King Code Wheel</h2>\n            <p class=\"ccg-section__intro\">Fire King asks for three clue words at the end of each mini-adventure. On the original wheel, align the first word on the outer disc with the second word on the inner disc, then read the password through the window named by the third word.</p>\n            <div class=\"game-downloads\">\n                <a class=\"game-pill\" href=\"https://www.c64copyprotection.com/wp-content/uploads/2018/04/Fire-King-Codewheel.pdf\" target=\"_blank\" rel=\"noopener noreferrer external\">View original two-piece code wheel (PDF)</a>\n                <a class=\"game-pill\" href=\"https://www.lemon64.com/labs/fireking.html\" target=\"_blank\" rel=\"noopener noreferrer external\">Try Lemon64 password lookup (external)</a>\n            </div>\n            <p class=\"ccg-section__intro\">Original wheel archived by C64 Copy Protection, with thanks to Craig A. Ernster. These links open external websites; no third-party scans are stored on Cheeky Commodore Gamer.</p>\n        </section>";
+
 function readArg(argv, name, fallback) {
   const index = argv.indexOf(name);
   if (index === -1 || !argv[index + 1]) return fallback;
@@ -359,7 +362,15 @@ function buildCanonicalPage(shell, game) {
   );
   html = removeStaticNotFoundCopy(html);
   html = prefillStaticContent(html, game, title, imagePath, imageMetadata);
+  html = addFireKingCypherResources(html, slug);
   return normalizeGeneratedWhitespace(html);
+}
+
+function addFireKingCypherResources(html, slug) {
+  if (slug !== "fire-king" || html.includes('id="fire-king-cypher"')) return html;
+  const anchor = "<section id=\"game-reading-section\" class=\"game-section ccg-game-resource-section ccg-game-resource-section--reading\"";
+  if (!html.includes(anchor)) throw new Error("Fire King code wheel insertion anchor missing.");
+  return html.replace(anchor, FIRE_KING_CYPHER_SECTION + "\n" + anchor);
 }
 
 function buildFlatRedirectStub(game) {

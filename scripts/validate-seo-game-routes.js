@@ -157,6 +157,13 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
 
   const expectedTitleText = title.toLowerCase() === "smash t.v." ? "Smash TV" : title;
   const normalizedHero = decodeHtmlEntities(heroTitle).trim();
+  if (slug === "fire-king") {
+    expect(html.includes('id="fire-king-cypher"'), `${rel}: Oracle code-wheel resource section is missing.`, errors);
+    expect(html.includes("https://www.c64copyprotection.com/wp-content/uploads/2018/04/Fire-King-Codewheel.pdf"), `${rel}: original wheel PDF link is missing.`, errors);
+    expect(html.includes("https://www.lemon64.com/labs/fireking.html"), `${rel}: external password lookup link is missing.`, errors);
+  } else {
+    expect(!html.includes('id="fire-king-cypher"'), `${rel}: Fire King resource leaked to another game.`, errors);
+  }
   expect(normalizedHero === expectedTitleText, `${rel}: static H1 does not match game title.`, errors);
 }
 
