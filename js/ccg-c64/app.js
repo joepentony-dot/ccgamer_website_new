@@ -2108,6 +2108,85 @@ for (const button of document.querySelectorAll("[data-joy-mask]")) {
   button.addEventListener("contextmenu", (event) => event.preventDefault());
 }
 
+// On-screen F1-F8 uses the same keyboard matrix mapping as physical keys.
+// Even numbered function keys automatically press the shifted C64 key.
+// Hold for as long as the finger is down; an immediate click pulse may be
+// missed by the 50 Hz keyboard scanner on a real emulated C64.
+const touchFunctionKeys = document.querySelector("[data-touch-function-keys]");
+const heldTouchFunctionKeys = new Map();
+
+function setTouchFunctionKey(code, pressed) {
+  if (!/^F[1-8]$/.test(code)) return;
+  const button = document.querySelector(`[data-c64-touch-fkey="${code}"]`);
+  if (!button) return;
+  if (pressed && heldTouchFunctionKeys.has(code)) return;
+  if (!pressed && !heldTouchFunctionKeys.has(code)) return;
+  if (pressed) heldTouchFunctionKeys.set(code, true);
+  else heldTouchFunctionKeys.delete(code);
+  button.classList.toggle("is-pressed", pressed);
+  if (pressed) screen?.focus({ preventScroll: true });
+  handleC64Key({
+    code,
+    key: code,
+    target: screen,
+    shiftKey: false,
+    ctrlKey: false,
+    altKey: false,
+    metaKey: false,
+    repeat: false,
+    preventDefault() {},
+    getModifierState() { return false; },
+  }, pressed);
+}
+
+for (const button of document.querySelectorAll("[data-c64-touch-fkey]")) {
+  const code = button.dataset.c64TouchFkey;
+  let usedKeyboard = false;
+  let usedPointer = false;
+  button.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    if (!running || !machine) return;
+    usedPointer = true;
+    setTouchFunctionKey(code, true);
+    try { button.setPointerCapture?.(event.pointerId); } catch {}
+  });
+  const release = () => setTouchFunctionKey(code, false);
+  button.addEventListener("pointerup", release);
+  button.addEventListener("pointercancel", release);
+  button.addEventListener("lostpointercapture", release);
+  button.addEventListener("keydown", (event) => {
+    if (event.repeat || !["Enter", " "].includes(event.key)) return;
+    event.preventDefault();
+    usedKeyboard = true;
+    setTouchFunctionKey(code, true);
+  });
+  button.addEventListener("keyup", (event) => {
+    if (!["Enter", " "].includes(event.key)) return;
+    event.preventDefault();
+    release();
+  });
+  button.addEventListener("click", (event) => {
+    // Hardware keyboard and pointer already generated their key presses.
+    if (usedPointer || usedKeyboard) {
+      usedPointer = false;
+      usedKeyboard = false;
+      return;
+    }
+    // Assistive technology may dispatch click without pointer/key events.
+    if (!running || !machine || event.detail !== 0) return;
+    setTouchFunctionKey(code, true);
+    window.setTimeout(release, 160);
+  });
+  button.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+function releaseAllTouchFunctionKeys() {
+  for (const code of [...heldTouchFunctionKeys.keys()]) setTouchFunctionKey(code, false);
+}
+touchFunctionKeys?.addEventListener("toggle", () => {
+  if (!touchFunctionKeys.open) releaseAllTouchFunctionKeys();
+});
+window.addEventListener("blur", releaseAllTouchFunctionKeys);
+
 void refreshVaultStatus();
 
 fullscreenButton?.addEventListener("click", async () => {
