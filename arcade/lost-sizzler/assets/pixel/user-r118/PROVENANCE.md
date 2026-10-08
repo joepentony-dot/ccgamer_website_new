@@ -49,3 +49,11 @@ These are licence findings for identified source packs, NOT proof that every bin
 - 2D Pixel Dungeon Asset Pack v2.0 AND Enemy_Animations_Set.zip are free downloads from https://pixel-poem.itch.io/dungeon-assetpuck . Creator explicitly permits free and commercial projects and modifications; no redistribution or resale of standalone asset packs. Animation set creator announcement: https://pixel-poem.itch.io/dungeon-assetpuck/devlog/902754/new-animations-set-for-free . KEEP free versions as candidates, subject to exact file matching and game-scale checks.
 - `2D Dungeon Asset Pack_v5.2.zip` is a PAID tier ($2.75 minimum on creator page); EXCLUDE under no-payments policy.
 - Dungeon Gathering Free Version: original SnowHex page identified as https://snowhex.itch.io/dungeon-gathering ; free vs premium content differs. Precise free-version commercial licence not yet confirmed from its own page and archive; HOLD, do not approve on inference from other SnowHex packs.
+
+## No-payment replacement candidate queue — 8 October 2026
+
+Owner requested replacements for excluded, restricted or paid-only assets. Verified source-page licence + replacement mapping is in `docs/ai-work/dungeon-carnage-r118-free-replacements.md`, and master owner audit status is PARTIAL.
+
+Preferred 16x16 CC0 no-payment sources: Kenney Tiny Dungeon (https://kenney.nl/assets/tiny-dungeon), hyprv Dungeon Pack 16x16 (https://hyprv.itch.io/16x16-dungeon), DeadlyEssence01 Free 2D Dungeon Tileset (https://deadlyessence.itch.io/free-tilesets), and 16x16–32x32 animated monsters from elesrech (https://elesrech.itch.io/pixel-monsters-enemies-asset-pack). Free supplementary CC0 torch and furniture from https://opengameart.org/content/16x16-torch and https://opengameart.org/content/tables-and-misc-props-16x16. Kettoman Free Dungeon Tileset is free for commercial use but restricts standalone asset redistribution: https://kettoman.itch.io/free-pixel-dungeon-tileset-16x16.
+
+These are *source-page commercial-use findings, not imported binaries*. Download/file-hash/individual sprite checks, aspect ratio checks, exact-head tests and separate approved release are required prior to activation. Do not use the paid tier contents, unverified sprites or Minifantasy non-commercial free version. Do not replace existing verified artwork gratuitously.
