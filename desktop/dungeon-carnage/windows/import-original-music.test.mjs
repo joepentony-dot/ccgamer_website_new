@@ -1,5 +1,6 @@
 import {test} from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {TRACKS,remapMusicUrls} from "./import-original-music.mjs";
 
 const base="https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/";
@@ -50,4 +51,15 @@ test("verified originals override R119 preview-only WAV selection if present",()
   assert.doesNotMatch(patched,/preview-only|exploration\.wav|offlineMusic/);
   assert.match(patched,/verified original MP3 tracks now own offline playback/);
   assert.match(patched,/Every enhancement URL inherits/);
+});
+
+test("real game asset catalogue remaps every original track without remote playback",()=>{
+  const actual=fs.readFileSync("arcade/lost-sizzler/js/asset-overrides.js","utf8");
+  const patched=remapMusicUrls(actual);
+  assert.ok(patched!==actual,"Expected real owner soundtrack to be remapped");
+  assert.ok(!patched.includes(base),"No remaining Supabase original-music URLs");
+  for(const [category,name] of TRACKS){
+    assert.ok(patched.includes("assets/audio/music/originals/"+category+"/"+name),
+      "Original must have an actual local runtime reference: "+name);
+  }
 });
