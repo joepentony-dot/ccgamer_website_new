@@ -43,3 +43,9 @@ Policy: NO PAID ASSET ACQUISITIONS. Do not purchase licences or include paid-onl
 - Still pending individual rights and identity: Dungeon Gathering Free Version (SnowHex), Enemy Animations Set, 2D Pixel Dungeon Asset Pack v2.0, other unspecified archives and any source-unmatched sprites. Do not infer licensing from filenames.
 
 These are licence findings for identified source packs, NOT proof that every binary in a prior owner upload matches its source. No additional artwork is activated by this documentation pass.
+
+## Pixel_Poem source confirmation — 8 October 2026
+
+- 2D Pixel Dungeon Asset Pack v2.0 AND Enemy_Animations_Set.zip are free downloads from https://pixel-poem.itch.io/dungeon-assetpuck . Creator explicitly permits free and commercial projects and modifications; no redistribution or resale of standalone asset packs. Animation set creator announcement: https://pixel-poem.itch.io/dungeon-assetpuck/devlog/902754/new-animations-set-for-free . KEEP free versions as candidates, subject to exact file matching and game-scale checks.
+- `2D Dungeon Asset Pack_v5.2.zip` is a PAID tier ($2.75 minimum on creator page); EXCLUDE under no-payments policy.
+- Dungeon Gathering Free Version: original SnowHex page identified as https://snowhex.itch.io/dungeon-gathering ; free vs premium content differs. Precise free-version commercial licence not yet confirmed from its own page and archive; HOLD, do not approve on inference from other SnowHex packs.
