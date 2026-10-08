@@ -67,6 +67,17 @@ The previously uploaded original ZIPs were recovered from the owner's ChatGPT fi
 
 The game renderer now fits non-square sprites **proportionally** within existing draw bounds; the previously selected 14x23 wall-torch frames are not stretched and fallback sprites remain available if images fail to load. R118 Node regression guards now pin the exact PNG hashes, verified original atlas crop metadata, selected overrides and expected proportional output. More expensive/restricted/unknown-rights content remains excluded.
 
-**Uncompleted:** Free Kenney/hyprv/elesrech/DeadlyEssence replacement packs have licence-verified creator pages but were not available as local binary copies in this work environment. They remain **download-and-evaluate candidates**, not silently imported or advertised as integrated. No paid downloads were purchased.
+**Uncompleted:** One free Kenney Tiny Dungeon barrel sprite was subsequently obtained through a publicly documented CC0 mirror and imported with its exact binary fingerprint. Other hyprv, elesrech and DeadlyEssence replacement packs are still **download-and-evaluate candidates**, not silently imported or advertised as integrated. No paid downloads were purchased.
 
 Release gate unchanged: latest-head qualification, mainline reconciliation and deployed visual/manual verification required. Draft PR #2600 must not be merged until those gates pass.
+
+## Kenney Tiny Dungeon no-cost barrel replacement — 8 October 2026
+
+- Original creator: **Kenney**, *Tiny Dungeon 1.0*, source https://kenney.nl/assets/tiny-dungeon, published under CC0 1.0 and free to use commercially without attribution.
+- Binary source: curated public repository https://github.com/selinyilmazz/playable-ad-generator/blob/main/public/assets/packs/tiny-dungeon/objects/barrel.png. Its https://github.com/selinyilmazz/playable-ad-generator/blob/main/public/assets/packs/tiny-dungeon/ATTRIBUTION.md explicitly maps barrel to original tile index `tile_0082.png`, includes the original Kenney `LICENSE.txt` and documents 16x16 sprites.
+- Imported PNG: `kenney-tiny-dungeon-barrel.png` **16x16**, Git blob SHA `78f95bceab167e05e7e058c818b97360868fbdbc`, PNG SHA-256 `2efb31e30cd6f1527329fe5d7704e41c65a8376d498bf93372f46155600420c9`.
+- Mirrors are not substitutes for independent byte matching against Kenney's original release ZIP; that specific binary-to-original verification remains open. This is a source-documented, openly CC0-licensed free candidate, not a paid-tier asset.
+- Runtime: `images.visuals.propBarrel` now draws this licensed 16x16 sprite in the game's unchanged `barrel` decor owner. The old unidentified-rights barrel remains excluded; collision, placement, fire damage and loot handling are unchanged.
+- Regression contract pins the selected path, 16x16 dimensions, licence, curated original tile index and PNG SHA-256. Existing R85 barrel default remains available as an image-load fallback.
+
+**All three selected runtime replacements (Niji key, 0x72 crate and Kenney barrel) are free to use commercially. No paid content has been purchased or introduced.** Current PR still requires exact reconciled-head CI and visual acceptance before release.
