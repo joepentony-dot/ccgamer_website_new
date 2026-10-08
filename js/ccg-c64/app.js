@@ -777,7 +777,7 @@ function setControlState(snapshot) {
   }
 }
 
-function render(snapshot) {
+function render(snapshot, { suppressStatus = false } = {}) {
   document.querySelectorAll("[data-rom-count]").forEach((node) => {
     node.textContent = String(snapshot.requiredReady);
   });
@@ -813,7 +813,7 @@ function render(snapshot) {
   }
 
   setControlState(snapshot);
-  if (!running) drawStatus(snapshot);
+  if (!running && !suppressStatus) drawStatus(snapshot);
 }
 
 function showSetup() {
@@ -2168,7 +2168,9 @@ if (!initial.allRequiredReady) {
   }
 }
 const startupRoms = vault.snapshot();
-render(startupRoms);
+// Start directly on the real VIC-II output. Avoid flashing the old CCG
+// pre-boot placeholder when a usable firmware bank is already present.
+render(startupRoms, { suppressStatus: startupRoms.allRequiredReady });
 if (startupRoms.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
   // Avoid two simultaneous power-on sessions if a game is selected before
   // the automatic READY-screen startup has finished attaching SID audio.
