@@ -243,6 +243,10 @@ async function verify(output){
     }
   }
 
+  const credits=await fs.readFile(path.join(root,"assets","THIRD-PARTY-ART-CREDITS.md"),"utf8");
+  for(const expected of ["0x72","Niji","Kenney","Pixel_Poem","not CC0","commercial games"]){
+    if(!credits.includes(expected))fail("Required R118 third-party art credit or license boundary missing: "+expected);
+  }
   const version=JSON.parse(await fs.readFile(path.join(root,"version.json"),"utf8"));
   if(manifest.build!==version.build||manifest.cacheToken!==version.cacheToken||manifest.releaseVersion!==version.releaseVersion)fail("Manifest/version identity mismatch");
 
