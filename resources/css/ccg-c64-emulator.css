@@ -1941,6 +1941,62 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-touch-fire { width: 78px; height: 78px; }
 }
 
+/* The manual original-ROM configuration is now optional. Keep its dialogue
+   compact and independently scrollable on phones rather than allowing the
+   multi-step form to extend beneath Android/iOS browser navigation bars. */
+@media (max-width: 760px) {
+  .ccg-c64-setup {
+    height: 100dvh;
+    max-height: 100dvh;
+    place-items: center;
+    padding: max(0.35rem, env(safe-area-inset-top))
+      max(0.35rem, env(safe-area-inset-right))
+      max(0.35rem, env(safe-area-inset-bottom))
+      max(0.35rem, env(safe-area-inset-left));
+  }
+  .ccg-c64-setup__dialog {
+    min-width: 0;
+    max-height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.6rem;
+  }
+  .ccg-c64-setup__header {
+    position: sticky;
+    top: -0.6rem;
+    z-index: 2;
+    gap: 0.35rem;
+    padding: 0.4rem 0 0.5rem;
+    background: #0d1029;
+  }
+  .ccg-c64-setup__header h2 { font-size: clamp(0.9rem, 4vw, 1.2rem); }
+  .ccg-c64-setup__exit {
+    min-height: 44px;
+    flex: 0 0 auto;
+    color: #fff;
+    background: #181b41;
+    border: 1px solid #5b619e;
+  }
+  .ccg-c64-setup__steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    align-items: start;
+    align-content: start;
+    gap: 0.4rem;
+  }
+  .ccg-c64-setup-step {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+  .ccg-c64-setup-step__body { padding: 0.5rem; }
+  .ccg-c64-setup-step--final { grid-column: auto; }
+  .ccg-c64-file-trigger, .ccg-c64-ready-button { min-height: 44px; }
+  .ccg-c64-rom-slot { min-height: 62px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
