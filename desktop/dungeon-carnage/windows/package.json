@@ -10,7 +10,8 @@
   },
   "devDependencies": {
     "electron": "44.7.0",
-    "electron-builder": "26.17.0"
+    "electron-builder": "26.17.0",
+    "playwright-core": "1.55.0"
   },
   "build": {
     "appId": "uk.co.cheekycommodoregamer.dungeoncarnage",
