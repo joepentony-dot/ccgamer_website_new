@@ -25,6 +25,8 @@ assert(css.includes("visibility: hidden;") &&
   "Drop hint must be hidden during play and visible only during a drag");
 assert(html.includes("data-joystick-swap"), "Port swapping must have a visible button");
 assert(html.includes("data-joystick-port"), "Port selection must be visible");
+assert(html.includes("data-keyboard-joystick"), "Keyboard joystick switch must be visible");
+assert(css.includes(".ccg-c64-joystick-actions"), "Port and keyboard joystick controls must stay compact");
 assert(html.includes("data-emulator-speed"), "Actual PAL speed must be measurable");
 assert(!html.includes(">SOURCE</a>"), "Prominent source navigation must be omitted");
 assert(html.includes('href="/emulator/c64/legal.html"'), "GPL source access must remain available");
@@ -67,6 +69,15 @@ const context = vm.createContext({
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
   inputStatus: { textContent: "" },
+  keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
+  keyboardPriorityUntil: 0,
+  KEYBOARD_JOYSTICK_MASKS: {
+    ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
+    ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
+    Space: 16, ControlLeft: 16, ControlRight: 16,
+  },
+  performance: { now: () => 1000 },
+  applyJoystickInput() {},
 });
 vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
 function event(code, key, opts = {}) {
@@ -227,9 +238,24 @@ const joystickMachine = {
   _updateLightpen() { joystickUpdates++; },
 };
 const joystickStorage = new Map();
+let timeNow = 5000;
+const keyboardModeButton = {
+  textContent: "", pressed: "", listeners: {},
+  setAttribute(name, value) { this[name] = value; },
+  addEventListener(type, handler) { this.listeners[type] = handler; },
+};
 const joystickContext = vm.createContext({
   joystickPort: 2, joystickPortIndicator: joystickStatus,
-  joystickSwapButton: joystickButton, machine: joystickMachine,
+  joystickSwapButton: joystickButton, keyboardJoystickButton: keyboardModeButton,
+  machine: joystickMachine, keyboardJoystickEnabled: false,
+  keyboardJoystickKeys: new Set(), keyboardPriorityUntil: 0,
+  KEYBOARD_JOYSTICK_MASKS: {
+    ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
+    ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
+    Space: 16, ControlLeft: 16, ControlRight: 16,
+  },
+  heldMatrixKeys: new Map(), shiftLeftPhysical: false, shiftRightPhysical: false,
+  performance: { now: () => timeNow },
   gamepadJoyByte: 0xef, touchJoyByte: 0xfe,
   localStorage: {
     setItem(key, value) { joystickStorage.set(key, value); },
@@ -252,6 +278,39 @@ joystickContext.swapPort();
 assert.equal(joystickMachine.joyPort1, 255);
 assert.equal(joystickMachine.joyPort2, 0xee);
 assert(joystickUpdates >= 3, "Port 1 lightpen pin must be updated when joystick swaps");
+
+// A gamepad held down or firing must never mask a physical S key or its
+// CIA column while the player types. Gamepad resumes after a quiet interval.
+joystickContext.heldMatrixKeys.set("KeyS", { col: 1, row: 5 });
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 255, "Held keyboard S must neutralize connected gamepad");
+joystickContext.heldMatrixKeys.delete("KeyS");
+joystickContext.keyboardPriorityUntil = 6000;
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 255, "Keyboard priority must persist briefly after release");
+timeNow = 6100;
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xee, "Gamepad resumes after keyboard inactivity");
+
+// Keyboard joystick is optional and routes WASD/arrows/SPACE as active-low
+// joystick bits to whichever port the player has chosen.
+keyboardModeButton.listeners.click();
+assert.equal(keyboardModeButton.textContent, "KEYBOARD JOY: ON");
+assert.equal(joystickStorage.get("ccg.emulator.c64.keyboardJoystick"), "1");
+joystickContext.keyboardJoystickKeys.add("KeyW");
+joystickContext.keyboardJoystickKeys.add("Space");
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xee, "Keyboard W+SPACE must provide up+fire");
+joystickContext.keyboardJoystickKeys.delete("Space");
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xfe, "Keyboard joystick key release must drop fire");
+joystickContext.swapPort();
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort1, 0xfe, "Keyboard joystick must follow port swapping");
+assert.equal(joystickMachine.joyPort2, 255);
+joystickContext.keyboardJoystickKeys.clear();
+keyboardModeButton.listeners.click();
+assert.equal(keyboardModeButton.textContent, "KEYBOARD JOY: OFF");
 
 // FIT must size against the actual screen stage rather than a guessed vh
 // offset, and restore the CSS width on mobile.

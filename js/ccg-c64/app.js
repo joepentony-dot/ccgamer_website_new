@@ -19,6 +19,8 @@ const closeSetupButton = document.querySelector("[data-close-setup]");
 const loadAnyMediaButton = document.querySelector("[data-load-any-media]");
 const anyMediaInput = document.getElementById("ccg-c64-any-media-input");
 const mediaDropzone = document.querySelector("[data-media-dropzone]");
+const onlineLibraryPanel = document.querySelector(".ccg-c64-panel--library");
+const controlsDeck = document.querySelector(".ccg-c64-control-stack");
 const onlineLibrarySelect = document.querySelector("[data-online-library-select]");
 const onlineLibraryLoad = document.querySelector("[data-online-library-load]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
@@ -61,6 +63,7 @@ const vaultStatus = document.querySelector("[data-vault-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
+const keyboardJoystickButton = document.querySelector("[data-keyboard-joystick]");
 const joystickPortIndicator = document.querySelector("[data-joystick-port]");
 const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
 const audioStatus = document.querySelector("[data-audio-status]");
@@ -90,6 +93,14 @@ let mountedDisk = null;
 let mountedTape = null;
 let mountedCartridge = null;
 let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
+let keyboardJoystickEnabled = localStorage.getItem("ccg.emulator.c64.keyboardJoystick") === "1";
+const keyboardJoystickKeys = new Set();
+let keyboardPriorityUntil = 0;
+const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
+  ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
+  ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
+  Space: 16, ControlLeft: 16, ControlRight: 16,
+});
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
@@ -259,11 +270,27 @@ function updateJoystickUi() {
     joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
     joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
   }
+  if (keyboardJoystickButton) {
+    keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
+    keyboardJoystickButton.setAttribute("aria-pressed", keyboardJoystickEnabled ? "true" : "false");
+  }
+}
+
+function keyboardJoystickByte() {
+  if (!keyboardJoystickEnabled) return 0xFF;
+  let result = 0xFF;
+  for (const code of keyboardJoystickKeys) result &= ~KEYBOARD_JOYSTICK_MASKS[code];
+  return result;
 }
 
 function applyJoystickInput() {
   if (!machine) return;
-  const byte = gamepadJoyByte & touchJoyByte;
+  // A browser gamepad can keep a direction/fire held down continuously.
+  // Give physical C64 keys priority while held and briefly after the last
+  // keypress, preventing those joystick bits from masking the keyboard CIA.
+  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
+    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
+  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
   machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
   machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
   // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
@@ -280,6 +307,18 @@ function swapJoystickPort() {
 }
 
 joystickSwapButton?.addEventListener("click", swapJoystickPort);
+keyboardJoystickButton?.addEventListener("click", () => {
+  keyboardJoystickEnabled = !keyboardJoystickEnabled;
+  keyboardJoystickKeys.clear();
+  keyboardPriorityUntil = 0;
+  localStorage.setItem("ccg.emulator.c64.keyboardJoystick", keyboardJoystickEnabled ? "1" : "0");
+  applyJoystickInput();
+  updateJoystickUi();
+  if (inputStatus) inputStatus.textContent = keyboardJoystickEnabled
+    ? "KEYBOARD JOYSTICK // ARROWS OR WASD + SPACE"
+    : "KEYBOARD KEYS // C64 ACTIVE";
+  screen?.focus();
+});
 updateJoystickUi();
 
 function updateDriveModeUi(snapshot = vault.snapshot()) {
@@ -385,6 +424,8 @@ function releaseAllInput() {
     machine.setRestoreNmiLine(false);
   }
   heldMatrixKeys.clear();
+  keyboardJoystickKeys.clear();
+  keyboardPriorityUntil = 0;
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
 }
@@ -509,6 +550,21 @@ function handleC64Key(event, pressed) {
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
+
+  // Physical keyboard always wins over the gamepad, including when a gamepad
+  // button remains pressed. The optional keyboard joystick converts arrow,
+  // WASD and fire presses to the currently selected joystick port, but does
+  // not suppress normal C64 keys (including S for game-start menus).
+  if (KEY_MAP[event.code] || CHAR_MAP[event.key] ||
+      ["ArrowLeft", "ArrowUp", "F2", "F4", "F6", "F8", "F12"].includes(event.code)) {
+    keyboardPriorityUntil = performance.now() + 1200;
+    const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
+    if (joystickMask && keyboardJoystickEnabled) {
+      if (pressed) keyboardJoystickKeys.add(event.code);
+      else keyboardJoystickKeys.delete(event.code);
+    }
+    applyJoystickInput();
+  }
 
   if (event.code === "F12") {
     event.preventDefault();
@@ -1314,11 +1370,18 @@ async function initialiseOnlineLibrary() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     const entries = Array.isArray(payload?.entries) ? payload.entries : [];
+    // Entries must be deliberately approved for public redistribution.
+    // An empty or missing library never displays a useless test-game slot.
     onlineLibraryEntries = entries.filter((entry) =>
-      entry && typeof entry.id === "string" && typeof entry.title === "string" &&
+      entry && entry.approved === true &&
+      typeof entry.id === "string" && typeof entry.title === "string" &&
+      typeof entry.license === "string" && entry.license.trim() &&
       SUPPORTED_MEDIA_TYPES.has(String(entry.format || "").toLowerCase()) &&
-      (typeof entry.url === "string" || typeof entry.dataBase64 === "string")
+      ((typeof entry.url === "string" && entry.url.startsWith("/emulator/c64/media/")) ||
+        (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0))
     );
+    if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
+    controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
 
     onlineLibrarySelect.replaceChildren();
     const placeholder = document.createElement("option");
@@ -1337,6 +1400,8 @@ async function initialiseOnlineLibrary() {
     if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
   } catch (error) {
     onlineLibraryEntries = [];
+    if (onlineLibraryPanel) onlineLibraryPanel.hidden = true;
+    controlsDeck?.classList.remove("has-online-library");
     onlineLibrarySelect.replaceChildren(new Option("Library unavailable", ""));
     onlineLibraryStatus.textContent = "UNAVAILABLE";
     if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
