@@ -7,7 +7,8 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
-const expectedBuild="V10.42 r117";
+const expectedBuild=String(JSON.parse(fs.readFileSync(path.join(repo,"arcade/lost-sizzler/version.json"),"utf8")).build||"");
+assert.match(expectedBuild,/^V10\.42 r\d+$/,"stale-browser test must use the published build revision");
 const staleBuild="2026.09.10.0-stale-badge-contract";
 const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".jpg":"image/jpeg",".ogg":"audio/ogg",".mp3":"audio/mpeg",".wav":"audio/wav"};
 const sockets=new Set();
