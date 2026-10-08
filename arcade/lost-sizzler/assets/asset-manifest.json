@@ -137,7 +137,12 @@
               16,
               16
             ],
-            "provenanceNote": "Original creator licensed CC0. File retrieved from named curated public GitHub mirror; its original Kenney tile index is documented by mirror. Mirror binary has not been independently matched to original Kenney ZIP."
+            "provenanceNote": "CC0 Kenney original creator. Named original tile_0082.png byte-matched across three independently hosted pack copies (all Git blob 78f95bceab167e05e7e058c818b97360868fbdbc). Direct Kenney ZIP verification not performed.",
+            "independentOriginalIndexGitBlobMatches": [
+              "https://github.com/Ultralak/Crusade/blob/master/GD/Art/kenney_tinyDungeon/Tiles/tile_0082.png",
+              "https://github.com/koisland/GodotSurvivalLike/blob/master/assets/kenney_tinydungeon/Tiles/tile_0082.png",
+              "https://github.com/hortinstein/2DSurvivorsCourse/blob/master/CourseFiles/kenney_tinydungeon/Tiles/tile_0082.png"
+            ]
           }
         },
         "activeBarrelSprite": "assets/pixel/user-r118/kenney-tiny-dungeon-barrel.png"
