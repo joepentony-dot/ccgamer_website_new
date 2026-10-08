@@ -67,3 +67,10 @@ The zero-payment art intake revealed that earlier itch.io packages indiscriminat
 `scripts/build-c64-dungeon-carnage-itch-package.mjs` now reads **both** licence-separated `stagedNotWired` arrays from the existing asset manifest. Those candidate PNG files remain unchanged on the GitHub branch for future development, but are **excluded only from the distributable itch.io ZIP**. At the same time, packaging verifies all active 0x72/Niji/Kenney and Pixel_Poem runtime sprites are present and that no active path also appears in a staged exclusion list. The release manifest records the exact omitted paths; `--verify` independently fails if a staged file leaks into the package or an active file is missing.
 
 The resulting R118 candidate package was inspected: **10 staged files excluded, 0 excluded files present, 0 active assets missing**. Existing fallback image paths and all website/gameplay files are unchanged. The staged artwork and author/permission documentation remain in the source repository. The later exact-head CI, live visual acceptance and PR merge gate still apply.
+
+
+## Free bookshelf quality review and shipped creator acknowledgements
+
+The free CC0 16×16 `bookshelf.png` from o_lobster's original *Simple Dungeon Crawler 16×16* artwork was located and byte-matched across three original-pack mirrors (Git blob `c705943144123b59e83f44178af8314fef0eed8f`). A rendered comparison against R85's original `prop-bookcase.svg` showed the current 64×64 artwork retaining a more detailed, recognisable bookcase at gameplay tile size. **No R118 bookcase override was introduced**. The Craftpix supply shelf was also rejected as semantically incorrect, and no paid alternative is required.
+
+The distributable game now includes a concise artist-credit file at `assets/THIRD-PARTY-ART-CREDITS.md` covering active CC0 artwork (0x72, Niji, Kenney) and separately licensed free-commercial Pixel_Poem coins. `scripts/build-c64-dungeon-carnage-itch-package.mjs` and the R118 Node contract require correct creator credit and that Pixel_Poem **must not be represented as CC0**. All existing gameplay/visual fallback behaviours are preserved.

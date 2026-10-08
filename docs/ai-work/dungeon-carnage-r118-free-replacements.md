@@ -72,8 +72,19 @@ From the original owner-uploaded free `2D Pixel Dungeon Asset Pack v2.0.zip` (co
 
 Other candidates, including Pixel_Poem skeleton/vampire movement strips, remain unactivated. A side-by-side review found their small silhouettes less suitable than the game's existing larger animated enemies. This selection does not complete the entire future art-intake queue.
 
-## Unresolved bookcase replacement and commercial packaging
+## Bookcase decision and commercial packaging
 
 The existing R85 `prop-bookcase.svg` remains the visual fallback because the newly inspected Craftpix free `supplies_objects.png` contains **supply shelves** rather than a recognisable bookshelf. Replacing bookcases with a different prop would be a visual regression. A better zero-payment candidate is **Kenney's Roguelike/RPG Pack (2015)**: https://kenney.nl/assets/roguelike-rpg-pack (CC0, 16×16 tiles, includes bookcases), also listed by Kenney on OpenGameArt at https://opengameart.org/content/roguelikerpg-pack-1700-tiles. No bookcase sprite has been selected, extracted or activated from that pack yet; the actual tile and perspective must be checked first.
 
 Itch.io packaging no longer ships the ten staged-only R118 PNGs merely because they are in the working repository. Both CC0 and separately creator-licensed free-commercial `stagedNotWired` lists drive the exclusion automatically; the release manifest and `--verify` enforce this. Active art remains bundled and fallback rendering is unchanged. No purchases or changes to the original archives.
+
+
+### No-cost bookshelf comparison — R118 selection outcome
+
+A **real 16×16 bookshelf** (not Craftpix's supply shelves) was identified in [o_lobster's Simple Dungeon Crawler 16×16 pack](https://o-lobster.itch.io/simple-dungeon-crawler-16x16-pixel-pack), published under **CC0-1.0** and downloadable for **£0**. Its exact `props_itens/bookshelf.png` file has Git blob SHA `c705943144123b59e83f44178af8314fef0eed8f`, byte-matched across three independently hosted original-pack copies: `MateuSai/Godot-Roguelike-Tutorial`, `drxwat/godot-tutorial-turn-based-movement`, `axtonio/CoddyGodot`. This confirms a free, commercially usable alternative exists without purchasing any assets.
+
+A side-by-side render of the actual proposed sprite and the existing 64×64 R85 `prop-bookcase.svg` at game sizes 38, 76 and 152 pixels found the existing artwork **more recognisable and detailed at the live game's tile scale**. The free 16×16 image is too sparse to improve the design. The Kenney Roguelike/RPG pack is independently CC0 but its bookcase pixels are not yet independently extracted/compared. **Decision: keep R85 bookcase, do not import lower-quality alternatives into runtime, and do not regard the bookcase as an outstanding paid-asset dependency.** This is an artwork-suitability decision, not a licensing rejection.
+
+### Playable game art-credit record
+
+The downloadable game now ships `assets/THIRD-PARTY-ART-CREDITS.md` listing only **active** artwork from 0x72, Niji, Kenney and Pixel_Poem, with exact source links and the essential CC0 versus creator-granted commercial-use distinction. The itch.io builder verifies this file is present. Staged-only sprite artwork is still excluded from downloadable releases; source hashes and detailed usage terms stay in GitHub's provenance documentation.
