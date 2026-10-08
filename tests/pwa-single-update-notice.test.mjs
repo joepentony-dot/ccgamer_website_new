@@ -37,6 +37,7 @@ function fakeDocument() {
         node.parent = this;
       }
     }
+    appendChild(node) { this.append(node); return node; }
     remove() {
       if (this.parent) this.parent.children = this.parent.children.filter(node => node !== this);
       this.parent = null;
