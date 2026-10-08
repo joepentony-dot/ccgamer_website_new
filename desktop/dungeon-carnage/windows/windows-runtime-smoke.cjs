@@ -69,11 +69,13 @@ async function start(){
 async function stop(active){
   if(!active)return;
   try{await active.page.close({runBeforeUnload:false})}catch(_){}
-  try{await active.browser.close()}catch(_){}
-  for(let attempt=0;attempt<20&&active.child.exitCode===null;attempt++)await pause(150);
-  // Only the child Electron EXE started by this test is terminated on timeout.
+  // Closing the CDP connection before Electron finished quitting could kill
+  // the app before Chromium committed recently written localStorage.
+  for(let attempt=0;attempt<40&&active.child.exitCode===null;attempt++)await pause(250);
+  // Only terminate the EXE spawned for this test if normal closing fails.
   if(active.child.exitCode===null)active.child.kill();
   for(let attempt=0;attempt<20&&active.child.exitCode===null;attempt++)await pause(150);
+  try{await active.browser.close()}catch(_){}
 }
 async function verifyAudioAndIsolation(){
   const response=await fetch(base+"assets/audio/voice/ccg-recorded-voices-r69.ogg",{
