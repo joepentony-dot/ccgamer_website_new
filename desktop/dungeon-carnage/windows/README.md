@@ -62,3 +62,17 @@ generated from icon.svg; replace the SVG later with approved final artwork.
    purchase/download settings, commercial end-user licensing and release QA.
 
 **Do not publish this preview as a paid game.**
+
+## Save-game origin and acceptance
+
+The game server now listens on fixed loopback port **47731**, rather than a
+random port. Chromium localStorage and IndexedDB are bound to the exact page
+origin, so moving ports on each run would hide saved progress. Port conflicts
+intentionally fail with a user-visible error rather than silently losing
+access to saves. The app keeps its Electron user-data directory between
+updates; uninstall retention must still be checked on the owner's PC.
+
+The Windows GitHub workflow also launches the **actual unpacked EXE** and
+verifies that it serves the game HTML, accepts OGG Range audio requests, and
+denies access to dotfiles. This is a technical startup smoke only, not a
+complete manual playthrough or verified original soundtrack test.
