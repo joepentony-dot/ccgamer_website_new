@@ -1210,6 +1210,111 @@ function decodeLibraryBase64(value) {
   return bytes;
 }
 
+// Change the physical disk in drive 8 without touching the C64 CPU, RAM,
+// current game, execution state or BASIC auto-start queue.
+function swapMountedDisk(media, key = null) {
+  if (!running || !machine || !mountedDisk) {
+    throw new Error("Start a disk game before using SWAP DISK.");
+  }
+  const name = media?.name || "";
+  const type = String(media?.type || mediaTypeFromName(name) || "").toLowerCase();
+  if (!["d64", "d71", "d81", "g64"].includes(type)) {
+    throw new Error("Only disk images (D64, D71, D81 or G64) can be swapped.");
+  }
+  const bytes = media.bytes instanceof Uint8Array ? media.bytes : new Uint8Array(media.bytes || []);
+  const g64 = type === "g64" || isG64(bytes);
+  const variant = g64 ? null : d64Variant(bytes.length);
+  if ((!g64 && (!variant || variant.kind !== type)) ||
+      (g64 && !vault.getBytes("drive1541"))) {
+    throw new Error(g64
+      ? "G64 disk swapping needs the optional 1541 DOS ROM."
+      : "The replacement disk image is invalid for its file format.");
+  }
+
+  const kind = g64 ? "g64" : variant.kind;
+  const targetKey = key || `local:${name}`;
+  // Retain any writes made to the outgoing disk, including True 1541 writes.
+  captureMutableMedia();
+  const source = diskSideCache.get(targetKey) || { name, kind, bytes };
+  const nextDisk = { name: source.name || name, kind, bytes: source.bytes.slice() };
+  const disk = createDiskFromMedia(nextDisk);
+  if (!disk) throw new Error("The replacement disk cannot be opened.");
+
+  cancelAutoStart();
+  machine.setD64(disk);
+  machine.setTrueDrive(driveMode === "true" &&
+    ["d64", "g64"].includes(kind) && Boolean(vault.getBytes("drive1541")));
+  mountedDisk = nextDisk;
+  mountedDiskKey = targetKey;
+  diskSideCache.set(targetKey, cloneMedia(nextDisk));
+  if (diskSlotStatus) diskSlotStatus.textContent = `DISK SWAPPED // ${name}`;
+  if (machineState) machineState.textContent = `DISK 8 INSERTED // ${name.toUpperCase()}`;
+  if (stageNote) stageNote.textContent =
+    `${name} inserted into drive 8. Game and memory preserved — return to the game to continue loading.`;
+  updateMediaControls(vault.snapshot());
+  screen?.focus();
+  return true;
+}
+
+function onlineDiskSides(entry) {
+  if (!entry || !Array.isArray(entry.disks) || entry.disks.length < 2) return [];
+  return entry.disks.filter((disk) =>
+    disk && typeof disk.filename === "string" &&
+    typeof disk.url === "string" &&
+    /^\/emulator\/c64\/media\/[a-z0-9._-]+\.(?:d64|d71|d81|g64)$/i.test(disk.url) &&
+    ["d64", "d71", "d81", "g64"].includes(String(disk.format).toLowerCase())
+  );
+}
+
+function updateOnlineDiskUi() {
+  if (!onlineLibraryDisks || !onlineLibraryDiskSelect) return;
+  const entry = onlineLibraryEntries.find((item) => item.id === activeLibraryEntryId);
+  const sides = onlineDiskSides(entry);
+  const visible = sides.length > 1 && Boolean(running && mountedDisk);
+  onlineLibraryDisks.hidden = !visible;
+  onlineLibraryDiskSelect.replaceChildren();
+  if (visible) {
+    for (let i = 0; i < sides.length; i += 1) {
+      const option = document.createElement("option");
+      option.value = String(i);
+      option.textContent = sides[i].label || `Disk ${i + 1}`;
+      onlineLibraryDiskSelect.append(option);
+    }
+    onlineLibraryDiskSelect.value = String(activeLibraryDiskIndex);
+  }
+  if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled = !visible;
+}
+
+async function fetchLibraryDisk(disk) {
+  if (!disk?.url || !/^\/emulator\/c64\/media\/[a-z0-9._-]+\.(?:d64|d71|d81|g64)$/i.test(disk.url)) {
+    throw new Error("This game disk is not an approved local disk image.");
+  }
+  const response = await fetch(disk.url, { cache: "no-store", credentials: "same-origin" });
+  if (!response.ok) throw new Error(`Disk download failed (HTTP ${response.status}).`);
+  return new Uint8Array(await response.arrayBuffer());
+}
+
+async function swapOnlineLibraryDisk() {
+  const entry = onlineLibraryEntries.find((item) => item.id === activeLibraryEntryId);
+  const sides = onlineDiskSides(entry);
+  const index = Number(onlineLibraryDiskSelect?.value);
+  if (!sides.length || !Number.isInteger(index) || !sides[index]) return;
+  const disk = sides[index];
+  const key = `library:${entry.id}:${index}`;
+  if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled = true;
+  try {
+    const saved = diskSideCache.get(key);
+    const bytes = saved?.bytes || await fetchLibraryDisk(disk);
+    swapMountedDisk({ name: disk.filename, type: disk.format, bytes }, key);
+    activeLibraryDiskIndex = index;
+    updateOnlineDiskUi();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "The requested disk cannot be inserted.";
+  } finally {
+    if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled = false;
+  }
+}
+
 async function openMediaBytes(media) {
   if (!media || !machine || !running) return false;
   const name = media.name || `media.${media.type || "bin"}`;
