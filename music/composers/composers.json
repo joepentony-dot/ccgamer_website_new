@@ -3320,6 +3320,25 @@
     ]
   },
   {
+    "name": "John De Margheriti",
+    "slug": "john-de-margheriti",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "John De Margheriti"
+    ],
+    "games": [
+      "fire-king"
+    ]
+  },
+  {
     "name": "Graham Marsh",
     "slug": "graham-marsh",
     "count": 2,
@@ -4782,6 +4801,25 @@
     ],
     "games": [
       "super-gridder"
+    ]
+  },
+  {
+    "name": "Michael Stoney",
+    "slug": "michael-stoney",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Michael Stoney"
+    ],
+    "games": [
+      "fire-king"
     ]
   },
   {
