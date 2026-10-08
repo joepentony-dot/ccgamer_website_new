@@ -32,8 +32,10 @@ assert(!html.includes(">SOURCE</a>"), "Prominent source navigation must be omitt
 assert(html.includes('href="/emulator/c64/legal.html"'), "GPL source access must remain available");
 assert(app.includes("function fitScreenToStage()") && app.includes("new ResizeObserver(fitScreenToStage)"),
   "FIT must respond to measured display area and browser resize");
-assert(app.includes('screenStage.requestFullscreen({ navigationUI: "hide" })'),
-  "Fullscreen must target the picture only, not the surrounding status console");
+assert(app.includes("const fullscreenTarget = touchLayout") &&
+       app.includes('document.querySelector(".ccg-c64-console") || screenStage') &&
+       app.includes("await fullscreenTarget.requestFullscreen"),
+  "Fullscreen must retain picture-only desktop mode while including touch controls on mobile");
 assert(css.includes(".ccg-c64-screen-stage:fullscreen") &&
   css.includes("height: 100dvh !important") &&
   css.includes(".ccg-c64-workspace.is-display-expanded"),
