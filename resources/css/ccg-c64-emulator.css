@@ -819,6 +819,24 @@ select:disabled {
 .ccg-c64-library-load[hidden] {
   display: none !important;
 }
+.ccg-c64-library-retry {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid rgba(224, 180, 87, 0.65);
+  border-radius: 6px;
+  color: #fff0bc;
+  background: rgba(95, 63, 24, 0.68);
+  font: 800 0.55rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-library-retry[hidden] { display: none !important; }
+.ccg-c64-library-retry:hover,
+.ccg-c64-library-retry:focus-visible {
+  border-color: #f8d990;
+  outline-offset: 2px;
+}
+
 
 .ccg-c64-library-load:hover:not(:disabled),
 .ccg-c64-library-load:focus-visible {
