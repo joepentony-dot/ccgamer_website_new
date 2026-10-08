@@ -640,7 +640,8 @@ select:disabled {
 /* File-first media flow -------------------------------------- */
 
 .ccg-c64-panel--quickload,
-.ccg-c64-panel--library {
+.ccg-c64-panel--library,
+.ccg-c64-panel--local-library {
   grid-column: 1 / -1;
 }
 
@@ -682,6 +683,14 @@ select:disabled {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 84px;
   gap: 0.4rem;
+}
+
+.ccg-c64-library-row--local {
+  grid-template-columns: minmax(0, 1fr) 60px 72px;
+}
+
+.ccg-c64-library-row--local button {
+  padding-inline: 0.25rem;
 }
 
 .ccg-c64-library-row select,
@@ -1219,7 +1228,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-panel--quickload,
-  .ccg-c64-panel--library {
+  .ccg-c64-panel--library,
+  .ccg-c64-panel--local-library {
     grid-column: auto;
   }
 
