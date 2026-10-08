@@ -1382,6 +1382,7 @@ async function openMediaBytes(media) {
         : "Disk mounted in Fast Load mode. The emulator will automatically LOAD and RUN the first program.";
     }
     updateMediaControls(vault.snapshot());
+    updateOnlineDiskUi();
     screen?.focus();
     return true;
   }
@@ -1479,6 +1480,9 @@ async function queueMedia(media, { freshBoot = false } = {}) {
 async function queueMediaFile(file, options = {}) {
   if (!file) return false;
   const type = mediaTypeFromName(file.name);
+  activeLibraryEntryId = null;
+  activeLibraryDiskIndex = 0;
+  updateOnlineDiskUi();
   if (!type) {
     if (stageNote) stageNote.textContent = "Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.";
     return false;
@@ -1557,8 +1561,22 @@ async function loadOnlineLibraryEntry() {
 
     const type = String(entry.format).toLowerCase();
     const filename = entry.filename || `${entry.title.replace(/[^a-z0-9._-]+/gi, "-") || "ccg-media"}.${type}`;
-    await queueMedia({ name: filename, type, bytes }, { freshBoot: true });
-    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "READY";
+    const sides = onlineDiskSides(entry);
+    const firstKey = type === "d64" || type === "d71" || type === "d81" || type === "g64"
+      ? `library:${entry.id}:0` : null;
+    // Only commit this library selection after the new game is accepted.
+    activeLibraryEntryId = entry.id;
+    activeLibraryDiskIndex = 0;
+    const queued = await queueMedia({
+      name: filename, type, bytes, sourceKey: firstKey,
+    }, { freshBoot: true });
+    // queued=false also covers ROM setup pending; the selected game is resumed
+    // after the player installs their own C64 system ROMs.
+    if (!queued && !pendingMedia) {
+      activeLibraryEntryId = null;
+    }
+    updateOnlineDiskUi();
+    if (onlineLibraryStatus) onlineLibraryStatus.textContent = queued ? "READY" : "ROM SETUP";
   } catch (error) {
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "ERROR";
     if (stageNote) stageNote.textContent = error?.message || "The Online Library item could not be loaded.";
@@ -1611,6 +1629,22 @@ diskInput?.addEventListener("change", async () => {
   const file = diskInput.files?.[0];
   diskInput.value = "";
   await queueMediaFile(file);
+});
+
+swapDiskButton?.addEventListener("click", () => swapDiskInput?.click());
+swapDiskInput?.addEventListener("change", async () => {
+  const file = swapDiskInput.files?.[0];
+  swapDiskInput.value = "";
+  if (!file) return;
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    swapMountedDisk({ name: file.name, type: mediaTypeFromName(file.name), bytes });
+    activeLibraryEntryId = null;
+    activeLibraryDiskIndex = 0;
+    updateOnlineDiskUi();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "The replacement disk cannot be inserted.";
+  }
 });
 
 driveModeButton?.addEventListener("click", () => {
@@ -1729,6 +1763,7 @@ onlineLibrarySelect?.addEventListener("change", () => {
   if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect.value;
 });
 onlineLibraryLoad?.addEventListener("click", () => { void loadOnlineLibraryEntry(); });
+onlineLibraryDiskSwapButton?.addEventListener("click", () => { void swapOnlineLibraryDisk(); });
 void initialiseOnlineLibrary();
 
 async function saveGameVaultSlot() {
