@@ -59,9 +59,9 @@ async function execute(catalogueAvailable) {
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
 assert.equal(direct.entries.length, 5);
-assert.equal(good.context.onlineLibraryEntries.length, 1883,
-  "All 1878 packed titles plus five direct games must appear even if HEAD is unavailable");
-assert.equal(good.context.onlineLibraryStatus.textContent, "1,883 READY");
+assert.equal(good.context.onlineLibraryEntries.length, 1882,
+  "All approved titles except the withdrawn Bruce Lee PRG must appear even if HEAD is unavailable");
+assert.equal(good.context.onlineLibraryStatus.textContent, "1,882 READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
 assert.equal(good.fetchRequests.length, 2, "Only the two JSON catalogues must be fetched at startup");
@@ -76,4 +76,4 @@ assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
 assert(failed.statuses.warning, "A catalogue failure must be logged instead of swallowed");
 
-console.log("PASS: 1883 library entries appear without HEAD, direct games survive real catalogue errors, and retry is exposed.");
+console.log("PASS: 1882 selectable library entries appear without HEAD, direct CRT games survive catalogue errors, and retry is exposed.");
