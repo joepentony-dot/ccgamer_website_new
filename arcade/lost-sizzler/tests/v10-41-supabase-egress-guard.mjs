@@ -66,7 +66,10 @@ const playlistSandbox={
   window:playlistWindow,
   Audio:FakeAudio,
   URL,
-  location:{href:'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/'},
+  // Exercise real-site remote looping here; the automated/local exclusion is
+  // independently asserted in v10-7-audio-playlists.mjs.
+  location:{href:'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/',hostname:'www.cheekycommodoregamer.co.uk',protocol:'https:'},
+  navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
   performance:{now:()=>0},
   setInterval:()=>1,
   clearInterval(){},
