@@ -65,6 +65,9 @@ jobs:
       - name: Run reload/cache consistency regression
         run: node --test tests/pwa-reload-reliability.test.mjs
 
+      - name: Verify single shared update notice
+        run: node --test tests/pwa-single-update-notice.test.mjs
+
       - name: Install Chromium reload-test runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.55.0
