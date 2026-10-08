@@ -562,6 +562,10 @@ select:disabled {
   gap: 0.4rem;
 }
 
+.ccg-c64-media-row--three {
+  grid-template-columns: repeat(3, minmax(0,1fr));
+}
+
 .ccg-c64-media-row--four {
   grid-template-columns: repeat(4, minmax(0,1fr));
 }
