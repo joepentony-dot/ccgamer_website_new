@@ -1,54 +1,5 @@
 {
   "version": 1,
-  "policy": "Only redistributable games with verified upstream source files and licence notices. System firmware remains user-supplied.",
-  "entries": [
-    {
-      "id": "snake64",
-      "title": "Snake for Commodore 64",
-      "filename": "snake64.prg",
-      "format": "prg",
-      "description": "Classic Snake in Commodore BASIC. Z and / steer; cursor keys and joystick also supported.",
-      "controls": "Z / or cursor keys to turn; RETURN pauses.",
-      "license": "MIT",
-      "approved": true,
-      "author": "David R. Van Wagner",
-      "url": "/emulator/c64/media/snake64.prg",
-      "bytes": 2211,
-      "source": "https://github.com/davervw/c-snake",
-      "sourceCommit": "69a773924b6e436da836f980be0f0d99ef21623c",
-      "sourceBlob": "ab1a2d5ac1adeeaefacd165099a4825272273b07"
-    },
-    {
-      "id": "8bit-island",
-      "title": "8 Bit Island",
-      "filename": "8bit-island.prg",
-      "format": "prg",
-      "description": "A Commodore BASIC text adventure featuring 20 locations, objects and multiple endings.",
-      "controls": "Type adventure commands using the C64 keyboard.",
-      "license": "MIT",
-      "approved": true,
-      "author": "gpowerf",
-      "url": "/emulator/c64/media/8bit-island.prg",
-      "bytes": 32525,
-      "source": "https://github.com/gpowerf/8bitisland",
-      "sourceCommit": "f3d91c3357084a892569808a384567a0cb2b1641",
-      "sourceBlob": "76dbc7de7c7612bd66b658923b0c912a3c6d60c5"
-    },
-    {
-      "id": "meteor-storm",
-      "title": "Meteor Storm",
-      "filename": "meteor-storm.prg",
-      "format": "prg",
-      "description": "Original C64 arcade action with meteors, sprites, music and wave-based scoring.",
-      "controls": "Consult the game menu for controls; joystick port can be swapped.",
-      "license": "MIT",
-      "approved": true,
-      "author": "C64AIToolChain project",
-      "url": "/emulator/c64/media/meteor-storm.prg",
-      "bytes": 26058,
-      "source": "https://github.com/dexmac221/C64AIToolChain",
-      "sourceCommit": "e9a85612f5e82863bf33e4a19ff71219d6a98102",
-      "sourceBlob": "cea1c52da1603ced454063468d3d0b27cf292548"
-    }
-  ]
+  "policy": "The public library lists only game files for which public redistribution permission is confirmed. Players may load their own legally obtained D64, CRT, PRG, TAP or other supported C64 media using LOAD & AUTO START.",
+  "entries": []
 }
