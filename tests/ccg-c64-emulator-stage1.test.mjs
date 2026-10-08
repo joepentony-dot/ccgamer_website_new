@@ -98,8 +98,14 @@ assert(css.includes(".ccg-c64-library-suggestions[hidden]") &&
        css.includes("position: absolute;") &&
        css.includes(".ccg-c64-panel--library.is-suggesting"),
   "Suggestions must float over the control deck without increasing grid height");
-assert(app.includes("available.every(Boolean)"),
-  "Game browser must hide any partly uploaded game collection");
+assert(!app.includes("available.every(Boolean)") &&
+       !app.includes('method: "HEAD"') &&
+       app.includes("packed = data.entries.filter("),
+  "Valid Blast catalogue must be searchable without eleven blocking HEAD checks");
+assert(app.includes("packedCatalogueError") &&
+       app.includes("onlineLibraryRetryButton") &&
+       html.includes("data-online-library-retry hidden"),
+  "Catalogue fetch failures must be explained with a visible retry rather than silently hiding 1,878 games");
 assert(app.includes("directGameKeys") && app.includes("!directGameKeys.has("),
   "Archived game pack must not duplicate already hosted D64/CRT titles");
 assert(app.includes('fetch("/emulator/c64/library.json"'), "Online Library must load from the CCG manifest");
@@ -261,7 +267,7 @@ assert(app.includes("machine.injectRun()") &&
   app.includes("name: filename, type, bytes, sourceKey: firstKey") &&
   app.includes("}, { freshBoot: true })" ) &&
   app.includes("loadPackedGameBytes(entry, onlineLibraryPackCache)") &&
-  app.includes('method: "HEAD"'),
+  app.includes("packed = data.entries.filter("),
 
   "Online Library selection must preserve media bytes and auto-start while tracking the first disk");
 
