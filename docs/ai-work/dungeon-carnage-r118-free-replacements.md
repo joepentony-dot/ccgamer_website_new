@@ -65,3 +65,9 @@ The unknown-rights column artwork can now be replaced by the byte-matched origin
 ### SnowHex free-tier source evidence
 
 Original zero-payment archive `Dungeon Gathering Free Version.rar` is now available from the owner's file library; SHA-256 `8d6a7d7b71e548d45f471d41b4fb153622bad928b3982aa7e1fb8f89033c0611`. Its `License.txt` explicitly permits commercial projects and modification with no mandatory credit and forbids unbundled asset resale/redistribution. Creator page https://snowhex.itch.io/dungeon-gathering confirms the free-tier licence and differentiates the paid full-version tier. Retain as **free commercially eligible but unintegrated** until tile dimensions, animation slices and presentation are checked. 
+
+## Additional selected free source: animated Pixel_Poem coin
+
+From the original owner-uploaded free `2D Pixel Dungeon Asset Pack v2.0.zip` (commercial game use permitted by its creator at https://pixel-poem.itch.io/dungeon-assetpuck/comments?after=22), the original 16×16 four-phase spinning coin has been integrated as a visual replacement for gold-score pickups. Three PNGs are committed since source frame 4 is byte-for-byte identical to source frame 2. The previous R85 pickup-gold.svg continues as fallback. The external pack is free-commercial, **not CC0**, and is tracked in its own manifest namespace with exact source hashes; it should not be redistributed as an asset collection.
+
+Other candidates, including Pixel_Poem skeleton/vampire movement strips, remain unactivated. A side-by-side review found their small silhouettes less suitable than the game's existing larger animated enemies. This selection does not complete the entire future art-intake queue.
