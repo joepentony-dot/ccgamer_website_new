@@ -82,7 +82,7 @@ window.CCG_ASSET_OVERRIDES={
       credits:"assets/pixel/visual-overhaul/r85/pickup-gold.svg",
       xpOrb:"assets/pixel/visual-overhaul/r85/pickup-xp.svg",
       armour:"assets/pixel/visual-overhaul/r85/pickup-armour.svg",
-      key:"assets/pixel/user-r118/extended-gold-key.png",bronze:null,exitSigil:null,
+      key:null,bronze:null,exitSigil:null,
       weapon:"assets/pixel/visual-overhaul/r85/pickup-firearm-upgrade.svg",
       rapid:null,game:null,loot:null
     }
