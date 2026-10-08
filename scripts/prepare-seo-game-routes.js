@@ -370,7 +370,7 @@ function addFireKingCypherResources(html, slug) {
   if (slug !== "fire-king" || html.includes('id="fire-king-cypher"')) return html;
   const anchor = "<section id=\"game-reading-section\" class=\"game-section ccg-game-resource-section ccg-game-resource-section--reading\"";
   if (!html.includes(anchor)) throw new Error("Fire King code wheel insertion anchor missing.");
-  return html.replace(anchor, FIRE_KING_CYPHER_SECTION + "\\n" + anchor);
+  return html.replace(anchor, FIRE_KING_CYPHER_SECTION + "\n" + anchor);
 }
 
 function buildFlatRedirectStub(game) {
