@@ -85,6 +85,7 @@ let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
 let onlineLibraryEntries = [];
+let onlineLibraryRequestId = 0;
 let autoStartSteps = null;
 let autoStartTypeRest = "";
 let autoStartSawBusy = false;
@@ -414,8 +415,19 @@ function releaseHeldMatrixBinding(event, heldKey) {
   return true;
 }
 
+function isTypingOrChoosingMedia(target) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(target.closest(
+    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"]'
+  ));
+}
+
 function handleC64Key(event, pressed) {
-  if (!running || !machine || document.activeElement !== screen) return;
+  if (!running || !machine || (setup && !setup.hidden)) return;
+  // The emulator is the active application on this dedicated page. Requiring
+  // canvas focus loses F-keys, cursor keys and SPACE after a toolbar click.
+  // Keep native typing and library-selection controls undisturbed.
+  if (isTypingOrChoosingMedia(document.activeElement) || isTypingOrChoosingMedia(event.target)) return;
 
   if (event.metaKey) return;
 
@@ -1218,6 +1230,7 @@ async function loadOnlineLibraryEntry() {
   const id = onlineLibrarySelect?.value || "";
   const entry = onlineLibraryEntries.find((item) => item.id === id);
   if (!entry) return;
+  const requestId = ++onlineLibraryRequestId;
 
   if (onlineLibraryLoad) onlineLibraryLoad.disabled = true;
   if (onlineLibraryStatus) onlineLibraryStatus.textContent = "FETCHING";
@@ -1237,15 +1250,24 @@ async function loadOnlineLibraryEntry() {
       bytes = new Uint8Array(await response.arrayBuffer());
     }
 
+    // A rapid second selection must never mount a slower first download.
+    if (requestId !== onlineLibraryRequestId) return;
     const type = String(entry.format).toLowerCase();
     const filename = entry.filename || `${entry.title.replace(/[^a-z0-9._-]+/gi, "-") || "ccg-media"}.${type}`;
-    await queueMedia({ name: filename, type, bytes }, { freshBoot: true });
-    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "READY";
+    const loaded = await queueMedia({ name: filename, type, bytes }, { freshBoot: true });
+    if (requestId === onlineLibraryRequestId && onlineLibraryStatus) {
+      onlineLibraryStatus.textContent = loaded ? "READY" :
+        (!vault.snapshot().allRequiredReady ? "ROMS NEEDED" : "ERROR");
+    }
   } catch (error) {
-    if (onlineLibraryStatus) onlineLibraryStatus.textContent = "ERROR";
-    if (stageNote) stageNote.textContent = error?.message || "The Online Library item could not be loaded.";
+    if (requestId === onlineLibraryRequestId) {
+      if (onlineLibraryStatus) onlineLibraryStatus.textContent = "ERROR";
+      if (stageNote) stageNote.textContent = error?.message || "The Online Library item could not be loaded.";
+    }
   } finally {
-    if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect?.value;
+    if (requestId === onlineLibraryRequestId && onlineLibraryLoad) {
+      onlineLibraryLoad.disabled = !onlineLibrarySelect?.value;
+    }
   }
 }
 
@@ -1406,6 +1428,8 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 
 onlineLibrarySelect?.addEventListener("change", () => {
   if (onlineLibraryLoad) onlineLibraryLoad.disabled = !onlineLibrarySelect.value;
+  // Selecting a title is enough: no second LOAD click required.
+  if (onlineLibrarySelect.value) void loadOnlineLibraryEntry();
 });
 onlineLibraryLoad?.addEventListener("click", () => { void loadOnlineLibraryEntry(); });
 void initialiseOnlineLibrary();
