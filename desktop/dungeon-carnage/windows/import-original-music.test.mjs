@@ -8,6 +8,8 @@ test("exact 16-track recovered Supabase inventory; no duplicates",()=>{
   assert.equal(TRACKS.length,16);
   assert.equal(new Set(TRACKS.map(t=>t[1])).size,16);
   assert.equal(TRACKS.reduce((total,t)=>total+t[2],0),72233137);
+  assert.ok(TRACKS.every(([,name,size,etag])=>name.endsWith(".mp3")&&size>1000000&&/^[0-9a-f]{32}$/.test(etag)));
+  assert.equal(new Set(TRACKS.map(t=>t[3])).size,16,"Storage ETag fingerprints must be unique");
   const counts={};
   for(const [category] of TRACKS)counts[category]=(counts[category]||0)+1;
   assert.deepEqual(counts,{
