@@ -10,51 +10,6 @@
       "description": "A tiny CCG-created BASIC program used to verify the Online Library loading path.",
       "license": "CCG original test media",
       "dataBase64": "AQghCAoAmSJDQ0cgT05MSU5FIExJQlJBUlkgUkVBRFkiAAAA"
-    },
-    {
-      "id": "bruce-lee-trilogy",
-      "title": "Bruce Lee Trilogy",
-      "filename": "bruce-lee-trilogy.crt",
-      "format": "crt",
-      "url": "/emulator/c64/media/bruce-lee-trilogy.crt",
-      "description": "Magic Desk cartridge; boots on selection.",
-      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
-    },
-    {
-      "id": "forbidden-forest",
-      "title": "Forbidden Forest",
-      "filename": "forbidden-forest.d64",
-      "format": "d64",
-      "url": "/emulator/c64/media/forbidden-forest.d64",
-      "description": "Disk image; LOAD/RUN is automatic.",
-      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
-    },
-    {
-      "id": "paradroid",
-      "title": "Paradroid",
-      "filename": "paradroid.d64",
-      "format": "d64",
-      "url": "/emulator/c64/media/paradroid.d64",
-      "description": "Disk image; LOAD/RUN is automatic.",
-      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
-    },
-    {
-      "id": "uridium",
-      "title": "Uridium",
-      "filename": "uridium.d64",
-      "format": "d64",
-      "url": "/emulator/c64/media/uridium.d64",
-      "description": "Disk image; LOAD/RUN is automatic.",
-      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
-    },
-    {
-      "id": "master-of-magic",
-      "title": "Master of Magic",
-      "filename": "Master_of_magic.d64",
-      "format": "d64",
-      "url": "/emulator/c64/media/Master_of_magic.d64",
-      "description": "Disk image; LOAD/RUN is automatic.",
-      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
     }
   ]
 }
