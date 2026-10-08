@@ -295,7 +295,7 @@
     if(state.active){
       // Important recorded events may interrupt a lower-priority cue immediately.
       // Never build a delayed playback queue: a stale voice can mislead players.
-      const importantOverride=(priority>=50&&state.activePriority<30)||(priority>=60&&state.activePriority<50)||(priority>=44&&state.activePriority<25&&hasApprovedRecording(key)),mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;
+      const importantOverride=priority>=50&&state.activePriority<30,recordedOverride=(priority>=60&&state.activePriority<50)||(priority>=44&&state.activePriority<25&&hasApprovedRecording(key)),mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride||recordedOverride;
       if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}
       if(!hasApprovedRecording(key)){state.skipped++;state.lastSkipped={key,reason:"no-approved-recording",at:now};return false}
       stopActive("interrupted")
