@@ -2,9 +2,9 @@
 
 The C64 emulator loads disk and cartridge images hosted in this folder using `/emulator/c64/library.json`. The public dropdown only displays entries with `approved: true` and a matching hosted file. Never advertise media before its file has been committed.
 
-## Owner-selected games awaiting transfer into GitHub
+## Owner-selected games hosted in this folder
 
-On 8 October 2026 the Cheeky Commodore Gamer website owner confirmed permission to redistribute the following user-supplied C64 game images. The files were inspected but **are not yet in this folder**. This README is not an indication they are live.
+On 8 October 2026, the Cheeky Commodore Gamer website owner confirmed permission to redistribute the following user-supplied C64 game images. The original files were transferred to GitHub without modification; their exact byte sizes and SHA-256 digests were verified. The public Online Library now lists these files.
 
 | Filename | Type | Expected bytes | SHA-256 |
 |---|---|---:|---|
@@ -14,4 +14,6 @@ On 8 October 2026 the Cheeky Commodore Gamer website owner confirmed permission 
 | `Master_of_magic.d64` | D64 | 174848 | `7d4fb707a47ea2716018b1ff8658cfded6beeb75388e2fc877da44dd560f5838` |
 | `bruce-lee-trilogy.crt` | CRT Magic Desk (type 19) | 131392 | `6462a7562dcb539da2a6bfb843235dd70ffb2817403ea99efc350669b9e62999` |
 
-After transfer, verify each exact SHA-256, update `/emulator/c64/library.json` with playable `approved: true` entries, and qualify auto-loading through GitHub Actions. These five files are each individual game media images; multi-disk games may instead list multiple validated `disks` per title. The game disk-swap UI does not reset the C64.
+The live catalogue is `/emulator/c64/library.json` and records each listed file's SHA-256, size and redistribution attestation. The C64 emulator verification workflow checks those files directly.
+
+These five images are each single game media files. For future multi-disk games, list multiple `disks` objects in the catalogue and use the emulator's disk-side selector or **SWAP DISK** button. Changing a disk does not reset the C64.
