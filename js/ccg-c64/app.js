@@ -1294,8 +1294,10 @@ function updateLocalLibraryButtons() {
     localLibraryRemove.disabled = !localSaved.some((item) => item.id === id);
   }
   if (localLibraryAdd) {
-    localLibraryAdd.textContent = localLibraryPreset(id) && !localSaved.some((item) => item.id === id)
-      ? "IMPORT" : "ADD";
+    const preset = localLibraryPreset(id);
+    localLibraryAdd.textContent = preset
+      ? (localSaved.some((item) => item.id === id) ? "REPLACE" : "IMPORT")
+      : "ADD";
   }
 }
 
@@ -1407,8 +1409,7 @@ localLibrarySelect?.addEventListener("change", () => {
 localLibraryAdd?.addEventListener("click", () => {
   const id = localLibrarySelect?.value || "";
   const selectedPreset = localLibraryPreset(id);
-  const needsFile = selectedPreset && !localSaved.some((entry) => entry.id === id);
-  beginLocalImport(needsFile ? id : "");
+  beginLocalImport(selectedPreset?.id || "");
 });
 
 localLibraryInput?.addEventListener("change", async () => {
