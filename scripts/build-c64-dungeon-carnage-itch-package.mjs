@@ -41,7 +41,55 @@ async function ordinaryDir(dir,label){
   if(stat.isSymbolicLink()||!stat.isDirectory())fail(label+" must be a real non-symlink directory: "+dir);
   return stat;
 }
-async function copyTree(source,destination,relativeRoot,files){
+
+/**
+ * Asset variants not wired into the live game are retained in the source
+ * repository for licensed development and testing, but must not be copied
+ * into downloadable itch.io releases. This is particularly important for
+ * creator-licensed packs that prohibit distributing standalone assets.
+ *
+ * The source and staged package carry the same asset-manifest catalogue.
+ * Read the catalogue instead of maintaining a second hard-coded file list.
+ */
+function r118PackageSelection(catalogue){
+  const art=catalogue?.images?.visualOverhaul||{};
+  const cc0=art.r118LicensedCC0||null;
+  const commercial=art.r118FreeCommercial||null;
+  const sourceOnly=new Set(),requiredActive=new Set();
+  const prefix="assets/pixel/user-r118/";
+  const check=relative=>{
+    if(typeof relative!=="string"||!safeRelative(relative)||!relative.startsWith(prefix)||!relative.endsWith(".png")){
+      fail("Unsafe R118 package artwork path: "+String(relative));
+    }
+    return relative;
+  };
+  for(const group of [cc0,commercial]){
+    if(!group)continue;
+    if(!Array.isArray(group.stagedNotWired))fail("R118 staged artwork catalogue must be an array");
+    for(const relative of group.stagedNotWired){
+      const path=check(relative);
+      if(sourceOnly.has(path))fail("Duplicate staged artwork across licence groups: "+path);
+      sourceOnly.add(path);
+    }
+  }
+  if(cc0){
+    if(cc0.license!=="CC0-1.0")fail("R118 CC0 source catalogue lost its license");
+    for(const relative of cc0.activeWallTorchFrames||[])requiredActive.add(check(relative));
+    for(const name of ["activeKeyCandidate","activeCrateSprite","activeBarrelSprite","activePillarSprite"]){
+      if(cc0[name])requiredActive.add(check(cc0[name]));
+    }
+  }
+  if(commercial){
+    if(!String(commercial.license||"").toLowerCase().includes("commercial"))fail("R118 free-commercial artwork licence missing");
+    for(const relative of commercial.activeCreditCoinFrames||[])requiredActive.add(check(relative));
+  }
+  for(const path of requiredActive){
+    if(sourceOnly.has(path))fail("R118 release would exclude a required runtime sprite: "+path);
+  }
+  return {sourceOnly,requiredActive};
+}
+
+async function copyTree(source,destination,relativeRoot,files,sourceOnly=new Set()){
   await ordinaryDir(source,"Source directory");
   await fs.mkdir(destination,{recursive:true});
   const entries=(await fs.readdir(source,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name,"en"));
@@ -52,7 +100,11 @@ async function copyTree(source,destination,relativeRoot,files){
     assertAllowed(relative);
     const stat=await fs.lstat(from);
     if(stat.isSymbolicLink())fail("Itch package refuses symbolic links: "+relative);
-    if(stat.isDirectory())await copyTree(from,to,relative,files);
+    if(sourceOnly.has(relative)){
+      if(!stat.isFile())fail("Staged R118 artwork must be an ordinary file: "+relative);
+      continue;
+    }
+    if(stat.isDirectory())await copyTree(from,to,relative,files,sourceOnly);
     else if(stat.isFile()){
       await fs.mkdir(path.dirname(to),{recursive:true});
       await fs.copyFile(from,to);
@@ -60,6 +112,26 @@ async function copyTree(source,destination,relativeRoot,files){
     }else fail("Unsupported source entry: "+relative);
   }
 }
+async function disableStagedOverrideUrls(root,sourceOnly){
+  if(!sourceOnly.size)return;
+  const file=path.join(root,"js","asset-overrides.js");
+  let contents=await fs.readFile(file,"utf8"),replaced=0;
+  for(const relative of sourceOnly){
+    // Only replace exact, manifest-listed sprite value literals. Never touch
+    // other owner overrides, licence text or the source-repository file.
+    const literal=":"+JSON.stringify(relative);
+    if(contents.includes(literal)){
+      contents=contents.split(literal).join(":null");
+      replaced++;
+    }
+    if(contents.includes(JSON.stringify(relative))){
+      fail("Staged R118 asset path remains in packaged owner overrides: "+relative);
+    }
+  }
+  await fs.writeFile(file,contents,"utf8");
+  console.log("R118 package disabled "+replaced+" staged-only owner override URLs");
+}
+
 function offlineRuntime(cacheToken){
   return [
     "(()=>{",
@@ -108,7 +180,7 @@ function transformIndex(source,cacheToken){
   if(/(?:href|src)="\/(?!\/)/.test(html))fail("Root-relative URL remains in staged itch index");
   return html;
 }
-async function collectManifest(root,version,sourceSha){
+async function collectManifest(root,version,sourceSha,sourceOnlyAssetsExcluded=[]){
   const files=[];
   async function walk(dir,relative){
     const entries=(await fs.readdir(dir,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name,"en"));
@@ -138,6 +210,7 @@ async function collectManifest(root,version,sourceSha){
     canonicalGameUrl:CANONICAL_GAME_URL,
     websiteAccountFeatures:[],
     localModes:["Solo","Tutorial"],
+    sourceOnlyAssetsExcluded,
     fileCount:files.length,
     totalBytes:files.reduce((sum,file)=>sum+file.bytes,0),
     files
@@ -149,6 +222,31 @@ async function verify(output){
   await ordinaryDir(root,"Itch package root");
   const manifest=JSON.parse(await fs.readFile(path.join(root,"release-manifest.json"),"utf8"));
   if(manifest.schema!=="ccg-c64-dungeon-carnage-itch-package-v1")fail("Unexpected itch package manifest schema");
+  // Guard actual downloadable bytes: staged-only author assets may stay in
+  // the repository but must never leak into the commercial release archive.
+  const artCatalogue=JSON.parse(await fs.readFile(path.join(root,"assets","asset-manifest.json"),"utf8"));
+  const {sourceOnly,requiredActive}=r118PackageSelection(artCatalogue);
+  const excluded=[...sourceOnly].sort();
+  if(JSON.stringify(manifest.sourceOnlyAssetsExcluded||[])!==JSON.stringify(excluded)){
+    fail("Itch R118 source-only exclusion list differs from audited manifest");
+  }
+  for(const relative of sourceOnly){
+    if(await exists(path.join(root,...relative.split("/"))))fail("Unused R118 candidate leaked into itch package: "+relative);
+  }
+  for(const relative of requiredActive){
+    await ordinaryFile(path.join(root,...relative.split("/")),"Licensed active R118 artwork");
+  }
+  const packagedOwners=await fs.readFile(path.join(root,"js","asset-overrides.js"),"utf8");
+  for(const relative of sourceOnly){
+    if(packagedOwners.includes(JSON.stringify(relative))){
+      fail("Inactive R118 artwork URL leaked into packaged game runtime: "+relative);
+    }
+  }
+
+  const credits=await fs.readFile(path.join(root,"assets","THIRD-PARTY-ART-CREDITS.md"),"utf8");
+  for(const expected of ["0x72","Niji","Kenney","Pixel_Poem","not CC0","commercial games"]){
+    if(!credits.includes(expected))fail("Required R118 third-party art credit or license boundary missing: "+expected);
+  }
   const version=JSON.parse(await fs.readFile(path.join(root,"version.json"),"utf8"));
   if(manifest.build!==version.build||manifest.cacheToken!==version.cacheToken||manifest.releaseVersion!==version.releaseVersion)fail("Manifest/version identity mismatch");
 
@@ -207,6 +305,9 @@ async function build(output,sourceSha){
   await fs.rm(outputRoot,{recursive:true,force:true});
   await fs.mkdir(outputRoot,{recursive:true});
 
+  const sourceCatalogue=JSON.parse(await fs.readFile(path.join(SOURCE_ROOT,"assets","asset-manifest.json"),"utf8"));
+  const selection=r118PackageSelection(sourceCatalogue);
+  const excluded=[...selection.sourceOnly].sort();
   const copied=[];
   for(const name of INCLUDE_FILES){
     const from=path.join(SOURCE_ROOT,name);
@@ -216,7 +317,7 @@ async function build(output,sourceSha){
     await fs.copyFile(from,to);
     copied.push(name);
   }
-  for(const name of INCLUDE_DIRS)await copyTree(path.join(SOURCE_ROOT,name),path.join(outputRoot,name),name,copied);
+  for(const name of INCLUDE_DIRS)await copyTree(path.join(SOURCE_ROOT,name),path.join(outputRoot,name),name,copied,selection.sourceOnly);
   for(const [sourceRelative,packageRelative] of EXTERNAL_FILES){
     assertAllowed(packageRelative);
     const from=path.join(REPO_ROOT,...sourceRelative.split("/"));
@@ -227,6 +328,8 @@ async function build(output,sourceSha){
     copied.push(packageRelative);
   }
 
+  await disableStagedOverrideUrls(outputRoot,selection.sourceOnly);
+
   const version=JSON.parse(await fs.readFile(path.join(outputRoot,"version.json"),"utf8"));
   const indexPath=path.join(outputRoot,"index.html");
   const sourceIndex=await fs.readFile(indexPath,"utf8");
@@ -234,7 +337,7 @@ async function build(output,sourceSha){
   await fs.writeFile(path.join(outputRoot,"js","itch-release-runtime.js"),offlineRuntime(version.cacheToken),"utf8");
   await fs.writeFile(path.join(outputRoot,"js","v10-42-demo-paywall.js"),packageDemoPaywallRuntime(),"utf8");
 
-  const manifest=await collectManifest(outputRoot,version,sourceSha);
+  const manifest=await collectManifest(outputRoot,version,sourceSha,excluded);
   await fs.writeFile(path.join(outputRoot,"release-manifest.json"),JSON.stringify(manifest,null,2)+"\n","utf8");
   await verify(outputRoot);
   console.log("C64 Dungeon Carnage itch package built: "+manifest.fileCount+" files, "+manifest.totalBytes+" bytes, "+manifest.build);

@@ -1,0 +1,90 @@
+# R118 — zero-payment replacements for discarded or restricted artwork
+
+Recorded: 8 October 2026. Scope: browser-based C64 Dungeon Carnage in `arcade/lost-sizzler/`.
+Owner directive: use free assets only; do not purchase packs, paid tiers or commercial upgrades.
+**Intake status: verified source-page licence / replacement CANDIDATE, not yet imported or runtime enabled.**
+
+## Replacement decisions (in order of preference)
+
+| Artwork to replace | First free candidate | Backup/alternative | Reason and caveat |
+|---|---|---|---|
+| Unidentified tileset floors and walls from `Dungeon tileset(1).zip` | Kenney Tiny Dungeon (CC0, 16x16) | DeadlyEssence01 Free 2D Dungeon Tileset (CC0, 16x16) | Preserve existing collision map and room topology; change drawings only after proportional preview. |
+| Unverified gold-key extraction | hyprv Dungeon Pack 16x16 (CC0; includes keys) | Existing approved 0x72/engine key fallback | Current key override stays disabled. Select and match exact source pixels before activation. |
+| Doors, stairs, chests, coins, potion replacements | hyprv Dungeon Pack 16x16 (CC0) | Kenney Tiny Dungeon (CC0) | Existing sprite/door behaviour stays unchanged. |
+| Barrels, general furniture and props from unknown-rights archive | Kenney Tiny Dungeon (CC0) | Tables and Misc Props 16x16 by .bee (CC0) | Furniture variety to be checked asset-by-asset; do not claim a bookcase exists unless inspected. |
+| Fireplace/sconce/torch sprites from unknown-rights archive | Original 0x72 v5 wall torches (already source-verified) | Spring Spring 16x16 Torch (CC0) | Existing four R118 wall-torch frames already selected; inspect aspect ratio rather than introduce duplicate graphics by default. |
+| Spikes, traps and environmental hazards | Existing approved 0x72 tiles/traps | Kettoman Free Pixel Dungeon Tileset 16x16 (free commercial use, no standalone resale) | Only visual substitutions; preserve hitboxes, damage and timing. |
+| Minifantasy free-version monsters/characters (non-commercial-only) | elesrech Pixel Monsters & Enemies (CC0; 16x16–32x32; animated) | Existing permitted 0x72 / Pixel_Poem sprites | Only integrate animations after frame-count, frame-box and game-size review. |
+| Dungeon Gathering Free Version free-tier elements | SnowHex original free archive (commercial use permitted; no standalone asset redistribution) | Kenney Tiny Dungeon / 0x72 CC0 | Original `License.txt` and creator page were verified. Free content is eligible for review; paid full edition excluded. Nothing activated until frame/visual QA. |
+| Paid premium expansion tiers | Free content from their verified creator packs | Kenney / hyprv / 0x72 CC0 packs | No paid assets or purchases. |
+
+## Verified original pages and licence text
+
+- Kenney Tiny Dungeon — https://kenney.nl/assets/tiny-dungeon — 2D 16x16, 130+ sprites, **CC0**, free download (donations optional). Maker: Kenney.
+- hyprv Dungeon Pack 16x16 — https://hyprv.itch.io/16x16-dungeon — **CC0**, free/name-your-own-price download; creator expressly allows commercial use; includes walls, doors, stairs, floors, torches, chests, potions, coins and keys.
+- DeadlyEssence01 Free 2D Dungeon Tileset — https://deadlyessence.itch.io/free-tilesets — **CC0**, 16x16; commercial and non-commercial use allowed.
+- elesrech Pixel Monsters & Enemies — https://elesrech.itch.io/pixel-monsters-enemies-asset-pack — **CC0**, 20 animated 16x16–32x32 creatures, free/name-your-own-price download.
+- .bee Tables and Misc Props (16x16) — https://opengameart.org/content/tables-and-misc-props-16x16 — **CC0**, free 16x16 furniture.
+- Spring Spring 16x16 Torch — https://opengameart.org/content/16x16-torch — **CC0**, free animated GIF.
+- Kettoman Free Pixel Dungeon Tileset — https://kettoman.itch.io/free-pixel-dungeon-tileset-16x16 — free for commercial use; no resale or redistribution as-is; includes traps, chests, doors, decorations. Respect source conditions.
+- Original 0x72 v5 — https://0x72.itch.io/16x16-dungeon-tileset — **CC0**; existing game assets preferred over duplicate packs.
+- Original 0x72 DungeonTileset II — https://0x72.itch.io/dungeontileset-ii — **CC0**; existing staged assets can be considered.
+
+Avoid assuming the apparently similar *Puny Dungeon* downloads carry identical licence metadata across hosts: itch.io lists CC BY 4.0 in the asset metadata despite CC0 prose, while OpenGameArt displays CC0. Keep this candidate out of the automatic CC0 queue pending clarification.
+
+## Mandatory before activating any replacement
+
+1. Obtain the actual **zero-cost** archive from its original creator; record exact source URL, release date, archive hash, included licence/readme and chosen sprite file hashes. Do not claim newly discovered download files are already in this repo.
+2. Inspect each sprite sheet: tile dimensions, grid, alpha transparency, direction, frame count, visual scale and nearest-neighbour reduction. Prefer 16x16 assets; a sprite sheet is not a single frame.
+3. Add only selected and verified binary assets; preserve existing fallback graphics. No unverified archive, paid tier, missing-licence artwork, or accidental standalone distribution.
+4. Guard renderer overrides and enhance existing R118 visual regression coverage; do not weaken existing tests or modify collision, room structure, combat, item logic or progression for cosmetic replacements.
+5. Reconcile R118 with the latest `main`, update the master audit, run exact-current-head qualification and verify in-browser proportions before merging. Documentation research is not release approval.
+
+## Current state
+
+- These are **located and licence-screened alternatives**, NOT downloaded, imported or switched on.
+- The Niji v1.1 gold-key source was subsequently verified by unique exact RGBA atlas match and the key was enabled. A 0x72 II crate was recovered, byte-matched to its free CC0 archive and activated without altering crate collision. Minifantasy free version and unknown-rights `Dungeon tileset(1).zip` stay excluded; paid tiers remain excluded.
+- No costs authorised. No release or mainline merge authorised.
+
+## Post-candidate progress — 8 October 2026
+
+Recovered original owner archives allowed immediate no-cost binary-backed intake independent of the four additional source-page candidates:
+
+- ACTUAL INTEGRATION: Niji Extended v1.1 gold key (exact unique pixel crop), replaces quarantined key; CC0.
+- ACTUAL INTEGRATION: 0x72 DungeonTileset II v1.7 `frames/crate.png` (16x24), active crate sprite; CC0.
+- VISUAL CORRECTION: wall-torch and tall props use aspect-preserving draw bounds.
+- NOW INTEGRATED: Kenney Tiny Dungeon free CC0 16x16 barrel (`tile_0082.png` in the curated source's attribution), recorded SHA-256 and enabled as an existing barrel rendering override. Its exact original tile index file was independently byte-matched in three additional Tiny Dungeon copies (same Git blob SHA); direct comparison with Kenney's own ZIP was not performed.
+- STILL SOURCE-ONLY: Other Kenney tiles, hyprv, DeadlyEssence01, elesrech, .bee and Kettoman files have not been acquired as matching local binary downloads; they have **not been added to runtime**.
+
+Use `assets/pixel/user-r118/PROVENANCE.md` and the R118 test contract for precise file fingerprints. The draft branch remains unmerged and still needs exact-current-head qualification.
+
+## Further source archive substitution — CC0 pillar
+
+The unknown-rights column artwork can now be replaced by the byte-matched original `frames/column.png` from the owner's 0x72 DungeonTileset II v1.7 ZIP (CC0-1.0), now imported as `cc0-column-0x72-ii.png`. Runtime activation is confined to `pillar` decor visuals; the retained plinth indicates its existing blocking tile. Do not substitute the old unverified `Dungeon tileset(1).zip` artwork or treat this single pillar as completion of the remaining unpaid-pack search.
+
+### SnowHex free-tier source evidence
+
+Original zero-payment archive `Dungeon Gathering Free Version.rar` is now available from the owner's file library; SHA-256 `8d6a7d7b71e548d45f471d41b4fb153622bad928b3982aa7e1fb8f89033c0611`. Its `License.txt` explicitly permits commercial projects and modification with no mandatory credit and forbids unbundled asset resale/redistribution. Creator page https://snowhex.itch.io/dungeon-gathering confirms the free-tier licence and differentiates the paid full-version tier. Retain as **free commercially eligible but unintegrated** until tile dimensions, animation slices and presentation are checked. 
+
+## Additional selected free source: animated Pixel_Poem coin
+
+From the original owner-uploaded free `2D Pixel Dungeon Asset Pack v2.0.zip` (commercial game use permitted by its creator at https://pixel-poem.itch.io/dungeon-assetpuck/comments?after=22), the original 16×16 four-phase spinning coin has been integrated as a visual replacement for gold-score pickups. Three PNGs are committed since source frame 4 is byte-for-byte identical to source frame 2. The previous R85 pickup-gold.svg continues as fallback. The external pack is free-commercial, **not CC0**, and is tracked in its own manifest namespace with exact source hashes; it should not be redistributed as an asset collection.
+
+Other candidates, including Pixel_Poem skeleton/vampire movement strips, remain unactivated. A side-by-side review found their small silhouettes less suitable than the game's existing larger animated enemies. This selection does not complete the entire future art-intake queue.
+
+## Bookcase decision and commercial packaging
+
+The existing R85 `prop-bookcase.svg` remains the visual fallback because the newly inspected Craftpix free `supplies_objects.png` contains **supply shelves** rather than a recognisable bookshelf. Replacing bookcases with a different prop would be a visual regression. A better zero-payment candidate is **Kenney's Roguelike/RPG Pack (2015)**: https://kenney.nl/assets/roguelike-rpg-pack (CC0, 16×16 tiles, includes bookcases), also listed by Kenney on OpenGameArt at https://opengameart.org/content/roguelikerpg-pack-1700-tiles. No bookcase sprite has been selected, extracted or activated from that pack yet; the actual tile and perspective must be checked first.
+
+Itch.io packaging no longer ships the ten staged-only R118 PNGs merely because they are in the working repository. Both CC0 and separately creator-licensed free-commercial `stagedNotWired` lists drive the exclusion automatically; the release manifest and `--verify` enforce this. Active art remains bundled and fallback rendering is unchanged. No purchases or changes to the original archives.
+
+
+### No-cost bookshelf comparison — R118 selection outcome
+
+A **real 16×16 bookshelf** (not Craftpix's supply shelves) was identified in [o_lobster's Simple Dungeon Crawler 16×16 pack](https://o-lobster.itch.io/simple-dungeon-crawler-16x16-pixel-pack), published under **CC0-1.0** and downloadable for **£0**. Its exact `props_itens/bookshelf.png` file has Git blob SHA `c705943144123b59e83f44178af8314fef0eed8f`, byte-matched across three independently hosted original-pack copies: `MateuSai/Godot-Roguelike-Tutorial`, `drxwat/godot-tutorial-turn-based-movement`, `axtonio/CoddyGodot`. This confirms a free, commercially usable alternative exists without purchasing any assets.
+
+A side-by-side render of the actual proposed sprite and the existing 64×64 R85 `prop-bookcase.svg` at game sizes 38, 76 and 152 pixels found the existing artwork **more recognisable and detailed at the live game's tile scale**. The free 16×16 image is too sparse to improve the design. The Kenney Roguelike/RPG pack is independently CC0 but its bookcase pixels are not yet independently extracted/compared. **Decision: keep R85 bookcase, do not import lower-quality alternatives into runtime, and do not regard the bookcase as an outstanding paid-asset dependency.** This is an artwork-suitability decision, not a licensing rejection.
+
+### Playable game art-credit record
+
+The downloadable game now ships `assets/THIRD-PARTY-ART-CREDITS.md` listing only **active** artwork from 0x72, Niji, Kenney and Pixel_Poem, with exact source links and the essential CC0 versus creator-granted commercial-use distinction. The itch.io builder verifies this file is present. Staged-only sprite artwork is still excluded from downloadable releases; source hashes and detailed usage terms stay in GitHub's provenance documentation.

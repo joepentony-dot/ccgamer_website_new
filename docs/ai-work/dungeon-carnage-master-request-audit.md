@@ -1,6 +1,6 @@
 # C64 Dungeon Carnage — Master Owner Request Reconciliation
 
-Last reconciled: 7 October 2026
+Last reconciled: 8 October 2026 (R118 branch audit; not proof of deployed acceptance)
 Repository: joepentony-dot/ccgamer_website_new
 Scope: browser-based C64 Dungeon Carnage only, plus directly related website tasks explicitly requested by the owner.
 
@@ -39,13 +39,12 @@ This file is the durable owner-request audit. A request is not considered finish
 - Tutorial contracts reconciled to current fifteen-floor systems.
 - Floor 15 Blood Archivist/guardian composition repaired so boss and Sigil progression do not compete.
 - Fifteen-floor enemy/hazard profiles and floor identities are retained.
-- R117 authored secondary trials and fifteen-floor room-objective identity are being reconciled on PR #2593.
+- R117 authored secondary trials and fifteen-floor room-objective identity were carried through merged PR #2593 (7 October 2026; recorded in the R118 audit). Deployed/owner acceptance remains a separate gate.
 
-### CURRENT RELEASE BLOCKER
-- PR #2593 is NOT yet merged.
-- Latest R117 branch includes the mandatory-trial/blocking-decor P1 repair.
-- Exact-head Full Qualification remains required before merge.
-- The current public release must not be presented as test-ready until main is merged/deployed and the live page reports V10.42 R117 with the R117 cache identity.
+### CURRENT RELEASE / ACCEPTANCE HOLD
+- R117 PR #2593 was merged on 7 October 2026. Do not repeat the outdated claim that it is open.
+- R118 PR #2600 remains a separate, not-yet-merged owner-supplied artwork pass; it must be reconciled with latest main and exact-head qualified.
+- The release and owner-test acceptance criteria below still apply, including confirmed deployment/cache identity; green CI on an earlier SHA is not sufficient.
 
 ---
 
@@ -85,11 +84,13 @@ Current R80 runtime defines only:
 
 Body and Trinket are not present in the canonical wearable slot order. This must not be called complete merely because R80 added genuine equipment.
 
-### OUTSTANDING — recent supplied third-party/free asset packs
-The owner supplied/identified newer packs on 7 October, including KayKit Dungeon Pack, Dungeons & Pixels demo, Dungeon tileset, free pixel-art dungeon objects, Super Pixel Objects, Treasure+ and related material, and asked to use suitable assets/source missing assets.
-The October asset-intake branch did not actually import those packs.
-Earlier R85/R97 authored art upgrades are real but do NOT satisfy this later asset-intake request.
-Any future intake must preserve proportions, visual quality at reduced size, licensing/provenance and gameplay collision/readability.
+### PARTIAL — recent supplied third-party/free asset packs (R118)
+The owner supplied/identified newer packs on 7 October, including KayKit Dungeon Pack, Dungeons & Pixels demo, Dungeon tileset, free pixel-art dungeon objects, Super Pixel Objects, Treasure+ and related material, and asked to use suitable artwork and source missing art.
+R118 imported four licensed 0x72 wall-torch frames and staged further candidates, but most owner-supplied packs are NOT yet integrated. The Niji gold-key override was re-enabled only after a unique exact pixel match against the recovered original v1.1 archive; one source-byte-matched 0x72 II crate is also now imported as a visual replacement, with proportional torch/prop rendering and hash-pinned tests. Earlier R85/R97 authored art does not close this request.
+Owner instructed: NO PAID LICENCES OR DOWNLOADS. Minifantasy free/non-commercial-only, paid expansion tiers and unknown-rights Dungeon tileset(1).zip are excluded from commercial intake.
+Additional free replacement source licences identified on original pages: Kenney Tiny Dungeon, hyprv Dungeon 16x16, DeadlyEssence01 Free Dungeon Tileset, elesrech animated monsters, and supplemental CC0 props/torches. A curated 16x16 Kenney Tiny Dungeon barrel is now imported, selected and SHA-pinned; it is a free CC0 replacement with a documented original tile index, and independently byte-matched to `tile_0082.png` in three public Kenney Tiny Dungeon folders (a direct comparison to Kenney's own ZIP was not performed). The other new free-source candidates are not imported or wired. SnowHex Dungeon Gathering Free Version was independently traced to the original creator's commercial-use permissions and its extracted embedded `License.txt`; the owner-held free version (not the paid full tier) is eligible for future scale/animation review, but no SnowHex sprites are enabled. The recovered owner archives also provided verified runtime CC0 key, crate and now 0x72 II 16×48 stone-column replacements. The column is rendered proportionally over a plinth to keep the existing blocking tile visually apparent, with unchanged collision and room logic. Its original archive hash and PNG identity are regression-guarded. Pixel_Poem's free 2D Pixel Dungeon Asset Pack v2.0 has also supplied an exact-source-verified animated 16×16 gold-score pickup (four animation phases, three distinct PNGs); the separately recorded creator-granted commercial-use permission is **not CC0**. R85 gold SVG fallback remains, all scoring and pickup behaviour stays unchanged. Smaller Pixel_Poem enemy sprites are held back after comparison with the existing larger enemy art. A licensing correction now distinguishes eight source-traced staged CC0 visuals from the remaining two staged Pixel_Poem movement strips: `skeleton-move.png` and `vampire-move.png` are creator-permitted free-commercial assets, **not CC0**, with exact source ZIP/frame hashes and no runtime activation. The R118 test rejects future CC0 misclassification. Both previously unverified staged 0x72 character sheets (`pumpkin-dude.png` and `plague-doc.png`) are now positively traced, pixel-for-pixel, to eight original DungeonTileset II v1.7 idle/run frames each (16×23 sprites within 16×32 atlas cells); original ZIP, sheet hashes and placement offsets have been recorded and regression-guarded. Neither sheet is mapped onto the current game enemies until gameplay visual acceptance. Full candidate and incorporation distinctions: docs/ai-work/dungeon-carnage-r118-free-replacements.md.
+The R118 itch.io builder now excludes all ten staged, unwired candidate PNGs from downloadable packages while preserving them untouched in the source repository. Its manifest-based licence-separated exclusion list, active-sprite presence checks and build-time verification passed against an actual package: ten excluded, none leaked, all active included. This makes future false source-only redistribution less likely; website asset layout and gameplay remain unchanged. Bookcase review is now CLOSED AS AN ARTWORK-QUALITY DECISION: Craftpix's wooden supply shelves are not bookcases. A real zero-cost CC0 16×16 bookshelf from o_lobster's original pack was located, byte-matched in three mirrors, and visually compared at game scale with the existing 64×64 R85 bookcase; the established R85 rendering was visibly more detailed and recognisable, so no paid asset or new override is needed. The package also now ships a concise artist-credit record for active 0x72, Niji, Kenney and separately licensed free-commercial Pixel_Poem artwork, regression-guarded for commercial-use and non-CC0 distinctions.
+Continue exact binary provenance, proportion/animation tests, appropriate credits, and preserved collisions/combat/progression. R118 is not complete until integrated, tested, approved and merged.
 
 ### PARTIAL / OUTSTANDING — endgame and credits
 R88 functionality is still present in current main and includes:
@@ -192,11 +193,11 @@ The owner should be told the build is ready for full gameplay testing only when:
 
 ## 9. Next repository work order
 
-1. Finish exact-head qualification and merge/deploy PR #2593 only when green.
-2. Re-run this audit against merged main.
+1. Reconcile draft R118 PR #2600 with current main; finish the free-only third-party asset intake and source-file matching, including the replacement candidate matrix.
+2. Verify pixel-scale/animation and regression tests; then run all qualification on the exact reconciled head before considering merge/deployment. Re-audit the deployed mainline after release.
 3. Salvage/finish the full requested endgame delta that remains beyond R88, especially persistent final reward/title and substantial completion flow.
 4. Reconcile the fuller equipment-slot request (Body + Trinket gap).
-5. Perform the October supplied-asset intake/licensing/proportion audit and integrate only suitable assets.
+5. Continue the October R118 owner-supplied and free-replacement asset intake; only use verified free/commercially usable files, not paid tiers or non-commercial-only artwork.
 6. Audit richer voiced NPC coverage and close remaining gaps.
 7. Salvage and merge the Bad Game Sprites quiz on a fresh current-main branch.
 8. Run the owner manual acceptance list on the deployed final candidate.
