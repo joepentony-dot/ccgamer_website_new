@@ -293,7 +293,9 @@
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
     if(state.active){
-      const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;
+      // Important recorded events may interrupt a lower-priority cue immediately.
+      // Never build a delayed playback queue: a stale voice can mislead players.
+      const importantOverride=priority>=50&&state.activePriority<30,recordedOverride=(priority>=60&&state.activePriority<50)||(priority>=44&&state.activePriority<25&&hasApprovedRecording(key)),mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride||recordedOverride;
       if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}
       if(!hasApprovedRecording(key)){state.skipped++;state.lastSkipped={key,reason:"no-approved-recording",at:now};return false}
       stopActive("interrupted")
@@ -311,7 +313,9 @@
     if(!coolReady(voiceKey,cooldown,now))return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key:voiceKey,reason:"unavailable",at:now};return false}
     if(state.active){
-      const mayInterrupt=Boolean(opts.interrupt);
+      // Encounter-specific recorded dialogue should take precedence over less
+      // important current speech rather than being lost or replayed late.
+      const mayInterrupt=Boolean(opts.interrupt)||(priority>=40&&priority>state.activePriority&&hasApprovedRecording(voiceKey));
       if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false}
       stopActive("interrupted")
     }
