@@ -356,7 +356,7 @@ for(const [label,environment] of [
   ["local file executable",{...site,protocol:"file:"}]
 ]){
   const sources=egressFixture(environment);
-  assert(!sources.some(url=>/\\.supabase\\.co\\/storage\\/v1\\/object\\//i.test(url)),label+" requested billable Supabase audio.");
+  assert(!sources.some(url=>/\.supabase\.co\/storage\/v1\/object\//i.test(url)),label+" requested billable Supabase audio.");
   assert(sources.includes("assets/audio/music/exploration.wav"),label+" must use its bundled authored track.");
 }
 console.log("Dungeon audio egress contracts passed: zero Supabase Storage music for automation/local/itch/file, live production preserved.");
