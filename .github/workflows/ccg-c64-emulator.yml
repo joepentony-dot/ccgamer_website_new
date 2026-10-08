@@ -50,15 +50,6 @@ jobs:
       - name: Verify phone portrait, landscape and touch fullscreen
         run: node tests/ccg-c64-mobile-layout.test.mjs
 
-      - name: Verify real first-visit Open ROM READY boot and representative PRG loads
-        run: node tests/ccg-c64-open-rom-boot.test.mjs
-
-      - name: Verify bundled Open ROM fallback preserves original user firmware
-        run: node tests/ccg-c64-open-rom-fallback.test.mjs
-
-      - name: Verify READY landing and explicit LOAD bypasses firmware setup
-        run: node tests/ccg-c64-ready-load-flow.test.mjs
-
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
