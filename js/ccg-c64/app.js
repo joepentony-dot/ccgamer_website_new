@@ -28,6 +28,7 @@ const onlineLibrarySuggestions = document.querySelector("[data-online-library-su
 const onlineLibrarySearchWrap = document.querySelector("[data-library-search-wrap]");
 const onlineLibraryCount = document.querySelector("[data-library-result-count]");
 const onlineLibraryMatchCount = document.querySelector("[data-library-match-count]");
+const onlineLibraryLoadButton = document.querySelector("[data-online-library-load]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
 const onlineLibraryDisks = document.querySelector("[data-online-library-disks]");
 const onlineLibraryDiskSelect = document.querySelector("[data-online-library-disk-select]");
@@ -126,6 +127,7 @@ let pendingMedia = null;
 let onlineLibraryEntries = [];
 let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
+let selectedLibraryEntryId = null;
 let onlineLibraryLoadingGame = false;
 const onlineLibraryPackCache = new Map();
 let autoStartSteps = null;
@@ -1536,6 +1538,33 @@ async function queueMediaFile(file, options = {}) {
   return queueMedia({ name: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()) }, options);
 }
 
+// Selecting a search result never mounts or starts media. Loading is a
+// separate explicit action, so the player can verify the chosen title first.
+function updateSelectedLibraryGame() {
+  const selected = onlineLibraryEntries.find((item) => item.id === selectedLibraryEntryId);
+  if (onlineLibraryLoadButton) {
+    onlineLibraryLoadButton.hidden = !selected;
+    onlineLibraryLoadButton.disabled = !selected || onlineLibraryLoadingGame;
+    onlineLibraryLoadButton.textContent = onlineLibraryLoadingGame ? "LOADING..." : "LOAD";
+  }
+  if (selected && onlineLibraryCount) {
+    onlineLibraryCount.textContent =
+      `SELECTED: ${selected.title} (${String(selected.format).toUpperCase()})`;
+  }
+}
+
+function selectOnlineLibraryEntry(id) {
+  if (onlineLibraryLoadingGame) return;
+  const entry = onlineLibraryEntries.find((item) => item.id === id);
+  if (!entry) return;
+  selectedLibraryEntryId = entry.id;
+  onlineLibrarySearch.value = entry.title;
+  refreshOnlineLibrarySuggestions();
+  setLibrarySuggestionsOpen(false);
+  updateSelectedLibraryGame();
+  onlineLibraryLoadButton?.focus();
+}
+
 function setLibrarySuggestionsOpen(open) {
   const show = Boolean(open && !onlineLibraryLoadingGame &&
     onlineLibraryEntries.length && onlineLibrarySearch?.value.trim());
@@ -1575,7 +1604,7 @@ function refreshOnlineLibrarySuggestions({ open = false } = {}) {
 
   if (!query) {
     if (onlineLibraryCount) onlineLibraryCount.textContent =
-      "Type a game title to see suggestions.";
+      "Type a title, then select a game.";
     setLibrarySuggestionsOpen(false);
     return;
   }
@@ -1612,7 +1641,7 @@ function refreshOnlineLibrarySuggestions({ open = false } = {}) {
       : `${filtered.total} MATCH${filtered.total === 1 ? "" : "ES"}`;
   if (onlineLibraryCount) onlineLibraryCount.textContent =
     filtered.total
-      ? "Select a game or use ↑ ↓ and Enter."
+      ? "Select a game, then click LOAD."
       : "No matches for that title.";
 
   setLibrarySuggestionsOpen(open);
@@ -1673,17 +1702,18 @@ async function initialiseOnlineLibrary() {
   onlineLibraryStatus.textContent = onlineLibraryEntries.length
     ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
+  updateSelectedLibraryGame();
 }
 
-async function loadOnlineLibraryEntry(id) {
-  if (onlineLibraryLoadingGame) return;
-  const entry = onlineLibraryEntries.find((item) => item.id === id);
+async function loadSelectedLibraryEntry() {
+  if (onlineLibraryLoadingGame || !selectedLibraryEntryId) return;
+  const entry = onlineLibraryEntries.find((item) => item.id === selectedLibraryEntryId);
   if (!entry) return;
-  onlineLibrarySearch.value = entry.title;
   setLibrarySuggestionsOpen(false);
   onlineLibraryLoadingGame = true;
   if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOADING GAME";
   refreshOnlineLibrarySuggestions();
+  updateSelectedLibraryGame();
 
   try {
     let bytes;
@@ -1722,6 +1752,7 @@ async function loadOnlineLibraryEntry(id) {
   } finally {
     onlineLibraryLoadingGame = false;
     refreshOnlineLibrarySuggestions();
+    updateSelectedLibraryGame();
   }
 }
 
@@ -1901,7 +1932,11 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 });
 
 onlineLibrarySearch?.addEventListener("input", () => {
+  // Any edit invalidates the previous choice. The LOAD GAME button must not
+  // accidentally start an old selection when the visible query has changed.
+  selectedLibraryEntryId = null;
   refreshOnlineLibrarySuggestions({ open: true });
+  updateSelectedLibraryGame();
 });
 onlineLibrarySearch?.addEventListener("focus", () => {
   refreshOnlineLibrarySuggestions({ open: true });
@@ -1931,13 +1966,14 @@ onlineLibrarySearch?.addEventListener("keydown", (event) => {
       !onlineLibrarySuggestions.hidden && visibleLibrarySuggestions.length) {
     event.preventDefault();
     const index = activeLibrarySuggestionIndex < 0 ? 0 : activeLibrarySuggestionIndex;
-    void loadOnlineLibraryEntry(visibleLibrarySuggestions[index].id);
+    selectOnlineLibraryEntry(visibleLibrarySuggestions[index].id);
   }
 });
 onlineLibraryGrid?.addEventListener("click", (event) => {
   const id = event.target.closest("[data-play-game]")?.dataset.playGame;
-  if (id) void loadOnlineLibraryEntry(id);
+  if (id) selectOnlineLibraryEntry(id);
 });
+onlineLibraryLoadButton?.addEventListener("click", () => { void loadSelectedLibraryEntry(); });
 onlineLibrarySearchWrap?.addEventListener("focusout", (event) => {
   if (!onlineLibrarySearchWrap.contains(event.relatedTarget)) setLibrarySuggestionsOpen(false);
 });
