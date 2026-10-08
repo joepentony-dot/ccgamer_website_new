@@ -1025,6 +1025,12 @@ function drawWallLights(){
     ctx.restore();
   }
 }
+function dungeonAssetFitRect(image,x,y,width,height,alignBottom=false){
+  const sw=Number(image?.naturalWidth),sh=Number(image?.naturalHeight);
+  if(!(sw>0&&sh>0&&width>0&&height>0))return null;
+  const scale=Math.min(width/sw,height/sh),w=Math.max(1,Math.round(sw*scale)),h=Math.max(1,Math.round(sh*scale));
+  return {x:Math.round(x+(width-w)/2),y:Math.round(y+(alignBottom?height-h:(height-h)/2)),w,h};
+}
 function drawFurniture(){
   for(const d of world.decor||[]){
     if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
@@ -1035,7 +1041,7 @@ function drawFurniture(){
     const fireplaceFrames=lostSizzlerPixelAssets.fireplaceFrames||[],torchSconceFrames=lostSizzlerPixelAssets.torchSconceFrames||[];
     if(propArt?.complete&&propArt.naturalWidth){
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor="rgba(0,0,0,.52)";ctx.shadowBlur=5;
-      ctx.drawImage(propArt,Math.round(q.x+1),Math.round(q.y+1),C.tile-2,C.tile-2);ctx.restore();
+      const fit=dungeonAssetFitRect(propArt,q.x+1,q.y+1,C.tile-2,C.tile-2,true);if(fit)ctx.drawImage(propArt,fit.x,fit.y,fit.w,fit.h);ctx.restore();
     }else if(d.type==="fireplace"&&fireplaceFrames.length===5&&fireplaceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
       const frame=fireplaceFrames[Math.floor(performance.now()/115+(h%5))%fireplaceFrames.length];
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.orange;ctx.shadowBlur=18;
@@ -1073,7 +1079,7 @@ function drawFurniture(){
     }else if(d.type==="candleSconce"&&torchSconceFrames.length===4&&torchSconceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
       const frame=torchSconceFrames[Math.floor(performance.now()/120+(h%4))%torchSconceFrames.length];
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.orange;ctx.shadowBlur=10;
-      ctx.drawImage(frame,Math.round(q.x+4),Math.round(q.y+2),C.tile-8,C.tile-4);ctx.restore();
+      const fit=dungeonAssetFitRect(frame,q.x+4,q.y+2,C.tile-8,C.tile-4);if(fit)ctx.drawImage(frame,fit.x,fit.y,fit.w,fit.h);ctx.restore();
     }else if(d.type==="candleSconce"){
       ctx.fillStyle="#8b6a3d";ctx.fillRect(q.x+C.tile/2-6,q.y+14,12,3);ctx.fillRect(q.x+C.tile/2-1,q.y+10,3,10);ctx.shadowColor=P.orange;ctx.shadowBlur=8;ctx.fillStyle=P.orange;ctx.fillRect(q.x+C.tile/2-3,q.y+5,6,7);ctx.fillStyle=P.gold;ctx.fillRect(q.x+C.tile/2-1,q.y+4,2,5)
     }else if(["terminal","console","oven"].includes(d.type)){
