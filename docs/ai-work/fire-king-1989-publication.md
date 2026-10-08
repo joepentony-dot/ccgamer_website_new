@@ -16,6 +16,14 @@ Before merging, upload and commit these exact files to this branch:
 
 The separate ChatGPT artifact `fire-king-website-assets.zip` holds these three files with their final repository paths. **Do not merge this branch until all three exist in the branch with the expected sizes/content.** Do not replace them with the Lemon64 image or a generic placeholder.
 
+## One-step owner upload (no Supabase login, no Git commands)
+
+1. Download the `fire-king-website-assets.zip` file supplied in this ChatGPT conversation.
+2. Open https://github.com/joepentony-dot/ccgamer_website_new/pull/2597 and drag the **ZIP itself** into the Pull Request **Conversation** comment box, then click **Comment**. Do not extract it first.
+3. Notify the assistant. The prepared guarded workflow `.github/workflows/fire-king-binary-asset-import.yml` can then be re-triggered by a branch commit. It reads **only a comment made by the repository owner**, downloads exactly that ZIP, matches **all three files against immutable SHA-256 and size checks**, and commits them only to the Fire King branch. It never uploads to Supabase or writes to main.
+
+This workaround is needed because the GitHub connector available in this ChatGPT session supports text-file edits but not binary attachments. The one-time ZIP stays attached to the PR as a review record.
+
 ## Record preflight
 
 - **Identity:** Fire King, C64, 1989, Micro Forté, Strategic Studies Group (SSG). Sources: https://www.lemon64.com/game/fire-king and original supplied manual.
