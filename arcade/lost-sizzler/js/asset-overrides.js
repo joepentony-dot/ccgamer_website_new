@@ -58,7 +58,7 @@ window.CCG_ASSET_OVERRIDES={
       bladeHazard:null,
       hazardHole:null,
       propCrate:"assets/pixel/user-r118/cc0-crate-0x72-ii.png",
-      propBarrel:null,
+      propBarrel:"assets/pixel/user-r118/kenney-tiny-dungeon-barrel.png",
       propBookcase:null,
       propConsole:null,
       r118PumpkinDude:"assets/pixel/user-r118/pumpkin-dude.png",
