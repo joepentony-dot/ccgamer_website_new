@@ -214,5 +214,5 @@ test("CCG boots original firmware automatically before a selected game starts", 
   assert(app.includes("installHostedROMs(vault, files)"));
   assert(app.includes("await powerOn()"));
   assert(!app.includes("open-rom-bundle"));
-  assert(html.includes("provided automatically by this website"));
+  assert(html.includes("supplied automatically by this website"));
 });
