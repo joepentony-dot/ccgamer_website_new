@@ -39,10 +39,17 @@ assert(html.includes('id="ccg-rom-set"') && html.includes("multiple"), "Direct m
 assert(html.includes("data-load-any-media"), "A file-first C64 media loader must exist");
 assert(html.includes("data-media-dropzone"), "Drag-and-drop media loading must exist");
 assert(html.includes("data-online-library-search"), "The game library needs a search box");
-assert(html.includes("data-online-library-grid"), "The game library needs separate playable game cards");
-assert(html.includes("data-library-letters"), "The game library needs A-Z navigation");
-assert(html.includes("data-library-previous") && html.includes("data-library-next"),
-  "A large catalogue must paginate instead of rendering all games");
+assert(html.includes('data-online-library-grid role="listbox"'),
+  "Game suggestions must be an accessible listbox rather than a full grid");
+assert(html.includes('role="combobox"') && html.includes('aria-autocomplete="list"') &&
+  html.includes('aria-expanded="false"') &&
+  html.includes('aria-controls="ccg-c64-library-options"'),
+  "The compact game search must expose accessible combobox semantics");
+assert(html.includes("data-online-library-suggestions hidden"),
+  "Game suggestions must not be visible before typing");
+assert(!html.includes("data-library-letters") && !html.includes("data-library-previous") &&
+  !html.includes("data-library-next") && !html.includes("data-library-format"),
+  "A-Z pagination and ALL browse controls must be removed");
 assert(!html.includes("data-online-library-select"), "The obsolete giant game dropdown must be removed");
 assert(html.includes("data-emulator-back"), "The emulator route must expose a visible Back control");
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
@@ -81,10 +88,16 @@ assert(app.includes("queueMediaFile"), "File-first media routing must be wired")
 assert(app.includes("initialiseOnlineLibrary"), "Online Library manifest loading must be wired");
 assert(app.includes("PACK_CATALOG_URL") && app.includes("parsePackedCatalog"),
   "Searchable game browser must load the owner-uploaded packed game catalogue");
-assert(app.includes("refreshOnlineLibraryCards") &&
-       app.includes("onlineLibraryPage += 1") &&
-       app.includes("onlineLibraryLetter = letter"),
-  "Searchable library must paginate and filter by first letter");
+assert(app.includes("refreshOnlineLibrarySuggestions") &&
+       app.includes("suggestCatalogGames(onlineLibraryEntries, query, 8)") &&
+       app.includes("setActiveLibrarySuggestion") &&
+       app.includes('event.key === "ArrowDown"') &&
+       app.includes('event.key === "Enter"'),
+  "Search must show bounded keyboard-navigable typeahead suggestions");
+assert(css.includes(".ccg-c64-library-suggestions[hidden]") &&
+       css.includes("position: absolute;") &&
+       css.includes(".ccg-c64-panel--library.is-suggesting"),
+  "Suggestions must float over the control deck without increasing grid height");
 assert(app.includes("available.every(Boolean)"),
   "Game browser must hide any partly uploaded game collection");
 assert(app.includes("directGameKeys") && app.includes("!directGameKeys.has("),
