@@ -139,8 +139,8 @@
             ],
             "provenanceNote": "CC0 Kenney original creator. Named original tile_0082.png byte-matched across three independently hosted pack copies (all Git blob 78f95bceab167e05e7e058c818b97360868fbdbc). Direct Kenney ZIP verification not performed.",
             "independentOriginalIndexGitBlobMatches": [
-              "https://github.com/Ultralak/Crusade/blob/master/GD/Art/kenney_tinyDungeon/Tiles/tile_0082.png",
-              "https://github.com/koisland/GodotSurvivalLike/blob/master/assets/kenney_tinydungeon/Tiles/tile_0082.png",
+              "https://github.com/Ultralak/Crusade/blob/main/GD/Art/kenney_tinyDungeon/Tiles/tile_0082.png",
+              "https://github.com/koisland/GodotSurvivalLike/blob/main/assets/kenney_tinydungeon/Tiles/tile_0082.png",
               "https://github.com/hortinstein/2DSurvivorsCourse/blob/master/CourseFiles/kenney_tinydungeon/Tiles/tile_0082.png"
             ]
           }
