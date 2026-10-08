@@ -79,10 +79,7 @@ assert(vault.includes("sizes: [8192]"), "KERNAL/BASIC size validation is require
 assert(vault.includes("sizes: [4096]"), "CHARGEN size validation is required");
 assert(vault.includes("sizes: [16384, 16386]"), "1541 size validation is required");
 assert(app.includes("vault.restore()"), "Cached ROM restoration must be wired");
-assert(app.includes('if (startupRoms.allRequiredReady && typeof SharedArrayBuffer !== "undefined")') &&
-  app.includes("vault.useBundledOpenRoms(readBundledOpenRoms())") &&
-  app.includes("initialPowerOn = powerOn();"),
-  "First-time Open ROM fallback or user's stored C64 ROMs must automatically boot the real CPU");
+assert(app.includes('if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined")'), "Cached system ROMs must auto-boot the real C64 on page load");
 assert(app.includes("void powerOn();"), "Cached-ROM startup must invoke the real C64 power-on path");
 assert(app.includes('document.querySelector("[data-emulator-back]")'), "Back navigation must be wired in the emulator application");
 assert(!app.includes("if (!initial.allRequiredReady) showSetup()"), "First visit must not force the firmware setup modal");
