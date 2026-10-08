@@ -2006,6 +2006,10 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     border-radius: 8px;
   }
   .ccg-c64-console > .ccg-c64-panel--library[hidden] { display: none !important; }
+  .ccg-c64-console > .ccg-c64-panel--library input[type="search"] {
+    min-height: 46px;
+    font-size: 16px;
+  }
   .ccg-c64-console > .ccg-c64-panel--library.is-suggesting { z-index: 90; }
   .ccg-c64-mobile-actions {
     display: flex;
