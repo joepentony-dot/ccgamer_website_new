@@ -315,10 +315,6 @@ select:focus-visible,
   transition: width 160ms ease;
 }
 
-.ccg-c64-screen-stage.is-2x .ccg-c64-screen-bezel {
-  width: min(768px, 100%);
-}
-
 #ccg-c64-screen {
   display: block;
   width: 100%;
@@ -1706,6 +1702,59 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-screen-bezel {
     max-width: 100%;
   }
+}
+
+
+/* Expanded SIZE mode gives the game its own wide row rather than constraining
+   it beside the controls. The panel layout returns when SIZE NORMAL is used. */
+@media (min-width: 960px) {
+  .ccg-c64-workspace.is-display-expanded {
+    display: block;
+    width: min(1880px, calc(100% - 0.8rem));
+  }
+
+  .ccg-c64-workspace.is-display-expanded .ccg-c64-console {
+    margin-bottom: 0.75rem;
+  }
+
+  .ccg-c64-workspace.is-display-expanded .ccg-c64-screen-stage {
+    height: min(90dvh, 980px);
+    min-height: min(68dvh, 760px);
+  }
+
+  .ccg-c64-workspace.is-display-expanded .ccg-c64-control-stack {
+    width: 100%;
+  }
+}
+
+/* The FULL button targets the picture stage alone, not its smaller parent
+   console with a status header and a vh-limited game viewport. The actual
+   C64 image stays at its native 384:272 ratio instead of being stretched. */
+.ccg-c64-screen-stage:fullscreen {
+  display: grid;
+  place-items: center;
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: none !important;
+  margin: 0;
+  padding: 0 !important;
+  border: 0;
+  border-radius: 0;
+  background: #000;
+  box-shadow: none;
+}
+
+.ccg-c64-screen-stage:fullscreen .ccg-c64-screen-bezel {
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transition: none;
+}
+
+.ccg-c64-screen-stage:fullscreen .ccg-c64-screen-glass {
+  border-radius: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

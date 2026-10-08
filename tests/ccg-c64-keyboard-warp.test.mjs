@@ -32,6 +32,16 @@ assert(!html.includes(">SOURCE</a>"), "Prominent source navigation must be omitt
 assert(html.includes('href="/emulator/c64/legal.html"'), "GPL source access must remain available");
 assert(app.includes("function fitScreenToStage()") && app.includes("new ResizeObserver(fitScreenToStage)"),
   "FIT must respond to measured display area and browser resize");
+assert(app.includes('screenStage.requestFullscreen({ navigationUI: "hide" })'),
+  "Fullscreen must target the picture only, not the surrounding status console");
+assert(css.includes(".ccg-c64-screen-stage:fullscreen") &&
+  css.includes("height: 100dvh !important") &&
+  css.includes(".ccg-c64-workspace.is-display-expanded"),
+  "Fullscreen must fill the viewport and SIZE must expand the screen independently of controls");
+assert(app.includes("function beginAutomaticWarp(") && app.includes("function finishAutomaticWarp()"),
+  "Media auto-start must enable maximum warp and restore real-time PAL speed");
+assert(app.includes("beginAutomaticWarp(200)"),
+  "CRT cartridge must receive a bounded fast-boot window");
 assert(css.includes("grid-template-areas:"), "Desktop control deck must declare explicit areas");
 assert(css.includes('"vault vault vault vault vault vault"'), "Vault controls must be available without collapsing");
 assert(css.includes("grid-template-columns: repeat(5, minmax(0, 1fr))"), "Ten primary actions must fit in two rows");
@@ -133,7 +143,8 @@ assert.notEqual(actualCIA.read(0x01) & (1 << 5), 0,
 for (const [code, col, row] of [
   ["F2", 0, 4], ["F4", 0, 5], ["F6", 0, 6], ["F8", 0, 3],
 ]) {
-  down(code, code);
+  const shiftedDown = down(code, code);
+  assert(shiftedDown.prevented, code + " must not activate a browser shortcut");
   assert(keys.has(keyId(col, row)) && keys.has(keyId(1, 7)), code + " must shift the C64 function key");
   up(code, code);
   assert(!keys.has(keyId(col, row)) && !keys.has(keyId(1, 7)), code + " release must clear both keys");
@@ -201,7 +212,8 @@ let runs = 0;
 let ticks = 0;
 const frameContext = vm.createContext({
   machine: { runFrame() { runs++; } }, running: true, paused: false,
-  warpLoadActive: true, lastFrameTime: 0, frameAccumulator: 0,
+  warpLoadActive: true, automaticWarpActive: false, automaticWarpFramesRemaining: 0,
+  lastFrameTime: 0, frameAccumulator: 0,
   PAL_FRAME_MS: 1000 / 50.125,
   WARP_FRAME_BUDGET_MS: 12, WARP_MAX_FRAMES_PER_TICK: 1024,
   performance: { now: () => ticks++ * 0.5 },
@@ -321,7 +333,8 @@ const fitStage = { clientWidth: 700, clientHeight: 240, classList: { toggle() {}
 const bezel = { style: { width: "" } };
 let desktop = true;
 const fitContext = vm.createContext({
-  screenStage: fitStage, screenBezel: bezel, fixed2x: false,
+  screenStage: fitStage, screenBezel: bezel, displayExpanded: false,
+  document: { fullscreenElement: null },
   window: {
     matchMedia() { return { matches: desktop }; },
     getComputedStyle() {
@@ -341,4 +354,38 @@ desktop = false;
 fitContext.fitNow();
 assert.equal(bezel.style.width, "", "Mobile must restore responsive CSS width");
 
-console.log("C64 keyboard S/CIA, VICE keys, focused-toolbar recovery, drag overlay, FIT and MAX Warp tests passed.");
+// Fullscreen overrides mobile sizing and uses both viewport dimensions.
+fitContext.document.fullscreenElement = fitStage;
+fitStage.clientWidth = 1920;
+fitStage.clientHeight = 1080;
+fitContext.fitNow();
+assert.equal(bezel.style.width, "1496px",
+  "Fullscreen C64 canvas must nearly fill viewport height without distortion");
+
+// Automatic game launches warp at MAX and return to real-time playback only
+// after the staged LOAD/RUN sequence has finished.
+const autoStartBegin = app.indexOf("function finishAutomaticWarp() {");
+const autoStartEnd = app.indexOf("async function prepareFreshGameSession()", autoStartBegin);
+assert(autoStartBegin >= 0 && autoStartEnd > autoStartBegin, "Automatic warp helpers missing");
+const speedTransitions = [];
+const autoContext = vm.createContext({
+  automaticWarpActive: false, automaticWarpFramesRemaining: 0,
+  warpLoadActive: false, autoStartSteps: null, autoStartTypeRest: "",
+  autoStartSawBusy: false, autoStartBudget: 0,
+  machine: { bufferKeyboardText: (text) => text.length },
+  running: true, paused: false,
+  basicReady() { return true; },
+  setWarpLoad(on) { speedTransitions.push(on); autoContext.warpLoadActive = on; },
+  stageNote: { textContent: "" },
+});
+vm.runInContext(app.slice(autoStartBegin, autoStartEnd) +
+  "\nglobalThis.enqueue = queueAutoStart; globalThis.advance = serviceAutoStart;", autoContext);
+autoContext.enqueue([{ ready: true }, { type: "RUN\\r" }]);
+assert.equal(speedTransitions.at(-1), true, "Auto-start must enable maximum warp");
+autoContext.advance();
+assert.equal(autoContext.warpLoadActive, true, "Waiting for RUN must remain accelerated");
+autoContext.advance();
+assert.equal(autoContext.warpLoadActive, false, "RUN completion must restore 1x speed");
+assert.equal(speedTransitions.at(-1), false, "Automatic warp must restore normal SID timing");
+
+console.log("C64 F1-F8, CIA keyboard, automatic MAX Warp, responsive expanded FIT and fullscreen tests passed.");

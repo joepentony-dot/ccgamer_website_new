@@ -85,6 +85,7 @@ const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
+const workspace = document.querySelector(".ccg-c64-workspace");
 
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
@@ -95,6 +96,8 @@ let machine = null;
 let running = false;
 let paused = false;
 let warpLoadActive = false;
+let automaticWarpActive = false;
+let automaticWarpFramesRemaining = 0;
 let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
@@ -136,7 +139,7 @@ let autoStartSawBusy = false;
 let autoStartBudget = 0;
 let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
 if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
-let fixed2x = localStorage.getItem("ccg.emulator.c64.size") === "2x";
+let displayExpanded = ["2x", "expanded"].includes(localStorage.getItem("ccg.emulator.c64.size"));
 
 const SID_WORKLET_URL = "/js/ccg-c64/core/sid/sid-worklet.js";
 let audioContext = null;
@@ -164,10 +167,10 @@ function cycleCrtMode() {
 
 function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
-  // Mobile layouts size from intrinsic aspect ratio. Desktop has a bounded
-  // screen stage, so fit the bezel to BOTH measured dimensions, not an
-  // assumed vh or a hard-coded browser toolbar height.
-  if (!window.matchMedia?.("(min-width: 960px)")?.matches) {
+  // Use every available pixel in fullscreen regardless of desktop breakpoints.
+  // In the page, mobile layouts still size naturally from the canvas ratio.
+  if (document.fullscreenElement !== screenStage &&
+      !window.matchMedia?.("(min-width: 960px)")?.matches) {
     screenBezel.style.width = "";
     return;
   }
@@ -178,22 +181,23 @@ function fitScreenToStage() {
   const availableHeight = Math.max(0, screenStage.clientHeight - padY);
   if (!availableWidth || !availableHeight) return;
   const ratio = 384 / 272;
-  const bezelWidth = Math.floor(Math.min(
-    availableWidth, availableHeight * ratio, fixed2x ? 768 : 1120
-  ));
+  const bezelWidth = Math.floor(Math.min(availableWidth, availableHeight * ratio));
   screenBezel.style.width = `${Math.max(1, bezelWidth)}px`;
 }
 
 function applyScreenSize() {
-  screenStage?.classList.toggle("is-2x", fixed2x);
+  workspace?.classList.toggle("is-display-expanded", displayExpanded);
   const strong = sizeButton?.querySelector("strong");
-  if (strong) strong.textContent = fixed2x ? "2X" : "FIT";
+  if (strong) strong.textContent = displayExpanded ? "NORMAL" : "EXPAND";
+  sizeButton?.setAttribute("aria-pressed", displayExpanded ? "true" : "false");
   fitScreenToStage();
+  // Grid reflow can change the stage dimensions after the synchronous measure.
+  requestAnimationFrame(fitScreenToStage);
 }
 
 function toggleScreenSize() {
-  fixed2x = !fixed2x;
-  localStorage.setItem("ccg.emulator.c64.size", fixed2x ? "2x" : "fit");
+  displayExpanded = !displayExpanded;
+  localStorage.setItem("ccg.emulator.c64.size", displayExpanded ? "expanded" : "fit");
   applyScreenSize();
 }
 
@@ -580,6 +584,13 @@ function handleC64Key(event, pressed) {
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
 
+  // F1-F8 are all C64 keys: F2/F4/F6/F8 are their shifted counterparts.
+  // Chrome otherwise consumes F3 (find), F5 (reload), F6 (address bar)
+  // and F7 (caret browsing) before games can use them.
+  if (!event.ctrlKey && !event.altKey && /^F[1-8]$/.test(event.code)) {
+    event.preventDefault();
+  }
+
   // Physical keyboard always wins over the gamepad, including when a gamepad
   // button remains pressed. The optional keyboard joystick converts arrow,
   // WASD and fire presses to the currently selected joystick port, but does
@@ -844,11 +855,25 @@ function basicReady() {
   return Boolean(ram && ram[0x00C6] === 0 && ram[0x00CC] === 0 && ram[0x002C] === 0x08);
 }
 
+function finishAutomaticWarp() {
+  automaticWarpFramesRemaining = 0;
+  if (!automaticWarpActive) return;
+  automaticWarpActive = false;
+  if (warpLoadActive) setWarpLoad(false);
+}
+
+function beginAutomaticWarp(frames = 0) {
+  automaticWarpActive = true;
+  automaticWarpFramesRemaining = frames;
+  setWarpLoad(true);
+}
+
 function cancelAutoStart() {
   autoStartSteps = null;
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 0;
+  finishAutomaticWarp();
 }
 
 function queueAutoStart(steps) {
@@ -856,6 +881,7 @@ function queueAutoStart(steps) {
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 10 * 60 * 60;
+  beginAutomaticWarp();
 }
 
 function serviceAutoStart() {
@@ -952,7 +978,9 @@ function frameLoop(now) {
         machine.runFrame();
         frames++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
-      } while (frames < WARP_MAX_FRAMES_PER_TICK &&
+        if (automaticWarpActive && automaticWarpFramesRemaining > 0 &&
+            --automaticWarpFramesRemaining === 0) finishAutomaticWarp();
+      } while (warpLoadActive && frames < WARP_MAX_FRAMES_PER_TICK &&
         performance.now() - start < WARP_FRAME_BUDGET_MS);
       if (autoStartSteps) serviceAutoStart();
       frameAccumulator = 0;
@@ -1096,13 +1124,20 @@ function setWarpLoad(value) {
 
 function toggleWarpLoad() {
   if (!machine || !running || paused) return;
+  // A manual click overrides automatic loading; don't switch the user's
+  // chosen speed again when the remaining LOAD/RUN steps finish.
+  automaticWarpActive = false;
+  automaticWarpFramesRemaining = 0;
   setWarpLoad(!warpLoadActive);
 }
 
 function togglePause() {
   if (!machine || !running) return;
   paused = !paused;
-  if (paused && warpLoadActive) warpLoadActive = false;
+  if (paused) {
+    finishAutomaticWarp();
+    warpLoadActive = false;
+  }
   setAudioPaused(paused);
   frameAccumulator = 0;
   lastFrameTime = 0;
@@ -1450,7 +1485,8 @@ async function openMediaBytes(media) {
     resetAudioForMachine();
     if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = `${info.mode.toUpperCase()} // ${mountedCartridge.label}`;
     if (machineState) machineState.textContent = `CARTRIDGE AUTO-BOOT // ${mountedCartridge.label.toUpperCase()}`;
-    if (stageNote) stageNote.textContent = "CRT cartridge inserted and booted automatically through the cartridge hardware path.";
+    if (stageNote) stageNote.textContent = "Cartridge inserted. Booting at maximum warp speed for four emulated seconds, then returning to normal timing.";
+    beginAutomaticWarp(200);
     updateMediaControls(vault.snapshot());
     screen?.focus();
     return true;
@@ -1687,8 +1723,8 @@ prgInput?.addEventListener("change", async () => {
   await queueMediaFile(file);
 });
 
-window.addEventListener("keydown", (event) => handleC64Key(event, true));
-window.addEventListener("keyup", (event) => handleC64Key(event, false));
+window.addEventListener("keydown", (event) => handleC64Key(event, true), { capture: true });
+window.addEventListener("keyup", (event) => handleC64Key(event, false), { capture: true });
 window.addEventListener("blur", releaseAllInput);
 document.addEventListener("focusin", (event) => {
   if (running && usesNativeKeyboard(event.target)) releaseAllInput();
@@ -1702,10 +1738,11 @@ document.addEventListener("visibilitychange", () => {
   }
   lastFrameTime = 0;
   frameAccumulator = 0;
-  if (!paused) setAudioPaused(false);
+  if (!paused) setAudioPaused(warpLoadActive);
 });
 
 document.addEventListener("fullscreenchange", () => {
+  fitScreenToStage();
   if (!running || paused) return;
   lastFrameTime = 0;
   frameAccumulator = 0;
@@ -1920,6 +1957,8 @@ async function loadGameVaultSlot() {
     }
 
     stopFrameLoop();
+    cancelAutoStart();
+    warpLoadActive = false;
     setAudioPaused(true);
 
     mountedDisk = cloneMedia(payload.media?.disk);
@@ -2002,12 +2041,16 @@ for (const button of document.querySelectorAll("[data-joy-mask]")) {
 void refreshVaultStatus();
 
 fullscreenButton?.addEventListener("click", async () => {
-  const target = document.querySelector(".ccg-c64-console");
-  if (!target) return;
+  if (!screenStage) return;
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
-    else await target.requestFullscreen();
-  } catch {}
+    else await screenStage.requestFullscreen({ navigationUI: "hide" });
+    fitScreenToStage();
+    screen?.focus();
+  } catch (error) {
+    if (stageNote) stageNote.textContent = "Fullscreen was blocked by the browser. Use the DISPLAY FULL button again, or check browser permissions.";
+    console.warn("[ccg-c64] Fullscreen unavailable:", error);
+  }
 });
 
 document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date().getFullYear()));
