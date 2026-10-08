@@ -82,7 +82,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   let firstBasicEntry = null, firstEaLoop = null, firstScreenWrite = null;
   const sampledCycles = [];
   const screenClearCalls = [], basicColdCalls = [], screenOutputCalls = [];
-  const nmiTransitions = [], acceptedNmis = [];
+  const nmiTransitions = [], acceptedNmis = [], acceptedInterrupts = [], recoveryEntries = [], pcTrail = [];
   const originalNmiSource = machine._setNmiSource.bind(machine);
   machine._setNmiSource = (source,asserted) => {
     if(nmiTransitions.length < 16) nmiTransitions.push({frame:frames,source,asserted,pc:machine.cpu.pc.toString(16),cia2:{mask:machine.cia2.icrMask,status:machine.cia2.icrStatus,irq:machine.cia2.irqState},prev:{...machine._nmiSources}});
@@ -90,6 +90,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   };
   const originalAccept = machine.cpu.onInterruptAccept;
   machine.cpu.onInterruptAccept = (kind) => {
+    if(acceptedInterrupts.length<30) acceptedInterrupts.push({kind,frame:frames,pc:machine.cpu.pc.toString(16)});
     if(kind==='nmi' && acceptedNmis.length<16) acceptedNmis.push({frame:frames,pc:machine.cpu.pc.toString(16),sources:{...machine._nmiSources},cia2:{mask:machine.cia2.icrMask,status:machine.cia2.icrStatus,irq:machine.cia2.irqState}});
     originalAccept?.(kind);
   };
@@ -98,6 +99,12 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   machine.cpu.clock = function () {
     if (this.atInstructionBoundary()) {
       const pc = this.pc;
+      pcTrail.push(pc.toString(16)); if(pcTrail.length>16) pcTrail.shift();
+      if((pc===0xfe43 || pc===0xfe47 || pc===0xfe6c || pc===0xfe6f || pc===0xff48) && recoveryEntries.length<28) {
+        recoveryEntries.push({frame:frames,pc:pc.toString(16),sp:this.sp,p:this.p,irq:this.irqLine,nmi:this.nmiLine,
+          source:{...machine._nmiSources},vectorRam:[...machine.mem.ram.slice(0x314,0x31a)],
+          stack:[...machine.mem.ram.slice(0x100+this.sp+1,0x100+Math.min(0xff,this.sp+13))],trail:[...pcTrail]});
+      }
       if(pc===0xe544 && screenClearCalls.length<16) screenClearCalls.push(stackSnapshot(this));
       if(pc===0xa67a && basicColdCalls.length<16) basicColdCalls.push(stackSnapshot(this));
       if(pc===0xe716 && screenOutputCalls.length<16) screenOutputCalls.push(stackSnapshot(this));
@@ -155,7 +162,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
     const ram = machine.mem.ram;
     console.log("BASIC execution statistics", JSON.stringify({
       basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,firstBasicEntry,firstEaLoop,firstScreenWrite,
-      screenClearCalls,basicColdCalls,screenOutputCalls,nmiTransitions,acceptedNmis,
+      screenClearCalls,basicColdCalls,screenOutputCalls,nmiTransitions,acceptedNmis,acceptedInterrupts,recoveryEntries,
       eaInstr:[...eaInstr.entries()].sort((a,b)=>b[1]-a[1]).slice(0,45).map(([pc,count])=>[pc.toString(16),count]),
       eaClrRows:[...eaClrRows.entries()].sort((a,b)=>a[0]-b[0]),
       sampleY,
