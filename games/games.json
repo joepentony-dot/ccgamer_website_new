@@ -8115,6 +8115,60 @@
   },
   {
     "system": "C64",
+    "id": "fire_king",
+    "slug": "fire-king",
+    "title": "Fire King",
+    "sorttitle": "Fire King",
+    "year": 1989,
+    "genres": [
+      "action-adventure",
+      "shooting",
+      "role-playing"
+    ],
+    "collections": [],
+    "videoid": "9Wlh2bEIRWM",
+    "thumbnail": "resources/images/thumbnails/all/fire-king.webp",
+    "pdf": "/resources/manuals/fireking-manual.pdf",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://www.lemon64.com/game/fire-king"
+    ],
+    "zzap": [],
+    "description": "Fire King is a 1989 Commodore 64 fantasy action adventure from Australian developer Micro Forté, published by Strategic Studies Group. Following Demon Stalkers, it takes Gauntlet-style crossbow combat into a larger world of towns, forests, dungeons and waterways. Choose from six adventurers with different strength, armour and magic, then explore a kingdom threatened by the death of its Fire Mage king. Fight monsters, follow clues, buy equipment and work out how to use scrolls, bells, magical boots and relics. Limited inventory space, hidden passages, attribute-draining slimes and simultaneous two-player support make progress more involved than a straightforward arcade shooter. Fire King's two-disk release also included maps and the Oracle's Mystical Cypher code wheel for adventure passwords. Its ambitious design is interesting, although navigation and inventory juggling can make the journey frustrating.",
+    "ccg_rating": 5,
+    "ccg_rating_reason": "Fire King has plenty of ambition. The wider world, improved scrolling, strange equipment and puzzles give it more to do than Demon Stalkers, but I spent too much time getting lost, juggling seven pockets and battling awkward controls rather than enjoying the adventure. There's a good game trying to get out of here, but the frustration wins far too often. 5/10.",
+    "credits": {
+      "publisher": [
+        "Strategic Studies Group"
+      ],
+      "producer": "",
+      "coder": [
+        "Jeff Pritchard",
+        "John De Margheriti",
+        "Simon Hayes",
+        "Stephen Lewis",
+        "Stephen Wang"
+      ],
+      "graphics": [
+        "Stephen Lewis"
+      ],
+      "musician": [
+        "John De Margheriti",
+        "Michael Stoney"
+      ],
+      "re_releaser": [],
+      "developer": "Micro Forté",
+      "title_screen": "Stephen Lewis",
+      "box_art": "Nick Stathopoulos",
+      "music_driver_assistance": "Rob Hubbard"
+    },
+    "developer": "Micro Forté",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "firelord",
     "slug": "firelord",
     "title": "Firelord",
