@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
   "summary": {
-    "c64Games": 561,
+    "c64Games": 562,
     "archiveReleasesScanned": 2900,
     "matchedGames": 415,
     "manualReviewGames": 15,
-    "noTitleCandidateGames": 131,
-    "unmatchedGames": 146
+    "noTitleCandidateGames": 132,
+    "unmatchedGames": 147
   },
   "unmatched": [
     {
@@ -447,6 +447,16 @@
       "year": 1990,
       "publishers": [
         "Mindscape"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "fire-king",
+      "title": "Fire King",
+      "year": 1989,
+      "publishers": [
+        "Strategic Studies Group"
       ],
       "reReleasers": [],
       "status": "no-title-candidate"

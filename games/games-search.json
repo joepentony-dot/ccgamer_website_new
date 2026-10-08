@@ -3756,6 +3756,29 @@
     "year": 1983
   },
   {
+    "title": "Fire King",
+    "slug": "fire-king",
+    "publisher": [
+      "Strategic Studies Group"
+    ],
+    "genre": [
+      "action-adventure",
+      "shooting",
+      "role-playing"
+    ],
+    "genres": [
+      "action-adventure",
+      "shooting",
+      "role-playing"
+    ],
+    "composer": [
+      "John De Margheriti",
+      "Michael Stoney"
+    ],
+    "music": [],
+    "year": 1989
+  },
+  {
     "title": "Firelord",
     "slug": "firelord",
     "publisher": [

@@ -1212,6 +1212,12 @@
     "thumbnail": "resources/images/thumbnails/all/fire_ant_new.png"
   },
   {
+    "slug": "fire-king",
+    "title": "Fire King",
+    "year": 1989,
+    "thumbnail": "resources/images/thumbnails/all/fire-king.webp"
+  },
+  {
     "slug": "firelord",
     "title": "Firelord",
     "year": 1986,

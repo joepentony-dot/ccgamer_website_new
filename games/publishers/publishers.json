@@ -2004,6 +2004,18 @@
     "url": "/games/publishers/strategic-simulations-inc/"
   },
   {
+    "name": "Strategic Studies Group",
+    "slug": "strategic-studies-group",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/strategic-studies-group/"
+  },
+  {
     "name": "Summit",
     "slug": "summit",
     "count": 4,
