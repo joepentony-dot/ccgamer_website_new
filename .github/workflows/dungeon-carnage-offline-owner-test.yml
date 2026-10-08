@@ -1,0 +1,89 @@
+name: C64 Dungeon Carnage — Offline Owner Test ZIP
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/dungeon-carnage-offline-launcher/**'
+      - 'scripts/verify-dungeon-carnage-offline-egress.mjs'
+      - 'arcade/lost-sizzler/**'
+      - '.github/workflows/dungeon-carnage-offline-owner-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-owner-zip:
+    name: Windows offline owner package and no-Supabase tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: Test local-only launcher
+        run: |
+          GO111MODULE=off go test ./scripts/dungeon-carnage-offline-launcher
+      - name: Stage and verify self-contained game
+        shell: bash
+        run: |
+          set -euo pipefail
+          game="$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline/game"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --output "$game" --source-sha "$GITHUB_SHA"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "$game"
+      - name: Build portable Windows x64 game launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline"
+          GO111MODULE=off GOOS=windows GOARCH=amd64 CGO_ENABLED=0 \
+            go build -trimpath -ldflags="-s -w" -o "$stage/PLAY-DUNGEON-CARNAGE.exe" ./scripts/dungeon-carnage-offline-launcher/main.go
+          test -s "$stage/PLAY-DUNGEON-CARNAGE.exe"
+          cat > "$stage/READ-ME-FIRST.txt" <<'TXT'
+          C64 DUNGEON CARNAGE — OWNER OFFLINE TEST PACKAGE
+
+          1. Extract the entire ZIP into a new folder on your Windows PC.
+          2. Double-click PLAY-DUNGEON-CARNAGE.exe.
+          3. Your default browser opens automatically with the game.
+          4. Keep the small launcher window open while playing.
+          5. Close the launcher window when you are finished.
+
+          No Supabase account is needed. This launcher runs only on
+          127.0.0.1 on your own computer. It does not close browsers or
+          other programs. Your existing online member-access gate stays unchanged.
+
+          This is an interim browser-based executable launcher, NOT
+          the final native Windows game. Built from this pull request;
+          it is a test package and should not be shared as a public release.
+
+          If Windows SmartScreen warns about an unknown app, that is
+          because this development build does not have a code-signing certificate.
+          TXT
+      - name: Test browser startup with no production Supabase traffic
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+          game="$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline/game"
+          node scripts/verify-c64-dungeon-carnage-itch-browser.mjs --root "$game"
+          node scripts/verify-dungeon-carnage-offline-egress.mjs --root "$game"
+      - name: ZIP owner-only test bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline"
+          (cd "$stage" && zip -X -q -r "$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline-Owner-Test.zip" .)
+          unzip -l "$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline-Owner-Test.zip" | grep -q ' PLAY-DUNGEON-CARNAGE.exe$'
+          unzip -l "$RUNNER_TEMP/CCG-Dungeon-Carnage-Offline-Owner-Test.zip" | grep -q ' game/release-manifest.json$'
+      - name: Upload downloadable offline ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: CCG-Dungeon-Carnage-Offline-Owner-Test
+          path: ${{ runner.temp }}/CCG-Dungeon-Carnage-Offline-Owner-Test.zip
+          if-no-files-found: error
+          retention-days: 14
