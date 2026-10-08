@@ -17,7 +17,8 @@
       "filename": "bruce-lee-trilogy.crt",
       "format": "crt",
       "url": "/emulator/c64/media/bruce-lee-trilogy.crt",
-      "description": "Magic Desk cartridge; boots on selection."
+      "description": "Magic Desk cartridge; boots on selection.",
+      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
     },
     {
       "id": "forbidden-forest",
@@ -25,7 +26,8 @@
       "filename": "forbidden-forest.d64",
       "format": "d64",
       "url": "/emulator/c64/media/forbidden-forest.d64",
-      "description": "Disk image; LOAD/RUN is automatic."
+      "description": "Disk image; LOAD/RUN is automatic.",
+      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
     },
     {
       "id": "paradroid",
@@ -33,7 +35,8 @@
       "filename": "paradroid.d64",
       "format": "d64",
       "url": "/emulator/c64/media/paradroid.d64",
-      "description": "Disk image; LOAD/RUN is automatic."
+      "description": "Disk image; LOAD/RUN is automatic.",
+      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
     },
     {
       "id": "uridium",
@@ -41,7 +44,8 @@
       "filename": "uridium.d64",
       "format": "d64",
       "url": "/emulator/c64/media/uridium.d64",
-      "description": "Disk image; LOAD/RUN is automatic."
+      "description": "Disk image; LOAD/RUN is automatic.",
+      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
     },
     {
       "id": "master-of-magic",
@@ -49,7 +53,8 @@
       "filename": "Master_of_magic.d64",
       "format": "d64",
       "url": "/emulator/c64/media/Master_of_magic.d64",
-      "description": "Disk image; LOAD/RUN is automatic."
+      "description": "Disk image; LOAD/RUN is automatic.",
+      "license": "PENDING: third-party redistribution authorisation must be verified before publication."
     }
   ]
 }
