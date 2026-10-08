@@ -1380,7 +1380,7 @@ async function openMediaBytes(media) {
     if (stageNote) {
       stageNote.textContent = useTrueDrive
         ? "Disk mounted in True 1541 mode. The emulator will wait for BASIC READY, type LOAD, wait for loading to finish, then type RUN."
-        : "Disk mounted in Fast Load mode. The emulator will automatically LOAD and RUN the first program.";
+        : "Disk mounted in Fast Load mode. The emulator will automatically LOAD and RUN the first program. If the game asks for Disk 2, choose SWAP DISK; your game will continue.";
     }
     updateMediaControls(vault.snapshot());
     updateOnlineDiskUi();
