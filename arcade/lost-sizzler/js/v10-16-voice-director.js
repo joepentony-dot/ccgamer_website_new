@@ -524,13 +524,13 @@
     watchMs-=Number(dt||0);if(watchMs>0||mode!=="playing"||!p1||tutorialSilent())return;watchMs=350;
     try{
       if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.12&&!state.criticalHealthLatch.has(p1)){state.criticalHealthLatch.add(p1);sayKey("criticalHealth")}else if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){state.lowHealthLatch.add(p1);sayKey("lowHealth")}
-      for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){state.gildedFiveWarned.add(elf.id);sayKey("gildedFive",{cooldown:0})}
+      for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){if(sayKey("gildedFive",{cooldown:0}))state.gildedFiveWarned.add(elf.id)}
       const banish=typeof banishmentState==="function"?banishmentState(p1):null;
-      if(banish?.ready&&banish.nearest&&!state.banishmentPromptSeen.has(banish.nearest)){state.banishmentPromptSeen.add(banish.nearest);sayKey("useBanishmentFlask",{cooldown:0});return}
+      if(banish?.ready&&banish.nearest&&!state.banishmentPromptSeen.has(banish.nearest)){if(sayKey("useBanishmentFlask",{cooldown:0}))state.banishmentPromptSeen.add(banish.nearest);return}
       const guardians=[host?.guardian,...(host?.enemies||[])].filter(Boolean),guardian=guardians.find(enemy=>enemy?.alive&&enemy?.guardian&&!enemy?.exitWarden&&!enemy?.sigilWarden&&sharesLiveRoom(enemy));
-      if(guardian&&!state.guardianVoiceSeen.has(guardian)){state.guardianVoiceSeen.add(guardian);sayKey("guardianEncountered",{cooldown:0});return}
+      if(guardian&&!state.guardianVoiceSeen.has(guardian)){if(sayKey("guardianEncountered",{cooldown:0}))state.guardianVoiceSeen.add(guardian);return}
       const roomId=W.roomAt(world,p1.x,p1.y),roomKey=`${Number(run?.floor||1)}:${roomId}`,ordinaryNearby=(host?.enemies||[]).some(enemy=>enemy?.alive&&!enemy?.follower&&!enemy?.guardian&&!enemy?.deathStalker&&!enemy?.exitWarden&&!enemy?.sigilWarden&&sharesLiveRoom(enemy));
-      if(ordinaryNearby&&!state.enemyRoomVoiceKeys.has(roomKey)){state.enemyRoomVoiceKeys.add(roomKey);sayKey("enemiesNearby",{cooldown:0})}
+      if(ordinaryNearby&&!state.enemyRoomVoiceKeys.has(roomKey)){if(sayKey("enemiesNearby",{cooldown:0}))state.enemyRoomVoiceKeys.add(roomKey)}
     }catch(_){}
   }
   if(typeof update==="function"){
