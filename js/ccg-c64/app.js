@@ -24,6 +24,9 @@ const controlsDeck = document.querySelector(".ccg-c64-control-stack");
 const onlineLibrarySelect = document.querySelector("[data-online-library-select]");
 const onlineLibraryLoad = document.querySelector("[data-online-library-load]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
+const onlineLibraryDisks = document.querySelector("[data-online-library-disks]");
+const onlineLibraryDiskSelect = document.querySelector("[data-online-library-disk-select]");
+const onlineLibraryDiskSwapButton = document.querySelector("[data-online-library-disk-swap]");
 const machineState = document.querySelector("[data-machine-state]");
 const screen = document.getElementById("ccg-c64-screen");
 // Match the upstream C64 READY presentation path: WebGL first, Canvas2D only as a fallback.
@@ -43,6 +46,8 @@ const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
 const loadDiskButton = document.querySelector("[data-load-disk]");
 const diskInput = document.getElementById("ccg-c64-disk-input");
+const swapDiskButton = document.querySelector("[data-swap-disk]");
+const swapDiskInput = document.getElementById("ccg-c64-swap-disk-input");
 const diskSlotStatus = document.querySelector("[data-disk-slot-status]");
 const driveModeButton = document.querySelector("[data-drive-mode]");
 const loadTapeButton = document.querySelector("[data-load-tape]");
@@ -90,6 +95,11 @@ let speedSampleTime = 0;
 let speedSampleFrames = 0;
 let driveMode = "fast"; // Always start user-facing sessions in auto-loading Fast Load mode.
 let mountedDisk = null;
+// Hold alternate sides in memory so returning to Disk 1 preserves its writes.
+const diskSideCache = new Map();
+let mountedDiskKey = null;
+let activeLibraryEntryId = null;
+let activeLibraryDiskIndex = 0;
 let mountedTape = null;
 let mountedCartridge = null;
 let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
@@ -343,6 +353,9 @@ function updateMediaControls(snapshot = vault.snapshot()) {
   if (vaultSaveButton) vaultSaveButton.disabled = !active;
   if (vaultLoadButton) vaultLoadButton.disabled = !active;
   if (vaultClearButton) vaultClearButton.disabled = false;
+  if (swapDiskButton) swapDiskButton.disabled = !active || !mountedDisk;
+  if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled =
+    !active || !mountedDisk || !activeLibraryEntryId;
   updateDriveModeUi(snapshot);
 }
 
@@ -364,6 +377,7 @@ function captureMutableMedia() {
   machine.commitDriveWrites();
   if (mountedDisk && machine.currentD64?.img) {
     mountedDisk = { ...mountedDisk, bytes: machine.currentD64.img.slice() };
+    if (mountedDiskKey) diskSideCache.set(mountedDiskKey, cloneMedia(mountedDisk));
   }
   if (mountedTape?.kind === "tap" && machine.datasette?.hasMedia) {
     mountedTape = { ...mountedTape, bytes: machine.exportTapBytes() };
@@ -875,6 +889,8 @@ async function prepareFreshGameSession() {
   releaseAllInput();
 
   mountedDisk = null;
+  mountedDiskKey = null;
+  diskSideCache.clear();
   mountedTape = null;
   mountedCartridge = null;
   driveMode = "fast";
@@ -1230,6 +1246,8 @@ async function openMediaBytes(media) {
     const disk = g64 ? new G64(bytes) : new D64(bytes);
     machine.setD64(disk);
     mountedDisk = { name, bytes: bytes.slice(), kind };
+    mountedDiskKey = media.sourceKey || `local:${name}`;
+    diskSideCache.set(mountedDiskKey, cloneMedia(mountedDisk));
 
     if (g64) {
       driveMode = "true";
@@ -1329,6 +1347,7 @@ async function queueMedia(media, { freshBoot = false } = {}) {
     name: media.name || `media.${type}`,
     type,
     bytes: media.bytes instanceof Uint8Array ? media.bytes.slice() : new Uint8Array(media.bytes),
+    sourceKey: media.sourceKey || null,
   };
 
   if (!vault.snapshot().allRequiredReady) {
