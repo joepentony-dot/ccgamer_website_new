@@ -28,3 +28,18 @@ This asset pass does not modify collision, room topology, trap damage, AI, inven
 - PENDING SOURCE MATCH: KayKit, Craftpix, Dungeons & Pixels, Super Pixel Objects, Treasure+ and remaining packs. No licence approval inferred from filenames alone.
 
 Source-page licensing verification does not establish binary-level identity for every extracted sprite. Retain original file-match requirements and the exact-head CI/release gate.
+
+## Free-tier licensing investigation — 8 October 2026 (additional pass)
+
+Policy: NO PAID ASSET ACQUISITIONS. Do not purchase licences or include paid-only pack contents. 'Discard' means exclude from candidate/release consideration; do not erase user archives or existing assets without separate review.
+
+- KayKit Dungeon Pack 1.1 FREE: https://kaylousberg.itch.io/kaykit-dungeon-pack — CC0 commercial use permitted, free tier only. EXTRA and SOURCE tiers require payment: EXCLUDE. Primarily 3D models, not automatically suitable for the 2D browser game's pixel-art presentation.
+- KayKit Dungeon Pack 1.0 legacy: https://kaylousberg.itch.io/kaykit-dungeon — CC0 commercial use permitted. Match version before selecting files.
+- Dungeons & Pixels Free Demo: https://indie-vova.itch.io/dungeons-and-pixels-starter-pack — creator permits commercial use and modification, prohibits standalone pack redistribution. FREE DEMO only; premium starter pack is paid and EXCLUDED. Confirm packaged LICENSE.txt before release.
+- Super Pixel Objects Sample: https://untiedgames.itch.io/super-pixel-objects-sample — free sample permits commercial use WITH ATTRIBUTION; standalone asset resale prohibited. Attribution must be included if used.
+- Treasure+ by SciGho: https://ninjikin.itch.io/treasure — free download under CC BY 4.0; commercial use permitted WITH ATTRIBUTION and licence link.
+- Craftpix Free Pixel Art Dungeon Objects: https://free-game-assets.itch.io/free-pixel-art-dungeon-objects-asset-pack — original uploader states commercial game use permitted but no redistribution of standalone files; https://craftpix.net/freebies/free-pixel-art-dungeon-objects-asset-pack/ is the named Craftpix original. Use only verified free-tier contents and record the Craftpix terms.
+- Minifantasy Dungeon Free Version: EXCLUDE from commercial game; commercial licence requires payment.
+- Still pending individual rights and identity: Dungeon Gathering Free Version (SnowHex), Enemy Animations Set, 2D Pixel Dungeon Asset Pack v2.0, other unspecified archives and any source-unmatched sprites. Do not infer licensing from filenames.
+
+These are licence findings for identified source packs, NOT proof that every binary in a prior owner upload matches its source. No additional artwork is activated by this documentation pass.
