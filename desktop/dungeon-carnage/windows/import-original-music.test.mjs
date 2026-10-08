@@ -33,3 +33,21 @@ test("rejects partial soundtrack recovery and stale/misidentified sources",()=>{
   const sample=TRACKS.slice(1).map(([category,name])=>base+category+"/"+name).join("\n");
   assert.throws(()=>remapMusicUrls(sample),/Canonical soundtrack URL missing/);
 });
+
+test("verified originals override R119 preview-only WAV selection if present",()=>{
+  const urls=TRACKS.map(([category,name])=>base+category+"/"+name).join("\n");
+  const guard=[
+    "/* Offline packages must play bundled tracks; preview-only */",
+    "if(window.CCGDungeonCarnageItchPackage===true){",
+    '  const offlineMusic=window.CCG_ASSET_OVERRIDES.audio.music;',
+    '  for(const [state,localTrack] of Object.entries({normal:"assets/audio/music/exploration.wav"})){',
+    '    offlineMusic.playlists[state]=[localTrack];',
+    "  }",
+    "}",
+    "/* Every enhancement URL inherits */"
+  ].join("\n");
+  const patched=remapMusicUrls(urls+"\n"+guard);
+  assert.doesNotMatch(patched,/preview-only|exploration\.wav|offlineMusic/);
+  assert.match(patched,/verified original MP3 tracks now own offline playback/);
+  assert.match(patched,/Every enhancement URL inherits/);
+});
