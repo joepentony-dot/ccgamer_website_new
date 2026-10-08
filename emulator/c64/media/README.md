@@ -1,6 +1,6 @@
 # CCG Browser C64 — Game media directory
 
-The C64 emulator loads disk and cartridge images hosted in this folder using `/emulator/c64/library.json`. The public dropdown only displays entries with `approved: true` and a matching hosted file. Never advertise media before its file has been committed.
+The C64 emulator loads disk and cartridge images hosted in this folder using `/emulator/c64/library.json`. The searchable public game browser displays owner-approved media entries with matching hosted files, plus available verified packs from the Blast Collection. Never advertise media before its file has been committed.
 
 ## Owner-selected games hosted in this folder
 

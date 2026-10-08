@@ -1606,7 +1606,14 @@ async function initialiseOnlineLibrary() {
         const reported = Number(head.headers.get("content-length") || 0);
         return !reported || reported === pack.bytes;
       }));
-      if (available.every(Boolean)) packed = data.entries;
+      if (available.every(Boolean)) {
+        // CCG-approved direct game uploads win over matching packed titles.
+        // This also prevents duplicates if an older pack includes those disks.
+        const directGameKeys = new Set(regular.map((entry) =>
+          `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+        packed = data.entries.filter((entry) =>
+          !directGameKeys.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
+      }
     }
   } catch (_) { /* Keep the existing C64 upload controls working when packs are absent. */ }
 
