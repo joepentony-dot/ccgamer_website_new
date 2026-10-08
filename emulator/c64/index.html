@@ -94,6 +94,19 @@
         </div>
       </section>
 
+      <section class="ccg-c64-panel ccg-c64-panel--local-library">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>MY GAMES — SAVED ON THIS DEVICE</strong><em data-local-library-status>CHECKING</em></header>
+        <div class="ccg-c64-library-row ccg-c64-library-row--local">
+          <select data-local-library-select aria-label="Choose a locally stored C64 game">
+            <option value="">Loading saved games…</option>
+          </select>
+          <button type="button" data-local-library-add title="Import a game into this browser">ADD</button>
+          <button type="button" data-local-library-remove disabled title="Remove the selected saved game">REMOVE</button>
+        </div>
+        <input id="ccg-c64-local-media-input" type="file" accept=".prg,.d64,.d71,.d81,.g64,.tap,.t64,.crt" hidden>
+        <small class="ccg-c64-library-note">Choose one of the five game slots and add your own file once. Next time, select it to auto-load. ADD also accepts other C64 games. Files stay in this browser and are never uploaded.</small>
+      </section>
+
       <section class="ccg-c64-panel ccg-c64-panel--library">
         <header class="ccg-c64-panel-title"><span>••</span><strong>ONLINE LIBRARY</strong><em data-online-library-status>LOADING</em></header>
         <div class="ccg-c64-library-row">
