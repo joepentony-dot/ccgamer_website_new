@@ -87,6 +87,17 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
     }
     if(found) break;
   }
+  if (!found) {
+    const ram = machine.mem.ram;
+    console.log("BASIC cold boot diagnostic: CPU PC", machine.cpu.pc?.toString(16),
+      "CPU jammed", machine.cpu.jammed ?? machine.cpu.jam,
+      "Reset vector", Array.from(files.kernal.slice(-4)).map(x => x.toString(16)));
+    for (let row=0;row<12;row++) {
+      const bytes=Array.from(ram.subarray(0x0400+row*40,0x0400+(row+1)*40));
+      const decoded=bytes.map(value=>{const code=value&0x7f;return code===32?" ":code>=1&&code<=26?String.fromCharCode(code+64):code===46?".":`[${code.toString(16)}]`;}).join("");
+      console.log("SCREEN",row,decoded,"hex",bytes.slice(0,12).map(b=>b.toString(16).padStart(2,"0")).join(" "));
+    }
+  }
   assert(found,"Original Commodore BASIC must render READY. into screen memory within 120 frames");
   console.log("Original BASIC READY reached in", frames+1,"PAL frames.");
 });
