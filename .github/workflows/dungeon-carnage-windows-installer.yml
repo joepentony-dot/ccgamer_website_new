@@ -1,0 +1,154 @@
+name: Dungeon Carnage Windows Installer (Preview)
+
+on:
+  pull_request:
+    paths:
+      - 'desktop/dungeon-carnage/windows/**'
+      - '.github/workflows/dungeon-carnage-windows-installer.yml'
+      - 'scripts/build-c64-dungeon-carnage-itch-package.mjs'
+      - 'arcade/lost-sizzler/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dungeon-carnage-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stage-offline-game:
+    name: Stage qualified standalone gameplay on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and verify canonical standalone game
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/dungeon-carnage-windows-game"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --output "$output" --source-sha "$GITHUB_SHA"
+          node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "$output"
+          test -s "$output/assets/THIRD-PARTY-ART-CREDITS.md"
+          test -s "$output/release-manifest.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-game-staged
+          path: ${{ runner.temp }}/dungeon-carnage-windows-game/
+          if-no-files-found: error
+          retention-days: 3
+
+  windows-preview:
+    name: Build installer and portable EXE (unsigned, test only)
+    needs: stage-offline-game
+    runs-on: windows-latest
+    timeout-minutes: 50
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - name: Checkout current exact game source
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test Windows launcher security and byte-range audio
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node --check desktop/dungeon-carnage/windows/main.cjs
+          node --check desktop/dungeon-carnage/windows/path-guard.cjs
+          node --test desktop/dungeon-carnage/windows/path-guard.test.cjs
+          node --test desktop/dungeon-carnage/windows/import-original-music.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Download same-commit Linux verified game
+        uses: actions/download-artifact@v4
+        with:
+          name: dungeon-game-staged
+          path: desktop/dungeon-carnage/windows/game
+      - name: Verify Windows staging boundary
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = 'desktop/dungeon-carnage/windows/game'
+          if (!(Test-Path "$output/index.html")) { throw 'Missing game entry' }
+          if (!(Test-Path "$output/assets/THIRD-PARTY-ART-CREDITS.md")) { throw 'Missing art provenance' }
+          if (!(Test-Path "$output/release-manifest.json")) { throw 'Missing integrity manifest' }
+          if (Test-Path "$output/js/ccg-supabase-config.js") { throw 'Supabase client leaked into desktop release' }
+          if (Test-Path "$output/js/ccg-supabase-client.js") { throw 'Supabase client leaked into desktop release' }
+
+      - name: Install pinned Electron and installer builder
+        working-directory: desktop/dungeon-carnage/windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          npm install --no-audit --no-fund --no-package-lock
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Build branded Windows installer and portable executable
+        working-directory: desktop/dungeon-carnage/windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          npm run dist
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Verify installers and embedded ASAR resources
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = 'desktop/dungeon-carnage/windows/dist'
+          $installer = @(Get-ChildItem "$root/C64-Dungeon-Carnage-Setup-*.exe" -ErrorAction SilentlyContinue)
+          $portable = @(Get-ChildItem "$root/C64-Dungeon-Carnage-Portable-*.exe" -ErrorAction SilentlyContinue)
+          if ($installer.Count -ne 1 -or $portable.Count -ne 1) { throw 'Expected exactly one installer and one portable Windows EXE' }
+          $asar = Get-Item "$root/win-unpacked/resources/app.asar" -ErrorAction Stop
+          if ($asar.Length -lt 10000000) { throw 'Game archive unexpectedly small' }
+          if (Test-Path "$root/win-unpacked/resources/app/game") { throw 'Loose game directory outside ASAR' }
+          $items = @($installer[0],$portable[0])
+          $records = $items | ForEach-Object {
+            $hash = Get-FileHash $_.FullName -Algorithm SHA256
+            "$($hash.Hash)  $($_.Name)"
+          }
+          $records | Set-Content "$root/SHA256SUMS.txt" -Encoding UTF8
+          @'
+          C64 DUNGEON CARNAGE - PREVIEW BUILD, NOT FOR SALE
+
+          Setup EXE: Windows installation with shortcuts and uninstaller.
+          Portable EXE: standalone launch without installing the game.
+          Windows may warn that this development preview is unsigned.
+
+          The original 16 Supabase MP3s have not been recovered.
+          Audio playback and full game acceptance have not been completed.
+          Do not publish this preview as a paid itch.io release.
+          Game files are inside resources/app.asar. ASAR is packaging,
+          not encryption or DRM, and does not prevent extraction.
+          '@ | Set-Content "$root/READ-ME-FIRST.txt" -Encoding UTF8
+          Get-ChildItem $root -Filter '*.exe' | Select-Object Name,Length
+          Get-Content "$root/SHA256SUMS.txt"
+
+      - name: Real Windows executable runtime smoke
+        working-directory: desktop/dungeon-carnage/windows
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node windows-runtime-smoke.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload private owner preview artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: C64-Dungeon-Carnage-Windows-Preview
+          path: |
+            desktop/dungeon-carnage/windows/dist/C64-Dungeon-Carnage-Setup-*.exe
+            desktop/dungeon-carnage/windows/dist/C64-Dungeon-Carnage-Portable-*.exe
+            desktop/dungeon-carnage/windows/dist/READ-ME-FIRST.txt
+            desktop/dungeon-carnage/windows/dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14

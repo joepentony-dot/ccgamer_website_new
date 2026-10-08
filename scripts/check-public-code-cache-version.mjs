@@ -22,6 +22,8 @@ const EXCLUDED_PREFIXES = Object.freeze([
   "supabase/",
   "tests/",
   "arcade/lost-sizzler/",
+  // Native Windows packaging never ships through the public site service worker.
+  "desktop/dungeon-carnage/windows/",
   "games/ccg-games/cheeky-commodore-quest/",
   "multiplayer-server/"
 ]);
@@ -71,6 +73,9 @@ function runSelfTest() {
   assert.equal(isCacheablePublicCodePath("admin/js/admin-nav.js"), false);
   assert.equal(isCacheablePublicCodePath("scripts/rebuild-games.js"), false);
   assert.equal(isCacheablePublicCodePath("arcade/lost-sizzler/js/game.js"), false);
+  assert.equal(isCacheablePublicCodePath("desktop/dungeon-carnage/windows/import-original-music.mjs"), false);
+  assert.equal(isCacheablePublicCodePath("desktop/dungeon-carnage/windows/windows-runtime-smoke.cjs"), false);
+  assert.equal(isCacheablePublicCodePath("desktop/dungeon-carnage/online-content.js"), true);
   assert.equal(isCacheablePublicCodePath("games/ccg-games/cheeky-commodore-quest/js/game.js"), false);
   assert.equal(extractCodeCacheVersion('const CODE_CACHE_VERSION = "test-v3";'), "test-v3");
   assert.throws(() => extractCodeCacheVersion("const CACHE_VERSION = \"v1\";"));

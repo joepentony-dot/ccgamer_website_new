@@ -463,14 +463,71 @@ window.CCGSystems=(()=>{
     const sanctuaryEligible=r=>Boolean(sanctuarySafeBase(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))&&!rewardChestRooms.has(Number(r.id)));
     const sanctuaryRelocatable=r=>Boolean(sanctuaryStructuralSafe(r)&&!(host.enemies||[]).some(enemy=>enemy?.alive!==false&&W.roomAt(world,enemy.x,enemy.y)===r.id&&sanctuaryProtectedEnemy(enemy)));
     const sanctuaryDesired=Math.max(0,Math.min(Number(C.dungeon.sanctuaryRooms)||0,Math.max(0,(world.rooms||[]).length-2)));
+    // Space the two safe refuges across the dungeon, rather than accepting
+    // two neighbouring rooms merely because they happen to be eligible first.
+    // Require intervening rooms on the corridor graph AND a physical gap
+    // between room boundaries. Never put refuges beside one another.
+    const SANCTUARY_MIN_GRAPH_HOPS=3,SANCTUARY_MIN_ROOM_GAP=18;
+    const sanctuaryCandidates=[],sanctuaryCandidateIds=new Set();
+    const addSanctuaryCandidates=(list,allowOccupied=false,tier=0)=>{
+      for(const room of list||[]){
+        if(!room||sanctuaryCandidateIds.has(room.id)||!(allowOccupied?sanctuaryRelocatable(room):sanctuarySafeBase(room)))continue;
+        sanctuaryCandidateIds.add(room.id);sanctuaryCandidates.push({room,tier});
+      }
+    };
+    addSanctuaryCandidates(featureRooms.filter(sanctuaryEligible).slice(-Math.min(12,featureRooms.length)),false,0);
+    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))),false,1);
+    addSanctuaryCandidates(featureRooms.filter(sanctuarySafeBase),false,2);
+    addSanctuaryCandidates((world.rooms||[]).filter(r=>sanctuaryRelocatable(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))),true,3);
+    addSanctuaryCandidates((world.rooms||[]).filter(sanctuaryRelocatable),true,4);
+    const sanctuaryNeighbourIds=new Map((world.rooms||[]).filter(Boolean).map(r=>[r.id,[]]));
+    for(const edge of world.edges||[]){
+      if(sanctuaryNeighbourIds.has(edge.a)&&sanctuaryNeighbourIds.has(edge.b)){
+        sanctuaryNeighbourIds.get(edge.a).push(edge.b);sanctuaryNeighbourIds.get(edge.b).push(edge.a);
+      }
+    }
+    const sanctuaryHopCache=new Map();
+    const sanctuaryHops=(a,b)=>{
+      if(!sanctuaryHopCache.has(a)){
+        const distances=new Map([[a,0]]),queue=[a];
+        for(let at=0;at<queue.length;at++){
+          const id=queue[at];for(const next of sanctuaryNeighbourIds.get(id)||[]){
+            if(distances.has(next))continue;
+            distances.set(next,distances.get(id)+1);queue.push(next);
+          }
+        }
+        sanctuaryHopCache.set(a,distances);
+      }
+      return sanctuaryHopCache.get(a).get(b)??-1;
+    };
+    const sanctuaryRoomGap=(a,b)=>Math.max(0,a.x-b.x-b.w,b.x-a.x-a.w)+Math.max(0,a.y-b.y-b.h,b.y-a.y-a.h);
+    const sanctuaryFarEnough=(a,b)=>sanctuaryHops(a.id,b.id)>=SANCTUARY_MIN_GRAPH_HOPS&&sanctuaryRoomGap(a,b)>=SANCTUARY_MIN_ROOM_GAP;
     const sanctuaryPool=[];
-    const addSanctuaryCandidates=(list,allowOccupied=false)=>{for(const room of list||[]){if(sanctuaryPool.length>=sanctuaryDesired)break;if(room&&(allowOccupied?sanctuaryRelocatable(room):sanctuarySafeBase(room))&&!sanctuaryPool.some(candidate=>candidate.id===room.id))sanctuaryPool.push(room)}};
-    addSanctuaryCandidates(featureRooms.filter(sanctuaryEligible).slice(-Math.min(12,featureRooms.length)));
-    addSanctuaryCandidates(featureRooms.filter(r=>sanctuarySafeBase(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))));
-    addSanctuaryCandidates(featureRooms.filter(sanctuarySafeBase));
-    addSanctuaryCandidates((world.rooms||[]).filter(r=>sanctuaryRelocatable(r)&&!r.optional&&!secretOrOptionalDoorRooms.has(Number(r.id))),true);
-    addSanctuaryCandidates((world.rooms||[]).filter(sanctuaryRelocatable),true);
-    const sanctuaryTarget=Math.min(sanctuaryDesired,sanctuaryPool.length);
+    if(sanctuaryDesired&&sanctuaryCandidates.length){
+      // Choose the best PAIR from all eligible tiers, not a greedy pair of
+      // nearby rooms. Prioritise safe ordinary rooms, then route separation,
+      // then physical distance. This is deterministic and consumes no RNG.
+      let bestPair=null;
+      for(let i=0;i<sanctuaryCandidates.length;i++)for(let j=i+1;j<sanctuaryCandidates.length;j++){
+        const a=sanctuaryCandidates[i],b=sanctuaryCandidates[j];
+        if(!sanctuaryFarEnough(a.room,b.room))continue;
+        const candidate={a,b,tier:Math.max(a.tier,b.tier),tierSum:a.tier+b.tier,hops:sanctuaryHops(a.room.id,b.room.id),gap:sanctuaryRoomGap(a.room,b.room)};
+        if(!bestPair||candidate.tier<bestPair.tier||
+          (candidate.tier===bestPair.tier&&(candidate.tierSum<bestPair.tierSum||
+            (candidate.tierSum===bestPair.tierSum&&(candidate.hops>bestPair.hops||
+              (candidate.hops===bestPair.hops&&candidate.gap>bestPair.gap))))))bestPair=candidate;
+      }
+      if(bestPair&&sanctuaryDesired>1)sanctuaryPool.push(bestPair.a.room,bestPair.b.room);
+      else sanctuaryPool.push(sanctuaryCandidates[0].room);
+      // If a future mode asks for more than two refuges, every additional
+      // room must also satisfy the same separation rule from all previous ones.
+      for(const candidate of sanctuaryCandidates){
+        if(sanctuaryPool.length>=sanctuaryDesired)break;
+        if(sanctuaryPool.includes(candidate.room)||!sanctuaryPool.every(room=>sanctuaryFarEnough(room,candidate.room)))continue;
+        sanctuaryPool.push(candidate.room);
+      }
+    }
+    const sanctuaryTarget=sanctuaryPool.length;
     const relocateSanctuaryEnemies=room=>{
       const movers=(host.enemies||[]).filter(enemy=>enemy?.alive!==false&&W.roomAt(world,enemy.x,enemy.y)===room.id&&!sanctuaryProtectedEnemy(enemy));
       if(!movers.length)return;
