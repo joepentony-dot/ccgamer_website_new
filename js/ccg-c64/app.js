@@ -2230,6 +2230,8 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
   button.addEventListener("contextmenu", event => event.preventDefault());
 }
 
+void refreshVaultStatus();
+
 // Secondary mobile keys share the physical keyboard's CIA matrix route.
 // A 120ms minimum press allows the emulated 50 Hz keyboard scan to register taps.
 const MIN_TOUCH_VIRTUAL_KEY_MS = 120;
@@ -2312,7 +2314,7 @@ window.addEventListener("keydown", event => {
   }
 });
 
-void refreshVaultStatus();
+
 
 fullscreenButton?.addEventListener("click", async () => {
   if (!screenStage) return;
