@@ -196,7 +196,9 @@
     }
 
     function showUpdatePanel(fingerprint) {
-        if (document.querySelector("[data-ccg-release-update]")) return;
+        // The installable-app service-worker checker can display this exact
+        // same update panel. Share its DOM singleton, not just this script's flag.
+        if (document.querySelector(".ccg-pwa-panel--update")) return;
         ensureCss();
 
         const panel = document.createElement("aside");
