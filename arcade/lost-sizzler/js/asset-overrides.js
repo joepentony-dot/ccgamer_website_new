@@ -148,6 +148,23 @@ window.CCG_ASSET_OVERRIDES={
   }
 };
 
+/* Offline packages must play bundled tracks; production continues using the
+ * approved uploaded soundtrack and is never changed by this guard. */
+if(window.CCGDungeonCarnageItchPackage===true){
+  const offlineMusic=window.CCG_ASSET_OVERRIDES.audio.music;
+  const offlineTracks={
+    normal:"assets/audio/music/exploration.wav",
+    danger:"assets/audio/music/danger.wav",
+    sanctuary:"assets/audio/music/sanctuary.wav",
+    named:"assets/audio/music/named-enemy.wav",
+    stalker:"assets/audio/music/count-loadula.wav"
+  };
+  for(const [state,localTrack] of Object.entries(offlineTracks)){
+    offlineMusic.playlists[state]=[localTrack];
+    offlineMusic[state==="normal"?"exploration":state]=localTrack;
+  }
+}
+
 /* Every enhancement URL inherits the currently published release token. Older
  * releases used a mixture of historical tokens and bare URLs, allowing a
  * browser HTTP cache to combine new core files with old enhancement files. */
