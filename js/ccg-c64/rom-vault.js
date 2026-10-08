@@ -133,13 +133,42 @@ export class ROMVault {
       charRom: null,
       drive1541: null,
     };
+    this.partialOriginalEntries = null;
   }
 
   restore() {
+    this.partialOriginalEntries = null;
     for (const key of Object.keys(ROM_SPEC)) {
       this.entries[key] = this.#read(key);
     }
     return this.snapshot();
+  }
+
+  // Open ROMs provides a no-setup fallback, but is never mixed with
+  // original firmware or written over a visitor's locally supplied ROM set.
+  // The fallback is session-only, so full firmware can always replace it.
+  useBundledOpenRoms(roms) {
+    if (this.snapshot().allRequiredReady || this.usingBundledOpenRoms()) return false;
+    const entries = {};
+    for (const key of REQUIRED_ROM_KEYS) {
+      const bytes = roms?.[key];
+      if (!(bytes instanceof Uint8Array) || !ROM_SPEC[key].sizes.includes(bytes.length)) {
+        throw new Error("Bundled Open ROM validation failed: " + key);
+      }
+      entries[key] = { bytes, name: "Open ROMs (LGPL 3)", size: bytes.length, bundled: true };
+    }
+    // A visitor who saved only one or two original ROM files must still be
+    // able to play immediately. Preserve that incomplete set in memory,
+    // leaving its existing localStorage data untouched for later completion.
+    this.partialOriginalEntries = Object.fromEntries(
+      REQUIRED_ROM_KEYS.map(key => [key, this.entries[key] && !this.entries[key].bundled
+        ? this.entries[key] : null]));
+    Object.assign(this.entries, entries);
+    return true;
+  }
+
+  usingBundledOpenRoms() {
+    return REQUIRED_ROM_KEYS.every(key => this.entries[key]?.bundled === true);
   }
 
   install(key, bytes, name = null) {
@@ -149,6 +178,15 @@ export class ROMVault {
     const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
     if (!spec.sizes.includes(data.length)) {
       throw new Error(`${spec.label} must be ${spec.sizes.join(" or ")} bytes; received ${data.length}.`);
+    }
+
+    // The first uploaded original ROM switches to user-firmware mode.
+    // No hybrid (open BASIC + proprietary KERNAL or vice versa) can be used.
+    if (REQUIRED_ROM_KEYS.includes(key) && this.usingBundledOpenRoms()) {
+      for (const required of REQUIRED_ROM_KEYS) {
+        this.entries[required] = this.partialOriginalEntries?.[required] || null;
+      }
+      this.partialOriginalEntries = null;
     }
 
     const entry = {
@@ -178,6 +216,7 @@ export class ROMVault {
   }
 
   clear() {
+    this.partialOriginalEntries = null;
     for (const spec of Object.values(ROM_SPEC)) {
       try { this.storage.removeItem(spec.storageKey); } catch {}
     }

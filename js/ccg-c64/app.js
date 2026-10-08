@@ -1,4 +1,6 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
+import { readBundledOpenRoms } from "./open-rom-bundle.js";
+import { singleLineSysTarget } from "./prg-autostart.js";
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
@@ -86,6 +88,31 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
 
+// On phones, the game selector belongs immediately below the C64 screen,
+// before the joystick and secondary upload/settings deck. Moving the *same*
+// panel preserves its search state and event listeners. Restore its original
+// position whenever a desktop-size layout is used.
+const libraryDesktopAnchor = document.createComment("CCG C64 desktop library position");
+if (onlineLibraryPanel?.parentNode) {
+  onlineLibraryPanel.parentNode.insertBefore(libraryDesktopAnchor, onlineLibraryPanel);
+}
+const mobileLibraryMedia = window.matchMedia(
+  "(max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px)"
+);
+function positionOnlineLibraryForViewport() {
+  if (!onlineLibraryPanel || !screenStage || !controlsDeck) return;
+  if (mobileLibraryMedia.matches) {
+    const consolePanel = screenStage.closest(".ccg-c64-console");
+    if (consolePanel && onlineLibraryPanel.parentNode !== consolePanel) {
+      screenStage.insertAdjacentElement("afterend", onlineLibraryPanel);
+    }
+  } else if (onlineLibraryPanel.parentNode !== controlsDeck && libraryDesktopAnchor.parentNode) {
+    libraryDesktopAnchor.parentNode.insertBefore(onlineLibraryPanel, libraryDesktopAnchor.nextSibling);
+  }
+}
+positionOnlineLibraryForViewport();
+mobileLibraryMedia.addEventListener("change", positionOnlineLibraryForViewport);
+
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
 // Keep a little time for rendering, real keyboard events and browser accessibility.
@@ -125,6 +152,7 @@ let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
+let initialPowerOn = null;
 let onlineLibraryEntries = [];
 let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
@@ -775,7 +803,7 @@ function setControlState(snapshot) {
   }
 }
 
-function render(snapshot) {
+function render(snapshot, { suppressStatus = false } = {}) {
   document.querySelectorAll("[data-rom-count]").forEach((node) => {
     node.textContent = String(snapshot.requiredReady);
   });
@@ -811,7 +839,7 @@ function render(snapshot) {
   }
 
   setControlState(snapshot);
-  if (!running) drawStatus(snapshot);
+  if (!running && !suppressStatus) drawStatus(snapshot);
 }
 
 function showSetup() {
@@ -1154,8 +1182,19 @@ for (const button of document.querySelectorAll("[data-open-setup]")) {
 document.querySelector("[data-clear-roms]")?.addEventListener("click", () => {
   if (!window.confirm("Clear the locally stored C64 ROMs from this browser?")) return;
   if (running) powerOff();
-  render(vault.clear());
-  showSetup();
+  vault.clear();
+  try {
+    vault.useBundledOpenRoms(readBundledOpenRoms());
+  } catch (error) {
+    console.warn("[ccg-c64] Could not restore open-source fallback:", error);
+  }
+  render(vault.snapshot());
+  if (vault.snapshot().allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
+    initialPowerOn = powerOn();
+    hideSetup();
+  } else {
+    showSetup();
+  }
 });
 
 for (const input of document.querySelectorAll("[data-rom-input]")) {
@@ -1166,6 +1205,7 @@ for (const input of document.querySelectorAll("[data-rom-input]")) {
     if (!key || !file) return;
 
     try {
+      if (running && vault.usingBundledOpenRoms() && REQUIRED_ROM_KEYS.includes(key)) powerOff();
       await vault.installFile(key, file);
       render(vault.snapshot());
     } catch (error) {
@@ -1181,6 +1221,8 @@ if (romSetInput) {
     if (!files.length) return;
 
     const found = pickRomFiles(files);
+    if (running && vault.usingBundledOpenRoms() &&
+        REQUIRED_ROM_KEYS.some(key => found[key])) powerOff();
     const loaded = [];
     const unresolved = [];
 
@@ -1210,6 +1252,8 @@ closeSetupButton?.addEventListener("click", hideSetup);
 finishSetup?.addEventListener("click", async () => {
   if (!vault.snapshot().allRequiredReady) return;
   hideSetup();
+  if (!running && initialPowerOn) await initialPowerOn;
+  if (!running) await powerOn();
 
   if (pendingMedia) {
     const media = pendingMedia;
@@ -1372,13 +1416,20 @@ async function openMediaBytes(media) {
 
   if (type === "prg") {
     if (bytes.length < 3) throw new Error("That PRG is too small to contain a C64 load address.");
+    // Generic Open ROM BASIC does not parse every proprietary BASIC SYS
+    // expression exactly like Commodore BASIC v2. For an exact single-line
+    // SYS launcher, type an equivalent direct SYS number after loading.
+    // Full original ROM installations retain their ordinary RUN behaviour.
+    const sysTarget = vault.usingBundledOpenRoms()
+      ? singleLineSysTarget(bytes) : null;
     queueAutoStart([
       { ready: true },
       { run: () => {
         machine.loadPRG(bytes);
-        machine.injectRun();
+        if (sysTarget !== null) machine.injectSys(sysTarget);
+        else machine.injectRun();
         if (machineState) machineState.textContent = `PRG AUTO-START // ${name.toUpperCase()}`;
-        if (stageNote) stageNote.textContent = `${name} loaded and RUN was entered automatically.`;
+        if (stageNote) stageNote.textContent = `${name} loaded and ${sysTarget === null ? "RUN" : `SYS ${sysTarget}`} was entered automatically.`;
       } },
     ]);
     screen?.focus();
@@ -1506,12 +1557,13 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   };
 
   if (!vault.snapshot().allRequiredReady) {
-    if (stageNote) stageNote.textContent = `${pendingMedia.name} is ready. Add the three C64 system ROMs once, then it will start automatically.`;
+    if (stageNote) stageNote.textContent = `${pendingMedia.name} is ready. This browser needs a complete system ROM set before it can play.`;
     showSetup();
     return false;
   }
 
   const wasRunning = running;
+  if (!running && initialPowerOn) await initialPowerOn;
   if (!running) await powerOn();
   if (!running || !machine) return false;
   if (freshBoot && wasRunning) await prepareFreshGameSession();
@@ -2136,17 +2188,40 @@ fullscreenButton?.addEventListener("click", async () => {
 document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date().getFullYear()));
 
 const initial = vault.restore();
-render(initial);
-
-// Returning visitors with a complete local ROM bank should see the real C64
-// BASIC READY screen, not the CCG pre-boot status canvas. First-time visitors
-// still retain the media-first flow and are prompted for ROMs only when needed.
-if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
-  void powerOn();
+let openRomFallbackError = null;
+if (!initial.allRequiredReady) {
+  try {
+    // Boot actual 6510/KERNAL/BASIC firmware, not an imitation READY canvas.
+    // The matched LGPL Open ROMs are a compatibility fallback only; a
+    // visitor's previously supplied original ROMs always take precedence.
+    vault.useBundledOpenRoms(readBundledOpenRoms());
+  } catch (error) {
+    openRomFallbackError = error;
+    console.warn("[ccg-c64] Built-in Open ROMs are unavailable:", error);
+  }
+}
+const startupRoms = vault.snapshot();
+// Start directly on the real VIC-II output. Avoid flashing the old CCG
+// pre-boot placeholder when a usable firmware bank is already present.
+render(startupRoms, { suppressStatus: startupRoms.allRequiredReady });
+if (startupRoms.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
+  // Avoid two simultaneous power-on sessions if a game is selected before
+  // the automatic READY-screen startup has finished attaching SID audio.
+  initialPowerOn = powerOn();
+  if (vault.usingBundledOpenRoms()) {
+    initialPowerOn.then(() => {
+      if (!running) return;
+      if (stageNote) stageNote.textContent =
+        "Open-source Open ROMs are running. This is a real emulated BASIC READY screen, " +
+        "but some games require original Commodore ROMs. SYSTEM ROMS lets you use your own set.";
+    });
+  }
+} else if (openRomFallbackError && stageNote) {
+  stageNote.textContent = "The built-in open-source ROMs could not start. Open SYSTEM ROMS to add your own.";
 }
 
-// Do not interrupt first-time visitors with a firmware modal. They can choose
-// media immediately; setup is requested only when the selected media needs booting.
+// User-installed original firmware remains an opt-in full-compatibility option.
+// The firmware setup is never opened merely for visiting the page.
 
 window.addEventListener("pagehide", () => {
   releaseAllInput();

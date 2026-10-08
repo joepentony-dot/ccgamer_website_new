@@ -54,14 +54,32 @@ release conventions and modifications documented in the source headers.
 Reference pin: official VICE 3.10 source release, vice-3.10.tar.gz,
 SHA-256 8e5bac18cbcb9f192380ad3ef881f8790f5b75c41d7b3da65d831985d864d6d1.
 
-ROM images and user media
--------------------------
-Commodore/MOS KERNAL, BASIC, CHARGEN and 1541 ROM images are not distributed by
-CCG. Games, disks, tapes and cartridges selected by a user remain user-supplied
-media and are not bundled with the emulator.
+Open ROMs: redistributable C64-compatible firmware
+----------------------------------------------------
+Copyright Paul Gardner-Stephen (2019) and Roman Standzikowski (FeralChild64)
+(2019-2021), and other contributors as documented upstream.
+License: GNU LGPL version 3 or later (plus upstream file-level licences).
+Project: https://github.com/MEGA65/open-roms
+Pinned source revision: ad178dbe4d48cd6a317737a8e0e7e662f7e33d32
+Binaries: bin/kernal_generic.rom, bin/basic_generic.rom,
+bin/chargen_openroms.rom (bundled UNMODIFIED in open-rom-bundle.js).
+Copyright and license text:
+  /emulator/c64/licenses/MEGA65-OPEN-ROMS-LICENSE.txt
+  /emulator/c64/licenses/LGPL-3.0.txt
+  /emulator/c64/licenses/GPL-3.0.txt
+The source for precisely the distributed binaries is available at the pinned
+commit. Generic Open ROMs is not original Commodore firmware. It does not
+implement every BASIC command or custom game/loader entry point.
+
+Original firmware and user-supplied media
+-----------------------------------------
+Original proprietary Commodore/MOS KERNAL, BASIC, CHARGEN and 1541 DOS ROM
+images are NOT distributed by CCG. Users can choose legally obtained original
+firmware through the local ROM vault for more complete game compatibility.
+Locally selected user media is not uploaded to CCG.
+The separate CCG Online Library carries only owner-authorised hosted media.
 
 Not bundled by this CCG route
 -----------------------------
-The CCG route does not bundle Commodore ROM images or copyrighted game media.
-The optional C64 READY 3D Retro Vibes models, upstream PWA shell and upstream
+Optional C64 READY 3D Retro Vibes models, upstream PWA shell and upstream
 product branding/assets are not required for the CCG emulator route.

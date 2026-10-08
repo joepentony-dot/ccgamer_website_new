@@ -32,4 +32,17 @@ assert(css.includes("grid-template-columns: minmax(0, 1fr) minmax(176px, 33%)"),
 assert(css.includes(".ccg-c64-screen-stage:fullscreen"),
   "Existing desktop fullscreen picture must be preserved");
 assert(css.includes("min-height: 44px"), "Touch controls must have accessible tap targets");
+assert(app.includes("function positionOnlineLibraryForViewport()"),
+  "Mobile layout must move the existing game library beneath the display");
+assert(app.includes('screenStage.insertAdjacentElement("afterend", onlineLibraryPanel)'),
+  "The library must appear directly after the C64 screen without scrolling past controls");
+assert(app.includes("libraryDesktopAnchor.parentNode.insertBefore(onlineLibraryPanel"),
+  "The original desktop library position must be restored on wider screens");
+assert(app.includes('mobileLibraryMedia.addEventListener("change", positionOnlineLibraryForViewport)'),
+  "Switching between portrait/landscape and desktop layouts must reflow the same library");
+assert(css.includes(".ccg-c64-console:fullscreen > .ccg-c64-panel--library"),
+  "The library must not cover touch-gameplay fullscreen");
+assert(css.includes(".ccg-c64-console > .ccg-c64-screen-foot") &&
+       css.includes(".ccg-c64-console > .ccg-c64-stage-note"),
+  "Mobile should not require scrolling past drag-drop instructions to find games");
 console.log("PASS C64 phone portrait/landscape and touch fullscreen responsive source contracts.");

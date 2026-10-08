@@ -1941,6 +1941,94 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-touch-fire { width: 78px; height: 78px; }
 }
 
+/* The manual original-ROM configuration is now optional. Keep its dialogue
+   compact and independently scrollable on phones rather than allowing the
+   multi-step form to extend beneath Android/iOS browser navigation bars. */
+@media (max-width: 760px) {
+  .ccg-c64-setup {
+    height: 100dvh;
+    max-height: 100dvh;
+    place-items: center;
+    padding: max(0.35rem, env(safe-area-inset-top))
+      max(0.35rem, env(safe-area-inset-right))
+      max(0.35rem, env(safe-area-inset-bottom))
+      max(0.35rem, env(safe-area-inset-left));
+  }
+  .ccg-c64-setup__dialog {
+    min-width: 0;
+    max-height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.6rem;
+  }
+  .ccg-c64-setup__header {
+    position: sticky;
+    top: -0.6rem;
+    z-index: 2;
+    gap: 0.35rem;
+    padding: 0.4rem 0 0.5rem;
+    background: #0d1029;
+  }
+  .ccg-c64-setup__header h2 { font-size: clamp(0.9rem, 4vw, 1.2rem); }
+  .ccg-c64-setup__exit {
+    min-height: 44px;
+    flex: 0 0 auto;
+    color: #fff;
+    background: #181b41;
+    border: 1px solid #5b619e;
+  }
+  .ccg-c64-setup__steps {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+    align-items: start;
+    align-content: start;
+    gap: 0.4rem;
+  }
+  .ccg-c64-setup-step {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+  .ccg-c64-setup-step__body { padding: 0.5rem; }
+  .ccg-c64-setup-step--final { grid-column: auto; }
+  .ccg-c64-file-trigger, .ccg-c64-ready-button { min-height: 44px; }
+  .ccg-c64-rom-slot { min-height: 62px; }
+}
+
+/* Mobile first-visit flow: C64 display -> searchable library -> touch play
+   controls -> optional file uploads. The actual panel is moved by app.js;
+   desktop two-column layout and all existing joystick bindings are unchanged. */
+@media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .ccg-c64-console > .ccg-c64-screen-foot,
+  .ccg-c64-console > .ccg-c64-stage-note {
+    display: none;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library {
+    width: 100%;
+    min-width: 0;
+    margin: 0.42rem 0 0;
+    padding: 0.55rem;
+    border-radius: 8px;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library.is-suggesting {
+    z-index: 90;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library .ccg-c64-panel-title {
+    min-height: 0;
+    margin-bottom: 0.35rem;
+    padding-bottom: 0.35rem;
+  }
+  .ccg-c64-console > .ccg-c64-touch-controls {
+    margin-top: 0.3rem;
+  }
+  /* Touch fullscreen is for playing the game, not selecting another title. */
+  .ccg-c64-console:fullscreen > .ccg-c64-panel--library {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
