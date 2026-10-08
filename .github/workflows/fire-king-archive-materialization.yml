@@ -32,6 +32,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Import curated Fire King magazine reviews through existing automatic importer
+        run: node scripts/import-amiga-magazine-reviews.js
       - name: Regenerate CCG game pages using authoritative existing publisher
         run: node scripts/rebuild-games.js
       - name: Check protected source and Fire King page contracts
@@ -44,6 +46,10 @@ jobs:
           test -s resources/images/games/boxes-3d/fire-king.webp
           grep -q 'https://www.cheekycommodoregamer.co.uk/games/fire-king/' games/fire-king/index.html
           grep -q '9Wlh2bEIRWM' games/fire-king/index.html
+          for verified in 'The Games Machine' 'Your Commodore' 'INFO' '61%' '50%' '3.5/5'; do
+            grep -Fq "$verified" games/fire-king/index.html || { echo "::error::Missing Fire King magazine entry: $verified"; exit 1; }
+          done
+          node -e 'const m=require("./data/magazine-review-records/e-h.json").games["c64:fire-king"]; if(!Array.isArray(m)||m.length<3||!m.some(x=>x.magazine==="The Games Machine"&&x.scorePercent===61)||!m.some(x=>x.magazine==="Your Commodore"&&x.scorePercent===50))process.exit(1)'
           node -e 'const g=require("./games/games.json").find(x=>x.slug==="fire-king"); if(!g || !String(g.pdf).includes("1Pj7XeGHm3Oo84wAd5gNVcp-2zHj25Kyc")) process.exit(1)'
           if ! git diff --quiet -- games/games.json index.html home.html resources/css/intro.css js/index-intro.js; then
             echo "::error::Publishing modified protected source or intro files"
@@ -55,13 +61,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add -- games/fire-king/index.html games/fire-king.html
+          git add -- games/fire-king/index.html games/fire-king.html data/magazine-review-records/e-h.json data/magazine-game-reviews/e-h.json
           git diff --cached --check
           if git diff --cached --quiet; then
             echo "Fire King generated pages already current."
             exit 0
           fi
-          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          test "$(git diff --cached --name-only | wc -l)" -le 4
+          git diff --cached --name-only | grep -Ev '^(games/fire-king/index.html|games/fire-king.html|data/magazine-review-records/e-h.json|data/magazine-game-reviews/e-h.json)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize verified Fire King magazine reviews and canonical C64 page"
+          git push origin "HEAD:${{ github.head_ref }}"
+ && exit 1 || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Generate canonical Fire King C64 game page and SEO redirect"
