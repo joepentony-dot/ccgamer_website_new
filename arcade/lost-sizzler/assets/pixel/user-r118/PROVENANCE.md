@@ -8,7 +8,7 @@ The owner supplied `Dungeon tileset(1).zip`, `0x72_16x16DungeonTileset.v5.zip`, 
 - 0x72 / Robert Norenberg, DungeonTileset II v1.7: https://0x72.itch.io/dungeontileset-ii (CC0-1.0; includes separate Doc and Pumpkin character downloads).
 - Niji, Dungeon Tileset II Extended v1.1: https://nijikokun.itch.io/dungeontileset-ii-extended (CC0-1.0).
 
-The four active `wall-torch-0.png` to `wall-torch-3.png` files match `items/torch_1.png` to `items/torch_4.png` byte-for-byte in the 0x72 v5 ZIP. Ten imported 0x72 PNGs have been byte-matched against archive entries. Other CC0 candidates remain staged for scale and semantic review; the extracted extended gold key and the separately supplied/assembled character candidates require exact lineage confirmation.
+The four active `wall-torch-0.png` to `wall-torch-3.png` files match `items/torch_1.png` to `items/torch_4.png` byte-for-byte in the 0x72 v5 ZIP. Ten imported 0x72 PNGs have been byte-matched against archive entries. Other CC0 candidates remain staged for scale and semantic review; the extracted extended gold key is now pixel-identical to a unique 16x16 crop of the Niji v1.1 atlas; separately supplied/assembled character candidates still require exact lineage confirmation.
 
 ## Excluded archive — no demonstrated redistribution permission
 
@@ -22,12 +22,12 @@ This asset pass does not modify collision, room topology, trap damage, AI, inven
 
 - VERIFIED SOURCE LICENCE: 0x72 v5 — https://0x72.itch.io/16x16-dungeon-tileset — CC0-1.0, creator explicitly permits commercial use, modification and distribution.
 - VERIFIED SOURCE LICENCE: 0x72 DungeonTileset II v1.7 — https://0x72.itch.io/dungeontileset-ii — CC0-1.0; original page lists the v1.7 ZIP and separate character downloads.
-- VERIFIED SOURCE LICENCE: Niji DungeonTileset II Extended v1.1 — https://nijikokun.itch.io/dungeontileset-ii-extended — CC0-1.0; original page lists v1.1 ZIP and mentions keys and animated wall torches. Exact pixel provenance of the extracted gold key remains UNVERIFIED, so runtime override remains disabled.
+- VERIFIED SOURCE LICENCE: Niji DungeonTileset II Extended v1.1 — https://nijikokun.itch.io/dungeontileset-ii-extended — CC0-1.0; original page lists v1.1 ZIP and mentions keys and animated wall torches. Exact pixel provenance of the extracted gold key was VERIFIED on 8 October by full RGBA pixel match at Niji v1.1 atlas (320,320) crop 16x16; runtime override is enabled with a hash-pinned regression guard.
 - RESTRICTED: Minifantasy Dungeon v2.3 Free Version — https://krishna-palacio.itch.io/minifantasy-dungeon — free licence is non-commercial only; creator offers separate paid commercial licence. Do not assume owner possession of the free archive grants commercial rights.
 - UNKNOWN: `Dungeon tileset(1).zip` — no established author or source page. Do not restore excluded derivatives.
 - PENDING SOURCE MATCH: KayKit, Craftpix, Dungeons & Pixels, Super Pixel Objects, Treasure+ and remaining packs. No licence approval inferred from filenames alone.
 
-Source-page licensing verification does not establish binary-level identity for every extracted sprite. Retain original file-match requirements and the exact-head CI/release gate.
+Source-page licensing verification does not establish binary-level identity for every extracted sprite; the gold key and newly activated crate have now been matched to their recovered original owner archives. Retain original file-match requirements and the exact-head CI/release gate.
 
 ## Free-tier licensing investigation — 8 October 2026 (additional pass)
 
@@ -57,3 +57,16 @@ Owner requested replacements for excluded, restricted or paid-only assets. Verif
 Preferred 16x16 CC0 no-payment sources: Kenney Tiny Dungeon (https://kenney.nl/assets/tiny-dungeon), hyprv Dungeon Pack 16x16 (https://hyprv.itch.io/16x16-dungeon), DeadlyEssence01 Free 2D Dungeon Tileset (https://deadlyessence.itch.io/free-tilesets), and 16x16–32x32 animated monsters from elesrech (https://elesrech.itch.io/pixel-monsters-enemies-asset-pack). Free supplementary CC0 torch and furniture from https://opengameart.org/content/16x16-torch and https://opengameart.org/content/tables-and-misc-props-16x16. Kettoman Free Dungeon Tileset is free for commercial use but restricts standalone asset redistribution: https://kettoman.itch.io/free-pixel-dungeon-tileset-16x16.
 
 These are *source-page commercial-use findings, not imported binaries*. Download/file-hash/individual sprite checks, aspect ratio checks, exact-head tests and separate approved release are required prior to activation. Do not use the paid tier contents, unverified sprites or Minifantasy non-commercial free version. Do not replace existing verified artwork gratuitously.
+
+## Verified source-binary integration — 8 October 2026
+
+The previously uploaded original ZIPs were recovered from the owner's ChatGPT file library (copies, not newly purchased content). We inspected original archive bytes, verified the creator's published CC0 terms, and integrated two small assets on the R118 branch:
+
+1. **Niji gold key** — existing `extended-gold-key.png`, 16x16. Original source archive `dungeontiles-extended v1.1.zip` SHA-256 `baccb8d4ff8b743dc42f7756a5946387fd05c3f007403c8aaefc76d181880b9a`; atlas `dungeontiles-extended v1.1/dungeontileset-extended.png`, pixel crop (x=320,y=320,w=16,h=16), **exact unique RGBA match** and pixel SHA-256 `580342c73c73cef8dd79c2a3c99094435fc6f2e724f2ac7fac96bb6ff8f207be`. Repo PNG SHA-256 `3d7b2609fa1c00fa9b679799cc549058106eb03a37fbf14434111723f21d1f01`. Original creator: Niji, https://nijikokun.itch.io/dungeontileset-ii-extended, CC0-1.0. Reactivated `images.items.key`; item collection/progression unchanged.
+2. **0x72 II crate** — newly committed `cc0-crate-0x72-ii.png`, 16x24. Recovered original archive `0x72_DungeonTilesetII_v1.7.zip` SHA-256 `a5b23341ebc831d7798bfb9666d864a08c079bb7aed18e3cf023a27d517c1512`; **byte-for-byte original file** `0x72_DungeonTilesetII_v1.7/frames/crate.png`, SHA-256 `e602c9be47378d5f4bd767cb7c5487928d289c887131ccd9dd5a9ebd69570db8`. Original creator: 0x72 / Robert Norenberg, https://0x72.itch.io/dungeontileset-ii, CC0-1.0. Activated only for existing visual crate render; collision footprint stays unchanged.
+
+The game renderer now fits non-square sprites **proportionally** within existing draw bounds; the previously selected 14x23 wall-torch frames are not stretched and fallback sprites remain available if images fail to load. R118 Node regression guards now pin the exact PNG hashes, verified original atlas crop metadata, selected overrides and expected proportional output. More expensive/restricted/unknown-rights content remains excluded.
+
+**Uncompleted:** Free Kenney/hyprv/elesrech/DeadlyEssence replacement packs have licence-verified creator pages but were not available as local binary copies in this work environment. They remain **download-and-evaluate candidates**, not silently imported or advertised as integrated. No paid downloads were purchased.
+
+Release gate unchanged: latest-head qualification, mainline reconciliation and deployed visual/manual verification required. Draft PR #2600 must not be merged until those gates pass.
