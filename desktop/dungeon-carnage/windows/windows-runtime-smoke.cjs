@@ -84,6 +84,19 @@ async function verifyAudioAndIsolation(){
   assert.equal(response.status,206,"Recorded audio sprite needs HTTP byte ranges");
   assert.match(response.headers.get("content-type")||"",/audio\/ogg/i);
   assert.equal((await response.arrayBuffer()).byteLength,64);
+
+  // A bundled file can exist on disk yet be inaccessible to packaged audio.
+  // Probe its real HTTP route and native RIFF/WAVE headers in the running EXE.
+  for(const name of ["exploration","danger","sanctuary","named-enemy","count-loadula"]){
+    const asset=await fetch(base+"assets/audio/music/"+name+".wav",{
+      headers:{Range:"bytes=0-11"},signal:AbortSignal.timeout(5000)
+    });
+    assert.equal(asset.status,206,"Packaged soundtrack route missing: "+name);
+    const data=Buffer.from(await asset.arrayBuffer());
+    assert.equal(data.length,12);
+    assert.equal(data.toString("ascii",0,4),"RIFF","Music asset is not WAV: "+name);
+    assert.equal(data.toString("ascii",8,12),"WAVE","Music asset has invalid WAV header: "+name);
+  }
   const dotfile=await fetch(base+".env",{signal:AbortSignal.timeout(5000)});
   assert.equal(dotfile.status,404,"Hidden server files must be inaccessible");
 }
@@ -92,6 +105,26 @@ async function main(){
   try{
     run=await start();
     await verifyAudioAndIsolation();
+    // Inspect the catalogue inside the *actual packaged Electron renderer*;
+    // tests of authored JS alone cannot prove offline URLs are selected.
+    await run.page.waitForFunction(
+      ()=>Boolean(window.CCG_ASSET_OVERRIDES?.audio?.music?.playlists?.normal),
+      null,{timeout:15000}
+    );
+    const selected=await run.page.evaluate(()=>({
+      offline:window.CCGDungeonCarnageItchPackage,
+      moods:window.CCG_ASSET_OVERRIDES.audio.music.playlists
+    }));
+    assert.equal(selected.offline,true,"Packaged offline flag must be enabled");
+    const expected={
+      normal:"exploration",danger:"danger",sanctuary:"sanctuary",
+      named:"named-enemy",stalker:"count-loadula"
+    };
+    for(const [mood,filename] of Object.entries(expected)){
+      assert.deepEqual(selected.moods[mood],
+        ["assets/audio/music/"+filename+".wav"],
+        "Packaged browser soundtrack must choose local track for "+mood);
+    }
     await run.page.evaluate(([key,value])=>localStorage.setItem(key,value),[probeKey,probeValue]);
     assert.equal(await run.page.evaluate(key=>localStorage.getItem(key),probeKey),probeValue);
     await stop(run);run=null;
@@ -100,7 +133,7 @@ async function main(){
     assert.equal(await run.page.evaluate(key=>localStorage.getItem(key),probeKey),probeValue,
       "The actual Windows application must preserve saved progress across launches");
     await run.page.evaluate(key=>localStorage.removeItem(key),probeKey);
-    console.log("WINDOWS EXE SMOKE PASS: real packaged game, OGG byte-range, hidden-file protection, persisted storage after EXE restart");
+    console.log("WINDOWS EXE SMOKE PASS: real packaged game, 5 WAV soundtrack routes and selected local playlists, OGG byte-range, hidden-file protection, persisted storage after EXE restart");
   }finally{await stop(run)}
 }
 main().catch(error=>{console.error(error);process.exitCode=1});
