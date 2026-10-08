@@ -19,6 +19,10 @@
   const VISIT_KEY = "ccg_pwa_public_visits";
   const DISMISS_KEY = "ccg_pwa_dismissed_until";
   const UPDATE_CHECK_KEY = "ccg_pwa_last_update_check";
+  // The release-fingerprint checker uses these keys to remember what visitors
+  // have seen. A successful PWA reload must re-baseline them on the new page.
+  const RELEASE_FINGERPRINT_KEY = "ccg_public_release_fingerprint";
+  const RELEASE_CHECK_KEY = "ccg_public_release_checked_at";
   const INSTALL_DELAY = 9000;
   const DISMISS_DAYS = 14;
   const UPDATE_CHECK_INTERVAL = 5 * 60 * 1000;
@@ -273,11 +277,18 @@
     button.disabled = true;
     button.textContent = "Updating…";
     state.reloadingForUpdate = true;
+    // The service-worker update and the public-asset release checker share one
+    // notice. Do not show a SECOND reload prompt immediately after this one.
+    storageSet(RELEASE_FINGERPRINT_KEY, "");
+    storageSet(RELEASE_CHECK_KEY, 0);
     waiting.postMessage({ type: "SKIP_WAITING" });
   }
 
   function showUpdatePanel() {
-    if (state.updatePanel || !state.registration?.waiting) return;
+    // Another CCG script also checks public asset fingerprints. Both types of
+    // update use the same visual panel, so only one may exist at a time.
+    if (state.updatePanel || document.querySelector(".ccg-pwa-panel--update") ||
+        !state.registration?.waiting) return;
 
     const { panel, actions } = buildPanel(
       "update",
