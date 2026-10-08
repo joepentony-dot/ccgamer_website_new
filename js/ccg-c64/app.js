@@ -1696,7 +1696,12 @@ async function initialiseOnlineLibrary() {
     // checked by loadPackedGameBytes before it can reach the emulator.
     const directGameKeys = new Set(regular.map((entry) =>
       `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+    // The old packed Bruce Lee PRG shows a non-responsive F-key menu in our
+    // emulator. The owner-supplied Bruce Lee Trilogy CRT already exists as an
+    // identical SHA-256 checked direct-file entry, so show only that version.
+    // Keep pack bytes and checksums untouched for every other title.
     packed = data.entries.filter((entry) =>
+      entry.title.trim().toLocaleLowerCase() !== "bruce lee" &&
       !directGameKeys.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
   } catch (error) {
     packedCatalogueError = error;
