@@ -786,10 +786,49 @@ select:disabled {
   outline: 2px solid var(--emu-accent);
   outline-offset: 1px;
 }
+.ccg-c64-library-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-height: 38px;
+  margin-top: 0.35rem;
+}
+
 .ccg-c64-library-result-count {
-  margin: 0.35rem 0 0;
+  min-width: 0;
+  flex: 1 1 auto;
+  margin: 0;
   color: var(--emu-muted);
   font: 600 0.55rem/1.45 var(--ccg-font-mono, "Courier New", monospace);
+  overflow-wrap: anywhere;
+}
+
+.ccg-c64-library-load {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 0.48rem 0.78rem;
+  border: 1px solid rgba(210, 113, 225, 0.75);
+  border-radius: 6px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(170, 73, 191, 0.7), rgba(109, 42, 137, 0.9));
+  font: 800 0.62rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+
+.ccg-c64-library-load[hidden] {
+  display: none !important;
+}
+
+.ccg-c64-library-load:hover:not(:disabled),
+.ccg-c64-library-load:focus-visible {
+  border-color: #eeb3f7;
+  background: rgba(200, 101, 213, 0.48);
+}
+
+.ccg-c64-library-load:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 .ccg-c64-library-suggestions {
   position: absolute;
