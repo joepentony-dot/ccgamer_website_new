@@ -17,9 +17,9 @@ for (const path of [
 const ownerGate = read("js/ccg-play-maintenance-owner-gate.js");
 const dungeonVersion = JSON.parse(read("arcade/lost-sizzler/version.json"));
 const dungeonCache = String(dungeonVersion.cacheToken || "").trim();
-const releaseMatch=String(dungeonVersion.build||"").match(/^V10\\.42 r(\\d+)$/);
+const releaseMatch=String(dungeonVersion.build||"").match(/^V10\.42 r(\d+)$/);
 assert.ok(releaseMatch,"Dungeon owner-gate must use a recognisable V10.42 release identity");
-assert.match(dungeonCache,/^\\d{8}r\\d+$/,"Dungeon protected runtime must use a dated cache token");
+assert.match(dungeonCache,/^\d{8}r\d+$/,"Dungeon protected runtime must use a dated cache token");
 assert.ok(dungeonCache.endsWith("r"+releaseMatch[1]),"Owner gate and released game must use the same revision in build and cache identity");
 for (const path of [
   "arcade/c64-dungeon-carnage/index.html",
