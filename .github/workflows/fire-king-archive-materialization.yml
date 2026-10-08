@@ -1,0 +1,68 @@
+name: Fire King temporary guarded game page materialization
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - games/games.json
+      - resources/images/thumbnails/all/fire-king.webp
+      - resources/images/games/boxes-3d/fire-king.webp
+      - .github/workflows/fire-king-archive-materialization.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fire-king-only-archive-materialization
+  cancel-in-progress: false
+
+jobs:
+  generate-fire-king:
+    if: github.event.pull_request.number == 2597 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'content/fire-king-1989-c64'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout approved Fire King source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 2
+          persist-credentials: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regenerate CCG game pages using authoritative existing publisher
+        run: node scripts/rebuild-games.js
+      - name: Check protected source and Fire King page contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s games/fire-king/index.html
+          test -s games/fire-king.html
+          test -s resources/images/thumbnails/all/fire-king.webp
+          test -s resources/images/games/boxes-3d/fire-king.webp
+          grep -q 'https://www.cheekycommodoregamer.co.uk/games/fire-king/' games/fire-king/index.html
+          grep -q '9Wlh2bEIRWM' games/fire-king/index.html
+          grep -q '1Pj7XeGHm3Oo84wAd5gNVcp-2zHj25Kyc' games/fire-king/index.html
+          if ! git diff --quiet -- games/games.json index.html home.html resources/css/intro.css js/index-intro.js; then
+            echo "::error::Publishing modified protected source or intro files"
+            exit 1
+          fi
+          echo "Authoritative rebuild passed; prepared exactly Fire King's generated slug and redirect pages."
+          git status --short | tail -n 110
+      - name: Commit ONLY generated Fire King game pages to the PR branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- games/fire-king/index.html games/fire-king.html
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo "Fire King generated pages already current."
+            exit 0
+          fi
+          test "$(git diff --cached --name-only | wc -l)" -eq 2
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate canonical Fire King C64 game page and SEO redirect"
+          git push origin "HEAD:${{ github.head_ref }}"
