@@ -32,6 +32,9 @@ jobs:
       - name: Check CCG shell and ROM contract
         run: node tests/ccg-c64-emulator-stage1.test.mjs
 
+      - name: Verify local game catalogue, storage and import behaviour
+        run: node tests/ccg-c64-local-library.test.mjs
+
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
 
@@ -41,6 +44,7 @@ jobs:
           node --check js/ccg-c64/coi-bootstrap.js
           node --check emulator/c64/coi-service-worker.js
           node --check js/ccg-c64/game-vault.js
+          node --check js/ccg-c64/local-media-library.js
           node --check js/ccg-c64/rom-vault.js
           node --check js/ccg-c64/t64.js
 
