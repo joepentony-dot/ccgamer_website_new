@@ -3,7 +3,7 @@ function hostEnemyStep(dt){
   A.stepEnemies(host,world.map,allPlayers(),Number(dt||0)*tempo,{
     shoot:s=>{s.power=Math.max(1,Math.round((s.power||1)*dm*(s.damageScale||1)));spawnEnemyShot(s)},
     melee:(e,target,power)=>{power=Math.max(1,Math.round(power*dm*(e.namedDamageScale||1)));const source=isDeathStalkerEnemy(e)?"Death Stalker":e.follower?.name||e.championName||window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1)})||e.kind,lp=findLocal(target.id);if(lp){const before=lp.health;hurtPlayer(lp,power,false,source);if(before>power)knockPlayerAway(lp,e)}},
-    notice:(html,sound,source)=>{const audible=source&&localPlayers().some(p=>visibleTo(p,source.x,source.y));if(audible){if(sound)S.sfx(sound);say(html,sound==="flame"?"red":"gold")}},
+    notice:(html,sound,source)=>{const goblinEvent=Boolean(source?.treasureGoblin),audible=goblinEvent||Boolean(source&&localPlayers().some(p=>visibleTo(p,source.x,source.y)));if(audible){if(sound)S.sfx(sound);say(html,sound==="flame"?"red":"gold");if(goblinEvent){const escaped=Boolean(source.treasureGoblinEscaped),title=escaped?"TREASURE GOBLIN ESCAPED":"TREASURE GOBLIN SPOTTED",detail=escaped?"The goblin got away with its loot.":"Catch the goblin before the escape timer expires.";if(!window.CCGLostSizzlerV141LandingNotificationPolish?.showMajor?.(title,detail,escaped?"red":"gold",8000))showToast(title,detail,escaped?"red":"gold",8000)}}},
     alert:(e,state,reason)=>{const seenHere=localPlayers().some(p=>visibleTo(p,e.x,e.y));if(state==="alert"&&seenHere){S.sfx("alert");floatText(e.x,e.y,"!",P.red);if(reason==="room"&&Math.random()<.18)say(`<strong>ROOM ALERT.</strong> ${e.follower?.name||e.championName||"Something"} has spotted you.`,"red")}if(state==="search"&&seenHere)S.sfx("search")}
   },world)
 }
@@ -66,7 +66,7 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   power=elementalDamage(e,power,element);e.flash=160;e.hpBarMs=2800;e.hitStunMs=Math.max(e.hitStunMs||0,C.enemy.hitStunMs||1000);
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
-  if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e))knockEnemyAway(e,attacker)}
+  if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e)&&!(e.treasureGoblin&&e.hp<=0))knockEnemyAway(e,attacker)}
   if(e.hp>0)return;
   e.hp=0;e.alive=false;if(e.treasureGoblin)e.treasureGoblinDefeated=true;host.revision++;run.stats.kills++;recordEnemyDefeat(e,attacker||p1);
   let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?15000:e.spider?(e.scoreValue||15):120;
@@ -79,7 +79,13 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   if(isDeathStalkerEnemy(e)){run.stats.stalkerEscapes=(run.stats.stalkerEscapes||0)+1;host.defeatedDeathStalkers=host.defeatedDeathStalkers||[];if(!host.defeatedDeathStalkers.includes(e.id))host.defeatedDeathStalkers.push(e.id);if(e.timedHunter){const tr=(host.timedRooms||[]).find(t=>t.hunterId===e.id||`death-stalker-${t.id}`===e.id);if(tr)tr.stalkerDefeated=true}}
   const fx={type:e.skeleton?"bones":"death",x:e.x,y:e.y,color:e.guardian?P.red:e.follower?P.gold:isDeathStalkerEnemy(e)?P.purple:e.champion?P.cyan:e.skeleton?"#e8dfbf":P.pink,elite:Boolean(e.follower||e.guardian||e.champion||isDeathStalkerEnemy(e)),kind:e.kind||"guardian",followerKind:e.follower?.kind||"",champion:Boolean(e.champion),guardian:Boolean(e.guardian),exitWarden:Boolean(e.exitWarden),deathStalker:Boolean(e.deathStalker),voidStalker:Boolean(e.voidStalker),facing:e.facing?{x:Number(e.facing.x||0),y:Number(e.facing.y||0)}:{x:1,y:0}};onFX(fx);
   if(e.bridgeThief)recoverBridgeThiefStash(e,attacker||p1);
-  if(e.treasureGoblin){const loot=PGR.lootForChest({depth:9},run,Math.random);host.items.push({id:`goblin-loot-${Date.now()}`,x:e.x,y:e.y,kind:"loot",loot,active:true,title:loot.name||loot.weapon?.displayName});showToast("TREASURE GOBLIN CAUGHT","It dropped something substantially better than dignity.","gold")}
+  if(e.treasureGoblin){
+    const loot=PGR.lootForChest({depth:9},run,Math.random);
+    const title=loot?.weapon?.displayName||loot?.name||"Treasure Goblin Cache";
+    host.items.push({id:`goblin-loot-${Date.now()}-${Math.random()}`,x:e.x,y:e.y,kind:"loot",loot,active:true,title});
+    const message=`${title} dropped here. Move onto the loot to collect it.`;
+    if(!window.CCGLostSizzlerV141LandingNotificationPolish?.showMajor?.("TREASURE GOBLIN CAUGHT",message,"gold",10000))showToast("TREASURE GOBLIN CAUGHT",message,"gold",10000);
+  }
   if(e.spider&&host.spiderNest&&!host.enemies.some(enemy=>enemy.alive&&enemy.spiderNestId===e.spiderNestId)){host.spiderNest.cleared=true;score+=100;showToast("DUSTWEB NEST CLEARED","The last set of legs stops moving. +100 score; each fragile spider awarded only 10 XP so the swarm cannot become a levelling shortcut.","green",8500)}
   if(e.skeleton&&host.skeletonHorde&&!host.enemies.some(enemy=>enemy.alive&&enemy.skeletonHordeId===e.skeletonHordeId)){host.skeletonHorde.cleared=true;score+=250;showToast("BONE HORDE SHATTERED","The final skeleton collapses. +250 score; this floor's single horde will not return.","green",8500)}
   if(e.exitWarden){host.sigilDropPos={x:e.x,y:e.y};const remaining=SYS.sigilDefendersAlive(host).length;if(remaining>0){showToast("SIGIL WARDEN DOWN",`${remaining} Sigil defender${remaining===1?"":"s"} still hold the chamber. The Exit Sigil remains sealed.`,"red",8500)}}
