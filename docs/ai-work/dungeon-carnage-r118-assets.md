@@ -49,3 +49,9 @@ The original uploaded `Dungeon Gathering Free Version.rar` was recovered and ins
 The author's free 2D Pixel Dungeon Asset Pack v2.0 supplied original 16×16 rotating coin sprites. Three distinct PNGs have been imported unchanged; the fourth animation phase reuses the second frame because the original image bytes are identical. The creator permits commercial games and modifications, but this is a **creator-granted free-commercial licence, not CC0**, so the permissions/hashes are separately recorded in `images.visualOverhaul.r118FreeCommercial` and the R118 provenance register.
 
 The new frames animate only existing gold-score ground pickups, drawing three coins inside the unchanged collection footprint. If any required frame fails to load, the previously approved R85 gold SVG remains the fallback. No economy, pickup, XP, combat, collision or other gameplay logic changed. Hash, size, frame ownership and renderer tests are included in the existing R118 test file. Pixel_Poem's small skeleton/vampire sheets were deliberately held back after visual comparison against the current more detailed enemy artwork.
+
+## Source confirmation for two staged character strips
+
+Both `pumpkin-dude.png` and `plague-doc.png` have now been individually traced to all eight original 0x72 DungeonTileset II v1.7 idle/run frames. RGBA pixels match exactly after their documented 16×32 atlas-cell offsets (pumpkin x=0,y=9; plague doctor x=-1,y=9), including intentional clipping in the latter. Source archive, output SHA-256 hashes, original frame hashes and free CC0 terms are recorded in the provenance register and asset manifest. The R118 regression test pins the result.
+
+**No enemy graphics have been switched on** as a consequence. The richer existing atlas stays in place until compatible actor roles and in-game proportions are verified.
