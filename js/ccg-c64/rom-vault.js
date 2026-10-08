@@ -174,7 +174,7 @@ export class ROMVault {
 
     // The first uploaded original ROM switches to user-firmware mode.
     // No hybrid (open BASIC + proprietary KERNAL or vice versa) can be used.
-    if (REQUIRED_ROM_KEYS.some(required => this.entries[required]?.bundled)) {
+    if (REQUIRED_ROM_KEYS.includes(key) && REQUIRED_ROM_KEYS.some(required => this.entries[required]?.bundled)) {
       for (const required of REQUIRED_ROM_KEYS) {
         if (this.entries[required]?.bundled) this.entries[required] = null;
       }
