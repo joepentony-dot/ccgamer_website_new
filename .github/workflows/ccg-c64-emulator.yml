@@ -44,6 +44,13 @@ jobs:
       - name: Verify explicit select-then-LOAD GAME interaction
         run: node tests/ccg-c64-library-select-load.test.mjs
 
+      - name: Verify mobile touch keys and fullscreen fallback
+        run: node tests/ccg-c64-mobile-controls.test.mjs
+
+      - name: Render phone portrait, landscape, tablet and desktop C64 layouts
+        timeout-minutes: 5
+        run: node tests/ccg-c64-mobile-browser.test.mjs
+
       - name: Verify 1883-game Blast catalogue startup without HEAD
         run: node tests/ccg-c64-library-startup.test.mjs
 
