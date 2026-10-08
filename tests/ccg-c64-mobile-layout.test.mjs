@@ -27,6 +27,8 @@ assert(css.includes('font-size: 16px;'), "Search input must avoid mobile browser
 assert(css.includes("(pointer: coarse) and (orientation: landscape) and (max-width: 1100px)"),
   "Landscape phones with wide CSS viewports must be supported");
 assert(css.includes("env(safe-area-inset-bottom)"), "Mobile safe areas must be respected");
+assert(css.includes("grid-template-columns: minmax(0, 1fr) minmax(176px, 33%)"),
+  "Landscape fullscreen must keep the picture and on-screen controls side by side");
 assert(css.includes(".ccg-c64-screen-stage:fullscreen"),
   "Existing desktop fullscreen picture must be preserved");
 assert(css.includes("min-height: 44px"), "Touch controls must have accessible tap targets");
