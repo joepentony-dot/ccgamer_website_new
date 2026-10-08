@@ -1970,6 +1970,55 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-touch-fire { width: 78px; height: 78px; }
 }
 
+/* Portable local-only ROM bank: desktop export and phone import controls. */
+.ccg-c64-setup__transfer {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+  margin: 0 0 0.75rem;
+  padding: 0.72rem;
+  border: 1px solid rgba(147, 132, 232, 0.55);
+  border-radius: 8px;
+  background: rgba(19, 22, 52, 0.78);
+}
+.ccg-c64-setup__transfer strong {
+  font-size: 0.75rem;
+  color: #f1edff;
+}
+.ccg-c64-setup__transfer p {
+  margin: 0.35rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #c4c3e1;
+}
+.ccg-c64-setup__transfer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.ccg-c64-setup__transfer-actions button,
+.ccg-c64-setup__transfer-actions label {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #8c83d0;
+  border-radius: 8px;
+  background: #24254a;
+  color: #f4f0ff;
+  font: 700 0.73rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-setup__transfer-actions button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.ccg-c64-setup__transfer output {
+  display: block;
+  font-size: 0.72rem;
+  color: #e0d7ff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,

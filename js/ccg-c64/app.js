@@ -16,6 +16,9 @@ const finishSetup = document.querySelector("[data-finish-setup]");
 const romSummary = document.querySelector("[data-rom-summary]");
 const romSetInput = document.getElementById("ccg-rom-set");
 const romSetMessage = document.querySelector("[data-rom-set-message]");
+const romExportButton = document.querySelector("[data-rom-export]");
+const romImportInput = document.querySelector("[data-rom-import]");
+const romTransferStatus = document.querySelector("[data-rom-transfer-status]");
 const closeSetupButton = document.querySelector("[data-close-setup]");
 const loadAnyMediaButton = document.querySelector("[data-load-any-media]");
 const anyMediaInput = document.getElementById("ccg-c64-any-media-input");
@@ -811,6 +814,7 @@ function render(snapshot) {
   }
 
   if (finishSetup) finishSetup.disabled = !snapshot.allRequiredReady;
+  if (romExportButton) romExportButton.disabled = !snapshot.allRequiredReady;
 
   if (!running && machineState) {
     if (snapshot.allRequiredReady && typeof SharedArrayBuffer === "undefined") {
@@ -1216,6 +1220,49 @@ if (romSetInput) {
     }
   });
 }
+
+// Download the ROM set locally on the user's own machine; no upload to CCG.
+romExportButton?.addEventListener("click", () => {
+  try {
+    const payload = JSON.stringify(vault.exportBundle());
+    const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "CCG-C64-My-ROM-Set.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 3000);
+    if (romTransferStatus) romTransferStatus.textContent =
+      "ROM set saved to your device. Transfer the file privately to your phone.";
+  } catch (error) {
+    if (romTransferStatus) romTransferStatus.textContent =
+      error?.message || "The installed ROM set could not be saved.";
+  }
+});
+
+romImportInput?.addEventListener("change", async () => {
+  const file = romImportInput.files?.[0];
+  romImportInput.value = "";
+  if (!file) return;
+  try {
+    if (file.size > 200000) throw new Error("That ROM transfer file is unexpectedly large.");
+    const bundle = JSON.parse(await file.text());
+    const snapshot = vault.importBundle(bundle);
+    render(snapshot);
+    if (romTransferStatus) romTransferStatus.textContent =
+      "ROM transfer accepted: KERNAL, BASIC and CHARGEN are now stored on this device.";
+    if (pendingMedia) {
+      finishSetup?.click();
+    } else {
+      hideSetup();
+      if (!running) await powerOn();
+    }
+  } catch (error) {
+    if (romTransferStatus) romTransferStatus.textContent =
+      error?.message || "The ROM set could not be imported.";
+  }
+});
 
 closeSetupButton?.addEventListener("click", hideSetup);
 
