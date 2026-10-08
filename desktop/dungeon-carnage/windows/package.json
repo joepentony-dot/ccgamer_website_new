@@ -1,0 +1,58 @@
+{
+  "name": "ccg-dungeon-carnage-windows",
+  "version": "0.119.0",
+  "private": true,
+  "description": "Offline Windows application for C64 Dungeon Carnage",
+  "main": "main.cjs",
+  "scripts": {
+    "test": "node --test path-guard.test.cjs",
+    "dist": "electron-builder --win nsis portable --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "uk.co.cheekycommodoregamer.dungeoncarnage",
+    "productName": "C64 Dungeon Carnage",
+    "copyright": "Copyright © 2026 Cheeky Commodore Gamer",
+    "asar": true,
+    "npmRebuild": false,
+    "files": [
+      "main.cjs",
+      "path-guard.cjs",
+      "game/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "icon.svg",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "artifactName": "C64-Dungeon-Carnage-Setup-${version}-${arch}.${ext}"
+    },
+    "portable": {
+      "artifactName": "C64-Dungeon-Carnage-Portable-${version}-${arch}.${ext}"
+    },
+    "publish": null
+  }
+}
