@@ -245,6 +245,19 @@
 
       <p class="ccg-c64-setup__lead">A real C64 needs KERNAL, BASIC and CHARGEN firmware before any D64, TAP, PRG or cartridge can run. Select those files once and this browser remembers them. After that, media loading is direct.</p>
 
+      <div class="ccg-c64-setup__transfer" role="group" aria-label="Transfer your installed C64 ROMs between devices">
+        <div>
+          <strong>ALREADY WORKING ON YOUR DESKTOP?</strong>
+          <p>On your desktop, save its locally installed C64 ROM set. Transfer that file to your phone, then select it here. CCG never receives your ROMs.</p>
+        </div>
+        <div class="ccg-c64-setup__transfer-actions">
+          <button type="button" data-rom-export disabled>SAVE ROM SET</button>
+          <label for="ccg-c64-import-rom-set">LOAD SAVED ROM SET</label>
+          <input type="file" id="ccg-c64-import-rom-set" accept=".json,application/json" data-rom-import hidden>
+        </div>
+        <output data-rom-transfer-status aria-live="polite"></output>
+      </div>
+
       <div class="ccg-c64-setup__steps">
         <section class="ccg-c64-setup-step">
           <div class="ccg-c64-setup-step__number">01</div>
