@@ -55,4 +55,7 @@ assert.equal(voice.state.queue.length,0);
 voice.setEnabled(false);
 assert.equal(voice.state.active,null);
 assert.equal(voice.state.queue.length,0);
+const combat=fs.readFileSync("arcade/lost-sizzler/js/game-local-runtime.js","utf8");
+assert.match(combat,/else if\(isDeathStalkerEnemy\(e\)\)window\.CCGLostSizzlerVoice\?\.say\?\.\("deathStalkerBanished",\{cooldown:0\}\)/,
+  "Actual fatal Death Stalker hit must request its approved banishment recording");
 console.log("R119 owner recorded voice priorities; no backlog; VOICE OFF: PASS");
