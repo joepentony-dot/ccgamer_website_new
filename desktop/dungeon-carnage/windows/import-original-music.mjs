@@ -46,11 +46,14 @@ export function remapMusicUrls(source){
   if(patched.includes(previewMarker)){
     const start=patched.indexOf(previewMarker);
     const guard=patched.indexOf("if(window.CCGDungeonCarnageItchPackage===true){",start);
-    const end=patched.indexOf("\n}\n",guard);
-    if(guard<start||end<guard)throw new Error("Unrecognised preview WAV-override shape");
+    const nextMarker="/* Every enhancement URL inherits";
+    const end=patched.indexOf(nextMarker,guard);
+    const block=end>=0&&guard>=start?patched.slice(guard,end):"";
+    if(guard<start||end<guard||!block.includes("offlineMusic.playlists[state]")||
+      !/}\s*$/.test(block))throw new Error("Unrecognised preview WAV-override shape");
     patched=patched.slice(0,start)+
-      "/* Owner's 16 verified original MP3 tracks now own offline playback. */"+
-      patched.slice(end+2);
+      "/* Owner's 16 verified original MP3 tracks now own offline playback. */\n\n"+
+      patched.slice(end);
   }
   return patched;
 }
