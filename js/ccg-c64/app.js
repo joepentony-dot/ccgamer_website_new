@@ -178,7 +178,8 @@ function fitScreenToStage() {
   if (document.fullscreenElement !== screenStage &&
       document.fullscreenElement !== mobileGameConsole &&
       !mobileGameConsole?.classList.contains("is-mobile-theater") &&
-      !window.matchMedia?.("(min-width: 960px)")?.matches) {
+      !window.matchMedia?.("(min-width: 960px)")?.matches &&
+      !(hasTouchScreen() && window.matchMedia?.("(orientation: landscape) and (max-width: 959px)")?.matches)) {
     screenBezel.style.width = "";
     return;
   }
