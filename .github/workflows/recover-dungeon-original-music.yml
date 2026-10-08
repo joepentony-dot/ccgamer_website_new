@@ -1,0 +1,76 @@
+name: Recover original Dungeon Carnage music to GitHub
+
+# INTENTIONALLY MANUAL ONLY. Never fetch production Supabase media during CI,
+# regression tests, site builds, or ordinary commits.
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type RECOVER_16_ORIGINAL_TRACKS once Supabase Storage is accessible"
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ccg-dungeon-original-music-recovery
+  cancel-in-progress: false
+
+jobs:
+  archive-original-music:
+    if: github.event.inputs.confirmation == 'RECOVER_16_ORIGINAL_TRACKS'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate exact 16-track recovery plan without downloading
+        run: node scripts/recover-dungeon-carnage-music.mjs --validate
+
+      - name: Recover audio once from the original public storage location
+        run: |
+          set -euo pipefail
+          node scripts/recover-dungeon-carnage-music.mjs --recover --confirm RECOVER_16_ORIGINAL_TRACKS
+          node scripts/recover-dungeon-carnage-music.mjs --verify
+
+      - name: Push recovered MP3s to a REVIEW branch (never main)
+        id: push
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="assets/dungeon-carnage-original-music-${{ github.run_id }}"
+          git switch -c "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- arcade/lost-sizzler/assets/audio/music/ccg-originals/
+          count="$(git diff --cached --name-only | grep -c '\.mp3$')"
+          test "$count" -eq 16
+          git diff --cached --check
+          git commit -m "Archive exact verified original 16-track Dungeon Carnage soundtrack"
+          git push --set-upstream origin "$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "Review branch: $branch" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open draft PR for owner review (if repository permits)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+        run: |
+          set -euo pipefail
+          if gh pr create --draft --base main --head "$BRANCH" \
+            --title "Restore 16 original Dungeon Carnage MP3s as GitHub-hosted static assets" \
+            --body "One-time recovery of the owner's published soundtrack, 16 verified MP3 files (72,233,137 bytes). All file sizes and SHA-256 hashes were checked. This PR adds the original binaries only; changing the live game and offline package music URLs requires a separately qualified migration. Do not merge before verifying licences, audio parity and static hosting limits."; then
+            echo "Draft asset PR created for review." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::GitHub Actions could not create a PR. The original files were pushed to $BRANCH; open a draft PR manually."
+            echo "Asset files are safe on $BRANCH; no changes were made to main." >> "$GITHUB_STEP_SUMMARY"
+          fi
