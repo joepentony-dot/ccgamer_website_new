@@ -59,3 +59,11 @@ Both `pumpkin-dude.png` and `plague-doc.png` have now been individually traced t
 ## R118 final licence classification correction
 
 Eight staged visuals belong to 0x72's original CC0 packs; two separate movement sheets (`skeleton-move.png` and `vampire-move.png`) belong to Pixel_Poem's free commercially permitted `Enemy_Animations_Set.zip` and are **not CC0**. The source archive SHA, each sheet's exact matching source PNG SHA and animation grid are now recorded in `r118FreeCommercial.stagedOriginalAnimationSheets` and checked by the R118 regression test. Neither sheet is active in gameplay.
+
+## Itch.io commercial-release asset boundary — R118 follow-up
+
+The zero-payment art intake revealed that earlier itch.io packages indiscriminately copied `assets/pixel/user-r118/`, including ten licensed-but-**staged, unused** PNG sheets: eight 0x72 CC0 candidates and two creator-permitted Pixel_Poem movement sheets (NOT CC0). Shipping source-only sprites is unnecessary, increases distribution exposure and may make standalone-file redistribution restrictions harder to honour.
+
+`scripts/build-c64-dungeon-carnage-itch-package.mjs` now reads **both** licence-separated `stagedNotWired` arrays from the existing asset manifest. Those candidate PNG files remain unchanged on the GitHub branch for future development, but are **excluded only from the distributable itch.io ZIP**. At the same time, packaging verifies all active 0x72/Niji/Kenney and Pixel_Poem runtime sprites are present and that no active path also appears in a staged exclusion list. The release manifest records the exact omitted paths; `--verify` independently fails if a staged file leaks into the package or an active file is missing.
+
+The resulting R118 candidate package was inspected: **10 staged files excluded, 0 excluded files present, 0 active assets missing**. Existing fallback image paths and all website/gameplay files are unchanged. The staged artwork and author/permission documentation remain in the source repository. The later exact-head CI, live visual acceptance and PR merge gate still apply.
