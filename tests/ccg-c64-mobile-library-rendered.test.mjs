@@ -52,7 +52,6 @@ const measure = [
  'deck:box(".ccg-c64-control-stack"), joy:show(".ccg-c64-touch-controls"),',
  'keys:show(".ccg-c64-touch-fkeys"), libraryInConsole:e(".ccg-c64-panel--library").parentElement===e(".ccg-c64-console"),',
  'romTransfer:e("[data-rom-import]")!==null,',
- 'libraryInConsole:e(".ccg-c64-panel--library").parentElement===e(".ccg-c64-console"),',
  'font:parseFloat(getComputedStyle(e("#ccg-c64-library-search")).fontSize)};'
 ].join("\n");
 
