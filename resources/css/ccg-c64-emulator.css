@@ -672,6 +672,11 @@ select:disabled {
   grid-column: 1 / -1;
 }
 
+/* No empty approval library panel or phantom space before genuine games exist. */
+.ccg-c64-panel--library[hidden] {
+  display: none !important;
+}
+
 .ccg-c64-quickload {
   display: grid;
   grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.2fr);
