@@ -87,6 +87,8 @@ assert(app.includes("refreshOnlineLibraryCards") &&
   "Searchable library must paginate and filter by first letter");
 assert(app.includes("available.every(Boolean)"),
   "Game browser must hide any partly uploaded game collection");
+assert(app.includes("directGameKeys") && app.includes("!directGameKeys.has("),
+  "Archived game pack must not duplicate already hosted D64/CRT titles");
 assert(app.includes('fetch("/emulator/c64/library.json"'), "Online Library must load from the CCG manifest");
 assert(app.includes('import { C64Machine } from "./core/machine.js"'), "Machine core must be wired into the CCG app");
 assert(app.includes("machine.runFrame()"), "PAL frame execution must be wired");
