@@ -63,6 +63,7 @@ jobs:
           grep -q '/arcade/c64-dungeon-carnage/' games/ccg-games/cheeky-commodore-quest/index.html
           grep -q '/arcade/c64-dungeon-carnage/' games/the-lost-sizzler/index.html
           node tests/dungeon-carnage-public-route.test.mjs
+          node tests/dungeon-carnage-r119-offline-goblin.test.mjs
           node tests/dungeon-member-playtester-admin.test.mjs
           node tests/dungeon-tester-code-gate.test.mjs
           node tests/play-games-maintenance.test.mjs
