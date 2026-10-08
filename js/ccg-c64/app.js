@@ -45,6 +45,9 @@ statusCanvas.width = screen?.width || 384;
 statusCanvas.height = screen?.height || 272;
 const statusCtx = statusCanvas.getContext("2d");
 const fullscreenButton = document.querySelector("[data-fullscreen]");
+const mobileFullscreenButton = document.querySelector("[data-mobile-fullscreen]");
+const mobileFullscreenExit = document.querySelector("[data-mobile-fullscreen-exit]");
+const mobileGameConsole = document.querySelector(".ccg-c64-console");
 const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
@@ -453,6 +456,7 @@ function attachSessionMedia(target) {
 }
 
 const heldMatrixKeys = new Map();
+const touchVirtualKeyHolds = new Map();
 // Buttons hold genuine CIA1 matrix keys; never synthesise browser KeyboardEvents.
 const touchFunctionKeyHolds = new Map();
 let shiftLeftPhysical = false;
@@ -466,6 +470,11 @@ function setC64Shift(left, right) {
 }
 
 function releaseAllInput() {
+  for (const [button, held] of touchVirtualKeyHolds) {
+    if (held.timer) clearTimeout(held.timer);
+    button.classList.remove("is-pressed");
+  }
+  touchVirtualKeyHolds.clear();
   for (const [button, held] of touchFunctionKeyHolds) {
     if (held.timer) clearTimeout(held.timer);
     button.classList.remove("is-pressed");
@@ -608,11 +617,12 @@ function handleC64Key(event, pressed) {
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
   // Text fields and dropdowns keep their native keyboard, as do ENTER/SPACE
   // for activating a focused button or link. The ROM setup remains modal.
+  const virtualInput = event.ccgVirtual === true;
   const nativeActivation = ["Enter", "NumpadEnter", "Space"].includes(event.code) &&
     (usesNativeKeyboard(event.target) || usesNativeKeyboard(document.activeElement));
-  if (pressed && (setup?.hidden === false ||
+  if (pressed && (setup?.hidden === false || (!virtualInput && (
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
-    nativeActivation)) return;
+    nativeActivation)))) return;
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -1847,6 +1857,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 document.addEventListener("fullscreenchange", () => {
+  syncMobileFullscreenUi();
   fitScreenToStage();
   if (!running || paused) return;
   lastFrameTime = 0;
@@ -2219,10 +2230,96 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
   button.addEventListener("contextmenu", event => event.preventDefault());
 }
 
+// Secondary mobile keys share the physical keyboard's CIA matrix route.
+// A 120ms minimum press allows the emulated 50 Hz keyboard scan to register taps.
+const MIN_TOUCH_VIRTUAL_KEY_MS = 120;
+for (const button of document.querySelectorAll("[data-c64-virtual-key]")) {
+  const code = button.getAttribute("data-c64-virtual-key");
+  const key = code === "Space" ? " " : code.startsWith("Key") ? code.slice(3).toLowerCase()
+    : code.startsWith("Digit") ? code.slice(5) : code;
+  const virtualEvent = () => ({
+    code, key, ccgVirtual: true, repeat: false,
+    shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
+    target: screen, getModifierState: () => false, preventDefault() {},
+  });
+  const release = (force = false) => {
+    const held = touchVirtualKeyHolds.get(button);
+    if (!held) return;
+    const remaining = MIN_TOUCH_VIRTUAL_KEY_MS - (performance.now() - held.started);
+    if (!force && remaining > 0) {
+      if (!held.timer) held.timer = setTimeout(() => release(true), remaining);
+      return;
+    }
+    if (held.timer) clearTimeout(held.timer);
+    touchVirtualKeyHolds.delete(button);
+    button.classList.remove("is-pressed");
+    handleC64Key(virtualEvent(), false);
+  };
+  button.addEventListener("pointerdown", event => {
+    event.preventDefault();
+    if (!running || !machine || paused || setup?.hidden === false || touchVirtualKeyHolds.has(button)) return;
+    touchVirtualKeyHolds.set(button, { started: performance.now(), timer: null });
+    handleC64Key(virtualEvent(), true);
+    button.classList.add("is-pressed");
+    try { button.setPointerCapture?.(event.pointerId); } catch {}
+  });
+  for (const name of ["pointerup", "pointercancel"]) {
+    button.addEventListener(name, event => { event.preventDefault(); release(); });
+  }
+  button.addEventListener("lostpointercapture", () => release());
+  button.addEventListener("click", event => {
+    if (event.detail !== 0 || !running || !machine || paused) return;
+    handleC64Key(virtualEvent(), true);
+    setTimeout(() => handleC64Key(virtualEvent(), false), MIN_TOUCH_VIRTUAL_KEY_MS);
+  });
+  button.addEventListener("contextmenu", event => event.preventDefault());
+}
+
+function syncMobileFullscreenUi() {
+  const active = Boolean(mobileGameConsole?.classList.contains("is-mobile-theater") ||
+    document.fullscreenElement === mobileGameConsole);
+  if (mobileFullscreenExit) mobileFullscreenExit.hidden = !active;
+  if (mobileFullscreenButton) mobileFullscreenButton.textContent =
+    active ? "EXIT FULLSCREEN" : "PLAY FULLSCREEN";
+  document.body.classList.toggle("ccg-c64-mobile-playing", active);
+}
+
+async function toggleMobileFullscreen() {
+  if (!mobileGameConsole) return;
+  if (mobileGameConsole.classList.contains("is-mobile-theater")) {
+    mobileGameConsole.classList.remove("is-mobile-theater");
+  } else if (document.fullscreenElement) {
+    await document.exitFullscreen();
+  } else {
+    try {
+      if (!mobileGameConsole.requestFullscreen) throw new Error("Fullscreen API unavailable");
+      await mobileGameConsole.requestFullscreen({ navigationUI: "hide" });
+    } catch {
+      // iPhone Safari and embedded browsers may not offer element fullscreen.
+      // Keep the emulator and touch controls together in a reversible overlay.
+      mobileGameConsole.classList.add("is-mobile-theater");
+    }
+  }
+  syncMobileFullscreenUi();
+  requestAnimationFrame(fitScreenToStage);
+}
+mobileFullscreenButton?.addEventListener("click", () => { void toggleMobileFullscreen(); });
+mobileFullscreenExit?.addEventListener("click", () => { void toggleMobileFullscreen(); });
+window.addEventListener("keydown", event => {
+  if (event.key === "Escape" && mobileGameConsole?.classList.contains("is-mobile-theater")) {
+    event.preventDefault();
+    void toggleMobileFullscreen();
+  }
+});
+
 void refreshVaultStatus();
 
 fullscreenButton?.addEventListener("click", async () => {
   if (!screenStage) return;
+  if (mobileLibraryViewport.matches) {
+    await toggleMobileFullscreen();
+    return;
+  }
   try {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
