@@ -93,7 +93,7 @@
         </div>
       </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--library">
+      <section class="ccg-c64-panel ccg-c64-panel--library" hidden aria-label="Approved online C64 games">
         <header class="ccg-c64-panel-title"><span>••</span><strong>ONLINE LIBRARY</strong><em data-online-library-status>LOADING</em></header>
         <div class="ccg-c64-library-row">
           <select data-online-library-select aria-label="Choose C64 media from the CCG Online Library">
@@ -135,10 +135,13 @@
         <header class="ccg-c64-panel-title"><span>••</span><strong>JOYSTICK CONTROL</strong><em>GAMEPAD + TOUCH</em></header>
         <div class="ccg-c64-port-row">
           <span class="ccg-c64-port-dot"></span>
-          <div><strong>JOYSTICK</strong><small>Gamepad and touch controller</small></div>
+          <div><strong>JOYSTICK</strong><small>Gamepad, keyboard or touch</small></div>
           <span class="ccg-c64-chip" data-joystick-port>PORT 2</span>
         </div>
-        <button type="button" class="ccg-c64-joystick-swap" data-joystick-swap title="Switch joystick controls between C64 port 1 and port 2">SWAP JOYSTICK</button>
+        <div class="ccg-c64-joystick-actions">
+          <button type="button" class="ccg-c64-joystick-swap" data-joystick-swap title="Switch joystick controls between C64 port 1 and port 2">SWAP JOYSTICK</button>
+          <button type="button" class="ccg-c64-joystick-swap" data-keyboard-joystick aria-pressed="false" title="Use arrow keys or WASD to steer, and SPACE or CTRL to fire. Keyboard input has priority over the connected gamepad.">KEYBOARD JOY: OFF</button>
+        </div>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--disk">
