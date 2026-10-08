@@ -65,6 +65,7 @@ jobs:
           node --check desktop/dungeon-carnage/windows/main.cjs
           node --check desktop/dungeon-carnage/windows/path-guard.cjs
           node --test desktop/dungeon-carnage/windows/path-guard.test.cjs
+          node --test desktop/dungeon-carnage/windows/import-original-music.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Download same-commit Linux verified game
