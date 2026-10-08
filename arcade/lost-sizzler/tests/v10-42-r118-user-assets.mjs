@@ -8,6 +8,13 @@ const overrides=read("js/asset-overrides.js");
 const render=read("js/game-render.js");
 const manifest=JSON.parse(read("assets/asset-manifest.json"));
 const provenance=read("assets/pixel/user-r118/PROVENANCE.md");
+const releaseCredits=read("assets/THIRD-PARTY-ART-CREDITS.md");
+for(const name of ["0x72","Niji","Kenney","Pixel_Poem"]){
+  if(!releaseCredits.includes(name))throw new Error("Missing third-party R118 contributor in packaged game art credits: "+name);
+}
+if(!releaseCredits.includes("not CC0"))throw new Error("Pixel_Poem art must not be mislabelled CC0 in shipped credits");
+if(!releaseCredits.includes("commercial games"))throw new Error("Creator commercial-use permission must be described in shipped credits");
+
 const sandbox={window:{}};
 const ownerEnd=overrides.indexOf("\n/* Every enhancement URL inherits");
 assert(ownerEnd>0,"R118 test could not isolate the owner-override declaration");
