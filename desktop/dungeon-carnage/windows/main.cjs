@@ -16,6 +16,11 @@ const GAME_ROOT=path.join(__dirname,"game");
 // Reserve one stable origin for save games across installations and updates.
 // Never switch to an arbitrary port: this would hide existing browser saves.
 const GAME_PORT=47731;
+// Keep a deterministic profile even when Windows runs the portable EXE from
+// another directory or future updates change the launcher entry path.
+const USER_DATA_PATH=path.join(app.getPath("appData"),"C64 Dungeon Carnage");
+fs.mkdirSync(USER_DATA_PATH,{recursive:true});
+app.setPath("userData",USER_DATA_PATH);
 const EXTERNAL_HOSTS=new Set([
   "cheekycommodoregamer.co.uk","www.cheekycommodoregamer.co.uk",
   "itch.io","www.itch.io","patreon.com","www.patreon.com",
@@ -128,7 +133,11 @@ async function startGame(){
     storageFlushedOnClose=true;
     Promise.resolve(session.defaultSession.flushStorageData())
       .catch(error=>console.error("Dungeon Carnage save flush failed",error))
-      .finally(()=>{if(!windowToClose.isDestroyed())windowToClose.destroy()});
+      .finally(()=>{
+        // Electron documents flushStorageData() without an awaitable result.
+        // Give the Chromium storage backend a short bounded shutdown window.
+        setTimeout(()=>{if(!windowToClose.isDestroyed())windowToClose.destroy()},750);
+      });
   });
   gameWindow.on("closed",()=>{gameWindow=null;app.quit()});
 }
