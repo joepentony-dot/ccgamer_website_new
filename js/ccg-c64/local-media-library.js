@@ -12,7 +12,7 @@ export function localMediaFormat(filename) {
 
 export function localMediaId(filename) {
   const name = String(filename || "").replace(/\.[^.]+$/, "");
-  return `custom:${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 100) || "game"}`;
+  return `custom:${(name + "-" + (localMediaFormat(filename) || "bin")).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 110) || "game"}`;
 }
 
 function checkMedia(id, filename, type, bytes) {
@@ -92,7 +92,7 @@ export class LocalMediaLibrary {
           title: record.title,
           filename: record.filename,
           type: record.type,
-          bytes: new Uint8Array(record.bytes),
+          bytes: new Uint8Array(record.bytes.slice(0)),
         } : null);
       };
       request.onerror = () => reject(request.error || new Error("Could not read the selected game."));
