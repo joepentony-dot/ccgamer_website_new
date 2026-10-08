@@ -1927,7 +1927,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     min-width: 0;
   }
   .ccg-c64-console:fullscreen .ccg-c64-screen-bezel {
-    width: 100%;
+    width: min(100%, 120dvh);
   }
   .ccg-c64-console:fullscreen .ccg-c64-touch-dpad {
     grid-template-columns: repeat(3, 44px);
