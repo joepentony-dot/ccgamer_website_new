@@ -2,13 +2,13 @@
 /*
  * C64 Dungeon Carnage native-window launcher.
  * Playable files reside in app.asar/game, not a loose public web directory.
- * All browser game HTTP requests are restricted to an ephemeral localhost URL.
+ * All browser game HTTP requests are restricted to an ephemeral loopback origin.
  */
 const electron=require("electron");
 const app=electron.app,BrowserWindow=electron.BrowserWindow;
 const shell=electron.shell,session=electron.session;
 const fs=require("node:fs"),http=require("node:http");
-const path=require("node:path"),crypto=require("node:crypto");
+const path=require("node:path");
 const {resolveGamePath,parseRange}=require("./path-guard.cjs");
 const GAME_ROOT=path.join(__dirname,"game");
 const EXTERNAL_HOSTS=new Set([
@@ -25,7 +25,7 @@ function externalDestination(raw){
     return url.toString();
   }catch(_){return null}
 }
-function serve(req,res,token){
+function serve(req,res){
   const host=String(req.headers.host||"");
   const port=gameServer&&gameServer.address()&&gameServer.address().port;
   if(host!=="127.0.0.1:"+port){res.writeHead(403);res.end();return}
@@ -33,9 +33,8 @@ function serve(req,res,token){
   let url;
   try{url=new URL(req.url||"","http://127.0.0.1")}
   catch(_){res.writeHead(400);res.end();return}
-  const prefix="/"+token;
-  if(!(url.pathname===prefix||url.pathname.startsWith(prefix+"/"))){res.writeHead(404);res.end();return}
-  const relative=url.pathname.slice(prefix.length)||"/";
+  // Preserve origin-root absolute paths used by the existing offline runtime.
+  const relative=url.pathname||"/";
   const target=resolveGamePath(relative,GAME_ROOT);
   if(!target){res.writeHead(404);res.end();return}
   let stat;
@@ -68,13 +67,12 @@ function serve(req,res,token){
   stream.pipe(res);
 }
 async function startGame(){
-  const token=crypto.randomBytes(24).toString("hex");
-  gameServer=http.createServer((req,res)=>serve(req,res,token));
+  gameServer=http.createServer((req,res)=>serve(req,res));
   await new Promise((resolve,reject)=>{
     gameServer.once("error",reject);
     gameServer.listen(0,"127.0.0.1",resolve);
   });
-  const base="http://127.0.0.1:"+gameServer.address().port+"/"+token+"/";
+  const base="http://127.0.0.1:"+gameServer.address().port+"/";
   const gameOrigin=new URL(base).origin;
   session.defaultSession.webRequest.onBeforeRequest(
     {urls:["http://*/*","https://*/*"]},
@@ -82,7 +80,7 @@ async function startGame(){
       let local=false;
       try{
         const url=new URL(details.url);
-        local=url.origin===gameOrigin&&url.pathname.startsWith("/"+token+"/");
+        local=url.origin===gameOrigin;
       }catch(_){}
       callback({cancel:!local});
     }
