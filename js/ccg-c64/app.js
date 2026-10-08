@@ -357,6 +357,7 @@ function updateMediaControls(snapshot = vault.snapshot()) {
   if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled =
     !active || !mountedDisk || !activeLibraryEntryId;
   updateDriveModeUi(snapshot);
+  updateOnlineDiskUi();
 }
 
 function cloneMedia(media) {
