@@ -4,12 +4,14 @@ import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault } from "./game-vault.js";
+import { LocalMediaLibrary, localMediaFormat, localMediaId } from "./local-media-library.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
 
 const vault = new ROMVault();
 const gameVault = new GameVault();
+const localMediaLibrary = new LocalMediaLibrary();
 const setup = document.querySelector("[data-rom-setup]");
 const finishSetup = document.querySelector("[data-finish-setup]");
 const romSummary = document.querySelector("[data-rom-summary]");
@@ -22,6 +24,11 @@ const mediaDropzone = document.querySelector("[data-media-dropzone]");
 const onlineLibrarySelect = document.querySelector("[data-online-library-select]");
 const onlineLibraryLoad = document.querySelector("[data-online-library-load]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
+const localLibrarySelect = document.querySelector("[data-local-library-select]");
+const localLibraryAdd = document.querySelector("[data-local-library-add]");
+const localLibraryRemove = document.querySelector("[data-local-library-remove]");
+const localLibraryStatus = document.querySelector("[data-local-library-status]");
+const localLibraryInput = document.getElementById("ccg-c64-local-media-input");
 const machineState = document.querySelector("[data-machine-state]");
 const screen = document.getElementById("ccg-c64-screen");
 // Match the upstream C64 READY presentation path: WebGL first, Canvas2D only as a fallback.
@@ -86,6 +93,10 @@ let touchHeldMask = 0;
 let pendingMedia = null;
 let onlineLibraryEntries = [];
 let onlineLibraryRequestId = 0;
+let localPresets = [];
+let localSaved = [];
+let localImportTargetId = "";
+let localLoadRequestId = 0;
 let autoStartSteps = null;
 let autoStartTypeRest = "";
 let autoStartSawBusy = false;
@@ -418,7 +429,7 @@ function releaseHeldMatrixBinding(event, heldKey) {
 function isTypingOrChoosingMedia(target) {
   if (!(target instanceof Element)) return false;
   return Boolean(target.closest(
-    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"]'
+    'input, textarea, select, button, a, summary, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"], [role="button"]'
   ));
 }
 
@@ -1270,6 +1281,184 @@ async function loadOnlineLibraryEntry() {
     }
   }
 }
+
+// Browser-local catalogue. Only preset names/formats are fetched from GitHub;
+// the game bytes are imported by the visitor and saved in IndexedDB.
+function localLibraryPreset(id) {
+  return localPresets.find((item) => item.id === id) || null;
+}
+
+function updateLocalLibraryButtons() {
+  const id = localLibrarySelect?.value || "";
+  if (localLibraryRemove) {
+    localLibraryRemove.disabled = !localSaved.some((item) => item.id === id);
+  }
+  if (localLibraryAdd) {
+    localLibraryAdd.textContent = localLibraryPreset(id) && !localSaved.some((item) => item.id === id)
+      ? "IMPORT" : "ADD";
+  }
+}
+
+async function refreshLocalLibrary(preferredId = "") {
+  if (!localLibrarySelect) return;
+  localSaved = await localMediaLibrary.list();
+  const selected = preferredId || localLibrarySelect.value;
+  localLibrarySelect.replaceChildren(new Option("Choose a game…", ""));
+
+  if (localPresets.length) {
+    const presetsGroup = document.createElement("optgroup");
+    presetsGroup.label = "C64 GAME SLOTS — YOUR FILE REQUIRED";
+    for (const preset of localPresets) {
+      const installed = localSaved.some((entry) => entry.id === preset.id);
+      presetsGroup.append(new Option(
+        `${preset.title} [${preset.format.toUpperCase()}] — ${installed ? "SAVED" : "ADD FILE"}`,
+        preset.id
+      ));
+    }
+    localLibrarySelect.append(presetsGroup);
+  }
+
+  const custom = localSaved.filter((entry) => !localLibraryPreset(entry.id));
+  if (custom.length) {
+    const savedGroup = document.createElement("optgroup");
+    savedGroup.label = "OTHER GAMES — SAVED IN THIS BROWSER";
+    for (const entry of custom) {
+      savedGroup.append(new Option(`${entry.title} [${entry.type.toUpperCase()}]`, entry.id));
+    }
+    localLibrarySelect.append(savedGroup);
+  }
+
+  if (Array.from(localLibrarySelect.options).some((option) => option.value === selected)) {
+    localLibrarySelect.value = selected;
+  }
+  if (localLibraryStatus) localLibraryStatus.textContent = `${localSaved.length} SAVED`;
+  updateLocalLibraryButtons();
+}
+
+async function initialiseLocalLibrary() {
+  if (!localLibrarySelect) return;
+  try {
+    const response = await fetch("/emulator/c64/local-catalogue.json", {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (!response.ok) throw new Error(`Local game slot catalogue unavailable (HTTP ${response.status}).`);
+    const payload = await response.json();
+    localPresets = (Array.isArray(payload.entries) ? payload.entries : []).filter((entry) =>
+      entry && /^preset:[a-z0-9-]+$/.test(entry.id) &&
+      typeof entry.title === "string" && typeof entry.filename === "string" &&
+      localMediaFormat(entry.filename) === entry.format
+    );
+  } catch (error) {
+    localPresets = [];
+    if (stageNote) stageNote.textContent = `${error.message} You can still import other games.`;
+  }
+  try {
+    await refreshLocalLibrary();
+  } catch (error) {
+    localLibrarySelect.replaceChildren(new Option("Browser storage unavailable", ""));
+    if (localLibraryStatus) localLibraryStatus.textContent = "UNAVAILABLE";
+    if (stageNote) stageNote.textContent = error.message;
+  }
+}
+
+function beginLocalImport(presetId = "") {
+  if (!localLibraryInput) return;
+  localImportTargetId = presetId;
+  localLibraryInput.value = "";
+  localLibraryInput.click();
+}
+
+async function loadLocalLibraryEntry(id) {
+  const requestId = ++localLoadRequestId;
+  const preset = localLibraryPreset(id);
+  try {
+    const entry = await localMediaLibrary.get(id);
+    if (requestId !== localLoadRequestId) return;
+    if (!entry) {
+      if (preset) {
+        if (stageNote) stageNote.textContent = `Choose your own ${preset.format.toUpperCase()} file for ${preset.title}. It will stay on this device.`;
+        beginLocalImport(preset.id);
+      }
+      return;
+    }
+    if (localLibraryStatus) localLibraryStatus.textContent = "LOADING";
+    const loaded = await queueMedia({
+      name: entry.filename,
+      type: entry.type,
+      bytes: entry.bytes,
+    }, { freshBoot: true });
+    if (requestId === localLoadRequestId && localLibraryStatus) {
+      localLibraryStatus.textContent = loaded ? "PLAYING" :
+        (vault.snapshot().allRequiredReady ? "LOAD ERROR" : "ROMS NEEDED");
+    }
+  } catch (error) {
+    if (requestId === localLoadRequestId) {
+      if (localLibraryStatus) localLibraryStatus.textContent = "ERROR";
+      if (stageNote) stageNote.textContent = error.message || "Could not load the saved game.";
+    }
+  }
+}
+
+localLibrarySelect?.addEventListener("change", () => {
+  updateLocalLibraryButtons();
+  if (localLibrarySelect.value) void loadLocalLibraryEntry(localLibrarySelect.value);
+});
+
+localLibraryAdd?.addEventListener("click", () => {
+  const id = localLibrarySelect?.value || "";
+  const selectedPreset = localLibraryPreset(id);
+  const needsFile = selectedPreset && !localSaved.some((entry) => entry.id === id);
+  beginLocalImport(needsFile ? id : "");
+});
+
+localLibraryInput?.addEventListener("change", async () => {
+  const file = localLibraryInput.files?.[0];
+  localLibraryInput.value = "";
+  const targetId = localImportTargetId;
+  localImportTargetId = "";
+  if (!file) return;
+
+  const preset = localLibraryPreset(targetId) ||
+    localPresets.find((entry) => entry.filename.toLowerCase() === file.name.toLowerCase()) || null;
+  const type = localMediaFormat(file.name);
+  if (!type || (preset && type !== preset.format)) {
+    if (stageNote) stageNote.textContent = preset
+      ? `That slot needs a ${preset.format.toUpperCase()} file, not ${type?.toUpperCase() || "an unsupported file"}.`
+      : "Please choose a supported C64 disk, tape, PRG or cartridge file.";
+    return;
+  }
+
+  try {
+    if (localLibraryStatus) localLibraryStatus.textContent = "SAVING";
+    const id = preset?.id || localMediaId(file.name);
+    const title = preset?.title || file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+    await localMediaLibrary.save({
+      id, title, filename: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()),
+    });
+    await refreshLocalLibrary(id);
+    if (stageNote) stageNote.textContent = `${title} saved in this browser. Starting game…`;
+    await loadLocalLibraryEntry(id);
+  } catch (error) {
+    if (localLibraryStatus) localLibraryStatus.textContent = "SAVE ERROR";
+    if (stageNote) stageNote.textContent = error.message || "Could not save the imported game.";
+  }
+});
+
+localLibraryRemove?.addEventListener("click", async () => {
+  const id = localLibrarySelect?.value || "";
+  const record = localSaved.find((entry) => entry.id === id);
+  if (!record || !window.confirm(`Remove ${record.title} from this browser's game library?`)) return;
+  try {
+    ++localLoadRequestId;
+    await localMediaLibrary.remove(id);
+    await refreshLocalLibrary(localLibraryPreset(id) ? id : "");
+    if (stageNote) stageNote.textContent = `${record.title} removed from this browser. Any currently running game is unaffected.`;
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error.message || "Could not remove the saved game.";
+  }
+});
+
+void initialiseLocalLibrary();
 
 loadAnyMediaButton?.addEventListener("click", () => anyMediaInput?.click());
 anyMediaInput?.addEventListener("change", async () => {
