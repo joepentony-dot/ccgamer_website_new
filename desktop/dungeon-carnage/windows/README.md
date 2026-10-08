@@ -76,3 +76,30 @@ The Windows GitHub workflow also launches the **actual unpacked EXE** and
 verifies that it serves the game HTML, accepts OGG Range audio requests, and
 denies access to dotfiles. This is a technical startup smoke only, not a
 complete manual playthrough or verified original soundtrack test.
+
+## Original soundtrack recovery intake (prepared, not yet populated)
+
+After the owner's original MP3s become accessible again, recover the **16
+original enabled files** into a folder outside the repository. The local
+packager can then import all 16 without adding them to GitHub or changing any
+public website code.
+
+Run the existing canonical itch staging builder first, then from the repository
+root, run these local commands with the actual paths substituted:
+
+```powershell
+node desktop/dungeon-carnage/windows/import-original-music.mjs --game "C:\path\to\staged-game" --music "C:\path\to\recovered-mp3-files"
+node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "C:\path\to\staged-game"
+```
+
+The importer accepts flat filenames or the original Supabase category folders.
+It refuses missing tracks, substitutes, unexpected sizes and non-MP3 headers.
+It copies the originals into the packaged game, replaces all original Supabase
+music URLs with local URLs and refreshes SHA-256 release-manifest entries. The
+source recordings are left unchanged. The importer is not automatic in GitHub
+Actions because the original private media are **not yet available** to it.
+
+**Never commit recovered music to the public website repository**, attach it
+to an unrelated pull request, or treat a preview with placeholder WAVs as the
+paid commercial soundtrack. An owner-approved private staging input should be
+used for future signed commercial release builds.
