@@ -8,7 +8,7 @@ The owner supplied `Dungeon tileset(1).zip`, `0x72_16x16DungeonTileset.v5.zip`, 
 - 0x72 / Robert Norenberg, DungeonTileset II v1.7: https://0x72.itch.io/dungeontileset-ii (CC0-1.0; includes separate Doc and Pumpkin character downloads).
 - Niji, Dungeon Tileset II Extended v1.1: https://nijikokun.itch.io/dungeontileset-ii-extended (CC0-1.0).
 
-The four active `wall-torch-0.png` to `wall-torch-3.png` files match `items/torch_1.png` to `items/torch_4.png` byte-for-byte in the 0x72 v5 ZIP. Ten imported 0x72 PNGs have been byte-matched against archive entries. Other CC0 candidates remain staged for scale and semantic review; the extracted extended gold key is now pixel-identical to a unique 16x16 crop of the Niji v1.1 atlas; separately supplied/assembled character candidates still require exact lineage confirmation.
+The four active `wall-torch-0.png` to `wall-torch-3.png` files match `items/torch_1.png` to `items/torch_4.png` byte-for-byte in the 0x72 v5 ZIP. Eight other original 0x72 CC0 PNGs remain staged for scale and semantic review; two of them are now provenanced complete character-animation sheets, matched against eight source frames each. The extracted extended gold key is pixel-identical to a unique 16x16 crop of the Niji v1.1 atlas. Two additional staged movement sheets are Pixel_Poem free-commercial art, NOT CC0, and are listed separately below.
 
 ## Excluded archive — no demonstrated redistribution permission
 
@@ -25,7 +25,7 @@ This asset pass does not modify collision, room topology, trap damage, AI, inven
 - VERIFIED SOURCE LICENCE: Niji DungeonTileset II Extended v1.1 — https://nijikokun.itch.io/dungeontileset-ii-extended — CC0-1.0; original page lists v1.1 ZIP and mentions keys and animated wall torches. Exact pixel provenance of the extracted gold key was VERIFIED on 8 October by full RGBA pixel match at Niji v1.1 atlas (320,320) crop 16x16; runtime override is enabled with a hash-pinned regression guard.
 - RESTRICTED: Minifantasy Dungeon v2.3 Free Version — https://krishna-palacio.itch.io/minifantasy-dungeon — free licence is non-commercial only; creator offers separate paid commercial licence. Do not assume owner possession of the free archive grants commercial rights.
 - UNKNOWN: `Dungeon tileset(1).zip` — no established author or source page. Do not restore excluded derivatives.
-- PENDING SOURCE MATCH: KayKit, Craftpix, Dungeons & Pixels, Super Pixel Objects, Treasure+ and remaining packs. No licence approval inferred from filenames alone.
+- REMAINING INDIVIDUAL FILE REVIEW: some KayKit, Craftpix, Dungeons & Pixels, Super Pixel Objects, Treasure+ and other source-tier binaries still need exact matching and art-scale checks; later sections record licences verified in subsequent passes. Do not assume all archive files are distributable because the archive name matches.
 
 Source-page licensing verification does not establish binary-level identity for every extracted sprite; the gold key and newly activated crate have now been matched to their recovered original owner archives. Retain original file-match requirements and the exact-head CI/release gate.
 
@@ -114,3 +114,12 @@ Source: original owner-uploaded `0x72_DungeonTilesetII_v1.7.zip` (SHA-256 `a5b23
 - `plague-doc.png` (128×32, PNG SHA-256 `2bb0c93615ac1a9c99e0f32be98d2d8e48fa78d7c4449627b3980dc9a849276e`): **all eight cells are pixel-identical** to `frames/doc_idle_anim_f0..3.png` and `frames/doc_run_anim_f0..3.png` after placing the original image at x=-1,y=9 in its 16×32 cell (the leftmost column is intentionally clipped).
 - The full original eight-frame PNG SHA-256 lists and these exact atlas offsets are recorded in `assets/asset-manifest.json -> images.visualOverhaul.r118LicensedCC0.stagedCharacterSourceVerified`; the existing R118 Node contract now pins both 128×32 PNG hashes, source archive, commercial CC0 licence, offset, frame counts and `stagedNotWired` status.
 - **These are source-verified STAGED images only.** No new enemy/character mapping or behavioural integration is authorised by the provenance match alone. Their potential roles are to be considered in a visual gameplay pass. The richer existing enemy atlas remains authoritative.
+
+## Licence classification correction — two staged movement sheets
+
+The earlier `r118LicensedCC0.stagedNotWired` collection incorrectly mixed in two original Pixel_Poem sprites. They are now moved to `r118FreeCommercial.stagedNotWired`, **not CC0**, while preserving both assets on the branch as staged-only candidates.
+
+- `skeleton-move.png` 320×32, ten 32×32 movement frames: **exact original bytes** from `Enemy_Animations_Set/enemies-skeleton1_movement.png`, SHA-256 `11ad26aaeda377fdad64aa6127e575900fd01198a36dbda6fdb19020d4d85469`.
+- `vampire-move.png` 256×32, eight 32×32 movement frames: **exact original bytes** from `Enemy_Animations_Set/enemies-vampire_movement.png`, SHA-256 `d84afcd7da250d7f890a325970e145967168703bcb3bb6e45b2f5a7e75fc903d`.
+- Source archive: owner's free `Enemy_Animations_Set.zip`, SHA-256 `4e17a982f71f688de7c86c9fa5feb63ad2709c649281b62b46cf6ce3de900dcd`. Pixel_Poem's creator permission for commercial games/modification is at https://pixel-poem.itch.io/dungeon-assetpuck/comments?after=22 .
+- Both movement sheets remain staged, **not activated**; source licences do not override the art-scale/suitability gate. Existing detailed enemy presentation is unchanged. The existing R118 test now fails if these non-CC0 assets are accidentally relabelled CC0 and checks their exact original bytes, frame dimensions and source archive identity.
