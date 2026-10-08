@@ -1970,6 +1970,168 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-touch-fire { width: 78px; height: 78px; }
 }
 
+/* C64 mobile consolidation: library immediately under the picture, thumb-
+   reachable extra keys, and a reversible fullscreen fallback for mobile Safari.
+   All desktop workstation rules and firmware handling remain unchanged. */
+.ccg-c64-mobile-actions,
+.ccg-c64-mobile-exit,
+.ccg-c64-touch-extra { display: none; }
+.ccg-c64-mobile-exit[hidden] { display: none !important; }
+.ccg-c64-library-suggestions.is-drop-up {
+  top: auto;
+  bottom: calc(100% + 5px);
+}
+#ccg-c64-library-options {
+  max-height: min(var(--ccg-suggest-height, 340px), 46dvh);
+}
+
+@media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .ccg-c64-console > .ccg-c64-panel--library {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0.4rem 0 0;
+    padding: 0.55rem;
+    grid-area: auto;
+    border-radius: 8px;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library[hidden] { display: none !important; }
+  .ccg-c64-console > .ccg-c64-panel--library.is-suggesting { z-index: 90; }
+  .ccg-c64-mobile-actions {
+    display: flex;
+    margin: 0.35rem 0;
+  }
+  .ccg-c64-mobile-actions button {
+    min-height: 44px;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid rgba(213, 104, 219, 0.65);
+    border-radius: 8px;
+    background: #47245f;
+    color: #fff;
+    font: 800 0.66rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: manipulation;
+  }
+  .ccg-c64-touch-extra {
+    display: block;
+    position: relative;
+    margin: 0.4rem 0 0;
+    padding: 0.36rem;
+    border: 1px solid var(--emu-line-soft);
+    border-radius: 8px;
+    background: rgba(10, 12, 34, 0.82);
+  }
+  .ccg-c64-touch-extra summary {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    border: 1px solid #4a4e8c;
+    border-radius: 7px;
+    background: rgba(77, 69, 149, 0.18);
+    color: #e1deff;
+    font: 800 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .ccg-c64-extra-key-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.32rem;
+    margin-top: 0.4rem;
+  }
+  .ccg-c64-extra-key-grid button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.4rem 0.1rem;
+    border: 1px solid #55558d;
+    border-radius: 7px;
+    background: #191b43;
+    color: #f3f0ff;
+    font: 800 0.61rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .ccg-c64-extra-key-grid button.is-pressed,
+  .ccg-c64-extra-key-grid button:active {
+    background: #6f4195;
+    border-color: #d6a4f2;
+  }
+  .ccg-c64-console:fullscreen > .ccg-c64-panel--library,
+  .ccg-c64-console.is-mobile-theater > .ccg-c64-panel--library,
+  .ccg-c64-console:fullscreen > .ccg-c64-mobile-actions,
+  .ccg-c64-console.is-mobile-theater > .ccg-c64-mobile-actions {
+    display: none !important;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-extra {
+    display: block;
+    flex: 0 0 auto;
+    max-height: min(38dvh, 230px);
+    overflow-y: auto;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-mobile-exit,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-mobile-exit {
+    display: block;
+    position: absolute;
+    z-index: 15;
+    top: max(0.4rem, env(safe-area-inset-top));
+    right: max(0.4rem, env(safe-area-inset-right));
+    min-height: 44px;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid #7771bc;
+    border-radius: 8px;
+    background: rgba(10, 11, 35, 0.94);
+    color: #fff;
+    font: 800 0.58rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: manipulation;
+  }
+  .ccg-c64-console.is-mobile-theater {
+    position: fixed;
+    z-index: 2147481200;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: max(0.35rem, env(safe-area-inset-top))
+      max(0.35rem, env(safe-area-inset-right))
+      max(0.35rem, env(safe-area-inset-bottom))
+      max(0.35rem, env(safe-area-inset-left));
+    border: 0;
+    border-radius: 0;
+    background: #03040e;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .ccg-c64-console.is-mobile-theater .ccg-c64-display-head,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-screen-foot,
+  .ccg-c64-console.is-mobile-theater .ccg-c64-stage-note { display: none; }
+  .ccg-c64-console.is-mobile-theater .ccg-c64-screen-stage {
+    flex: 0 0 auto;
+    min-height: 0;
+    height: auto;
+    width: 100%;
+    padding: 0;
+  }
+  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-controls {
+    display: flex;
+    flex: 0 0 auto;
+  }
+  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-extra {
+    display: block;
+    flex: 0 0 auto;
+  }
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .ccg-c64-console:fullscreen > .ccg-c64-touch-extra {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+body.ccg-c64-mobile-playing { overflow: hidden !important; }
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
