@@ -142,6 +142,27 @@ export class ROMVault {
     return this.snapshot();
   }
 
+  // Open ROMs provides a no-setup fallback, but is never mixed with
+  // original firmware or written over a visitor's locally supplied ROM set.
+  // The fallback is session-only, so full firmware can always replace it.
+  useBundledOpenRoms(roms) {
+    if (this.snapshot().requiredReady !== 0) return false;
+    const entries = {};
+    for (const key of REQUIRED_ROM_KEYS) {
+      const bytes = roms?.[key];
+      if (!(bytes instanceof Uint8Array) || !ROM_SPEC[key].sizes.includes(bytes.length)) {
+        throw new Error("Bundled Open ROM validation failed: " + key);
+      }
+      entries[key] = { bytes, name: "Open ROMs (LGPL 3)", size: bytes.length, bundled: true };
+    }
+    Object.assign(this.entries, entries);
+    return true;
+  }
+
+  usingBundledOpenRoms() {
+    return REQUIRED_ROM_KEYS.every(key => this.entries[key]?.bundled === true);
+  }
+
   install(key, bytes, name = null) {
     const spec = ROM_SPEC[key];
     if (!spec) throw new Error("Unknown ROM slot.");
@@ -149,6 +170,14 @@ export class ROMVault {
     const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
     if (!spec.sizes.includes(data.length)) {
       throw new Error(`${spec.label} must be ${spec.sizes.join(" or ")} bytes; received ${data.length}.`);
+    }
+
+    // The first uploaded original ROM switches to user-firmware mode.
+    // No hybrid (open BASIC + proprietary KERNAL or vice versa) can be used.
+    if (REQUIRED_ROM_KEYS.some(required => this.entries[required]?.bundled)) {
+      for (const required of REQUIRED_ROM_KEYS) {
+        if (this.entries[required]?.bundled) this.entries[required] = null;
+      }
     }
 
     const entry = {
