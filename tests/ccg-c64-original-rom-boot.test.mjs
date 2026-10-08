@@ -75,6 +75,23 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
     charRom: new Uint8Array(files.charRom),
   });
   assert(machine.ready, "Real machine must initialise");
+  const visitedPages = new Map(), visitedPCs = new Map();
+  let basicInstructions = 0, pcFC = 0, pcFD = 0, pcEA = 0, pcE4 = 0;
+  const origClock = machine.cpu.clock;
+  machine.cpu.clock = function () {
+    if (this.atInstructionBoundary()) {
+      const pc = this.pc;
+      const page = pc >>> 8;
+      visitedPages.set(page,(visitedPages.get(page)||0)+1);
+      if (pc>=0xA000 && pc<0xC000) basicInstructions++;
+      if (page===0xfc) pcFC++;
+      if (page===0xfd) pcFD++;
+      if (page===0xea) pcEA++;
+      if (page===0xe4) pcE4++;
+      if (pc>=0xe4c0 && pc<0xe500) visitedPCs.set(pc,(visitedPCs.get(pc)||0)+1);
+    }
+    return origClock.call(this);
+  };
   const ready = [18,5,1,4,25,46]; // C64 screen codes for READY.
   let frames=0, found=false;
   for (;frames<800;frames++) {
@@ -90,6 +107,15 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   }
   if (!found) {
     const ram = machine.mem.ram;
+    console.log("BASIC execution statistics", JSON.stringify({
+      basicInstructions,pcFC,pcFD,pcEA,pcE4,
+      topPages:[...visitedPages.entries()].sort((a,b)=>b[1]-a[1]).slice(0,16).map(([page,count])=>[page.toString(16),count]),
+      e4PCs:[...visitedPCs.entries()].sort((a,b)=>b[1]-a[1]).slice(0,16).map(([pc,count])=>[pc.toString(16),count]),
+      irqVector:[machine.mem.ram[0x314],machine.mem.ram[0x315]],
+      basicPointers:[...machine.mem.ram.slice(0x2b,0x34)],
+      screenPointer:machine.mem.ram[0x288],
+      ddr:machine.mem.cpuDDR,
+    }));
     console.log("BASIC cold boot diagnostic: CPU PC", machine.cpu.pc?.toString(16),
       "CPU jammed", machine.cpu.jammed ?? machine.cpu.jam,
       "Reset vector", Array.from(files.kernal.slice(-4)).map(x => x.toString(16)));
