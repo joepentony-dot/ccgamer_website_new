@@ -627,6 +627,26 @@ select:disabled {
   font-size: 0.5rem;
 }
 
+/* Joystick switch lives inside the existing control-port panel. */
+.ccg-c64-joystick-swap {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  min-height: 30px;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid rgba(141, 130, 255, 0.55);
+  border-radius: 6px;
+  background: #181c45;
+  color: #e1deff;
+  font: 800 0.58rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-joystick-swap:hover,
+.ccg-c64-joystick-swap:focus-visible {
+  border-color: var(--emu-accent);
+  background: rgba(111, 99, 196, 0.25);
+}
+
 .ccg-c64-chip {
   padding: 0.3rem 0.42rem;
   border: 1px solid rgba(128,217,177,0.3);
@@ -730,7 +750,10 @@ select:disabled {
   font-weight: 800;
   letter-spacing: 0.08em;
   pointer-events: none;
-  transition: opacity 120ms ease, transform 120ms ease;
+  /* Never cover running games; show the hint during a file drag only. */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
 }
 
 .ccg-c64-screen-stage.is-dragover {
@@ -739,6 +762,8 @@ select:disabled {
 }
 
 .ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint {
+  visibility: visible;
+  opacity: 1;
   color: #fff;
   border-color: var(--emu-accent);
   background: rgba(62,55,137,0.86);
@@ -1358,7 +1383,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-screen-bezel {
-    width: min(100%, calc((min(64vh, 100dvh - 250px) - 24px) * 1.4117647));
+    /* app.js sizes FIT from actual available stage height and width. */
+    max-width: 100%;
   }
 
   .ccg-c64-screen-foot {
@@ -1466,7 +1492,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-vault-row { gap: 0.3rem; }
-  .ccg-c64-port-row { min-height: 31px; }
+  .ccg-c64-port-row { min-height: 27px; }
+  .ccg-c64-joystick-swap { min-height: 25px; margin-top: 0.2rem; }
   .ccg-c64-footer { padding: 0.24rem 0.7rem 0.4rem; }
 }
 
@@ -1488,7 +1515,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-screen-bezel {
-    width: min(100%, calc((max(250px, 100dvh - 255px) - 25px) * 1.4117647));
+    max-width: 100%;
   }
 }
 

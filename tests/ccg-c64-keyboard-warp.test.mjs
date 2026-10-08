@@ -13,13 +13,23 @@ const app = read("js/ccg-c64/app.js");
 const css = read("resources/css/ccg-c64-emulator.css");
 const html = read("emulator/c64/index.html");
 const ciaSource = read("js/ccg-c64/core/cia.js");
-const { KEY_MAP, CHAR_MAP } = await import("data:text/javascript," + encodeURIComponent(ciaSource));
+const { KEY_MAP, CHAR_MAP, CIA } = await import("data:text/javascript," + encodeURIComponent(ciaSource));
 
 assert(html.includes("DRAG &amp; DROP A GAME HERE — AUTO START"), "The screen must advertise drag-and-drop auto-start");
 assert(html.includes("id=\"ccg-c64-drop-instructions\""), "The drop instructions must be accessible");
 assert(html.includes("aria-describedby=\"ccg-c64-drop-instructions\""), "The display must reference drop instructions");
 assert(html.includes("<strong>MAX</strong>"), "The Warp Load button must advertise MAX");
 assert(css.includes("position: relative;"), "Drop overlay must be anchored to the screen");
+assert(css.includes("visibility: hidden;") &&
+  css.includes(".ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint"),
+  "Drop hint must be hidden during play and visible only during a drag");
+assert(html.includes("data-joystick-swap"), "Port swapping must have a visible button");
+assert(html.includes("data-joystick-port"), "Port selection must be visible");
+assert(html.includes("data-emulator-speed"), "Actual PAL speed must be measurable");
+assert(!html.includes(">SOURCE</a>"), "Prominent source navigation must be omitted");
+assert(html.includes('href="/emulator/c64/legal.html"'), "GPL source access must remain available");
+assert(app.includes("function fitScreenToStage()") && app.includes("new ResizeObserver(fitScreenToStage)"),
+  "FIT must respond to measured display area and browser resize");
 assert(css.includes("grid-template-areas:"), "Desktop control deck must declare explicit areas");
 assert(css.includes('"vault vault vault vault vault vault"'), "Vault controls must be available without collapsing");
 assert(css.includes("grid-template-columns: repeat(5, minmax(0, 1fr))"), "Ten primary actions must fit in two rows");
@@ -37,9 +47,14 @@ const last = app.indexOf("function pollGamepad()", first);
 assert(first >= 0 && last > first, "Keyboard handler block must be present");
 const keys = new Map();
 const keyId = (col, row) => col + ":" + row;
+const actualCIA = new CIA(1);
 const cia1 = {
-  setKey(col, row, down) { if (down) keys.set(keyId(col, row), true); else keys.delete(keyId(col, row)); },
-  isKeyDown(col, row) { return keys.has(keyId(col, row)); },
+  setKey(col, row, down) {
+    if (down) keys.set(keyId(col, row), true);
+    else keys.delete(keyId(col, row));
+    actualCIA.setKey(col, row, down);
+  },
+  isKeyDown(col, row) { return actualCIA.isKeyDown(col, row); },
 };
 const canvas = { closest: () => null };
 const button = { closest: (selector) => selector.includes("button") ? button : null };
@@ -51,6 +66,7 @@ const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  inputStatus: { textContent: "" },
 });
 vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
 function event(code, key, opts = {}) {
@@ -92,6 +108,15 @@ keyTest("F7", "F7", 0, 3);
 keyTest("ArrowRight", "ArrowRight", 0, 2);
 keyTest("ArrowDown", "ArrowDown", 0, 7);
 keyTest("KeyA", "a", 1, 2);
+keyTest("KeyS", "s", 1, 5);
+actualCIA.portADir = 0xff;
+actualCIA.portA = 0xff & ~(1 << 1);
+down("KeyS", "s");
+assert.equal(actualCIA.read(0x01) & (1 << 5), 0,
+  "A game selecting CIA column 1 must see physical S on row 5");
+up("KeyS", "s");
+assert.notEqual(actualCIA.read(0x01) & (1 << 5), 0,
+  "CIA column/row must release after S keyup");
 
 // F2/F4/F6/F8 are shifted physical C64 F1/F3/F5/F7.
 for (const [code, col, row] of [
@@ -118,8 +143,33 @@ assert(!keys.has(keyId(1, 7)));
 down("F12", "F12"); assert.equal(machine.restore, true);
 up("F12", "F12"); assert.equal(machine.restore, false);
 context.document.activeElement = button;
+const start = down("KeyS", "s", { target: button });
+assert(start.prevented && keys.has(keyId(1, 5)),
+  "S must start the game even while a toolbar button holds focus");
+up("KeyS", "s", { target: button });
+assert(!keys.has(keyId(1, 5)), "S must release while button holds focus");
+const fn = down("F1", "F1", { target: button });
+assert(fn.prevented && keys.has(keyId(0, 4)), "F1 must reach the game while button holds focus");
+up("F1", "F1", { target: button });
 const blocked = down("Space", " ", { target: button });
 assert(!blocked.prevented && !keys.has(keyId(7, 4)), "Toolbar buttons must keep native keyboard operation");
+const hiddenFileInput = {
+  tagName: "INPUT", type: "file",
+  closest(selector) { return selector.includes("input") ? this : null; },
+};
+context.document.activeElement = hiddenFileInput;
+const afterLoad = down("KeyS", "s", { target: hiddenFileInput });
+assert(afterLoad.prevented && keys.has(keyId(1, 5)),
+  "Hidden file chooser must not block S after loading a disk");
+up("KeyS", "s", { target: hiddenFileInput });
+const textField = {
+  tagName: "INPUT", type: "text",
+  closest(selector) { return selector.includes("input") ? this : null; },
+};
+context.document.activeElement = textField;
+const insideTextField = down("KeyS", "s", { target: textField });
+assert(!insideTextField.prevented && !keys.has(keyId(1, 5)),
+  "Visible text input must retain its native keyboard");
 context.document.activeElement = canvas;
 context.setup.hidden = false;
 assert(!down("F1", "F1").prevented, "ROM setup must keep keyboard input");
@@ -146,7 +196,8 @@ const frameContext = vm.createContext({
   performance: { now: () => ticks++ * 0.5 },
   pollGamepad() {}, serviceAutoStart() {}, blitMachine() {},
   autoStartSteps: null, requestAnimationFrame: () => 1,
-  frameHandle: 0,
+  frameHandle: 0, speedSampleTime: 0, speedSampleFrames: 0,
+  emulatorSpeedStatus: { textContent: "", title: "" },
 });
 vm.runInContext(app.slice(frameStart, frameEnd) + "\nglobalThis.runTick = frameLoop;", frameContext);
 frameContext.runTick(1000);
@@ -158,4 +209,77 @@ frameContext.lastFrameTime = 1000;
 frameContext.runTick(1020);
 assert.equal(runs - warpRuns, 1, "Normal mode must retain near-50Hz PAL speed");
 
-console.log("C64 keyboard, VICE keys, Shift+8, toolbar focus, drag target and MAX Warp tests passed.");
+
+// The user's gamepad and touch bytes must reach exactly the selected C64 port
+// without interfering with the other port. Switching must be reversible.
+const joystickStart = app.indexOf("function updateJoystickUi() {");
+const joystickEnd = app.indexOf("function updateDriveModeUi(", joystickStart);
+assert(joystickStart >= 0 && joystickEnd > joystickStart, "Joystick switch code must exist");
+let joystickUpdates = 0;
+const joystickButton = {
+  title: "", listeners: new Map(),
+  setAttribute() {},
+  addEventListener(type, listener) { this.listeners.set(type, listener); },
+};
+const joystickStatus = { textContent: "" };
+const joystickMachine = {
+  joyPort1: 255, joyPort2: 255,
+  _updateLightpen() { joystickUpdates++; },
+};
+const joystickStorage = new Map();
+const joystickContext = vm.createContext({
+  joystickPort: 2, joystickPortIndicator: joystickStatus,
+  joystickSwapButton: joystickButton, machine: joystickMachine,
+  gamepadJoyByte: 0xef, touchJoyByte: 0xfe,
+  localStorage: {
+    setItem(key, value) { joystickStorage.set(key, value); },
+  },
+  inputStatus: { textContent: "" },
+  screen: { focus() {} },
+});
+vm.runInContext(app.slice(joystickStart, joystickEnd) +
+  "\nglobalThis.routeJoystick = applyJoystickInput; globalThis.swapPort = swapJoystickPort;",
+  joystickContext);
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort1, 255);
+assert.equal(joystickMachine.joyPort2, 0xee);
+joystickContext.swapPort();
+assert.equal(joystickMachine.joyPort1, 0xee, "Selected port 1 must receive combined joystick inputs");
+assert.equal(joystickMachine.joyPort2, 255, "Unselected port 2 must be idle");
+assert.equal(joystickStatus.textContent, "PORT 1");
+assert.equal(joystickStorage.get("ccg.emulator.c64.joystickPort"), "1");
+joystickContext.swapPort();
+assert.equal(joystickMachine.joyPort1, 255);
+assert.equal(joystickMachine.joyPort2, 0xee);
+assert(joystickUpdates >= 3, "Port 1 lightpen pin must be updated when joystick swaps");
+
+// FIT must size against the actual screen stage rather than a guessed vh
+// offset, and restore the CSS width on mobile.
+const fitStart = app.indexOf("function fitScreenToStage() {");
+const fitEnd = app.indexOf("function toggleScreenSize()", fitStart);
+assert(fitStart >= 0 && fitEnd > fitStart, "Measured FIT calculator missing");
+const fitStage = { clientWidth: 700, clientHeight: 240, classList: { toggle() {} } };
+const bezel = { style: { width: "" } };
+let desktop = true;
+const fitContext = vm.createContext({
+  screenStage: fitStage, screenBezel: bezel, fixed2x: false,
+  window: {
+    matchMedia() { return { matches: desktop }; },
+    getComputedStyle() {
+      return { paddingLeft: "10px", paddingRight: "10px",
+        paddingTop: "10px", paddingBottom: "10px" };
+    },
+  },
+  sizeButton: { querySelector: () => ({ textContent: "" }) },
+});
+vm.runInContext(app.slice(fitStart, fitEnd) + "\nglobalThis.fitNow = fitScreenToStage;", fitContext);
+fitContext.fitNow();
+assert.equal(bezel.style.width, "310px", "Short desktop stage must constrain bezel by height");
+fitStage.clientHeight = 680;
+fitContext.fitNow();
+assert.equal(bezel.style.width, "680px", "Wide stage must constrain bezel by available width");
+desktop = false;
+fitContext.fitNow();
+assert.equal(bezel.style.width, "", "Mobile must restore responsive CSS width");
+
+console.log("C64 keyboard S/CIA, VICE keys, focused-toolbar recovery, drag overlay, FIT and MAX Warp tests passed.");

@@ -29,7 +29,6 @@
     <nav class="ccg-c64-topnav" aria-label="C64 emulator navigation">
       <a href="/emulation.html">GUIDES</a>
       <button type="button" data-open-setup>SYSTEM ROMS</button>
-      <a href="/emulator/c64/legal.html">SOURCE</a>
     </nav>
   </header>
 
@@ -65,8 +64,8 @@
       </div>
 
       <div class="ccg-c64-screen-foot">
-        <span>384 × 272 SOURCE</span>
-        <span>WEBGL / CRT PRESENTER</span>
+        <span>C64 PAL DISPLAY</span>
+        <span data-emulator-speed title="Measured PAL playback speed; 100% is real time">PAL SPEED // --%</span>
         <span>DRAG A DISK, TAPE OR CARTRIDGE ONTO THE SCREEN</span>
       </div>
 
@@ -102,7 +101,7 @@
           </select>
           <button type="button" data-online-library-load disabled>LOAD</button>
         </div>
-        <small class="ccg-c64-library-note">Authorised CCG-hosted game and demo files only.</small>
+        
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--status">
@@ -133,12 +132,13 @@
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--port">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROL PORT 2</strong><em>GAMEPAD + TOUCH</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>JOYSTICK CONTROL</strong><em>GAMEPAD + TOUCH</em></header>
         <div class="ccg-c64-port-row">
           <span class="ccg-c64-port-dot"></span>
-          <div><strong>JOYSTICK</strong><small>Standard browser gamepad mapping</small></div>
-          <span class="ccg-c64-chip">AUTO</span>
+          <div><strong>JOYSTICK</strong><small>Gamepad and touch controller</small></div>
+          <span class="ccg-c64-chip" data-joystick-port>PORT 2</span>
         </div>
+        <button type="button" class="ccg-c64-joystick-swap" data-joystick-swap title="Switch joystick controls between C64 port 1 and port 2">SWAP JOYSTICK</button>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--disk">
@@ -197,7 +197,7 @@
   <footer class="ccg-c64-footer">
     <span>&copy; <span data-ccg-c64-year></span> Cheeky Commodore Gamer.</span>
     <span>C64 system ROM images are not supplied. User media remains local unless an authorised Online Library item is selected.</span>
-    <a href="/emulator/c64/legal.html">GPL source &amp; notices</a>
+    <a href="/emulator/c64/legal.html">Licences &amp; source</a>
   </footer>
 
   <div class="ccg-c64-setup" data-rom-setup hidden>
