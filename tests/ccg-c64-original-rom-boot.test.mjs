@@ -82,7 +82,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   let firstBasicEntry = null, firstEaLoop = null, firstScreenWrite = null;
   const sampledCycles = [];
   const screenClearCalls = [], basicColdCalls = [], screenOutputCalls = [];
-  const nmiTransitions = [], acceptedNmis = [], acceptedInterrupts = [], recoveryEntries = [], pcTrail = [];
+  const nmiTransitions = [], acceptedNmis = [], acceptedInterrupts = [], recoveryEntries = [], pcTrail = [], basicInitTrace = [];
   const originalNmiSource = machine._setNmiSource.bind(machine);
   machine._setNmiSource = (source,asserted) => {
     if(nmiTransitions.length < 16) nmiTransitions.push({frame:frames,source,asserted,pc:machine.cpu.pc.toString(16),cia2:{mask:machine.cia2.icrMask,status:machine.cia2.icrStatus,irq:machine.cia2.irqState},prev:{...machine._nmiSources}});
@@ -99,6 +99,8 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   machine.cpu.clock = function () {
     if (this.atInstructionBoundary()) {
       const pc = this.pc;
+      if([0xe394,0xe453,0xe455,0xe458,0xe45b,0xe45c,0xe45e,0xe3bf,0xe422,0xe380,0xe385,0xe388,0xe37b,0xe376].includes(pc)&&basicInitTrace.length<55)
+        basicInitTrace.push({frame:frames,pc:pc.toString(16),a:this.a,x:this.x,y:this.y,sp:this.sp,ramVectors:[...machine.mem.ram.slice(0x300,0x30c)]});
       pcTrail.push(pc.toString(16)); if(pcTrail.length>16) pcTrail.shift();
       if((pc===0xfe43 || pc===0xfe47 || pc===0xfe6c || pc===0xfe6f || pc===0xff48) && recoveryEntries.length<28) {
         recoveryEntries.push({frame:frames,pc:pc.toString(16),sp:this.sp,p:this.p,irq:this.irqLine,nmi:this.nmiLine,
@@ -162,7 +164,7 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
     const ram = machine.mem.ram;
     console.log("BASIC execution statistics", JSON.stringify({
       basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,firstBasicEntry,firstEaLoop,firstScreenWrite,
-      screenClearCalls,basicColdCalls,screenOutputCalls,nmiTransitions,acceptedNmis,acceptedInterrupts,recoveryEntries,
+      screenClearCalls,basicColdCalls,screenOutputCalls,nmiTransitions,acceptedNmis,acceptedInterrupts,recoveryEntries,basicInitTrace,
       eaInstr:[...eaInstr.entries()].sort((a,b)=>b[1]-a[1]).slice(0,45).map(([pc,count])=>[pc.toString(16),count]),
       eaClrRows:[...eaClrRows.entries()].sort((a,b)=>a[0]-b[0]),
       sampleY,
