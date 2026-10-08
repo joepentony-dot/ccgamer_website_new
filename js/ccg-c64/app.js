@@ -7,7 +7,7 @@ import { GameVault } from "./game-vault.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
-import { PACK_ROOT, PACK_CATALOG_URL, parsePackedCatalog, filterCatalog, loadPackedGameBytes } from "./game-catalog.js";
+import { PACK_ROOT, PACK_CATALOG_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes } from "./game-catalog.js";
 
 const vault = new ROMVault();
 const gameVault = new GameVault();
@@ -24,13 +24,10 @@ const onlineLibraryPanel = document.querySelector(".ccg-c64-panel--library");
 const controlsDeck = document.querySelector(".ccg-c64-control-stack");
 const onlineLibrarySearch = document.querySelector("[data-online-library-search]");
 const onlineLibraryGrid = document.querySelector("[data-online-library-grid]");
-const onlineLibraryLetters = document.querySelector("[data-library-letters]");
+const onlineLibrarySuggestions = document.querySelector("[data-online-library-suggestions]");
+const onlineLibrarySearchWrap = document.querySelector("[data-library-search-wrap]");
 const onlineLibraryCount = document.querySelector("[data-library-result-count]");
-const onlineLibraryFormats = document.querySelector(".ccg-c64-library-formats");
-const onlineLibraryPages = document.querySelector("[data-library-pages]");
-const onlineLibraryPageText = document.querySelector("[data-library-page-indicator]");
-const onlineLibraryPrevious = document.querySelector("[data-library-previous]");
-const onlineLibraryNext = document.querySelector("[data-library-next]");
+const onlineLibraryMatchCount = document.querySelector("[data-library-match-count]");
 const onlineLibraryStatus = document.querySelector("[data-online-library-status]");
 const onlineLibraryDisks = document.querySelector("[data-online-library-disks]");
 const onlineLibraryDiskSelect = document.querySelector("[data-online-library-disk-select]");
@@ -127,10 +124,8 @@ let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
 let onlineLibraryEntries = [];
-let onlineLibraryQuery = "";
-let onlineLibraryFormat = "all";
-let onlineLibraryLetter = "all";
-let onlineLibraryPage = 0;
+let visibleLibrarySuggestions = [];
+let activeLibrarySuggestionIndex = -1;
 let onlineLibraryLoadingGame = false;
 const onlineLibraryPackCache = new Map();
 let autoStartSteps = null;
@@ -1541,72 +1536,91 @@ async function queueMediaFile(file, options = {}) {
   return queueMedia({ name: file.name, type, bytes: new Uint8Array(await file.arrayBuffer()) }, options);
 }
 
-function refreshOnlineLibraryCards() {
-  if (!onlineLibraryGrid || !onlineLibraryLetters) return;
-  const filtered = filterCatalog(onlineLibraryEntries, {
-    query: onlineLibraryQuery, format: onlineLibraryFormat,
-    letter: onlineLibraryLetter, page: onlineLibraryPage,
-  });
-  onlineLibraryPage = filtered.page;
+function setLibrarySuggestionsOpen(open) {
+  const show = Boolean(open && !onlineLibraryLoadingGame &&
+    onlineLibraryEntries.length && onlineLibrarySearch?.value.trim());
+  if (onlineLibrarySuggestions) onlineLibrarySuggestions.hidden = !show;
+  if (onlineLibrarySearch) onlineLibrarySearch.setAttribute("aria-expanded", String(show));
+  onlineLibraryPanel?.classList.toggle("is-suggesting", show);
+  if (!show) {
+    activeLibrarySuggestionIndex = -1;
+    onlineLibrarySearch?.removeAttribute("aria-activedescendant");
+  }
+}
+
+function setActiveLibrarySuggestion(index) {
+  if (!visibleLibrarySuggestions.length) return;
+  activeLibrarySuggestionIndex =
+    Math.max(0, Math.min(index, visibleLibrarySuggestions.length - 1));
+  const options = onlineLibraryGrid?.querySelectorAll("[data-play-game]") || [];
+  for (let i = 0; i < options.length; i += 1) {
+    const active = i === activeLibrarySuggestionIndex;
+    options[i].setAttribute("aria-selected", String(active));
+    options[i].classList.toggle("is-active", active);
+    if (active) {
+      onlineLibrarySearch?.setAttribute("aria-activedescendant", options[i].id);
+      options[i].scrollIntoView?.({ block: "nearest" });
+    }
+  }
+}
+
+function refreshOnlineLibrarySuggestions({ open = false } = {}) {
+  if (!onlineLibraryGrid || !onlineLibrarySearch) return;
+  const query = onlineLibrarySearch.value.trim();
+  const filtered = suggestCatalogGames(onlineLibraryEntries, query, 8);
+  visibleLibrarySuggestions = filtered.games;
+  activeLibrarySuggestionIndex = -1;
+  onlineLibrarySearch.removeAttribute("aria-activedescendant");
   onlineLibraryGrid.replaceChildren();
-  for (const entry of filtered.games) {
-    const card = document.createElement("article");
-    card.className = "ccg-c64-game-card";
+
+  if (!query) {
+    if (onlineLibraryCount) onlineLibraryCount.textContent =
+      "Type a game title to see suggestions.";
+    setLibrarySuggestionsOpen(false);
+    return;
+  }
+
+  for (let i = 0; i < filtered.games.length; i += 1) {
+    const entry = filtered.games[i];
+    const option = document.createElement("button");
+    option.type = "button";
+    option.id = `ccg-c64-game-suggestion-${i}`;
+    option.className = "ccg-c64-library-option";
+    option.setAttribute("role", "option");
+    option.setAttribute("aria-selected", "false");
+    option.dataset.playGame = entry.id;
+    option.disabled = onlineLibraryLoadingGame;
+
     const title = document.createElement("strong");
-    title.className = "ccg-c64-game-title";
     title.textContent = entry.title;
-    const foot = document.createElement("div");
-    foot.className = "ccg-c64-game-card-foot";
-    const media = document.createElement("span");
-    media.className = "ccg-c64-game-type";
-    media.textContent = String(entry.format).toUpperCase();
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "ccg-c64-game-launch";
-    button.dataset.playGame = entry.id;
-    button.textContent = "PLAY";
-    button.disabled = onlineLibraryLoadingGame;
-    button.setAttribute("aria-label", "Play " + entry.title);
-    foot.append(media, button);
-    card.append(title, foot);
-    onlineLibraryGrid.append(card);
+    const format = document.createElement("span");
+    format.textContent = String(entry.format).toUpperCase();
+    option.append(title, format);
+    onlineLibraryGrid.append(option);
   }
-  if (!filtered.games.length) {
-    const none = document.createElement("p");
-    none.className = "ccg-c64-library-empty";
-    none.textContent = "No games match this search. Try another title or A-Z filter.";
-    onlineLibraryGrid.append(none);
+
+  if (!filtered.total) {
+    const noResults = document.createElement("p");
+    noResults.className = "ccg-c64-library-no-results";
+    noResults.textContent = "No matching games. Try another title.";
+    onlineLibraryGrid.append(noResults);
   }
-  if (onlineLibraryCount) {
-    const start = filtered.total ? filtered.page * 36 + 1 : 0;
-    const end = Math.min(filtered.total, (filtered.page + 1) * 36);
-    onlineLibraryCount.textContent = `${start}-${end} OF ${filtered.total} GAMES`;
-  }
-  if (onlineLibraryPages) onlineLibraryPages.hidden = filtered.pages <= 1;
-  if (onlineLibraryPageText) onlineLibraryPageText.textContent =
-    `PAGE ${filtered.page + 1} / ${filtered.pages}`;
-  if (onlineLibraryPrevious) onlineLibraryPrevious.disabled = filtered.page <= 0;
-  if (onlineLibraryNext) onlineLibraryNext.disabled = filtered.page >= filtered.pages - 1;
-  onlineLibraryLetters.querySelectorAll("button[data-library-letter]").forEach((button) => {
-    button.setAttribute("aria-pressed", button.dataset.libraryLetter === onlineLibraryLetter ? "true" : "false");
-  });
-  onlineLibraryFormats?.querySelectorAll("button[data-library-format]").forEach((button) => {
-    button.setAttribute("aria-pressed", button.dataset.libraryFormat === onlineLibraryFormat ? "true" : "false");
-  });
+
+  if (onlineLibraryMatchCount) onlineLibraryMatchCount.textContent =
+    filtered.total > filtered.games.length
+      ? `SHOWING ${filtered.games.length} OF ${filtered.total} MATCHES — KEEP TYPING`
+      : `${filtered.total} MATCH${filtered.total === 1 ? "" : "ES"}`;
+  if (onlineLibraryCount) onlineLibraryCount.textContent =
+    filtered.total
+      ? "Select a game or use ↑ ↓ and Enter."
+      : "No matches for that title.";
+
+  setLibrarySuggestionsOpen(open);
 }
 
 async function initialiseOnlineLibrary() {
-  if (!onlineLibraryGrid || !onlineLibraryStatus || !onlineLibraryLetters) return;
+  if (!onlineLibraryGrid || !onlineLibraryStatus || !onlineLibrarySearch) return;
   onlineLibraryStatus.textContent = "SCANNING";
-  onlineLibraryLetters.replaceChildren();
-  for (const letter of ["all", "0-9", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"]) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.dataset.libraryLetter = letter;
-    button.textContent = letter === "all" ? "ALL" : letter;
-    button.setAttribute("aria-pressed", letter === "all" ? "true" : "false");
-    onlineLibraryLetters.append(button);
-  }
 
   let regular = [];
   try {
@@ -1658,16 +1672,18 @@ async function initialiseOnlineLibrary() {
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   onlineLibraryStatus.textContent = onlineLibraryEntries.length
     ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
-  refreshOnlineLibraryCards();
+  refreshOnlineLibrarySuggestions();
 }
 
 async function loadOnlineLibraryEntry(id) {
   if (onlineLibraryLoadingGame) return;
   const entry = onlineLibraryEntries.find((item) => item.id === id);
   if (!entry) return;
+  onlineLibrarySearch.value = entry.title;
+  setLibrarySuggestionsOpen(false);
   onlineLibraryLoadingGame = true;
   if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOADING GAME";
-  refreshOnlineLibraryCards();
+  refreshOnlineLibrarySuggestions();
 
   try {
     let bytes;
@@ -1705,7 +1721,7 @@ async function loadOnlineLibraryEntry(id) {
     if (stageNote) stageNote.textContent = error?.message || "This game could not be started.";
   } finally {
     onlineLibraryLoadingGame = false;
-    refreshOnlineLibraryCards();
+    refreshOnlineLibrarySuggestions();
   }
 }
 
@@ -1885,35 +1901,48 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 });
 
 onlineLibrarySearch?.addEventListener("input", () => {
-  onlineLibraryQuery = onlineLibrarySearch.value;
-  onlineLibraryPage = 0;
-  refreshOnlineLibraryCards();
+  refreshOnlineLibrarySuggestions({ open: true });
 });
-onlineLibraryFormats?.addEventListener("click", (event) => {
-  const format = event.target.closest("button[data-library-format]")?.dataset.libraryFormat;
-  if (!format) return;
-  onlineLibraryFormat = format;
-  onlineLibraryPage = 0;
-  refreshOnlineLibraryCards();
+onlineLibrarySearch?.addEventListener("focus", () => {
+  refreshOnlineLibrarySuggestions({ open: true });
 });
-onlineLibraryLetters?.addEventListener("click", (event) => {
-  const letter = event.target.closest("button[data-library-letter]")?.dataset.libraryLetter;
-  if (!letter) return;
-  onlineLibraryLetter = letter;
-  onlineLibraryPage = 0;
-  refreshOnlineLibraryCards();
+onlineLibrarySearch?.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    if (onlineLibrarySuggestions && !onlineLibrarySuggestions.hidden) {
+      event.preventDefault();
+      setLibrarySuggestionsOpen(false);
+    }
+    return;
+  }
+  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    if (!onlineLibrarySearch.value.trim() || onlineLibraryLoadingGame) return;
+    event.preventDefault();
+    if (onlineLibrarySuggestions?.hidden) refreshOnlineLibrarySuggestions({ open: true });
+    if (visibleLibrarySuggestions.length) {
+      const last = visibleLibrarySuggestions.length - 1;
+      const next = event.key === "ArrowDown"
+        ? (activeLibrarySuggestionIndex < last ? activeLibrarySuggestionIndex + 1 : 0)
+        : (activeLibrarySuggestionIndex < 0 ? last : Math.max(0, activeLibrarySuggestionIndex - 1));
+      setActiveLibrarySuggestion(next);
+    }
+    return;
+  }
+  if (event.key === "Enter" && onlineLibrarySuggestions &&
+      !onlineLibrarySuggestions.hidden && visibleLibrarySuggestions.length) {
+    event.preventDefault();
+    const index = activeLibrarySuggestionIndex < 0 ? 0 : activeLibrarySuggestionIndex;
+    void loadOnlineLibraryEntry(visibleLibrarySuggestions[index].id);
+  }
 });
 onlineLibraryGrid?.addEventListener("click", (event) => {
-  const id = event.target.closest("button[data-play-game]")?.dataset.playGame;
+  const id = event.target.closest("[data-play-game]")?.dataset.playGame;
   if (id) void loadOnlineLibraryEntry(id);
 });
-onlineLibraryPrevious?.addEventListener("click", () => {
-  onlineLibraryPage -= 1;
-  refreshOnlineLibraryCards();
+onlineLibrarySearchWrap?.addEventListener("focusout", (event) => {
+  if (!onlineLibrarySearchWrap.contains(event.relatedTarget)) setLibrarySuggestionsOpen(false);
 });
-onlineLibraryNext?.addEventListener("click", () => {
-  onlineLibraryPage += 1;
-  refreshOnlineLibraryCards();
+document.addEventListener("pointerdown", (event) => {
+  if (!onlineLibrarySearchWrap?.contains(event.target)) setLibrarySuggestionsOpen(false);
 });
 onlineLibraryDiskSwapButton?.addEventListener("click", () => { void swapOnlineLibraryDisk(); });
 void initialiseOnlineLibrary();
