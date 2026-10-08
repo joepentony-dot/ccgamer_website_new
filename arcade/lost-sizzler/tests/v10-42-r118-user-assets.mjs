@@ -8,7 +8,9 @@ const render=read("js/game-render.js");
 const manifest=JSON.parse(read("assets/asset-manifest.json"));
 const provenance=read("assets/pixel/user-r118/PROVENANCE.md");
 const sandbox={window:{}};
-vm.runInNewContext(overrides,sandbox,{timeout:1000});
+const ownerEnd=overrides.indexOf("\n/* Every enhancement URL inherits");
+assert(ownerEnd>0,"R118 test could not isolate the owner-override declaration");
+vm.runInNewContext(overrides.slice(0,ownerEnd),sandbox,{timeout:1000});
 const visuals=sandbox.window.CCG_ASSET_OVERRIDES?.images?.visuals;
 const items=sandbox.window.CCG_ASSET_OVERRIDES?.images?.items;
 function assert(ok,message){if(!ok)throw new Error(message)}
