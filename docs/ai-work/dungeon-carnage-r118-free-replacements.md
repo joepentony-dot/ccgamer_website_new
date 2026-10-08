@@ -43,5 +43,16 @@ Avoid assuming the apparently similar *Puny Dungeon* downloads carry identical l
 ## Current state
 
 - These are **located and licence-screened alternatives**, NOT downloaded, imported or switched on.
-- The uncertain gold-key sprite remains inactive; Minifantasy free version and unknown-rights `Dungeon tileset(1).zip` stay excluded; paid tiers remain excluded.
+- The Niji v1.1 gold-key source was subsequently verified by unique exact RGBA atlas match and the key was enabled. A 0x72 II crate was recovered, byte-matched to its free CC0 archive and activated without altering crate collision. Minifantasy free version and unknown-rights `Dungeon tileset(1).zip` stay excluded; paid tiers remain excluded.
 - No costs authorised. No release or mainline merge authorised.
+
+## Post-candidate progress — 8 October 2026
+
+Recovered original owner archives allowed immediate no-cost binary-backed intake independent of the four additional source-page candidates:
+
+- ACTUAL INTEGRATION: Niji Extended v1.1 gold key (exact unique pixel crop), replaces quarantined key; CC0.
+- ACTUAL INTEGRATION: 0x72 DungeonTileset II v1.7 `frames/crate.png` (16x24), active crate sprite; CC0.
+- VISUAL CORRECTION: wall-torch and tall props use aspect-preserving draw bounds.
+- STILL SOURCE-ONLY: Kenney, hyprv, DeadlyEssence01, elesrech, .bee and Kettoman files have not been acquired as matching local binary downloads, so **they have not been added to runtime**.
+
+Use `assets/pixel/user-r118/PROVENANCE.md` and the R118 test contract for precise file fingerprints. The draft branch remains unmerged and still needs exact-current-head qualification.
