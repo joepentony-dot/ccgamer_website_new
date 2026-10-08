@@ -23,3 +23,23 @@ assert(readyScreen.includes("OPEN ROMS"), "An actual ROM executed and painted it
 assert(readyScreen.includes("READY"), "The emulated BASIC screen must reach READY");
 console.log("Open ROM booted to genuine READY, keyboard buffer", r[0xc6], "BASIC pointer",r[0x2c].toString(16));
 console.log("Open ROM real CPU boot smoke finished");
+
+import fs from "node:fs";
+import { parsePackedCatalog } from "../js/ccg-c64/game-catalog.js";
+
+const catalogue=parsePackedCatalog(JSON.parse(fs.readFileSync("emulator/c64/media/blast/catalog.json","utf8")));
+for(const entry of catalogue.entries.slice(0,4)){
+  const pack=fs.readFileSync("emulator/c64/media/blast/"+entry.packFile);
+  const prg=pack.subarray(entry.byteOffset,entry.byteOffset+entry.byteLength);
+  const m=new C64Machine();m.loadROMs(roms);
+  for(let i=0;i<80;i++)m.runFrame();
+  const before=Array.from(m.mem.ram.subarray(0x400,0x7e8)).join(",");
+  m.loadPRG(prg);m.injectRun();
+  for(let i=0;i<125;i++)m.runFrame();
+  const after=Array.from(m.mem.ram.subarray(0x400,0x7e8)).join(",");
+  console.log("PRG test",entry.title,"prg bytes",prg.length,"start",prg[0]|(prg[1]<<8),
+    "screenChanged",before!==after,"C6",m.mem.ram[0xC6],
+    "CPU",String(m.cpu.pc??m.cpu.PC??"?"),"head bytes",Array.from(prg.slice(0,24)));
+  assert.equal(m.ready,true,"CPU must remain active after game load");
+}
+console.log("Open ROM representative PRG probes completed");
