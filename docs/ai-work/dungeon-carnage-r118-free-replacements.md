@@ -15,7 +15,7 @@ Owner directive: use free assets only; do not purchase packs, paid tiers or comm
 | Fireplace/sconce/torch sprites from unknown-rights archive | Original 0x72 v5 wall torches (already source-verified) | Spring Spring 16x16 Torch (CC0) | Existing four R118 wall-torch frames already selected; inspect aspect ratio rather than introduce duplicate graphics by default. |
 | Spikes, traps and environmental hazards | Existing approved 0x72 tiles/traps | Kettoman Free Pixel Dungeon Tileset 16x16 (free commercial use, no standalone resale) | Only visual substitutions; preserve hitboxes, damage and timing. |
 | Minifantasy free-version monsters/characters (non-commercial-only) | elesrech Pixel Monsters & Enemies (CC0; 16x16–32x32; animated) | Existing permitted 0x72 / Pixel_Poem sprites | Only integrate animations after frame-count, frame-box and game-size review. |
-| Dungeon Gathering Free Version if source permission remains unresolved | Kenney Tiny Dungeon plus 0x72 sprites (CC0) | hyprv Dungeon Pack 16x16 (CC0) | Do not ship the unverified free-version archive. |
+| Dungeon Gathering Free Version free-tier elements | SnowHex original free archive (commercial use permitted; no standalone asset redistribution) | Kenney Tiny Dungeon / 0x72 CC0 | Original `License.txt` and creator page were verified. Free content is eligible for review; paid full edition excluded. Nothing activated until frame/visual QA. |
 | Paid premium expansion tiers | Free content from their verified creator packs | Kenney / hyprv / 0x72 CC0 packs | No paid assets or purchases. |
 
 ## Verified original pages and licence text
@@ -61,3 +61,7 @@ Use `assets/pixel/user-r118/PROVENANCE.md` and the R118 test contract for precis
 ## Further source archive substitution — CC0 pillar
 
 The unknown-rights column artwork can now be replaced by the byte-matched original `frames/column.png` from the owner's 0x72 DungeonTileset II v1.7 ZIP (CC0-1.0), now imported as `cc0-column-0x72-ii.png`. Runtime activation is confined to `pillar` decor visuals; the retained plinth indicates its existing blocking tile. Do not substitute the old unverified `Dungeon tileset(1).zip` artwork or treat this single pillar as completion of the remaining unpaid-pack search.
+
+### SnowHex free-tier source evidence
+
+Original zero-payment archive `Dungeon Gathering Free Version.rar` is now available from the owner's file library; SHA-256 `8d6a7d7b71e548d45f471d41b4fb153622bad928b3982aa7e1fb8f89033c0611`. Its `License.txt` explicitly permits commercial projects and modification with no mandatory credit and forbids unbundled asset resale/redistribution. Creator page https://snowhex.itch.io/dungeon-gathering confirms the free-tier licence and differentiates the paid full-version tier. Retain as **free commercially eligible but unintegrated** until tile dimensions, animation slices and presentation are checked. 
