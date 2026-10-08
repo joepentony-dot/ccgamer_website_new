@@ -61,6 +61,7 @@ const globals = {
   D64: class { constructor(b) { this.img = b.slice(); } },
   G64: class {},
   createDiskFromMedia(media) { return { img: media.bytes.slice() }; },
+  cloneMedia(media) { return { ...media, bytes: media.bytes.slice() }; },
   isG64() { return false; },
   d64Variant(length) { return length === 3 ? { kind: "d64" } : null; },
   mediaTypeFromName(name) { return name.split(".").pop(); },
