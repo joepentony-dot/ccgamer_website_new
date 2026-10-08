@@ -6,7 +6,7 @@ This branch adds exactly one C64 game to the existing GitHub-based publishing pi
 
 Both owner-supplied WebP assets are already committed to the Fire King branch and stored at the site's established image paths:
 
-- `resources/images/thumbnails/all/fire-king.webp` — game thumbnail, 34,398 bytes
+- `resources/images/thumbnails/all/fire-king.webp` — game thumbnail, 35,012 bytes (extended VP8X WebP, 460 × 215; sRGB ICC metadata for the site's image-dimension reader)
 - `resources/images/games/boxes-3d/fire-king.webp` — original boxed-game artwork, 65,538 bytes
 
 The source binaries were SHA-verified against the owner uploads before creating Git blobs. No other existing game image was modified.
