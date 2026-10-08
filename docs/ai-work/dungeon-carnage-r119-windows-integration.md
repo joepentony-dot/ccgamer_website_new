@@ -19,3 +19,13 @@ CI must pass at the exact integrated head: Dungeon PR Qualification, Full Qualif
 **Do not merge or publish merely on green CI.** Owner needs to verify live Windows installation/uninstallation, real Solo progression and save/Continue, Treasure Goblin loot and announcements, Death Stalker recorded banishment and correct voice events. The original 16 MP3 soundtrack files are blocked by Supabase egress; a signed commercial release must use owner-recovered authentic MP3s, not the temporary WAV fallback.
 
 Old draft PRs #2610, #2614 and #2617 remain separate until combined qualification and a safe reconciliation decision. Supabase user/login data and public release gates are untouched.
+
+## Additional R119 map-generation correction — sanctuary separation
+
+The owner supplied a map screenshot showing the two permanent green sanctuary rooms joined by a very short direct corridor. Root cause: `CCGSystems.decorate` previously selected the first two room candidates, without measuring physical distance or connectivity.
+
+- The **same procedural room allocator** now ranks eligible *pairs*, preferring the existing strict safe-room tier while requiring at least **3 graph hops** (intervening rooms) and at least **18 map tiles** between sanctuary room boundaries, rather than just different room IDs.
+- Candidate tiers retain all existing exclusions for start/exit, Sigil, reserved dedicated-hazard rooms, merchant rooms and irremovable/critical enemies. No changes to the dungeon map geometry, pickups, doors or member data.
+- Normal deterministic floor coverage exercised 28 real `CCGWorld.generate` + `CCGWorld.createHostState` + `CCGSystems.decorate` flows on floors 1, 3, 9 and 15: both sanctuaries retained per floor, with minimum 48 tiles of gap and minimum 3 corridor hops; no excluded critical room was converted. Test: `tests/dungeon-carnage-r119-sanctuary-spacing.test.mjs`, registered in Dungeon PR qualification.
+- If a future constrained map cannot accommodate two correctly separated safe rooms, the allocator intentionally never places two next to each other; it will choose fewer rather than violate the spacing invariant. This must remain a guarded edge case.
+- **Newly generated floors only:** saved runs with an already-generated adjacent sanctuary arrangement are not destructively rewritten; they get the new rule after their next floor is generated/new run is started.
