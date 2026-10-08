@@ -78,6 +78,9 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   const visitedPages = new Map(), visitedPCs = new Map();
   let basicInstructions = 0, pcFC = 0, pcFD = 0, pcEA = 0, pcE4 = 0;
   let firstTapeWait = null;
+  const eaInstr = new Map(), eaClrRows = new Map(), sampleY = [];
+  let firstBasicEntry = null, firstEaLoop = null, firstScreenWrite = null;
+  const sampledCycles = [];
   const origClock = machine.cpu.clock;
   machine.cpu.clock = function () {
     if (this.atInstructionBoundary()) {
@@ -95,6 +98,20 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
         };
       }
       const page = pc >>> 8;
+      if (pc>=0xe9f0 && pc<=0xea45) {
+        eaInstr.set(pc,(eaInstr.get(pc)||0)+1);
+        if(pc===0xea07) {
+          if (!firstEaLoop) firstEaLoop={frame:frames,sp:this.sp,a:this.a,x:this.x,y:this.y,
+            stack:Array.from(machine.mem.ram.slice(0x0100+this.sp+1,0x0100+this.sp+10)),
+            zp:Array.from(machine.mem.ram.slice(0xd1,0xd4)),ddr:machine.mem.cpuDDR};
+          eaClrRows.set(this.x,(eaClrRows.get(this.x)||0)+1);
+          if(sampleY.length<25) sampleY.push({frame:frames,x:this.x,y:this.y,sp:this.sp});
+        }
+      }
+      if(!firstBasicEntry && pc>=0xa000 && pc<=0xbfff)
+        firstBasicEntry={frame:frames,pc:pc.toString(16),a:this.a,x:this.x,y:this.y,sp:this.sp};
+      if(!firstScreenWrite && machine.mem.ram[0x0400] !== 0x20 && frames>130)
+        firstScreenWrite={frame:frames,code:machine.mem.ram[0x400],pc:pc.toString(16)};
       visitedPages.set(page,(visitedPages.get(page)||0)+1);
       if (pc>=0xA000 && pc<0xC000) basicInstructions++;
       if (page===0xfc) pcFC++;
@@ -121,7 +138,10 @@ test("real Commodore BASIC V2 reaches READY screen through the machine's CPU", (
   if (!found) {
     const ram = machine.mem.ram;
     console.log("BASIC execution statistics", JSON.stringify({
-      basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,
+      basicInstructions,pcFC,pcFD,pcEA,pcE4,firstTapeWait,firstBasicEntry,firstEaLoop,firstScreenWrite,
+      eaInstr:[...eaInstr.entries()].sort((a,b)=>b[1]-a[1]).slice(0,45).map(([pc,count])=>[pc.toString(16),count]),
+      eaClrRows:[...eaClrRows.entries()].sort((a,b)=>a[0]-b[0]),
+      sampleY,
       currentJiffy:Array.from(machine.mem.ram.slice(0xa0,0xa3)),
       lastKey:machine.mem.ram[0x91],
       keyboardBuffer:machine.mem.ram[0xc6],
