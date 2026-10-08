@@ -86,6 +86,22 @@ assert(visuals.propBookcase===null,"Unknown-rights bookcase override must remain
 assert(items.armour==="assets/pixel/visual-overhaul/r85/pickup-armour.svg","Licensed R85 armour fallback must be retained");
 const catalogue=manifest.images?.visualOverhaul?.r118LicensedCC0;
 assert(catalogue?.license==="CC0-1.0","R118 catalogue must record CC0 licence");
+const tracedCharSheets=[
+  ["pumpkin-dude.png","85d180f0a42d3a0bbcf14c1bce08d6b77bea6217013a73aa0235f8c9f8efdf17",[0,9]],
+  ["plague-doc.png","2bb0c93615ac1a9c99e0f32be98d2d8e48fa78d7c4449627b3980dc9a849276e",[-1,9]]
+];
+for(const [name,sourcePNG_SHA256,offset] of tracedCharSheets){
+  const art=fs.readFileSync(new URL(folder+name,root));
+  const record=catalogue?.stagedCharacterSourceVerified?.[name];
+  assert(art.readUInt32BE(16)===128&&art.readUInt32BE(20)===32,"Staged 0x72 animation sheet must remain eight 16x32 cells: "+name);
+  assert(sha256(art)===sourcePNG_SHA256&&record?.stagedPNG_SHA256===sourcePNG_SHA256,"Staged 0x72 animation sheet fingerprint changed: "+name);
+  assert(record.license==="CC0-1.0"&&record.archive==="0x72_DungeonTilesetII_v1.7.zip","Unverified paid/non-CC0 character art may not enter the staged catalogue: "+name);
+  assert(record.archiveSHA256==="a5b23341ebc831d7798bfb9666d864a08c079bb7aed18e3cf023a27d517c1512","Original author archive identity must be preserved: "+name);
+  assert(JSON.stringify(record.perCellOffsetPx)===JSON.stringify(offset),"Source-frame atlas offsets must preserve exact traced CC0 source: "+name);
+  assert(Array.isArray(record.sourceFrameSHA256)&&record.sourceFrameSHA256.length===8,"Staged spritesheet must trace all eight original frames: "+name);
+}
+assert(!render.includes('make(selected("r118PumpkinDude"))')&&!render.includes('make(selected("r118PlagueDoc"))'),"Staged character sprites must not displace the main authored enemy atlas before owner visual approval");
+
 assert(JSON.stringify(catalogue.activeWallTorchFrames)===JSON.stringify(active.map(x=>folder+x)),"R118 wall torch manifest differs from runtime");
 assert(catalogue.activeKeyCandidate===folder+key,"Provenanced Niji key must remain active in manifest");
 assert(catalogue.activeCrateSprite===folder+crate,"Source-verified 0x72 crate must be recorded in manifest");
