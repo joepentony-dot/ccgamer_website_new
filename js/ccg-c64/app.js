@@ -60,6 +60,9 @@ const vaultClearButton = document.querySelector("[data-vault-clear]");
 const vaultStatus = document.querySelector("[data-vault-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
+const joystickSwapButton = document.querySelector("[data-joystick-swap]");
+const joystickPortIndicator = document.querySelector("[data-joystick-port]");
+const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
 const audioStatus = document.querySelector("[data-audio-status]");
 const audioButton = document.querySelector("[data-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
@@ -79,10 +82,13 @@ let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
 let frameAccumulator = 0;
+let speedSampleTime = 0;
+let speedSampleFrames = 0;
 let driveMode = "fast"; // Always start user-facing sessions in auto-loading Fast Load mode.
 let mountedDisk = null;
 let mountedTape = null;
 let mountedCartridge = null;
+let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
@@ -219,9 +225,34 @@ function toggleAudioMute() {
   updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
 }
 
-function applyJoystickPort2() {
-  if (machine) machine.joyPort2 = gamepadJoyByte & touchJoyByte;
+function updateJoystickUi() {
+  if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
+  if (joystickSwapButton) {
+    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
+    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  }
 }
+
+function applyJoystickInput() {
+  if (!machine) return;
+  const byte = gamepadJoyByte & touchJoyByte;
+  machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
+  machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
+  // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
+  machine._updateLightpen?.();
+}
+
+function swapJoystickPort() {
+  joystickPort = joystickPort === 2 ? 1 : 2;
+  localStorage.setItem("ccg.emulator.c64.joystickPort", String(joystickPort));
+  applyJoystickInput();
+  updateJoystickUi();
+  if (inputStatus) inputStatus.textContent = `JOYSTICK PORT ${joystickPort} SELECTED`;
+  screen?.focus();
+}
+
+joystickSwapButton?.addEventListener("click", swapJoystickPort);
+updateJoystickUi();
 
 function updateDriveModeUi(snapshot = vault.snapshot()) {
   const driveAvailable = Boolean(snapshot.driveReady);
@@ -340,6 +371,7 @@ function pressMatrixBinding(heldKey, binding) {
   if (!machine || !binding) return;
   machine.cia1.setKey(binding.col, binding.row, true);
   heldMatrixKeys.set(heldKey, binding);
+  if (inputStatus) inputStatus.textContent = `KEY ${heldKey.replace(/^(?:Key|Digit)/, "")} // C64 ACTIVE`;
 }
 
 function pressShiftedMatrixBinding(heldKey, col, row) {
@@ -402,6 +434,7 @@ function releaseHeldMatrixBinding(event, heldKey) {
 
   heldMatrixKeys.delete(heldKey);
   machine.cia1.setKey(binding.col, binding.row, false);
+  if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
 
   if (binding.symbolMapped) {
     if (binding.pressedLeftShift && !event.shiftKey) {
@@ -423,13 +456,24 @@ function usesNativeKeyboard(target) {
   ));
 }
 
+function usesTextInput(target) {
+  return Boolean(target?.closest?.(
+    'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"]'
+  ));
+}
+
 function handleC64Key(event, pressed) {
   if (!running || !machine) return;
 
-  // Keyboard works while the emulator page is active, not only while its canvas
-  // has focus. Never hijack browser form navigation or ROM-setup controls.
-  if (pressed && ((!setup?.hidden) || usesNativeKeyboard(event.target) ||
-    usesNativeKeyboard(document.activeElement))) return;
+  // A clicked toolbar button retains browser focus. That must NOT prevent game
+  // commands such as S to start, Q to quit, or F-keys from reaching the C64.
+  // Text fields and dropdowns keep their native keyboard, as do ENTER/SPACE
+  // for activating a focused button or link. The ROM setup remains modal.
+  const nativeActivation = ["Enter", "NumpadEnter", "Space"].includes(event.code) &&
+    (usesNativeKeyboard(event.target) || usesNativeKeyboard(document.activeElement));
+  if (pressed && (setup?.hidden === false ||
+    usesTextInput(event.target) || usesTextInput(document.activeElement) ||
+    nativeActivation)) return;
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -516,7 +560,7 @@ function pollGamepad() {
 
   if (!pad) {
     gamepadJoyByte = 0xFF;
-    applyJoystickPort2();
+    applyJoystickInput();
     if (gamepadConnected) {
       gamepadConnected = false;
       if (inputStatus && touchHeldMask === 0) inputStatus.textContent = "KEYBOARD READY";
@@ -535,11 +579,11 @@ function pollGamepad() {
   if (axisX > 0.35 || pressed(15)) byte &= ~0x08;
   if (pressed(0) || pressed(1)) byte &= ~0x10;
   gamepadJoyByte = byte;
-  applyJoystickPort2();
+  applyJoystickInput();
 
   if (!gamepadConnected) {
     gamepadConnected = true;
-    if (inputStatus) inputStatus.textContent = "GAMEPAD // PORT 2";
+    if (inputStatus) inputStatus.textContent = `GAMEPAD // PORT ${joystickPort}`;
   }
 }
 
@@ -661,6 +705,8 @@ function stopFrameLoop() {
   frameHandle = 0;
   lastFrameTime = 0;
   frameAccumulator = 0;
+  speedSampleTime = 0;
+  speedSampleFrames = 0;
 }
 
 function blitMachine() {
@@ -757,6 +803,7 @@ async function prepareFreshGameSession() {
   fresh.setTrueDrive(false);
 
   machine = fresh;
+  applyJoystickInput();
   paused = false;
   warpLoadActive = false;
   frameImage = null;
@@ -771,7 +818,9 @@ function frameLoop(now) {
   if (!running || !machine) return;
   pollGamepad();
   if (!lastFrameTime) lastFrameTime = now;
-  const delta = Math.min(100, Math.max(0, now - lastFrameTime));
+  // Account for legitimate 100–250ms browser/renderer stalls, rather than
+  // dropping elapsed PAL time and making ordinary gameplay run slow.
+  const delta = Math.min(250, Math.max(0, now - lastFrameTime));
   lastFrameTime = now;
 
   if (!paused) {
@@ -798,6 +847,25 @@ function frameLoop(now) {
       if (frames) serviceAutoStart();
     }
     if (frames) blitMachine();
+    if (!speedSampleTime) speedSampleTime = now;
+    speedSampleFrames += frames;
+    if (now - speedSampleTime >= 1000) {
+      if (emulatorSpeedStatus) {
+        const speed = Math.round(100 * (speedSampleFrames * PAL_FRAME_MS) /
+          Math.max(1, now - speedSampleTime));
+        emulatorSpeedStatus.textContent = warpLoadActive
+          ? `WARP // ${speed}% PAL`
+          : `PAL SPEED // ${speed}%`;
+        emulatorSpeedStatus.title = speed < 95 && !warpLoadActive
+          ? "This device or tab is not sustaining real-time PAL emulation; try closing other tabs or using plain CRT mode."
+          : "Measured emulated frame time relative to real time (100% = PAL speed).";
+      }
+      speedSampleTime = now;
+      speedSampleFrames = 0;
+    }
+  } else {
+    speedSampleTime = 0;
+    speedSampleFrames = 0;
   }
 
   frameHandle = requestAnimationFrame(frameLoop);
@@ -846,6 +914,7 @@ async function powerOn() {
     running = true;
     paused = false;
     warpLoadActive = false;
+    applyJoystickInput();
     frameImage = null;
     frameAccumulator = 0;
     lastFrameTime = 0;
@@ -877,6 +946,7 @@ function resetMachine() {
   setAudioPaused(false);
   if (machineState) machineState.textContent = "C64 RESET // RUNNING";
   if (stageNote) stageNote.textContent = "C64 reset. Warp Load returned to normal 1× speed.";
+  applyJoystickInput();
   setControlState(vault.snapshot());
 }
 
@@ -1498,6 +1568,7 @@ async function loadGameVaultSlot() {
     restored.restoreState(payload.state);
 
     machine = restored;
+    applyJoystickInput();
     running = true;
     paused = false;
     frameImage = null;
@@ -1540,15 +1611,15 @@ for (const button of document.querySelectorAll("[data-joy-mask]")) {
     event.preventDefault();
     touchHeldMask |= mask;
     touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickPort2();
-    if (inputStatus) inputStatus.textContent = "TOUCH // PORT 2";
+    applyJoystickInput();
+    if (inputStatus) inputStatus.textContent = `TOUCH // PORT ${joystickPort}`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
   };
   const release = (event) => {
     event.preventDefault();
     touchHeldMask &= ~mask;
     touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickPort2();
+    applyJoystickInput();
     if (!touchHeldMask && inputStatus && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
   };
   button.addEventListener("pointerdown", press);
