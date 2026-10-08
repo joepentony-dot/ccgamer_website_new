@@ -192,4 +192,77 @@ frameContext.lastFrameTime = 1000;
 frameContext.runTick(1020);
 assert.equal(runs - warpRuns, 1, "Normal mode must retain near-50Hz PAL speed");
 
+
+// The user's gamepad and touch bytes must reach exactly the selected C64 port
+// without interfering with the other port. Switching must be reversible.
+const joystickStart = app.indexOf("function updateJoystickUi() {");
+const joystickEnd = app.indexOf("function updateDriveModeUi(", joystickStart);
+assert(joystickStart >= 0 && joystickEnd > joystickStart, "Joystick switch code must exist");
+let joystickUpdates = 0;
+const joystickButton = {
+  title: "", listeners: new Map(),
+  setAttribute() {},
+  addEventListener(type, listener) { this.listeners.set(type, listener); },
+};
+const joystickStatus = { textContent: "" };
+const joystickMachine = {
+  joyPort1: 255, joyPort2: 255,
+  _updateLightpen() { joystickUpdates++; },
+};
+const joystickStorage = new Map();
+const joystickContext = vm.createContext({
+  joystickPort: 2, joystickPortIndicator: joystickStatus,
+  joystickSwapButton: joystickButton, machine: joystickMachine,
+  gamepadJoyByte: 0xef, touchJoyByte: 0xfe,
+  localStorage: {
+    setItem(key, value) { joystickStorage.set(key, value); },
+  },
+  inputStatus: { textContent: "" },
+  screen: { focus() {} },
+});
+vm.runInContext(app.slice(joystickStart, joystickEnd) +
+  "\nglobalThis.routeJoystick = applyJoystickInput; globalThis.swapPort = swapJoystickPort;",
+  joystickContext);
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort1, 255);
+assert.equal(joystickMachine.joyPort2, 0xee);
+joystickContext.swapPort();
+assert.equal(joystickMachine.joyPort1, 0xee, "Selected port 1 must receive combined joystick inputs");
+assert.equal(joystickMachine.joyPort2, 255, "Unselected port 2 must be idle");
+assert.equal(joystickStatus.textContent, "PORT 1");
+assert.equal(joystickStorage.get("ccg.emulator.c64.joystickPort"), "1");
+joystickContext.swapPort();
+assert.equal(joystickMachine.joyPort1, 255);
+assert.equal(joystickMachine.joyPort2, 0xee);
+assert(joystickUpdates >= 3, "Port 1 lightpen pin must be updated when joystick swaps");
+
+// FIT must size against the actual screen stage rather than a guessed vh
+// offset, and restore the CSS width on mobile.
+const fitStart = app.indexOf("function fitScreenToStage() {");
+const fitEnd = app.indexOf("function toggleScreenSize()", fitStart);
+assert(fitStart >= 0 && fitEnd > fitStart, "Measured FIT calculator missing");
+const fitStage = { clientWidth: 700, clientHeight: 240, classList: { toggle() {} } };
+const bezel = { style: { width: "" } };
+let desktop = true;
+const fitContext = vm.createContext({
+  screenStage: fitStage, screenBezel: bezel, fixed2x: false,
+  window: {
+    matchMedia() { return { matches: desktop }; },
+    getComputedStyle() {
+      return { paddingLeft: "10px", paddingRight: "10px",
+        paddingTop: "10px", paddingBottom: "10px" };
+    },
+  },
+  sizeButton: { querySelector: () => ({ textContent: "" }) },
+});
+vm.runInContext(app.slice(fitStart, fitEnd) + "\nglobalThis.fitNow = fitScreenToStage;", fitContext);
+fitContext.fitNow();
+assert.equal(bezel.style.width, "310px", "Short desktop stage must constrain bezel by height");
+fitStage.clientHeight = 680;
+fitContext.fitNow();
+assert.equal(bezel.style.width, "680px", "Wide stage must constrain bezel by available width");
+desktop = false;
+fitContext.fitNow();
+assert.equal(bezel.style.width, "", "Mobile must restore responsive CSS width");
+
 console.log("C64 keyboard S/CIA, VICE keys, focused-toolbar recovery, drag overlay, FIT and MAX Warp tests passed.");
