@@ -2156,7 +2156,7 @@ document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date()
 
 const initial = vault.restore();
 let openRomFallbackError = null;
-if (!initial.allRequiredReady && initial.requiredReady === 0) {
+if (!initial.allRequiredReady) {
   try {
     // Boot actual 6510/KERNAL/BASIC firmware, not an imitation READY canvas.
     // The matched LGPL Open ROMs are a compatibility fallback only; a
