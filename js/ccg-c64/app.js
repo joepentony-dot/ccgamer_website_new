@@ -68,6 +68,7 @@ const audioButton = document.querySelector("[data-audio-toggle]");
 const crtButton = document.querySelector("[data-crt-toggle]");
 const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
+const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
@@ -126,10 +127,33 @@ function cycleCrtMode() {
   applyCrtMode();
 }
 
+function fitScreenToStage() {
+  if (!screenStage || !screenBezel) return;
+  // Mobile layouts size from intrinsic aspect ratio. Desktop has a bounded
+  // screen stage, so fit the bezel to BOTH measured dimensions, not an
+  // assumed vh or a hard-coded browser toolbar height.
+  if (!window.matchMedia?.("(min-width: 960px)")?.matches) {
+    screenBezel.style.width = "";
+    return;
+  }
+  const style = window.getComputedStyle(screenStage);
+  const padX = parseFloat(style.paddingLeft || "0") + parseFloat(style.paddingRight || "0");
+  const padY = parseFloat(style.paddingTop || "0") + parseFloat(style.paddingBottom || "0");
+  const availableWidth = Math.max(0, screenStage.clientWidth - padX);
+  const availableHeight = Math.max(0, screenStage.clientHeight - padY);
+  if (!availableWidth || !availableHeight) return;
+  const ratio = 384 / 272;
+  const bezelWidth = Math.floor(Math.min(
+    availableWidth, availableHeight * ratio, fixed2x ? 768 : 1120
+  ));
+  screenBezel.style.width = `${Math.max(1, bezelWidth)}px`;
+}
+
 function applyScreenSize() {
   screenStage?.classList.toggle("is-2x", fixed2x);
   const strong = sizeButton?.querySelector("strong");
   if (strong) strong.textContent = fixed2x ? "2X" : "FIT";
+  fitScreenToStage();
 }
 
 function toggleScreenSize() {
@@ -140,6 +164,10 @@ function toggleScreenSize() {
 
 applyCrtMode();
 applyScreenSize();
+if (screenStage && typeof ResizeObserver !== "undefined") {
+  new ResizeObserver(fitScreenToStage).observe(screenStage);
+}
+window.addEventListener("resize", fitScreenToStage);
 
 function updateAudioUi(label = null) {
   if (audioStatus && label) audioStatus.textContent = label;
