@@ -112,6 +112,26 @@ async function copyTree(source,destination,relativeRoot,files,sourceOnly=new Set
     }else fail("Unsupported source entry: "+relative);
   }
 }
+async function disableStagedOverrideUrls(root,sourceOnly){
+  if(!sourceOnly.size)return;
+  const file=path.join(root,"js","asset-overrides.js");
+  let contents=await fs.readFile(file,"utf8"),replaced=0;
+  for(const relative of sourceOnly){
+    // Only replace exact, manifest-listed sprite value literals. Never touch
+    // other owner overrides, licence text or the source-repository file.
+    const literal=":"+JSON.stringify(relative);
+    if(contents.includes(literal)){
+      contents=contents.split(literal).join(":null");
+      replaced++;
+    }
+    if(contents.includes(JSON.stringify(relative))){
+      fail("Staged R118 asset path remains in packaged owner overrides: "+relative);
+    }
+  }
+  await fs.writeFile(file,contents,"utf8");
+  console.log("R118 package disabled "+replaced+" staged-only owner override URLs");
+}
+
 function offlineRuntime(cacheToken){
   return [
     "(()=>{",
@@ -216,6 +236,12 @@ async function verify(output){
   for(const relative of requiredActive){
     await ordinaryFile(path.join(root,...relative.split("/")),"Licensed active R118 artwork");
   }
+  const packagedOwners=await fs.readFile(path.join(root,"js","asset-overrides.js"),"utf8");
+  for(const relative of sourceOnly){
+    if(packagedOwners.includes(JSON.stringify(relative))){
+      fail("Inactive R118 artwork URL leaked into packaged game runtime: "+relative);
+    }
+  }
 
   const version=JSON.parse(await fs.readFile(path.join(root,"version.json"),"utf8"));
   if(manifest.build!==version.build||manifest.cacheToken!==version.cacheToken||manifest.releaseVersion!==version.releaseVersion)fail("Manifest/version identity mismatch");
@@ -297,6 +323,8 @@ async function build(output,sourceSha){
     await fs.copyFile(from,to);
     copied.push(packageRelative);
   }
+
+  await disableStagedOverrideUrls(outputRoot,selection.sourceOnly);
 
   const version=JSON.parse(await fs.readFile(path.join(outputRoot,"version.json"),"utf8"));
   const indexPath=path.join(outputRoot,"index.html");
