@@ -1,4 +1,5 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
+import { HOSTED_ROM_VERSION, fetchVerifiedHostedROMs, installHostedROMs } from "./hosted-roms.js";
 import { C64Machine } from "./core/machine.js";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
@@ -154,6 +155,7 @@ let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
 let pendingMedia = null;
+let hostedFirmwareReadyPromise = null;
 let onlineLibraryEntries = [];
 let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
@@ -1579,6 +1581,11 @@ async function openMediaBytes(media) {
 }
 
 async function queueMedia(media, { freshBoot = false } = {}) {
+  // LOAD must wait if a first-time visitor is still receiving the verified
+  // original firmware. The chosen game is only queued after it has finished.
+  if (typeof hostedFirmwareReadyPromise !== "undefined" && hostedFirmwareReadyPromise) {
+    await hostedFirmwareReadyPromise;
+  }
   if (!media?.bytes?.length) throw new Error("The selected media file is empty.");
   const type = media.type || mediaTypeFromName(media.name);
   if (!type) throw new Error("Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.");
@@ -2278,15 +2285,30 @@ document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date()
 const initial = vault.restore();
 render(initial);
 
-// Returning visitors with a complete local ROM bank should see the real C64
-// BASIC READY screen, not the CCG pre-boot status canvas. First-time visitors
-// still retain the media-first flow and are prompted for ROMs only when needed.
-if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
-  void powerOn();
+// All visitors, desktop and mobile, load the SAME original Commodore 64
+// BASIC V2, KERNAL Rev.3 and CHARGEN from this website. Each file's SHA-256
+// is verified before the original ROMVault installs anything.
+async function bootWithHostedFirmware() {
+  try {
+    if (machineState) machineState.textContent = "STARTING COMMODORE 64";
+    if (stageNote) stageNote.textContent = "Loading the original C64 BASIC, KERNAL and CHARGEN firmware...";
+    const files = await fetchVerifiedHostedROMs();
+    const snapshot = installHostedROMs(vault, files);
+    render(snapshot);
+    if (machineState) machineState.textContent = HOSTED_ROM_VERSION;
+  } catch (error) {
+    console.error("[ccg-c64] Original C64 firmware unavailable:", error);
+    if (stageNote) stageNote.textContent =
+      "Original C64 firmware could not be loaded. Reload this page, " +
+      "or use SYSTEM ROMS to recover your installed files. " +
+      (error?.message || "");
+    render(vault.snapshot());
+  }
+  if (vault.snapshot().allRequiredReady && typeof SharedArrayBuffer !== "undefined" && !running) {
+    await powerOn();
+  }
 }
-
-// Do not interrupt first-time visitors with a firmware modal. They can choose
-// media immediately; setup is requested only when the selected media needs booting.
+hostedFirmwareReadyPromise = bootWithHostedFirmware();
 
 window.addEventListener("pagehide", () => {
   releaseAllInput();

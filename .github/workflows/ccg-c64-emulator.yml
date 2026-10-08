@@ -66,6 +66,10 @@ jobs:
         timeout-minutes: 5
         run: node tests/ccg-c64-mobile-library-rendered.test.mjs
 
+      - name: Verify original C64 firmware SHA-256 and CPU BASIC boot
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-original-rom-boot.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
