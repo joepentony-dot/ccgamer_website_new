@@ -9,7 +9,7 @@ const css=fs.readFileSync("arcade/lost-sizzler/css/dungeon-public-playtest.css",
 const migration=fs.readFileSync("supabase/migrations/20261007025945_dungeon_carnage_public_playtest_sessions.sql","utf8");
 const version=JSON.parse(fs.readFileSync("arcade/lost-sizzler/version.json","utf8"));
 const token=String(version.cacheToken||"");
-assert(/^\d{8}r\\d+$/.test(token),"public playtest assets must share a recognised published cache identity");
+assert(/^\d{8}r\d+$/.test(token),"public playtest assets must share a recognised published cache identity");
 const script="js/dungeon-public-playtest.js?v="+token;
 const style="css/dungeon-public-playtest.css?v="+token;
 
