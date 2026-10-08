@@ -20,8 +20,9 @@ const folder="assets/pixel/user-r118/";
 const active=[0,1,2,3].map(i=>"wall-torch-"+i+".png");
 const key="extended-gold-key.png";
 const crate="cc0-crate-0x72-ii.png";
+const barrel="kenney-tiny-dungeon-barrel.png";
 const staged=["floor-stairs.png","monster-dark-knight.png","monster-imp.png","monster-necromancer.png","plague-doc.png","prop-boxes-stacked.png","prop-column.png","pumpkin-dude.png","skeleton-move.png","vampire-move.png"];
-for(const name of [...active,key,crate,...staged]){
+for(const name of [...active,key,crate,barrel,...staged]){
   const bytes=fs.readFileSync(new URL(folder+name,root));
   assert(bytes.length>100,"Missing/empty CC0 candidate: "+name);
   assert(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),"Invalid PNG signature: "+name);
@@ -34,10 +35,13 @@ assert(visuals.propCrate===folder+crate,"Verified 0x72 DungeonTileset II crate m
 const sha256=bytes=>crypto.createHash("sha256").update(bytes).digest("hex");
 const keyBytes=fs.readFileSync(new URL(folder+key,root));
 const crateBytes=fs.readFileSync(new URL(folder+crate,root));
+const barrelBytes=fs.readFileSync(new URL(folder+barrel,root));
 assert(keyBytes.readUInt32BE(16)===16&&keyBytes.readUInt32BE(20)===16,"Gold key must remain exactly 16x16");
 assert(crateBytes.readUInt32BE(16)===16&&crateBytes.readUInt32BE(20)===24,"New 0x72 crate must remain exactly 16x24");
 assert(sha256(keyBytes)==="3d7b2609fa1c00fa9b679799cc549058106eb03a37fbf14434111723f21d1f01","Gold key binary no longer matches provenanced atlas extraction");
 assert(sha256(crateBytes)==="e602c9be47378d5f4bd767cb7c5487928d289c887131ccd9dd5a9ebd69570db8","Crate binary no longer matches original 0x72 II archive");
+assert(barrelBytes.readUInt32BE(16)===16&&barrelBytes.readUInt32BE(20)===16,"Kenney barrel must remain exactly 16x16");
+assert(sha256(barrelBytes)==="2efb31e30cd6f1527329fe5d7704e41c65a8376d498bf93372f46155600420c9","Kenney barrel binary must match declared curated CC0 asset");
 const fitStart=render.indexOf("function dungeonAssetFitRect(");
 const fitEnd=render.indexOf("\nfunction drawFurniture()",fitStart);
 assert(fitStart>=0&&fitEnd>fitStart,"Missing proportional artwork fitting function");
@@ -54,13 +58,17 @@ assert(render.includes("dungeonAssetFitRect(propArt,q.x+1,q.y+1,C.tile-2,C.tile-
 for(let i=1;i<=8;i++)assert(visuals["floorTile"+i]===null,"Unknown-rights R118 floor override must remain disabled: "+i);
 for(let i=0;i<4;i++)assert(visuals["spikeTrapFrame"+i]===null,"Unknown-rights R118 spike art must remain disabled: "+i);
 for(let i=0;i<5;i++)assert(visuals["fireplaceFrame"+i]===null,"Unknown-rights R118 fireplace art must remain disabled: "+i);
-for(const key of ["propBarrel","propBookcase"])assert(visuals[key]===null,"Unknown-rights R118 prop override must remain disabled: "+key);
+assert(visuals.propBarrel===folder+barrel,"Barrel must use separately licensed Kenney CC0 artwork, not excluded unidentified art");
+assert(visuals.propBookcase===null,"Unknown-rights bookcase override must remain disabled");
 assert(items.armour==="assets/pixel/visual-overhaul/r85/pickup-armour.svg","Licensed R85 armour fallback must be retained");
 const catalogue=manifest.images?.visualOverhaul?.r118LicensedCC0;
 assert(catalogue?.license==="CC0-1.0","R118 catalogue must record CC0 licence");
 assert(JSON.stringify(catalogue.activeWallTorchFrames)===JSON.stringify(active.map(x=>folder+x)),"R118 wall torch manifest differs from runtime");
 assert(catalogue.activeKeyCandidate===folder+key,"Provenanced Niji key must remain active in manifest");
 assert(catalogue.activeCrateSprite===folder+crate,"Source-verified 0x72 crate must be recorded in manifest");
+assert(catalogue.activeBarrelSprite===folder+barrel,"Licensed Kenney barrel must be recorded in manifest");
+assert(catalogue.sources?.activeBarrelSprite?.sourcePNG_SHA256===sha256(barrelBytes),"Barrel binary no longer matches audited mirror asset");
+assert(catalogue.sources.activeBarrelSprite.sourceSpriteIndex==="tile_0082.png"&&catalogue.sources.activeBarrelSprite.license==="CC0-1.0","Kenney source index and CC0 source licence are mandatory");
 assert(catalogue.sources?.activeKeyCandidate?.cropPixelSHA256==="580342c73c73cef8dd79c2a3c99094435fc6f2e724f2ac7fac96bb6ff8f207be","Niji key pixel match must remain documented");
 assert(JSON.stringify(catalogue.sources?.activeKeyCandidate?.atlasCropPx)===JSON.stringify([320,320,16,16]),"Niji key crop identity is missing");
 assert(catalogue.sources?.activeCrateSprite?.sourcePNG_SHA256===sha256(crateBytes),"Crate provenance digest does not match source sprite");
@@ -73,4 +81,4 @@ assert(render.includes('make(selected("floorTile1","assets/pixel/visual-overhaul
 assert(render.includes('make(selected("spikeTrapFrame0","assets/pixel/visual-overhaul/0x72/spikes-f0.png"))'),"Licensed trap fallback must remain");
 assert(render.includes('d.type==="fireplace"')&&render.includes('d.type==="candleSconce"'),"Procedural fireplace/sconce fallback must remain");
 assert(provenance.includes("CC0-1.0")&&provenance.includes("no README, author credit or licence file"),"Provenance must distinguish licensed and excluded sources");
-console.log("R118 CC0 key, crate, torches, pixel aspect fit and unknown-rights exclusion contracts passed.");
+console.log("R118 CC0 key, crate, Kenney barrel, torches, pixel aspect fit and unknown-rights exclusion contracts passed.");
