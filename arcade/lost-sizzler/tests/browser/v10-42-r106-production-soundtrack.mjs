@@ -21,6 +21,10 @@ try{
   const page=await browser.newPage();
   await page.setContent("<main></main>");
   await page.addScriptTag({content:[
+    // Simulate a genuine browser for this synthetic audio test: Audio and fetch
+    // are replaced with inert local fixtures, so no production egress occurs.
+    'Object.defineProperty(navigator,"webdriver",{configurable:true,value:false});',
+    'Object.defineProperty(navigator,"userAgent",{configurable:true,value:"Mozilla/5.0 Chrome/140.0 Safari/537.36"});',
     'window.__CCG_ALLOW_REMOTE_TEST_ASSETS__=true;',
     'window.CCG_SUPABASE_URL="https://example.supabase.co";',
     'window.CCG_SUPABASE_ANON_KEY="test-anon-key";',
