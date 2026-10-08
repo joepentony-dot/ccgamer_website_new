@@ -1010,12 +1010,12 @@ document.querySelector("[data-emulator-back]")?.addEventListener("click", () => 
 });
 
 powerButton?.addEventListener("click", () => { void powerOn(); });
-resetButton?.addEventListener("click", resetMachine);
-pauseButton?.addEventListener("click", togglePause);
-warpLoadButton?.addEventListener("click", toggleWarpLoad);
-audioButton?.addEventListener("click", toggleAudioMute);
-crtButton?.addEventListener("click", cycleCrtMode);
-sizeButton?.addEventListener("click", toggleScreenSize);
+resetButton?.addEventListener("click", () => { resetMachine(); screen?.focus(); });
+pauseButton?.addEventListener("click", () => { togglePause(); screen?.focus(); });
+warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
+audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
+crtButton?.addEventListener("click", () => { cycleCrtMode(); screen?.focus(); });
+sizeButton?.addEventListener("click", () => { toggleScreenSize(); screen?.focus(); });
 screen?.addEventListener("pointerdown", () => screen.focus());
 
 const SUPPORTED_MEDIA_TYPES = new Set(["prg", "d64", "d71", "d81", "g64", "tap", "t64", "crt"]);
