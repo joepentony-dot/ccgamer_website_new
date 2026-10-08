@@ -93,7 +93,11 @@ node scripts/build-c64-dungeon-carnage-itch-package.mjs --verify "C:\path\to\sta
 ```
 
 The importer accepts flat filenames or the original Supabase category folders.
-It refuses missing tracks, substitutes, unexpected sizes and non-MP3 headers.
+It refuses missing tracks, unexpected sizes, non-MP3 headers and files whose
+MD5 fingerprint does not match the original object ETag recorded in Supabase
+Storage. These fingerprints were retrieved from the project's read-only
+Storage metadata on 8 October 2026, so matching-name replacement audio cannot
+be mistaken for the originals.
 It copies the originals into the packaged game, replaces all original Supabase
 music URLs with local URLs and refreshes SHA-256 release-manifest entries. The
 source recordings are left unchanged. The importer is not automatic in GitHub
