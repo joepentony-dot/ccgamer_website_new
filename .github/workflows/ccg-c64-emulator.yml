@@ -59,6 +59,9 @@ jobs:
       - name: Verify private local ROM export and mobile import
         run: node --test tests/ccg-c64-local-rom-transfer.test.mjs
 
+      - name: Verify mobile game search directly below the C64 display
+        run: node --test tests/ccg-c64-mobile-library-priority.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
