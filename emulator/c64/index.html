@@ -101,6 +101,10 @@
           </select>
           <button type="button" data-online-library-load disabled>LOAD</button>
         </div>
+        <div class="ccg-c64-library-row ccg-c64-library-disks" data-online-library-disks hidden>
+          <select data-online-library-disk-select aria-label="Choose replacement disk for the selected game"></select>
+          <button type="button" data-online-library-disk-swap disabled title="Insert selected game disk without restarting">SWAP DISK</button>
+        </div>
         
       </section>
 
@@ -146,11 +150,13 @@
 
       <section class="ccg-c64-panel ccg-c64-panel--disk">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
-        <div class="ccg-c64-media-row">
-          <button type="button" data-load-disk>LOAD DISK</button>
+        <div class="ccg-c64-media-row ccg-c64-media-row--three">
+          <button type="button" data-load-disk title="Load and automatically run a game from disk">LOAD DISK</button>
+          <button type="button" data-swap-disk disabled title="Change a disk while the game keeps running; no reset, LOAD or RUN">SWAP DISK</button>
           <button type="button" data-drive-mode aria-pressed="false" disabled title="Default mode: mount disk and automatically LOAD/RUN">FAST LOAD</button>
         </div>
         <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
+        <input id="ccg-c64-swap-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--tape">

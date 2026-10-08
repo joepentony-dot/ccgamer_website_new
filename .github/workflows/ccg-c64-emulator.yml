@@ -35,6 +35,9 @@ jobs:
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
 
+      - name: Verify hot disk swapping and multi-disk library controls
+        run: node tests/ccg-c64-disk-swap.test.mjs
+
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
 

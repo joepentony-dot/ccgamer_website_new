@@ -562,6 +562,10 @@ select:disabled {
   gap: 0.4rem;
 }
 
+.ccg-c64-media-row--three {
+  grid-template-columns: repeat(3, minmax(0,1fr));
+}
+
 .ccg-c64-media-row--four {
   grid-template-columns: repeat(4, minmax(0,1fr));
 }
@@ -715,6 +719,14 @@ select:disabled {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 84px;
   gap: 0.4rem;
+}
+
+.ccg-c64-library-disks {
+  margin-top: 0.35rem;
+}
+
+.ccg-c64-library-disks[hidden] {
+  display: none !important;
 }
 
 .ccg-c64-library-row select,

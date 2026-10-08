@@ -174,44 +174,65 @@ assert(html.includes('class="ccg-c64-panel ccg-c64-panel--library" hidden'),
 assert(app.includes("onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0"),
   "Approved titles must automatically reveal Online Library");
 
-// Verify actual shipped game bytes, not merely dropdown labels or broken
-// external download links. Git blob hashes pin the exact developer releases.
+// Verify real, present disk/cartridge files and the individual permissions and
+// hashes. No dummy or user-rejected media may be resurrected by a test.
 for (const retiredName of ["snake64.prg", "8bit-island.prg", "meteor-storm.prg"]) {
   assert(!fs.existsSync(path.join(root, "emulator/c64/media", retiredName)),
     "A user-rejected preloaded game must not remain publicly downloadable: " + retiredName);
 }
 assert(onlineLibrary.entries.every((entry) =>
-  !["snake64", "8bit-island", "meteor-storm"].includes(entry.id)),
+  !["snake64", "8bit-island", "meteor-storm", "ccg-emulator-test-prg"].includes(entry.id)),
   "Removed game titles must not return to the public Online Library");
-const gameNotices = onlineLibrary.entries.length
-  ? read("emulator/c64/media/LICENCES.txt") : "";
 
+const gameNotices = onlineLibrary.entries.some((entry) => entry.license === "MIT")
+  ? read("emulator/c64/media/LICENCES.txt") : "";
 const seenGameIds = new Set();
 for (const entry of onlineLibrary.entries) {
   assert(!seenGameIds.has(entry.id), "Duplicate approved game ID: " + entry.id);
   seenGameIds.add(entry.id);
-  assert(entry.approved === true && entry.license === "MIT",
-    "Public entries require explicit licensing approval: " + entry.id);
-  assert(/^\/emulator\/c64\/media\/[a-z0-9-]+\.prg$/.test(entry.url),
-    "Hosted PRG paths must be local and restricted to the game media folder: " + entry.id);
-  assert(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/.test(entry.source),
-    "Each game must identify its upstream GitHub source: " + entry.id);
-  assert(/^[a-f0-9]{40}$/.test(entry.sourceCommit) && /^[a-f0-9]{40}$/.test(entry.sourceBlob),
-    "Each game must be pinned to a verified source revision and original game blob");
+  assert(entry.approved === true && typeof entry.license === "string" && entry.license.trim(),
+    "Public games must have a recorded redistribution permission: " + entry.id);
+  assert(/^\/emulator\/c64\/media\/[A-Za-z0-9._-]+\.(?:prg|d64|d71|d81|g64|crt)$/i.test(entry.url) &&
+    !entry.url.includes(".."),
+    "Media URL must be a safe, locally hosted game file path: " + entry.id);
   const program = fs.readFileSync(path.join(root, entry.url.slice(1)));
-  assert.equal(program.length, entry.bytes, "Hosted game size must match approved manifest: " + entry.id);
-  assert.equal(program[0] | (program[1] << 8), 0x0801,
-    "Approved game must have a valid C64 BASIC-loadable PRG header: " + entry.id);
-  assert(program.length >= 100 && program.length <= 65536, "Game must fit a normal C64 PRG: " + entry.id);
-  const blobHash = createHash("sha1").update(`blob ${program.length}\0`).update(program).digest("hex");
-  assert.equal(blobHash, entry.sourceBlob,
-    "Hosted game must be exactly the developer's approved binary: " + entry.id);
-  assert(gameNotices.includes(entry.sourceBlob) && gameNotices.includes(entry.sourceCommit),
-    "Game copyright and licence notice must retain original file provenance: " + entry.id);
+  assert.equal(program.length, entry.bytes, "Hosted file must match manifest byte size: " + entry.id);
+  if (entry.format === "prg") {
+    assert.equal(program[0] | (program[1] << 8), 0x0801,
+      "PRG must contain the expected C64 BASIC load address: " + entry.id);
+  } else if (entry.format === "d64") {
+    assert.equal(program.length, 174848,
+      "35-track D64 must have exactly 174,848 bytes: " + entry.id);
+  } else if (entry.format === "crt") {
+    assert.equal(program.subarray(0, 16).toString("ascii"), "C64 CARTRIDGE   ",
+      "CRT game must have Commodore cartridge header: " + entry.id);
+    const hwType = program.readUInt16BE(0x16);
+    assert([0, 1, 3, 19, 32].includes(hwType),
+      "CRT game must use an emulator-supported cartridge hardware type: " + entry.id);
+  }
+  if (entry.sourceBlob) {
+    assert(entry.license === "MIT", "Source-republished games must retain their original licence");
+    assert(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/.test(entry.source) &&
+      /^[a-f0-9]{40}$/.test(entry.sourceCommit) &&
+      /^[a-f0-9]{40}$/.test(entry.sourceBlob),
+      "Open-source games need pinned upstream provenance: " + entry.id);
+    const hash = createHash("sha1").update(`blob ${program.length}\0`).update(program).digest("hex");
+    assert.equal(hash, entry.sourceBlob, "Hosted game must match original developer's binary: " + entry.id);
+    assert(gameNotices.includes(entry.sourceBlob) && gameNotices.includes(entry.sourceCommit),
+      "MIT game must retain its third-party licence notices: " + entry.id);
+  } else {
+    assert(/^[a-f0-9]{64}$/.test(entry.sha256) &&
+      entry.license.includes("CCG website owner"),
+      "Owner-authorised media needs the stated permission and a pinned SHA-256: " + entry.id);
+    assert.equal(createHash("sha256").update(program).digest("hex"), entry.sha256,
+      "Hosted game must exactly match the owner-provided disk/cartridge image: " + entry.id);
+  }
 }
 assert(app.includes("machine.injectRun()") &&
-  app.includes("await queueMedia({ name: filename, type, bytes }, { freshBoot: true })"),
-  "Online Library selection must pass playable PRG bytes to the existing auto-start pipeline");
+  app.includes("await queueMedia({") &&
+  app.includes("name: filename, type, bytes, sourceKey: firstKey") &&
+  app.includes("}, { freshBoot: true })"),
+  "Online Library selection must preserve media bytes and auto-start while tracking the first disk");
 
 assert(html.includes("data-keyboard-joystick"),
   "Players must be able to use a keyboard as C64 joystick");
