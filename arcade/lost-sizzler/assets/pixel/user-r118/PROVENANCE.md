@@ -1,22 +1,19 @@
-# R118 owner-supplied dungeon art provenance
+# R118 owner-supplied art provenance — licensing checkpoint (8 October 2026)
 
-Source received from the site owner on 8 October 2026 as `Dungeon tileset(1).zip`.
+The owner supplied `Dungeon tileset(1).zip`, `0x72_16x16DungeonTileset.v5.zip`, `0x72_DungeonTilesetII_v1.7.zip` and `dungeontiles-extended v1.1.zip`.
 
-The supplied archive contained:
-- `Dungeon tileset.png`
-- `01.gif` (torch / wall-sconce animation)
-- `02.gif` (fireplace animation)
-- `03.gif` (spike-trap animation)
+## Verified CC0 sources
 
-R118 derives only selected in-game assets from that owner-supplied archive:
-- four floor-detail tiles
-- one barrel sprite
-- one bookcase/shelf sprite
-- one armour/helmet pickup
-- four wall-sconce animation frames
-- five fireplace animation frames
-- safe/active spike-trap art
+- 0x72 / Robert Norenberg, 16x16 Dungeon Tileset v5: https://0x72.itch.io/16x16-dungeon-tileset (CC0-1.0; commercial use, modification and redistribution permitted).
+- 0x72 / Robert Norenberg, DungeonTileset II v1.7: https://0x72.itch.io/dungeontileset-ii (CC0-1.0; includes separate Doc and Pumpkin character downloads).
+- Niji, Dungeon Tileset II Extended v1.1: https://nijikokun.itch.io/dungeontileset-ii-extended (CC0-1.0).
 
-No README, author credit or licence file was present inside the supplied ZIP. The owner explicitly requested that these supplied assets be integrated into C64 Dungeon Carnage. External provenance/licensing was therefore not independently established by the repository. Do not represent these files as original CCG artwork or reuse them outside this project without confirming their source rights.
+The four active `wall-torch-0.png` to `wall-torch-3.png` files match `items/torch_1.png` to `items/torch_4.png` byte-for-byte in the 0x72 v5 ZIP. Ten imported 0x72 PNGs have been byte-matched against archive entries. Other CC0 candidates remain staged for scale and semantic review; the extracted extended gold key and the separately supplied/assembled character candidates require exact lineage confirmation.
 
-The gameplay collision, room topology, trap ownership and progression logic remain unchanged by this art pass. Canvas/R85 fallbacks remain available when any R118 asset cannot decode.
+## Excluded archive — no demonstrated redistribution permission
+
+`Dungeon tileset(1).zip` contained `Dungeon tileset.png`, `01.gif`, `02.gif` and `03.gif`, but **no README, author credit or licence file**. Its four floor tiles, barrel, bookcase, armour, fireplace, spike and sconce assets are removed from the candidate tree. Their runtime visual overrides were already disabled in the latest R118 head, preserving established licensed R85/0x72 and procedural fallback artwork. Do not reintroduce these assets without independent permission.
+
+The Minifantasy Dungeon Free Version has an explicit **non-commercial-only** licence; do not import it into the planned commercial release.
+
+This asset pass does not modify collision, room topology, trap damage, AI, inventory or progression.

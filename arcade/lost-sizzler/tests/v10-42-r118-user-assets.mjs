@@ -1,44 +1,45 @@
 import fs from "node:fs";
+import vm from "node:vm";
 
 const root=new URL("../",import.meta.url);
-const overrides=fs.readFileSync(new URL("js/asset-overrides.js",root),"utf8");
-const render=fs.readFileSync(new URL("js/game-render.js",root),"utf8");
-const manifest=fs.readFileSync(new URL("assets/asset-manifest.json",root),"utf8");
-const provenance=fs.readFileSync(new URL("assets/pixel/user-r118/PROVENANCE.md",root),"utf8");
-
-function assert(condition,message){if(!condition)throw new Error(message)}
-
-const assets=[
-  "floor-1.png","floor-2.png","floor-3.png","floor-4.png",
-  "prop-barrel.png","prop-bookcase.png","pickup-armour.png",
-  "spike-inactive.png","spike-active.png",
-  "torch-sconce-0.png","torch-sconce-1.png","torch-sconce-2.png","torch-sconce-3.png",
-  "fireplace-0.png","fireplace-1.png","fireplace-2.png","fireplace-3.png","fireplace-4.png"
-];
-for(const name of assets){
-  const url=new URL(`assets/pixel/user-r118/${name}`,root);
-  assert(fs.existsSync(url),`Missing R118 owner-supplied asset: ${name}`);
-  assert(fs.statSync(url).size>250,`R118 asset is unexpectedly small: ${name}`);
+const read=path=>fs.readFileSync(new URL(path,root),"utf8");
+const overrides=read("js/asset-overrides.js");
+const render=read("js/game-render.js");
+const manifest=JSON.parse(read("assets/asset-manifest.json"));
+const provenance=read("assets/pixel/user-r118/PROVENANCE.md");
+const sandbox={window:{}};
+vm.runInNewContext(overrides,sandbox,{timeout:1000});
+const visuals=sandbox.window.CCG_ASSET_OVERRIDES?.images?.visuals;
+const items=sandbox.window.CCG_ASSET_OVERRIDES?.images?.items;
+function assert(ok,message){if(!ok)throw new Error(message)}
+assert(visuals&&items,"R118 override object must parse and expose image owners");
+const folder="assets/pixel/user-r118/";
+const active=[0,1,2,3].map(i=>"wall-torch-"+i+".png");
+const key="extended-gold-key.png";
+const staged=["floor-stairs.png","monster-dark-knight.png","monster-imp.png","monster-necromancer.png","plague-doc.png","prop-boxes-stacked.png","prop-column.png","pumpkin-dude.png","skeleton-move.png","vampire-move.png"];
+for(const name of [...active,key,...staged]){
+  const bytes=fs.readFileSync(new URL(folder+name,root));
+  assert(bytes.length>100,"Missing/empty CC0 candidate: "+name);
+  assert(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),"Invalid PNG signature: "+name);
+  const w=bytes.readUInt32BE(16),h=bytes.readUInt32BE(20);
+  assert(w>0&&h>0&&w<=512&&h<=512,"R118 PNG exceeds candidate size envelope: "+name+" "+w+"x"+h);
 }
-
-for(let i=1;i<=8;i++){
-  const source=((i-1)%4)+1;
-  assert(overrides.includes(`floorTile${i}:"assets/pixel/user-r118/floor-${source}.png"`),`R118 floor override missing for tile ${i}`);
-}
-assert(overrides.includes('propBarrel:"assets/pixel/user-r118/prop-barrel.png"'),"R118 barrel override missing");
-assert(overrides.includes('propBookcase:"assets/pixel/user-r118/prop-bookcase.png"'),"R118 bookcase override missing");
-assert(overrides.includes('armour:"assets/pixel/user-r118/pickup-armour.png"'),"R118 armour pickup override missing");
-assert(overrides.includes('spikeTrapFrame0:"assets/pixel/user-r118/spike-inactive.png"'),"R118 safe spike art missing");
-assert(overrides.includes('spikeTrapFrame1:"assets/pixel/user-r118/spike-active.png"'),"R118 active spike art missing");
-
-assert(render.includes("fireplaceFrames:["),"R118 fireplace frame loader missing");
-assert(render.includes("torchSconceFrames:["),"R118 torch-sconce frame loader missing");
-assert(render.includes('d.type==="fireplace"&&fireplaceFrames.length===5'),"R118 fireplace renderer missing");
-assert(render.includes('d.type==="candleSconce"&&torchSconceFrames.length===4'),"R118 wall-sconce renderer missing");
-assert(render.includes('d.type==="barrel"?lostSizzlerPixelAssets.propBarrel'),"R118 barrel is not wired into furniture rendering");
-assert(render.includes('["bookcase","shelf"].includes(d.type)?lostSizzlerPixelAssets.propBookcase'),"R118 bookcase is not wired into furniture rendering");
-
-assert(manifest.includes('"r118OwnerAssets"')||manifest.includes('"r118FloorTile1"'),"R118 assets must be catalogued in the manifest");
-assert(provenance.includes("owner-supplied")&&provenance.includes("No README, author credit or licence file"),"R118 provenance must preserve the supplied-source licensing caveat");
-
-console.log("R118 owner-supplied dungeon art contracts passed.");
+for(let i=0;i<4;i++)assert(visuals["torchSconceFrame"+i]===folder+active[i],"Verified CC0 wall torch frame not selected: "+i);
+assert(items.key===folder+key,"R118 key candidate must remain explicitly catalogued pending source-lineage acceptance");
+for(let i=1;i<=8;i++)assert(visuals["floorTile"+i]===null,"Unknown-rights R118 floor override must remain disabled: "+i);
+for(let i=0;i<4;i++)assert(visuals["spikeTrapFrame"+i]===null,"Unknown-rights R118 spike art must remain disabled: "+i);
+for(let i=0;i<5;i++)assert(visuals["fireplaceFrame"+i]===null,"Unknown-rights R118 fireplace art must remain disabled: "+i);
+for(const key of ["propBarrel","propBookcase"])assert(visuals[key]===null,"Unknown-rights R118 prop override must remain disabled: "+key);
+assert(items.armour==="assets/pixel/visual-overhaul/r85/pickup-armour.svg","Licensed R85 armour fallback must be retained");
+const catalogue=manifest.images?.visualOverhaul?.r118LicensedCC0;
+assert(catalogue?.license==="CC0-1.0","R118 catalogue must record CC0 licence");
+assert(JSON.stringify(catalogue.activeWallTorchFrames)===JSON.stringify(active.map(x=>folder+x)),"R118 wall torch manifest differs from runtime");
+assert(catalogue.activeKeyCandidate===folder+key,"R118 key candidate not catalogued");
+assert(JSON.stringify(catalogue.stagedNotWired)===JSON.stringify(staged.map(x=>folder+x)),"R118 staged manifest differs from files");
+const excluded=["floor-1.png","floor-2.png","floor-3.png","floor-4.png","prop-barrel.png","prop-bookcase.png","pickup-armour.png","spike-inactive.png","spike-active.png","fireplace.gif","torch-sconce.gif",...Array.from({length:5},(_,i)=>"fireplace-"+i+".png"),...Array.from({length:4},(_,i)=>"torch-sconce-"+i+".png")];
+for(const name of excluded)assert(!fs.existsSync(new URL(folder+name,root)),"Unknown-rights source still bundled: "+name);
+assert(render.includes('make(selected("floorTile1","assets/pixel/visual-overhaul/0x72/floor-1.png"))'),"Licensed floor fallback must remain");
+assert(render.includes('make(selected("spikeTrapFrame0","assets/pixel/visual-overhaul/0x72/spikes-f0.png"))'),"Licensed trap fallback must remain");
+assert(render.includes('d.type==="fireplace"')&&render.includes('d.type==="candleSconce"'),"Procedural fireplace/sconce fallback must remain");
+assert(provenance.includes("CC0-1.0")&&provenance.includes("no README, author credit or licence file"),"Provenance must distinguish licensed and excluded sources");
+console.log("R118 licensed asset staging and unknown-rights exclusion contracts passed.");
