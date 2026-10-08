@@ -210,8 +210,10 @@ for (const entry of onlineLibrary.entries) {
     "Game copyright and licence notice must retain original file provenance: " + entry.id);
 }
 assert(app.includes("machine.injectRun()") &&
-  app.includes("await queueMedia({ name: filename, type, bytes }, { freshBoot: true })"),
-  "Online Library selection must pass playable PRG bytes to the existing auto-start pipeline");
+  app.includes("await queueMedia({") &&
+  app.includes("name: filename, type, bytes, sourceKey: firstKey") &&
+  app.includes("}, { freshBoot: true })"),
+  "Online Library selection must preserve media bytes and auto-start while tracking the first disk");
 
 assert(html.includes("data-keyboard-joystick"),
   "Players must be able to use a keyboard as C64 joystick");
