@@ -23,8 +23,9 @@ const crate="cc0-crate-0x72-ii.png";
 const pillar="cc0-column-0x72-ii.png";
 const barrel="kenney-tiny-dungeon-barrel.png";
 const coinFiles=[0,1,2].map(i=>"pixel-poem-credit-coin-"+i+".png");
-const staged=["floor-stairs.png","monster-dark-knight.png","monster-imp.png","monster-necromancer.png","plague-doc.png","prop-boxes-stacked.png","prop-column.png","pumpkin-dude.png","skeleton-move.png","vampire-move.png"];
-for(const name of [...active,key,crate,pillar,barrel,...coinFiles,...staged]){
+const staged=["floor-stairs.png","monster-dark-knight.png","monster-imp.png","monster-necromancer.png","plague-doc.png","prop-boxes-stacked.png","prop-column.png","pumpkin-dude.png"];
+const stagedFreeCommercial=["skeleton-move.png","vampire-move.png"];
+for(const name of [...active,key,crate,pillar,barrel,...coinFiles,...staged,...stagedFreeCommercial]){
   const bytes=fs.readFileSync(new URL(folder+name,root));
   assert(bytes.length>100,"Missing/empty CC0 candidate: "+name);
   assert(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),"Invalid PNG signature: "+name);
@@ -136,6 +137,19 @@ assert(catalogue.sources?.activeCrateSprite?.sourcePNG_SHA256===sha256(crateByte
 assert(catalogue.sources.activeKeyCandidate.license==="CC0-1.0"&&catalogue.sources.activeCrateSprite.license==="CC0-1.0","Active added artwork must retain commercial CC0 source records");
 
 assert(JSON.stringify(catalogue.stagedNotWired)===JSON.stringify(staged.map(x=>folder+x)),"R118 staged manifest differs from files");
+assert(JSON.stringify(freeCommercial.stagedNotWired)===JSON.stringify(stagedFreeCommercial.map(x=>folder+x)),"Pixel_Poem commercial-use staging must be separate from CC0 sources");
+for(const [name,digest,dimensions,expectedFrames] of [
+  ["skeleton-move.png","11ad26aaeda377fdad64aa6127e575900fd01198a36dbda6fdb19020d4d85469",[320,32],10],
+  ["vampire-move.png","d84afcd7da250d7f890a325970e145967168703bcb3bb6e45b2f5a7e75fc903d",[256,32],8]
+]){
+  const png=fs.readFileSync(new URL(folder+name,root));
+  const record=freeCommercial.stagedOriginalAnimationSheets?.[name];
+  assert(sha256(png)===digest&&record?.originalPNG_SHA256===digest,"Movement animation must match exact free original Pixel_Poem bytes: "+name);
+  assert(png.readUInt32BE(16)===dimensions[0]&&png.readUInt32BE(20)===dimensions[1],"Original animation grid dimensions must not change: "+name);
+  assert(record.originalArchive==="Enemy_Animations_Set.zip"&&record.archiveSHA256==="4e17a982f71f688de7c86c9fa5feb63ad2709c649281b62b46cf6ce3de900dcd","Movement animation source archive provenance missing: "+name);
+  assert(record.frameCount===expectedFrames&&JSON.stringify(record.frameDimensionsPx)==="[32,32]","Movement sheet must be indexed by its original 32x32 frames: "+name);
+}
+assert(!catalogue.stagedNotWired.some(path=>/skeleton-move|vampire-move/.test(path)),"Non-CC0 Pixel_Poem movement sheets must not be falsely classified as CC0");
 const excluded=["floor-1.png","floor-2.png","floor-3.png","floor-4.png","prop-barrel.png","prop-bookcase.png","pickup-armour.png","spike-inactive.png","spike-active.png","fireplace.gif","torch-sconce.gif",...Array.from({length:5},(_,i)=>"fireplace-"+i+".png"),...Array.from({length:4},(_,i)=>"torch-sconce-"+i+".png")];
 for(const name of excluded)assert(!fs.existsSync(new URL(folder+name,root)),"Unknown-rights source still bundled: "+name);
 assert(render.includes('make(selected("floorTile1","assets/pixel/visual-overhaul/0x72/floor-1.png"))'),"Licensed floor fallback must remain");
