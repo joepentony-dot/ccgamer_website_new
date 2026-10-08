@@ -59,6 +59,10 @@ jobs:
       - name: Verify private local ROM export and mobile import
         run: node --test tests/ccg-c64-local-rom-transfer.test.mjs
 
+      - name: Verify original C64 firmware hashes and CPU BASIC READY boot
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-original-rom-boot.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
