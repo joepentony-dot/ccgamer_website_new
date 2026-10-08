@@ -43,3 +43,9 @@ An original 0x72 DungeonTileset II v1.7 `frames/column.png` was recovered and im
 ## SnowHex free-version licence resolution
 
 The original uploaded `Dungeon Gathering Free Version.rar` was recovered and inspected. It contains its creator's `License.txt` granting commercial game use/modification, subject to no standalone asset redistribution; the original SnowHex itch.io listing confirms these commercial terms for the zero-payment download. The archive is **not** the paid full-version package. Source rights can now be treated as VERIFIED for free-tier contents; in-game scale, sprite semantics and installation remain pending. No SnowHex artwork has yet been enabled. Details and SHA-256: `arcade/lost-sizzler/assets/pixel/user-r118/PROVENANCE.md`.
+
+## Pixel_Poem commercial-free animated gold-score pickup
+
+The author's free 2D Pixel Dungeon Asset Pack v2.0 supplied original 16×16 rotating coin sprites. Three distinct PNGs have been imported unchanged; the fourth animation phase reuses the second frame because the original image bytes are identical. The creator permits commercial games and modifications, but this is a **creator-granted free-commercial licence, not CC0**, so the permissions/hashes are separately recorded in `images.visualOverhaul.r118FreeCommercial` and the R118 provenance register.
+
+The new frames animate only existing gold-score ground pickups, drawing three coins inside the unchanged collection footprint. If any required frame fails to load, the previously approved R85 gold SVG remains the fallback. No economy, pickup, XP, combat, collision or other gameplay logic changed. Hash, size, frame ownership and renderer tests are included in the existing R118 test file. Pixel_Poem's small skeleton/vampire sheets were deliberately held back after visual comparison against the current more detailed enemy artwork.
