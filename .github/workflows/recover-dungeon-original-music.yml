@@ -41,6 +41,15 @@ jobs:
           node scripts/recover-dungeon-carnage-music.mjs --recover --confirm RECOVER_16_ORIGINAL_TRACKS
           node scripts/recover-dungeon-carnage-music.mjs --verify
 
+      # Preserve a second recoverable copy even if GitHub branch push or PR creation fails.
+      - name: Back up original MP3s as a downloadable GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CCG-Dungeon-Carnage-Original-16-MP3s
+          path: arcade/lost-sizzler/assets/audio/music/ccg-originals/
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Push recovered MP3s to a REVIEW branch (never main)
         id: push
         shell: bash
