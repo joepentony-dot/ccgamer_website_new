@@ -2,7 +2,9 @@
 /*
  * C64 Dungeon Carnage native-window launcher.
  * Playable files reside in app.asar/game, not a loose public web directory.
- * All browser game HTTP requests are restricted to an ephemeral loopback origin.
+ * All browser game HTTP requests are restricted to a stable loopback origin.
+ * The port must never change between launches: browser-origin storage, save
+ * slots and preferences depend on the exact port being stable.
  */
 const electron=require("electron");
 const app=electron.app,BrowserWindow=electron.BrowserWindow;
@@ -11,6 +13,9 @@ const fs=require("node:fs"),http=require("node:http");
 const path=require("node:path");
 const {resolveGamePath,parseRange}=require("./path-guard.cjs");
 const GAME_ROOT=path.join(__dirname,"game");
+// Reserve one stable origin for save games across installations and updates.
+// Never switch to an arbitrary port: this would hide existing browser saves.
+const GAME_PORT=47731;
 const EXTERNAL_HOSTS=new Set([
   "cheekycommodoregamer.co.uk","www.cheekycommodoregamer.co.uk",
   "itch.io","www.itch.io","patreon.com","www.patreon.com",
@@ -70,9 +75,9 @@ async function startGame(){
   gameServer=http.createServer((req,res)=>serve(req,res));
   await new Promise((resolve,reject)=>{
     gameServer.once("error",reject);
-    gameServer.listen(0,"127.0.0.1",resolve);
+    gameServer.listen(GAME_PORT,"127.0.0.1",resolve);
   });
-  const base="http://127.0.0.1:"+gameServer.address().port+"/";
+  const base="http://127.0.0.1:"+GAME_PORT+"/";
   const gameOrigin=new URL(base).origin;
   session.defaultSession.webRequest.onBeforeRequest(
     {urls:["http://*/*","https://*/*"]},
@@ -123,6 +128,10 @@ else{
   });
   app.whenReady().then(startGame).catch(error=>{
     console.error("Dungeon Carnage Windows startup failed",error);
+    const message=error?.code==="EADDRINUSE"
+      ?"Dungeon Carnage cannot open its saved-game port (47731). Close other instances or applications using this port and start it again. Your saves have not been deleted."
+      :"Dungeon Carnage could not start. "+String(error?.message||error);
+    try{electron.dialog.showErrorBox("Dungeon Carnage — launch failed",message)}catch(_){}
     app.quit();
   });
 }
