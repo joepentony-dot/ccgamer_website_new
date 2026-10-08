@@ -64,10 +64,6 @@
   const MAX_RECORDED_CLIP_MS=10000;
   const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,artefactLorePlayed:false,ammoPickupRuns:new WeakSet(),ammoPickupFallbackSpoken:false,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),criticalHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0,pendingGesture:null,enemyRoomVoiceKeys:new Set(),guardianVoiceSeen:new WeakSet(),banishmentPromptSeen:new WeakSet()};
   let voiceContext=null,voiceImpulse=null;
-  // Preserve short, context-bound owner recordings when a previous cue is still
-  // playing. Before this guard, many correct NPC and objective events were lost.
-  const QUEUED_VOICE_TTL_MS=7000,MAX_QUEUED_VOICES=3;
-  let queuedVoiceDrain=null;
   const primedVoiceSources=new Set(),primingVoiceSources=new Set();
 
   const lines={
@@ -194,13 +190,9 @@
   function coolReady(key,cooldown,now=performance.now()){const last=state.lastByKey.get(key)||-Infinity;return now-last>=cooldown}
   function clearActiveTimers(active=state.active){if(active?.timer){clearInterval(active.timer);active.timer=null}if(active?.watchdog){clearTimeout(active.watchdog);active.watchdog=null}}
   function releaseDungeonFx(active){if(!active?.dungeonFx)return;try{active.dungeonFx.disconnect()}catch(_){}active.dungeonFx=null}
-  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;scheduleQueuedVoice();return true}
+  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;return true}
   function stopActive(reason="stopped"){
-    if(reason==="menu"||reason==="stopped"){
-      state.pendingGesture=null;
-      state.queue.length=0;
-      if(queuedVoiceDrain!==null){clearTimeout(queuedVoiceDrain);queuedVoiceDrain=null}
-    }
+    if(reason==="menu"||reason==="stopped")state.pendingGesture=null;
     const active=state.active;if(!active)return false;state.active=null;state.activePriority=-1;state.serial++;
     clearActiveTimers(active);
     if(active.audio){try{active.audio.onended=null;active.audio.onerror=null;active.audio.pause();active.audio.currentTime=0}catch(_){}}
@@ -250,7 +242,7 @@
       const fail=()=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onended=null;audio.onerror=null;audio.pause();audio.currentTime=0}catch(_){}releaseDungeonFx(active);
-        state.active=null;state.activePriority=-1;scheduleQueuedVoice();
+        state.active=null;state.activePriority=-1;
       };
       audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);state.active=active;state.activePriority=priority;audio.onended=()=>finishActive(active);audio.onerror=fail;armWatchdog(active);
       const p=audio.play();if(p?.catch)p.catch(fail);return true;
@@ -272,7 +264,6 @@
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
         try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
-        if(!retryOnGesture)scheduleQueuedVoice();
         if((recordedAvailable||approvedLegacy)&&retryOnGesture){let runRef=null;try{runRef=typeof run==="object"?run:null}catch(_){}state.pendingGesture={key,priority,runRef};return}
       };
       const begin=()=>{
@@ -295,40 +286,6 @@
     }catch(_){return false}
   }
   function tutorialSilent(){const tutorial=window.CCGLostSizzlerOnboardingV120?.state;return Boolean(tutorial?.active||tutorial?.tutorialRequested||window.CCGLostSizzlerTutorialGuidanceV123?.tutorialLaunchPending)}
-  function queueRecordedVoice(key,priority,kind="key",text="",opts={}){
-    if(!hasApprovedRecording(key))return false; // no fabricated spoken fallback
-    const now=performance.now();let runRef=null;
-    try{runRef=typeof run==="object"?run:null}catch(_){}
-    state.queue=state.queue.filter(entry=>now-entry.at<QUEUED_VOICE_TTL_MS&&(!entry.runRef||entry.runRef===runRef));
-    if(state.queue.some(entry=>entry.key===key&&entry.kind===kind))return true;
-    if(state.queue.length>=MAX_QUEUED_VOICES){
-      let lowest=0;
-      for(let i=1;i<state.queue.length;i++)if(state.queue[i].priority<state.queue[lowest].priority)lowest=i;
-      if(priority<=state.queue[lowest].priority)return false;
-      state.queue.splice(lowest,1)
-    }
-    state.queue.push({key,priority,kind,text,opts:{...opts},at:now,runRef});
-    state.queued=(state.queued||0)+1;
-    return true
-  }
-  function scheduleQueuedVoice(){
-    if(queuedVoiceDrain!==null)clearTimeout(queuedVoiceDrain);
-    queuedVoiceDrain=setTimeout(()=>{queuedVoiceDrain=null;drainQueuedVoice()},80)
-  }
-  function drainQueuedVoice(){
-    if(state.active||!state.unlocked||!state.enabled||!soundAllowed()||tutorialSilent())return false;
-    const now=performance.now();let runRef=null;
-    try{runRef=typeof run==="object"?run:null}catch(_){}
-    state.queue=state.queue.filter(entry=>now-entry.at<QUEUED_VOICE_TTL_MS&&(!entry.runRef||entry.runRef===runRef));
-    while(state.queue.length){
-      state.queue.sort((a,b)=>b.priority-a.priority||a.at-b.at);
-      const next=state.queue.shift();
-      const opts={...next.opts,priority:next.priority,cooldown:0};
-      const played=next.kind==="dialogue"?sayDialogue(next.key,next.text,opts):sayKey(next.key,opts);
-      if(played)return true
-    }
-    return false
-  }
   function sayKey(key,opts={}){
     const entry=lines[key];if(!entry||!state.enabled||(tutorialSilent()&&!opts.allowDuringTutorial))return false;
     const currentFloor=Math.max(0,Number(run?.floor||0));if(key==="rareLoot"&&currentFloor>0&&state.rareLootFloor===currentFloor)return false;if(key==="rareLoot"&&currentFloor>0)state.rareLootFloor=currentFloor;
@@ -336,13 +293,10 @@
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
     if(state.active){
-      const importantOverride=priority>=50&&state.activePriority<30,mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;
-      if(!mayInterrupt||priority<=state.activePriority){
-        // Spoken owner cues must not disappear just because another recording
-        // is finishing. Queue meaningful events; never flood mundane chatter.
-        if((priority>=38||key==="hazardPain"||key==="healthRestored"||key==="armourRestored")&&queueRecordedVoice(key,priority,"key","",opts))return true;
-        state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false
-      }
+      // Important recorded events may interrupt a lower-priority cue immediately.
+      // Never build a delayed playback queue: a stale voice can mislead players.
+      const importantOverride=(priority>=50&&state.activePriority<30)||(priority>=60&&state.activePriority<50)||(priority>=44&&state.activePriority<25&&hasApprovedRecording(key)),mayInterrupt=Boolean(opts.interrupt??entry.interrupt)||importantOverride;
+      if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key,reason:"busy",at:now};return false}
       if(!hasApprovedRecording(key)){state.skipped++;state.lastSkipped={key,reason:"no-approved-recording",at:now};return false}
       stopActive("interrupted")
     }
@@ -359,11 +313,10 @@
     if(!coolReady(voiceKey,cooldown,now))return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key:voiceKey,reason:"unavailable",at:now};return false}
     if(state.active){
-      const mayInterrupt=Boolean(opts.interrupt);
-      if(!mayInterrupt||priority<=state.activePriority){
-        if(queueRecordedVoice(voiceKey,priority,"dialogue",spokenText,opts))return true;
-        state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false
-      }
+      // Encounter-specific recorded dialogue should take precedence over less
+      // important current speech rather than being lost or replayed late.
+      const mayInterrupt=Boolean(opts.interrupt)||(priority>=40&&priority>state.activePriority&&hasApprovedRecording(voiceKey));
+      if(!mayInterrupt||priority<=state.activePriority){state.skipped++;state.lastSkipped={key:voiceKey,reason:"busy",at:now};return false}
       stopActive("interrupted")
     }
     const src=assetFor(voiceKey);let started=false;
@@ -372,7 +325,7 @@
     if(!started){state.skipped++;state.lastSkipped={key:voiceKey,reason:"playback",at:now};return false}
     state.lastByKey.set(voiceKey,now);state.played++;return true
   }
-  function setEnabled(value){state.enabled=Boolean(value);saveEnabled();if(!state.enabled){state.queue.length=0;stopActive();if(queuedVoiceDrain!==null){clearTimeout(queuedVoiceDrain);queuedVoiceDrain=null}}updateButton();return state.enabled}
+  function setEnabled(value){state.enabled=Boolean(value);saveEnabled();if(!state.enabled){state.queue.length=0;stopActive()}updateButton();return state.enabled}
   function updateButton(){if(state.button){state.button.textContent=state.enabled?"VOICE ON":"VOICE OFF";state.button.setAttribute("aria-pressed",String(state.enabled));state.button.title=state.enabled?"Disable spoken game prompts":"Enable spoken game prompts"}}
   function mountButton(){
     if(document.getElementById("voice-btn"))return;
@@ -539,7 +492,7 @@
   }
   let announcedRun=null;
   function resetRunVoiceState(){
-    stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;if(queuedVoiceDrain!==null){clearTimeout(queuedVoiceDrain);queuedVoiceDrain=null}state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");
+    stopActive();state.unlocked=true;primeRecordedVoices();state.queue.length=0;state.rareLootFloor=0;state.artefactLorePlayed=false;state.gildedFiveWarned.clear();state.enemyRoomVoiceKeys.clear();state.guardianVoiceSeen=new WeakSet();state.banishmentPromptSeen=new WeakSet();state.lastByKey.delete("noAmmo");
   }
   function onAuthoritativeRunStarted(event){
     const detail=event?.detail||{},activeRun=detail.run||(typeof run==="object"?run:null);
