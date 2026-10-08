@@ -2,6 +2,7 @@
 "use strict";
 
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import assert from "node:assert";
 import { fileURLToPath } from "node:url";
@@ -172,6 +173,41 @@ assert(html.includes('class="ccg-c64-panel ccg-c64-panel--library" hidden'),
   "Online Library must be hidden until approved titles are available");
 assert(app.includes("onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0"),
   "Approved titles must automatically reveal Online Library");
+
+// Verify actual shipped game bytes, not merely dropdown labels or broken
+// external download links. Git blob hashes pin the exact developer releases.
+const gameNotices = read("emulator/c64/media/LICENCES.txt");
+assert(onlineLibrary.entries.length >= 3, "Approved Online Library must contain playable games, not placeholder items");
+assert(onlineLibrary.entries.some((entry) => entry.id === "snake64"), "Snake must be included");
+assert(onlineLibrary.entries.some((entry) => entry.id === "8bit-island"), "8 Bit Island must be included");
+assert(onlineLibrary.entries.some((entry) => entry.id === "meteor-storm"), "Meteor Storm must be included");
+const seenGameIds = new Set();
+for (const entry of onlineLibrary.entries) {
+  assert(!seenGameIds.has(entry.id), "Duplicate approved game ID: " + entry.id);
+  seenGameIds.add(entry.id);
+  assert(entry.approved === true && entry.license === "MIT",
+    "Public entries require explicit licensing approval: " + entry.id);
+  assert(/^\/emulator\/c64\/media\/[a-z0-9-]+\.prg$/.test(entry.url),
+    "Hosted PRG paths must be local and restricted to the game media folder: " + entry.id);
+  assert(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/.test(entry.source),
+    "Each game must identify its upstream GitHub source: " + entry.id);
+  assert(/^[a-f0-9]{40}$/.test(entry.sourceCommit) && /^[a-f0-9]{40}$/.test(entry.sourceBlob),
+    "Each game must be pinned to a verified source revision and original game blob");
+  const program = fs.readFileSync(path.join(root, entry.url.slice(1)));
+  assert.equal(program.length, entry.bytes, "Hosted game size must match approved manifest: " + entry.id);
+  assert.equal(program[0] | (program[1] << 8), 0x0801,
+    "Approved game must have a valid C64 BASIC-loadable PRG header: " + entry.id);
+  assert(program.length >= 100 && program.length <= 65536, "Game must fit a normal C64 PRG: " + entry.id);
+  const blobHash = createHash("sha1").update(`blob ${program.length}\0`).update(program).digest("hex");
+  assert.equal(blobHash, entry.sourceBlob,
+    "Hosted game must be exactly the developer's approved binary: " + entry.id);
+  assert(gameNotices.includes(entry.sourceBlob) && gameNotices.includes(entry.sourceCommit),
+    "Game copyright and licence notice must retain original file provenance: " + entry.id);
+}
+assert(app.includes("machine.injectRun()") &&
+  app.includes("await queueMedia({ name: filename, type, bytes }, { freshBoot: true })"),
+  "Online Library selection must pass playable PRG bytes to the existing auto-start pipeline");
+
 assert(html.includes("data-keyboard-joystick"),
   "Players must be able to use a keyboard as C64 joystick");
 
