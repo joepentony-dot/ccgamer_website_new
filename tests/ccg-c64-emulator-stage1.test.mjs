@@ -160,7 +160,19 @@ assert(headers.includes("/emulator/c64/*"), "Emulator-specific headers are requi
 assert(headers.includes("Cross-Origin-Embedder-Policy: require-corp"), "COEP must be scoped for SharedArrayBuffer");
 assert(emulation.includes('href="/emulator/c64/"'), "Emulation hub must link to the CCG browser emulator");
 assert.equal(onlineLibrary.version, 1, "Online Library manifest version must be pinned");
-assert(Array.isArray(onlineLibrary.entries) && onlineLibrary.entries.length >= 1, "Online Library must contain at least one authorised test entry");
-assert(onlineLibrary.entries.every((entry) => entry.license && (entry.url || entry.dataBase64)), "Every Online Library entry must carry redistribution context and media data");
+assert(Array.isArray(onlineLibrary.entries), "Online Library manifest must contain an array (which may be empty)");
+assert(!onlineLibrary.entries.some((entry) => entry.id === "ccg-emulator-test-prg" || entry.title === "CCG Emulator Test"),
+  "The dummy CCG test PRG must never appear in the public catalogue");
+assert(onlineLibrary.entries.every((entry) => entry.approved === true &&
+  typeof entry.license === "string" && entry.license.trim() &&
+  ((typeof entry.url === "string" && entry.url.startsWith("/emulator/c64/media/")) ||
+   (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0))),
+  "Public games need explicit redistribution approval, licence and media");
+assert(html.includes('class="ccg-c64-panel ccg-c64-panel--library" hidden'),
+  "Online Library must be hidden until approved titles are available");
+assert(app.includes("onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0"),
+  "Approved titles must automatically reveal Online Library");
+assert(html.includes("data-keyboard-joystick"),
+  "Players must be able to use a keyboard as C64 joystick");
 
 console.log("CCG browser C64 Stage 1 contract passed.");
