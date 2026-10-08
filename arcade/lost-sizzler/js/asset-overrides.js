@@ -61,6 +61,7 @@ window.CCG_ASSET_OVERRIDES={
       propBarrel:"assets/pixel/user-r118/kenney-tiny-dungeon-barrel.png",
       propBookcase:null,
       propConsole:null,
+      propPillar:"assets/pixel/user-r118/cc0-column-0x72-ii.png",
       r118PumpkinDude:"assets/pixel/user-r118/pumpkin-dude.png",
       r118PlagueDoc:"assets/pixel/user-r118/plague-doc.png",
       r118DarkKnight:"assets/pixel/user-r118/monster-dark-knight.png",
