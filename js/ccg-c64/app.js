@@ -485,9 +485,13 @@ function usesNativeKeyboard(target) {
 }
 
 function usesTextInput(target) {
-  return Boolean(target?.closest?.(
+  const field = target?.closest?.(
     'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"], [role="combobox"]'
-  ));
+  );
+  // Hidden file pickers can retain browser focus after LOAD & AUTO START.
+  // They are not editable fields and must never disable game keystrokes.
+  if (field?.tagName === "INPUT" && ["file", "hidden"].includes(field.type)) return false;
+  return Boolean(field);
 }
 
 function handleC64Key(event, pressed) {
