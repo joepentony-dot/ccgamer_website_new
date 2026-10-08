@@ -1784,6 +1784,122 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   border-radius: 0;
 }
 
+
+/* Mobile gameplay: maximise the PAL picture, keep touch targets accessible,
+   and never allow the search overlay or a control row to widen the viewport. */
+@media (max-width: 760px) {
+  .ccg-c64-topbar {
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+    min-height: 0;
+    padding: 0.5rem max(0.5rem, env(safe-area-inset-right)) 0.5rem max(0.5rem, env(safe-area-inset-left));
+  }
+  .ccg-c64-brand { gap: 0.32rem; flex: 1 1 auto; }
+  .ccg-c64-brand span { white-space: normal; flex-wrap: wrap; }
+  .ccg-c64-topnav { flex: 0 1 auto; flex-wrap: wrap; justify-content: flex-end; }
+  .ccg-c64-topnav a, .ccg-c64-topnav button { min-height: 40px; }
+  .ccg-c64-site-nav { justify-content: flex-start; overscroll-behavior-x: contain; }
+  .ccg-c64-site-nav a, .ccg-c64-site-nav button { min-height: 40px; }
+  .ccg-c64-workspace { width: 100%; padding: 0.3rem 0.35rem 0.85rem; }
+  .ccg-c64-console { padding: 0.34rem; margin-bottom: 0.5rem; }
+  .ccg-c64-screen-stage { min-height: 0; height: auto; padding: 0.16rem; }
+  .ccg-c64-screen-bezel { width: 100%; max-width: 100%; border-width: 2px; }
+  .ccg-c64-drop-hint { display: none; }
+  .ccg-c64-stage-note { line-height: 1.4; font-size: 0.63rem; overflow-wrap: anywhere; }
+  .ccg-c64-touch-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding: 0.6rem 0.25rem;
+    touch-action: manipulation;
+  }
+  .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, clamp(44px, 13vw, 58px));
+    grid-template-rows: repeat(3, clamp(44px, 13vw, 58px));
+    gap: 0.12rem;
+  }
+  .ccg-c64-touch-dpad button { min-width: 44px; min-height: 44px; border-radius: 9px; font-size: 1rem; }
+  .ccg-c64-touch-fire { flex: 0 0 auto; width: clamp(80px, 24vw, 112px); height: clamp(80px, 24vw, 112px); }
+  .ccg-c64-panel, .ccg-c64-quickload, .ccg-c64-library-confirm { min-width: 0; }
+  .ccg-c64-panel-title { gap: 0.25rem; }
+  .ccg-c64-panel-title strong { font-size: 0.64rem; }
+  .ccg-c64-panel-title em { font-size: 0.53rem; text-align: right; overflow-wrap: anywhere; }
+  .ccg-c64-library-search-wrap > input[type="search"] { min-height: 46px; font-size: 16px; }
+  .ccg-c64-library-suggestions { z-index: 90; }
+  #ccg-c64-library-options { max-height: min(46dvh, 340px); }
+  .ccg-c64-library-option { min-height: 48px; }
+  .ccg-c64-library-confirm { flex-wrap: wrap; align-items: center; }
+  .ccg-c64-library-load, .ccg-c64-library-retry { min-height: 44px; }
+  .ccg-c64-library-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .ccg-c64-library-row select { min-width: 0; }
+  .ccg-c64-button-grid button { min-height: 46px; }
+  .ccg-c64-media-row, .ccg-c64-vault-row { min-width: 0; }
+  .ccg-c64-media-row button, .ccg-c64-vault-row button,
+  .ccg-c64-vault-row select, .ccg-c64-joystick-actions button { min-height: 44px; }
+  .ccg-c64-setup__dialog { overscroll-behavior: contain; }
+  .ccg-c64-footer { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
+/* Preserve desktop fullscreen unchanged. For touch devices, fullscreen the
+   whole console so gameplay never loses its on-screen joystick and FIRE. */
+@media (max-width: 760px), (pointer: coarse) {
+  .ccg-c64-console:fullscreen {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: max(0.3rem, env(safe-area-inset-top)) max(0.35rem, env(safe-area-inset-right))
+      max(0.35rem, env(safe-area-inset-bottom)) max(0.35rem, env(safe-area-inset-left));
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: #03040e;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-display-head { min-height: 28px; padding-bottom: 0.15rem; }
+  .ccg-c64-console:fullscreen .ccg-c64-screen-stage {
+    flex: 0 0 auto;
+    min-height: 0;
+    width: 100%;
+    padding: 0;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-screen-bezel { width: min(100%, 100dvh * 384 / 272); max-width: 100%; }
+  .ccg-c64-console:fullscreen .ccg-c64-screen-foot,
+  .ccg-c64-console:fullscreen .ccg-c64-stage-note { display: none; }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-controls {
+    display: flex;
+    flex: 1 0 auto;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.4rem;
+  }
+}
+@media (max-width: 760px) and (orientation: landscape) {
+  .ccg-c64-console { padding: 0.25rem; }
+  .ccg-c64-screen-stage { min-height: 0; }
+  .ccg-c64-console:fullscreen { overflow-y: auto; }
+  .ccg-c64-console:fullscreen .ccg-c64-screen-bezel {
+    width: min(100%, 72dvh * 384 / 272);
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-controls {
+    flex: 0 0 auto;
+    padding: 0.25rem 0;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-fire { width: 80px; height: 80px; }
+}
+@media (max-width: 360px) {
+  .ccg-c64-button-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ccg-c64-touch-dpad { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); }
+  .ccg-c64-touch-fire { width: 78px; height: 78px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ccg-c64-screen-bezel,
   .ccg-c64-button-grid button,
