@@ -45,6 +45,14 @@ assert.equal(voice.state.active.key,"healthRestored");
 assert.equal(voice.sayDialogue("npc.scout.found","Thank God you found me.",{priority:44}),true,
   "Current recorded NPC dialogue should interrupt a minor health cue");
 assert.equal(voice.state.active.key,"npc.scout.found");
+const interruptedBefore=voice.state.interrupted;
+assert.equal(voice.sayDialogue("npc.alchemist.ready","I can distil Banishment Essence.",{priority:90,interrupt:true}),false,
+  "Missing R69 Alchemist dialogue must not pretend to play");
+assert.equal(voice.state.active.key,"npc.scout.found",
+  "Unavailable speech must not interrupt an existing audible recording");
+assert.equal(voice.state.interrupted,interruptedBefore,
+  "Missing recorded dialogue must never increment interrupted-speech counter");
+assert.equal(voice.state.lastSkipped.reason,"no-approved-recording");
 assert.equal(voice.sayDialogue("npc.scout.following","I'll follow you.",{priority:44}),false,
   "Equal priority must not interrupt current NPC recording");
 assert.equal(voice.state.queue.length,0,"No stale recordings may accumulate");
