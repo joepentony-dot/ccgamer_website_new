@@ -22,8 +22,9 @@ const key="extended-gold-key.png";
 const crate="cc0-crate-0x72-ii.png";
 const pillar="cc0-column-0x72-ii.png";
 const barrel="kenney-tiny-dungeon-barrel.png";
+const coinFiles=[0,1,2].map(i=>"pixel-poem-credit-coin-"+i+".png");
 const staged=["floor-stairs.png","monster-dark-knight.png","monster-imp.png","monster-necromancer.png","plague-doc.png","prop-boxes-stacked.png","prop-column.png","pumpkin-dude.png","skeleton-move.png","vampire-move.png"];
-for(const name of [...active,key,crate,pillar,barrel,...staged]){
+for(const name of [...active,key,crate,pillar,barrel,...coinFiles,...staged]){
   const bytes=fs.readFileSync(new URL(folder+name,root));
   assert(bytes.length>100,"Missing/empty CC0 candidate: "+name);
   assert(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),"Invalid PNG signature: "+name);
@@ -45,6 +46,19 @@ assert(pillarBytes.readUInt32BE(16)===16&&pillarBytes.readUInt32BE(20)===48,"New
 assert(sha256(keyBytes)==="3d7b2609fa1c00fa9b679799cc549058106eb03a37fbf14434111723f21d1f01","Gold key binary no longer matches provenanced atlas extraction");
 assert(sha256(crateBytes)==="e602c9be47378d5f4bd767cb7c5487928d289c887131ccd9dd5a9ebd69570db8","Crate binary no longer matches original 0x72 II archive");
 assert(sha256(pillarBytes)==="3fb915b96de71b6d939f434124d9c3c27831c54458a5daa5df3f447dd34c8e0e","Pillar binary no longer matches original 0x72 II archive");
+const coinDigests=[
+  "7e5956295c3b484f1d8dc3cc4d620538fe666bd23492a329e485c2a634df5989",
+  "7bfb1fe833ae9da9097edf914fd78a43f72421fb633913020f41bf9286025755",
+  "0f54e2f2b5a71b6a03a61addf7aa0752bddc2abb50c8d24b5b4ece77d1de2370"
+];
+for(let i=0;i<coinFiles.length;i++){
+  const bytes=fs.readFileSync(new URL(folder+coinFiles[i],root));
+  assert(bytes.readUInt32BE(16)===16&&bytes.readUInt32BE(20)===16,"Animated credit coin must remain 16x16: "+i);
+  assert(sha256(bytes)===coinDigests[i],"Pixel_Poem original coin PNG must retain exact source bytes: "+i);
+}
+const coinPaths=[0,1,2,1].map(i=>folder+coinFiles[i]);
+for(let i=0;i<4;i++)assert(visuals["creditCoinFrame"+i]===coinPaths[i],"Animated credit coins must preserve the original four-frame sequence: "+i);
+assert(items.credits==="assets/pixel/visual-overhaul/r85/pickup-gold.svg","Existing R85 credit SVG fallback must be retained");
 assert(barrelBytes.readUInt32BE(16)===16&&barrelBytes.readUInt32BE(20)===16,"Kenney barrel must remain exactly 16x16");
 assert(sha256(barrelBytes)==="2efb31e30cd6f1527329fe5d7704e41c65a8376d498bf93372f46155600420c9","Kenney barrel binary must match declared curated CC0 asset");
 const fitStart=render.indexOf("function dungeonAssetFitRect(");
@@ -79,6 +93,25 @@ assert(catalogue.activePillarSprite===folder+pillar,"Source-verified 0x72 pillar
 assert(catalogue.sources?.activePillarSprite?.sourcePNG_SHA256===sha256(pillarBytes),"Pillar provenance digest must match exact original 0x72 PNG");
 assert(catalogue.sources.activePillarSprite.license==="CC0-1.0","Pillar must preserve recorded original creator commercial-use CC0 license");
 assert(catalogue.activeBarrelSprite===folder+barrel,"Licensed Kenney barrel must be recorded in manifest");
+const freeCommercial=manifest.images?.visualOverhaul?.r118FreeCommercial;
+assert(freeCommercial?.creator==="Pixel_Poem","Free commercial sprite author attribution missing");
+assert(freeCommercial.license.includes("commercial game projects"),"Coin visual replacement requires commercial game permission");
+assert(freeCommercial.originalArchiveSHA256==="efb5711728cd031b14d1333ad71329d2622bf9f11853a7cb7d216326e1d33f9d","Original uploaded free pack SHA-256 must be recorded");
+assert(JSON.stringify(freeCommercial.activeCreditCoinFrames)===JSON.stringify(coinPaths),"Coin catalogue and renderer selection paths must match");
+assert(JSON.stringify(freeCommercial.originalSHA256)===JSON.stringify([coinDigests[0],coinDigests[1],coinDigests[2],coinDigests[1]]),"Source original coin hashes and byte-duplicate frame mapping must match");
+assert(freeCommercial.importedDistinctFrames===3,"Duplicate source frame must not be bundled twice");
+const coinDrawStart=render.indexOf("function drawPickupGlyph("),coinDrawEnd=render.indexOf("\nfunction ",coinDrawStart+1);
+assert(coinDrawStart>=0&&coinDrawEnd>coinDrawStart,"Failed to find the complete in-game pickup rendering function");
+const drawCalls=[];
+const coinImages=coinPaths.map((source,id)=>({source,id,complete:true,naturalWidth:16,naturalHeight:16}));
+const ctxStub={save(){},restore(){},drawImage(...args){drawCalls.push(args)}};
+const ctxEnvironment={ctx:ctxStub,performance:{now:()=>240},pickupOverrideImages:new Map(),lostSizzlerPixelAssets:{creditCoinFrames:coinImages},P:{gold:"#ffc84b"}};
+vm.runInNewContext(render.slice(coinDrawStart,coinDrawEnd)+'\ndrawPickupGlyph({kind:"credits"},"#ffc84b");',ctxEnvironment,{timeout:1000});
+assert(drawCalls.length===3,"The animated pickup must render three bounded gold coins");
+assert(JSON.stringify(drawCalls.map(args=>args[3]))===JSON.stringify([16,16,21]),"Gold animation must remain within intended pickup dimensions");
+assert(drawCalls.every(args=>coinImages.includes(args[0])),"Gold animation must use the source-audited frames only");
+assert(ctxStub.imageSmoothingEnabled===false,"Gold animation must preserve nearest-neighbour pixel presentation");
+assert(render.includes("if(custom?.complete&&custom.naturalWidth)"),"Existing R85 pickup fallback must remain");
 assert(catalogue.sources?.activeBarrelSprite?.sourcePNG_SHA256===sha256(barrelBytes),"Barrel binary no longer matches audited mirror asset");
 assert(catalogue.sources.activeBarrelSprite.sourceSpriteIndex==="tile_0082.png"&&catalogue.sources.activeBarrelSprite.license==="CC0-1.0","Kenney source index and CC0 source licence are mandatory");
 assert(catalogue.sources?.activeKeyCandidate?.cropPixelSHA256==="580342c73c73cef8dd79c2a3c99094435fc6f2e724f2ac7fac96bb6ff8f207be","Niji key pixel match must remain documented");
@@ -93,4 +126,4 @@ assert(render.includes('make(selected("floorTile1","assets/pixel/visual-overhaul
 assert(render.includes('make(selected("spikeTrapFrame0","assets/pixel/visual-overhaul/0x72/spikes-f0.png"))'),"Licensed trap fallback must remain");
 assert(render.includes('d.type==="fireplace"')&&render.includes('d.type==="candleSconce"'),"Procedural fireplace/sconce fallback must remain");
 assert(provenance.includes("CC0-1.0")&&provenance.includes("no README, author credit or licence file"),"Provenance must distinguish licensed and excluded sources");
-console.log("R118 CC0 key, crate, pillar, Kenney barrel, torches, pixel aspect fit and unknown-rights exclusion contracts passed.");
+console.log("R118 CC0 art, commercial-free gold animation, aspect-preserving render and unknown-rights exclusions passed.");
