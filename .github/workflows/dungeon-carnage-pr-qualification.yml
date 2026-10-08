@@ -68,6 +68,7 @@ jobs:
           node arcade/lost-sizzler/tests/v10-42-r119-recorded-voice-queue.mjs
           node tests/dungeon-carnage-recorded-voice-coverage-audit.mjs
           node tests/dungeon-carnage-r120-alchemist-voice-accuracy.test.mjs
+          node tests/dungeon-carnage-r120-voice-on-playback.test.mjs
           node tests/dungeon-member-playtester-admin.test.mjs
           node tests/dungeon-tester-code-gate.test.mjs
           node tests/play-games-maintenance.test.mjs
