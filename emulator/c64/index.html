@@ -66,7 +66,7 @@
 
       <div class="ccg-c64-screen-foot">
         <span>384 × 272 SOURCE</span>
-        <span>WEBGL / CRT PRESENTER</span>
+        <span data-emulator-speed title="Measured PAL playback speed; 100% is real time">PAL SPEED // --%</span>
         <span>DRAG A DISK, TAPE OR CARTRIDGE ONTO THE SCREEN</span>
       </div>
 
@@ -133,12 +133,13 @@
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--port">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROL PORT 2</strong><em>GAMEPAD + TOUCH</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>JOYSTICK CONTROL</strong><em>GAMEPAD + TOUCH</em></header>
         <div class="ccg-c64-port-row">
           <span class="ccg-c64-port-dot"></span>
-          <div><strong>JOYSTICK</strong><small>Standard browser gamepad mapping</small></div>
-          <span class="ccg-c64-chip">AUTO</span>
+          <div><strong>JOYSTICK</strong><small>Gamepad and touch controller</small></div>
+          <span class="ccg-c64-chip" data-joystick-port>PORT 2</span>
         </div>
+        <button type="button" class="ccg-c64-joystick-swap" data-joystick-swap title="Switch joystick controls between C64 port 1 and port 2">SWAP JOYSTICK</button>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--disk">
