@@ -6,7 +6,7 @@ Checkpoint: 8 October 2026. Dedicated branch: `codex/dungeon-r118-user-asset-int
 
 - R117 PR #2593 merged into main on 7 October at `a2e8bcc96be3c52e6af9260017268b8ae8c17408`. The older master request audit's claim that #2593 remains open is outdated.
 - Owner-provided 0x72 Dungeon Tileset v5 and DungeonTileset II v1.7 are CC0-1.0, as verified on the original creator's itch.io pages. Niji Dungeon Tileset II Extended v1.1 is also CC0-1.0 on its creator's page.
-- Ten 0x72 imported image Git blobs were byte-matched against original ZIP members. Four wall-torch frames are enabled; the formerly unverified Niji gold key was pixel-matched uniquely to the owner's original v1.1 atlas and re-enabled; a byte-identical 0x72 II crate is now imported and used for existing crate visuals. Ten other CC0 candidates remain staged and not wired to gameplay.
+- Original 0x72/Niji CC0 artwork has been recovered and source-matched. Four wall-torch frames, the Niji gold key, 0x72 II crate/column and Kenney CC0 barrel are visually integrated. Of the earlier ten remaining staged art candidates, eight are 0x72 CC0; the pumpkin/plague-doctor strips now have exact source lineage confirmed. The other two staged strips (skeleton and vampire movement) are original Pixel_Poem assets with separate free-commercial permission, NOT CC0. All ten stay unwired to gameplay.
 - The earlier `Dungeon tileset(1).zip` had no README, licence or author credit. Twenty derived art files have been removed from the R118 candidate tree; unknown-rights floor, prop, spike and fireplace overrides remain disabled. Existing 0x72/R85 and canvas fallbacks are retained.
 - Minifantasy Dungeon Free Version is non-commercial-only and must not be included in a commercial release.
 
@@ -55,3 +55,7 @@ The new frames animate only existing gold-score ground pickups, drawing three co
 Both `pumpkin-dude.png` and `plague-doc.png` have now been individually traced to all eight original 0x72 DungeonTileset II v1.7 idle/run frames. RGBA pixels match exactly after their documented 16×32 atlas-cell offsets (pumpkin x=0,y=9; plague doctor x=-1,y=9), including intentional clipping in the latter. Source archive, output SHA-256 hashes, original frame hashes and free CC0 terms are recorded in the provenance register and asset manifest. The R118 regression test pins the result.
 
 **No enemy graphics have been switched on** as a consequence. The richer existing atlas stays in place until compatible actor roles and in-game proportions are verified.
+
+## R118 final licence classification correction
+
+Eight staged visuals belong to 0x72's original CC0 packs; two separate movement sheets (`skeleton-move.png` and `vampire-move.png`) belong to Pixel_Poem's free commercially permitted `Enemy_Animations_Set.zip` and are **not CC0**. The source archive SHA, each sheet's exact matching source PNG SHA and animation grid are now recorded in `r118FreeCommercial.stagedOriginalAnimationSheets` and checked by the R118 regression test. Neither sheet is active in gameplay.
