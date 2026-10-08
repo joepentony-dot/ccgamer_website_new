@@ -35,6 +35,19 @@ const lostSizzlerPixelAssets=(()=>{
       make(selected("spikeTrapFrame2","assets/pixel/visual-overhaul/0x72/spikes-f2.png")),
       make(selected("spikeTrapFrame3","assets/pixel/visual-overhaul/0x72/spikes-f3.png"))
     ],
+    fireplaceFrames:[
+      make(selected("fireplaceFrame0")),
+      make(selected("fireplaceFrame1")),
+      make(selected("fireplaceFrame2")),
+      make(selected("fireplaceFrame3")),
+      make(selected("fireplaceFrame4"))
+    ],
+    torchSconceFrames:[
+      make(selected("torchSconceFrame0")),
+      make(selected("torchSconceFrame1")),
+      make(selected("torchSconceFrame2")),
+      make(selected("torchSconceFrame3"))
+    ],
     enemyAtlasA:make("assets/pixel/enemy-atlas-standard-a-v10-35.png"),
     enemyAtlasB:make("assets/pixel/enemy-atlas-standard-b-v10-35.png"),
     environmentAtlas:make("assets/pixel/environment-atlas-v10-35.png"),
@@ -1019,9 +1032,14 @@ function drawFurniture(){
       :d.type==="barrel"?lostSizzlerPixelAssets.propBarrel
       :["bookcase","shelf"].includes(d.type)?lostSizzlerPixelAssets.propBookcase
       :["terminal","console"].includes(d.type)?lostSizzlerPixelAssets.propConsole:null;
+    const fireplaceFrames=lostSizzlerPixelAssets.fireplaceFrames||[],torchSconceFrames=lostSizzlerPixelAssets.torchSconceFrames||[];
     if(propArt?.complete&&propArt.naturalWidth){
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor="rgba(0,0,0,.52)";ctx.shadowBlur=5;
       ctx.drawImage(propArt,Math.round(q.x+1),Math.round(q.y+1),C.tile-2,C.tile-2);ctx.restore();
+    }else if(d.type==="fireplace"&&fireplaceFrames.length===5&&fireplaceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
+      const frame=fireplaceFrames[Math.floor(performance.now()/115+(h%5))%fireplaceFrames.length];
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.orange;ctx.shadowBlur=18;
+      ctx.drawImage(frame,Math.round(q.x),Math.round(q.y),C.tile,C.tile);ctx.restore();
     }else if(d.type==="fireplace"){
       const now=performance.now(),flicker=Math.sin(now/67+d.x)*2,cx=q.x+C.tile/2;ctx.fillStyle="#2a2423";ctx.fillRect(q.x+2,q.y+3,C.tile-4,C.tile-4);ctx.fillStyle="#7f614b";ctx.fillRect(q.x+3,q.y+3,C.tile-6,6);ctx.fillRect(q.x+3,q.y+3,6,C.tile-6);ctx.fillRect(q.x+C.tile-9,q.y+3,6,C.tile-6);ctx.fillStyle="#0b0808";ctx.fillRect(q.x+9,q.y+12,C.tile-18,C.tile-12);ctx.fillStyle="#5c341d";ctx.fillRect(q.x+9,q.y+C.tile-10,C.tile-18,5);ctx.shadowColor=P.orange;ctx.shadowBlur=22;ctx.fillStyle="#d54b27";ctx.beginPath();ctx.moveTo(cx-10,q.y+C.tile-9);ctx.quadraticCurveTo(cx-12+flicker,q.y+13,cx-3,q.y+8);ctx.quadraticCurveTo(cx+2,q.y+16,cx+9,q.y+C.tile-9);ctx.fill();ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(cx-6,q.y+C.tile-9);ctx.quadraticCurveTo(cx-4-flicker,q.y+16,cx+1,q.y+12);ctx.quadraticCurveTo(cx+7,q.y+18,cx+6,q.y+C.tile-9);ctx.fill();ctx.fillStyle=P.gold;ctx.fillRect(cx-2,q.y+18,4,10);for(let n=0;n<5;n++){ctx.globalAlpha=.35+n*.1;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx-9+n*4+Math.sin(now/90+n)*3,q.y+10-((now/35+n*7)%18),2,2)}ctx.globalAlpha=1;ctx.shadowBlur=0
     }else if(["shelf","bookcase","tapeStack","slotRack","rack"].includes(d.type)){
@@ -1052,6 +1070,10 @@ function drawFurniture(){
       ctx.fillStyle="#092235";ctx.fillRect(q.x+3,q.y+5,C.tile-6,C.tile-10);ctx.fillStyle="#14506c";ctx.fillRect(q.x+5,q.y+7,C.tile-10,C.tile-14);ctx.fillStyle="#45b3c9";ctx.fillRect(q.x+9,q.y+11,9,2);ctx.fillRect(q.x+22,q.y+20,10,2);ctx.fillStyle="#0d3449";ctx.fillRect(q.x+12,q.y+26,16,3)
     }else if(d.type==="pillar"){
       ctx.fillStyle="#8d7a71";ctx.fillRect(q.x+10,q.y+4,C.tile-20,C.tile-8);ctx.fillStyle="#c2ada0";ctx.fillRect(q.x+8,q.y+4,C.tile-16,5);ctx.fillRect(q.x+7,q.y+C.tile-9,C.tile-14,5);ctx.fillStyle="#b48b32";ctx.fillRect(q.x+9,q.y+10,3,C.tile-20);ctx.fillRect(q.x+C.tile-12,q.y+10,3,C.tile-20)
+    }else if(d.type==="candleSconce"&&torchSconceFrames.length===4&&torchSconceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
+      const frame=torchSconceFrames[Math.floor(performance.now()/120+(h%4))%torchSconceFrames.length];
+      ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.orange;ctx.shadowBlur=10;
+      ctx.drawImage(frame,Math.round(q.x+4),Math.round(q.y+2),C.tile-8,C.tile-4);ctx.restore();
     }else if(d.type==="candleSconce"){
       ctx.fillStyle="#8b6a3d";ctx.fillRect(q.x+C.tile/2-6,q.y+14,12,3);ctx.fillRect(q.x+C.tile/2-1,q.y+10,3,10);ctx.shadowColor=P.orange;ctx.shadowBlur=8;ctx.fillStyle=P.orange;ctx.fillRect(q.x+C.tile/2-3,q.y+5,6,7);ctx.fillStyle=P.gold;ctx.fillRect(q.x+C.tile/2-1,q.y+4,2,5)
     }else if(["terminal","console","oven"].includes(d.type)){
