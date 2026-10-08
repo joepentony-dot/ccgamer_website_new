@@ -759,6 +759,160 @@ select:disabled {
   margin-top: 0.45rem;
 }
 
+/* Searchable, paginated C64 game browser — replaces unwieldy select menu. */
+.ccg-c64-panel--library { min-width: 0; }
+.ccg-c64-library-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  align-items: center;
+}
+.ccg-c64-library-toolbar input[type="search"] {
+  width: 100%;
+  min-width: 0;
+  height: 37px;
+  padding: 0.4rem 0.68rem;
+  color: #fff;
+  background: #0a0e28;
+  border: 1px solid #4d4a8f;
+  border-radius: 6px;
+  font: 700 0.67rem var(--ccg-font-mono, "Courier New", monospace);
+  letter-spacing: 0.025em;
+}
+.ccg-c64-library-toolbar input[type="search"]:focus-visible {
+  outline: 2px solid var(--emu-accent);
+  outline-offset: 1px;
+}
+.ccg-c64-library-formats { display: flex; flex-wrap: nowrap; gap: 0.22rem; }
+.ccg-c64-library-formats button,
+.ccg-c64-library-letters button,
+.ccg-c64-library-pages button {
+  min-height: 30px;
+  padding: 0.3rem 0.46rem;
+  border: 1px solid #35375f;
+  border-radius: 5px;
+  background: #151832;
+  color: #bbbddd;
+  font: 800 0.55rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-library-formats button[aria-pressed="true"],
+.ccg-c64-library-letters button[aria-pressed="true"] {
+  border-color: var(--emu-accent);
+  background: rgba(173, 88, 202, 0.2);
+  color: #fff;
+}
+.ccg-c64-library-letters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.18rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding: 0.42rem 0 0.34rem;
+  margin-top: 0.2rem;
+}
+.ccg-c64-library-letters button {
+  flex: 0 0 auto;
+  padding-inline: 0.33rem;
+  min-width: 24px;
+  min-height: 27px;
+  font-size: 0.54rem;
+}
+.ccg-c64-library-result-count {
+  color: var(--emu-muted);
+  margin: 0.28rem 0 0.48rem;
+  font-size: 0.59rem;
+  font-family: var(--ccg-font-mono, "Courier New", monospace);
+}
+.ccg-c64-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 148px), 1fr));
+  gap: 0.42rem;
+  max-height: min(420px, 58vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding-right: 0.15rem;
+}
+.ccg-c64-game-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 103px;
+  padding: 0.56rem;
+  border: 1px solid rgba(120, 120, 199, 0.35);
+  border-radius: 8px;
+  background: linear-gradient(160deg, #1c2141, #10152e);
+}
+.ccg-c64-game-card:focus-within {
+  border-color: var(--emu-accent);
+}
+.ccg-c64-game-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  flex: 1;
+  color: #f3f2ff;
+  font: 800 0.67rem/1.28 var(--ccg-font-mono, "Courier New", monospace);
+  overflow-wrap: anywhere;
+}
+.ccg-c64-game-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-content: space-between;
+  margin-top: 0.52rem;
+}
+.ccg-c64-game-type {
+  font: 800 0.48rem var(--ccg-font-mono, "Courier New", monospace);
+  letter-spacing: 0.08em;
+  color: #9eabd5;
+}
+.ccg-c64-game-launch {
+  min-height: 29px;
+  padding: 0.3rem 0.56rem;
+  border: 1px solid rgba(210, 113, 225, 0.65);
+  border-radius: 5px;
+  color: #fff;
+  background: rgba(145, 67, 163, 0.34);
+  font: 800 0.56rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-game-launch:hover:not(:disabled) {
+  background: rgba(200, 101, 213, 0.33);
+  border-color: #eeb3f7;
+}
+.ccg-c64-game-launch:disabled { opacity: 0.5; cursor: wait; }
+.ccg-c64-library-pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-top: 0.65rem;
+}
+.ccg-c64-library-pages[hidden] { display: none !important; }
+.ccg-c64-library-pages span {
+  color: #d2d2ef;
+  font: 700 0.56rem var(--ccg-font-mono, "Courier New", monospace);
+}
+.ccg-c64-library-disks { margin-top: 0.65rem; }
+.ccg-c64-library-empty {
+  grid-column: 1 / -1;
+  padding: 0.8rem;
+  color: var(--emu-muted);
+  font-size: 0.65rem;
+  border: 1px dashed #454567;
+  border-radius: 7px;
+}
+@media (max-width: 600px) {
+  .ccg-c64-library-toolbar { grid-template-columns: 1fr; }
+  .ccg-c64-library-formats { justify-content: stretch; }
+  .ccg-c64-library-formats button { flex: 1; }
+  .ccg-c64-game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+
 .ccg-c64-drop-hint {
   position: absolute;
   inset: auto 50% 1rem auto;
@@ -1439,7 +1593,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
 
   .ccg-c64-control-stack.has-online-library {
     grid-template-areas:
-      "quick quick quick online online online"
+      "quick quick quick quick quick quick"
+      "online online online online online online"
       "controls controls controls controls controls controls"
       "status status status port port port"
       "disk disk disk tape tape tape"

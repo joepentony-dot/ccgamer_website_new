@@ -38,7 +38,12 @@ assert(!html.includes("webkitdirectory"), "The emulator must not force a VICE-fo
 assert(html.includes('id="ccg-rom-set"') && html.includes("multiple"), "Direct multi-file system ROM selection must exist");
 assert(html.includes("data-load-any-media"), "A file-first C64 media loader must exist");
 assert(html.includes("data-media-dropzone"), "Drag-and-drop media loading must exist");
-assert(html.includes("data-online-library-select"), "The CCG Online Library selector must exist");
+assert(html.includes("data-online-library-search"), "The game library needs a search box");
+assert(html.includes("data-online-library-grid"), "The game library needs separate playable game cards");
+assert(html.includes("data-library-letters"), "The game library needs A-Z navigation");
+assert(html.includes("data-library-previous") && html.includes("data-library-next"),
+  "A large catalogue must paginate instead of rendering all games");
+assert(!html.includes("data-online-library-select"), "The obsolete giant game dropdown must be removed");
 assert(html.includes("data-emulator-back"), "The emulator route must expose a visible Back control");
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
@@ -74,6 +79,14 @@ assert(!app.includes("if (!initial.allRequiredReady) showSetup()"), "First visit
 assert(app.includes("pendingMedia"), "Media selected before system ROM setup must be queued");
 assert(app.includes("queueMediaFile"), "File-first media routing must be wired");
 assert(app.includes("initialiseOnlineLibrary"), "Online Library manifest loading must be wired");
+assert(app.includes("PACK_CATALOG_URL") && app.includes("parsePackedCatalog"),
+  "Searchable game browser must load the owner-uploaded packed game catalogue");
+assert(app.includes("refreshOnlineLibraryCards") &&
+       app.includes("onlineLibraryPage += 1") &&
+       app.includes("onlineLibraryLetter = letter"),
+  "Searchable library must paginate and filter by first letter");
+assert(app.includes("available.every(Boolean)"),
+  "Game browser must hide any partly uploaded game collection");
 assert(app.includes('fetch("/emulator/c64/library.json"'), "Online Library must load from the CCG manifest");
 assert(app.includes('import { C64Machine } from "./core/machine.js"'), "Machine core must be wired into the CCG app");
 assert(app.includes("machine.runFrame()"), "PAL frame execution must be wired");
@@ -231,7 +244,10 @@ for (const entry of onlineLibrary.entries) {
 assert(app.includes("machine.injectRun()") &&
   app.includes("await queueMedia({") &&
   app.includes("name: filename, type, bytes, sourceKey: firstKey") &&
-  app.includes("}, { freshBoot: true })"),
+  app.includes("}, { freshBoot: true })" ) &&
+  app.includes("loadPackedGameBytes(entry, onlineLibraryPackCache)") &&
+  app.includes('method: "HEAD"'),
+
   "Online Library selection must preserve media bytes and auto-start while tracking the first disk");
 
 assert(html.includes("data-keyboard-joystick"),
