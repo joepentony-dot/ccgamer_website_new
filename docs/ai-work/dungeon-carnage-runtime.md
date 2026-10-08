@@ -1146,3 +1146,10 @@ Branch `codex/dungeon-projectile-lifecycle-current-main` was created from exact 
 - Exact candidate `606fb89fe27cb82c2e14883c0802b38bf0e2ab95` reached the full Chromium matrix with shards 2/4/5/6 green, but shard 1 exposed one R61 HUD integration defect: the retained V10.25 melee HUD wrapper overwrote canonical `sync()`'s new weapon-level title after each refresh.
 - The failure was limited to title metadata: the compact visible `L2 FIELD PULSE` label and the R61 adjacent-loaded-firearm FIRE regression had already reached the browser contract. The implementation, not the assertion, was corrected in `c8a79088840d97eb8f2c94180c1aa6f5cf8ac5d9` so the older HUD wrapper preserves `Weapon Level N · <full weapon identity>` while retaining melee/fallback guidance.
 - This correction requires a fresh exact-head PR qualification, package/cache/SEO checks and all six Chromium shards before merge. No FIRE, trap, damage or death-owner logic changed in the follow-up.
+
+## R119 combined gameplay/voice branch — 8 October 2026
+
+- Draft integration **#2624** / `integration/dungeon-r119-gameplay-audio-20261008` consolidates qualified-but-unmerged #2610 and #2614 on a fresh main baseline, along with the Windows package candidate from #2617. These previous branches are NOT merged and must not be independently published as a commercial release.
+- Treasure Goblin sight starts escape timer, visible notifications accompany spotted/caught/escaped outcomes, fatal hits preserve the loot tile, and a zero-valued escape timer cannot reset to 22 seconds.
+- Approved recorded NPC/event speech may override lower-priority speech without building a stale voice queue; the Death Stalker defeat event uses its existing recorded banishment cue. No made-up dialogue is introduced.
+- The intended original 16 MP3 soundtrack tracks are still inaccessible under Supabase restricted Storage; offline WAV fallback is temporary only, and the owner-private original-MP3 importer must validate genuine fingerprints before release. Refer to `docs/ai-work/dungeon-carnage-r119-windows-integration.md` for guardrails, current-head tests and outstanding acceptance.
