@@ -53,6 +53,7 @@ Recovered original owner archives allowed immediate no-cost binary-backed intake
 - ACTUAL INTEGRATION: Niji Extended v1.1 gold key (exact unique pixel crop), replaces quarantined key; CC0.
 - ACTUAL INTEGRATION: 0x72 DungeonTileset II v1.7 `frames/crate.png` (16x24), active crate sprite; CC0.
 - VISUAL CORRECTION: wall-torch and tall props use aspect-preserving draw bounds.
-- STILL SOURCE-ONLY: Kenney, hyprv, DeadlyEssence01, elesrech, .bee and Kettoman files have not been acquired as matching local binary downloads, so **they have not been added to runtime**.
+- NOW INTEGRATED: Kenney Tiny Dungeon free CC0 16x16 barrel (`tile_0082.png` in the curated source's attribution), recorded SHA-256 and enabled as an existing barrel rendering override. Its curated binary has not yet been matched to Kenney's original ZIP.
+- STILL SOURCE-ONLY: Other Kenney tiles, hyprv, DeadlyEssence01, elesrech, .bee and Kettoman files have not been acquired as matching local binary downloads; they have **not been added to runtime**.
 
 Use `assets/pixel/user-r118/PROVENANCE.md` and the R118 test contract for precise file fingerprints. The draft branch remains unmerged and still needs exact-current-head qualification.
