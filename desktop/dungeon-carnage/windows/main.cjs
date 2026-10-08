@@ -118,6 +118,18 @@ async function startGame(){
   gameWindow.once("ready-to-show",()=>{if(gameWindow)gameWindow.show()});
   await gameWindow.loadURL(base+"index.html");
   gameWindow.show();
+  // LocalStorage is written asynchronously by Chromium. A player can close
+  // immediately after saving, so keep the app alive until storage is flushed.
+  let storageFlushedOnClose=false;
+  const windowToClose=gameWindow;
+  gameWindow.on("close",event=>{
+    if(storageFlushedOnClose)return;
+    event.preventDefault();
+    storageFlushedOnClose=true;
+    Promise.resolve(session.defaultSession.flushStorageData())
+      .catch(error=>console.error("Dungeon Carnage save flush failed",error))
+      .finally(()=>{if(!windowToClose.isDestroyed())windowToClose.destroy()});
+  });
   gameWindow.on("closed",()=>{gameWindow=null;app.quit()});
 }
 if(process.platform==="win32")app.setAppUserModelId("uk.co.cheekycommodoregamer.dungeoncarnage");
