@@ -96,7 +96,7 @@ test('recovers a game-specific factual clause after a long introductory phrase',
       year: 1984,
       system: 'C64',
       publisher: 'A&F Software',
-      description: "Chuckie Egg (1984) – Commodore 64 Platform Action Released in 1984 by A&F Software for the Commodore 64, Chuckie Egg is a fast-paced platform game based on Nigel Alderton's popular ZX Spectrum original. Climb ladders.",
+      description: "Chuckie Egg (1984) – Commodore 64 Platform Action Released in 1984 by A&F Software for the Commodore 64 with the conversion handled by Sean Townsend and Martin Webb, Chuckie Egg is a fast-paced platform game based on Nigel Alderton's popular ZX Spectrum original. Climb ladders.",
       expected: "Chuckie Egg is a fast-paced platform game based on Nigel Alderton's popular ZX Spectrum original."
     },
     {
