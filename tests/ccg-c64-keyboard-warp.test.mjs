@@ -80,6 +80,7 @@ const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  touchHeldButtons: new Map(),
   inputStatus: { textContent: "" },
   keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
   keyboardPriorityUntil: 0,
