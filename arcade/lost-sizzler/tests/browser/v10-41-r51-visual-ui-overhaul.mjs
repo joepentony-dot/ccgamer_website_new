@@ -90,6 +90,76 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
+  // Exercise the review's real exploration/fullscreen working set, using the
+  // actual generator and Canvas painter rather than the small starting camera.
+  const stoneCacheWork=await page.evaluate(()=>{
+    const savedWorld=world,savedFloor=run.floor,originalCreate=document.createElement,originalDraw=ctx.drawImage;
+    let allocations=0,submissions=0;
+    document.createElement=function(tag,...args){if(tag==="canvas")allocations++;return originalCreate.call(this,tag,...args)};
+    ctx.drawImage=function(...args){submissions++;return originalDraw.apply(this,args)};
+    try{
+      run.floor=1;world=W.generate("ccg-premium-visual-baseline-2026-10-09-F1");
+      const geometry=JSON.stringify(world.map),tiles=[];
+      for(let y=0;y<world.map.length;y++)for(let x=0;x<world.map[y].length;x++){
+        if(world.map[y][x]===0)continue;
+        const n=world.map[y-1]?.[x]===0,e=world.map[y]?.[x+1]===0,
+          so=world.map[y+1]?.[x]===0,w=world.map[y]?.[x-1]===0,
+          mask=(n?1:0)|(e?2:0)|(so?4:0)|(w?8:0);
+        if(!mask)continue;
+        const room=world.rooms[W.roomAt(world,x,y)],h=tileHash(x,y,room?.variant||0),
+          th=W.themeAt(world,x+(so?0:w?-1:e?1:0),y+(so?1:w||e?0:-1));
+        tiles.push({x,y,h,key:`${mask}:${h%3}:${th.wall}:${th.hi}`});
+      }
+      let visible=null,region=null;
+      outer:for(let y=0;y<=world.map.length-24;y++)for(let x=0;x<=world.map[0].length-40;x++){
+        const rows=tiles.filter(t=>t.x>=x&&t.x<x+40&&t.y>=y&&t.y<y+24);
+        if(new Set(rows.map(t=>t.key)).size>=76){visible=rows;region={x,y};break outer}
+      }
+      if(!visible)throw new Error("fixed seed must reproduce at least 76 original variants in a 40x24 viewport");
+      const paint=(rows,label)=>{
+        const before=allocations,beforeSubmissions=submissions,builds=dungeonRenderPerformance.stoneReliefRasterBuilds||0,start=performance.now();
+        for(const t of rows){
+          drawDungeonStoneRelief({x:(t.x-region.x)*C.tile,y:(t.y-region.y)*C.tile},t.x,t.y,t.h);
+        }
+        return{label,tiles:rows.length,submissions:submissions-beforeSubmissions,allocations:allocations-before,
+          rasterBuilds:(dungeonRenderPerformance.stoneReliefRasterBuilds||0)-builds,
+          cpuSubmissionMs:Number((performance.now()-start).toFixed(3)),
+          entries:dungeonStoneReliefCache.size,pixelBytes:dungeonStoneReliefBytes};
+      };
+      const phases=[paint(visible,"cold-large-viewport")];
+      for(let frame=0;frame<3;frame++)phases.push(paint(visible,"warm-large-viewport"));
+      const scrolled=tiles.filter(t=>t.x>=region.x+20&&t.x<region.x+60&&t.y>=region.y&&t.y<region.y+24);
+      phases.push(paint(scrolled,"scroll"),paint(scrolled,"warm-scroll"),paint(visible,"return"));
+      phases.push(paint(tiles,"explore-whole-world"),paint(visible,"return-after-exploration"));
+      const retired=[...dungeonStoneReliefCache.values()];
+      world=W.generate("ccg-premium-visual-baseline-2026-10-09-F1");
+      phases.push(paint(visible,"new-world"),paint(visible,"warm-new-world"));
+      const handoffRetired=[...dungeonStoneReliefCache.values()].every(atlas=>!retired.includes(atlas))&&retired.every(atlas=>atlas.width===0&&atlas.height===0);
+      const pixels=[...dungeonStoneReliefCache.values()].reduce((sum,atlas)=>sum+atlas.width*atlas.height*4,0);
+      const immutable=JSON.stringify(world.map)===geometry;
+      run.floor=4;world=W.generate("ccg-premium-visual-baseline-2026-10-09-F4");
+      const quality=dungeonRenderPerformance.quality;
+      try{dungeonRenderPerformance.quality="severe";renderView(p1,{x:0,y:0,w:canvas.width,h:canvas.height})}
+      finally{dungeonRenderPerformance.quality=quality}
+      return{region,originalVariants:new Set(visible.map(t=>t.key)).size,phases,handoffRetired,immutable,
+        pixelBytes:pixels,laterFloorEntries:dungeonStoneReliefCache.size,laterFloorBytes:dungeonStoneReliefBytes,
+        byteBudget:DUNGEON_STONE_PIXEL_BUDGET,entryLimit:DUNGEON_STONE_ATLAS_LIMIT};
+    }finally{document.createElement=originalCreate;ctx.drawImage=originalDraw;world=savedWorld;run.floor=savedFloor}
+  });
+  assert.ok(stoneCacheWork.originalVariants>=76,"large viewport must exceed the old FIFO limit");
+  for(const phase of stoneCacheWork.phases){
+    assert.ok(phase.entries<=stoneCacheWork.entryLimit&&phase.pixelBytes<=stoneCacheWork.byteBudget);
+    if(phase.label.startsWith("warm")||phase.label.startsWith("return")){
+      assert.equal(phase.allocations,0,phase.label+" must allocate zero offscreen canvases");
+      assert.equal(phase.rasterBuilds,0,phase.label+" must rebuild zero stone rasters");
+    }
+  }
+  assert.ok(stoneCacheWork.phases.find(row=>row.label==="new-world").allocations>0,"world handoff must build fresh atlases");
+  assert.equal(stoneCacheWork.handoffRetired,true);assert.equal(stoneCacheWork.immutable,true);
+  assert.equal(stoneCacheWork.laterFloorEntries,0);assert.equal(stoneCacheWork.laterFloorBytes,0);
+  assert.equal(stoneCacheWork.pixelBytes,stoneCacheWork.phases.find(row=>row.label==="warm-new-world").pixelBytes);
+  console.log("R127 real Canvas cache work (CPU submission, not GPU timing): "+JSON.stringify(stoneCacheWork));
+
   // Optional evidence capture for the approved premium-dungeon visual programme.
   // Run locally with CCG_DUNGEON_VISUAL_BASELINE_DIR=/path/to/output.
   // CI continues checking normal visual behaviour without extra build minutes or
@@ -149,7 +219,7 @@ try{
             quality:String(typeof dungeonRenderQuality==="function"?dungeonRenderQuality():"unavailable"),
             prefersReducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
             renderMotionReduced:Boolean(window.CCGLostSizzlerV142R70RenderPerformance?.reducedMotion?.()),
-            stonework:{cacheEntries:dungeonStoneReliefCache.size,warmCacheMisses,pilot:selectedFloor===1},
+            stonework:{cacheEntries:dungeonStoneReliefCache.size,pixelBytes:dungeonStoneReliefBytes,byteBudget:DUNGEON_STONE_PIXEL_BUDGET,entryLimit:DUNGEON_STONE_ATLAS_LIMIT,warmCacheMisses,pilot:selectedFloor===1},
             frameIntervalsMs:{count:values.length,p50:percentile(.5),p95:percentile(.95),max:percentile(1)},
             generated:{rooms:world.rooms?.length||0,wallLights:world.wallLights?.length||0,
               decor:world.decor?.length||0,wallTorches:world.decor?.filter(row=>row.type==="candleSconce").length||0}
@@ -158,7 +228,7 @@ try{
         assert.equal(sample.floor,floor,"visual baseline must capture the requested generated floor");
         assert.equal(sample.renderMotionReduced,sample.prefersReducedMotion,
           "the actual Canvas renderer must honour the device reduced-motion setting");
-        assert.ok(sample.stonework.cacheEntries<=64,"stonework must retain its bounded bitmap budget");
+        assert.ok(sample.stonework.cacheEntries<=sample.stonework.entryLimit&&sample.stonework.pixelBytes<=sample.stonework.byteBudget,"stonework must retain its bounded bitmap budget");
         assert.equal(sample.stonework.warmCacheMisses,0,"a warmed camera must not rerasterise static stone faces");
         if(floor===1&&sample.quality!=="severe")assert.ok(sample.stonework.cacheEntries>0,
           "the Floor 1 benchmark must exercise actual cached exposed stone faces");
@@ -219,6 +289,7 @@ try{
     fs.writeFileSync(path.join(output,"frame-baseline.json"),JSON.stringify({
       source:"Existing Canvas engine, controlled fixed run seed; RAF intervals only, not draw/GPU timing",
       sourceHead:process.env.GITHUB_SHA||"local-working-copy",
+      cacheWork:stoneCacheWork,
       cases:samples
     },null,2));
     console.log(`Visual baseline captured ${samples.length} floor/device samples in ${output}`);

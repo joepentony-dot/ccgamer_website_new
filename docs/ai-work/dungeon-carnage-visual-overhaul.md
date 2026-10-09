@@ -1,3 +1,9 @@
+## R127 cache-thrashing repair — 9 October 2026
+
+- #2660 original green head's P1 review is valid: an explored 40x24 desktop region has 78 variants and FIFO rebuilds 78 canvases/frame. The initial starting-camera evidence was insufficient; do not use its 64-entry claim as performance acceptance.
+- Same renderer now factors edge/seed combinations into one atlas per material: all 22 canonical materials fit; maximum 32 pages plus independent 4 MiB RGBA pixel admission budget. No in-frame eviction; overflow keeps authored-wall fallback without allocations. Old world/tile backing stores retire explicitly, including severe rendering. Appearance retains the existing art and all original flame/light/reduced-motion owners.
+- Expanded existing Node/R51 contracts pass locally for large viewport, repeated frames, scrolling/return, full palette and world exploration, transitions, byte admission and fallback. Real viewport seven atlases / 592,704 pixel bytes, whole-world fourteen / 1,185,408 bytes, zero warmed allocations. Actual CPU submission measured separately from RAF; no GPU guarantee. Fresh exact-head CI, screenshots and satisfactory P1 review precede authorized merge and deployment verification. Details/commands in runtime checkpoint. No new graphics PR or unrelated work.
+
 ## R127 Floor 1 exposed stone faces — 9 October 2026
 
 - Based on qualified, merged and deployment-verified R126 / #2653 (`78ee87213150c9fd681c65125d743dabb4593b07`). Successor branch `codex/seo/dungeon-r127-exposed-stonework-20261009` is the sole new source-development vehicle.

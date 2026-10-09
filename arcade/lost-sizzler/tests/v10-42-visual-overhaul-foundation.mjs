@@ -92,7 +92,7 @@ const stoneSandbox={window:{},document:{querySelector:()=>null,getElementById:()
   createElement(tag){
     assert.equal(tag,"canvas");created++;
     return{getContext(){return canvasAvailable?{imageSmoothingEnabled:false,
-      fillRect(...rect){raster.push(rect)}}:null}};
+      save(){},restore(){},translate(){},fillRect(...rect){raster.push(rect)}}:null}};
   }},C:{tile:48},run:{floor:1},world:null,W:{themeAt:()=>material},
   ctx:{drawImage(...args){submitted.push(args)}}};
 vm.createContext(stoneSandbox);
@@ -117,11 +117,44 @@ for(let mask=0;mask<16;mask++){
   assert.equal(created,beforeBuilds+1,"identical material/edge/seed must reuse one raster");
   assert.equal(submitted[0][0],submitted[1][0],"camera movement must reuse the same bitmap");
 }
-for(let i=0;i<100;i++){
-  material={wall:`#${i.toString(16).padStart(6,"0")}`,hi:"#7f70eb"};
-  vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
+// Every canonical material/seed/mask fits, including camera exploration.
+const worldSandbox={window:{}};vm.createContext(worldSandbox);
+vm.runInContext(readFileSync(new URL("../js/config.js",import.meta.url),"utf8"),worldSandbox);
+vm.runInContext(readFileSync(new URL("../js/world.js",import.meta.url),"utf8"),worldSandbox);
+const materials=Object.values(worldSandbox.window.CCGWorld.themes);
+assert.ok(materials.length<=32,"all canonical material/seed atlases must fit the bounded cache");
+stoneSandbox.world=stoneWorld(15);stoneSandbox.C.tile=42;
+const canonicalPass=()=>{
+  for(const th of materials)for(let seed=0;seed<3;seed++){
+    material=th;
+    for(let mask=1;mask<16;mask++){
+      // Changing exposures in a single world must not require another atlas.
+      const exposed=stoneWorld(mask);stoneSandbox.world.map=exposed.map;
+      vm.runInContext(`drawDungeonStoneRelief({x:0,y:0},2,2,${seed})`,stoneSandbox);
+    }
+  }
+};
+// Mutable fixture world only; its individual maps stay frozen.
+stoneSandbox.world={map:stoneWorld(15).map};canonicalPass();
+assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),materials.length);
+const canonicalBuilds=created;canonicalPass();
+assert.equal(created,canonicalBuilds,"all 990 visible canonical variations must remain warm");
+assert.equal(vm.runInContext("dungeonStoneReliefBytes",stoneSandbox),materials.length*3*4*42*42*4);
+// Admission beyond a future palette's limit cannot evict/rebuild hot entries.
+for(let pass=0;pass<3;pass++){
+  const before=created;
+  for(let i=0;i<100;i++){
+    material={wall:`#${i.toString(16).padStart(6,"0")}`,hi:"#7f70eb"};
+    vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
+  }
+  if(pass>0)assert.equal(created,before,"overflow fallback must not allocate every frame");
 }
-assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),64,"stone bitmap memory must remain bounded");
+assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),32);
+material=materials[0];
+const beforeReturn=created;
+vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,0)",stoneSandbox);
+assert.equal(created,beforeReturn,"scrolling back must retain admitted material atlases");
+assert.ok(vm.runInContext("dungeonStoneReliefBytes<=DUNGEON_STONE_PIXEL_BUDGET",stoneSandbox));
 stoneSandbox.world=stoneWorld(4);
 vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
 assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),1,"a new floor/world must retire old stone rasters");
@@ -133,6 +166,23 @@ assert.equal(created,beforeLaterFloor);
 assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),0,"later-floor handoff must retire pilot bitmaps");
 stoneSandbox.run.floor=1;stoneSandbox.world=stoneWorld(4);canvasAvailable=false;
 assert.equal(vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox),false,"unavailable Canvas must preserve the original wall fallback");
+const failedBuilds=created;
+vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
+assert.equal(created,failedBuilds,"unavailable Canvas must not be retried each frame");
+canvasAvailable=true;stoneSandbox.C.tile=128;stoneSandbox.world=stoneWorld(4);
+const beforeByteLimit=created;
+for(let pass=0;pass<2;pass++)for(let i=0;i<10;i++){
+  material={wall:`#${i.toString(16).padStart(6,"0")}`,hi:"#7f70eb"};
+  vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
+}
+assert.equal(created-beforeByteLimit,5,"byte admission limit must reject excess atlases before allocating");
+assert.equal(vm.runInContext("dungeonStoneReliefBytes",stoneSandbox),5*128*128*12*4);
+stoneSandbox.C.tile=512;stoneSandbox.world=stoneWorld(4);
+const beforeOversize=created;
+assert.equal(vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox),false);
+assert.equal(created,beforeOversize,"oversized atlas must be rejected before Canvas allocation");
+assert.equal(vm.runInContext("dungeonStoneReliefBytes",stoneSandbox),0,"tile-size handoff evicts old pixel backing");
+assert.match(renderer,/function renderView\(p,v\)\{\s*retireDungeonStoneReliefWorld\(\)/,"world resources must retire even when severe rendering bypasses the stone painter");
 assert.match(renderer.slice(renderer.indexOf("function drawTile(x,y)"),renderer.indexOf("function drawPickupGlyph")),/drawDungeonStoneRelief\(s,x,y,h\)/,"live detailed tiles must own the stone pass");
 assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawTilePerformance"),renderer.indexOf("function drawTile(x,y)")),/drawDungeonStoneRelief/,"severe static-tile fallback must retain its existing cost");
 

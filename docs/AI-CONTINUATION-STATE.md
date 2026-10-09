@@ -1,3 +1,8 @@
+## R127 P1 cache repair on #2660 — 9 October 2026, 18:00 UK
+
+- Refreshed main `78ee87213150c9fd681c65125d743dabb4593b07`, #2660 original head `f0bebaf73759ed7ab7418b1fc87fd5126d08a25a`, and unresolved review thread `PRRT_kwDOQcoeX86q3ahd`. Its FIFO-thrashing finding is valid despite the original 18 green checks: the small starting-camera assertion did not qualify explored/fullscreen views. #2653 production and all post-merge checks passed.
+- Same sole source PR/branch receives a material atlas repair plus expanded existing tests. Local real 40x24 seed region has 78 old variants: old source rebuilt 78 canvases on every warm pass; repaired source creates seven atlases once and none on warm/scroll/return. Exact-head full remote qualification and satisfactory fresh review are required before the authorized merge. Runtime checkpoint records budget, measurements and commands; no unrelated work or new graphics PR.
+
 ## Qualified R126 release and R127 stonework candidate — 9 October 2026
 
 - #2653 merged from fully qualified `ed4c00bcc7bf65338752ed09a0062407ec3917a4` as `78ee87213150c9fd681c65125d743dabb4593b07`: six Chromium shards, PR/Windows/package/cache/SEO/site safety/Workers and visual baseline all passed. Post-merge Pages, Production Smoke and navigation passed; both game routes are HTTP 200 and deployed renderer bytes match the merged blob. Main Full qualification was still queued at the audit.
