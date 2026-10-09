@@ -334,39 +334,6 @@ function toggleAudioMute() {
   updateAudioUi(warpLoadActive ? "WARP SILENT" : (audioMuted ? "MUTED" : "SID ACTIVE"));
 }
 
-function updateJoystickUi() {
-  if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
-  if (joystickSwapButton) {
-    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
-    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
-  }
-  if (keyboardJoystickButton) {
-    keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
-    keyboardJoystickButton.setAttribute("aria-pressed", keyboardJoystickEnabled ? "true" : "false");
-  }
-}
-
-function keyboardJoystickByte() {
-  if (!keyboardJoystickEnabled) return 0xFF;
-  let result = 0xFF;
-  for (const code of keyboardJoystickKeys) result &= ~KEYBOARD_JOYSTICK_MASKS[code];
-  return result;
-}
-
-function applyJoystickInput() {
-  if (!machine) return;
-  // A browser gamepad can keep a direction/fire held down continuously.
-  // Give physical C64 keys priority while held and briefly after the last
-  // keypress, preventing those joystick bits from masking the keyboard CIA.
-  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
-    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
-  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
-  machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
-  machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
-  // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
-  machine._updateLightpen?.();
-}
-
 function syncTouchJoystick() {
   touchHeldMask = combinedTouchMask(touchPointerHolds);
   touchJoyByte = 0xFF & ~touchHeldMask;
@@ -429,6 +396,39 @@ touchJumpAutoButton?.addEventListener("click", () => {
   updateJumpControls();
 });
 updateJumpControls();
+
+function updateJoystickUi() {
+  if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
+  if (joystickSwapButton) {
+    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
+    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  }
+  if (keyboardJoystickButton) {
+    keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
+    keyboardJoystickButton.setAttribute("aria-pressed", keyboardJoystickEnabled ? "true" : "false");
+  }
+}
+
+function keyboardJoystickByte() {
+  if (!keyboardJoystickEnabled) return 0xFF;
+  let result = 0xFF;
+  for (const code of keyboardJoystickKeys) result &= ~KEYBOARD_JOYSTICK_MASKS[code];
+  return result;
+}
+
+function applyJoystickInput() {
+  if (!machine) return;
+  // A browser gamepad can keep a direction/fire held down continuously.
+  // Give physical C64 keys priority while held and briefly after the last
+  // keypress, preventing those joystick bits from masking the keyboard CIA.
+  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
+    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
+  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
+  machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
+  machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
+  // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
+  machine._updateLightpen?.();
+}
 
 function swapJoystickPort() {
   joystickPort = joystickPort === 2 ? 1 : 2;
@@ -556,6 +556,9 @@ function releaseAllInput() {
     machine?.cia1.setKey(held.col, held.row, false);
   }
   touchFunctionKeyHolds.clear();
+  touchPointerHolds.clear();
+  touchHeldMask = 0;
+  touchJoyByte = 0xFF;
   if (machine) {
     for (const held of heldMatrixKeys.values()) {
       machine.cia1.setKey(held.col, held.row, false);
@@ -566,7 +569,6 @@ function releaseAllInput() {
     gamepadJoyByte = 0xFF;
     touchJoyByte = 0xFF;
     touchHeldMask = 0;
-    touchPointerHolds.clear();
     machine.joyPort2 = 0xFF;
     machine.setRestoreNmiLine(false);
   }
