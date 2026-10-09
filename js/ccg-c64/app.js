@@ -1297,7 +1297,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
-  setMobilePlaying(false);
+  if (typeof setMobilePlaying === "function") setMobilePlaying(false);
   captureMutableMedia();
   releaseAllInput();
   powerOffAudio();
@@ -1849,7 +1849,7 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   pendingMedia = null;
   try {
     const loaded = await openMediaBytes(queued);
-    if (loaded) enterMobilePlayMode(queued.name);
+    if (loaded && typeof enterMobilePlayMode === "function") enterMobilePlayMode(queued.name);
     return loaded;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "The media could not be opened.";
@@ -2402,7 +2402,8 @@ async function loadGameVaultSlot() {
     if (stageNote) stageNote.textContent = "Machine state and its local disk, tape and cartridge media were restored from this browser.";
     updateMediaControls(vault.snapshot());
     await refreshVaultStatus();
-    enterMobilePlayMode(mountedCartridge?.name || mountedDisk?.name || mountedTape?.name || "SAVED GAME");
+    if (typeof enterMobilePlayMode === "function") enterMobilePlayMode(
+      mountedCartridge?.name || mountedDisk?.name || mountedTape?.name || "SAVED GAME");
     screen?.focus();
   } catch (error) {
     if (!frameHandle && running && machine) frameHandle = requestAnimationFrame(frameLoop);
