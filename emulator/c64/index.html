@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_c64app_v1">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_c64app_v2">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -57,6 +57,20 @@
         <button type="button" class="ccg-c64-mobile-keyboard-toggle" data-mobile-keyboard-toggle
           aria-controls="ccg-c64-mobile-keyboard" aria-expanded="false" aria-pressed="false">KEYBOARD</button>
       </div>
+        <div class="ccg-c64-install-promo" data-c64-app-install aria-label="Install C64 emulator app">
+          <div class="ccg-c64-install-promo__intro">
+            <strong>PUT THE C64 ON YOUR HOME SCREEN</strong>
+            <span>Install CCG C64 as a separate mobile app. No app-store account needed.</span>
+          </div>
+          <button type="button" data-c64-app-install-button>HOW TO INSTALL</button>
+          <p data-c64-app-install-status role="status" aria-live="polite">Opens straight into your C64 library.</p>
+          <details data-c64-app-install-help>
+            <summary>iPHONE / iPAD &amp; ANDROID INSTALLATION</summary>
+            <p><strong>iPhone / iPad:</strong> Open this page in Safari, tap Share and choose Add to Home Screen. Enable Open as Web App if offered, then tap Add.</p>
+            <p><strong>Android:</strong> Open this page in Chrome, tap Install app if offered, or open the browser menu and choose Add to Home screen / Install app.</p>
+            <p>Game downloads and first-time loading still require an internet connection. The emulator uses the same C64 game library and locally saved settings as this website in supported browsers.</p>
+          </details>
+        </div>
       <div class="ccg-c64-display-head">
         <div>
           <span class="ccg-c64-kicker">CCG BROWSER C64 // PAL</span>
@@ -134,20 +148,6 @@
 
       <section class="ccg-c64-panel ccg-c64-panel--library" hidden aria-label="Searchable C64 game library">
         <header class="ccg-c64-panel-title"><span>••</span><strong>GAME LIBRARY</strong><em data-online-library-status>LOADING</em></header>
-        <div class="ccg-c64-install-promo" data-c64-app-install aria-label="Install C64 emulator app">
-          <div class="ccg-c64-install-promo__intro">
-            <strong>PUT THE C64 ON YOUR HOME SCREEN</strong>
-            <span>Install CCG C64 as a separate mobile app. No app-store account needed.</span>
-          </div>
-          <button type="button" data-c64-app-install-button>HOW TO INSTALL</button>
-          <p data-c64-app-install-status role="status" aria-live="polite">Opens straight into your C64 library.</p>
-          <details data-c64-app-install-help>
-            <summary>iPHONE / iPAD &amp; ANDROID INSTALLATION</summary>
-            <p><strong>iPhone / iPad:</strong> Open this page in Safari, tap Share and choose Add to Home Screen. Enable Open as Web App if offered, then tap Add.</p>
-            <p><strong>Android:</strong> Open this page in Chrome, tap Install app if offered, or open the browser menu and choose Add to Home screen / Install app.</p>
-            <p>Game downloads and first-time loading still require an internet connection. The emulator uses the same C64 game library and locally saved settings as this website in supported browsers.</p>
-          </details>
-        </div>
         <div class="ccg-c64-library-search-wrap" data-library-search-wrap>
           <input type="search" id="ccg-c64-library-search" data-online-library-search
             role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
@@ -360,7 +360,7 @@
     </section>
   </div>
 
-  <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v1" defer></script>
+  <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2" defer></script>
   <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobileplay_v2"></script>
 </body>
 </html>
