@@ -414,4 +414,45 @@ assert(app.includes("machine.injectRun()") &&
 assert(html.includes("data-keyboard-joystick"),
   "Players must be able to use a keyboard as C64 joystick");
 
+
+const ccgHome = read("home.html");
+const ccgEmulationGuide = read("emulation.html");
+const configuredStaticPages = JSON.parse(read("tools/seo/static-pages.json"));
+const canonicalSitemap = read("sitemap-pages.xml");
+const emulatorMetaTitle = html.match(/<title>([^<]+)<\/title>/)?.[1] || "";
+assert(/^C64 Emulator Online/.test(emulatorMetaTitle) && /Commodore 64 Games/.test(emulatorMetaTitle),
+  "Direct emulator landing page must target C64 emulator and Commodore 64 search intent");
+assert(html.includes('rel="canonical" href="https://www.cheekycommodoregamer.co.uk/emulator/c64/"') &&
+  html.includes('name="robots" content="index,follow'),
+  "Emulator must be indexable and canonicalize directly to its own route");
+assert(html.includes('<h1 class="ccg-c64-kicker">C64 Emulator') &&
+  html.includes('aria-labelledby="ccg-c64-discovery-title"') &&
+  html.includes("Play Commodore 64 games online"),
+  "Search engines and visitors need one visible H1 and useful introductory text");
+assert(html.includes('property="og:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/"') &&
+  html.includes('name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/"'),
+  "Social sharing must always link straight to the C64 emulator, not the hub");
+const ldBlock = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+assert(ldBlock, "Emulator needs search-engine readable WebApplication schema");
+const ld = JSON.parse(ldBlock);
+assert.equal(ld["@type"], "WebApplication");
+assert.equal(ld.url, "https://www.cheekycommodoregamer.co.uk/emulator/c64/");
+assert.equal(ld.offers.price, "0");
+assert(configuredStaticPages.includes("emulator/c64/index.html"),
+  "Sitemap generator config must include the actual emulator index.html");
+assert(canonicalSitemap.includes("<loc>https://www.cheekycommodoregamer.co.uk/emulator/c64/</loc>"),
+  "Published sitemap must list the canonical directory URL once");
+assert.equal((canonicalSitemap.match(/<loc>https:\/\/www\.cheekycommodoregamer\.co\.uk\/emulator\/c64\/<\/loc>/g) || []).length, 1,
+  "Emulator sitemap canonical must appear exactly once");
+assert(ccgHome.includes('class="home-c64-emulator-promo" href="/emulator/c64/"') &&
+  ccgHome.includes("Play Commodore 64 Games Online") &&
+  ccgHome.includes('href="/resources/css/home-c64-emulator-promo.css"'),
+  "Homepage must give users a static, crawlable C64 emulator link with intact existing tiles");
+assert(ccgEmulationGuide.includes('href="/emulator/c64/">Play C64 Games Online'),
+  "Emulation guide must also direct visitors to the interactive emulator");
+const homePromotionCss = read("resources/css/home-c64-emulator-promo.css");
+assert(homePromotionCss.includes("home-c64-emulator-promo") &&
+  homePromotionCss.includes("@media (max-width: 680px)"),
+  "Home emulator promotion must remain responsive and scoped outside home thumbnail rules");
+
 console.log("CCG browser C64 Stage 1 contract passed.");
