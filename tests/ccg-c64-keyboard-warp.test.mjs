@@ -91,6 +91,9 @@ const context = vm.createContext({
   },
   performance: { now: () => 1000 },
   applyJoystickInput() {},
+  // The app initialises a separate touch-profile UI outside this isolated
+  // keyboard-matrix slice. Keep its harmless on-boot callback explicit.
+  updateJumpControls() {},
 });
 vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
 function event(code, key, opts = {}) {
