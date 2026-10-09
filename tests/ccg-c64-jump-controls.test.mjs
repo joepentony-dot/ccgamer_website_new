@@ -58,4 +58,6 @@ assert(app.includes('localStorage.setItem(JUMP_OVERRIDES_KEY, JSON.stringify(jum
 assert(css.includes(".ccg-c64-touch-jump[hidden]"));
 assert(css.includes(".ccg-c64-console:fullscreen .ccg-c64-touch-actions"));
 assert(css.includes(".ccg-c64-touch-extras .ccg-c64-touch-fkeys"));
+assert(css.includes("Landscape phones wider than 760 CSS pixels") &&
+  css.includes("flex-wrap: wrap;"), "Landscape touch controls must wrap the settings panel without horizontal overflow");
 console.log("PASS: C64 UP-as-JUMP profiles, saved per-game controls, multi-touch and mobile responsive source contracts.");
