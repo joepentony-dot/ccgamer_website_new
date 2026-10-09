@@ -420,4 +420,119 @@ autoContext.advance();
 assert.equal(autoContext.warpLoadActive, false, "RUN completion must restore 1x speed");
 assert.equal(speedTransitions.at(-1), false, "Automatic warp must restore normal SID timing");
 
+// Run the actual immersive mobile controller + virtual CIA keyboard in a
+// browser-like VM. This exercises touchscreen pointer holds, keyboard toggle,
+// EXIT, and verifies that desktop/fine-pointer devices cannot enter this mode.
+const mobileStart = app.indexOf('const mobilePlayConsole = document.querySelector(".ccg-c64-console");');
+const mobileEnd = app.indexOf("// The same searchable game library belongs", mobileStart);
+assert(mobileStart >= 0 && mobileEnd > mobileStart, "Immersive mobile implementation missing");
+function mobileNode() {
+  const classes = new Set();
+  const props = {};
+  return {
+    hidden: false, children: [], listeners: {}, style: {},
+    classList: {
+      toggle(c, on) { if (on) classes.add(c); else classes.delete(c); },
+      add(c) { classes.add(c); }, remove(c) { classes.delete(c); },
+      contains(c) { return classes.has(c); },
+    },
+    setAttribute(k, v) { props[k] = v; }, getAttribute(k) { return props[k]; },
+    addEventListener(name, fn) { (this.listeners[name] ||= []).push(fn); },
+    dispatch(name, pointerId = 1) {
+      for (const fn of this.listeners[name] || []) fn({ pointerId, preventDefault() {} });
+    },
+    setPointerCapture() {}, appendChild(child) { this.children.push(child); },
+    querySelectorAll() { return this.children.flatMap(row => row.children || [])
+      .filter(button => button.classList.contains("is-pressed")); },
+  };
+}
+const fakeConsole = mobileNode();
+const mobileBar = mobileNode();
+const mobileExit = mobileNode();
+const mobileTitle = mobileNode();
+const mobileToggle = mobileNode();
+const mobileClose = mobileNode();
+const mobilePanel = mobileNode();
+mobilePanel.hidden = true; // HTML keyboard overlay starts hidden.
+const mobileKeys = mobileNode();
+const mobileBody = mobileNode();
+const mobileNodes = new Map([
+  [".ccg-c64-console", fakeConsole],
+  ["[data-mobile-playbar]", mobileBar],
+  ["[data-mobile-exit-game]", mobileExit],
+  ["[data-mobile-play-title]", mobileTitle],
+  ["[data-mobile-keyboard-toggle]", mobileToggle],
+  ["[data-mobile-keyboard-close]", mobileClose],
+  ["[id='ccg-c64-mobile-keyboard']", mobilePanel],
+  ["[data-mobile-keyboard-keys]", mobileKeys],
+]);
+const mobileMedia = { matches: true, addEventListener() {} };
+const ciaMobile = new CIA(1);
+const mobileMachine = { cia1: ciaMobile, joyPort2: 0xf7, setRestoreNmiLine(on) { this.nmi = on; } };
+let mobileTime = 1000;
+let mobilePowerOffCount = 0;
+let mobileGamepadPolls = 0;
+const mobileContext = vm.createContext({
+  document: {
+    querySelector: selector => mobileNodes.get(selector) || null,
+    body: mobileBody, createElement: () => mobileNode(), fullscreenElement: null,
+  },
+  window: { matchMedia: () => mobileMedia, scrollTo() {} },
+  requestAnimationFrame() {}, performance: { now: () => mobileTime },
+  KEY_MAP, CHAR_MAP, machine: mobileMachine,
+  running: true, paused: false, setup: { hidden: true },
+  heldMatrixKeys: new Map(), touchFunctionKeyHolds: new Map(),
+  shiftLeftPhysical: false, shiftRightPhysical: false,
+  pollGamepad() { mobileGamepadPolls++; },
+  fitScreenToStage() {},
+  powerOff() { mobilePowerOffCount++; },
+  setTimeout, clearTimeout,
+});
+vm.runInContext(app.slice(mobileStart, mobileEnd) +
+  "\nglobalThis.playOnMobile = enterMobilePlayMode;" +
+  "globalThis.showMobileKeys = setMobileKeyboardOpen;", mobileContext);
+const findVirtual = (code) => mobileKeys.children.flatMap(row => row.children)
+  .find(key => key.getAttribute("data-c64-vkey") === code);
+assert(findVirtual("Space") && findVirtual("F7") && findVirtual("F12"),
+  "The full C64 keyboard needs SPACE, F-keys and RESTORE");
+mobileContext.playOnMobile("Paradroid");
+assert(fakeConsole.classList.contains("is-mobile-playing"), "Loading media should maximise the mobile game");
+assert.equal(mobileBar.hidden, false);
+assert.equal(mobileTitle.textContent, "Paradroid");
+mobileToggle.dispatch("click");
+assert.equal(mobilePanel.hidden, false, "Keyboard toggle should open the in-game overlay");
+const mobileSpace = findVirtual("Space");
+mobileSpace.dispatch("pointerdown");
+assert(ciaMobile.isKeyDown(7, 4), "Mobile SPACE must reach CIA matrix immediately");
+assert.equal(mobileMachine.joyPort2, 0xf7, "Typing must not override gamepad RIGHT");
+mobileTime += 200;
+mobileSpace.dispatch("pointerup");
+assert(!ciaMobile.isKeyDown(7, 4), "Mobile SPACE should release after pointerup");
+assert(mobileGamepadPolls > 0, "Touch keyboard edges must poll gamepad");
+const mobileShift = findVirtual("ShiftLeft");
+const mobileA = findVirtual("KeyA");
+mobileShift.dispatch("pointerdown", 2);
+mobileA.dispatch("pointerdown", 3);
+assert(ciaMobile.isKeyDown(1, 7) && ciaMobile.isKeyDown(1, 2),
+  "SHIFT and a letter must support concurrent touch");
+mobileTime += 200;
+mobileA.dispatch("pointerup", 3);
+assert(ciaMobile.isKeyDown(1, 7), "Releasing A must not release held SHIFT");
+mobileShift.dispatch("pointerup", 2);
+assert(!ciaMobile.isKeyDown(1, 7), "SHIFT must release after its own pointerup");
+findVirtual("F12").dispatch("pointerdown", 4);
+assert.equal(mobileMachine.nmi, true, "RESTORE should assert the emulated NMI line");
+mobileTime += 200;
+findVirtual("F12").dispatch("pointerup", 4);
+assert.equal(mobileMachine.nmi, false, "RESTORE should release the NMI line");
+mobileClose.dispatch("click");
+assert.equal(mobilePanel.hidden, true, "Close must hide the keyboard");
+mobileExit.dispatch("click");
+assert.equal(mobilePowerOffCount, 1, "Exit Game must stop the running C64 session");
+assert(!fakeConsole.classList.contains("is-mobile-playing"), "Exit should restore library layout");
+mobileMedia.matches = false;
+mobileContext.playOnMobile("Desktop test");
+assert(!fakeConsole.classList.contains("is-mobile-playing"),
+  "Fine-pointer/desktop mode must never activate mobile full-viewport layout");
+
 console.log("C64 F1-F8, CIA keyboard, automatic MAX Warp, responsive expanded FIT and fullscreen tests passed.");
