@@ -15,10 +15,16 @@
   <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon.ico">
+  <link rel="manifest" href="/emulator/c64/manifest.webmanifest">
+  <meta name="theme-color" content="#090d2e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CCG C64">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_mobileplay_v2">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_c64app_v1">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -127,6 +133,20 @@
 
       <section class="ccg-c64-panel ccg-c64-panel--library" hidden aria-label="Searchable C64 game library">
         <header class="ccg-c64-panel-title"><span>••</span><strong>GAME LIBRARY</strong><em data-online-library-status>LOADING</em></header>
+        <div class="ccg-c64-install-promo" data-c64-app-install aria-label="Install C64 emulator app">
+          <div class="ccg-c64-install-promo__intro">
+            <strong>PUT THE C64 ON YOUR HOME SCREEN</strong>
+            <span>Install CCG C64 as a separate mobile app. No app-store account needed.</span>
+          </div>
+          <button type="button" data-c64-app-install-button>HOW TO INSTALL</button>
+          <p data-c64-app-install-status role="status" aria-live="polite">Opens straight into your C64 library.</p>
+          <details data-c64-app-install-help>
+            <summary>iPHONE / iPAD &amp; ANDROID INSTALLATION</summary>
+            <p><strong>iPhone / iPad:</strong> Open this page in Safari, tap Share and choose Add to Home Screen. Enable Open as Web App if offered, then tap Add.</p>
+            <p><strong>Android:</strong> Open this page in Chrome, tap Install app if offered, or open the browser menu and choose Add to Home screen / Install app.</p>
+            <p>Game downloads and first-time loading still require an internet connection. The emulator uses the same C64 game library and locally saved settings as this website in supported browsers.</p>
+          </details>
+        </div>
         <div class="ccg-c64-library-search-wrap" data-library-search-wrap>
           <input type="search" id="ccg-c64-library-search" data-online-library-search
             role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
@@ -339,6 +359,7 @@
     </section>
   </div>
 
+  <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v1" defer></script>
   <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobileplay_v2"></script>
 </body>
 </html>
