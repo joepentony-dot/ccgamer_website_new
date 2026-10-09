@@ -69,6 +69,7 @@ jobs:
           node tests/dungeon-carnage-recorded-voice-coverage-audit.mjs
           node tests/dungeon-carnage-r120-alchemist-voice-accuracy.test.mjs
           node tests/dungeon-carnage-r120-voice-on-playback.test.mjs
+          node tests/dungeon-carnage-r121-voice-latch-retry.test.mjs
           node tests/dungeon-member-playtester-admin.test.mjs
           node tests/dungeon-tester-code-gate.test.mjs
           node tests/play-games-maintenance.test.mjs
