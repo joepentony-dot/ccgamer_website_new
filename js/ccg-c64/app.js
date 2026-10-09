@@ -395,8 +395,6 @@ touchJumpAutoButton?.addEventListener("click", () => {
   persistJumpOverrides();
   updateJumpControls();
 });
-updateJumpControls();
-
 function updateJoystickUi() {
   if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
   if (joystickSwapButton) {
@@ -542,6 +540,9 @@ const touchFunctionKeyHolds = new Map();
 let shiftLeftPhysical = false;
 let shiftRightPhysical = false;
 let gamepadConnected = false;
+// Initialise after gamepad state exists; a saved hidden-JUMP preference may
+// need to synchronise touch input during first page load.
+updateJumpControls();
 
 function setC64Shift(left, right) {
   if (!machine) return;
