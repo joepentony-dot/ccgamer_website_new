@@ -2108,6 +2108,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
    Position-fixed is deliberate: iOS Safari does not allow fullscreen on divs. */
 .ccg-c64-mobile-playbar[hidden],
 .ccg-c64-mobile-keyboard[hidden] { display: none !important; }
+/* The additional switch exists in the DOM for mobile play only. */
+.ccg-c64-mobile-joystick-swap { display: none !important; }
 .ccg-c64-mobile-playbar,
 .ccg-c64-mobile-keyboard { display: none; }
 
@@ -2246,6 +2248,36 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     margin: 0;
     padding: 0;
     justify-content: center;
+  }
+  /* Always reachable at the lower-right of the mobile control deck.
+     The existing desktop switch remains in its original location. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options {
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick-swap {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.4rem clamp(0.35rem, 2vw, 0.8rem);
+    border: 1px solid #8d82ff;
+    border-radius: 8px;
+    background: #252858;
+    color: #f5f2ff;
+    font: 800 clamp(0.59rem, 2vw, 0.73rem) var(--ccg-font-mono, "Courier New", monospace);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick-swap:active {
+    background: #4b418a;
   }
   .ccg-c64-console.is-mobile-playing .ccg-c64-function-drawer { display: none; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-keyboard {
