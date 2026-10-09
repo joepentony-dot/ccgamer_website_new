@@ -238,7 +238,7 @@ export function buildGameSeoPreview(source, snippetBuilder) {
   const slug = String(source?.slug || '').trim();
   const platform = platformDetails(system);
   const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
-  const yearText = /^\\d{4}$/.test(year) ? ` (${year})` : '';
+  const yearText = /^\d{4}$/.test(year) ? ` (${year})` : '';
   const seoTitle = title && ['C64', 'AMIGA'].includes(system)
     ? `${title}${yearText} – ${platform.short} | Review, Screens & History`
     : 'Enter a game title and platform.';
