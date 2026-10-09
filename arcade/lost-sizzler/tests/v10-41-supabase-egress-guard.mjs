@@ -41,6 +41,39 @@ assert(adminWindow.CCG_ADMIN_AUDIO_READY===true,'Skipping remote audio must stil
 assert(adminWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,'Automated browser must expose that remote media was deliberately skipped.');
 assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detail?.remoteMediaSkipped===true),'Remote-media skip must dispatch the normal readiness event.');
 
+// Packaged builds must retain local audio when the remote catalogue is skipped.
+// Regresses the Windows EXE smoke failure where the admin loader emptied
+// the already-correct five bundled WAV playlist selections.
+const packagedTracks={
+  normal:'assets/audio/music/exploration.wav',
+  danger:'assets/audio/music/danger.wav',
+  sanctuary:'assets/audio/music/sanctuary.wav',
+  named:'assets/audio/music/named-enemy.wav',
+  stalker:'assets/audio/music/count-loadula.wav'
+};
+let packagedRemoteCalls=0;
+const packagedWindow={
+  CCGDungeonCarnageItchPackage:true,
+  __CCG_ALLOW_REMOTE_TEST_ASSETS__:true, // Must never overrule offline isolation.
+  CCG_ASSET_OVERRIDES:{audio:{music:{playlists:
+    Object.fromEntries(Object.entries(packagedTracks).map(([state,url])=>[state,[url]]))},voice:{}}},
+  ccgSupabase:{getClient:async()=>{packagedRemoteCalls++;throw new Error('Offline game must not reach Supabase')}},
+  addEventListener(){},dispatchEvent(){}
+};
+vm.runInNewContext(adminSource,{
+  window:packagedWindow,navigator:{webdriver:true,userAgent:'HeadlessChrome/140'},
+  location:{hostname:'127.0.0.1'},CustomEvent:FakeCustomEvent,console
+},{filename:'admin-audio-overrides.js/offline'});
+await new Promise(resolve=>setImmediate(resolve));
+assert(packagedRemoteCalls===0,'Packaged game must not request remote music even with automated override flag.');
+assert(packagedWindow.CCG_ADMIN_AUDIO_READY===true&&packagedWindow.CCG_ADMIN_AUDIO.remoteMediaSkipped===true,
+  'Packaged audio must complete local-only readiness without a network request.');
+for(const [state,url] of Object.entries(packagedTracks)){
+  const selection=packagedWindow.CCG_ASSET_OVERRIDES.audio.music.playlists[state];
+  assert(Array.isArray(selection)&&selection.length===1&&selection[0]===url,
+    'Offline admin audio must preserve bundled '+state+' WAV rather than erase the playlist.');
+}
+
 class FakeAudio{
   static instances=[];
   constructor(url){this.url=url;this.paused=true;this.volume=0;this.currentTime=0;this.duration=180;this.listeners={};this.loop=false;this.preload='auto';FakeAudio.instances.push(this)}

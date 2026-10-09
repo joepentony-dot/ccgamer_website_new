@@ -357,7 +357,43 @@ try{
   assert.equal(tutorialFire.held,false,"Tutorial FIRE must not leave the held/repeat input latched");
   assert.equal(tutorialFire.launched,1,"one Tutorial FIRE press must create exactly one projectile");
 
-  await page.evaluate(()=>showToast("AMMO PICKUP","Reserve shots collected.","cyan",6000));
+  // The tutorial may still have a high-priority major notice active. That
+  // banner deliberately masks routine pickups; first verify the priority
+  // boundary, then exercise the normal rail after the owner's canonical
+  // floor-transition reset. Never bypass the actual notification runtime.
+  const notificationBoundary=await page.evaluate(()=>{
+    const owner=window.CCGLostSizzlerV141LandingNotificationPolish;
+    if(typeof owner?.resetForFloor!=="function")return{available:false};
+    const active=Number(owner.state?.majorUntil||0)>performance.now();
+    const panel=document.getElementById("ccg-major-notification");
+    const priorTitle=panel?.querySelector(".major-copy b")?.textContent||"";
+    let priorityPreserved=true;
+    if(active){
+      const ignored=showToast("AMMO PICKUP","Reserve shots collected.","cyan",6000);
+      priorityPreserved=ignored===false&&
+        panel?.dataset.visible==="true"&&
+        panel.querySelector(".major-copy b")?.textContent===priorTitle&&
+        getComputedStyle(document.getElementById("pickup-toast")).display==="none";
+    }
+    const reset=owner.resetForFloor();
+    return{available:true,active,priorityPreserved,reset,
+      majorHidden:panel?.dataset.visible==="false",
+      majorFlagCleared:document.body.dataset.ccgMajorNotification!=="true"};
+  });
+  assert.equal(notificationBoundary.available,true,"canonical major-notification owner must be present");
+  assert.equal(notificationBoundary.priorityPreserved,true,
+    "an active major alert must not be displaced by a routine pickup");
+  assert.equal(notificationBoundary.reset,true,"the canonical floor boundary must reset major notifications");
+  assert.equal(notificationBoundary.majorHidden,true,"reset must close the major notice");
+  assert.equal(notificationBoundary.majorFlagCleared,true,"reset must release pickup visibility");
+  const pickupDelivered=await page.evaluate(()=>{
+    const delivered=showToast("AMMO PICKUP","Reserve shots collected.","cyan",6000);
+    return{delivered,title:document.getElementById("pickup-title")?.textContent||"",
+      description:document.getElementById("pickup-text")?.textContent||""};
+  });
+  assert.equal(pickupDelivered.delivered,true,"the ordinary pickup must reach the live notification rail");
+  assert.equal(pickupDelivered.title,"AMMO PICKUP","ordinary pickup title must be displayed");
+  assert.equal(pickupDelivered.description,"Reserve shots collected.","ordinary pickup text must be displayed");
   const rail=await page.evaluate(()=>{
     const canvas=document.querySelector(".canvas-wrap")?.getBoundingClientRect();
     const rail=document.querySelector(".game-message-rail")?.getBoundingClientRect();
