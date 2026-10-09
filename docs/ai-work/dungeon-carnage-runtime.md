@@ -1,3 +1,9 @@
+## R123 notification priority/rail qualification checkpoint — 9 October 2026
+
+- On draft #2644 base `main` `4847a3ef7460438cb8f1b3da55e4f1ade869162a`, exact head `02b4186768bd3c8c2b18654d31e3539a2dab5ec0` passed Node, Windows EXE preview, itch.io, cache, site safety and SEO but **failed focused PR Chromium smoke** at routine pickup display `none` versus expected `grid`. The current major notification runtime intentionally hides `#pickup-toast` during a high-priority alert and delays low-priority messages; a recent tutorial/death event can leave that state present. Full CI Chromium shard 2 remained in progress at inspection.
+- Scoped correction only in existing `arcade/lost-sizzler/tests/browser/v10-42-r51-fire-lockout-browser.mjs`: preserve major alert precedence assertions, use canonical `resetForFloor` boundary before routine pickup layout assessment, require actual routine title/text/delivery and preserve all existing geometry, grid and pointer-event assertions. Do not call a mocked UI state, lengthen a wait timeout, or modify the actual game notifications.
+- Parent 02b qualification **NOT transferable** to the new exact head. This remains an unmerged draft; no player-facing deployed change. Original audio/voice recovery, Flask #2642 live check, public 24-hour access timer and screenshots/performance baseline remain outstanding.
+
 ## R123 current-main emulator preservation — 9 October 2026, 12:28 BST
 
 - Reconciled draft Dungeon PR #2644 with `main` `4847a3ef7460438cb8f1b3da55e4f1ade869162a` by copying the **exact seven main Git blobs** changed by merged C64 emulator #2648/#2649 (mobile immersive gameplay, keyboard, joystick-port switch, adapter/CSS, service worker and two tests), with two Git parents. The Dungeon branch did not edit any of these paths. No game runtime, renderer, save, audio, art, timer or member-data edits in this reconciliation.
