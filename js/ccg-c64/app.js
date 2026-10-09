@@ -425,7 +425,8 @@ function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
   // Use every available pixel in fullscreen regardless of desktop breakpoints.
   // In the page, mobile layouts still size naturally from the canvas ratio.
-  if (!mobilePlayActive && document.fullscreenElement !== screenStage &&
+  if (!(typeof mobilePlayActive !== "undefined" && mobilePlayActive) &&
+      document.fullscreenElement !== screenStage &&
       !window.matchMedia?.("(min-width: 960px)")?.matches) {
     screenBezel.style.width = "";
     return;
@@ -720,7 +721,7 @@ function releaseKeyboardInput() {
   keyboardJoystickKeys.clear();
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
-  releaseMobileVirtualKeys();
+  if (typeof releaseMobileVirtualKeys === "function") releaseMobileVirtualKeys();
   applyJoystickInput();
 }
 
