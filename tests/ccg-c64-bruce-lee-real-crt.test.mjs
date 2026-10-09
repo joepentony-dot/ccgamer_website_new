@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import vm from "node:vm";
 import { C64Machine } from "../js/ccg-c64/core/machine.js";
 import { KEY_MAP } from "../js/ccg-c64/core/cia.js";
 
@@ -133,6 +134,82 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
     }
     return originalRead(reg);
   };
+  // Bind the actual browser F-key pointer handler, not an imitation of its
+  // input code. Short finger taps should survive the 120 ms minimum hold.
+  const app=fs.readFileSync("js/ccg-c64/app.js","utf8");
+  const handlerStart=app.indexOf("// On phones, make short taps long enough");
+  const handlerEnd=app.indexOf("void refreshVaultStatus();",handlerStart);
+  assert(handlerStart>=0 && handlerEnd>handlerStart,"Real touch handler must exist");
+  class TouchButton {
+    constructor(name) {
+      this.name=name;
+      this.events={};
+      this.isPressed=false;
+      this.classList={
+        add:()=>{this.isPressed=true;},
+        remove:()=>{this.isPressed=false;},
+      };
+    }
+    getAttribute(name) { return name==="data-c64-fkey" ? this.name : null; }
+    addEventListener(type,fn) { (this.events[type] ||= []).push(fn); }
+    dispatch(type) {
+      for(const fn of this.events[type] || [])
+        fn({preventDefault() {},pointerId:1});
+    }
+    setPointerCapture() {}
+  }
+  const touchButtons=Object.fromEntries(
+    ["F1","F3","F5","F7"].map(name=>[name,new TouchButton(name)]));
+  let touchClock=1000, nextTimeout=1;
+  const scheduledTimeouts=new Map();
+  const context=vm.createContext({
+    document:{querySelectorAll:selector=>{
+      assert.equal(selector,"[data-c64-fkey]");
+      return Object.values(touchButtons);
+    }},
+    KEY_MAP,machine,running:true,paused:false,setup:{hidden:true},
+    inputStatus:{textContent:""},
+    performance:{now:()=>touchClock},
+    keyboardPriorityUntil:0,
+    applyJoystickInput() {},
+    touchFunctionKeyHolds:new Map(),
+    heldMatrixKeys:new Map(),
+    setTimeout:(fn,delay)=>{
+      const id=nextTimeout++;
+      scheduledTimeouts.set(id,{fn,due:touchClock+delay});
+      return id;
+    },
+    clearTimeout:(id)=>scheduledTimeouts.delete(id),
+  });
+  vm.runInContext(app.slice(handlerStart,handlerEnd),context);
+  const runDueTimers=()=>{
+    for(const [id,timer] of [...scheduledTimeouts]) {
+      if(timer.due<=touchClock) {
+        scheduledTimeouts.delete(id);
+        timer.fn();
+      }
+    }
+  };
+  const quickTapInGame=(name)=>{
+    const button=touchButtons[name];
+    const [col,row]=KEY_MAP[name];
+    button.dispatch("pointerdown");
+    assert(machine.cia1.isKeyDown(col,row),name+" touch never reached the CIA");
+    touchClock+=10;
+    button.dispatch("pointerup");
+    assert(machine.cia1.isKeyDown(col,row),
+      name+" short tap released before the C64 could scan the keyboard");
+    progress(machine,6); // 6 PAL frames = 120 ms, a realistic brief tap
+    const held=gameImage(machine);
+    touchClock+=110;
+    runDueTimers();
+    assert(!machine.cia1.isKeyDown(col,row),name+" touch remained stuck");
+    assert(!button.isPressed,name+" visual button remained stuck");
+    progress(machine,20);
+    assert.equal(context.touchFunctionKeyHolds.size,0,
+      "Completed touch tap left a held-button record");
+    return {held,after:gameImage(machine)};
+  };
   const results=[];
   const reverseScan=machine.cia1._readKeyboardColumns;
   for(const name of ["F3","F5","F7"]) {
@@ -156,9 +233,19 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
     progress(machine,20);
     const after=gameImage(machine);
     active=null;
+    // Replay a ten-millisecond mobile tap from the SAME save-state. The
+    // actual app.js handler must lengthen it so the game can detect it.
+    const physicalEnd=machine.serializeState();
+    machine.restoreState(save);
+    active="touch-"+name;
+    const touch=quickTapInGame(name);
+    active=null;
+    machine.restoreState(physicalEnd);
     const response={
       name,baselineHeld:diff(before,oldHeld),baselineAfter:diff(before,oldAfter),
-      held:diff(before,held),after:diff(before,after),read:reads[name],
+      held:diff(before,held),after:diff(before,after),
+      touchHeld:diff(before,touch.held),touchAfter:diff(before,touch.after),
+      touchReads:reads["touch-"+name],read:reads[name],
       baselineReads:reads["baseline-"+name],pc:after.pc,mode:after.d011,bank:after.memBank,
     };
     results.push(response);
@@ -179,5 +266,13 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
     console.log("Bruce Lee "+entry.name+" matrix benefit:",JSON.stringify({fixed,baseline}));
     assert(fixed>baseline,
       entry.name+" has no stronger game response with reverse CIA scanning; this change is not a verified fix");
+    const quickTap=Math.max(amount(entry.touchHeld),amount(entry.touchAfter));
+    console.log("Bruce Lee "+entry.name+" mobile-tap benefit:",
+      JSON.stringify({quickTap,baseline,fixed,portA:entry.touchReads?.portA,
+        portB:entry.touchReads?.portB}));
+    assert(quickTap>baseline,
+      entry.name+" ten-millisecond mobile tap was not detected by the real cartridge menu");
+    assert((entry.touchReads?.portA || 0)+(entry.touchReads?.portB || 0)>0,
+      entry.name+" short mobile tap never reached the game's CIA poll loop");
   }
 });
