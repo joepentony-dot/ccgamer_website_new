@@ -84,6 +84,7 @@
 
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
+    <link rel="stylesheet" href="/resources/css/home-support-panel.css" />
     <link rel="stylesheet" href="/resources/css/home-c64-emulator-promo.css" />
     <link rel="stylesheet" href="resources/css/home-debug.css" />
     <link rel="stylesheet" href="resources/css/ccg-mobile-lite.css">
@@ -523,26 +524,24 @@
                 </div>
             </section>
 
-            <!-- COMPACT SUPPORT STRIP -->
-            <section class="home-cta-upgrade home-cta-upgrade--streamlined" aria-label="Support Cheeky Commodore Gamer">
+            <!-- OPTIONAL HOME SUPPORT: INLINE ONLY, NO POPUPS OR FUNDRAISING TRACKER -->
+            <section class="home-cta-upgrade home-cta-upgrade--streamlined" aria-labelledby="home-support-heading">
                 <div class="home-support-strip__copy">
-                    <span class="home-highlight-card__eyebrow">Keep the archive growing</span>
-                    <h2 class="home-support-strip__title">Enjoying CCG?</h2>
-                    <p class="home-support-strip__text">Support the project or follow the channel for more Commodore videos and deep dives.</p>
+                    <span class="home-highlight-card__eyebrow">Optional community support</span>
+                    <h2 class="home-support-strip__title" id="home-support-heading">Enjoying CCG?</h2>
+                    <p class="home-support-strip__text">The archive is free for everyone. If you'd like to help with website costs and future updates, you're welcome to chip in. No obligation.</p>
                 </div>
                 <div class="home-support-strip__actions">
                     <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
                        target="_blank"
                        rel="noopener noreferrer"
-                       class="ccg-btn ccg-btn-blue">
-                        Support CCG
-                    </a>
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="ccg-btn ccg-btn-red">
-                        YouTube
-                    </a>
+                       class="ccg-btn ccg-btn-blue home-support-strip__donate"
+                       data-ccg-revenue-link="paypal-beer">Buy Joe a Beer</a>
+                    <div class="home-support-strip__links" aria-label="More ways to support or follow CCG">
+                        <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="patreon">Patreon</a>
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+                        <a href="/support.html">More options</a>
+                    </div>
                 </div>
             </section>
 
