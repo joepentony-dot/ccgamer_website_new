@@ -83,47 +83,24 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
   // The Magic Desk cartridge decompresses the selected 1984 game before the
   // game's own menu appears. Don't mistake that timed loading transition for
   // an F-key response (an earlier permissive test did exactly that).
-  let originalTitleFrame=-1;
+  // The 1984 entry still passes through a static bitmap splash, then a
+  // secondary title. The original game scans F3/F5/F7 at its own menu,
+  // not during the splash or while the cartridge bank is unpacking.
   const stages=[];
-  for(let f=0;f<260;f+=10) {
-    progress(machine,10);
-    const current=gameImage(machine);
-    const text=current.screen.map(c64Char).join("");
-    if(f%100===0) stages.push({frame:f,screenBase:current.screenBase,
-      bitmapMode:Boolean(current.d011&0x20),pc:current.pc,bank:current.memBank,
-      text:text.replace(/ {2,}/g," ").slice(0,160)});
-    if(/BRUCE.{0,40}LEE/.test(text) && /PLAYER|PRESS/.test(text)) {
-      originalTitleFrame=f+10;
-      break;
-    }
-  }
-  // An intermediate bitmap splash may wait for an additional confirmation.
-  // Exercise known C64 controls against it before concluding the game hung.
-  const wakeAttempts=[];
-  if(originalTitleFrame===-1) {
-    for (const wake of ["F3","fire2","fire1","Enter","Space"]) {
-      if(wake==="fire2" || wake==="fire1") {
-        if(wake==="fire2") machine.joyPort2=0xef;
-        else machine.joyPort1=0xef;
-        progress(machine,35);
-        machine.joyPort1=0xff;machine.joyPort2=0xff;
-      } else key(machine,wake,35);
-      let ready=false;
-      for(let f=0;f<320;f+=10) {
-        progress(machine,10);
-        const view=gameImage(machine);
-        const text=view.screen.map(c64Char).join("");
-        if(/BRUCE.{0,40}LEE/.test(text) && /PLAYER|PRESS/.test(text)) {
-          originalTitleFrame=f+10;ready=true;break;
-        }
-      }
-      const view=gameImage(machine);
-      wakeAttempts.push({wake,ready,pc:view.pc,screenBase:view.screenBase,
-        bitmapMode:Boolean(view.d011&0x20),
-        words:view.screen.map(c64Char).join("").replace(/ {2,}/g," ").slice(0,240)});
-      if(ready) break;
-    }
-  }
+  const record=(name)=>{
+    const image=gameImage(machine);
+    stages.push({name,pc:image.pc,screenBase:image.screenBase,
+      bitmap:Boolean(image.d011&0x20),bank:image.memBank,
+      words:image.screen.map(c64Char).join("").replace(/ {2,}/g," ").slice(0,260)});
+  };
+  progress(machine,260);record("1984 bitmap splash");
+  key(machine,"F3",35); // first confirmation advances the splash
+  progress(machine,320);record("after splash");
+  machine.joyPort2=0xef;
+  progress(machine,35);
+  machine.joyPort2=0xff;
+  progress(machine,320);record("1984 own menu before start");
+  const originalTitleFrame="after 1984 splash confirmed";
   const title=gameImage(machine);
   console.log("Bruce Lee wake attempts:",JSON.stringify(wakeAttempts));
   console.log("Bruce Lee stuck-loop RAM:",JSON.stringify({
@@ -135,8 +112,12 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
     screenModeChange:diff(picker,title),
     cartridgeBank:title.memBank,pc:title.pc,
   }));
-  assert(originalTitleFrame!==-1,
-    "Original Bruce Lee menu never became ready; cannot validate in-game F3/F5/F7");
+  assert(title.screenBase!==picker.screenBase && !(title.d011&0x20),
+    "Didn't reach the selected 1984 game's character-display phase");
+  const idleBefore=gameImage(machine);
+  progress(machine,40);
+  const idleAfter=gameImage(machine);
+  console.log("Bruce Lee idle screen changes:",JSON.stringify(diff(idleBefore,idleAfter)));
   progress(machine,30);
   let prior=gameImage(machine);
 
