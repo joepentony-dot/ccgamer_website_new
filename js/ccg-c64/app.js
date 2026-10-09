@@ -172,6 +172,8 @@ function syncTouchJoystick() {
   touchHeldMask = 0;
   for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask;
   touchJoyByte = 0xFF & ~touchHeldMask;
+  // Re-sample physical gamepad alongside each touch edge, not one RAF later.
+  pollGamepad();
   applyJoystickInput();
 }
 function configureJump(gameId) {
@@ -522,7 +524,10 @@ function setC64Shift(left, right) {
   machine.cia1.setKey(6, 4, Boolean(right));
 }
 
-function releaseAllInput() {
+// Form focus releases held C64 keys, not gamepad or touch joystick directions.
+// Clearing those controller bytes while a key is pressed causes a perceptible
+// one-frame movement dropout until requestAnimationFrame polls again.
+function releaseKeyboardInput() {
   for (const [button, held] of touchFunctionKeyHolds) {
     if (held.timer) clearTimeout(held.timer);
     button.classList.remove("is-pressed");
@@ -535,18 +540,26 @@ function releaseAllInput() {
     }
     setC64Shift(false, false);
     machine.cia1.setKey(7, 2, false);
-    machine.joyPort1 = 0xFF;
-    gamepadJoyByte = 0xFF;
-    touchJoyByte = 0xFF;
-    touchHeldMask = 0;
-    touchHeldButtons.clear();
-    machine.joyPort2 = 0xFF;
     machine.setRestoreNmiLine(false);
   }
   heldMatrixKeys.clear();
   keyboardJoystickKeys.clear();
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
+  applyJoystickInput();
+}
+
+function releaseAllInput() {
+  releaseKeyboardInput();
+  if (machine) {
+    machine.joyPort1 = 0xFF;
+    gamepadJoyByte = 0xFF;
+    touchJoyByte = 0xFF;
+    touchHeldMask = 0;
+    touchHeldButtons.clear();
+    machine.joyPort2 = 0xFF;
+    machine._updateLightpen?.();
+  }
 }
 
 function physicalMatrixBinding(event) {
@@ -660,6 +673,10 @@ function usesTextInput(target) {
 
 function handleC64Key(event, pressed) {
   if (!running || !machine) return;
+  // Sample the current pad on the SAME event turn as every physical key edge:
+  // a keyboard press/release must never leave stale joystick data waiting for
+  // the next animation frame, even when gameplay combines SPACE with motion.
+  pollGamepad();
 
   // A clicked toolbar button retains browser focus. That must NOT prevent game
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
@@ -1920,8 +1937,10 @@ window.addEventListener("keydown", (event) => handleC64Key(event, true), { captu
 window.addEventListener("keyup", (event) => handleC64Key(event, false), { capture: true });
 window.addEventListener("blur", releaseAllInput);
 document.addEventListener("focusin", (event) => {
-  if (running && usesNativeKeyboard(event.target)) releaseAllInput();
+  if (running && usesNativeKeyboard(event.target)) releaseKeyboardInput();
 });
+window.addEventListener("gamepadconnected", pollGamepad);
+window.addEventListener("gamepaddisconnected", pollGamepad);
 
 document.addEventListener("visibilitychange", () => {
   if (!running) return;
@@ -2286,6 +2305,7 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     const prior = touchFunctionKeyHolds.get(button);
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
+    pollGamepad();
     machine.cia1.setKey(col, row, true);
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;

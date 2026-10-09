@@ -63,7 +63,7 @@ function waitForState(worker, wanted, timeoutMs = 8000) {
 async function start() {
   if (isolated()) {
     clearReloadCount();
-    await import("/js/ccg-c64/app.js");
+    await import("/js/ccg-c64/app.js?ccg_rev=20261009_live2");
     return;
   }
 

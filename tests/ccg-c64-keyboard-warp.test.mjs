@@ -76,6 +76,7 @@ const machine = {
   cia1, joyPort1: 0xff, joyPort2: 0xff,
   setRestoreNmiLine(value) { this.restore = value; },
 };
+let keyEdgePadSamples = 0;
 const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
@@ -91,8 +92,15 @@ const context = vm.createContext({
   },
   performance: { now: () => 1000 },
   applyJoystickInput() {},
+  pollGamepad() {
+    // Real pad RIGHT stays held throughout a keyboard SPACE transition.
+    keyEdgePadSamples++;
+    machine.joyPort2 = 0xf7;
+  },
 });
-vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
+vm.runInContext(app.slice(first, last) +
+  "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;" +
+  "globalThis.releaseKeysOnly = releaseKeyboardInput;", context);
 function event(code, key, opts = {}) {
   const value = {
     code, key, target: opts.target || canvas,
@@ -125,6 +133,8 @@ function keyTest(code, key, col, row) {
 }
 keyTest("Enter", "Enter", 0, 1);
 keyTest("Space", " ", 7, 4);
+assert(keyEdgePadSamples >= 2, "Gamepad must be sampled synchronously on Space down AND up");
+assert.equal(machine.joyPort2, 0xf7, "Held gamepad RIGHT cannot drop while SPACE is tapped");
 keyTest("F1", "F1", 0, 4);
 keyTest("F3", "F3", 0, 5);
 keyTest("F5", "F5", 0, 6);
@@ -200,10 +210,15 @@ context.setup.hidden = false;
 assert(!down("F1", "F1").prevented, "ROM setup must keep keyboard input");
 context.setup.hidden = true;
 
-// A key held while focus moves must not become permanently stuck.
+// Form focus must release stale C64 keys WITHOUT neutralising gamepad motion.
+down("Space", " ");
+context.releaseKeysOnly();
+assert.equal(keys.size, 0, "Focusing a page control must release held C64 keys");
+assert.equal(machine.joyPort2, 0xf7, "Focusing a page control must preserve RIGHT gamepad input");
 down("Space", " ");
 context.release();
 assert.equal(keys.size, 0, "Leaving gameplay must release all held C64 keys");
+assert.equal(machine.joyPort2, 0xff, "Actual blur/power-off must still neutralise joystick inputs");
 assert.equal(machine.restore, false);
 
 // Warp should execute multiple frames in each budgeted browser tick, while
