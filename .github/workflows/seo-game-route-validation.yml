@@ -13,6 +13,7 @@ on:
       - "scripts/prepare-seo-game-routes.js"
       - "js/ccg-game-seo-snippet.js"
       - "tests/game-seo-snippet-quality.test.mjs"
+      - "tests/game-seo-canonical-metadata-contract.test.mjs"
       - "scripts/validate-seo-game-routes.js"
       - "scripts/prepare-seo-genre-links.js"
       - "scripts/validate-seo-genre-links.js"
@@ -79,7 +80,7 @@ jobs:
           node --check scripts/rebuild-games.js
 
       - name: Validate shared C64 and Amiga SEO snippets
-        run: node --test tests/game-seo-snippet-quality.test.mjs
+        run: node --test tests/game-seo-snippet-quality.test.mjs tests/game-seo-canonical-metadata-contract.test.mjs
 
       - name: Generate canonical game routes
         shell: bash
