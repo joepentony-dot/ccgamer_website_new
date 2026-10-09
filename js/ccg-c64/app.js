@@ -145,7 +145,6 @@ let mountedCartridge = null;
 let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
 let keyboardJoystickEnabled = localStorage.getItem("ccg.emulator.c64.keyboardJoystick") === "1";
 const keyboardJoystickKeys = new Set();
-let keyboardPriorityUntil = 0;
 const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
   ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
   ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
@@ -394,12 +393,11 @@ function keyboardJoystickByte() {
 
 function applyJoystickInput() {
   if (!machine) return;
-  // A browser gamepad can keep a direction/fire held down continuously.
-  // Give physical C64 keys priority while held and briefly after the last
-  // keypress, preventing those joystick bits from masking the keyboard CIA.
-  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
-    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
-  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
+  // Active-low bits are held joystick directions/fire. Combine the live
+  // gamepad, touchscreen and optional keyboard-joystick state every frame;
+  // physical C64 keyboard keys use the separate CIA matrix without muting
+  // a gamepad direction (e.g. run right while SPACE drops a bomb).
+  const byte = gamepadJoyByte & touchJoyByte & keyboardJoystickByte();
   machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
   machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
   // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
@@ -419,7 +417,6 @@ joystickSwapButton?.addEventListener("click", swapJoystickPort);
 keyboardJoystickButton?.addEventListener("click", () => {
   keyboardJoystickEnabled = !keyboardJoystickEnabled;
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   localStorage.setItem("ccg.emulator.c64.keyboardJoystick", keyboardJoystickEnabled ? "1" : "0");
   applyJoystickInput();
   updateJoystickUi();
@@ -548,7 +545,6 @@ function releaseAllInput() {
   }
   heldMatrixKeys.clear();
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
 }
@@ -685,18 +681,13 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
   }
 
-  // Physical keyboard always wins over the gamepad, including when a gamepad
-  // button remains pressed. The optional keyboard joystick converts arrow,
-  // WASD and fire presses to the currently selected joystick port, but does
-  // not suppress normal C64 keys (including S for game-start menus).
-  if (KEY_MAP[event.code] || CHAR_MAP[event.key] ||
-      ["ArrowLeft", "ArrowUp", "F2", "F4", "F6", "F8", "F12"].includes(event.code)) {
-    keyboardPriorityUntil = performance.now() + 1200;
-    const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
-    if (joystickMask && keyboardJoystickEnabled) {
-      if (pressed) keyboardJoystickKeys.add(event.code);
-      else keyboardJoystickKeys.delete(event.code);
-    }
+  // Physical C64 keys always reach the CIA matrix. If keyboard joystick
+  // mode is enabled, selected keys also add joystick bits; they must never
+  // suppress an independently held gamepad/touch direction.
+  const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
+  if (joystickMask && keyboardJoystickEnabled) {
+    if (pressed) keyboardJoystickKeys.add(event.code);
+    else keyboardJoystickKeys.delete(event.code);
     applyJoystickInput();
   }
 
@@ -2296,8 +2287,6 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
     machine.cia1.setKey(col, row, true);
-    keyboardPriorityUntil = performance.now() + 1200;
-    applyJoystickInput();
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
