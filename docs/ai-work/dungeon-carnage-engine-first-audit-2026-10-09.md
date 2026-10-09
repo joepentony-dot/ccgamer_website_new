@@ -1,3 +1,9 @@
+## Authoritative 9 October framework / game-loop decision
+
+Keep the **current JavaScript engine**, not Unity, Godot, Phaser or a rewrite. Separate Unity repo is an experimental architectural reference, with many stacked draft PRs and outstanding real Unity Editor qualification. The user-supplied Game Loop diagram sets the target ownership model: input -> authoritative simulation/game state -> tile collision, AI, combat, dungeon rules -> state-driven animation/render/audio -> shared browser/itch/Windows source. Audit current `loop(t)` variable-delta/frame coupling with real timing tests before any fixed-step proposal. Read the [governing decision record](dungeon-carnage-engine-first-architecture-decision-2026-10-09.md).
+
+The first Windows EXE qualification of #2644 exposed an existing genuine audio bug: `admin-audio-overrides.js` cleared packaged local playlists in its remote-skip path. A narrowly packaged-only fix and five-mood/zero-network regression have been committed to the draft; isolated real-owner tests passed but exact-head Node, Chromium and Windows smoke qualification remains open. Do not claim original uploaded MP3s are recovered. The active scheduled development task is **Dungeon Engine-First Development**, hourly, replacing the old disabled Dungeon hourly task rather than duplicating Unity work.
+
 # C64 Dungeon Carnage — engine-first architecture evidence and next actions
 **Audit date:** 9 October 2026 (UK)  
 **Read baseline:** `main` at `ff91aa0f5041b672bacdec9f956f472820c504d3` (merged R121).  
