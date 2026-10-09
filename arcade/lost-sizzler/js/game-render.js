@@ -140,9 +140,14 @@ function sampleDungeonRenderPerformance(timestamp){
 function dungeonRenderQuality(){return dungeonRenderPerformance.quality||"rich"}
 function dungeonRenderSevere(){return dungeonRenderQuality()==="severe"}
 function dungeonRenderRichFx(){return dungeonRenderQuality()==="rich"}
+// Respect the OS reduced-motion preference independently of graphics quality.
+// Keep the MediaQueryList live: changing accessibility settings needs no reload.
+const dungeonMotionQuery=typeof window.matchMedia==="function"?window.matchMedia("(prefers-reduced-motion: reduce)"):null;
+function dungeonReducedMotion(){return dungeonMotionQuery?.matches===true}
 window.CCGLostSizzlerV142R70RenderPerformance={
   sampleFrame:sampleDungeonRenderPerformance,
   quality:dungeonRenderQuality,
+  reducedMotion:dungeonReducedMotion,
   get state(){return dungeonRenderPerformance}
 };
 function cameraClampFor(targetX,targetY,v){
@@ -1056,12 +1061,16 @@ function drawPlayer(p,kind="p1"){
   if(hurt){ctx.fillStyle=P.cyan;ctx.fillRect(cx-12,cy-19,4,3);ctx.fillRect(cx+8,cy-18,4,3)}ctx.restore();if(kind==="remote")label(p.name,{x:s.x,y:s.y-2},col);drawTransientHealth(p,s,col);drawPlayerResources(p,s,col,kind)
 }
 function drawWallLights(){
-  const quality=dungeonRenderQuality(),richFx=quality==="rich",severe=quality==="severe",now=performance.now();
+  const quality=dungeonRenderQuality(),richFx=quality==="rich",animateFx=richFx&&!dungeonReducedMotion(),severe=quality==="severe",now=performance.now();
   for(const l of world.wallLights||[]){
     if(!tileInRenderView(l.x,l.y,4))continue;
     if(!visibleTo(focus,l.x,l.y)&&md(focus,l)>12)continue;
-    const s=ws(l.x,l.y),phase=richFx?now/90+l.x*2.7+l.y:(l.x*2.7+l.y),f=richFx?4+Math.sin(phase)*1.25:4,cx=s.x+C.tile/2;
+    const s=ws(l.x,l.y),phase=animateFx?now/90+l.x*2.7+l.y:(l.x*2.7+l.y),f=animateFx?4+Math.sin(phase)*1.25:4,cx=s.x+C.tile/2;
     ctx.save();ctx.imageSmoothingEnabled=false;
+    // A static soot-darkened stone niche and warm mortar glint add depth.
+    // Both are fixed pixels so reduced-motion players retain the same detail.
+    ctx.fillStyle="rgba(18,10,14,.33)";ctx.fillRect(cx-11,s.y+5,22,17);
+    ctx.fillStyle="rgba(146,79,42,.24)";ctx.fillRect(cx-8,s.y+7,16,3);
     ctx.fillStyle="#241712";ctx.fillRect(cx-7,s.y+13,14,4);ctx.fillRect(cx-3,s.y+10,6,17);
     ctx.fillStyle="#8b6031";ctx.fillRect(cx-5,s.y+14,10,2);ctx.fillRect(cx-2,s.y+11,4,14);
     ctx.fillStyle="#d2a35a";ctx.fillRect(cx-1,s.y+12,2,10);
@@ -1069,7 +1078,7 @@ function drawWallLights(){
     ctx.fillStyle="#d54b27";ctx.beginPath();ctx.moveTo(cx,s.y+12);ctx.quadraticCurveTo(cx-f,s.y+3,cx,s.y-8);ctx.quadraticCurveTo(cx+f,s.y+3,cx,s.y+12);ctx.fill();
     ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(cx-3,s.y+10);ctx.quadraticCurveTo(cx-2,s.y+3,cx,s.y-4);ctx.quadraticCurveTo(cx+3,s.y+3,cx+3,s.y+10);ctx.fill();
     ctx.fillStyle=P.gold;ctx.fillRect(cx-1,s.y+1,2,6);
-    if(richFx)for(let n=0;n<3;n++){const a=phase*.34+n*1.8,r=7+n*2;ctx.globalAlpha=.3+n*.12;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx+Math.sin(a)*r,s.y-4-((n*5+now/70)%18),2,2)}
+    if(animateFx)for(let n=0;n<3;n++){const a=phase*.34+n*1.8,r=7+n*2;ctx.globalAlpha=.3+n*.12;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx+Math.sin(a)*r,s.y-4-((n*5+now/70)%18),2,2)}
     ctx.restore();
   }
 }
@@ -1081,7 +1090,7 @@ function dungeonAssetFitRect(image,x,y,width,height,alignBottom=false){
 }
 function drawFurniture(){
   for(const d of world.decor||[]){
-    if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
+    if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=dungeonReducedMotion()?.82:.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
     const propArt=d.type==="crate"?lostSizzlerPixelAssets.propCrate
       :d.type==="barrel"?lostSizzlerPixelAssets.propBarrel
       :["bookcase","shelf"].includes(d.type)?lostSizzlerPixelAssets.propBookcase
@@ -1132,7 +1141,7 @@ function drawFurniture(){
     }else if(d.type==="pillar"){
       ctx.fillStyle="#8d7a71";ctx.fillRect(q.x+10,q.y+4,C.tile-20,C.tile-8);ctx.fillStyle="#c2ada0";ctx.fillRect(q.x+8,q.y+4,C.tile-16,5);ctx.fillRect(q.x+7,q.y+C.tile-9,C.tile-14,5);ctx.fillStyle="#b48b32";ctx.fillRect(q.x+9,q.y+10,3,C.tile-20);ctx.fillRect(q.x+C.tile-12,q.y+10,3,C.tile-20)
     }else if(d.type==="candleSconce"&&torchSconceFrames.length===4&&torchSconceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
-      const frame=torchSconceFrames[Math.floor(performance.now()/120+(h%4))%torchSconceFrames.length];
+      const frame=torchSconceFrames[dungeonReducedMotion()?(h%torchSconceFrames.length):Math.floor(performance.now()/120+(h%4))%torchSconceFrames.length];
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.orange;ctx.shadowBlur=10;
       const fit=dungeonAssetFitRect(frame,q.x+4,q.y+2,C.tile-8,C.tile-4);if(fit)ctx.drawImage(frame,fit.x,fit.y,fit.w,fit.h);ctx.restore();
     }else if(d.type==="candleSconce"){
@@ -1408,24 +1417,24 @@ function drawDedicatedHazards(){
 function drawWindyCorridor(){const nest=host.spiderNest;if(!nest)return;const now=performance.now();for(const q of nest.corridorCells||[]){if(!visibleTo(focus,q.x,q.y)&&md(focus,q)>7)continue;const s=ws(q.x,q.y);ctx.save();ctx.strokeStyle="rgba(188,216,235,.45)";ctx.lineWidth=1.5;for(let n=0;n<3;n++){const drift=(now/8+n*17+q.x*9)%C.tile;ctx.beginPath();ctx.moveTo(s.x+drift-18,s.y+10+n*9);ctx.bezierCurveTo(s.x+drift-8,s.y+5+n*9,s.x+drift+4,s.y+16+n*9,s.x+drift+16,s.y+9+n*9);ctx.stroke()}ctx.restore()}}
 function lightPool(x,y,r,rgb,strength=.22,core=8){if(x+r<view.x||y+r<view.y||x-r>view.x+view.w||y-r>view.y+view.h)return;const g=ctx.createRadialGradient(x,y,core,x,y,r);g.addColorStop(0,`rgba(${rgb},${strength})`);g.addColorStop(.25,`rgba(${rgb},${strength*.62})`);g.addColorStop(.68,`rgba(${rgb},${strength*.18})`);g.addColorStop(1,`rgba(${rgb},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
 function drawDynamicLighting(){
-  const now=performance.now(),quality=dungeonRenderQuality(),richFx=quality==="rich",severe=quality==="severe";ctx.save();ctx.globalCompositeOperation="lighter";
+  const now=performance.now(),quality=dungeonRenderQuality(),richFx=quality==="rich",animateFx=richFx&&!dungeonReducedMotion(),severe=quality==="severe";ctx.save();ctx.globalCompositeOperation="lighter";
   if(focus.torchMs>0){
-    const s=ws(focus.rx,focus.ry),flicker=richFx?(.96+Math.sin(now/110)*.025):1;
+    const s=ws(focus.rx,focus.ry),flicker=animateFx?(.96+Math.sin(now/110)*.025):1;
     lightPool(s.x+C.tile/2,s.y+C.tile/2,C.player.torchRadius*C.tile*flicker,"255,177,67",severe?.15:.21,14);
     if(!severe)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*3.2,"255,229,139",.18,6)
   }
   for(const fire of world.fireplaces||[]){
     if(!tileInRenderView(fire.x,fire.y,8))continue;
-    const s=ws(fire.x,fire.y),flicker=richFx?(.96+Math.sin(now/105+fire.x)*.035):1;
+    const s=ws(fire.x,fire.y),flicker=animateFx?(.96+Math.sin(now/105+fire.x)*.035):1;
     lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*(severe?4.2:6)*flicker,"255,125,42",severe?.16:.22,8);
     if(richFx)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.5,"255,221,128",.18,4)
   }
   for(const l of world.wallLights||[]){
     if(!tileInRenderView(l.x,l.y,8))continue;
-    const s=ws(l.x,l.y),flicker=richFx?(.97+Math.sin(now/115+l.x*4)*.025):1;
+    const s=ws(l.x,l.y),flicker=animateFx?(.97+Math.sin(now/115+l.x*4)*.025):1;
     lightPool(s.x+C.tile/2,s.y+7,(l.radius||5)*C.tile*flicker,"255,157,54",severe?.11:.15,5)
   }
-  if(!severe)for(const e of host.enemies||[])if(e.alive&&e.follower&&tileInRenderView(e.x,e.y,10)){const visual=enemyVisuals.get(e.id),s=ws(visual?.rx??e.x,visual?.ry??e.y),r=(C.enemy.followerLightRadius||10)*C.tile,flicker=richFx?(.97+Math.sin(now/120+enemySpriteSeed(e)%17)*.025):1;lightPool(s.x+C.tile/2,s.y+C.tile/2,r*flicker,"255,142,48",.2,9)}
+  if(!severe)for(const e of host.enemies||[])if(e.alive&&e.follower&&tileInRenderView(e.x,e.y,10)){const visual=enemyVisuals.get(e.id),s=ws(visual?.rx??e.x,visual?.ry??e.y),r=(C.enemy.followerLightRadius||10)*C.tile,flicker=animateFx?(.97+Math.sin(now/120+enemySpriteSeed(e)%17)*.025):1;lightPool(s.x+C.tile/2,s.y+C.tile/2,r*flicker,"255,142,48",.2,9)}
   if(host.exitOpen){const s=ws(world.exit.x,world.exit.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*4.5,"164,94,255",.18,10);if(!severe)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.2,"108,236,255",.16,5)}
   if(!severe)for(const g of host.generators||[])if(g.alive&&g.powered&&tileInRenderView(g.x,g.y,5)){const s=ws(g.x,g.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.6,"255,55,63",.15,5)}
   if(!severe)for(const sh of host.shrines||[])if(sh.active&&tileInRenderView(sh.x,sh.y,5)){const s=ws(sh.x,sh.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.3,"174,94,255",.14,5)}

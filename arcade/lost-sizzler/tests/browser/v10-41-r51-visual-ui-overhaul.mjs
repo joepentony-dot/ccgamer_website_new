@@ -145,12 +145,15 @@ try{
             canvas:{width:canvas.width,height:canvas.height},
             quality:String(typeof dungeonRenderQuality==="function"?dungeonRenderQuality():"unavailable"),
             prefersReducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
+            renderMotionReduced:Boolean(window.CCGLostSizzlerV142R70RenderPerformance?.reducedMotion?.()),
             frameIntervalsMs:{count:values.length,p50:percentile(.5),p95:percentile(.95),max:percentile(1)},
             generated:{rooms:world.rooms?.length||0,wallLights:world.wallLights?.length||0,
               decor:world.decor?.length||0,wallTorches:world.decor?.filter(row=>row.type==="candleSconce").length||0}
           };
         },floor);
         assert.equal(sample.floor,floor,"visual baseline must capture the requested generated floor");
+        assert.equal(sample.renderMotionReduced,sample.prefersReducedMotion,
+          "the actual Canvas renderer must honour the device reduced-motion setting");
         assert.equal(sample.seed,`${fixedSeed}-F${floor}`,"desktop/mobile must have exactly matched seeded floor generation");
         assert.ok(sample.frameIntervalsMs.count>=40&&sample.canvas.width>0&&sample.canvas.height>0,
           "visual baseline must capture live rendered frames and a usable canvas");
