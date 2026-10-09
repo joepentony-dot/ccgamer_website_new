@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_mobilewarp_v1">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_mobilezoom_v1">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -53,7 +53,11 @@
     <section class="ccg-c64-console" aria-label="Commodore 64 display">
       <div class="ccg-c64-mobile-playbar" data-mobile-playbar hidden>
         <button type="button" class="ccg-c64-mobile-exit" data-mobile-exit-game aria-label="Exit game and return to game library">← EXIT GAME</button>
-        <span class="ccg-c64-mobile-play-title" data-mobile-play-title>NOW PLAYING</span>
+        <div class="ccg-c64-mobile-play-centre">
+          <button type="button" class="ccg-c64-mobile-zoom-toggle" data-mobile-zoom-toggle
+            aria-pressed="false" aria-label="Enable mobile game zoom" title="Enlarge the C64 picture and trim part of its outer border">ZOOM: OFF</button>
+          <span class="ccg-c64-mobile-play-title" data-mobile-play-title>NOW PLAYING</span>
+        </div>
         <button type="button" class="ccg-c64-mobile-keyboard-toggle" data-mobile-keyboard-toggle
           aria-controls="ccg-c64-mobile-keyboard" aria-expanded="false" aria-pressed="false">KEYBOARD</button>
       </div>
@@ -363,6 +367,6 @@
   </div>
 
   <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2" defer></script>
-  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilewarp_v1"></script>
+  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_v1"></script>
 </body>
 </html>
