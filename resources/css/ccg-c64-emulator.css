@@ -2140,14 +2140,41 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     background: #040616;
   }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
     order: 0;
     flex: 0 0 auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.4rem;
+    gap: 0.35rem;
     min-height: 44px;
     width: 100%;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-exit {
+    justify-self: start;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-keyboard-toggle {
+    justify-self: end;
+  }
+  .ccg-c64-mobile-play-centre {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    min-width: 0;
+    gap: 0.15rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle {
+    min-height: 34px;
+    width: max-content;
+    max-width: 100%;
+    padding: 0.28rem 0.4rem;
+    border-color: #9b8be8;
+    background: #2b285f;
+    white-space: nowrap;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle[aria-pressed="true"] {
+    border-color: #f3cb70;
+    background: #5a441b;
+    color: #fff2c8;
   }
   .ccg-c64-mobile-playbar button,
   .ccg-c64-mobile-keyboard-head button {
@@ -2168,7 +2195,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     border-color: #d0b1ff;
   }
   .ccg-c64-mobile-play-title {
-    flex: 1 1 auto;
+    display: block;
+    max-width: 100%;
     min-width: 0;
     overflow: hidden;
     white-space: nowrap;
@@ -2208,6 +2236,16 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     flex: 0 0 auto;
     border-width: 2px;
     aspect-ratio: 384 / 272;
+  }
+  /* Trim about 6.5% per edge of the emulated 384×272 PAL border.
+     Scale the picture *inside* the clipped bezel, not the bezel itself:
+     desktop, FIT measurements, touchscreen geometry and overlays are intact. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-bezel > #ccg-c64-screen {
+    transform-origin: center center;
+    transition: transform 160ms ease-out;
+  }
+  .ccg-c64-console.is-mobile-playing.is-mobile-zoomed .ccg-c64-screen-bezel > #ccg-c64-screen {
+    transform: scale(1.15);
   }
   .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls,
   .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-controls {
@@ -2367,6 +2405,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-console.is-mobile-playing:fullscreen { gap: 0.15rem; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar { min-height: 38px; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar button { min-height: 38px; padding: 0.25rem 0.5rem; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle { min-height: 36px; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title { display: none; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls { padding: 0.1rem 0.35rem; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad,
   .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-dpad {
