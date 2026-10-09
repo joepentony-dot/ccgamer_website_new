@@ -1,3 +1,9 @@
+## Engine-first runtime continuation — 9 October 2026
+
+- Active **draft PR #2644** (`audit/dungeon-engine-first-contracts-20261009`) is on `main` baseline `04d746d8ddc159d0db55bfe382c719f90f31bb33`. Previous PR head `c31aa6e66810b82ca43cb895c09358dd14b8bcbe` had fully green PR Qualification, all six Chromium shards, Windows executable smoke, package/cache/site-safety/SEO and a successful Workers preview. No production merge.
+- New same-branch regression tranche: the *existing* live Solo endurance browser contract now executes the canonical `damageEnemy` defeat path twice on two living ordinary enemies tagged with the same authored follower identity; validates persistent exact-once defeat accounting, first-time real dossier presentation, player Close interaction, and no re-open on the second defeat. Fixture selection rejects null/dead/guardian/Sigil/Death Stalker/Goblin entries. **Candidate only** until its NEW exact head is qualified; parent checks are not transferable. No runtime, HUD, assets or balance modified in this tranche.
+- On any failure, fix genuine existing runtime defects in their owner, not by weakening assertions or adding another test file. Preserve C64 input merge #2646, FIRE/JUMP #2645, access timer, saves and existing sound fallback. Continue floor-by-floor native render baseline, limited scope performance/reduced-motion assessments, Flask #2642 and owner music/voice recovery as separate outstanding gates. No merge, live manual acceptance or production deployment claimed.
+
 ## R117 runtime/qualification checkpoint — 7 October 2026 23:33 UK
 
 - Active PR #2593 on `codex/dungeon-r117-release-reconciliation-20261007`; initial qualification head `4a4912f426a093e50bb70c1400f04b59edf37889`, based on `main` `c56a5c20b2bed4da6446d2eb96498a4ce4e1dab0`. R117 is not merged or qualified.

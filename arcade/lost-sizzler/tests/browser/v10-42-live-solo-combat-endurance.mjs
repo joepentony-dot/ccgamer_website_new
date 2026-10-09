@@ -80,7 +80,7 @@ async function verifyOneTimeNamedDossier(page){
   // follower identity. Ordinary attack/input endurance is exercised below.
   const fixture=await page.evaluate(()=>{
     const follower=C.followerElites?.find(f=>typeof f?.name==="string"&&f.name);
-    const enemies=(host?.enemies||[]).filter(e=>e?.alive!==false&&!e?.guardian&&!e?.exitWarden&&!e?.sigilDefender&&!e?.deathStalker&&!e?.treasureGoblin).slice(0,2);
+    const enemies=(host?.enemies||[]).filter(e=>e&&e.alive!==false&&!e.guardian&&!e?.exitWarden&&!e?.sigilDefender&&!e?.deathStalker&&!e?.treasureGoblin).slice(0,2);
     if(!follower||enemies.length!==2||run?.namedDossierAutoShown||typeof damageEnemy!=="function")return null;
     for(const e of enemies){e.follower={...follower};e.hp=1;e.armor=0}
     return{name:follower.name,ids:enemies.map(e=>e.id),before:Number(PGR.readDossier()?.[follower.name]?.defeats||0)};
