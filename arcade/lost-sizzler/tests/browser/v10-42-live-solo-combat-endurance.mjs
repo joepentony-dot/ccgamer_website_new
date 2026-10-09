@@ -55,6 +55,19 @@ async function snap(page){
 async function settleGameplayMode(page,label){
   const current=await page.evaluate(()=>String(typeof mode!=="undefined"?mode:""));
   if(current==="playing")return;
+  if(current==="dossier"){
+    // Freeing a named enemy intentionally opens their dossier once. Test the
+    // actual player close action and resume rather than suppressing the feature.
+    const permitted=await page.evaluate(()=>Boolean(
+      run?.namedDossierAutoShown&&UI.namedDossier&&
+      !UI.namedDossier.classList.contains("hidden")
+    ));
+    assert.equal(permitted,true,`${label}: dossier appeared without the canonical named-enemy reward`);
+    await page.locator("#named-dossier-close").click();
+    await page.waitForFunction(()=>mode==="playing"&&
+      Boolean(UI.namedDossier?.classList.contains("hidden")),null,{timeout:5000});
+    return;
+  }
   if(current!=="levelup")assert.fail(`${label}: unexpected gameplay mode ${current}`);
   const choice=page.locator("#level-up-choices button").first();
   await choice.waitFor({state:"visible",timeout:5000});
