@@ -2352,7 +2352,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
    and the separate site-wide CCG PWA retain their existing behaviour. */
 .ccg-c64-install-promo, .ccg-c64-install-promo[hidden] { display: none !important; }
 @media (pointer: coarse) {
-  .ccg-c64-panel--library .ccg-c64-install-promo:not([hidden]) {
+  .ccg-c64-console:not(.is-mobile-playing) > .ccg-c64-install-promo:not([hidden]) {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
@@ -2363,6 +2363,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     border-radius: 10px;
     background: linear-gradient(130deg, #1a2559, #101338);
   }
+  .ccg-c64-console:fullscreen > .ccg-c64-install-promo { display: none !important; }
   .ccg-c64-install-promo__intro {
     display: grid;
     gap: 0.2rem;
