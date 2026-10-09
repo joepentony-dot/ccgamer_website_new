@@ -80,16 +80,33 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
   machine.joyPort2=0xef; // FIRE: select first entry, Bruce Lee 1984
   progress(machine,25);
   machine.joyPort2=0xff;
-  progress(machine,130);
+  // The Magic Desk cartridge decompresses the selected 1984 game before the
+  // game's own menu appears. Don't mistake that timed loading transition for
+  // an F-key response (an earlier permissive test did exactly that).
+  let originalTitleFrame=-1;
+  const stages=[];
+  for(let f=0;f<1200;f+=10) {
+    progress(machine,10);
+    const current=gameImage(machine);
+    const text=current.screen.map(c64Char).join("");
+    if(f%100===0) stages.push({frame:f,screenBase:current.screenBase,
+      bitmapMode:Boolean(current.d011&0x20),pc:current.pc,bank:current.memBank,
+      text:text.replace(/ {2,}/g," ").slice(0,160)});
+    if(/BRUCE.{0,40}LEE/.test(text) && /PLAYER|PRESS/.test(text)) {
+      originalTitleFrame=f+10;
+      break;
+    }
+  }
   const title=gameImage(machine);
+  console.log("Bruce Lee load stages:",JSON.stringify(stages));
   console.log("Bruce Lee CRT selection:",JSON.stringify({
-    selectorFrame,yearSelectorScreenBase:picker.screenBase,
+    selectorFrame,originalTitleFrame,yearSelectorScreenBase:picker.screenBase,
     gameScreenBase:title.screenBase,bitmapMode:Boolean(title.d011&0x20),
     screenModeChange:diff(picker,title),
     cartridgeBank:title.memBank,pc:title.pc,
   }));
-  assert(title.screenBase!==picker.screenBase || (title.d011&0x20),
-    "The test must enter the original Bruce Lee game, not stay at the trilogy selector");
+  assert(originalTitleFrame!==-1,
+    "Original Bruce Lee menu never became ready; cannot validate in-game F3/F5/F7");
   progress(machine,30);
   let prior=gameImage(machine);
 
