@@ -70,6 +70,13 @@ jobs:
         timeout-minutes: 5
         run: node --test tests/ccg-c64-original-rom-boot.test.mjs
 
+      - name: Verify real Bruce Lee Trilogy F3 F5 F7 menu via CPU and CIA
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-bruce-lee-real-crt.test.mjs
+
+      - name: Verify CIA1 reverse keyboard scan and releases
+        run: node --test tests/ccg-c64-keyboard-reverse-scan.test.mjs
+
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 

@@ -444,7 +444,10 @@ export class CIA {
     switch (reg & 0x0F) {
       case 0x00: 
         if (this.readPortA) return this.readPortA();
-        return (this.portA & this.portADir) | (0xFF & ~this.portADir);
+        // Reverse matrix scan: software may drive CIA1 Port B rows and
+        // sense Port A columns. Joystick 2 is combined separately by Memory.
+        const pinA = this.id === 1 ? this._readKeyboardColumns() : 0xFF;
+        return ((this.portA & this.portADir) | (pinA & ~this.portADir)) & 0xFF;
       case 0x01:
         if (this.id === 1) {
           // CIA1 Port B: per-bit, output pins (DDR=1) read back the output
@@ -539,7 +542,8 @@ export class CIA {
     switch (reg & 0x0F) {
       case 0x00:
         if (this.readPortA) return this.readPortA();
-        return (this.portA & this.portADir) | (0xFF & ~this.portADir);
+        const pinA = this.id === 1 ? this._readKeyboardColumns() : 0xFF;
+        return ((this.portA & this.portADir) | (pinA & ~this.portADir)) & 0xFF;
       case 0x01:
         if (this.id === 1) {
           return ((this.portB & this.portBDir) |
@@ -718,6 +722,20 @@ export class CIA {
       if (!(sel & (1 << col))) {
         result &= this.matrix[col];
       }
+    }
+    return result;
+  }
+
+  // CIA1 Port A sees the columns pulled low through pressed keys when the
+  // corresponding Port B row is selected as an OUTPUT and driven LOW.
+  // This is the electrical reverse of the normal _readKeyboard() scan.
+  _readKeyboardColumns() {
+    const selectedRows = (~((this.portB & this.portBDir) |
+      (~this.portBDir & 0xFF))) & 0xFF;
+    if (!selectedRows) return 0xFF;
+    let result = 0xFF;
+    for (let col = 0; col < 8; col++) {
+      if ((~this.matrix[col] & selectedRows) !== 0) result &= ~(1 << col);
     }
     return result;
   }
