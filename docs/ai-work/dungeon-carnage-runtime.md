@@ -1,3 +1,8 @@
+## R125 opt-in desktop/mobile evidence capture — 9 October 2026
+
+- R123 and R124 have **merged**. Latest authoritative main `05c41e9b6a590aa1a98949cc6100661e7cec539c` includes unrelated C64 app installer #2652; no dungeon overlap. Existing genuine viewport screenshots are NOT the five-floor seeded baseline. New R125 minimal GitHub Actions workflow runs the existing R51 visual-owner browser contract with the opt-in env once on its own PR creation, thereafter via manual `workflow_dispatch` only; capture floors 1,4,7,11,15 on desktop and touch mobile reduced-motion. Upload Canvas/HUD screenshot pairs plus RAF pacing JSON; validate counts and preserve failed partial evidence. Does not introduce any duplicate .mjs test or affect normal CI, any renderer, save, access, members, audio, lighting, original 16-song voice blocking items, or Flask #2642.
+- Initial workflow commit = **capture capability awaiting actual Actions run**, not measured baseline success. Collect and inspect real artifact, then allow measured visible lighting/animation improvements in subsequent guarded slice. New head must qualify before a safe merge; maintain one active Dungeon development PR.
+
 ## R124 post-engine-merge visible stonework tranche — 9 October 2026
 
 - **Merged R123** into `main` at `8152635dfbb02bccf7eb2db39b82480af815a5a1` via PR #2644; all seven pre-merge workflows green. Push Pages deployment and Production Smoke passed. Final merged-head Full Qualification/Site Safety/Live Navigation were still running/queued when inspected. No final live game acceptance claimed.
