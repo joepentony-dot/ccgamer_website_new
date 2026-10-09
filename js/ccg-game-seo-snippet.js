@@ -72,11 +72,12 @@
       ? String(game.year).trim()
       : "";
     const platform = platformLabel(game);
+    const article = platform === "Amiga" ? "an" : "a";
     const publisher = firstPublisher(game);
     const label = normalize(title) || "This game";
     const intro = label + (year ? " (" + year + ")" : "");
     const candidates = [
-      intro + " is a " + platform + " game" + (publisher ? " published by " + publisher : "") + ".",
+      intro + " is " + article + " " + platform + " game" + (publisher ? " published by " + publisher : "") + ".",
       intro + " on " + platform + "."
     ];
     return candidates.find((item) => item.length <= maxLength) || normalize(intro).slice(0, maxLength);
