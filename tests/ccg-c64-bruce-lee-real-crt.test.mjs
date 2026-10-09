@@ -85,7 +85,7 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
   // an F-key response (an earlier permissive test did exactly that).
   let originalTitleFrame=-1;
   const stages=[];
-  for(let f=0;f<1200;f+=10) {
+  for(let f=0;f<260;f+=10) {
     progress(machine,10);
     const current=gameImage(machine);
     const text=current.screen.map(c64Char).join("");
@@ -97,7 +97,37 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
       break;
     }
   }
+  // An intermediate bitmap splash may wait for an additional confirmation.
+  // Exercise known C64 controls against it before concluding the game hung.
+  const wakeAttempts=[];
+  if(originalTitleFrame===-1) {
+    for (const wake of ["F3","fire2","fire1","Enter","Space"]) {
+      if(wake==="fire2" || wake==="fire1") {
+        if(wake==="fire2") machine.joyPort2=0xef;
+        else machine.joyPort1=0xef;
+        progress(machine,35);
+        machine.joyPort1=0xff;machine.joyPort2=0xff;
+      } else key(machine,wake,35);
+      let ready=false;
+      for(let f=0;f<320;f+=10) {
+        progress(machine,10);
+        const view=gameImage(machine);
+        const text=view.screen.map(c64Char).join("");
+        if(/BRUCE.{0,40}LEE/.test(text) && /PLAYER|PRESS/.test(text)) {
+          originalTitleFrame=f+10;ready=true;break;
+        }
+      }
+      const view=gameImage(machine);
+      wakeAttempts.push({wake,ready,pc:view.pc,screenBase:view.screenBase,
+        bitmapMode:Boolean(view.d011&0x20),
+        words:view.screen.map(c64Char).join("").replace(/ {2,}/g," ").slice(0,240)});
+      if(ready) break;
+    }
+  }
   const title=gameImage(machine);
+  console.log("Bruce Lee wake attempts:",JSON.stringify(wakeAttempts));
+  console.log("Bruce Lee stuck-loop RAM:",JSON.stringify({
+    pc:machine.cpu.pc,bytes:[...machine.mem.ram.slice(0xA30,0xA55)]}));
   console.log("Bruce Lee load stages:",JSON.stringify(stages));
   console.log("Bruce Lee CRT selection:",JSON.stringify({
     selectorFrame,originalTitleFrame,yearSelectorScreenBase:picker.screenBase,
