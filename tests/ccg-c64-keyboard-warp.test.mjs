@@ -453,6 +453,7 @@ const mobileTitle = mobileNode();
 const mobileToggle = mobileNode();
 const mobileClose = mobileNode();
 const mobilePanel = mobileNode();
+mobilePanel.hidden = true; // HTML keyboard overlay starts hidden.
 const mobileKeys = mobileNode();
 const mobileBody = mobileNode();
 const mobileNodes = new Map([
