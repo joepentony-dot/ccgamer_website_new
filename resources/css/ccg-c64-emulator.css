@@ -2139,34 +2139,36 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     border-radius: 0;
     background: #040616;
   }
+  /* Restore the original single-row mobile playbar. The zoom release used a
+     two-line grid here, shrinking the game viewport and shifting its snap. */
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    display: flex;
     order: 0;
     flex: 0 0 auto;
     align-items: center;
-    gap: 0.35rem;
+    justify-content: space-between;
+    gap: 0.4rem;
     min-height: 44px;
     width: 100%;
   }
-  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-exit {
-    justify-self: start;
-  }
-  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-keyboard-toggle {
-    justify-self: end;
-  }
   .ccg-c64-mobile-play-centre {
-    display: grid;
-    justify-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
     align-items: center;
     min-width: 0;
-    gap: 0.15rem;
+  }
+  /* Keep the current game title in the DOM for screen readers and updates,
+     without introducing a second row that can clip mobile gameplay. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title {
+    display: none;
   }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle {
-    min-height: 34px;
-    width: max-content;
+    min-height: 44px;
+    flex: 0 0 auto;
+    width: auto;
     max-width: 100%;
-    padding: 0.28rem 0.4rem;
+    padding: 0.35rem 0.45rem;
     border-color: #9b8be8;
     background: #2b285f;
     white-space: nowrap;
@@ -2405,8 +2407,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-console.is-mobile-playing:fullscreen { gap: 0.15rem; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar { min-height: 38px; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar button { min-height: 38px; padding: 0.25rem 0.5rem; }
-  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle { min-height: 36px; }
-  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title { display: none; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle { min-height: 38px; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls { padding: 0.1rem 0.35rem; }
   .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad,
   .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-dpad {
