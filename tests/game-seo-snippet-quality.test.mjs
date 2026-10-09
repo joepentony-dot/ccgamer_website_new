@@ -50,7 +50,7 @@ test('oversized source sentence receives a truthful factual fallback rather than
     description: 'Kingpin is an arcade bowling game that includes an extensive series of interconnected mechanics and lengthy descriptive clauses carefully assembled to exceed the allocated SEO text limit without creating any complete sentence earlier in the paragraph, which forces the generator to prefer verified release facts rather than chopping a clause in the middle.'
   };
   const actual = snippet.buildSnippet(game, game.title);
-  assert.equal(actual, 'Kingpin (1995) is a Amiga game published by Team17.');
+  assert.equal(actual, 'Kingpin (1995) is an Amiga game published by Team17.');
   assert.doesNotMatch(actual, /…|\.\.\./);
 });
 
