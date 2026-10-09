@@ -144,11 +144,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobileplay_v2"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilewarp_v1"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobileplay_v2")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilewarp_v1")'), "COI bootstrap must import the emulator only after isolation");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
@@ -161,6 +161,16 @@ assert(css.includes("grid-area: console"), "C64 display must stay in the left wo
 assert(css.includes("grid-area: controls"), "C64 controls must stay in the right workstation column");
 assert(css.includes(".ccg-c64-screen-stage"), "Large emulator display stage must be present");
 assert(css.includes("@media (max-width: 760px)"), "Mobile command-deck layout is required");
+assert(html.includes('data-jump-toggle aria-pressed="false">JUMP: OFF</button>') &&
+  html.includes('data-mobile-warp-load') &&
+  html.indexOf('data-jump-toggle') < html.indexOf('data-mobile-warp-load') &&
+  html.indexOf('data-mobile-warp-load') < html.indexOf('data-mobile-joystick-swap'),
+  "Mobile control order must be JUMP, WARP LOAD, SWAP JOYSTICK");
+assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-warp-load") &&
+  css.includes(".ccg-c64-mobile-warp-load { display: none !important; }"),
+  "Warp control must be isolated to mobile gameplay and not alter desktop");
+assert(app.includes('mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });'),
+  "Mobile warp button must use the existing warp toggle, not a second implementation");
 assert(html.includes("data-mobile-joystick-swap") && html.includes("SWAP JOYSTICK · PORT 2"),
   "Mobile gameplay must expose a lower-right live joystick-port switch");
 assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick-swap") &&

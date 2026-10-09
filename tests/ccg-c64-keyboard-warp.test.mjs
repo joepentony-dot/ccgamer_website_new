@@ -19,6 +19,8 @@ assert(html.includes("DRAG &amp; DROP A GAME HERE — AUTO START"), "The screen 
 assert(html.includes("id=\"ccg-c64-drop-instructions\""), "The drop instructions must be accessible");
 assert(html.includes("aria-describedby=\"ccg-c64-drop-instructions\""), "The display must reference drop instructions");
 assert(html.includes("<strong>MAX</strong>"), "The Warp Load button must advertise MAX");
+assert(html.includes('data-mobile-warp-load') && html.includes('aria-pressed="false" disabled'),
+  "Mobile Warp Load must be disabled until C64 boots");
 assert(css.includes("position: relative;"), "Drop overlay must be anchored to the screen");
 assert(css.includes("visibility: hidden;") &&
   css.includes(".ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint"),
@@ -551,5 +553,89 @@ mobileMedia.matches = false;
 mobileContext.playOnMobile("Desktop test");
 assert(!fakeConsole.classList.contains("is-mobile-playing"),
   "Fine-pointer/desktop mode must never activate mobile full-viewport layout");
+
+// Both desktop and mobile must use the same real Warp Load state machine.
+// Exercise a touch click, desktop click, boot/paused guards and automatic
+// warp state sync without starting a second emulation loop or speed control.
+const syncWarpStart = app.indexOf("function setControlState(snapshot) {");
+const syncWarpEnd = app.indexOf("function render(snapshot)", syncWarpStart);
+const warpToggleStart = app.indexOf("function setWarpLoad(value) {");
+const warpToggleEnd = app.indexOf("function togglePause()", warpToggleStart);
+const desktopWarpListener = 'warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });';
+const mobileWarpListener = 'mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });';
+assert(syncWarpStart >= 0 && syncWarpEnd > syncWarpStart &&
+  warpToggleStart >= 0 && warpToggleEnd > warpToggleStart &&
+  app.includes(desktopWarpListener) && app.includes(mobileWarpListener),
+  "Warp load buttons must both use the existing bounded C64 runtime");
+function warpButton(withStrong = false) {
+  const props = {};
+  const listeners = {};
+  const label = { textContent: "" };
+  return {
+    disabled: false, textContent: "", props, listeners,
+    setAttribute(name, value) { props[name] = value; },
+    querySelector(selector) { return withStrong && selector === "strong" ? label : null; },
+    addEventListener(name, callback) { listeners[name] = callback; },
+    label
+  };
+}
+const mainWarpButton = warpButton(true);
+const touchWarpButton = warpButton();
+const pauseWarpButton = { disabled: false, querySelector: () => ({ textContent: "" }) };
+const powerWarpButton = { disabled: false, querySelector: () => ({ textContent: "" }) };
+const audioWarpStates = [];
+let warpScreenFocus = 0;
+const warpContext = vm.createContext({
+  warpLoadButton: mainWarpButton, mobileWarpLoadButton: touchWarpButton,
+  resetButton: { disabled: false }, pauseButton: pauseWarpButton,
+  powerButton: powerWarpButton, loadMediaButton: { disabled: false },
+  loadDiskButton: { disabled: false },
+  running: true, paused: false, machine: {},
+  warpLoadActive: false, automaticWarpActive: true, automaticWarpFramesRemaining: 30,
+  audioMuted: false, frameAccumulator: 1, lastFrameTime: 2,
+  screen: { focus() { warpScreenFocus++; } },
+  vault: { snapshot() { return { allRequiredReady: true }; } },
+  machineState: { textContent: "" }, stageNote: { textContent: "" },
+  updateMediaControls() {}, updateAudioUi() {},
+  setAudioPaused(value) { audioWarpStates.push(value); },
+});
+vm.runInContext(app.slice(syncWarpStart, syncWarpEnd) +
+  "\n" + app.slice(warpToggleStart, warpToggleEnd) +
+  "\n" + desktopWarpListener + "\n" + mobileWarpListener +
+  "\nglobalThis.syncWarpControls = setControlState;" +
+  "\nglobalThis.setRealWarpLoad = setWarpLoad;", warpContext);
+warpContext.syncWarpControls({ allRequiredReady: true });
+assert.equal(touchWarpButton.textContent, "WARP: OFF");
+assert.equal(touchWarpButton.disabled, false, "Loaded C64 enables the mobile warp control");
+touchWarpButton.listeners.click();
+assert.equal(warpContext.warpLoadActive, true, "Touch Warp Load must accelerate the actual C64");
+assert.equal(mainWarpButton.label.textContent, "ON · MAX", "Desktop button must reflect mobile warp");
+assert.equal(touchWarpButton.textContent, "WARP: ON");
+assert.equal(touchWarpButton.props["aria-pressed"], "true");
+assert.equal(warpContext.automaticWarpActive, false,
+  "Manual mobile warp must cancel any automatic warp timer");
+assert.equal(warpContext.automaticWarpFramesRemaining, 0);
+assert.equal(audioWarpStates.at(-1), true, "SID must be muted during Warp Load");
+mainWarpButton.listeners.click();
+assert.equal(warpContext.warpLoadActive, false, "Desktop Warp Load must restore 1x speed");
+assert.equal(touchWarpButton.textContent, "WARP: OFF", "Mobile button must track desktop switch");
+assert.equal(touchWarpButton.props["aria-pressed"], "false");
+assert.equal(audioWarpStates.at(-1), false, "Normal-speed SID audio must resume");
+warpContext.setRealWarpLoad(true); // Simulate automatic disk/cart fast loading.
+assert.equal(touchWarpButton.textContent, "WARP: ON",
+  "Automatic loading must update mobile warp state in real time");
+warpContext.setRealWarpLoad(false);
+assert.equal(touchWarpButton.textContent, "WARP: OFF",
+  "Completing automatic loading must restore mobile control to OFF");
+warpContext.paused = true;
+warpContext.syncWarpControls({ allRequiredReady: true });
+assert.equal(touchWarpButton.disabled, true, "Paused C64 must disable mobile warp");
+touchWarpButton.listeners.click();
+assert.equal(warpContext.warpLoadActive, false, "Paused C64 must ignore mobile warp clicks");
+warpContext.paused = false;
+warpContext.running = false;
+warpContext.syncWarpControls({ allRequiredReady: true });
+assert.equal(touchWarpButton.disabled, true, "Powered-off C64 must disable mobile warp");
+assert(warpScreenFocus >= 2, "Both warp controls should return focus to the game");
 
 console.log("C64 F1-F8, CIA keyboard, automatic MAX Warp, responsive expanded FIT and fullscreen tests passed.");
