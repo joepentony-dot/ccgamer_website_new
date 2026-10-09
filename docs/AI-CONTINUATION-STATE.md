@@ -1,3 +1,9 @@
+## Premium top-down dungeon visual target — owner approval, 9 October 2026
+
+- Owner approved the supplied dark pixel-art dungeon combat screenshot as an ongoing **quality target**, not artwork to reproduce. Locked scope: layered weathered stone and distinct 15-floor moods; warm flickering wall/held torches in cool surroundings; purposeful crate/barrel/moss/debris room dressing; bounded readable sparks/explosions/attack reactions; animation states; stronger CCG camera/HUD. Maintain existing approved assets, licence exclusions, CCG hero and engine-first priorities. See [premium visual target](ai-work/dungeon-carnage-premium-visual-target-2026-10-09.md).
+- Do not claim visual features implemented by this documentation checkpoint. Current `game-render.js` already provides the relevant lighting, animation, sprites, tiles, fog and performance owners; improve rather than replace. Existing **Dungeon Engine-First Development** schedule now includes the staged visual roadmap; no parallel Unity or asset collection schedule.
+- Exact PR #2644 at `677e1026efe2c8ef0ccab4dbe54f9e61a9a01392` is **RED**, not mergeable for release: Chromium shard 2 failed in `v10-42-live-solo-combat-endurance.mjs`, round 64 unexpectedly entered `dossier` after Numpad0; Workers branch build failed (cause unverified). Keep draft, investigate without weakening guards. No production or paid package publication.
+
 ## C64 mobile merge-down / Dungeon engine trial qualification — 9 October 2026
 
 - The separately qualified C64 mobile FIRE/JUMP PR **#2645** merged to `main` at `31b7478c6f948235fb12a7048252ec60c6a0b4df` (head `5ca2b9538a60e91bdba9dcda5e6f9cbebbe97f28`); the older competing #2643 did not merge. Maintain the unique proposed curated UP-to-jump mappings as deferred emulator follow-up; the merged version currently offers manual saved per-game JUMP preferences and an empty verified auto-title list. Do not overwrite the merged tested code with the failed alternative.

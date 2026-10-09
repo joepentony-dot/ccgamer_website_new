@@ -1,3 +1,7 @@
+## Owner visual quality benchmark — 9 October 2026
+
+The owner approved a dark atmospheric pixel dungeon screenshot as a **long-term visual quality reference**. Improve the existing renderer/lighting/prop placement/animation/combat/HUD systems to approach that level without copying the original screenshot's sprites, map or interface, importing unlicensed art or replacing the engine. Cross-reference [premium visual target and staged technical acceptance](dungeon-carnage-premium-visual-target-2026-10-09.md). Existing approved R118/0x72 sprites and fallback, all CCG game mechanics and fifteen-floor variety stay. Critical regressions and exact-head CI safety precede visual changes.
+
 ## R97 character and uploaded-soundtrack regression repair — 2 October 2026
 
 - Owner reported the beta had reverted to basic sprites and bundled music, and reiterated the prior licensed RPG enemy-art/name directive. Current main refreshed as `f38b84f0985d642f5daf7259cba633018a01814d` (R96); no open PR existed before this bounded repair. Candidate branch: `codex/dungeon-r97-rpg-sprites-soundtrack`.

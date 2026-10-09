@@ -1,3 +1,7 @@
+## Approved premium pixel-dungeon standard — 9 October 2026
+
+The owner-approved screenshot sets a **visual quality target** for the existing JavaScript/Canvas engine: layered stone floors/walls, warm locally flickering torches and cool shadow, cohesive deterministic room dressing, state-driven animation, readable action VFX, and practical camera/HUD. It grants no right to redistribute screenshot art and authorises no Unity migration or large rewrite. Read [staged detailed target](dungeon-carnage-premium-visual-target-2026-10-09.md). Critical bugs and engine reliability remain higher priority than aesthetic enhancements; existing licensed assets and game/UX safeguards are mandatory.
+
 # Dungeon Carnage — engine-first development decision (9 October 2026)
 
 ## Authoritative product decision
