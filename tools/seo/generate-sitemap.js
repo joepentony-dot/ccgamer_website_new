@@ -24,6 +24,7 @@ const DEFAULT_STATIC_PATHS = [
   'complete-index.html',
   'contact.html',
   'emulation.html',
+  'emulator/c64/index.html',
   'home.html',
   'games/collections/bpjs-indexed-games.html',
   'games/collections/cartridge-games.html',
