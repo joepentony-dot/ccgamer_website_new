@@ -80,6 +80,7 @@ const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  touchPointerHolds: new Map(),
   inputStatus: { textContent: "" },
   keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
   keyboardPriorityUntil: 0,
@@ -201,7 +202,9 @@ context.setup.hidden = true;
 
 // A key held while focus moves must not become permanently stuck.
 down("Space", " ");
+context.touchPointerHolds.set(77, { mask: 1, button: null });
 context.release();
+assert.equal(context.touchPointerHolds.size, 0, "Leaving gameplay must release all touch pointers");
 assert.equal(keys.size, 0, "Leaving gameplay must release all held C64 keys");
 assert.equal(machine.restore, false);
 
