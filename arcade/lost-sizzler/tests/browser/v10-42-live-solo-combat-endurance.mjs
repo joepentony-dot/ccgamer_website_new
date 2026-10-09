@@ -75,6 +75,44 @@ async function settleGameplayMode(page,label){
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing",null,{timeout:5000});
 }
 
+async function verifyOneTimeNamedDossier(page){
+  // Exercise the actual enemy-defeat reward owner twice with the same authored
+  // follower identity. Ordinary attack/input endurance is exercised below.
+  const fixture=await page.evaluate(()=>{
+    const follower=C.followerElites?.find(f=>typeof f?.name==="string"&&f.name);
+    const enemies=(host?.enemies||[]).filter(e=>e?.alive!==false&&!e?.guardian&&!e?.exitWarden&&!e?.sigilDefender&&!e?.deathStalker&&!e?.treasureGoblin).slice(0,2);
+    if(!follower||enemies.length!==2||run?.namedDossierAutoShown||typeof damageEnemy!=="function")return null;
+    for(const e of enemies){e.follower={...follower};e.hp=1;e.armor=0}
+    return{name:follower.name,ids:enemies.map(e=>e.id),before:Number(PGR.readDossier()?.[follower.name]?.defeats||0)};
+  });
+  assert.ok(fixture,"two ordinary enemies and an unshown authored named dossier are required for the live encounter contract");
+  const defeat=async id=>page.evaluate(({enemyId,name})=>{
+    const enemy=host.enemies.find(e=>e.id===enemyId);
+    if(!enemy)return null;
+    damageEnemy(enemy,10,"energy",p1);
+    return{fallen:enemy.alive===false,defeats:Number(PGR.readDossier()?.[name]?.defeats||0),
+      autoShown:Boolean(run.namedDossierAutoShown),mode:String(mode)};
+  },{enemyId:id,name:fixture.name});
+  const first=await defeat(fixture.ids[0]);
+  assert.equal(first?.fallen,true,"first named enemy must be freed through the actual damage/death owner");
+  assert.equal(first.defeats,fixture.before+1,"first named defeat must be recorded exactly once");
+  assert.equal(first.autoShown,true,"first named defeat must claim the one-time dossier reward");
+  await page.waitForFunction(name=>mode==="dossier"&&Boolean(UI.namedDossier)&&
+    !UI.namedDossier.classList.contains("hidden")&&
+    Boolean(UI.namedDossierList?.querySelector(".dossier-entry.focused")?.textContent?.includes(name)),
+    fixture.name,{timeout:5000});
+  await page.locator("#named-dossier-close").click();
+  await page.waitForFunction(()=>mode==="playing"&&Boolean(UI.namedDossier?.classList.contains("hidden")),null,{timeout:5000});
+  const second=await defeat(fixture.ids[1]);
+  assert.equal(second?.fallen,true,"second named enemy must also be freed through the actual damage/death owner");
+  assert.equal(second.defeats,fixture.before+2,"repeat named defeat must still be recorded exactly once");
+  await page.waitForTimeout(500);
+  const after=await page.evaluate(()=>({mode:String(mode),hidden:Boolean(UI.namedDossier?.classList.contains("hidden")),autoShown:Boolean(run.namedDossierAutoShown)}));
+  assert.equal(after.mode,"playing","repeat named defeat must not interrupt Solo with another dossier");
+  assert.equal(after.hidden,true,"repeat named defeat must not reopen the dismissed dossier");
+  assert.equal(after.autoShown,true,"named dossier one-time run flag must remain set after repeat defeat");
+}
+
 async function armEnemy(page){
   return page.evaluate(()=>{
     if(!p1||!host)return false;
@@ -185,6 +223,7 @@ try{
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
 
+  await verifyOneTimeNamedDossier(page);
   const keys=["Space","Numpad0"];
   for(let round=1;round<=96;round++){
     await settleGameplayMode(page,`round ${round} start`);
