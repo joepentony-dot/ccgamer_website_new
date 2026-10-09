@@ -117,7 +117,9 @@ assert(app.includes("machine.cia1.setKey"), "Physical keyboard input must reach 
 assert(app.includes("machine.setRestoreNmiLine"), "RESTORE/NMI keyboard handling must be wired");
 assert(app.includes("navigator.getGamepads"), "Gamepad polling must be wired");
 assert(app.includes("gamepadJoyByte = byte"), "Gamepad input must feed the shared Port 2 merger");
-assert(app.includes("touchHeldMask |= mask"), "Touch controls must feed joystick Port 2");
+assert(app.includes("for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask") &&
+       app.includes("touchJoyByte = 0xFF & ~touchHeldMask;"),
+  "Independent multi-touch controls must feed the active-low joystick merger");
 assert(app.includes('event.code || `key:${event.key}`'), "Held keyboard identity must survive Shift changes");
 assert(cia.includes("'*': { col: 6, row: 1, shift: false }"), "C64 asterisk must remain the unshifted matrix key");
 assert(app.includes("else if (!charBinding.shift && shiftDown)"), "Symbol mapping must suppress host Shift when the C64 symbol is unshifted");
