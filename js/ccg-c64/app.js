@@ -145,7 +145,6 @@ let mountedCartridge = null;
 let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
 let keyboardJoystickEnabled = localStorage.getItem("ccg.emulator.c64.keyboardJoystick") === "1";
 const keyboardJoystickKeys = new Set();
-let keyboardPriorityUntil = 0;
 const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
   ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
   ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
@@ -173,6 +172,8 @@ function syncTouchJoystick() {
   touchHeldMask = 0;
   for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask;
   touchJoyByte = 0xFF & ~touchHeldMask;
+  // Re-sample physical gamepad alongside each touch edge, not one RAF later.
+  pollGamepad();
   applyJoystickInput();
 }
 function configureJump(gameId) {
@@ -394,12 +395,11 @@ function keyboardJoystickByte() {
 
 function applyJoystickInput() {
   if (!machine) return;
-  // A browser gamepad can keep a direction/fire held down continuously.
-  // Give physical C64 keys priority while held and briefly after the last
-  // keypress, preventing those joystick bits from masking the keyboard CIA.
-  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
-    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
-  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
+  // Active-low bits are held joystick directions/fire. Combine the live
+  // gamepad, touchscreen and optional keyboard-joystick state every frame;
+  // physical C64 keyboard keys use the separate CIA matrix without muting
+  // a gamepad direction (e.g. run right while SPACE drops a bomb).
+  const byte = gamepadJoyByte & touchJoyByte & keyboardJoystickByte();
   machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
   machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
   // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
@@ -419,7 +419,6 @@ joystickSwapButton?.addEventListener("click", swapJoystickPort);
 keyboardJoystickButton?.addEventListener("click", () => {
   keyboardJoystickEnabled = !keyboardJoystickEnabled;
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   localStorage.setItem("ccg.emulator.c64.keyboardJoystick", keyboardJoystickEnabled ? "1" : "0");
   applyJoystickInput();
   updateJoystickUi();
@@ -525,7 +524,10 @@ function setC64Shift(left, right) {
   machine.cia1.setKey(6, 4, Boolean(right));
 }
 
-function releaseAllInput() {
+// Form focus releases held C64 keys, not gamepad or touch joystick directions.
+// Clearing those controller bytes while a key is pressed causes a perceptible
+// one-frame movement dropout until requestAnimationFrame polls again.
+function releaseKeyboardInput() {
   for (const [button, held] of touchFunctionKeyHolds) {
     if (held.timer) clearTimeout(held.timer);
     button.classList.remove("is-pressed");
@@ -538,19 +540,26 @@ function releaseAllInput() {
     }
     setC64Shift(false, false);
     machine.cia1.setKey(7, 2, false);
+    machine.setRestoreNmiLine(false);
+  }
+  heldMatrixKeys.clear();
+  keyboardJoystickKeys.clear();
+  shiftLeftPhysical = false;
+  shiftRightPhysical = false;
+  applyJoystickInput();
+}
+
+function releaseAllInput() {
+  releaseKeyboardInput();
+  if (machine) {
     machine.joyPort1 = 0xFF;
     gamepadJoyByte = 0xFF;
     touchJoyByte = 0xFF;
     touchHeldMask = 0;
     touchHeldButtons.clear();
     machine.joyPort2 = 0xFF;
-    machine.setRestoreNmiLine(false);
+    machine._updateLightpen?.();
   }
-  heldMatrixKeys.clear();
-  keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
-  shiftLeftPhysical = false;
-  shiftRightPhysical = false;
 }
 
 function physicalMatrixBinding(event) {
@@ -664,6 +673,10 @@ function usesTextInput(target) {
 
 function handleC64Key(event, pressed) {
   if (!running || !machine) return;
+  // Sample the current pad on the SAME event turn as every physical key edge:
+  // a keyboard press/release must never leave stale joystick data waiting for
+  // the next animation frame, even when gameplay combines SPACE with motion.
+  pollGamepad();
 
   // A clicked toolbar button retains browser focus. That must NOT prevent game
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
@@ -685,18 +698,13 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
   }
 
-  // Physical keyboard always wins over the gamepad, including when a gamepad
-  // button remains pressed. The optional keyboard joystick converts arrow,
-  // WASD and fire presses to the currently selected joystick port, but does
-  // not suppress normal C64 keys (including S for game-start menus).
-  if (KEY_MAP[event.code] || CHAR_MAP[event.key] ||
-      ["ArrowLeft", "ArrowUp", "F2", "F4", "F6", "F8", "F12"].includes(event.code)) {
-    keyboardPriorityUntil = performance.now() + 1200;
-    const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
-    if (joystickMask && keyboardJoystickEnabled) {
-      if (pressed) keyboardJoystickKeys.add(event.code);
-      else keyboardJoystickKeys.delete(event.code);
-    }
+  // Physical C64 keys always reach the CIA matrix. If keyboard joystick
+  // mode is enabled, selected keys also add joystick bits; they must never
+  // suppress an independently held gamepad/touch direction.
+  const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
+  if (joystickMask && keyboardJoystickEnabled) {
+    if (pressed) keyboardJoystickKeys.add(event.code);
+    else keyboardJoystickKeys.delete(event.code);
     applyJoystickInput();
   }
 
@@ -1929,8 +1937,10 @@ window.addEventListener("keydown", (event) => handleC64Key(event, true), { captu
 window.addEventListener("keyup", (event) => handleC64Key(event, false), { capture: true });
 window.addEventListener("blur", releaseAllInput);
 document.addEventListener("focusin", (event) => {
-  if (running && usesNativeKeyboard(event.target)) releaseAllInput();
+  if (running && usesNativeKeyboard(event.target)) releaseKeyboardInput();
 });
+window.addEventListener("gamepadconnected", pollGamepad);
+window.addEventListener("gamepaddisconnected", pollGamepad);
 
 document.addEventListener("visibilitychange", () => {
   if (!running) return;
@@ -2295,9 +2305,8 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     const prior = touchFunctionKeyHolds.get(button);
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
+    pollGamepad();
     machine.cia1.setKey(col, row, true);
-    keyboardPriorityUntil = performance.now() + 1200;
-    applyJoystickInput();
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}

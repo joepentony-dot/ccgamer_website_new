@@ -51,6 +51,7 @@ const end = app.indexOf("void refreshVaultStatus();", start);
 assert(start >= 0 && end > start, "Touch function-key handlers must be installed");
 let now = 1000;
 let nextTimer = 0;
+let gamepadSamples = 0;
 const timers = new Map();
 const ctx = vm.createContext({
   document: { querySelectorAll: selector => {
@@ -60,13 +61,15 @@ const ctx = vm.createContext({
   KEY_MAP, machine: { cia1: cia }, running: true, paused: false,
   setup: { hidden: true }, inputStatus: { textContent: "" },
   performance: { now: () => now }, keyboardPriorityUntil: 0,
-  applyJoystickInput() {}, touchFunctionKeyHolds: new Map(), heldMatrixKeys: new Map(),
+  applyJoystickInput() {}, pollGamepad() { gamepadSamples++; },
+  touchFunctionKeyHolds: new Map(), heldMatrixKeys: new Map(),
   setTimeout: fn => { const id = ++nextTimer; timers.set(id, fn); return id; },
   clearTimeout: id => timers.delete(id),
 });
 vm.runInContext(app.slice(start, end), ctx);
 const f3 = buttons[1];
 f3.dispatch("pointerdown");
+assert.equal(gamepadSamples, 1, "F3 must sample controller on the same input event");
 assert.equal(cia.read(1) & (1 << 5), 0, "F3 pointerdown must reach CIA matrix");
 f3.dispatch("pointerup");
 assert.equal(cia.read(1) & (1 << 5), 0, "Quick tap must stay down long enough to scan");

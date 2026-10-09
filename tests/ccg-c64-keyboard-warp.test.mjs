@@ -76,10 +76,12 @@ const machine = {
   cia1, joyPort1: 0xff, joyPort2: 0xff,
   setRestoreNmiLine(value) { this.restore = value; },
 };
+let keyEdgePadSamples = 0;
 const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  touchHeldButtons: new Map(),
   inputStatus: { textContent: "" },
   keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
   keyboardPriorityUntil: 0,
@@ -90,8 +92,15 @@ const context = vm.createContext({
   },
   performance: { now: () => 1000 },
   applyJoystickInput() {},
+  pollGamepad() {
+    // Real pad RIGHT stays held throughout a keyboard SPACE transition.
+    keyEdgePadSamples++;
+    machine.joyPort2 = 0xf7;
+  },
 });
-vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
+vm.runInContext(app.slice(first, last) +
+  "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;" +
+  "globalThis.releaseKeysOnly = releaseKeyboardInput;", context);
 function event(code, key, opts = {}) {
   const value = {
     code, key, target: opts.target || canvas,
@@ -124,6 +133,8 @@ function keyTest(code, key, col, row) {
 }
 keyTest("Enter", "Enter", 0, 1);
 keyTest("Space", " ", 7, 4);
+assert(keyEdgePadSamples >= 2, "Gamepad must be sampled synchronously on Space down AND up");
+assert.equal(machine.joyPort2, 0xf7, "Held gamepad RIGHT cannot drop while SPACE is tapped");
 keyTest("F1", "F1", 0, 4);
 keyTest("F3", "F3", 0, 5);
 keyTest("F5", "F5", 0, 6);
@@ -199,10 +210,15 @@ context.setup.hidden = false;
 assert(!down("F1", "F1").prevented, "ROM setup must keep keyboard input");
 context.setup.hidden = true;
 
-// A key held while focus moves must not become permanently stuck.
+// Form focus must release stale C64 keys WITHOUT neutralising gamepad motion.
+down("Space", " ");
+context.releaseKeysOnly();
+assert.equal(keys.size, 0, "Focusing a page control must release held C64 keys");
+assert.equal(machine.joyPort2, 0xf7, "Focusing a page control must preserve RIGHT gamepad input");
 down("Space", " ");
 context.release();
 assert.equal(keys.size, 0, "Leaving gameplay must release all held C64 keys");
+assert.equal(machine.joyPort2, 0xff, "Actual blur/power-off must still neutralise joystick inputs");
 assert.equal(machine.restore, false);
 
 // Warp should execute multiple frames in each budgeted browser tick, while
@@ -293,18 +309,28 @@ assert.equal(joystickMachine.joyPort1, 255);
 assert.equal(joystickMachine.joyPort2, 0xee);
 assert(joystickUpdates >= 3, "Port 1 lightpen pin must be updated when joystick swaps");
 
-// A gamepad held down or firing must never mask a physical S key or its
-// CIA column while the player types. Gamepad resumes after a quiet interval.
+// Holding a gamepad direction must continue while physical keys are pressed,
+// held and released: SPACE is often the C64 game's bomb or secondary action.
+joystickContext.gamepadJoyByte = 0xf7; // Right
+joystickContext.touchJoyByte = 0xff;
+joystickContext.heldMatrixKeys.set("Space", { col: 7, row: 4 });
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xf7, "SPACE held must not interrupt gamepad RIGHT");
+joystickContext.heldMatrixKeys.delete("Space");
+joystickContext.keyboardPriorityUntil = 7000; // Regression guard against a key-release timeout.
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xf7, "SPACE release must not introduce a gamepad delay");
 joystickContext.heldMatrixKeys.set("KeyS", { col: 1, row: 5 });
 joystickContext.routeJoystick();
-assert.equal(joystickMachine.joyPort2, 255, "Held keyboard S must neutralize connected gamepad");
+assert.equal(joystickMachine.joyPort2, 0xf7, "Menu key S must not silence the joystick");
 joystickContext.heldMatrixKeys.delete("KeyS");
-joystickContext.keyboardPriorityUntil = 6000;
+joystickContext.touchJoyByte = 0xfe; // Touch UP while gamepad holds RIGHT.
 joystickContext.routeJoystick();
-assert.equal(joystickMachine.joyPort2, 255, "Keyboard priority must persist briefly after release");
-timeNow = 6100;
+assert.equal(joystickMachine.joyPort2, 0xf6, "Touch and gamepad directions must remain simultaneous");
+joystickContext.gamepadJoyByte = 0xff;
 joystickContext.routeJoystick();
-assert.equal(joystickMachine.joyPort2, 0xee, "Gamepad resumes after keyboard inactivity");
+assert.equal(joystickMachine.joyPort2, 0xfe, "Releasing gamepad must preserve touch held UP");
+joystickContext.touchJoyByte = 0xff;
 
 // Keyboard joystick is optional and routes WASD/arrows/SPACE as active-low
 // joystick bits to whichever port the player has chosen.
@@ -313,6 +339,10 @@ assert.equal(keyboardModeButton.textContent, "KEYBOARD JOY: ON");
 assert.equal(joystickStorage.get("ccg.emulator.c64.keyboardJoystick"), "1");
 joystickContext.keyboardJoystickKeys.add("KeyW");
 joystickContext.keyboardJoystickKeys.add("Space");
+joystickContext.gamepadJoyByte = 0xf7; // RIGHT + keyboard UP + FIRE.
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xe6, "Keyboard joystick and gamepad must combine without arbitration");
+joystickContext.gamepadJoyByte = 0xff;
 joystickContext.routeJoystick();
 assert.equal(joystickMachine.joyPort2, 0xee, "Keyboard W+SPACE must provide up+fire");
 joystickContext.keyboardJoystickKeys.delete("Space");

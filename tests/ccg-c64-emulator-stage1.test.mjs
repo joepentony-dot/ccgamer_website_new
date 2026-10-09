@@ -55,11 +55,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_live2"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_live2")'), "COI bootstrap must import the emulator only after isolation");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
@@ -117,7 +117,9 @@ assert(app.includes("machine.cia1.setKey"), "Physical keyboard input must reach 
 assert(app.includes("machine.setRestoreNmiLine"), "RESTORE/NMI keyboard handling must be wired");
 assert(app.includes("navigator.getGamepads"), "Gamepad polling must be wired");
 assert(app.includes("gamepadJoyByte = byte"), "Gamepad input must feed the shared Port 2 merger");
-assert(app.includes("touchHeldMask |= mask"), "Touch controls must feed joystick Port 2");
+assert(app.includes("for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask") &&
+       app.includes("touchJoyByte = 0xFF & ~touchHeldMask;"),
+  "Independent multi-touch controls must feed the active-low joystick merger");
 assert(app.includes('event.code || `key:${event.key}`'), "Held keyboard identity must survive Shift changes");
 assert(cia.includes("'*': { col: 6, row: 1, shift: false }"), "C64 asterisk must remain the unshifted matrix key");
 assert(app.includes("else if (!charBinding.shift && shiftDown)"), "Symbol mapping must suppress host Shift when the C64 symbol is unshifted");

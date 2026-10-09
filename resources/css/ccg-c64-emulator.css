@@ -1954,6 +1954,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-console { margin-bottom: 0.5rem; }
   .ccg-c64-screen-stage { height: auto; min-height: 0; }
   .ccg-c64-touch-controls { display: flex; justify-content: space-around; }
+  .ccg-c64-touch-options { display: flex; }
   .ccg-c64-console:fullscreen {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(176px, 33%);
