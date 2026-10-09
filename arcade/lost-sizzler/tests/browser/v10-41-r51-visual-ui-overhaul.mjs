@@ -90,6 +90,89 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
+  // Optional evidence capture for the approved premium-dungeon visual programme.
+  // Run locally with CCG_DUNGEON_VISUAL_BASELINE_DIR=/path/to/output.
+  // CI continues checking normal visual behaviour without extra build minutes or
+  // recording screenshots. These measurements are RAF intervals, not GPU timings.
+  if(process.env.CCG_DUNGEON_VISUAL_BASELINE_DIR){
+    const output=path.resolve(process.env.CCG_DUNGEON_VISUAL_BASELINE_DIR);
+    fs.mkdirSync(output,{recursive:true});
+    const samples=[];
+    const capture=async(capturePage,label)=>{
+      await capturePage.evaluate(()=>beginRun({seed:"ccg-premium-visual-baseline-2026-10-09"}));
+      for(const floor of [1,4,7,11,15]){
+        const sample=await capturePage.evaluate(async selectedFloor=>{
+          run.floor=selectedFloor;
+          run.deepest=Math.max(Number(run.deepest||1),selectedFloor);
+          run.floorComplete=false;
+          run.modifier=PGR.chooseFloorModifier(run);
+          const seed=PGR.floorSeed(run);
+          startWorld(seed,false,true,false);
+          mode="playing";
+          setRunPresentation(true);
+          p1.maxHealth=Math.max(5000,Number(p1.maxHealth||0));
+          p1.health=p1.maxHealth;
+          const frames=[];
+          await new Promise(resolve=>{
+            let previous=null;
+            const frame=time=>{
+              if(previous!==null)frames.push(time-previous);
+              previous=time;
+              if(frames.length<45)requestAnimationFrame(frame);
+              else resolve();
+            };
+            requestAnimationFrame(frame);
+          });
+          const values=[...frames].sort((a,b)=>a-b);
+          const percentile=ratio=>Number(values[Math.min(values.length-1,Math.floor((values.length-1)*ratio))].toFixed(2));
+          return{
+            floor:selectedFloor,seed:String(seed),
+            viewport:{width:innerWidth,height:innerHeight},
+            canvas:{width:canvas.width,height:canvas.height},
+            quality:String(typeof dungeonRenderQuality==="function"?dungeonRenderQuality():"unavailable"),
+            prefersReducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
+            frameIntervalsMs:{count:values.length,p50:percentile(.5),p95:percentile(.95),max:percentile(1)},
+            generated:{rooms:world.rooms?.length||0,wallLights:world.wallLights?.length||0,
+              decor:world.decor?.length||0,wallTorches:world.decor?.filter(row=>row.type==="candleSconce").length||0}
+          };
+        },floor);
+        assert.equal(sample.floor,floor,"visual baseline must capture the requested generated floor");
+        assert.ok(sample.frameIntervalsMs.count>=40&&sample.canvas.width>0&&sample.canvas.height>0,
+          "visual baseline must capture live rendered frames and a usable canvas");
+        samples.push({device:label,...sample});
+        await capturePage.locator("#game").screenshot({path:path.join(output,`${label}-floor-${floor}-canvas.png`)});
+        await capturePage.screenshot({path:path.join(output,`${label}-floor-${floor}-hud.png`)});
+      }
+    };
+    await capture(page,"desktop");
+    const mobileContext=await browser.newContext({
+      viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,reducedMotion:"reduce"
+    });
+    try{
+      await mobileContext.route("https://*.supabase.co/**",route=>route.fulfill({
+        status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"
+      }));
+      await mobileContext.addInitScript(()=>{
+        localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true");
+        localStorage.setItem("ccg-lost-sizzler-tutorial-complete-v1","true");
+      });
+      const mobilePage=await mobileContext.newPage();
+      await mobilePage.goto(`${origin}/arcade/lost-sizzler/?r123-visual-baseline=1`,{waitUntil:"domcontentloaded"});
+      await mobilePage.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),null,{timeout:90000});
+      await mobilePage.locator("#solo-btn").click({noWaitAfter:true});
+      await mobilePage.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing",null,{timeout:20000});
+      await capture(mobilePage,"mobile-reduced-motion");
+    }finally{
+      await mobileContext.close();
+    }
+    fs.writeFileSync(path.join(output,"frame-baseline.json"),JSON.stringify({
+      source:"Existing Canvas engine, controlled fixed run seed; RAF intervals only, not draw/GPU timing",
+      sourceHead:process.env.GITHUB_SHA||"local-working-copy",
+      cases:samples
+    },null,2));
+    console.log(`Visual baseline captured ${samples.length} floor/device samples in ${output}`);
+  }
+
   const focus=await page.evaluate(async()=>{await quitToMenu();const api=window.CCGLostSizzlerV141R51MenuFocus,before=api.state.focusMoves,button=document.getElementById("tutorial-zone-btn");button.focus();await new Promise(resolve=>setTimeout(resolve,40));const style=getComputedStyle(button);return{active:document.activeElement?.id,outline:style.outlineStyle,outlineWidth:style.outlineWidth,moves:api.state.focusMoves-before,createPresent:Boolean(document.getElementById("create-btn"))}});
   assert.equal(focus.createPresent,false,"zero-server release must keep retired Create Online absent");
   assert.equal(focus.active,"tutorial-zone-btn","focus helper must work on a supported local gameplay action");

@@ -1,3 +1,9 @@
+## R123 premium visual evidence capture — 9 October 2026
+
+- The current #2644 branch now adds **optional screenshot and RAF pacing collection** to the already-owned r51 visual-browser regression, without touching `game-render.js` or asset provenance. When `CCG_DUNGEON_VISUAL_BASELINE_DIR` is set, it exercises five real generated floors (1/4/7/11/15), fixed seed, desktop and mobile touch with reduced-motion preference. Each floor/device records Canvas and full-HUD PNGs, canvas/viewport dimensions, observed quality tier, 45 RAF intervals (p50/p95/max), and floor decor/torch/room counts in one JSON file. Ordinary CI remains unchanged.
+- **Not yet executed or visually accepted**: source code/CI alone does not produce the native screenshot comparison or frame-time benchmark. These RAF intervals are NOT direct render CPU/GPU timing. Await opt-in execution, inspect all generated assets and mobile legibility, then decide bounded renderer improvements. Preserve the existing R118 four-frame sconces and independent procedural wallLights.
+- Previous head `7189dee9713e42b40a0a45d01b00377a7ef0cdc6` was fully green (six Chromium shards, Windows, PR, packaging/cache/site safety/SEO); follow-up source changes require their own exact-head CI. No production merge or package publishing. Flask QA #2642 and original 16 MP3/voice recovery are still separate gates.
+
 ## Engine-first runtime continuation — 9 October 2026
 
 - Active **draft PR #2644** (`audit/dungeon-engine-first-contracts-20261009`) is on `main` baseline `04d746d8ddc159d0db55bfe382c719f90f31bb33`. Previous PR head `c31aa6e66810b82ca43cb895c09358dd14b8bcbe` had fully green PR Qualification, all six Chromium shards, Windows executable smoke, package/cache/site-safety/SEO and a successful Workers preview. No production merge.
