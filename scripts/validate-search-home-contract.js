@@ -185,8 +185,8 @@ function stripApprovedHomeFooterCssDeferral(html) {
 // The rest of home.html is still byte-for-byte checked against origin/main.
 function stripApprovedHomeSupportArt(html, role) {
   let source = String(html);
-  const newPanel = source.match(/<section\\b[^>]*class=["'][^"']*\\bhome-support-art\\b[^"']*["'][^>]*>[\\s\\S]*?<\\/section>/i);
-  const oldPanel = source.match(/<section\\b[^>]*class=["'][^"']*\\bhome-cta-upgrade--streamlined\\b[^"']*["'][^>]*>[\\s\\S]*?<\\/section>/i);
+  const newPanel = source.match(/<section\b[^>]*class=["'][^"']*\bhome-support-art\b[^"']*["'][^>]*>[\s\S]*?<\/section>/i);
+  const oldPanel = source.match(/<section\b[^>]*class=["'][^"']*\bhome-cta-upgrade--streamlined\b[^"']*["'][^>]*>[\s\S]*?<\/section>/i);
   const panel = newPanel || oldPanel;
   if (!panel) fail("The homepage optional support section is missing.");
 
@@ -209,14 +209,14 @@ function stripApprovedHomeSupportArt(html, role) {
     if (expected.some((item) => !s.includes(item))) {
       fail("The optional homepage support graphic is missing an approved image, destination, or accessible link.");
     }
-    if ((s.match(/<img\\b/gi) || []).length !== 1
-        || (s.match(/<a\\b/gi) || []).length !== 8
-        || /<(?:script|iframe|form|audio|video)\\b/i.test(s)
-        || /\\son[a-z]+\\s*=/i.test(s)
+    if ((s.match(/<img\b/gi) || []).length !== 1
+        || (s.match(/<a\b/gi) || []).length !== 8
+        || /<(?:script|iframe|form|audio|video)\b/i.test(s)
+        || /\son[a-z]+\s*=/i.test(s)
         || /javascript:|src=["']https?:/i.test(s)) {
       fail("The optional homepage support graphic contains unapproved or interactive markup.");
     }
-    const links = [...s.matchAll(/<a\\b[^>]*href=["']([^"']+)["'][^>]*>/gi)].map((m) => m[1]);
+    const links = [...s.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)].map((m) => m[1]);
     const allowed = new Set([
       'https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL',
       'https://www.patreon.com/CheekyCommodoreGamer',
@@ -234,8 +234,8 @@ function stripApprovedHomeSupportArt(html, role) {
   }
 
   source = source.replace(panel[0], '<section data-ccg-approved-home-support-art></section>');
-  source = source.replace(/<!--\\s*(?:COMPACT SUPPORT STRIP|OPTIONAL HOME SUPPORT: EXACT ARTWORK WITH ACCESSIBLE LINK HOTSPOTS)\\s*-->/gi, '');
-  source = source.replace(/\\s*<link\\s+rel=["']stylesheet["']\\s+href=["']\\/resources\\/css\\/home-support-panel\\.css["']\\s*\\/?>/gi, '');
+  source = source.replace(/<!--\s*(?:COMPACT SUPPORT STRIP|OPTIONAL HOME SUPPORT: EXACT ARTWORK WITH ACCESSIBLE LINK HOTSPOTS)\s*-->/gi, '');
+  source = source.replace(/\s*<link\s+rel=["']stylesheet["']\s+href=["']\/resources\/css\/home-support-panel\.css["']\s*\/?>/gi, '');
   return source;
 }
 
@@ -283,10 +283,10 @@ assertExactHead(current);
 
 const normalizedCurrent = stripApprovedHomeSupportArt(stripApprovedSeoHead(
   stripApprovedHomeDiscoveryTransformation(current, "current")
-), "current").replace(/\\s+/g, " ").trim();
+), "current").replace(/\s+/g, " ").trim();
 const normalizedBaseline = stripApprovedHomeSupportArt(stripApprovedSeoHead(
   stripApprovedHomeDiscoveryTransformation(baseline, "baseline")
-), "baseline").replace(/\\s+/g, " ").trim();
+), "baseline").replace(/\s+/g, " ").trim();
 
 if (normalizedCurrent !== normalizedBaseline) {
   fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA, first-paint search slot, footer CSS deferral and archive-dashboard fields.");
