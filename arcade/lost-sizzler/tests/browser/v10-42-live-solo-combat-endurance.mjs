@@ -80,15 +80,21 @@ async function verifyOneTimeNamedDossier(page){
   // follower identity. Ordinary attack/input endurance is exercised below.
   const fixture=await page.evaluate(()=>{
     const follower=C.followerElites?.find(f=>typeof f?.name==="string"&&f.name);
-    const enemies=(host?.enemies||[]).filter(e=>e&&e.alive!==false&&!e.guardian&&!e?.exitWarden&&!e?.sigilDefender&&!e?.deathStalker&&!e?.treasureGoblin).slice(0,2);
+    const enemies=(host?.enemies||[]).filter(e=>e&&e.alive===true&&!e.follower&&!e.guardian&&!e.exitWarden&&!e.sigilDefender&&!e.deathStalker&&!e.treasureGoblin).slice(0,2);
     if(!follower||enemies.length!==2||run?.namedDossierAutoShown||typeof damageEnemy!=="function")return null;
-    for(const e of enemies){e.follower={...follower};e.hp=1;e.armor=0}
+    // Do not label either enemy until the synchronous defeat action below.
+    // Otherwise live projectiles/AI can defeat an already-labelled fixture
+    // between page.evaluate calls and contaminate the exact-once count.
     return{name:follower.name,ids:enemies.map(e=>e.id),before:Number(PGR.readDossier()?.[follower.name]?.defeats||0)};
   });
   assert.ok(fixture,"two ordinary enemies and an unshown authored named dossier are required for the live encounter contract");
   const defeat=async id=>page.evaluate(({enemyId,name})=>{
     const enemy=host.enemies.find(e=>e.id===enemyId);
-    if(!enemy)return null;
+    const follower=C.followerElites?.find(f=>f?.name===name);
+    if(!enemy||enemy.alive!==true||!follower)return null;
+    // Assign the authored identity and defeat in this same JavaScript turn:
+    // no frame can interleave an unrelated kill of a labelled enemy.
+    enemy.follower={...follower};enemy.hp=1;enemy.armor=0;
     damageEnemy(enemy,10,"energy",p1);
     return{fallen:enemy.alive===false,defeats:Number(PGR.readDossier()?.[name]?.defeats||0),
       autoShown:Boolean(run.namedDossierAutoShown),mode:String(mode)};
