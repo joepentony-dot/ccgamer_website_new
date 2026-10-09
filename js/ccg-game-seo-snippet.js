@@ -82,7 +82,7 @@
     if (!match) return "";
     const sentence = text.slice(0, match.index + match[0].length).trim();
     const comma = sentence.indexOf(",");
-    if (comma < 0 || comma > 110) return "";
+    if (comma < 0 || comma > 190) return "";
     const candidate = sentence.slice(comma + 1).trim();
     const subject = normalize(title).toLowerCase();
     if (!subject || !candidate.toLowerCase().startsWith(subject)) return "";
