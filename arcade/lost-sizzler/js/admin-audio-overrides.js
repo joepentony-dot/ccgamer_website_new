@@ -40,6 +40,9 @@
   }
 
   function remoteMediaAllowed(){
+    // Standalone itch/desktop builds are fully local and must never query the
+    // production Supabase music/voice catalogue, even in a normal browser.
+    if(window.CCGDungeonCarnageItchPackage===true||location.protocol==="file:")return false;
     if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
     let automated=false,local=false;
     try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}

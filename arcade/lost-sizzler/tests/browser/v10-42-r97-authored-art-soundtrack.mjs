@@ -44,6 +44,10 @@ try{
     for(const row of result){assert.equal(row.drawn,true,row.kind+" must decode and draw authored art");assert.ok(row.visible>50,row.kind+" must contain visible sprite pixels");}
     console.log("R97_SPRITE_PROOF_"+viewport.width+"="+(await page.screenshot()).toString("base64"));
     await page.addScriptTag({content:`
+      // This synthetic soundtrack test replaces both fetch and Audio with local
+      // fakes; simulate a normal website visitor, not an automated download.
+      Object.defineProperty(navigator,"webdriver",{configurable:true,value:false});
+      Object.defineProperty(navigator,"userAgent",{configurable:true,value:"Mozilla/5.0 Chrome/140.0 Safari/537.36"});
       window.__CCG_ALLOW_REMOTE_TEST_ASSETS__=true;
       window.CCG_SUPABASE_URL="https://lcslgxpgmttaexsorxik.supabase.co";
       window.CCG_SUPABASE_ANON_KEY="test-anon-key";

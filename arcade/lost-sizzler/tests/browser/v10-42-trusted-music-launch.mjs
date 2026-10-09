@@ -81,6 +81,14 @@ try{
     await route.fulfill({status:200,headers,body:JSON.stringify(rows)});
   });
 
+  // Fail closed: browser contracts may use local authored WAV fixtures, never
+  // production Supabase media. Abort before bytes leave the Supabase CDN.
+  let attemptedSupabaseStorage=0;
+  await context.route("https://*.supabase.co/storage/v1/object/**",route=>{
+    attemptedSupabaseStorage++;
+    return route.abort("blockedbyclient");
+  });
+
   let heldModule=false,releaseHeldModule=()=>{};
   const heldModuleGate=new Promise(resolve=>{releaseHeldModule=resolve});
   await context.route("**/js/v10-42-r94-enemy-identity.js*",async route=>{
@@ -148,6 +156,7 @@ try{
   assert.equal(playing.pendingGestureState,"","successful trusted launch must not leave music waiting for another gesture");
   assert.ok(playing.slots[playing.state].volume>=.1,"live authored music must remain at an audible non-zero level");
   assert.equal(playing.slots[playing.state].muted,false,"live authored music must not be muted");
+  assert.equal(attemptedSupabaseStorage,0,"Trusted music test attempted billable Supabase Storage media; use local fixtures.");
   assert.deepEqual(pageErrors,[],`trusted launch must not raise page errors: ${pageErrors.join("\n")}`);
 
   await context.close();

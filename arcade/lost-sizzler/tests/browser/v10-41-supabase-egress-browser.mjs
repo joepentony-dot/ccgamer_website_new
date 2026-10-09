@@ -25,6 +25,13 @@ const browser=await chromium.launch({headless:true,args:['--disable-dev-shm-usag
 
 try{
   const context=await browser.newContext({viewport:{width:1366,height:768}});
+  // Local/headless testing is never allowed to transfer production media.
+  // Abort CDN requests before bytes leave the origin and fail on any attempt.
+  let attemptedProductionStorage=0;
+  await context.route("https://*.supabase.co/storage/v1/object/**",async route=>{
+    attemptedProductionStorage++;
+    await route.abort("blockedbyclient");
+  });
   const page=await context.newPage();
   page.setDefaultTimeout(45000);
   const remoteMusicRequests=[];
@@ -52,12 +59,14 @@ try{
 
   const audioState=await page.evaluate(()=>window.CCGLostSizzlerPlaylistAudio?.getState?.());
   assert.ok(audioState,'Playlist diagnostics must remain available in the canonical run.');
-  assert.equal(audioState.customSoundtrackOwned,true,'R110 canonical run must keep uploaded production soundtrack ownership even when remote catalogue hydration is guarded.');
-  assert.equal(audioState.fallbackActive,false,'R110 canonical run must not fall back to bundled/generated basic music.');
-  assert.ok(String(audioState.url||'').includes('supabase.co/storage/')&&String(audioState.url||'').includes('/music/'),`R110 must use the release-pinned production music asset, got ${audioState.url}`);
-  assert.ok(remoteMusicRequests.length>=1,'R110 canonical Chromium run must request the release-pinned Supabase production soundtrack.');
+  assert.equal(audioState.customSoundtrackOwned,false,'Headless runs must not own production Supabase music, even when URLs are pinned in asset-overrides.js.');
+  assert.equal(audioState.soundtrackOwned,true,'Headless runs must retain an authored local soundtrack for gameplay tests.');
+  assert.equal(audioState.fallbackActive,false,'Headless runs must not start generated legacy music.');
+  assert.ok(String(audioState.url||'').startsWith('assets/audio/music/'),`Headless test must use bundled music, got ${audioState.url}`);
+  assert.equal(remoteMusicRequests.length,0,'Automated Chromium must request zero production Supabase music.');
+  assert.equal(attemptedProductionStorage,0,'Blocked Supabase Storage route must never be reached.');
 
-  console.log('Lost Sizzler canonical Chromium run kept headless catalogue hydration guarded while release-pinned production music owned playback.');
+  console.log('Dungeon canonical headless Chromium test passed: bundled authored soundtrack and zero production Storage requests.');
   await context.close();
 }finally{
   await browser.close();

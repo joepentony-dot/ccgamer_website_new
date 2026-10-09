@@ -57,6 +57,25 @@
     }catch(_){return false}
   };
 
+  /* Test and standalone releases must not fetch production CDN songs, even
+   * when asset-overrides.js pins a hardcoded Supabase music URL. */
+  function remoteProductionAudioDisabled(){
+    try{
+      const host=String(location.hostname||"").toLowerCase();
+      return window.CCGDungeonCarnageItchPackage===true
+        || location.protocol==="file:"
+        || ["localhost","127.0.0.1","::1"].includes(host)
+        || navigator.webdriver===true
+        || /HeadlessChrome/i.test(String(navigator.userAgent||""));
+    }catch(_){return true}
+  }
+
+  function safeMusicSources(sources){
+    const list=unique(sources);
+    if(!remoteProductionAudioDisabled())return list;
+    return list.filter(url=>!isMeteredRemoteTrack(url));
+  }
+
   function adminAudioPending(){
     try{
       const policy=window.CCGLostSizzlerRemoteMediaPolicy;
@@ -68,7 +87,7 @@
     const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{};
     const admin=window.CCG_ADMIN_AUDIO||{};
     const legacy=LEGACY_ADMIN_KEYS[state];
-    return unique([
+    return safeMusicSources([
       ...asList(override.playlists?.[state]),
       ...asList(override[legacy]),
       ...asList(admin.playlists?.[state]),
@@ -78,7 +97,7 @@
 
   function packagedSources(state){
     const legacy=LEGACY_ADMIN_KEYS[state],music=assets.music||{};
-    return unique([
+    return safeMusicSources([
       ...asList(music.playlists?.[state]),
       ...asList(music[state]),
       ...asList(music[legacy])
