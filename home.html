@@ -524,20 +524,37 @@
                 </div>
             </section>
 
-            <!-- OPTIONAL HOME SUPPORT: INLINE ONLY, NO POPUPS OR FUNDRAISING TRACKER -->
-            <section class="home-cta-upgrade home-cta-upgrade--streamlined" aria-labelledby="home-support-heading">
-                <div class="home-support-strip__copy">
-                    <span class="home-highlight-card__eyebrow">Optional community support</span>
-                    <h2 class="home-support-strip__title" id="home-support-heading">Enjoying CCG?</h2>
-                    <p class="home-support-strip__text">The archive is free for everyone. If you'd like to help with website costs and future updates, you're welcome to chip in. No obligation.</p>
+            <!-- OPTIONAL HOME SUPPORT: EXACT ARTWORK WITH ACCESSIBLE LINK HOTSPOTS -->
+            <section class="home-support-art" aria-label="Optional support for Cheeky Commodore Gamer">
+                <div class="home-support-art__canvas">
+                    <img class="home-support-art__image"
+                         src="/resources/images/ccg-home-support-neon.webp"
+                         width="2172"
+                         height="724"
+                         loading="lazy"
+                         decoding="async"
+                         alt="Enjoying CCG? The archive is free for everyone. If you'd like to help keep the website growing, you're welcome to chip in. No obligation." />
+                    <a class="home-support-art__hotspot home-support-art__hotspot--paypal"
+                       href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                       target="_blank" rel="noopener noreferrer"
+                       data-ccg-revenue-link="paypal-beer"
+                       aria-label="Buy Joe a Beer – optional PayPal donation">Buy Joe a Beer</a>
+                    <a class="home-support-art__hotspot home-support-art__hotspot--patreon"
+                       href="https://www.patreon.com/CheekyCommodoreGamer"
+                       target="_blank" rel="noopener noreferrer"
+                       data-ccg-revenue-link="patreon"
+                       aria-label="Support CCG on Patreon">Patreon</a>
+                    <a class="home-support-art__hotspot home-support-art__hotspot--youtube"
+                       href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       target="_blank" rel="noopener noreferrer"
+                       aria-label="Visit the Cheeky Commodore Gamer YouTube channel">YouTube</a>
+                    <a class="home-support-art__hotspot home-support-art__hotspot--more"
+                       href="/support.html" aria-label="View more optional support options">More support options</a>
                 </div>
-                <div class="home-support-strip__actions">
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="ccg-btn ccg-btn-blue home-support-strip__donate"
-                       data-ccg-revenue-link="paypal-beer">Buy Joe a Beer</a>
-                    <div class="home-support-strip__links" aria-label="More ways to support or follow CCG">
+                <div class="home-support-art__mobile" aria-label="Support links for smaller screens">
+                    <p>Enjoying CCG? The archive is free to everyone. If you'd like to help, you're welcome to chip in. No obligation.</p>
+                    <div class="home-support-art__mobile-links">
+                        <a class="home-support-art__mobile-primary" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="paypal-beer">Buy Joe a Beer</a>
                         <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="patreon">Patreon</a>
                         <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
                         <a href="/support.html">More options</a>
