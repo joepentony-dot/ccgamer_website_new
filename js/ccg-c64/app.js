@@ -79,6 +79,7 @@ const vaultStatus = document.querySelector("[data-vault-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
+const mobileJoystickSwapButton = document.querySelector("[data-mobile-joystick-swap]");
 const keyboardJoystickButton = document.querySelector("[data-keyboard-joystick]");
 const joystickPortIndicator = document.querySelector("[data-joystick-port]");
 const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
@@ -551,9 +552,13 @@ function toggleAudioMute() {
 
 function updateJoystickUi() {
   if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
-  if (joystickSwapButton) {
-    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
-    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  for (const button of [joystickSwapButton, mobileJoystickSwapButton]) {
+    if (!button) continue;
+    button.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
+    button.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  }
+  if (mobileJoystickSwapButton) {
+    mobileJoystickSwapButton.textContent = `SWAP JOYSTICK · PORT ${joystickPort}`;
   }
   if (keyboardJoystickButton) {
     keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
@@ -591,6 +596,7 @@ function swapJoystickPort() {
 }
 
 joystickSwapButton?.addEventListener("click", swapJoystickPort);
+mobileJoystickSwapButton?.addEventListener("click", swapJoystickPort);
 keyboardJoystickButton?.addEventListener("click", () => {
   keyboardJoystickEnabled = !keyboardJoystickEnabled;
   keyboardJoystickKeys.clear();
