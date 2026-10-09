@@ -35,6 +35,11 @@ const ccgMainManifest = JSON.parse(read("manifest.webmanifest"));
 const c64AppInstaller = read("js/ccg-c64/install-app.js");
 const c64AppIcon = read("emulator/c64/icons/ccg-c64-icon.svg");
 const c64AppMaskableIcon = read("emulator/c64/icons/ccg-c64-icon-maskable.svg");
+const c64IconRaster = [
+  ["ccg-c64-192.png", 192],
+  ["ccg-c64-512.png", 512],
+  ["ccg-c64-apple-180.png", 180],
+];
 
 assert(html.includes("CCG BROWSER C64") || html.includes("CCG C64"), "CCG identity is required");
 // The dedicated emulator PWA must not hijack the existing site-wide CCG app.
@@ -49,6 +54,18 @@ assert(c64AppManifest.icons.some(icon => icon.purpose === "any" && icon.src.ends
   "C64 home screen app icon must be present");
 assert(c64AppManifest.icons.some(icon => icon.purpose === "maskable" && icon.src.endsWith("ccg-c64-icon-maskable.svg")),
   "An Android maskable app icon must exist");
+for (const [filename, edge] of c64IconRaster) {
+  const image = fs.readFileSync(path.join(root, "emulator/c64/icons", filename));
+  assert.equal(image.subarray(0, 8).toString("hex"), "89504e470d0a1a0a",
+    "App icon must be a PNG image: " + filename);
+  assert.equal(image.readUInt32BE(16), edge, "App icon width must match: " + filename);
+  assert.equal(image.readUInt32BE(20), edge, "App icon height must match: " + filename);
+}
+assert(c64AppManifest.icons.some(icon => icon.sizes === "192x192" && icon.type === "image/png") &&
+  c64AppManifest.icons.some(icon => icon.sizes === "512x512" && icon.type === "image/png"),
+  "Android app installation needs 192px and 512px raster icon fallback");
+assert(html.includes('rel="apple-touch-icon" sizes="180x180" href="/emulator/c64/icons/ccg-c64-apple-180.png"'),
+  "iPhone installation must show the dedicated raster C64 icon");
 assert(c64AppIcon.includes("<svg ") && c64AppMaskableIcon.includes("<svg "),
   "Both installable emulator app icon files must contain SVG markup");
 assert(html.includes('rel="manifest" href="/emulator/c64/manifest.webmanifest"'),
