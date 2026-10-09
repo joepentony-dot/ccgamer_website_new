@@ -158,3 +158,24 @@ test('admin keeps specific factual game snippets free of fallback warnings', () 
   assert.match(preview.description, /action RPG/);
   assert.equal(preview.warnings.length, 0);
 });
+
+test('three-dot punctuation inside a long Super Pipeline sentence is not a completed SEO sentence', () => {
+  const game = {
+    title: 'Super Pipeline',
+    slug: 'super-pipeline',
+    system: 'C64',
+    year: 1983,
+    publisher: 'Taskset',
+    description: 'Super Pipeline (1983) – Commodore 64 Puzzle-Action Classic Released in 1983 by Taskset and developed by Andy Walker, Pipeline... also known as Super Pipeline, is a distinctive puzzle-action game about keeping an industrial pipe network operating under constant threat.'
+  };
+  const result = snippet.buildSnippet(game, game.title);
+  assert.equal(result, 'Super Pipeline (1983) is a Commodore 64 game published by Taskset.');
+  assert.ok(result.endsWith('.'));
+  assert.doesNotMatch(result, /\.\.\.$|…$/);
+  assert.equal(buildGameSeoPreview(game, snippet).description, result);
+});
+
+test('rejects an editorial sentence ending in three dots even when short enough', () => {
+  const result = snippet.firstCompleteSentence('A lengthy historic description that was abruptly cut off...', 155);
+  assert.equal(result, '');
+});
