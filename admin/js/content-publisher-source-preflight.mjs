@@ -256,6 +256,17 @@ export function buildGameSeoPreview(source, snippetBuilder) {
   if (title && seoTitle.length > 70) warnings.push('The page title is long and may be shortened in Google results.');
   if (!safeSlug) warnings.push('Enter a valid lowercase hyphenated slug for the canonical URL.');
   if (title && !snippet) warnings.push('SEO description preview is unavailable; source publishing validation remains active.');
+  // Advisory only: the authoritative publishing preflight remains unchanged.
+  // Detect when the snippet cannot use any meaningful editorial detail and
+  // has fallen back to known release metadata (title/year/platform/publisher).
+  if (title && snippet && typeof snippetBuilder?.buildSnippet === 'function') {
+    const factualFallback = snippetBuilder.buildSnippet({ ...game, description: '', desc: '' }, title);
+    if (snippet === factualFallback) {
+      warnings.push('Google snippet uses only basic release details. Add a verified game-specific gameplay or historical fact to the description.');
+    } else if (snippet.length < 70) {
+      warnings.push('Google snippet is very short. Consider including one additional verified game-specific fact.');
+    }
+  }
   return {
     url: safeSlug
       ? `https://www.cheekycommodoregamer.co.uk/games/${slug}/`
