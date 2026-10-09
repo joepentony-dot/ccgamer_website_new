@@ -444,7 +444,7 @@ test("residual review classifies every baseline unmatched C64 record exactly onc
     assert.equal(entry.year, source.year);
     assert.deepEqual(entry.publishers, source.publishers);
     assert.equal(entry.originalAuditStatus, source.status);
-    assert.match(entry.reviewedAt, /^\\d{4}-\\d{2}-\\d{2}$/);
+    assert.match(entry.reviewedAt, /^\d{4}-\d{2}-\d{2}$/);
     assert.ok(String(entry.reason || "").length >= 40, entry.gameSlug);
     assert.equal(currentMapping.games?.[entry.gameSlug], undefined,
       `${entry.gameSlug} has a verified UTA mapping: update the review instead of retaining an unmatched classification`);
