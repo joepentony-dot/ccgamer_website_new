@@ -53,6 +53,7 @@ const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
 const warpLoadButton = document.querySelector("[data-warp-load]");
+const mobileWarpLoadButton = document.querySelector("[data-mobile-warp-load]");
 const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
 const loadDiskButton = document.querySelector("[data-load-disk]");
@@ -1048,6 +1049,14 @@ function setControlState(snapshot) {
     const strong = warpLoadButton.querySelector("strong");
     if (strong) strong.textContent = warpLoadActive ? "ON · MAX" : "MAX";
   }
+  if (mobileWarpLoadButton) {
+    mobileWarpLoadButton.disabled = !running || paused;
+    mobileWarpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
+    mobileWarpLoadButton.textContent = warpLoadActive ? "WARP: ON" : "WARP: OFF";
+    mobileWarpLoadButton.setAttribute("aria-label", warpLoadActive
+      ? "Turn off warp load and return to normal C64 speed"
+      : "Turn on warp load at maximum C64 speed");
+  }
   if (loadMediaButton) loadMediaButton.disabled = false;
   if (loadDiskButton) loadDiskButton.disabled = false;
   updateMediaControls(snapshot);
@@ -1570,6 +1579,7 @@ powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", () => { resetMachine(); screen?.focus(); });
 pauseButton?.addEventListener("click", () => { togglePause(); screen?.focus(); });
 warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
+mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
 audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
 crtButton?.addEventListener("click", () => { cycleCrtMode(); screen?.focus(); });
 sizeButton?.addEventListener("click", () => { toggleScreenSize(); screen?.focus(); });
