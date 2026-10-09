@@ -72,3 +72,59 @@ test('generated descriptions are limited to a complete sentence for social shari
     assert.doesNotMatch(output, /…|\.\.\./, game.title);
   }
 });
+
+test('recovers a game-specific factual clause after a long introductory phrase', () => {
+  const cases = [
+    {
+      title: '1942',
+      year: 1986,
+      system: 'C64',
+      publisher: 'Elite',
+      description: "1942 (1986) – Commodore 64 WWII Vertical Shoot Em Up Arcade Classic Originally developed by Capcom and brought to the Commodore 64 in 1986 by Elite Systems, 1942 is a vertically scrolling shoot 'em up set against the backdrop of World War II. Further discussion.",
+      expected: "1942 is a vertically scrolling shoot 'em up set against the backdrop of World War II."
+    },
+    {
+      title: 'Kingpin',
+      year: 1995,
+      system: 'AMIGA',
+      publisher: 'Team17',
+      description: 'Kingpin: Arcade Sports Bowling (1995) – Commodore Amiga Sports Sim Released in 1995 by Team17 for the Commodore Amiga, Kingpin: Arcade Sports Series Bowling is a dedicated ten-pin bowling simulation designed for both solo players and multiplayer groups. You can control multiple bowlers.',
+      expected: 'Kingpin: Arcade Sports Series Bowling is a dedicated ten-pin bowling simulation designed for both solo players and multiplayer groups.'
+    },
+    {
+      title: 'Chuckie Egg',
+      year: 1984,
+      system: 'C64',
+      publisher: 'A&F Software',
+      description: "Chuckie Egg (1984) – Commodore 64 Platform Action Released in 1984 by A&F Software for the Commodore 64, Chuckie Egg is a fast-paced platform game based on Nigel Alderton's popular ZX Spectrum original. Climb ladders.",
+      expected: "Chuckie Egg is a fast-paced platform game based on Nigel Alderton's popular ZX Spectrum original."
+    },
+    {
+      title: 'Dune',
+      year: 1992,
+      system: 'AMIGA',
+      publisher: 'Virgin Games',
+      description: "Dune (1992) – Commodore Amiga Strategy Adventure Released in 1992 by Virgin Interactive and developed by Cryo Interactive, Dune is a bold adventure-strategy hybrid set in Frank Herbert's science-fiction universe. Explore Arrakis.",
+      expected: "Dune is a bold adventure-strategy hybrid set in Frank Herbert's science-fiction universe."
+    }
+  ];
+  for (const game of cases) {
+    const actual = snippet.buildSnippet(game, game.title);
+    assert.equal(actual, game.expected, game.title);
+    assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+    assert.equal(buildGameSeoPreview({ ...game, slug: game.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') }, snippet).description, actual);
+    assert.ok(actual.length <= 155);
+    assert.doesNotMatch(actual, /…|\.\.\.$/);
+  }
+});
+
+test('does not salvage an arbitrary dangling clause without the game title as subject', () => {
+  const game = {
+    title: 'Kingpin',
+    year: 1995,
+    system: 'AMIGA',
+    publisher: 'Team17',
+    description: 'After a very long introduction about the history of computers, the developers also included numerous mechanics that cannot be summarised without missing key context or losing the point of the original sentence in its entirety.'
+  };
+  assert.equal(snippet.buildSnippet(game, game.title), 'Kingpin (1995) is an Amiga game published by Team17.');
+});
