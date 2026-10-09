@@ -93,32 +93,22 @@ function expect(condition, message, errors) {
   if (!condition) errors.push(message);
 }
 
-// Validate the actual published game-page search and social summaries.
-// This guards against downstream publishing transforms accidentally undoing
-// the canonical snippet writer by appending boilerplate or truncating clauses.
+// Validate game-page search and social summaries after all publishing layers.
 function validateGameSnippetMetadata(html, rel, errors) {
-  const extract = (kind, key) => {
-    const pattern = new RegExp(
-      '<meta\\b(?=[^>]*\\b' + kind + '=["\\\']' + key.replace(/[.*+?^${}()|[\\]\\]/g, '\\function expect(condition, message, errors) {
-  if (!condition) errors.push(message);
-}
-') + '["\\\'])[^>]*>',
-      'i'
-    );
-    const tag = html.match(pattern)?.[0] || '';
-    const raw = tag.match(/\bcontent=(["'])([\s\S]*?)\1/i)?.[2] || '';
+  function fromTag(pattern) {
+    const tag = html.match(pattern)?.[0] || "";
+    const raw = tag.match(/\bcontent=(["'])([\s\S]*?)\1/i)?.[2] || "";
     return decodeHtmlEntities(raw).trim();
-  };
-  const description = extract('name', 'description');
-  const og = extract('property', 'og:description');
-  const twitter = extract('name', 'twitter:description');
+  }
+  const description = fromTag(/<meta\b[^>]*\bname=["']description["'][^>]*>/i);
+  const og = fromTag(/<meta\b[^>]*\bproperty=["']og:description["'][^>]*>/i);
+  const twitter = fromTag(/<meta\b[^>]*\bname=["']twitter:description["'][^>]*>/i);
   if (!description) return;
-  expect(!/…|\.\.\.$/.test(description), `${rel}: published meta description ends in a cut-off ellipsis.`, errors);
+  expect(!/(?:…|\.\.\.)$/.test(description), `${rel}: published meta description ends in a cut-off ellipsis.`, errors);
   expect(/[.!?][”"']?$/.test(description), `${rel}: published meta description must end with a complete sentence.`, errors);
   expect(og === description, `${rel}: Open Graph description differs from Google description.`, errors);
   expect(twitter === description, `${rel}: Twitter description differs from Google description.`, errors);
 }
-
 
 function validateCanonicalPage(root, game, sitemapLocs, errors) {
   const slug = String(game?.slug || "").trim();
