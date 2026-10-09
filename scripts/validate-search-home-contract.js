@@ -181,6 +181,64 @@ function stripApprovedHomeFooterCssDeferral(html) {
     );
 }
 
+// Explicitly scoped allowance for the optional homepage support-art replacement.
+// The rest of home.html is still byte-for-byte checked against origin/main.
+function stripApprovedHomeSupportArt(html, role) {
+  let source = String(html);
+  const newPanel = source.match(/<section\b[^>]*class=["'][^"']*\bhome-support-art\b[^"']*["'][^>]*>[\s\S]*?<\/section>/i);
+  const oldPanel = source.match(/<section\b[^>]*class=["'][^"']*\bhome-cta-upgrade--streamlined\b[^"']*["'][^>]*>[\s\S]*?<\/section>/i);
+  const panel = newPanel || oldPanel;
+  if (!panel) fail("The homepage optional support section is missing.");
+
+  if (newPanel) {
+    if (role !== "current") fail("Unexpected graphic support panel in the baseline.");
+    const s = panel[0];
+    const expected = [
+      '/resources/images/ccg-home-support-neon.webp',
+      'home-support-art__image',
+      'home-support-art__hotspot--paypal',
+      'home-support-art__hotspot--patreon',
+      'home-support-art__hotspot--youtube',
+      'home-support-art__hotspot--more',
+      'home-support-art__mobile',
+      'https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL',
+      'https://www.patreon.com/CheekyCommodoreGamer',
+      'https://www.youtube.com/@CheekyCommodoreGamer',
+      'href="/support.html"'
+    ];
+    if (expected.some((item) => !s.includes(item))) {
+      fail("The optional homepage support graphic is missing an approved image, destination, or accessible link.");
+    }
+    if ((s.match(/<img\b/gi) || []).length !== 1
+        || (s.match(/<a\b/gi) || []).length !== 8
+        || /<(?:script|iframe|form|audio|video)\b/i.test(s)
+        || /\son[a-z]+\s*=/i.test(s)
+        || /javascript:|src=["']https?:/i.test(s)) {
+      fail("The optional homepage support graphic contains unapproved or interactive markup.");
+    }
+    const links = [...s.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)].map((m) => m[1]);
+    const allowed = new Set([
+      'https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL',
+      'https://www.patreon.com/CheekyCommodoreGamer',
+      'https://www.youtube.com/@CheekyCommodoreGamer',
+      '/support.html'
+    ]);
+    if (links.length !== 8 || links.some((href) => !allowed.has(href))) {
+      fail("The optional homepage support graphic has an unapproved link destination.");
+    }
+  } else {
+    if (!panel[0].includes('https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL')
+        || !panel[0].includes('https://www.youtube.com/@CheekyCommodoreGamer')) {
+      fail("The baseline support section differs from the expected two-link strip.");
+    }
+  }
+
+  source = source.replace(panel[0], '<section data-ccg-approved-home-support-art></section>');
+  source = source.replace(/<!--\s*(?:COMPACT SUPPORT STRIP|OPTIONAL HOME SUPPORT: EXACT ARTWORK WITH ACCESSIBLE LINK HOTSPOTS)\s*-->/gi, '');
+  source = source.replace(/\s*<link\s+rel=["']stylesheet["']\s+href=["']\/resources\/css\/home-support-panel\.css["']\s*\/?>/gi, '');
+  return source;
+}
+
 function stripApprovedSeoHead(html) {
   return stripApprovedDungeonCarnageCssCacheBust(
     stripApprovedDungeonCarnageHomeCta(
@@ -223,12 +281,12 @@ const current = fs.readFileSync(HOME_PATH, "utf8");
 const baseline = readBaseline();
 assertExactHead(current);
 
-const normalizedCurrent = stripApprovedSeoHead(
+const normalizedCurrent = stripApprovedHomeSupportArt(stripApprovedSeoHead(
   stripApprovedHomeDiscoveryTransformation(current, "current")
-);
-const normalizedBaseline = stripApprovedSeoHead(
+), "current").replace(/\s+/g, " ").trim();
+const normalizedBaseline = stripApprovedHomeSupportArt(stripApprovedSeoHead(
   stripApprovedHomeDiscoveryTransformation(baseline, "baseline")
-);
+), "baseline").replace(/\s+/g, " ").trim();
 
 if (normalizedCurrent !== normalizedBaseline) {
   fail("home.html changed outside the approved SEO-head, Dungeon Carnage CTA, first-paint search slot, footer CSS deferral and archive-dashboard fields.");
