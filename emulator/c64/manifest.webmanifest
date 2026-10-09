@@ -1,0 +1,31 @@
+{
+  "id": "/emulator/c64/",
+  "name": "CCG C64 Emulator",
+  "short_name": "CCG C64",
+  "description": "Play Commodore 64 games with a touchscreen joystick, fire and jump buttons, an on-screen C64 keyboard, gamepad support and an in-browser game library.",
+  "lang": "en-GB",
+  "dir": "ltr",
+  "start_url": "/emulator/c64/?source=installed-c64-app",
+  "scope": "/emulator/c64/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#050719",
+  "theme_color": "#090d2e",
+  "categories": ["games", "entertainment"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/emulator/c64/icons/ccg-c64-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/emulator/c64/icons/ccg-c64-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
