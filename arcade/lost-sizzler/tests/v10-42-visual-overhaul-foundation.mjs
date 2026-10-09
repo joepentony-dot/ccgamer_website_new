@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import vm from "node:vm";
 
-const overrides=readFileSync(new URL("../js/asset-overrides.js",import.meta.url),"utf8");
-const renderer=readFileSync(new URL("../js/game-render.js",import.meta.url),"utf8");
+const overrides=readFileSync(new URL("../js/asset-overrides.js",import.meta.url),"utf8").replaceAll("\r\n","\n");
+const renderer=readFileSync(new URL("../js/game-render.js",import.meta.url),"utf8").replaceAll("\r\n","\n");
 const manifest=JSON.parse(readFileSync(new URL("../assets/asset-manifest.json",import.meta.url),"utf8"));
 const workstream=readFileSync(new URL("../../../docs/ai-work/dungeon-carnage-visual-overhaul.md",import.meta.url),"utf8");
 
@@ -83,4 +84,56 @@ assert.match(workstream,/CC0|public[- ]domain/i,"visual workstream must record l
 assert.match(workstream,/provenance/i,"visual workstream must require provenance");
 assert.match(workstream,/0x72 DungeonTileset II/,"primary visual source candidate must remain documented");
 
-console.log("Dungeon Carnage visual-overhaul asset-registry foundation contract passed.");
+// Exercise the real cached stone painter against immutable geometry. It must
+// remain a bounded presentation resource, with the existing wall as fallback.
+const raster=[],submitted=[];
+let material={wall:"#453aa0",hi:"#7f70eb"},created=0,canvasAvailable=true;
+const stoneSandbox={window:{},document:{querySelector:()=>null,getElementById:()=>null,
+  createElement(tag){
+    assert.equal(tag,"canvas");created++;
+    return{getContext(){return canvasAvailable?{imageSmoothingEnabled:false,
+      fillRect(...rect){raster.push(rect)}}:null}};
+  }},C:{tile:48},run:{floor:1},world:null,W:{themeAt:()=>material},
+  ctx:{drawImage(...args){submitted.push(args)}}};
+vm.createContext(stoneSandbox);
+vm.runInContext(renderer,stoneSandbox,{timeout:1000});
+function stoneWorld(mask){
+  const map=Array.from({length:5},()=>Array(5).fill(1));
+  if(mask&1)map[1][2]=0;if(mask&2)map[2][3]=0;
+  if(mask&4)map[3][2]=0;if(mask&8)map[2][1]=0;
+  return Object.freeze({map:Object.freeze(map.map(row=>Object.freeze(row)))});
+}
+for(let mask=0;mask<16;mask++){
+  stoneSandbox.world=stoneWorld(mask);
+  const before=JSON.stringify(stoneSandbox.world),beforeBuilds=created;
+  raster.length=0;submitted.length=0;
+  const result=vm.runInContext("drawDungeonStoneRelief({x:48,y:96},2,2,7)",stoneSandbox);
+  assert.equal(result,mask!==0,"only exposed wall edges receive relief");
+  assert.equal(JSON.stringify(stoneSandbox.world),before,"stonework cannot mutate collision geometry");
+  if(!mask)continue;
+  assert.ok(raster.length>0,"exposed faces must contain actual stone detail");
+  for(const [x,y,w,h] of raster)assert.ok(x>=0&&y>=0&&w>0&&h>0&&x+w<=48&&y+h<=48,"stone pixels must stay inside their wall tile");
+  vm.runInContext("drawDungeonStoneRelief({x:96,y:144},2,2,7)",stoneSandbox);
+  assert.equal(created,beforeBuilds+1,"identical material/edge/seed must reuse one raster");
+  assert.equal(submitted[0][0],submitted[1][0],"camera movement must reuse the same bitmap");
+}
+for(let i=0;i<100;i++){
+  material={wall:`#${i.toString(16).padStart(6,"0")}`,hi:"#7f70eb"};
+  vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
+}
+assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),64,"stone bitmap memory must remain bounded");
+stoneSandbox.world=stoneWorld(4);
+vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox);
+assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),1,"a new floor/world must retire old stone rasters");
+const beforeLaterFloor=created;
+stoneSandbox.run.floor=4;
+stoneSandbox.world=stoneWorld(4);
+assert.equal(vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox),false,"pilot must preserve later-floor presentation");
+assert.equal(created,beforeLaterFloor);
+assert.equal(vm.runInContext("dungeonStoneReliefCache.size",stoneSandbox),0,"later-floor handoff must retire pilot bitmaps");
+stoneSandbox.run.floor=1;stoneSandbox.world=stoneWorld(4);canvasAvailable=false;
+assert.equal(vm.runInContext("drawDungeonStoneRelief({x:0,y:0},2,2,7)",stoneSandbox),false,"unavailable Canvas must preserve the original wall fallback");
+assert.match(renderer.slice(renderer.indexOf("function drawTile(x,y)"),renderer.indexOf("function drawPickupGlyph")),/drawDungeonStoneRelief\(s,x,y,h\)/,"live detailed tiles must own the stone pass");
+assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawTilePerformance"),renderer.indexOf("function drawTile(x,y)")),/drawDungeonStoneRelief/,"severe static-tile fallback must retain its existing cost");
+
+console.log("Dungeon Carnage visual-overhaul asset-registry and cached stonework contracts passed.");

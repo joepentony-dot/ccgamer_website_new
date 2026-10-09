@@ -137,6 +137,9 @@ try{
             };
             requestAnimationFrame(frame);
           });
+          const stoneBuilds=dungeonRenderPerformance.stoneReliefRasterBuilds||0;
+          renderView(p1,{x:0,y:0,w:canvas.width,h:canvas.height});
+          const warmCacheMisses=(dungeonRenderPerformance.stoneReliefRasterBuilds||0)-stoneBuilds;
           const values=[...frames].sort((a,b)=>a-b);
           const percentile=ratio=>Number(values[Math.min(values.length-1,Math.floor((values.length-1)*ratio))].toFixed(2));
           return{
@@ -146,6 +149,7 @@ try{
             quality:String(typeof dungeonRenderQuality==="function"?dungeonRenderQuality():"unavailable"),
             prefersReducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches,
             renderMotionReduced:Boolean(window.CCGLostSizzlerV142R70RenderPerformance?.reducedMotion?.()),
+            stonework:{cacheEntries:dungeonStoneReliefCache.size,warmCacheMisses,pilot:selectedFloor===1},
             frameIntervalsMs:{count:values.length,p50:percentile(.5),p95:percentile(.95),max:percentile(1)},
             generated:{rooms:world.rooms?.length||0,wallLights:world.wallLights?.length||0,
               decor:world.decor?.length||0,wallTorches:world.decor?.filter(row=>row.type==="candleSconce").length||0}
@@ -154,6 +158,10 @@ try{
         assert.equal(sample.floor,floor,"visual baseline must capture the requested generated floor");
         assert.equal(sample.renderMotionReduced,sample.prefersReducedMotion,
           "the actual Canvas renderer must honour the device reduced-motion setting");
+        assert.ok(sample.stonework.cacheEntries<=64,"stonework must retain its bounded bitmap budget");
+        assert.equal(sample.stonework.warmCacheMisses,0,"a warmed camera must not rerasterise static stone faces");
+        if(floor===1&&sample.quality!=="severe")assert.ok(sample.stonework.cacheEntries>0,
+          "the Floor 1 benchmark must exercise actual cached exposed stone faces");
         assert.equal(sample.seed,`${fixedSeed}-F${floor}`,"desktop/mobile must have exactly matched seeded floor generation");
         assert.ok(sample.frameIntervalsMs.count>=40&&sample.canvas.width>0&&sample.canvas.height>0,
           "visual baseline must capture live rendered frames and a usable canvas");
