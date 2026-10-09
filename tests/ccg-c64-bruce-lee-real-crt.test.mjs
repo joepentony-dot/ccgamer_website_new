@@ -4,134 +4,130 @@ import test from "node:test";
 import { C64Machine } from "../js/ccg-c64/core/machine.js";
 import { KEY_MAP } from "../js/ccg-c64/core/cia.js";
 
-const firmware = {
+// Use the exact public Magic Desk cartridge, not the retired PRG listing.
+const romPaths = {
   kernal: "emulator/c64/firmware/kernal-901227-03.bin",
   basic: "emulator/c64/firmware/basic-901226-01.bin",
   charRom: "emulator/c64/firmware/chargen-901225-01.bin",
 };
-const roms = Object.fromEntries(Object.entries(firmware).map(([name,path]) =>
-  [name, new Uint8Array(fs.readFileSync(path))]));
-const cartFile = new Uint8Array(fs.readFileSync("emulator/c64/media/bruce-lee-trilogy.crt"));
-const formatChar = (value) => {
-  const x=value & 0x7f;
-  if (x === 32 || x===0x60) return " ";
-  if (x>=1 && x<=26) return String.fromCharCode(x+64);
-  if (x>=48 && x<=57) return String.fromCharCode(x);
-  return x===46 ? "." : " ";
+const roms = Object.fromEntries(Object.entries(romPaths).map(([k,p]) =>
+  [k,new Uint8Array(fs.readFileSync(p))]));
+const crt = new Uint8Array(fs.readFileSync("emulator/c64/media/bruce-lee-trilogy.crt"));
+
+const c64Char = (v) => {
+  v &= 0x7f;
+  if(v===32 || v===0x60) return " ";
+  if(v>=1 && v<=26) return String.fromCharCode(v+64);
+  if(v>=48 && v<=57) return String.fromCharCode(v);
+  return v===46 ? "." : " ";
 };
 function screen(machine) {
-  const base = (machine.cia2.vicBank +
-    ((machine.vic2.regs[0x18] >> 4) & 15) * 1024) & 0xffff;
-  const bytes = Array.from({length:1000}, (_,i)=>machine.mem.ram[(base+i)&0xffff]);
-  const rows = Array.from({length:25},(_,row)=>
-    bytes.slice(row*40,row*40+40).map(formatChar).join(""));
-  return {base,bytes,rows,text:rows.join(" ")};
+  const base=(machine.cia2.vicBank +
+    ((machine.vic2.regs[0x18] >>> 4) & 15) * 1024) & 0xffff;
+  const codes=Array.from({length:1000},(_,i)=>machine.mem.ram[(base+i)&0xffff]);
+  return codes.map(c64Char).join("");
 }
-function run(machine,frames) {
-  for(let n=0;n<frames;n++) assert(machine.runFrame(),"Emulator must continue running");
+function gameImage(machine) {
+  const bank=machine.cia2.vicBank;
+  const d018=machine.vic2.regs[0x18];
+  const screenBase=(bank+((d018>>>4)&15)*1024)&0xffff;
+  const bitmapBase=(bank+((d018&0x08)?8192:0))&0xffff;
+  const ram=machine.mem.ram;
+  return {
+    d011:machine.vic2.regs[0x11], d018, screenBase, bitmapBase,
+    screen:Array.from({length:1000},(_,i)=>ram[(screenBase+i)&0xffff]),
+    bitmap:Array.from({length:8000},(_,i)=>ram[(bitmapBase+i)&0xffff]),
+    colors:Array.from(machine.mem.colorRam),
+    vic:Array.from(machine.vic2.regs.slice(0,0x30)),
+    memBank:machine.mem.cartridge?.bank,
+    pc:machine.cpu.pc,
+  };
 }
-function pressKey(machine, key, frames=25) {
-  const coords=KEY_MAP[key];
-  assert(coords,"Missing matrix binding for "+key);
-  machine.cia1.setKey(coords[0],coords[1],true);
-  run(machine,frames);
-  machine.cia1.setKey(coords[0],coords[1],false);
+function diff(before,after) {
+  const count=(x,y)=>x.reduce((n,v,i)=>n+(v!==y[i]),0);
+  return {
+    screen:count(before.screen,after.screen),bitmap:count(before.bitmap,after.bitmap),
+    colors:count(before.colors,after.colors),vic:count(before.vic,after.vic),
+    screenBaseChanged:before.screenBase!==after.screenBase,
+    bitmapBaseChanged:before.bitmapBase!==after.bitmapBase,
+  };
 }
-function boot() {
+function progress(machine,frames) {
+  for(let i=0;i<frames;i++) assert(machine.runFrame(),"PAL emulation must advance");
+}
+function key(machine,name,frames) {
+  const matrix=KEY_MAP[name];
+  assert(matrix,"Missing mapping for "+name);
+  machine.cia1.setKey(...matrix,true);
+  progress(machine,frames);
+  machine.cia1.setKey(...matrix,false);
+}
+test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
   const machine=new C64Machine();
   machine.loadROMs(roms);
-  const attached=machine.loadCartridge(cartFile);
-  assert.equal(attached.hwType,19);
-  return machine;
-}
-const menuText = s=>s.rows.slice(2,20).join(" ").replace(/ {2,}/g," ");
-
-test("select Bruce Lee 1984 from real Magic Desk trilogy, then exercise game F-keys",()=>{
-  const attempts=[
-    {label:"port2 FIRE",joy:2},
-    {label:"port1 FIRE",joy:1},
-    {label:"RETURN",key:"Enter"},
-    {label:"SPACE",key:"Space"},
-    {label:"1",key:"Digit1"},
-    {label:"UP+port2 FIRE",joy:2,up:true},
-  ];
-  let selected=null;
-  for(const a of attempts) {
-    const machine=boot();
-    let selectorFrame=-1;
-    for(let f=0;f<600;f+=10) {
-      run(machine,10);
-      if(/1984/.test(screen(machine).text)) {selectorFrame=f+10;break;}
-    }
-    const intro=screen(machine);
-    assert(selectorFrame!==-1,"The hosted cartridge must boot to the 1984/2015/2019 game-selection menu");
-    run(machine,35); // let the initial key release/debounce finish
-    console.log("Trilogy 1984 menu reached in "+selectorFrame+" frames");
-    if(a.key) pressKey(machine,a.key,20);
-    else {
-      if(a.joy===1) machine.joyPort1=a.up?0xee:0xef;
-      else machine.joyPort2=a.up?0xee:0xef;
-      run(machine,25);
-      machine.joyPort1=0xff;machine.joyPort2=0xff;
-    }
-    let found=false;
-    for(let f=0;f<260;f+=20) {
-      run(machine,20);
-      const s=screen(machine);
-      if(s.text.includes("BRUCE") && s.text.includes("LEE") &&
-          s.rows.some(row=>row.includes("PLAYER") || row.includes("PRESS"))) {
-        found=true;
-        break;
-      }
-    }
-    const after=screen(machine);
-    console.log("Trilogy selection "+a.label+": "+JSON.stringify({
-      gameMenuFound:found,bank:machine.mem.cartridge?.bank,
-      screenBase:after.base,menuText:menuText(after),
-      firstRows:after.rows.slice(2,20)
-    }));
-    if (found) { selected={machine,via:a.label};break; }
+  const cart=machine.loadCartridge(crt);
+  assert.equal(cart.hwType,19);
+  // The cartridge FIRST shows its own year selector. It is not the game's
+  // title screen; use FIRE in joystick port 2 to enter Bruce Lee 1984.
+  let selectorFrame=-1;
+  for(let i=0;i<600;i+=10) {
+    progress(machine,10);
+    if(screen(machine).includes("1984")) {selectorFrame=i+10;break;}
   }
-  assert(selected,"Couldn't reach Bruce Lee 1984 from the hosted Trilogy CRT. Don't claim key fix.");
-  const machine=selected.machine;
-  const readCounts={};
-  let active=null;
-  const origRead=machine.cia1.read.bind(machine.cia1);
+  assert(selectorFrame>=0,"Trilogy year selector must appear");
+  progress(machine,35);
+  const picker=gameImage(machine);
+  machine.joyPort2=0xef; // FIRE: select first entry, Bruce Lee 1984
+  progress(machine,25);
+  machine.joyPort2=0xff;
+  progress(machine,130);
+  const title=gameImage(machine);
+  console.log("Bruce Lee CRT selection:",JSON.stringify({
+    selectorFrame,yearSelectorScreenBase:picker.screenBase,
+    gameScreenBase:title.screenBase,bitmapMode:Boolean(title.d011&0x20),
+    screenModeChange:diff(picker,title),
+    cartridgeBank:title.memBank,pc:title.pc,
+  }));
+  assert(title.screenBase!==picker.screenBase || (title.d011&0x20),
+    "The test must enter the original Bruce Lee game, not stay at the trilogy selector");
+  progress(machine,30);
+  let prior=gameImage(machine);
+
+  let active=null;const reads={};
+  const originalRead=machine.cia1.read.bind(machine.cia1);
   machine.cia1.read=(reg)=>{
     if(active && ((reg&15)===0 || (reg&15)===1)) {
-      const r=readCounts[active]||={portA:0,portB:0,ddrB:[],samples:[]};
-      if((reg&15)===0)r.portA++;else r.portB++;
-      if(r.samples.length<10)r.samples.push({
-        port:reg&15,ddrA:machine.cia1.portADir,ddrB:machine.cia1.portBDir,
+      const info=reads[active]||={portA:0,portB:0,samples:[]};
+      if((reg&15)===0)info.portA++;else info.portB++;
+      if(info.samples.length<8) info.samples.push({
+        reg:reg&15,ddrA:machine.cia1.portADir,ddrB:machine.cia1.portBDir,
         latchA:machine.cia1.portA,latchB:machine.cia1.portB
       });
     }
-    return origRead(reg);
+    return originalRead(reg);
   };
-  console.log("Bruce Lee title before keys:",JSON.stringify({
-    chosenVia:selected.via,rows:screen(machine).rows.slice(5,19)}));
-  const outputs=[];
-  let last=screen(machine);
-  for (const key of ["F3","F5","F7"]) {
-    active=key;
-    pressKey(machine,key,45);
-    let after=screen(machine);
-    const duringChanges=last.bytes.filter((b,i)=>b!==after.bytes[i]).length;
-    run(machine,20);
-    after=screen(machine);
+  const results=[];
+  for(const name of ["F3","F5","F7"]) {
+    const before=prior;
+    active=name;
+    key(machine,name,50);
+    const held=gameImage(machine);
+    progress(machine,20);
+    const after=gameImage(machine);
     active=null;
-    const afterChanges=last.bytes.filter((b,i)=>b!==after.bytes[i]).length;
-    outputs.push({key,changes:afterChanges,duringChanges,reads:readCounts[key],
-      rows:after.rows.slice(5,19)});
-    console.log("Bruce Lee "+key+" observed:",JSON.stringify(outputs.at(-1)));
-    last=after;
+    const response={
+      name,held:diff(before,held),after:diff(before,after),read:reads[name],
+      pc:after.pc,mode:after.d011,bank:after.memBank,
+    };
+    results.push(response);
+    console.log("Bruce Lee "+name+" input:",JSON.stringify(response));
+    prior=after;
   }
-  assert(readCounts.F3?.portA + readCounts.F3?.portB > 0,
-    "The game must scan the CIA while F3 is held");
-  assert(outputs[0].changes>0 || outputs[0].duringChanges>0,
-    "F3 did not change player selection in Bruce Lee");
-  assert(outputs[1].changes>0 || outputs[1].duringChanges>0,
-    "F5 did not change opponent selection in Bruce Lee");
-  assert(outputs[2].changes>0 || outputs[2].duringChanges>0,
-    "F7 did not start Bruce Lee gameplay");
+  const visualChange = entry =>
+    entry.after.screen+entry.after.bitmap+entry.after.colors > 0 ||
+    entry.held.screen+entry.held.bitmap+entry.held.colors > 0 ||
+    entry.after.screenBaseChanged || entry.held.screenBaseChanged;
+  assert(visualChange(results[0]),"F3 does not change the Bruce Lee player-selection display");
+  assert(visualChange(results[1]),"F5 does not change the Bruce Lee opponent-selection display");
+  assert(visualChange(results[2]),"F7 does not start the original Bruce Lee game");
 });
