@@ -67,3 +67,14 @@ The machine/video core, SID browser audio, keyboard/gamepad/touch input, D64/D71
 ## Visual/legal rule
 
 Do not copy the upstream interface, panel arrangement, branding, wording or artwork. CCG presentation must remain independently designed. Do not remove copyright or licence notices from code that is actually derived from GPL source merely to hide provenance; legal attribution belongs in source/legal notices, not in the branded emulator UI.
+
+## Mobile FIRE/JUMP control-profile upgrade — 9 October 2026
+
+- User-requested isolated emulator upgrade: mobile D-pad remains; FIRE and optional JUMP are independent on-screen action buttons. JUMP is genuine joystick UP (0x01), while FIRE remains 0x10; no C64 firmware, core, media, game image, desktop control, or existing function-key matrix binding is changed.
+- On-screen F1/F3/F5/F7 remain in a touch-accessible expandable panel; the existing 120ms minimum key hold and pointer-release lifecycle remain untouched.
+- A small standalone C64 mobile control-profile module uses documented title-specific rules only. Bruce Lee/Bruce Lee II/Bruce Lee Trilogy and Kung-Fu Master use UP-as-JUMP. Paradroid and Uridium are mapped as non-jumping navigation games. Unverified titles retain JUMP availability but are never represented as automatically analysed.
+- Users can toggle JUMP on/off for individual hosted game IDs or locally loaded filenames. Preferences are stored only in that browser's localStorage and can be reset to the curated default. Game selection alone does not alter live controls; changes apply when a game loads.
+- Per-pointer active joystick ownership replaces mask-only release logic. Two fingers holding D-pad UP and JUMP no longer release each other's joystick bit; diagonal directions and simultaneous FIRE are retained.
+- Mobile portrait and landscape fullscreen control CSS stays in the emulator's own stylesheet; no shared CSS, intro loader, `games/games.json`, game payload, or general-site deployment path is touched.
+- The required public-code cache namespace advances from `2026-10-09-public-code-v100` to `v101` in `service-worker.js`; this is required by the existing release guard whenever emulator JavaScript or CSS changes.
+- Qualify using `tests/ccg-c64-jump-controls.test.mjs`, existing C64 function-key/mobile/layout/catalogue tests, GitHub PR checks and manual phone touch acceptance. This upgrade is not deployed to main until qualification is satisfied.

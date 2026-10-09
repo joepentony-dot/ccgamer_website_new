@@ -50,7 +50,8 @@ const measure = [
  'touch:matchMedia("(pointer: coarse)").matches, stage:box(".ccg-c64-screen-stage"),',
  'bezel:box(".ccg-c64-screen-bezel"), console:box(".ccg-c64-console"),',
  'deck:box(".ccg-c64-control-stack"), joy:show(".ccg-c64-touch-controls"),',
- 'keys:show(".ccg-c64-touch-fkeys"), libraryInConsole:e(".ccg-c64-panel--library").parentElement===e(".ccg-c64-console"),',
+ 'keys:show(".ccg-c64-touch-extras summary"), keysCollapsed:!e(".ccg-c64-touch-extras").open,',
+ 'libraryInConsole:e(".ccg-c64-panel--library").parentElement===e(".ccg-c64-console"),',
  'romTransfer:e("[data-rom-import]")!==null,',
  'font:parseFloat(getComputedStyle(e("#ccg-c64-library-search")).fontSize)};'
 ].join("\n");
@@ -101,8 +102,8 @@ try {
       "C64 document horizontal overflow at "+width+"x"+height+": "+(r.sw-r.vw));
     if(touch){
       assert(r.libraryInConsole, "Mobile game library must sit directly below the C64 display");
-      assert(r.touch && r.joy && r.keys && r.romTransfer,
-        "Missing mobile joystick / extra keys / fullscreen button at "+width+"x"+height);
+      assert(r.touch && r.joy && r.keys && r.keysCollapsed && r.romTransfer,
+        "Missing mobile joystick / expandable function keys / ROM import at "+width+"x"+height);
       assert(r.font>=16,"Search font would zoom iOS page at "+width+"x"+height);
       assert(r.bezel.width <= r.stage.width+3 &&
         r.bezel.height <= r.stage.height+3,
@@ -118,6 +119,12 @@ try {
   }
 
   await emulate(session,390,844,true);
+  const openedKeys=await evaluate(session,[
+    'document.querySelector(".ccg-c64-touch-extras").open=true;',
+    'var keys=document.querySelector(".ccg-c64-touch-fkeys");',
+    'return keys.getBoundingClientRect().height>1 && keys.querySelectorAll("[data-c64-fkey]").length===4;'
+  ].join("\n"));
+  assert(openedKeys,"Expandable function-key panel must reveal F1/F3/F5/F7 at touch size");
   const drop=await evaluate(session,[
     'var l=document.querySelector(".ccg-c64-panel--library");l.hidden=false;',
     'var n=l.nextElementSibling,b=n.getBoundingClientRect().top;',

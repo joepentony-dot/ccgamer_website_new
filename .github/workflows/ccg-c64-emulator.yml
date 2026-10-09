@@ -53,6 +53,9 @@ jobs:
       - name: Check function key touch controls
         run: node tests/ccg-c64-function-keys.test.mjs
 
+      - name: Check FIRE/JUMP profiles, per-game preferences and multi-touch inputs
+        run: node tests/ccg-c64-jump-controls.test.mjs
+
       - name: Verify Bruce Lee cartridge replaces the old packed PRG listing
         run: node --test tests/ccg-c64-bruce-lee-library.test.mjs
 

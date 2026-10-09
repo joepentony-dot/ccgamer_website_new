@@ -80,6 +80,7 @@ const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  touchPointerHolds: new Map(),
   inputStatus: { textContent: "" },
   keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
   keyboardPriorityUntil: 0,
@@ -90,6 +91,9 @@ const context = vm.createContext({
   },
   performance: { now: () => 1000 },
   applyJoystickInput() {},
+  // The app initialises a separate touch-profile UI outside this isolated
+  // keyboard-matrix slice. Keep its harmless on-boot callback explicit.
+  updateJumpControls() {},
 });
 vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
 function event(code, key, opts = {}) {
@@ -201,7 +205,9 @@ context.setup.hidden = true;
 
 // A key held while focus moves must not become permanently stuck.
 down("Space", " ");
+context.touchPointerHolds.set(77, { mask: 1, button: null });
 context.release();
+assert.equal(context.touchPointerHolds.size, 0, "Leaving gameplay must release all touch pointers");
 assert.equal(keys.size, 0, "Leaving gameplay must release all held C64 keys");
 assert.equal(machine.restore, false);
 

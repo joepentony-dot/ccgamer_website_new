@@ -79,13 +79,24 @@
           <button type="button" data-joy-mask="8" aria-label="Joystick right">▶</button>
           <button type="button" data-joy-mask="2" aria-label="Joystick down">▼</button>
         </div>
-        <div class="ccg-c64-touch-fkeys" role="group" aria-label="C64 function keys">
-          <button type="button" data-c64-fkey="F1" aria-label="Press C64 F1">F1</button>
-          <button type="button" data-c64-fkey="F3" aria-label="Press C64 F3">F3</button>
-          <button type="button" data-c64-fkey="F5" aria-label="Press C64 F5">F5</button>
-          <button type="button" data-c64-fkey="F7" aria-label="Press C64 F7">F7</button>
+        <div class="ccg-c64-touch-actions" role="group" aria-label="Joystick action buttons">
+          <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
+          <button type="button" class="ccg-c64-touch-jump" data-joy-mask="1" data-jump-button aria-label="Jump using joystick up">JUMP</button>
         </div>
-        <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
+        <details class="ccg-c64-touch-extras">
+          <summary>FUNCTION KEYS &amp; JUMP OPTIONS</summary>
+          <div class="ccg-c64-touch-fkeys" role="group" aria-label="C64 function keys">
+            <button type="button" data-c64-fkey="F1" aria-label="Press C64 F1">F1</button>
+            <button type="button" data-c64-fkey="F3" aria-label="Press C64 F3">F3</button>
+            <button type="button" data-c64-fkey="F5" aria-label="Press C64 F5">F5</button>
+            <button type="button" data-c64-fkey="F7" aria-label="Press C64 F7">F7</button>
+          </div>
+          <div class="ccg-c64-touch-jump-settings">
+            <button type="button" data-jump-toggle aria-pressed="true">JUMP: ON</button>
+            <button type="button" data-jump-auto hidden>RESET AUTO</button>
+            <span data-jump-profile aria-live="polite">JUMP AVAILABLE</span>
+          </div>
+        </details>
       </div>
     </section>
 
