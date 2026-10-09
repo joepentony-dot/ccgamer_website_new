@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_mobileplay_v1">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261009_mobileplay_v2">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -92,6 +92,9 @@
       </div>
       <div class="ccg-c64-touch-options">
         <button type="button" data-jump-toggle aria-pressed="false">JUMP: OFF</button>
+        <button type="button" class="ccg-c64-mobile-joystick-swap" data-mobile-joystick-swap
+          aria-label="Swap joystick to C64 port 1"
+          title="Switch the joystick between Port 1 and Port 2 without restarting the game">SWAP JOYSTICK · PORT 2</button>
         <details class="ccg-c64-function-drawer"><summary>FUNCTION KEYS F1–F7</summary>
         <div class="ccg-c64-touch-fkeys" role="group" aria-label="C64 function keys">
           <button type="button" data-c64-fkey="F1" aria-label="Press C64 F1">F1</button>
@@ -336,6 +339,6 @@
     </section>
   </div>
 
-  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobileplay_v1"></script>
+  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobileplay_v2"></script>
 </body>
 </html>
