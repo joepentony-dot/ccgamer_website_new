@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+"use strict";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+const h = fs.readFileSync("emulator/c64/index.html","utf8");
+const j = fs.readFileSync("js/ccg-c64/app.js","utf8");
+const c = fs.readFileSync("resources/css/ccg-c64-emulator.css","utf8");
+assert(h.includes('class="ccg-c64-touch-jump" data-joy-mask="1" hidden'));
+assert.equal((h.match(/data-joy-mask="16"/g)||[]).length,1);
+assert(h.includes('data-jump-toggle'));
+assert(h.includes('<details class="ccg-c64-function-drawer">'));
+for(const k of ["F1","F3","F5","F7"]) assert(h.includes(`data-c64-fkey="${k}"`));
+assert(j.includes("configureJump(entry.id)"));
+assert(j.includes("ccg.emulator.c64.jumpProfiles.v1"));
+assert(j.includes("VERIFIED_JUMP_UP_GAMES = Object.freeze({})"));
+assert(j.includes("for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask"));
+assert(j.includes("touchHeldButtons.clear()"));
+assert(c.includes(".ccg-c64-touch-jump[hidden]"));
+assert(c.includes(".ccg-c64-touch-options { display: flex; }"));
+console.log("PASS C64 mobile dual-button source contract.");

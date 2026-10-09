@@ -154,6 +154,58 @@ const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
+const touchHeldButtons = new Map();
+const jumpToggle = document.querySelector("[data-jump-toggle]");
+const jumpButton = document.querySelector(".ccg-c64-touch-jump");
+const actionDeck = document.querySelector(".ccg-c64-touch-actions");
+const JUMP_PREF_KEY = "ccg.emulator.c64.jumpProfiles.v1";
+// Add entries only when UP-to-jump has been verified for that exact game.
+const VERIFIED_JUMP_UP_GAMES = Object.freeze({});
+let currentJumpGameId = null;
+let jumpEnabled = false;
+function readJumpPreferences() {
+  try {
+    const result = JSON.parse(localStorage.getItem(JUMP_PREF_KEY) || "{}");
+    return result && typeof result === "object" && !Array.isArray(result) ? result : {};
+  } catch { return {}; }
+}
+function syncTouchJoystick() {
+  touchHeldMask = 0;
+  for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask;
+  touchJoyByte = 0xFF & ~touchHeldMask;
+  applyJoystickInput();
+}
+function configureJump(gameId) {
+  currentJumpGameId = gameId || null;
+  const saved = readJumpPreferences();
+  jumpEnabled = currentJumpGameId && typeof saved[currentJumpGameId] === "boolean"
+    ? saved[currentJumpGameId] : VERIFIED_JUMP_UP_GAMES[currentJumpGameId] === true;
+  if (!jumpEnabled && jumpButton) {
+    touchHeldButtons.delete(jumpButton);
+    syncTouchJoystick();
+  }
+  if (jumpButton) jumpButton.hidden = !jumpEnabled;
+  actionDeck?.classList.toggle("has-jump", jumpEnabled);
+  if (jumpToggle) {
+    jumpToggle.textContent = `JUMP: ${jumpEnabled ? "ON" : "OFF"}`;
+    jumpToggle.setAttribute("aria-pressed", String(jumpEnabled));
+  }
+}
+jumpToggle?.addEventListener("click", () => {
+  const next = !jumpEnabled;
+  if (currentJumpGameId) {
+    const saved = readJumpPreferences();
+    saved[currentJumpGameId] = next;
+    try { localStorage.setItem(JUMP_PREF_KEY, JSON.stringify(saved)); } catch {}
+  }
+  if (!currentJumpGameId) {
+    jumpEnabled = next;
+    if (!next && jumpButton) { touchHeldButtons.delete(jumpButton); syncTouchJoystick(); }
+    if (jumpButton) jumpButton.hidden = !next;
+    actionDeck?.classList.toggle("has-jump", next);
+    if (jumpToggle) { jumpToggle.textContent = `JUMP: ${next ? "ON" : "OFF"}`; jumpToggle.setAttribute("aria-pressed", String(next)); }
+  } else configureJump(currentJumpGameId);
+});
 let pendingMedia = null;
 let hostedFirmwareReadyPromise = null;
 let onlineLibraryEntries = [];
@@ -490,6 +542,7 @@ function releaseAllInput() {
     gamepadJoyByte = 0xFF;
     touchJoyByte = 0xFF;
     touchHeldMask = 0;
+    touchHeldButtons.clear();
     machine.joyPort2 = 0xFF;
     machine.setRestoreNmiLine(false);
   }
@@ -1839,6 +1892,7 @@ async function loadSelectedLibraryEntry() {
     const firstKey = ["d64", "d71", "d81", "g64"].includes(type)
       ? `library:${entry.id}:0` : null;
     activeLibraryEntryId = entry.id;
+    configureJump(entry.id);
     activeLibraryDiskIndex = 0;
     const queued = await queueMedia({
       name: filename, type, bytes, sourceKey: firstKey,
@@ -2184,26 +2238,29 @@ vaultSlot?.addEventListener("change", () => { void refreshVaultStatus(); });
 
 for (const button of document.querySelectorAll("[data-joy-mask]")) {
   const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
-  const press = (event) => {
+  const press = event => {
     event.preventDefault();
-    touchHeldMask |= mask;
-    touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickInput();
+    if (button.hidden) return;
+    touchHeldButtons.set(button, { mask, pointerId: event.pointerId });
+    syncTouchJoystick();
     if (inputStatus) inputStatus.textContent = `TOUCH // PORT ${joystickPort}`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
   };
-  const release = (event) => {
+  const release = event => {
     event.preventDefault();
-    touchHeldMask &= ~mask;
-    touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickInput();
+    const held = touchHeldButtons.get(button);
+    if (!held || (event.pointerId != null && held.pointerId !== event.pointerId)) return;
+    touchHeldButtons.delete(button);
+    syncTouchJoystick();
     if (!touchHeldMask && inputStatus && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
   };
   button.addEventListener("pointerdown", press);
   button.addEventListener("pointerup", release);
   button.addEventListener("pointercancel", release);
-  button.addEventListener("contextmenu", (event) => event.preventDefault());
+  button.addEventListener("lostpointercapture", release);
+  button.addEventListener("contextmenu", event => event.preventDefault());
 }
+configureJump(null);
 
 // On phones, make short taps long enough for the C64 keyboard scan to see them.
 // Pointer capture and cancellation ensure a released F-key never remains stuck.

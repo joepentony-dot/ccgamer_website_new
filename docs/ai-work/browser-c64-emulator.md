@@ -64,6 +64,14 @@
 
 The machine/video core, SID browser audio, keyboard/gamepad/touch input, D64/D71/D81 media, optional True 1541, TAP/T64, CRT cartridge loading and three local Game Vault slots are now connected. Before merge, the remaining product work is final SID analogue-fidelity qualification, a decision on G64 support, final third-party/source inventory, deployed browser acceptance, release sitemap registration and a last Lighthouse/performance review. The Stage 1 shell remains the visual contract.
 
+## Dual-action mobile input — 9 October 2026
+
+- Branch: `codex/c64-mobile-dual-action-controls-20261009`.
+- Optional JUMP uses the original joystick UP bit. FIRE uses its original bit. The original F1/F3/F5/F7 CIA-matrix keys remain, under an expandable mobile panel.
+- The hosted library applies per-game controls when loaded. Unverified games remain FIRE-only; players can opt in to JUMP and save preferences per title on their device. No guessed binary-file classification.
+- Per-button held states preserve overlapping joystick UP and JUMP, including pointer cancellations; reset releases all controls.
+- Qualify portrait/landscape, fullscreen, function keys, source contracts and performance before merge.
+
 ## Visual/legal rule
 
 Do not copy the upstream interface, panel arrangement, branding, wording or artwork. CCG presentation must remain independently designed. Do not remove copyright or licence notices from code that is actually derived from GPL source merely to hide provenance; legal attribution belongs in source/legal notices, not in the branded emulator UI.
