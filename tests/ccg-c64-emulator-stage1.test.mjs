@@ -144,11 +144,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilewarp_v1"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_v1"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilewarp_v1")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_v1")'), "COI bootstrap must import the emulator only after isolation");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
@@ -178,6 +178,17 @@ assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick
   "Mobile joystick switch must be visible during gameplay and absent from desktop");
 assert(app.includes('mobileJoystickSwapButton?.addEventListener("click", swapJoystickPort)'),
   "Mobile and desktop joystick buttons must share the existing Port 1/2 switching logic");
+assert(html.includes('data-mobile-zoom-toggle') &&
+  html.indexOf("data-mobile-exit-game") < html.indexOf("data-mobile-zoom-toggle") &&
+  html.indexOf("data-mobile-zoom-toggle") < html.indexOf("data-mobile-keyboard-toggle"),
+  "Zoom must be the middle control in the mobile game playbar");
+assert(css.includes(".ccg-c64-console.is-mobile-playing.is-mobile-zoomed .ccg-c64-screen-bezel > #ccg-c64-screen") &&
+  css.includes("transform: scale(1.15)") && css.includes("transform-origin: center center"),
+  "Mobile zoom must crop the image within its existing bezel, without resizing the stage");
+assert(app.includes('mobileZoomButton?.addEventListener("click", toggleMobileZoom)') &&
+  app.includes("MOBILE_ZOOM_STORAGE_KEY") &&
+  app.includes('mobilePlayConsole?.classList.toggle("is-mobile-zoomed", zooming)'),
+  "Zoom must be reversible, persisted, and limited to mobile gameplay");
 assert(html.includes("data-mobile-exit-game") && html.includes("data-mobile-keyboard-toggle") &&
   html.includes('id="ccg-c64-mobile-keyboard"'), "Mobile gameplay must provide Exit and the C64 keyboard overlay");
 assert(app.includes('if (loaded && typeof enterMobilePlayMode === "function")') &&
