@@ -4,6 +4,7 @@
 import fs from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import vm from "node:vm";
 import assert from "node:assert";
 import { fileURLToPath } from "node:url";
 
@@ -71,7 +72,7 @@ assert(c64AppIcon.includes("<svg ") && c64AppMaskableIcon.includes("<svg "),
 assert(html.includes('rel="manifest" href="/emulator/c64/manifest.webmanifest"'),
   "Emulator must explicitly declare its own app manifest");
 assert(html.includes("data-c64-app-install") && html.includes("data-c64-app-install-button") &&
-  html.includes('src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v1"'),
+  html.includes('src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2"'),
   "The mobile app needs a working installation entry point");
 assert(css.includes(".ccg-c64-install-promo[hidden]") &&
   css.includes("@media (pointer: coarse)"),
@@ -81,6 +82,45 @@ assert(c64AppInstaller.includes('window.addEventListener("beforeinstallprompt"')
   c64AppInstaller.includes('window.addEventListener("appinstalled"') &&
   c64AppInstaller.includes('navigator.standalone === true'),
   "Installer must support Android prompts, installed-state detection and iOS fallback");
+// The prompt must be a sibling of the hidden game-library section, so
+// errors or slow loading of game listings cannot hide the install option.
+assert(html.indexOf('data-c64-app-install aria-label=') > html.indexOf('data-mobile-playbar hidden') &&
+  html.indexOf('data-c64-app-install aria-label=') < html.indexOf('class="ccg-c64-display-head"') &&
+  html.indexOf('data-c64-app-install aria-label=') < html.indexOf('ccg-c64-panel--library" hidden'),
+  "C64 app install control must be visible before the library loads");
+assert(css.includes(".ccg-c64-console:not(.is-mobile-playing) > .ccg-c64-install-promo:not([hidden])"),
+  "C64 app install prompt must show independently during mobile library load");
+assert(css.includes(".ccg-c64-console:fullscreen > .ccg-c64-install-promo { display: none !important; }"),
+  "Installer must never obscure fullscreen gameplay");
+function probeC64InstallVisibility(search, isStandalone) {
+  const panel = { hidden: false };
+  const button = { disabled: false, textContent: "", addEventListener() {} };
+  const help = { open: false };
+  const status = { textContent: "" };
+  const elements = new Map([
+    ["[data-c64-app-install]", panel],
+    ["[data-c64-app-install-button]", button],
+    ["[data-c64-app-install-help]", help],
+    ["[data-c64-app-install-status]", status]
+  ]);
+  vm.runInNewContext(c64AppInstaller, {
+    document: { querySelector: selector => elements.get(selector) ?? null },
+    window: {
+      location: { search },
+      matchMedia: () => ({ matches: isStandalone, addEventListener() {} }),
+      addEventListener() {}
+    },
+    navigator: { standalone: isStandalone },
+    URLSearchParams
+  });
+  return { panel, button };
+}
+assert.equal(probeC64InstallVisibility("?source=pwa", true).panel.hidden, false,
+  "The separate CCG website PWA must not hide the C64 install button");
+assert.equal(probeC64InstallVisibility("", false).button.textContent, "HOW TO INSTALL",
+  "Normal iPhone/Android browsers must show installation guidance");
+assert.equal(probeC64InstallVisibility("?source=installed-c64-app", true).panel.hidden, true,
+  "The dedicated installed C64 app must hide its own installation prompt");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
 assert(html.includes('width="384" height="272"'), "Native C64 canvas dimensions must be reserved");
 assert(!html.includes("webkitdirectory"), "The emulator must not force a VICE-folder scan");
