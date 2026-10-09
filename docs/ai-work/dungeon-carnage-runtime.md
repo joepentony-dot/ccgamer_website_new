@@ -1,3 +1,8 @@
+## R125 authentic visual capture guard — 9 October 2026
+
+- First actual baseline artifact 11619142023 proved the workflow/capture tools run, but desktop Tutorial overlay and WRONG desktop seed made the data invalid for visual/performance comparison against fixed-seed mobile. Canonical onboarding correctly gates first-time beginRun. Fix in existing r51 browser contract: separate experienced-tester Desktop Chromium context, actual Solo click, assert beginRun(seed) success, source and per-floor seeds, playing/non-Tutorial state and no visible tutorial modal on both devices. Re-run the same PR #2653 on its NEW exact head; replace baseline findings only after inspecting genuine screenshots and paced metrics.
+- No game runtime/renderer/asset changes. Original owner tracks, recorded voice and Flask QA #2642 remain independent blockers.
+
 ## R125 opt-in desktop/mobile evidence capture — 9 October 2026
 
 - R123 and R124 have **merged**. Latest authoritative main `05c41e9b6a590aa1a98949cc6100661e7cec539c` includes unrelated C64 app installer #2652; no dungeon overlap. Existing genuine viewport screenshots are NOT the five-floor seeded baseline. New R125 minimal GitHub Actions workflow runs the existing R51 visual-owner browser contract with the opt-in env once on its own PR creation, thereafter via manual `workflow_dispatch` only; capture floors 1,4,7,11,15 on desktop and touch mobile reduced-motion. Upload Canvas/HUD screenshot pairs plus RAF pacing JSON; validate counts and preserve failed partial evidence. Does not introduce any duplicate .mjs test or affect normal CI, any renderer, save, access, members, audio, lighting, original 16-song voice blocking items, or Flask #2642.

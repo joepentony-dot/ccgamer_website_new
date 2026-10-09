@@ -99,7 +99,21 @@ try{
     fs.mkdirSync(output,{recursive:true});
     const samples=[];
     const capture=async(capturePage,label)=>{
-      await capturePage.evaluate(()=>beginRun({seed:"ccg-premium-visual-baseline-2026-10-09"}));
+      const fixedSeed="ccg-premium-visual-baseline-2026-10-09";
+      const launch=await capturePage.evaluate(seed=>{
+        const started=beginRun({seed}),modal=document.getElementById("ccg-tutorial-stage-modal");
+        return{
+          started,seed:run?.seed||null,mode:String(mode),
+          tutorialActive:document.body.dataset.tutorialActive==="true",
+          modalVisible:Boolean(modal&&getComputedStyle(modal).display!=="none"&&
+            modal.getBoundingClientRect().width>0&&modal.getBoundingClientRect().height>0)
+        };
+      },fixedSeed);
+      assert.equal(launch.started,true,label+" must start the real fixed-seed Solo run");
+      assert.equal(launch.seed,fixedSeed,label+" must use the canonical run seed");
+      assert.equal(launch.mode,"playing",label+" must be in playable mode");
+      assert.equal(launch.tutorialActive,false,label+" must not be in Tutorial mode");
+      assert.equal(launch.modalVisible,false,label+" must not capture the Tutorial overlay");
       for(const floor of [1,4,7,11,15]){
         const sample=await capturePage.evaluate(async selectedFloor=>{
           run.floor=selectedFloor;
@@ -137,6 +151,7 @@ try{
           };
         },floor);
         assert.equal(sample.floor,floor,"visual baseline must capture the requested generated floor");
+        assert.equal(sample.seed,`${fixedSeed}-F${floor}`,"desktop/mobile must have exactly matched seeded floor generation");
         assert.ok(sample.frameIntervalsMs.count>=40&&sample.canvas.width>0&&sample.canvas.height>0,
           "visual baseline must capture live rendered frames and a usable canvas");
         samples.push({device:label,...sample});
@@ -144,7 +159,32 @@ try{
         await capturePage.screenshot({path:path.join(output,`${label}-floor-${floor}-hud.png`)});
       }
     };
-    await capture(page,"desktop");
+    // The existing r51 contract's first-visit Desktop page is onboarding
+    // state. Keep native visual evidence isolated so a Tutorial overlay cannot
+    // silently block the second fixed-seed beginRun call.
+    const desktopContext=await browser.newContext({
+      viewport:{width:1600,height:900},reducedMotion:"no-preference"
+    });
+    try{
+      await desktopContext.route("https://*.supabase.co/**",route=>route.fulfill({
+        status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"
+      }));
+      await desktopContext.addInitScript(()=>{
+        localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true");
+        localStorage.setItem("ccg-lost-sizzler-tutorial-complete-v1","true");
+      });
+      const desktopPage=await desktopContext.newPage();
+      desktopPage.on("pageerror",error=>errors.push(String(error?.stack||error)));
+      await desktopPage.goto(origin+"/arcade/lost-sizzler/?r125-visual-baseline=1",{waitUntil:"domcontentloaded"});
+      await desktopPage.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&
+        Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),null,{timeout:90000});
+      await desktopPage.locator("#solo-btn").click({noWaitAfter:true});
+      await desktopPage.waitForFunction(()=>document.body.dataset.runActive==="true"&&
+        mode==="playing"&&document.body.dataset.tutorialActive!=="true",null,{timeout:20000});
+      await capture(desktopPage,"desktop");
+    }finally{
+      await desktopContext.close();
+    }
     const mobileContext=await browser.newContext({
       viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,reducedMotion:"reduce"
     });
