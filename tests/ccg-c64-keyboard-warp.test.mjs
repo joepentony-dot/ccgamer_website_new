@@ -263,6 +263,11 @@ const joystickButton = {
   addEventListener(type, listener) { this.listeners.set(type, listener); },
 };
 const joystickStatus = { textContent: "" };
+const mobileJoystickButton = {
+  textContent: "", title: "", ariaLabel: "", listeners: new Map(),
+  setAttribute(name, value) { if (name === "aria-label") this.ariaLabel = value; },
+  addEventListener(type, listener) { this.listeners.set(type, listener); },
+};
 const joystickMachine = {
   joyPort1: 255, joyPort2: 255,
   _updateLightpen() { joystickUpdates++; },
@@ -276,7 +281,8 @@ const keyboardModeButton = {
 };
 const joystickContext = vm.createContext({
   joystickPort: 2, joystickPortIndicator: joystickStatus,
-  joystickSwapButton: joystickButton, keyboardJoystickButton: keyboardModeButton,
+  joystickSwapButton: joystickButton, mobileJoystickSwapButton: mobileJoystickButton,
+  keyboardJoystickButton: keyboardModeButton,
   machine: joystickMachine, keyboardJoystickEnabled: false,
   keyboardJoystickKeys: new Set(), keyboardPriorityUntil: 0,
   KEYBOARD_JOYSTICK_MASKS: {
@@ -304,6 +310,17 @@ assert.equal(joystickMachine.joyPort1, 0xee, "Selected port 1 must receive combi
 assert.equal(joystickMachine.joyPort2, 255, "Unselected port 2 must be idle");
 assert.equal(joystickStatus.textContent, "PORT 1");
 assert.equal(joystickStorage.get("ccg.emulator.c64.joystickPort"), "1");
+assert.equal(mobileJoystickButton.textContent, "SWAP JOYSTICK · PORT 1",
+  "Mobile in-game button must display the current joystick port");
+assert.equal(mobileJoystickButton.ariaLabel, "Swap joystick to C64 port 2",
+  "Mobile in-game button must announce the destination joystick port");
+mobileJoystickButton.listeners.get("click")();
+assert.equal(joystickMachine.joyPort1, 255, "Mobile switch must release previous port 1 immediately");
+assert.equal(joystickMachine.joyPort2, 0xee, "Mobile switch must reroute held input to port 2");
+assert.equal(mobileJoystickButton.textContent, "SWAP JOYSTICK · PORT 2");
+assert.equal(joystickStorage.get("ccg.emulator.c64.joystickPort"), "2");
+joystickContext.swapPort();
+assert.equal(joystickMachine.joyPort1, 0xee, "Desktop switch must share the same live port state");
 joystickContext.swapPort();
 assert.equal(joystickMachine.joyPort1, 255);
 assert.equal(joystickMachine.joyPort2, 0xee);
