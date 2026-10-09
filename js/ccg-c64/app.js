@@ -98,6 +98,12 @@ const mobilePlayConsole = document.querySelector(".ccg-c64-console");
 const mobilePlaybar = document.querySelector("[data-mobile-playbar]");
 const mobileExitButton = document.querySelector("[data-mobile-exit-game]");
 const mobilePlayTitle = document.querySelector("[data-mobile-play-title]");
+const mobileZoomButton = document.querySelector("[data-mobile-zoom-toggle]");
+const MOBILE_ZOOM_STORAGE_KEY = "ccg.emulator.c64.mobileZoom.v1";
+let mobileZoomEnabled = (() => {
+  try { return localStorage.getItem(MOBILE_ZOOM_STORAGE_KEY) === "1"; }
+  catch { return false; }
+})();
 const mobileKeyboardToggle = document.querySelector("[data-mobile-keyboard-toggle]");
 const mobileKeyboardClose = document.querySelector("[data-mobile-keyboard-close]");
 const mobileKeyboardPanel = document.querySelector("[id='ccg-c64-mobile-keyboard']");
@@ -172,6 +178,26 @@ function setMobileKeyboardOpen(open) {
   if (mobileKeyboardToggle) mobileKeyboardToggle.textContent = active ? "HIDE KEYS" : "KEYBOARD";
 }
 
+function syncMobileZoom() {
+  // Optical zoom only: the actual 384×272 PAL canvas and input matrix
+  // stay untouched. The existing bezel clips the outer C64 border.
+  const zooming = Boolean(mobilePlayActive && mobilePlayMedia?.matches && mobileZoomEnabled);
+  mobilePlayConsole?.classList.toggle("is-mobile-zoomed", zooming);
+  mobileZoomButton?.setAttribute("aria-pressed", String(zooming));
+  mobileZoomButton?.setAttribute("aria-label", zooming
+    ? "Disable mobile game zoom"
+    : "Enable mobile game zoom");
+  if (mobileZoomButton) mobileZoomButton.textContent = zooming ? "ZOOM: ON" : "ZOOM: OFF";
+}
+
+function toggleMobileZoom() {
+  if (!mobilePlayActive || !mobilePlayMedia?.matches) return;
+  mobileZoomEnabled = !mobileZoomEnabled;
+  try { localStorage.setItem(MOBILE_ZOOM_STORAGE_KEY, mobileZoomEnabled ? "1" : "0"); }
+  catch { /* Storage can be restricted in private browsing. */ }
+  syncMobileZoom();
+}
+
 function setMobilePlaying(active, label = "") {
   const enabled = Boolean(active && mobilePlayMedia?.matches && mobilePlayConsole);
   mobilePlayActive = enabled;
@@ -179,6 +205,7 @@ function setMobilePlaying(active, label = "") {
   document.body?.classList.toggle("is-mobile-playing", enabled);
   if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
   if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
+  syncMobileZoom();
   if (!enabled) setMobileKeyboardOpen(false);
   requestAnimationFrame(fitScreenToStage);
 }
@@ -199,6 +226,8 @@ function exitMobilePlayMode() {
 }
 
 mobileExitButton?.addEventListener("click", exitMobilePlayMode);
+mobileZoomButton?.addEventListener("click", toggleMobileZoom);
+syncMobileZoom();
 mobileKeyboardToggle?.addEventListener("click", () =>
   setMobileKeyboardOpen(Boolean(mobileKeyboardPanel?.hidden)));
 mobileKeyboardClose?.addEventListener("click", () => setMobileKeyboardOpen(false));
