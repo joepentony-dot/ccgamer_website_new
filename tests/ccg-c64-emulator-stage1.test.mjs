@@ -144,11 +144,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_v1"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_snap_v2"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_v1")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_snap_v2")'), "COI bootstrap must import the emulator only after isolation");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
@@ -182,6 +182,18 @@ assert(html.includes('data-mobile-zoom-toggle') &&
   html.indexOf("data-mobile-exit-game") < html.indexOf("data-mobile-zoom-toggle") &&
   html.indexOf("data-mobile-zoom-toggle") < html.indexOf("data-mobile-keyboard-toggle"),
   "Zoom must be the middle control in the mobile game playbar");
+const mobilePlaybarRule = css.match(/\.ccg-c64-console\.is-mobile-playing \.ccg-c64-mobile-playbar\s*\{([^}]+)\}/)?.[1] || "";
+assert(/display:\s*flex\s*;/.test(mobilePlaybarRule) &&
+  !/display:\s*grid\s*;/.test(mobilePlaybarRule) &&
+  /flex:\s*0 0 auto\s*;/.test(mobilePlaybarRule),
+  "Mobile playbar must retain the original single-row layout and height");
+assert(!css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);"),
+  "A three-column grid formerly caused mobile snap regression");
+assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title") &&
+  css.includes("display: none;"), "Game title must not add a second playbar row");
+assert(app.includes('window.scrollTo?.({ top: 0, left: 0, behavior: "instant" })') &&
+  app.includes('screen?.focus?.({ preventScroll: true })'),
+  "Game launch should not scroll the screen below the viewport top");
 assert(css.includes(".ccg-c64-console.is-mobile-playing.is-mobile-zoomed .ccg-c64-screen-bezel > #ccg-c64-screen") &&
   css.includes("transform: scale(1.15)") && css.includes("transform-origin: center center"),
   "Mobile zoom must crop the image within its existing bezel, without resizing the stage");

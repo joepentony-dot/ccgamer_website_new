@@ -200,6 +200,13 @@ function toggleMobileZoom() {
 
 function setMobilePlaying(active, label = "") {
   const enabled = Boolean(active && mobilePlayMedia?.matches && mobilePlayConsole);
+  // Leaving the mobile library search focused can leave iOS/Android in a
+  // scrolled, keyboard-height visual viewport just as fixed gameplay starts.
+  // Blur only native form inputs; the screen itself is focused without scroll.
+  if (enabled) {
+    const focused = document.activeElement;
+    if (/^(INPUT|TEXTAREA|SELECT)$/i.test(focused?.tagName || "")) focused.blur?.();
+  }
   mobilePlayActive = enabled;
   mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
   document.body?.classList.toggle("is-mobile-playing", enabled);
@@ -207,7 +214,16 @@ function setMobilePlaying(active, label = "") {
   if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
   syncMobileZoom();
   if (!enabled) setMobileKeyboardOpen(false);
-  requestAnimationFrame(fitScreenToStage);
+  requestAnimationFrame(() => {
+    if (enabled && mobilePlayActive) {
+      // The fixed console occupies the visual game viewport at the top.
+      // Reset any earlier search-results scroll before measuring FIT, without
+      // smooth scrolling or focusing the canvas into an arbitrary position.
+      window.scrollTo?.({ top: 0, left: 0, behavior: "instant" });
+      screen?.focus?.({ preventScroll: true });
+    }
+    fitScreenToStage();
+  });
 }
 
 function enterMobilePlayMode(name = "") {
