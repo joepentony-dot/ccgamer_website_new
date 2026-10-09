@@ -182,8 +182,11 @@ assert(html.includes('data-mobile-zoom-toggle') &&
   html.indexOf("data-mobile-exit-game") < html.indexOf("data-mobile-zoom-toggle") &&
   html.indexOf("data-mobile-zoom-toggle") < html.indexOf("data-mobile-keyboard-toggle"),
   "Zoom must be the middle control in the mobile game playbar");
-assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar {\\n    display: flex") === false || css.includes("display: flex;"),
-  "Mobile game playbar must not introduce a second row");
+const mobilePlaybarRule = css.match(/\.ccg-c64-console\.is-mobile-playing \.ccg-c64-mobile-playbar\s*\{([^}]+)\}/)?.[1] || "";
+assert(/display:\s*flex\s*;/.test(mobilePlaybarRule) &&
+  !/display:\s*grid\s*;/.test(mobilePlaybarRule) &&
+  /flex:\s*0 0 auto\s*;/.test(mobilePlaybarRule),
+  "Mobile playbar must retain the original single-row layout and height");
 assert(!css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);"),
   "A three-column grid formerly caused mobile snap regression");
 assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title") &&
