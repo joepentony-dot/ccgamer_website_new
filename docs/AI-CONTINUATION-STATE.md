@@ -1,3 +1,7 @@
+## Dungeon R126 qualification repair — 9 October 2026
+
+- Sole new Dungeon development PR remains #2653, reconciled from `5a923421` with main `cf3aef5ec`; newer Windows #2658 / SEO #2659 retained exactly. Existing R69/R70 now protect actual quality/reduced-motion behaviour. Local focused checks pass; fresh complete remote qualification, merge and deployment verification pending.
+- Refreshed open inventory: #2653; independent C64 #2643/#2631; separate Flask #2642; held audio/offline #2594–#2596. No competing new Dungeon source PR. Detailed evidence and local Windows limitations: `docs/ai-work/dungeon-carnage-runtime.md`.
 ## FAST-TRACK R126 lighting owner begins on the same active R125 PR — 9 October 2026
 
 - **Owner decision:** prioritize immediate player-visible upgrades, fewer PRs/commits, safe qualified merge-down. Target visibly upgraded playable game in roughly 4–8 weeks of sustained useful work, release candidate around 8–12 weeks if original audio, credits, QA and packaging arrive; planning targets, **not measured completion or delivery guarantees**. Maintain ONE active source-development PR and update existing docs alongside meaningful source code, never needless doc-only CI churn.
