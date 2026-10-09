@@ -41,6 +41,7 @@ let queueCount = 0;
 let lastQueued;
 let focusCount = 0;
 let refreshCount = 0;
+let activeGameProfile = null;
 let popupVisible = false;
 const searchListeners = {};
 const listListeners = {};
@@ -92,6 +93,7 @@ const context = vm.createContext({
     context.onlineLibraryCount.textContent = "Select a game, then click LOAD.";
   },
   updateOnlineDiskUi() {},
+  setActiveControlGame(entry) { activeGameProfile = entry; },
   async queueMedia(media, opts) {
     queueCount++;
     lastQueued = { media, opts };
@@ -151,6 +153,7 @@ assert.equal(lastQueued.media.type, "d64");
 assert.equal(lastQueued.media.name, "Paradroid.d64");
 assert.equal(lastQueued.opts.freshBoot, true, "New game must use fresh auto-boot");
 assert.equal(context.activeLibraryEntryId, second.id);
+assert.equal(activeGameProfile?.id, second.id, "Only a loaded game may activate its mobile control profile");
 assert.equal(context.onlineLibraryStatus.textContent, "GAME STARTED");
 assert.equal(loadButton.disabled, false, "LOAD should be available again after loading");
 assert(refreshCount >= 3);
