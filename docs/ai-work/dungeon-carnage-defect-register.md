@@ -49,3 +49,13 @@
 - **New confirmed bug:** `voiceWatch` previously marked Guardian encounters, use-Banishment-Flask prompts and ordinary enemy-room notices as already announced *before* verifying that their owner recording actually started. When a higher-priority voice was playing or sound was temporarily unavailable, the warning was silently lost. Markers now commit **only if** `sayKey` returns true. The five-second Gilded Elf warning follows the same rule, but its current R69 clip is absent and remains an asset-needed case.
 - The real voice-director VM regression `tests/dungeon-carnage-r120-voice-on-playback.test.mjs` covers Guardian, Flask, enemy-room retries and no stale queued voice, while the updated R119 VM verifies missing Alchemist dialogue cannot cut off audible Scout speech.
 - These changes make events *retryable while their triggering condition persists*. They do **not** guarantee that a one-shot event will replay after sound is turned back on; remaining recorded-cue owner gameplay acceptance is still required.
+
+## R121 follow-up — event confirmation versus event attempt
+
+The R120 bug fixes are merged into `main` at `df598b1d3214151bebb5500236c7b6f6072922ea`. Keep the commercial production hold in force.
+
+- **Confirmed warning defect:** both the immediate damage hook and the periodic `voiceWatch` health monitor set `lowHealthLatch` / `criticalHealthLatch` before knowing whether the player had actually heard the warning. An ongoing higher-priority recording, sound disabled or unavailable playback consumed the one-shot latch, so health warnings could remain silent until the player healed beyond the reset threshold.
+- **Confirmed rare loot defect:** the once-per-floor rare-loot latch was set before attempting voice playback. The first missed prompt permanently silenced all later legitimate attempts on the same floor.
+- The R121 candidate marks all those event latches only after `sayKey` successfully starts an approved recording. All muted/busy/missing-asset failures remain retryable on subsequent health ticks or loot prompts. Existing queue-free recorded speech policy and per-floor playback limits remain unchanged.
+- Regression `tests/dungeon-carnage-r121-voice-latch-retry.test.mjs` instantiates the **real voice-director** in a Node VM with deterministic approved audio, verifying low/critical retry, immediate damage hook, once-per-floor gating and no delayed stale audio queue.
+- Mark **FIXED IN CANDIDATE CODE**, not owner-audibly-accepted, until exact-head PR/full Chromium qualification and subsequent hands-on testing.
