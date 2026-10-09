@@ -5,6 +5,9 @@
  * Desktop hotspots align with the original image; mobile uses visible links.
  */
 html[data-ccg-page="home"] .home-support-art {
+  display: block;
+  grid-template-columns: none;
+  gap: 0;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
