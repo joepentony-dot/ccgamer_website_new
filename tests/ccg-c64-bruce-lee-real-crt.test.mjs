@@ -58,9 +58,15 @@ test("select Bruce Lee 1984 from real Magic Desk trilogy, then exercise game F-k
   let selected=null;
   for(const a of attempts) {
     const machine=boot();
-    run(machine,160);
+    let selectorFrame=-1;
+    for(let f=0;f<600;f+=10) {
+      run(machine,10);
+      if(/1984/.test(screen(machine).text)) {selectorFrame=f+10;break;}
+    }
     const intro=screen(machine);
-    assert(/1984/.test(intro.text),"The hosted cartridge must boot to the 1984/2015/2019 game-selection menu");
+    assert(selectorFrame!==-1,"The hosted cartridge must boot to the 1984/2015/2019 game-selection menu");
+    run(machine,35); // let the initial key release/debounce finish
+    console.log("Trilogy 1984 menu reached in "+selectorFrame+" frames");
     if(a.key) pressKey(machine,a.key,20);
     else {
       if(a.joy===1) machine.joyPort1=a.up?0xee:0xef;
