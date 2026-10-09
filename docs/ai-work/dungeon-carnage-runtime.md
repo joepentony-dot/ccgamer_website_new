@@ -1,3 +1,9 @@
+## R123 current-main emulator preservation — 9 October 2026, 12:28 BST
+
+- Reconciled draft Dungeon PR #2644 with `main` `4847a3ef7460438cb8f1b3da55e4f1ade869162a` by copying the **exact seven main Git blobs** changed by merged C64 emulator #2648/#2649 (mobile immersive gameplay, keyboard, joystick-port switch, adapter/CSS, service worker and two tests), with two Git parents. The Dungeon branch did not edit any of these paths. No game runtime, renderer, save, audio, art, timer or member-data edits in this reconciliation.
+- Parent `499e45063205818eaa44e8c09b6ccc228a7fc7ad` **passed all six Chromium shards**, PR/Node, Windows smoke, itch.io, cache, SEO, site safety and Workers preview. This parent success does **not** qualify the NEW merge head; rerun exact-head gates and preserve draft/no production release.
+- Optional baseline screenshots and RAF measurements have not yet been executed or visually accepted. Flask #2642 and original 16 music/voice assets remain independent gates.
+
 ## R123 premium visual evidence capture — 9 October 2026
 
 - The current #2644 branch now adds **optional screenshot and RAF pacing collection** to the already-owned r51 visual-browser regression, without touching `game-render.js` or asset provenance. When `CCG_DUNGEON_VISUAL_BASELINE_DIR` is set, it exercises five real generated floors (1/4/7/11/15), fixed seed, desktop and mobile touch with reduced-motion preference. Each floor/device records Canvas and full-HUD PNGs, canvas/viewport dimensions, observed quality tier, 45 RAF intervals (p50/p95/max), and floor decor/torch/room counts in one JSON file. Ordinary CI remains unchanged.

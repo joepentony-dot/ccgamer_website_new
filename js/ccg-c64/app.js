@@ -79,6 +79,7 @@ const vaultStatus = document.querySelector("[data-vault-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
+const mobileJoystickSwapButton = document.querySelector("[data-mobile-joystick-swap]");
 const keyboardJoystickButton = document.querySelector("[data-keyboard-joystick]");
 const joystickPortIndicator = document.querySelector("[data-joystick-port]");
 const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
@@ -89,6 +90,180 @@ const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
+
+/* Mobile/tablet gameplay: a viewport-filling console, with the screen above
+   uninterrupted touch controls. Desktop pointer/fine layouts never enter. */
+const mobilePlayConsole = document.querySelector(".ccg-c64-console");
+const mobilePlaybar = document.querySelector("[data-mobile-playbar]");
+const mobileExitButton = document.querySelector("[data-mobile-exit-game]");
+const mobilePlayTitle = document.querySelector("[data-mobile-play-title]");
+const mobileKeyboardToggle = document.querySelector("[data-mobile-keyboard-toggle]");
+const mobileKeyboardClose = document.querySelector("[data-mobile-keyboard-close]");
+const mobileKeyboardPanel = document.querySelector("[id='ccg-c64-mobile-keyboard']");
+const mobileKeyboardKeys = document.querySelector("[data-mobile-keyboard-keys]");
+const mobilePlayMedia = window.matchMedia?.("(pointer: coarse)");
+let mobilePlayActive = false;
+const mobileVirtualHeld = new Map();
+const MIN_MOBILE_KEY_MS = 105;
+
+const mobileKeyRows = [
+  [["RESTORE", "F12"], ["F1", "F1"], ["F3", "F3"], ["F5", "F5"],
+    ["F7", "F7"], ["RUN/STOP", "F9"], ["CLR/HOME", "F11"]],
+  [["1", "Digit1"], ["2", "Digit2"], ["3", "Digit3"], ["4", "Digit4"],
+    ["5", "Digit5"], ["6", "Digit6"], ["7", "Digit7"], ["8", "Digit8"],
+    ["9", "Digit9"], ["0", "Digit0"], ["DEL", "Backspace"]],
+  [..."QWERTYUIOP".split("").map(k => [k, "Key" + k]),
+    ["@", "@"], ["+", "+"]],
+  [..."ASDFGHJKL".split("").map(k => [k, "Key" + k]),
+    [":", ":"], [";", ";"], ["RETURN", "Enter"]],
+  [["SHIFT", "ShiftLeft"], ..."ZXCVBNM".split("").map(k => [k, "Key" + k]),
+    [",", ","], [".", "."], ["/", "/"], ["SHIFT", "ShiftRight"]],
+  [["CTRL", "ControlLeft"], ["C=", "F10"], ["-", "-"], ["*", "*"],
+    ["SPACE", "Space"], ["LEFT", "ArrowLeft"], ["UP", "ArrowUp"],
+    ["DOWN", "ArrowDown"], ["RIGHT", "ArrowRight"]]
+];
+
+function mobileVirtualBinding(code) {
+  if (code === "F12") return { restore: true };
+  if (code === "ArrowLeft") return { col: 0, row: 2, shift: true };
+  if (code === "ArrowUp") return { col: 0, row: 7, shift: true };
+  const physical = KEY_MAP[code];
+  if (physical) return { col: physical[0], row: physical[1], shift: false };
+  const character = CHAR_MAP[code];
+  if (character) return { col: character.col, row: character.row, shift: character.shift };
+  return null;
+}
+
+function syncMobileMatrixBit(col, row) {
+  if (!machine) return;
+  const held = [...mobileVirtualHeld.values()].some(k =>
+    (k.col === col && k.row === row) || (col === 1 && row === 7 && k.shift)) ||
+    [...heldMatrixKeys.values()].some(k => k.col === col && k.row === row) ||
+    [...touchFunctionKeyHolds.values()].some(k => k.col === col && k.row === row) ||
+    (col === 1 && row === 7 && shiftLeftPhysical) ||
+    (col === 6 && row === 4 && shiftRightPhysical);
+  machine.cia1.setKey(col, row, held);
+}
+
+function releaseMobileVirtualKeys() {
+  if (!mobileVirtualHeld.size) return;
+  const released = [...mobileVirtualHeld.values()];
+  for (const held of released) if (held.timer) clearTimeout(held.timer);
+  mobileVirtualHeld.clear();
+  if (machine) {
+    for (const held of released) {
+      if (held.restore) machine.setRestoreNmiLine(false);
+      else syncMobileMatrixBit(held.col, held.row);
+    }
+    syncMobileMatrixBit(1, 7);
+  }
+  for (const button of mobileKeyboardKeys?.querySelectorAll("button.is-pressed") || []) {
+    button.classList.remove("is-pressed");
+  }
+}
+
+function setMobileKeyboardOpen(open) {
+  const active = Boolean(open && mobilePlayActive);
+  if (!active) releaseMobileVirtualKeys();
+  if (mobileKeyboardPanel) mobileKeyboardPanel.hidden = !active;
+  mobileKeyboardToggle?.setAttribute("aria-expanded", String(active));
+  mobileKeyboardToggle?.setAttribute("aria-pressed", String(active));
+  if (mobileKeyboardToggle) mobileKeyboardToggle.textContent = active ? "HIDE KEYS" : "KEYBOARD";
+}
+
+function setMobilePlaying(active, label = "") {
+  const enabled = Boolean(active && mobilePlayMedia?.matches && mobilePlayConsole);
+  mobilePlayActive = enabled;
+  mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
+  document.body?.classList.toggle("is-mobile-playing", enabled);
+  if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
+  if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
+  if (!enabled) setMobileKeyboardOpen(false);
+  requestAnimationFrame(fitScreenToStage);
+}
+
+function enterMobilePlayMode(name = "") {
+  setMobilePlaying(true, name);
+}
+
+function exitMobilePlayMode() {
+  setMobilePlaying(false);
+  if (document.fullscreenElement && document.exitFullscreen) {
+    void document.exitFullscreen().catch(() => {});
+  }
+  // EXIT GAME stops the current game, but leaves downloaded catalogue, firmware
+  // and saved vault slots intact for the next LOAD.
+  if (running) powerOff();
+  window.scrollTo?.({ top: 0, behavior: "instant" });
+}
+
+mobileExitButton?.addEventListener("click", exitMobilePlayMode);
+mobileKeyboardToggle?.addEventListener("click", () =>
+  setMobileKeyboardOpen(Boolean(mobileKeyboardPanel?.hidden)));
+mobileKeyboardClose?.addEventListener("click", () => setMobileKeyboardOpen(false));
+mobilePlayMedia?.addEventListener?.("change", () => {
+  if (!mobilePlayMedia.matches && mobilePlayActive) setMobilePlaying(false);
+});
+
+// Use the real CIA keyboard matrix, including SHIFT and RESTORE. Button presses
+// never synthesise DOM KeyboardEvents, so Android/iOS keyboards cannot interrupt
+// the joystick; pointer capture supports simultaneous multi-touch keys.
+if (mobileKeyboardKeys) {
+  for (const rowKeys of mobileKeyRows) {
+    const row = document.createElement("div");
+    row.className = "ccg-c64-mobile-keyboard-row";
+    for (const [label, code] of rowKeys) {
+      if (!mobileVirtualBinding(code)) continue;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.setAttribute("data-c64-vkey", code);
+      button.setAttribute("aria-label", "C64 " + label);
+      row.appendChild(button);
+      const release = (event, force = false) => {
+        event?.preventDefault?.();
+        const held = mobileVirtualHeld.get(button);
+        if (!held || (!force && event?.pointerId != null && event.pointerId !== held.pointerId)) return;
+        const remaining = MIN_MOBILE_KEY_MS - (performance.now() - held.started);
+        if (!force && remaining > 0) {
+          if (!held.timer) held.timer = setTimeout(() => release(null, true), remaining);
+          return;
+        }
+        if (held.timer) clearTimeout(held.timer);
+        mobileVirtualHeld.delete(button);
+        button.classList.remove("is-pressed");
+        if (!machine) return;
+        if (held.restore) machine.setRestoreNmiLine(false);
+        else {
+          syncMobileMatrixBit(held.col, held.row);
+          if (held.shift) syncMobileMatrixBit(1, 7);
+        }
+      };
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        if (!mobilePlayActive || !running || !machine || paused ||
+            setup?.hidden === false || mobileVirtualHeld.has(button)) return;
+        const binding = mobileVirtualBinding(code);
+        const held = { ...binding, started: performance.now(), pointerId: event.pointerId, timer: null };
+        mobileVirtualHeld.set(button, held);
+        pollGamepad();
+        if (held.restore) machine.setRestoreNmiLine(true);
+        else {
+          if (held.shift) syncMobileMatrixBit(1, 7);
+          machine.cia1.setKey(held.col, held.row, true);
+        }
+        button.classList.add("is-pressed");
+        try { button.setPointerCapture?.(event.pointerId); } catch {}
+      });
+      for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+        button.addEventListener(type, event => release(event));
+      }
+      button.addEventListener("contextmenu", event => event.preventDefault());
+    }
+    mobileKeyboardKeys.appendChild(row);
+  }
+}
+
 
 // The same searchable game library belongs immediately below the C64 display
 // on phones. Keep its original position and all existing listeners on desktop.
@@ -251,7 +426,8 @@ function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
   // Use every available pixel in fullscreen regardless of desktop breakpoints.
   // In the page, mobile layouts still size naturally from the canvas ratio.
-  if (document.fullscreenElement !== screenStage &&
+  if (!(typeof mobilePlayActive !== "undefined" && mobilePlayActive) &&
+      document.fullscreenElement !== screenStage &&
       !window.matchMedia?.("(min-width: 960px)")?.matches) {
     screenBezel.style.width = "";
     return;
@@ -376,9 +552,13 @@ function toggleAudioMute() {
 
 function updateJoystickUi() {
   if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
-  if (joystickSwapButton) {
-    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
-    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  for (const button of [joystickSwapButton, mobileJoystickSwapButton]) {
+    if (!button) continue;
+    button.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
+    button.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  }
+  if (mobileJoystickSwapButton) {
+    mobileJoystickSwapButton.textContent = `SWAP JOYSTICK · PORT ${joystickPort}`;
   }
   if (keyboardJoystickButton) {
     keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
@@ -416,6 +596,7 @@ function swapJoystickPort() {
 }
 
 joystickSwapButton?.addEventListener("click", swapJoystickPort);
+mobileJoystickSwapButton?.addEventListener("click", swapJoystickPort);
 keyboardJoystickButton?.addEventListener("click", () => {
   keyboardJoystickEnabled = !keyboardJoystickEnabled;
   keyboardJoystickKeys.clear();
@@ -546,6 +727,7 @@ function releaseKeyboardInput() {
   keyboardJoystickKeys.clear();
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
+  if (typeof releaseMobileVirtualKeys === "function") releaseMobileVirtualKeys();
   applyJoystickInput();
 }
 
@@ -1122,6 +1304,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  if (typeof setMobilePlaying === "function") setMobilePlaying(false);
   captureMutableMedia();
   releaseAllInput();
   powerOffAudio();
@@ -1672,7 +1855,9 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   const queued = pendingMedia;
   pendingMedia = null;
   try {
-    return await openMediaBytes(queued);
+    const loaded = await openMediaBytes(queued);
+    if (loaded && typeof enterMobilePlayMode === "function") enterMobilePlayMode(queued.name);
+    return loaded;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "The media could not be opened.";
     return false;
@@ -2224,6 +2409,8 @@ async function loadGameVaultSlot() {
     if (stageNote) stageNote.textContent = "Machine state and its local disk, tape and cartridge media were restored from this browser.";
     updateMediaControls(vault.snapshot());
     await refreshVaultStatus();
+    if (typeof enterMobilePlayMode === "function") enterMobilePlayMode(
+      mountedCartridge?.name || mountedDisk?.name || mountedTape?.name || "SAVED GAME");
     screen?.focus();
   } catch (error) {
     if (!frameHandle && running && machine) frameHandle = requestAnimationFrame(frameLoop);
@@ -2336,6 +2523,7 @@ fullscreenButton?.addEventListener("click", async () => {
       const fullscreenTarget = touchLayout
         ? document.querySelector(".ccg-c64-console") || screenStage
         : screenStage;
+      if (mobilePlayMedia?.matches && running) enterMobilePlayMode("C64 GAMEPLAY");
       await fullscreenTarget.requestFullscreen({ navigationUI: "hide" });
     }
     fitScreenToStage();

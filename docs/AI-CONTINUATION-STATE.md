@@ -1,3 +1,9 @@
+## Dungeon engine-first current-main reconciliation — 9 October 2026, 12:28 BST
+
+- Live `main` at `4847a3ef7460438cb8f1b3da55e4f1ade869162a` includes merged emulator #2648 mobile immersive gameplay/CIA keyboard and #2649 mobile joystick-port switch, atop merged FIRE/JUMP and keyboard/gamepad latency fixes. The seven changed paths since the previous Dungeon base `04d746d8ddc159d0db55bfe382c719f90f31bb33` have **no overlap** with the Dungeon branch's changed paths. This draft branch retains their exact live-main blob SHAs in a two-parent merge, including emulator CSS/JS, service worker and tests; no emulator source from the stale Dungeon branch was restored.
+- Parent Dungeon candidate `499e45063205818eaa44e8c09b6ccc228a7fc7ad` was **fully green on exact head**: all six Chromium shards, Node/PR qualification, Windows EXE smoke, itch.io staging, site safety, cache, SEO and Cloudflare Workers branch preview. The current two-parent reconciliation creates a NEW head which must be requalified independently. No PR merge into production, release or deploy.
+- Existing optional desktop/mobile five-floor screenshot/RAF baseline remains **uncaptured** and cannot support performance or aesthetic acceptance yet. Next priority: verify new exact-head qualification and run opt-in capture with real screenshots before visual renderer changes. Separate Flask #2642, original 16 owner music tracks/voice recordings, access timer, member/save integrity remain protected.
+
 ## Engine-first visual baseline capture harness — 9 October 2026
 
 - PR **#2644**, based on `main` `04d746d8ddc159d0db55bfe382c719f90f31bb33`: previous dossier exact head `7189dee9713e42b40a0a45d01b00377a7ef0cdc6` passed all seven triggered workflows including all six Chromium shards and Windows executable smoke. No review threads. This is the verified PREVIOUS head, not the qualification result of the new visual-baseline candidate.
