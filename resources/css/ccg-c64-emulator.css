@@ -2109,7 +2109,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
 .ccg-c64-mobile-playbar[hidden],
 .ccg-c64-mobile-keyboard[hidden] { display: none !important; }
 /* Extra touch controls exist in the DOM for mobile gameplay only. */
-.ccg-c64-mobile-joystick-swap,
+.ccg-c64-mobile-joystick-swap { display: none !important; }
 .ccg-c64-mobile-warp-load { display: none !important; }
 .ccg-c64-mobile-playbar,
 .ccg-c64-mobile-keyboard { display: none; }
