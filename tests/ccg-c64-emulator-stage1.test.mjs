@@ -30,8 +30,40 @@ const emulation = read("emulation.html");
 const onlineLibrary = JSON.parse(read("emulator/c64/library.json"));
 const coiBootstrap = read("js/ccg-c64/coi-bootstrap.js");
 const coiWorker = read("emulator/c64/coi-service-worker.js");
+const c64AppManifest = JSON.parse(read("emulator/c64/manifest.webmanifest"));
+const ccgMainManifest = JSON.parse(read("manifest.webmanifest"));
+const c64AppInstaller = read("js/ccg-c64/install-app.js");
+const c64AppIcon = read("emulator/c64/icons/ccg-c64-icon.svg");
+const c64AppMaskableIcon = read("emulator/c64/icons/ccg-c64-icon-maskable.svg");
 
 assert(html.includes("CCG BROWSER C64") || html.includes("CCG C64"), "CCG identity is required");
+// The dedicated emulator PWA must not hijack the existing site-wide CCG app.
+assert.equal(c64AppManifest.id, "/emulator/c64/");
+assert.equal(c64AppManifest.scope, "/emulator/c64/");
+assert.equal(new URL(c64AppManifest.start_url, "https://www.cheekycommodoregamer.co.uk").pathname,
+  "/emulator/c64/");
+assert.equal(c64AppManifest.display, "standalone");
+assert.notEqual(c64AppManifest.id, ccgMainManifest.id,
+  "The C64 app must install separately from the primary CCG website");
+assert(c64AppManifest.icons.some(icon => icon.purpose === "any" && icon.src.endsWith("ccg-c64-icon.svg")),
+  "C64 home screen app icon must be present");
+assert(c64AppManifest.icons.some(icon => icon.purpose === "maskable" && icon.src.endsWith("ccg-c64-icon-maskable.svg")),
+  "An Android maskable app icon must exist");
+assert(c64AppIcon.includes("<svg ") && c64AppMaskableIcon.includes("<svg "),
+  "Both installable emulator app icon files must contain SVG markup");
+assert(html.includes('rel="manifest" href="/emulator/c64/manifest.webmanifest"'),
+  "Emulator must explicitly declare its own app manifest");
+assert(html.includes("data-c64-app-install") && html.includes("data-c64-app-install-button") &&
+  html.includes('src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v1"'),
+  "The mobile app needs a working installation entry point");
+assert(css.includes(".ccg-c64-install-promo[hidden]") &&
+  css.includes("@media (pointer: coarse)"),
+  "App installation instructions must be hidden on desktop");
+assert(c64AppInstaller.includes('window.addEventListener("beforeinstallprompt"') &&
+  c64AppInstaller.includes("await prompt.prompt()") &&
+  c64AppInstaller.includes('window.addEventListener("appinstalled"') &&
+  c64AppInstaller.includes('navigator.standalone === true'),
+  "Installer must support Android prompts, installed-state detection and iOS fallback");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
 assert(html.includes('width="384" height="272"'), "Native C64 canvas dimensions must be reserved");
 assert(!html.includes("webkitdirectory"), "The emulator must not force a VICE-folder scan");
