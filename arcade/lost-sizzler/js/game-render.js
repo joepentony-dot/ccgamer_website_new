@@ -292,6 +292,34 @@ function drawTile(x,y){
     const edge=x<=room.x+1||x>=room.x+room.w-2||y<=room.y+1||y>=room.y+room.h-2;if(edge){ctx.fillStyle="rgba(0,0,0,.12)";ctx.fillRect(s.x,s.y,C.tile,C.tile)}
     if(room.grandHall){const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),onCarpet=room.grandHallAxis==="horizontal"?Math.abs(y-cy)<=1:Math.abs(x-cx)<=1;if(onCarpet){ctx.fillStyle=((x+y)%2)?"#651527":"#76182d";ctx.fillRect(s.x+2,s.y+2,C.tile-4,C.tile-4);ctx.fillStyle="#b48832";if(room.grandHallAxis==="horizontal"){ctx.fillRect(s.x+2,s.y+2,C.tile-4,2);ctx.fillRect(s.x+2,s.y+C.tile-4,C.tile-4,2)}else{ctx.fillRect(s.x+2,s.y+2,2,C.tile-4);ctx.fillRect(s.x+C.tile-4,s.y+2,2,C.tile-4)}ctx.fillStyle="rgba(255,215,100,.10)";for(let py=7;py<C.tile-5;py+=8)for(let px=7;px<C.tile-5;px+=8)if((px+py+x+y)%3===0)ctx.fillRect(s.x+px,s.y+py,2,2)}}
   }
+  // R124: stone walls cast a thin, cool, static contact shadow onto the
+  // neighbouring flagstones. Decorative wear belongs underneath actors,
+  // loot and fog and uses no extra assets, gradients or animation state.
+  if(room){
+    const northWall=world.map[y-1]?.[x]!==0,westWall=world.map[y]?.[x-1]!==0,
+      southWall=world.map[y+1]?.[x]!==0,eastWall=world.map[y]?.[x+1]!==0;
+    if(northWall||westWall||southWall||eastWall){
+      ctx.fillStyle="rgba(5,9,14,.24)";
+      if(northWall)ctx.fillRect(s.x+2,s.y+2,C.tile-4,7);
+      if(westWall)ctx.fillRect(s.x+2,s.y+2,7,C.tile-4);
+      if(southWall)ctx.fillRect(s.x+2,s.y+C.tile-8,C.tile-4,6);
+      if(eastWall)ctx.fillRect(s.x+C.tile-8,s.y+2,6,C.tile-4);
+      // Moss grows along shaded mortar in the crypt; the first floor has
+      // sparse mineral stains instead. Both patterns are seeded, not animated.
+      if(theme==="MOSS_CRYPT"&&h%4===0){
+        const mx=westWall?4:eastWall?C.tile-12:9+(h%19),
+          my=northWall?5:southWall?C.tile-10:9+((h>>>6)%20);
+        ctx.fillStyle="rgba(43,99,54,.48)";ctx.fillRect(s.x+mx,s.y+my,8,3);
+        ctx.fillStyle="rgba(142,162,83,.42)";ctx.fillRect(s.x+mx+2,s.y+my-1,4,2);
+        ctx.fillStyle="rgba(29,71,43,.42)";ctx.fillRect(s.x+mx+5,s.y+my+3,3,2);
+      }else if(Number(run?.floor)===1&&h%6===0){
+        const mx=westWall?5:eastWall?C.tile-10:8+(h%19),
+          my=northWall?6:southWall?C.tile-9:8+((h>>>7)%20);
+        ctx.fillStyle="rgba(89,114,110,.30)";ctx.fillRect(s.x+mx,s.y+my,7,2);
+        ctx.fillStyle="rgba(12,25,28,.30)";ctx.fillRect(s.x+mx+2,s.y+my+2,4,1);
+      }
+    }
+  }
   // Every room gets a deterministic floor signature so even rooms sharing a theme are visually distinct.
   if(room){
     const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),sig=room.signature??room.id;
