@@ -1,3 +1,12 @@
+## Engine-first architecture audit — 9 October 2026 UK
+
+- Authoritative baseline: R121 `main` `ff91aa0f5041b672bacdec9f956f472820c504d3`. New **draft** PR [#2644](https://github.com/joepentony-dot/ccgamer_website_new/pull/2644), branch `audit/dungeon-engine-first-contracts-20261009`. This does NOT replace or merge with Flask QA #2642 or emergency audio/recovery branches #2594–#2596.
+- Owner-directed development priority is now engine-first, **after critical live defects**. Commercial production, release/download publishing and major redesign remain paused. No change to member data, Supabase, website access policy, current asset licences or game build/cache identity is approved.
+- Source findings: canonical `arcade/lost-sizzler/js/{world,systems,ai,progression,game-core,game-render}.js` already own BSP seeded topology, room objectives/sanctuary allocation, cardinal AI/pathfinding, combat/progression and pixel rendering. R119 sanctuary spacing already requires >=3 graph hops and >=18 tiles; do not overwrite it.
+- Independent in-memory structural generation: 60 real `CCGWorld.generate` + `createHostState` + `CCGSystems.decorate` seeds over floors 1/3/9/15 had reachable exit cells, valid generated door topology, and two separated sanctuaries; min gap 31 tiles / 3 hops; 0 failures. This does NOT verify full objectives, physical decoration blocking, live browser handling or owner acceptance.
+- Draft #2644 changes **only** the existing fifteen-floor regression contract to reject invalid enemy/configuration/difficulty/inventory/campaign values, and adds the evidence-based [engine-first audit](ai-work/dungeon-carnage-engine-first-audit-2026-10-09.md). New validation assertions passed isolated direct execution; **full Node and Chromium/website/package CI still requires exact-head verification**. No gameplay, visual, runtime, asset or publishing edits.
+- Next: review the exact-head CI result; keep draft pending all required green checks and authorization; reconcile wrapper ownership and full-objective generated-floor reachability with additional existing-contract tests before any gameplay refactor.
+
 ## R117 qualification checkpoint — 7 October 2026 23:33 UK
 
 - Authoritative main: `c56a5c20b2bed4da6446d2eb96498a4ce4e1dab0`. Active PR #2593 / `codex/dungeon-r117-release-reconciliation-20261007` at head `4a4912f426a093e50bb70c1400f04b59edf37889`, 15 ahead and 0 behind main; NOT merge-ready.
