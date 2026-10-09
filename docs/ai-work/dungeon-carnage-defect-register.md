@@ -59,3 +59,10 @@ The R120 bug fixes are merged into `main` at `df598b1d3214151bebb5500236c7b6f607
 - The R121 candidate marks all those event latches only after `sayKey` successfully starts an approved recording. All muted/busy/missing-asset failures remain retryable on subsequent health ticks or loot prompts. Existing queue-free recorded speech policy and per-floor playback limits remain unchanged.
 - Regression `tests/dungeon-carnage-r121-voice-latch-retry.test.mjs` instantiates the **real voice-director** in a Node VM with deterministic approved audio, verifying low/critical retry, immediate damage hook, once-per-floor gating and no delayed stale audio queue.
 - Mark **FIXED IN CANDIDATE CODE**, not owner-audibly-accepted, until exact-head PR/full Chromium qualification and subsequent hands-on testing.
+
+## R122 Banishment Flask transaction acceptance — new automated qualification
+
+- **No new Flask code change:** `v10-42-artefact-shop-stability.js` already owns the exchange after #2090/R77. Historical source-only assertions did not establish the full transaction outcome.
+- `tests/dungeon-carnage-r122-flask-live-transaction.test.mjs` now executes the actual Alchemist shop wrapper in an isolated Node VM to verify: exactly three ordinary Vessel Essence produces exactly one Flask **without a previous Gold Flask purchase**; Gold and Score remain unchanged; insufficient Essence has no effect; an existing Alchemist's Seal reduces the required amount to two; legacy physical Artefacts and mixed payments are consumed exactly; failed inventory insertion restores spent items and Essence; non-Alchemist and deprecated Score-funded buttons fail closed.
+- This is deterministic automated transaction coverage, **not a substitute for the owner's deployed browser acceptance**. Do not mark the manual Defect 5 gate complete solely on green CI.
+- Development is bug-fix/verification only. The paid itch.io product, original-music extraction and installer production remain paused.
