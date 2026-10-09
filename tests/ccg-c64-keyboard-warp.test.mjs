@@ -514,12 +514,14 @@ mobileShift.dispatch("pointerdown", 2);
 mobileA.dispatch("pointerdown", 3);
 assert(ciaMobile.isKeyDown(1, 7) && ciaMobile.isKeyDown(1, 2),
   "SHIFT and a letter must support concurrent touch");
+mobileTime += 200;
 mobileA.dispatch("pointerup", 3);
 assert(ciaMobile.isKeyDown(1, 7), "Releasing A must not release held SHIFT");
 mobileShift.dispatch("pointerup", 2);
 assert(!ciaMobile.isKeyDown(1, 7), "SHIFT must release after its own pointerup");
 findVirtual("F12").dispatch("pointerdown", 4);
 assert.equal(mobileMachine.nmi, true, "RESTORE should assert the emulated NMI line");
+mobileTime += 200;
 findVirtual("F12").dispatch("pointerup", 4);
 assert.equal(mobileMachine.nmi, false, "RESTORE should release the NMI line");
 mobileClose.dispatch("click");
