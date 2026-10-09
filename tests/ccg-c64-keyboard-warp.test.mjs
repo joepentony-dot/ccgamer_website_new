@@ -469,6 +469,7 @@ const fakeConsole = mobileNode();
 const mobileBar = mobileNode();
 const mobileExit = mobileNode();
 const mobileTitle = mobileNode();
+const mobileZoom = mobileNode();
 const mobileToggle = mobileNode();
 const mobileClose = mobileNode();
 const mobilePanel = mobileNode();
@@ -480,6 +481,7 @@ const mobileNodes = new Map([
   ["[data-mobile-playbar]", mobileBar],
   ["[data-mobile-exit-game]", mobileExit],
   ["[data-mobile-play-title]", mobileTitle],
+  ["[data-mobile-zoom-toggle]", mobileZoom],
   ["[data-mobile-keyboard-toggle]", mobileToggle],
   ["[data-mobile-keyboard-close]", mobileClose],
   ["[id='ccg-c64-mobile-keyboard']", mobilePanel],
@@ -491,13 +493,32 @@ const mobileMachine = { cia1: ciaMobile, joyPort2: 0xf7, setRestoreNmiLine(on) {
 let mobileTime = 1000;
 let mobilePowerOffCount = 0;
 let mobileGamepadPolls = 0;
+const mobileFrameCallbacks = [];
+const mobileScrollTargets = [];
+const mobileCanvasFocusOptions = [];
+let mobileSearchBlurCount = 0;
+const mobileLibraryInput = {
+  tagName: "INPUT",
+  blur() { mobileSearchBlurCount++; },
+};
+const savedZoomSettings = new Map();
 const mobileContext = vm.createContext({
   document: {
     querySelector: selector => mobileNodes.get(selector) || null,
     body: mobileBody, createElement: () => mobileNode(), fullscreenElement: null,
+    activeElement: mobileLibraryInput,
   },
-  window: { matchMedia: () => mobileMedia, scrollTo() {} },
-  requestAnimationFrame() {}, performance: { now: () => mobileTime },
+  window: {
+    matchMedia: () => mobileMedia,
+    scrollTo(position) { mobileScrollTargets.push(position); },
+  },
+  screen: { focus(opts) { mobileCanvasFocusOptions.push(opts); } },
+  localStorage: {
+    getItem(key) { return savedZoomSettings.get(key) || null; },
+    setItem(key, value) { savedZoomSettings.set(key, String(value)); },
+  },
+  requestAnimationFrame(callback) { mobileFrameCallbacks.push(callback); },
+  performance: { now: () => mobileTime },
   KEY_MAP, CHAR_MAP, machine: mobileMachine,
   running: true, paused: false, setup: { hidden: true },
   heldMatrixKeys: new Map(), touchFunctionKeyHolds: new Map(),
@@ -518,6 +539,36 @@ mobileContext.playOnMobile("Paradroid");
 assert(fakeConsole.classList.contains("is-mobile-playing"), "Loading media should maximise the mobile game");
 assert.equal(mobileBar.hidden, false);
 assert.equal(mobileTitle.textContent, "Paradroid");
+assert.equal(mobileSearchBlurCount, 1,
+  "Mobile game entry should blur focused game search to dismiss soft keyboards");
+assert.equal(mobileScrollTargets.length, 0,
+  "Viewport must not snap before mobile play layout is committed");
+assert.equal(mobileFrameCallbacks.length, 1,
+  "Mobile entry should measure FIT on the next animation frame");
+mobileFrameCallbacks.shift()();
+assert.equal(mobileScrollTargets.length, 1,
+  "The first mobile gameplay frame must reset stale library scrolling");
+assert.equal(mobileScrollTargets[0].top, 0);
+assert.equal(mobileScrollTargets[0].behavior, "instant",
+  "Mobile snapping must never smoothly scroll the fixed screen out of view");
+assert.equal(mobileCanvasFocusOptions[0].preventScroll, true,
+  "Canvas focus must never scroll the viewport downward");
+assert.equal(mobileZoom.textContent, "ZOOM: OFF", "Mobile starts with uncropped full C64 borders");
+assert.equal(mobileZoom.getAttribute("aria-pressed"), "false");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Zoom defaults to off");
+mobileZoom.dispatch("click");
+assert.equal(mobileScrollTargets.length, 1,
+  "Zoom may change only the picture crop, never snap/scroll the page");
+assert.equal(mobileZoom.textContent, "ZOOM: ON", "Zoom button must show its actual state");
+assert.equal(mobileZoom.getAttribute("aria-pressed"), "true");
+assert.equal(mobileZoom.getAttribute("aria-label"), "Disable mobile game zoom");
+assert(fakeConsole.classList.contains("is-mobile-zoomed"), "Zoom should apply the CSS viewport crop");
+assert.equal(savedZoomSettings.get("ccg.emulator.c64.mobileZoom.v1"), "1",
+  "The selected zoom preference should persist between games and browser visits");
+mobileZoom.dispatch("click");
+assert.equal(mobileZoom.textContent, "ZOOM: OFF", "Zoom toggle must restore full picture");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Normal PAL frame must be restored");
+mobileZoom.dispatch("click");
 mobileToggle.dispatch("click");
 assert.equal(mobilePanel.hidden, false, "Keyboard toggle should open the in-game overlay");
 const mobileSpace = findVirtual("Space");
@@ -549,10 +600,21 @@ assert.equal(mobilePanel.hidden, true, "Close must hide the keyboard");
 mobileExit.dispatch("click");
 assert.equal(mobilePowerOffCount, 1, "Exit Game must stop the running C64 session");
 assert(!fakeConsole.classList.contains("is-mobile-playing"), "Exit should restore library layout");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Exiting must restore uncropped library preview");
+assert.equal(mobileZoom.getAttribute("aria-pressed"), "false", "Zoom controls reset while not playing");
+mobileContext.playOnMobile("New game");
+assert(fakeConsole.classList.contains("is-mobile-zoomed"), "New games should honour saved mobile zoom choice");
+mobileZoom.dispatch("click"); // Switch off before desktop/fine-pointer assertions.
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"));
 mobileMedia.matches = false;
 mobileContext.playOnMobile("Desktop test");
 assert(!fakeConsole.classList.contains("is-mobile-playing"),
   "Fine-pointer/desktop mode must never activate mobile full-viewport layout");
+mobileZoom.dispatch("click");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"),
+  "Fine-pointer/desktop mode must never activate game zoom");
+assert.equal(savedZoomSettings.get("ccg.emulator.c64.mobileZoom.v1"), "0",
+  "Desktop clicks must not overwrite the last mobile preference");
 
 // Both desktop and mobile must use the same real Warp Load state machine.
 // Exercise a touch click, desktop click, boot/paused guards and automatic
