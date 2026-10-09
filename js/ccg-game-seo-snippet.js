@@ -58,11 +58,14 @@
     let match;
     while ((match = endings.exec(text)) !== null) {
       const end = endings.lastIndex;
+      // Three consecutive dots are editorial punctuation, not a sentence end.
+      // Treating them as a terminal period can publish cut-off search snippets.
+      if (text.slice(Math.max(0, end - 3), end) === "...") continue;
       if (end < MIN_SENTENCE_LENGTH) continue;
       if (end > maxLength) return "";
       return text.slice(0, end).trim();
     }
-    return text.length >= MIN_SENTENCE_LENGTH && text.length <= maxLength && /[.!?]$/.test(text)
+    return text.length >= MIN_SENTENCE_LENGTH && text.length <= maxLength && /[.!?]$/.test(text) && !/(?:…|\.\.\.)$/.test(text)
       ? text
       : "";
   }
