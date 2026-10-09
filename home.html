@@ -84,6 +84,7 @@
 
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
+    <link rel="stylesheet" href="/resources/css/home-c64-emulator-promo.css" />
     <link rel="stylesheet" href="resources/css/home-debug.css" />
     <link rel="stylesheet" href="resources/css/ccg-mobile-lite.css">
     <script src="js/ccg-mobile-lite.js" defer></script>
@@ -466,6 +467,25 @@
                         </span>
                     </a>
                 </nav>
+
+                <!-- Direct, crawlable route to the interactive C64 emulator.
+                     Keep this separate from the locked home card/thumbnail contracts. -->
+                <a class="home-c64-emulator-promo" href="/emulator/c64/"
+                   aria-label="Open the free Commodore 64 emulator and play C64 games in your browser">
+                    <span class="home-c64-emulator-promo__icon" aria-hidden="true">
+                        <svg viewBox="0 0 40 40" focusable="false">
+                            <rect x="3" y="7" width="34" height="25" rx="4"></rect>
+                            <rect x="8" y="12" width="24" height="14" rx="1"></rect>
+                            <path d="M13 17l4 3-4 3M20 23h7M14 35h12"></path>
+                        </svg>
+                    </span>
+                    <span class="home-c64-emulator-promo__copy">
+                        <span class="home-c64-emulator-promo__eyebrow">PLAY STRAIGHT FROM YOUR BROWSER</span>
+                        <strong class="home-c64-emulator-promo__title">C64 Emulator — Play Commodore 64 Games Online</strong>
+                        <span class="home-c64-emulator-promo__description">Search the playable C64 library, load a game and get playing on desktop or mobile. No separate emulator download needed.</span>
+                    </span>
+                    <span class="home-c64-emulator-promo__action">LAUNCH C64 EMULATOR <span aria-hidden="true">→</span></span>
+                </a>
 
                 <div class="home-featured-videos" aria-labelledby="home-videos-heading">
                     <div class="home-featured-videos__copy">
