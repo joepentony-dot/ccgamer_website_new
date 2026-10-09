@@ -67,6 +67,31 @@
       : "";
   }
 
+  /**
+   * If an editorial opening is too long for a complete search snippet,
+   * preserve the factual main clause after an introductory comma.
+   * Example: "Released in 1986 by Publisher, Game is a puzzle adventure."
+   * becomes "Game is a puzzle adventure." without inventing content.
+   *
+   * Restrict to the game title as the grammatical subject, so we never
+   * publish a dangling clause or imply facts from unrelated text.
+   */
+  function conciseSubjectSentence(value, title, maxLength) {
+    const text = normalize(value);
+    const match = /[.!?][”"']?(?=\s|$)/.exec(text);
+    if (!match) return "";
+    const sentence = text.slice(0, match.index + match[0].length).trim();
+    const comma = sentence.indexOf(",");
+    if (comma < 0 || comma > 190) return "";
+    const candidate = sentence.slice(comma + 1).trim();
+    const subject = normalize(title).toLowerCase();
+    if (!subject || !candidate.toLowerCase().startsWith(subject)) return "";
+    const remainder = candidate.slice(subject.length);
+    if (!/\b(?:is|was|are|were|has|have|features|combines|takes|offers|delivers)\b/i.test(remainder)) return "";
+    if (candidate.length < MIN_SENTENCE_LENGTH || candidate.length > maxLength) return "";
+    return candidate;
+  }
+
   function sourceFallback(game, title, maxLength) {
     const year = /^\d{4}$/.test(String(game && game.year || "").trim())
       ? String(game.year).trim()
@@ -98,6 +123,9 @@
       if (withTitle.length <= limit) return withTitle;
       return sentence;
     }
+
+    const concise = conciseSubjectSentence(editorial, title, limit);
+    if (concise) return concise;
 
     return sourceFallback(game, title, limit);
   }
