@@ -134,8 +134,22 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
     return originalRead(reg);
   };
   const results=[];
+  const reverseScan=machine.cia1._readKeyboardColumns;
   for(const name of ["F3","F5","F7"]) {
-    const before=prior;
+    // Play exactly the same keypress twice from the same emulated frame:
+    // first with reverse-matrix sensing disabled (original deployed CIA),
+    // then with the corrected bidirectional key matrix.
+    const save=machine.serializeState();
+    const before=gameImage(machine);
+    machine.cia1._readKeyboardColumns=()=>0xff;
+    active="baseline-"+name;
+    key(machine,name,50);
+    const oldHeld=gameImage(machine);
+    progress(machine,20);
+    const oldAfter=gameImage(machine);
+    active=null;
+    machine.restoreState(save);
+    machine.cia1._readKeyboardColumns=reverseScan;
     active=name;
     key(machine,name,50);
     const held=gameImage(machine);
@@ -143,11 +157,12 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
     const after=gameImage(machine);
     active=null;
     const response={
-      name,held:diff(before,held),after:diff(before,after),read:reads[name],
-      pc:after.pc,mode:after.d011,bank:after.memBank,
+      name,baselineHeld:diff(before,oldHeld),baselineAfter:diff(before,oldAfter),
+      held:diff(before,held),after:diff(before,after),read:reads[name],
+      baselineReads:reads["baseline-"+name],pc:after.pc,mode:after.d011,bank:after.memBank,
     };
     results.push(response);
-    console.log("Bruce Lee "+name+" input:",JSON.stringify(response));
+    console.log("Bruce Lee "+name+" A/B:",JSON.stringify(response));
     prior=after;
   }
   const visualChange = entry =>
@@ -157,4 +172,12 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
   assert(visualChange(results[0]),"F3 does not change the Bruce Lee player-selection display");
   assert(visualChange(results[1]),"F5 does not change the Bruce Lee opponent-selection display");
   assert(visualChange(results[2]),"F7 does not start the original Bruce Lee game");
+  for(const entry of results) {
+    const amount=(d)=>d.screen+d.bitmap+d.colors;
+    const fixed=Math.max(amount(entry.held),amount(entry.after));
+    const baseline=Math.max(amount(entry.baselineHeld),amount(entry.baselineAfter));
+    console.log("Bruce Lee "+entry.name+" matrix benefit:",JSON.stringify({fixed,baseline}));
+    assert(fixed>baseline,
+      entry.name+" has no stronger game response with reverse CIA scanning; this change is not a verified fix");
+  }
 });
