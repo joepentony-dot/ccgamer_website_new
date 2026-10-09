@@ -576,7 +576,6 @@ mobileContext.playOnMobile("New game");
 assert(fakeConsole.classList.contains("is-mobile-zoomed"), "New games should honour saved mobile zoom choice");
 mobileZoom.dispatch("click"); // Switch off before desktop/fine-pointer assertions.
 assert(!fakeConsole.classList.contains("is-mobile-zoomed"));
-mobileContext.exitMobilePlayMode = undefined;
 mobileMedia.matches = false;
 mobileContext.playOnMobile("Desktop test");
 assert(!fakeConsole.classList.contains("is-mobile-playing"),
