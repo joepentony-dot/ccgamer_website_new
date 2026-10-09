@@ -993,7 +993,8 @@ select:disabled {
 }
 
 .ccg-c64-touch-dpad button,
-.ccg-c64-touch-fire {
+.ccg-c64-touch-fire,
+.ccg-c64-touch-jump {
   border: 1px solid #4a4e8c;
   background: #171a3c;
   color: #e2e2ff;
@@ -1020,6 +1021,25 @@ select:disabled {
   letter-spacing: 0.1em;
 }
 
+/* Optional joystick-UP JUMP, function keys remain in expandable drawer. */
+.ccg-c64-touch-actions { display: flex; align-items: center; justify-content: center; gap: 0.3rem; min-width: 0; }
+.ccg-c64-touch-actions .ccg-c64-touch-fire, .ccg-c64-touch-jump {
+  flex: 0 1 auto; width: clamp(75px, 21vw, 102px); height: clamp(75px, 21vw, 102px);
+}
+.ccg-c64-touch-jump {
+  border: 1px solid #829be3; border-radius: 50%; background: rgba(38,65,140,0.35);
+  font: 800 0.75rem var(--ccg-font-mono, "Courier New", monospace);
+  color: #eef3ff; touch-action: none;
+}
+.ccg-c64-touch-jump[hidden] { display: none !important; }
+.ccg-c64-touch-options { display: none; align-items: flex-start; justify-content: center; gap: 0.55rem; margin-top: 0.4rem; flex-wrap: wrap; }
+.ccg-c64-touch-options button, .ccg-c64-function-drawer summary {
+  border: 1px solid #7774b9; border-radius: 7px; background: #20234d;
+  color: #f4f0ff; min-height: 44px; padding: 0.5rem; cursor: pointer;
+  font: 700 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+}
+.ccg-c64-function-drawer summary { display: list-item; }
+.ccg-c64-function-drawer .ccg-c64-touch-fkeys { margin-top: 0.35rem; }
 /* Real C64 function keys for phones (not browser key events).
    The same matrix bindings as a physical F1/F3/F5/F7 keyboard are used. */
 .ccg-c64-touch-fkeys {
@@ -1844,6 +1864,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     padding: 0.6rem 0.25rem;
     touch-action: manipulation;
   }
+  .ccg-c64-touch-options { display: flex; }
   .ccg-c64-touch-dpad {
     grid-template-columns: repeat(3, clamp(44px, 13vw, 58px));
     grid-template-rows: repeat(3, clamp(44px, 13vw, 58px));
@@ -1897,7 +1918,8 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
   .ccg-c64-console:fullscreen .ccg-c64-screen-bezel { width: 100%; max-width: 100%; }
   .ccg-c64-console:fullscreen .ccg-c64-screen-foot,
-  .ccg-c64-console:fullscreen .ccg-c64-stage-note { display: none; }
+  .ccg-c64-console:fullscreen .ccg-c64-stage-note,
+  .ccg-c64-console:fullscreen .ccg-c64-touch-options { display: none; }
   .ccg-c64-console:fullscreen .ccg-c64-touch-controls {
     display: flex;
     flex: 1 0 auto;
