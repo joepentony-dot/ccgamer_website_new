@@ -245,6 +245,7 @@ select:focus-visible,
   min-width: 0;
 }
 
+.ccg-c64-display-head h1.ccg-c64-kicker { margin: 0; }
 .ccg-c64-kicker {
   color: var(--emu-accent);
   font-family: var(--ccg-font-mono, "Courier New", monospace);
@@ -2477,4 +2478,34 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
   .ccg-c64-install-promo details p { margin: 0.3rem 0 0.6rem; }
   .ccg-c64-install-promo details strong { color: #fff; }
+}
+
+/* Search landing-page description remains below the interactive emulator,
+   outside fixed mobile gameplay. It must never resize the screen or controls. */
+.ccg-c64-discovery {
+  max-width: 1160px;
+  margin: 1rem auto 1.25rem;
+  padding: 1.05rem clamp(0.8rem, 2vw, 1.4rem);
+  border: 1px solid rgba(141, 130, 255, 0.24);
+  border-radius: 12px;
+  background: rgba(8, 12, 34, 0.77);
+  color: var(--emu-text);
+}
+.ccg-c64-discovery h2 {
+  margin: 0 0 0.5rem;
+  color: #f4efff;
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+  line-height: 1.35;
+}
+.ccg-c64-discovery p {
+  margin: 0.5rem 0 0;
+  color: var(--emu-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.ccg-c64-discovery strong { color: var(--emu-text); }
+.ccg-c64-discovery a { color: #bbbcff; text-underline-offset: 3px; }
+@media (max-width: 760px) {
+  .ccg-c64-discovery { margin: 0.65rem 0.4rem 1rem; padding: 0.8rem; }
+  .ccg-c64-discovery p { font-size: 0.8rem; }
 }
