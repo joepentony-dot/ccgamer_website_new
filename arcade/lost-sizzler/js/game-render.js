@@ -175,6 +175,84 @@ function tileInRenderView(x,y,pad=2){
   return sx>=-margin&&sy>=-margin&&sx<=view.w+margin&&sy<=view.h+margin
 }
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
+// Floor 1 pilot: exposed stone faces belong to presentation, never geometry.
+// Factor all edge combinations and three seeds into one atlas per material.
+// The 22 canonical materials fit regardless of viewport or camera position.
+const dungeonStoneReliefCache=new Map();
+const DUNGEON_STONE_ATLAS_LIMIT=32,DUNGEON_STONE_PIXEL_BUDGET=4*1024*1024;
+const DUNGEON_STONE_EDGE_MASKS=Object.freeze([4,1,8,2]);
+let dungeonStoneReliefWorld=null,dungeonStoneReliefTile=0,dungeonStoneReliefBytes=0,dungeonStoneReliefUnavailable=false;
+function retireDungeonStoneReliefWorld(){
+  if(world!==dungeonStoneReliefWorld||C.tile!==dungeonStoneReliefTile){
+    for(const atlas of dungeonStoneReliefCache.values()){atlas.width=0;atlas.height=0}
+    dungeonStoneReliefCache.clear();dungeonStoneReliefWorld=world;dungeonStoneReliefTile=C.tile;
+    dungeonStoneReliefBytes=0;dungeonStoneReliefUnavailable=false;
+  }
+}
+function drawDungeonStoneRelief(s,x,y,h){
+  retireDungeonStoneReliefWorld();
+  if(Number(run?.floor||1)!==1)return false;
+  const north=world.map[y-1]?.[x]===0,east=world.map[y]?.[x+1]===0,
+    south=world.map[y+1]?.[x]===0,west=world.map[y]?.[x-1]===0,
+    mask=(north?1:0)|(east?2:0)|(south?4:0)|(west?8:0);
+  if(!mask)return false;
+  // Borrow the adjoining room's material instead of the wall's corridor default.
+  const th=W.themeAt(world,x+(south?0:west?-1:east?1:0),y+(south?1:west||east?0:-1)),
+    tile=C.tile,key=`${tile}:${th.wall}:${th.hi}`;
+  let stone=dungeonStoneReliefCache.get(key);
+  if(!stone){
+    // Admit bounded world resources without evicting this frame's working set.
+    // Future/custom palettes beyond the budget retain authored wall fallback;
+    // they must not allocate and evict atlases again on every frame.
+    const bytes=tile*tile*4*3*4;
+    if(dungeonStoneReliefUnavailable||dungeonStoneReliefCache.size>=DUNGEON_STONE_ATLAS_LIMIT||
+      dungeonStoneReliefBytes+bytes>DUNGEON_STONE_PIXEL_BUDGET)return false;
+    try{
+      stone=document.createElement("canvas");stone.width=tile*4;stone.height=tile*3;
+      const g=stone.getContext("2d");if(!g){dungeonStoneReliefUnavailable=true;return false}
+      g.imageSmoothingEnabled=false;
+      let variant=0;
+      const depth=Math.max(8,Math.round(tile*.30)),cheek=Math.max(5,Math.round(tile*.15)),
+        face=(fx,fy,fw,fh,vertical=false)=>{
+          g.fillStyle="rgba(8,6,12,.80)";g.fillRect(fx,fy,fw,fh);
+          g.fillStyle="#48424a";g.fillRect(fx+1,fy+1,fw-2,fh-2);
+          g.fillStyle=th.wall;g.globalAlpha=.35;g.fillRect(fx+1,fy+1,fw-2,fh-2);g.globalAlpha=1;
+          g.fillStyle="rgba(199,186,166,.22)";g.fillRect(fx+1,fy+1,fw-2,2);
+          g.fillStyle="rgba(3,5,9,.44)";g.fillRect(fx+1,fy+fh-3,fw-2,2);
+          g.fillStyle=th.hi;g.globalAlpha=.35;g.fillRect(fx+1,fy+3,1,fh-6);g.globalAlpha=1;
+          g.fillStyle="rgba(6,5,10,.64)";
+          if(vertical){
+            for(let joint=8+variant;joint<fh-3;joint+=11)g.fillRect(fx+1,fy+joint,fw-2,1);
+          }else{
+            const seam=Math.floor(fh/2);g.fillRect(fx+1,fy+seam,fw-2,1);
+            for(let joint=9+variant*3;joint<fw-3;joint+=16){
+              g.fillRect(fx+joint,fy+2,1,seam-2);
+              if(joint+7<fw-3)g.fillRect(fx+joint+7,fy+seam+1,1,fh-seam-3);
+            }
+          }
+          // Chipped capstone exposes warm stone without another animation.
+          g.fillStyle="rgba(222,203,167,.38)";g.fillRect(fx+2+variant,fy+2,2,1);
+        };
+      // Rasterise in local tile coordinates so mortar/chips remain identical.
+      for(variant=0;variant<3;variant++)for(let edge=0;edge<4;edge++){
+        g.save();g.translate(edge*tile,variant*tile);
+        if(edge===0)face(0,tile-depth,tile,depth);
+        else if(edge===1)face(0,1,tile,cheek);
+        else if(edge===2)face(1,2,cheek,tile-4,true);
+        else face(tile-cheek-1,2,cheek,tile-4,true);
+        g.restore();
+      }
+      dungeonStoneReliefCache.set(key,stone);
+      dungeonStoneReliefBytes+=bytes;
+      dungeonRenderPerformance.stoneReliefRasterBuilds=(dungeonRenderPerformance.stoneReliefRasterBuilds||0)+1;
+    }catch(_){dungeonStoneReliefUnavailable=true;return false}
+  }
+  // Preserve original south/north/west/east compositing and tile clipping.
+  const dx=Math.round(s.x),dy=Math.round(s.y);
+  for(let edge=0;edge<4;edge++)
+    if(mask&DUNGEON_STONE_EDGE_MASKS[edge])ctx.drawImage(stone,edge*tile,(h%3)*tile,tile,tile,dx,dy,tile,tile);
+  return true
+}
 const FLOOR_TILE_PALETTES=Object.freeze({
   1:Object.freeze({id:"threshold-stone",name:"THRESHOLD STONE",floor:"rgba(105,99,94,.085)",wall:"rgba(88,84,82,.105)",accent:"#a8a39c"}),
   2:Object.freeze({id:"drive-steel",name:"1541 DRIVE STEEL",floor:"rgba(48,78,96,.11)",wall:"rgba(37,63,82,.14)",accent:"#72d7ff"}),
@@ -267,6 +345,7 @@ function drawTile(x,y){
     else if(theme==="WARP_GALLERY"||theme==="MODEM_EXCHANGE"){ctx.strokeStyle=th.accent+"72";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+7,s.y+31);ctx.lineTo(s.x+14,s.y+20);ctx.lineTo(s.x+22,s.y+25);ctx.lineTo(s.x+34,s.y+9);ctx.stroke();for(const [nx,ny] of [[7,31],[14,20],[22,25],[34,9]]){ctx.fillStyle=th.accent;ctx.fillRect(s.x+nx-1,s.y+ny-1,3,3)}}
     else if(["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL"].includes(theme)){ctx.strokeStyle="rgba(20,12,10,.72)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x+6,s.y+8);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-8);ctx.stroke();ctx.fillStyle="#332821";ctx.fillRect(s.x+5,s.y+5,5,5);ctx.fillRect(s.x+C.tile-10,s.y+C.tile-10,5,5);ctx.fillStyle=th.accent+"70";ctx.fillRect(s.x+7,s.y+7,2,2);ctx.fillRect(s.x+C.tile-9,s.y+C.tile-9,2,2)}
     else if(theme==="SPIDER_NEST"){ctx.strokeStyle="rgba(225,232,244,.34)";ctx.lineWidth=1;const cx=s.x+C.tile/2,cy=s.y+C.tile/2;for(let n=0;n<5;n++){const a=n*Math.PI/4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*22,cy+Math.sin(a)*22);ctx.stroke()}ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.arc(cx,cy,15,0,Math.PI*2);ctx.stroke()}
+    drawDungeonStoneRelief(s,x,y,h);
     return;
   }
   const h=tileHash(x,y,variant+roomId),theme=room?.theme||"WARP_GALLERY";ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
@@ -1554,6 +1633,7 @@ function dungeonCameraZoom(v,p){
   return 1
 }
 function renderView(p,v){
+  retireDungeonStoneReliefWorld(); // Also retire old resources in severe quality.
   const zoom=dungeonCameraZoom(v,p),logical=zoom>1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
   view=logical;focus=p;cam=camFor(p,logical);
   window.__ccgDungeonCamera={zoom,viewportWidth:v.w,viewportHeight:v.h,logicalWidth:logical.w,logicalHeight:logical.h,tile:C.tile};

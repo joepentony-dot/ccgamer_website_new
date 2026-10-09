@@ -1,3 +1,13 @@
+## R127 P1 cache repair on #2660 — 9 October 2026, 18:00 UK
+
+- Refreshed main `78ee87213150c9fd681c65125d743dabb4593b07`, #2660 original head `f0bebaf73759ed7ab7418b1fc87fd5126d08a25a`, and unresolved review thread `PRRT_kwDOQcoeX86q3ahd`. Its FIFO-thrashing finding is valid despite the original 18 green checks: the small starting-camera assertion did not qualify explored/fullscreen views. #2653 production and all post-merge checks passed.
+- Same sole source PR/branch receives a material atlas repair plus expanded existing tests. Local real 40x24 seed region has 78 old variants: old source rebuilt 78 canvases on every warm pass; repaired source creates seven atlases once and none on warm/scroll/return. Exact-head full remote qualification and satisfactory fresh review are required before the authorized merge. Runtime checkpoint records budget, measurements and commands; no unrelated work or new graphics PR.
+
+## Qualified R126 release and R127 stonework candidate — 9 October 2026
+
+- #2653 merged from fully qualified `ed4c00bcc7bf65338752ed09a0062407ec3917a4` as `78ee87213150c9fd681c65125d743dabb4593b07`: six Chromium shards, PR/Windows/package/cache/SEO/site safety/Workers and visual baseline all passed. Post-merge Pages, Production Smoke and navigation passed; both game routes are HTTP 200 and deployed renderer bytes match the merged blob. Main Full qualification was still queued at the audit.
+- Sole new Dungeon source vehicle is `codex/seo/dungeon-r127-exposed-stonework-20261009`, a bounded Floor 1 cached masonry pilot. Actual local five-floor desktop/mobile screenshot, lighting, geometry/cache/fallback, asset, syntax and Lighthouse checks pass; remote exact-head qualification must establish merge readiness. Detailed status and measurements: `docs/ai-work/dungeon-carnage-runtime.md` and visual workstream.
+- Preserve unrelated C64 #2643/#2631 and held audio/offline #2594–#2596. Original sixteen music tracks, voices and Flask #2642/manual acceptance remain unresolved. Development tranche names do not change public R119 release metadata.
 ## Dungeon R126 qualification repair — 9 October 2026
 
 - Sole new Dungeon development PR remains #2653, reconciled from `5a923421` with main `cf3aef5ec`; newer Windows #2658 / SEO #2659 retained exactly. Existing R69/R70 now protect actual quality/reduced-motion behaviour. Local focused checks pass; fresh complete remote qualification, merge and deployment verification pending.
