@@ -102,7 +102,6 @@ test("Bruce Lee 1984 actual CRT menu reacts to function keys",()=>{
   progress(machine,320);record("1984 own menu before start");
   const originalTitleFrame="after 1984 splash confirmed";
   const title=gameImage(machine);
-  console.log("Bruce Lee wake attempts:",JSON.stringify(wakeAttempts));
   console.log("Bruce Lee stuck-loop RAM:",JSON.stringify({
     pc:machine.cpu.pc,bytes:[...machine.mem.ram.slice(0xA30,0xA55)]}));
   console.log("Bruce Lee load stages:",JSON.stringify(stages));
