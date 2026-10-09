@@ -11,7 +11,13 @@
   let deferredPrompt = null;
   let busy = false;
   const installedMode = window.matchMedia?.("(display-mode: standalone)");
-  const isInstalled = () => Boolean(installedMode?.matches || navigator.standalone === true);
+  // The main Cheeky Commodore Gamer PWA also runs in standalone mode.
+  // Only the dedicated C64 launch URL identifies *this* standalone app.
+  // Do not hide the C64 install option inside the separate website PWA.
+  const isDedicatedC64Launch = () =>
+    new URLSearchParams(window.location.search).get("source") === "installed-c64-app";
+  const isInstalled = () =>
+    isDedicatedC64Launch() && Boolean(installedMode?.matches || navigator.standalone === true);
 
   function refresh() {
     panel.hidden = isInstalled();
