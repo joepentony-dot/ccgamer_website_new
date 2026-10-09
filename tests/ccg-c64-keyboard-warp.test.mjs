@@ -19,6 +19,8 @@ assert(html.includes("DRAG &amp; DROP A GAME HERE — AUTO START"), "The screen 
 assert(html.includes("id=\"ccg-c64-drop-instructions\""), "The drop instructions must be accessible");
 assert(html.includes("aria-describedby=\"ccg-c64-drop-instructions\""), "The display must reference drop instructions");
 assert(html.includes("<strong>MAX</strong>"), "The Warp Load button must advertise MAX");
+assert(html.includes('data-mobile-warp-load') && html.includes('aria-pressed="false" disabled'),
+  "Mobile Warp Load must be disabled until C64 boots");
 assert(css.includes("position: relative;"), "Drop overlay must be anchored to the screen");
 assert(css.includes("visibility: hidden;") &&
   css.includes(".ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint"),
