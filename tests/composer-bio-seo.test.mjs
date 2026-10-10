@@ -137,3 +137,51 @@ test("research policy rejects generic CCG filler and adds verified biographies",
   assert.ok(overrides.profiles["david-hanlon"]?.sources?.some((source) => /c64\.com\/gt_display_interview\.php\?interview=7/.test(source.url)));
   assert.ok(overrides.profiles["raphael-gesqua"]?.sources?.some((source) => /mo5\.com\/en\/artwork-artists\/raphael-gesqua/.test(source.url)));
 });
+
+
+test("Mark Cooksey uses a complete sourced SEO sentence rather than a clipped biography", () => {
+  const research = enrich.loadResearchDocument(path.resolve("music/composers/research.json"));
+  const profile = research.profiles["mark-cooksey"];
+  assert.ok(profile?.bio);
+  const composer = { name: "Mark Cooksey", slug: "mark-cooksey", c64Count: 4, amigaCount: 0, count: 4 };
+  const output = enrich.buildDescription(composer, profile, ["Ghosts 'n Goblins"]);
+  assert.equal(output, "Mark Cooksey is an English game composer and audio programmer.");
+  assert.ok(output.length <= 158);
+  assert.doesNotMatch(output, /…|\.\.\.$/);
+  assert.match(output, /[.!?]$/);
+  assert.equal(enrich.buildDescription(composer, profile, ["Ghosts 'n Goblins"]), output);
+});
+
+test("composer snippet chooses complete sourced statements even for oversized overrides", () => {
+  const verbose = {
+    seoDescription: "Example Composer is a documented game musician. " +
+      "This additional editorial passage is much too long to put into a Google meta description, " +
+      "and no search result should ever cut its words or put an ellipsis in the middle of a sentence."
+  };
+  assert.equal(
+    enrich.buildDescription(route, verbose, ["Example Game"]),
+    "Example Composer is a documented game musician."
+  );
+});
+
+test("composer snippet uses catalogued credits if a sourced sentence cannot be shortened", () => {
+  const profile = { bio: "An extremely long introductory description ".repeat(12) + "without any suitable grammatical shortening." };
+  const actual = enrich.buildDescription(route, profile, ["Example Game"]);
+  assert.match(actual, /Example Composer/);
+  assert.match(actual, /Example Game/);
+  assert.ok(actual.length <= 158);
+  assert.doesNotMatch(actual, /…|\.\.\./);
+  assert.match(actual, /[.!?]$/);
+});
+
+test("curated and generated composer social metadata are source-consistent and idempotent", () => {
+  const content = "Composer A&F worked on the game Ghosts 'n Goblins.";
+  const original = '<html><head><meta name="description" content="Old."></head><body></body></html>';
+  const first = enrich.replaceMetaDescription(original, content);
+  const twice = enrich.replaceMetaDescription(first, content);
+  assert.equal(twice, first);
+  assert.match(first, /name="description" content="Composer A&amp;F worked on the game Ghosts &#39;n Goblins\."/);
+  assert.match(first, /property="og:description" content="Composer A&amp;F worked on the game Ghosts &#39;n Goblins\."/);
+  assert.match(first, /name="twitter:description" content="Composer A&amp;F worked on the game Ghosts &#39;n Goblins\."/);
+  assert.doesNotMatch(first, /&amp;amp;/);
+});
