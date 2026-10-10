@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const gameOutputUtils = require("./game-output-utils");
+const { buildSnippet } = require("../js/ccg-game-seo-snippet.js");
 
 const SITE_ROOT = gameOutputUtils.SITE_ORIGIN;
 
@@ -28,6 +29,36 @@ function escapeHtml(text) {
         .replace(/>/g, "&gt;")
         .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#39;");
+}
+
+// The authoritative SEO generator owns the Google description. Reuse its
+// decoded text for social cards rather than replacing it with generic copy.
+function decodeHtmlDescription(value) {
+    const named = { amp: "&", quot: '"', apos: "'", lt: "<", gt: ">", nbsp: " " };
+    return String(value || "").replace(/&(#x[0-9a-f]+|#[0-9]+|amp|quot|apos|lt|gt|nbsp);/gi, (entity, code) => {
+        if (code[0] === "#") {
+            const hex = code[1].toLowerCase() === "x";
+            const number = Number.parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
+            return Number.isInteger(number) && number >= 0 && number <= 0x10ffff &&
+                !(number >= 0xd800 && number <= 0xdfff)
+                ? String.fromCodePoint(number)
+                : entity;
+        }
+        return named[code.toLowerCase()] || entity;
+    });
+}
+
+function existingMetaDescription(html) {
+    for (const found of String(html || "").matchAll(/<meta\b[^>]*>/gi)) {
+        const attributes = {};
+        for (const attr of found[0].matchAll(/([^\s=/>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g)) {
+            attributes[attr[1].toLowerCase()] = attr[2] ?? attr[3] ?? attr[4] ?? "";
+        }
+        if (String(attributes.name || "").toLowerCase() === "description") {
+            return decodeHtmlDescription(attributes.content).trim();
+        }
+    }
+    return "";
 }
 
 function normalizeSlug(game) {
@@ -496,10 +527,13 @@ function buildCanonicalHtml({
     const current = String(existingHtml || "");
 
     if (current.trim()) {
-        const socialDescription = `${title} on ${platformLong} — screenshots, gameplay video, manual, downloads and game history.`;
+        const existingDescription = existingMetaDescription(current);
+        const socialDescription = existingDescription || buildSnippet(game, title);
         const year = String(game?.year || "").trim();
         const socialTitle = `${title}${year ? ` (${year})` : ""} – ${normalizePlatformShort(game)} | Review, Screens & History`;
-        let updated = upsertSocialMeta(current, buildSocialMetaBlock({
+        const canonicalHtml = existingDescription ? current : current.replace(/<\/head>/i,
+            `    <meta name="description" content="${escapeHtml(socialDescription)}">\n</head>`);
+        let updated = upsertSocialMeta(canonicalHtml, buildSocialMetaBlock({
             title: socialTitle,
             description: socialDescription,
             canonicalUrl,
@@ -517,7 +551,7 @@ function buildCanonicalHtml({
         return updated.replace(/<\/head>/i, `${schemaScript}\n</head>`);
     }
 
-    const metaDescription = `${title} on ${platformLong} — screenshots, gameplay video, manual, downloads and game history.`;
+    const metaDescription = buildSnippet(game, title);
     const year = String(game?.year || "").trim();
     const socialTitle = `${title}${year ? ` (${year})` : ""} – ${normalizePlatformShort(game)} | Review, Screens & History`;
     const socialMetaBlock = buildSocialMetaBlock({
