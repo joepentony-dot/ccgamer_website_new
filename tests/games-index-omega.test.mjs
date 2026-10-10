@@ -18,7 +18,7 @@ test('games archive has strong static C64 and Amiga SEO', () => {
   assert.match(games, /<title>C64 &amp; Amiga Games Archive \| Cheeky Commodore Gamer<\/title>/);
   assert.ok(authoritativeDescription.length <= 155, 'authoritative SEO description is concise');
   assert.match(authoritativeDescription, /[.!?]$/, 'authoritative SEO description ends with a sentence');
-  assert.doesNotMatch(authoritativeDescription, /(?:…|\\.\\.\\.)$/, 'no cut-off ellipsis');
+  assert.ok(!authoritativeDescription.endsWith('…') && !authoritativeDescription.endsWith('...'), 'no cut-off ellipsis');
   for (const tag of [
     '<meta name="description" content="',
     '<meta property="og:description" content="',
@@ -26,9 +26,12 @@ test('games archive has strong static C64 and Amiga SEO', () => {
   ]) {
     assert.ok(games.includes(tag + authoritativeDescription + '"'), tag + ' matches authoritative description');
   }
-  const schemaMatch = games.match(/<script type="application\\/ld\\+json" data-ccg-games-index-schema>([\\s\\S]*?)<\\/script>/);
-  assert.ok(schemaMatch, 'games archive schema is present');
-  const graph = JSON.parse(schemaMatch[1])['@graph'];
+  const schemaMarker = '<script type="application/ld+json" data-ccg-games-index-schema>';
+  const schemaStart = games.indexOf(schemaMarker);
+  assert.ok(schemaStart >= 0, 'games archive schema is present');
+  const schemaEnd = games.indexOf('</script>', schemaStart);
+  assert.ok(schemaEnd > schemaStart, 'games archive schema closes');
+  const graph = JSON.parse(games.slice(schemaStart + schemaMarker.length, schemaEnd))['@graph'];
   assert.equal(graph.find((entry) => entry['@type'] === 'CollectionPage').description, authoritativeDescription,
     'CollectionPage schema shares authoritative description');
   assert.match(games, /<meta name="robots" content="index,follow" \/>/);
