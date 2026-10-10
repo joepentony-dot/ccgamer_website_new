@@ -42,10 +42,6 @@ try{
     page.setDefaultTimeout(30000);
     const errors=[];
     page.on("pageerror",err=>errors.push(String(err.stack||err)));
-    await page.goto(origin+"/arcade/lost-sizzler/?r130-victory-browser=1",{waitUntil:"domcontentloaded"});
-    await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),null,{timeout:90000});
-    await page.locator("#solo-btn").click({noWaitAfter:true});
-    await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(run&&p1),null,{timeout:30000});
     // Hold catalogue enrichment until keyboard navigation is focused. This
     // reproduces the slow network race reported by independent review.
     let releaseCatalogue;
@@ -55,6 +51,12 @@ try{
       await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify([{title:"Bruce Lee",slug:"bruce-lee"}])});
     });
     const catalogueRequest=page.waitForRequest(request=>/\/games\/games\.json(?:\?|$)/.test(request.url()),{timeout:10000});
+    await page.goto(origin+"/arcade/lost-sizzler/?r130-victory-browser=1",{waitUntil:"domcontentloaded"});
+    await catalogueRequest;
+    console.log('R130 '+testCase.name+' catalogue request intercepted before bootstrap');
+    await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),null,{timeout:90000});
+    await page.locator("#solo-btn").click({noWaitAfter:true});
+    await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(run&&p1),null,{timeout:30000});
     const completion=await page.evaluate(()=>{
       // Test only: drive the *real* canonical endRun UI after a controlled
       // last-floor winning fixture. No production save/reward logic is replaced.
@@ -93,7 +95,6 @@ try{
     assert.equal(completion.panelScrollable,true,"the credits panel must permit full viewing");
     assert.equal(completion.reduced,testCase.reducedMotion==="reduce");
     if(completion.reduced)assert.equal(completion.animation,"none","reduced motion must suppress chapter animations");
-    await catalogueRequest;
     const firstTarget=testCase.name==="desktop"?"v106-enemy-credits":"v104-retro-credits";
     const firstButton=testCase.name==="desktop"?"#v130-jump-bestiary":"#v130-jump-pickups";
     await page.locator(firstButton).click();
