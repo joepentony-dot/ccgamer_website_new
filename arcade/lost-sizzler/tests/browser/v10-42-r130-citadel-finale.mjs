@@ -46,6 +46,15 @@ try{
     await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV142Bootstrap?.ready),null,{timeout:90000});
     await page.locator("#solo-btn").click({noWaitAfter:true});
     await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(run&&p1),null,{timeout:30000});
+    // Hold catalogue enrichment until keyboard navigation is focused. This
+    // reproduces the slow network race reported by independent review.
+    let releaseCatalogue;
+    const catalogueGate=new Promise(resolve=>{releaseCatalogue=resolve});
+    await page.route("**/games/games.json",async route=>{
+      await catalogueGate;
+      await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify([{title:"Bruce Lee",slug:"bruce-lee"}])});
+    });
+    const catalogueRequest=page.waitForRequest(request=>/\/games\/games\.json(?:\?|$)/.test(request.url()),{timeout:10000});
     const completion=await page.evaluate(()=>{
       // Test only: drive the *real* canonical endRun UI after a controlled
       // last-floor winning fixture. No production save/reward logic is replaced.
@@ -84,10 +93,19 @@ try{
     assert.equal(completion.panelScrollable,true,"the credits panel must permit full viewing");
     assert.equal(completion.reduced,testCase.reducedMotion==="reduce");
     if(completion.reduced)assert.equal(completion.animation,"none","reduced motion must suppress chapter animations");
-    await page.locator("#v130-jump-bestiary").click();
-    assert.equal(await page.evaluate(()=>document.activeElement?.id),"v106-enemy-credits","bestiary skip must move keyboard focus");
-    await page.locator("#v130-jump-pickups").click();
-    assert.equal(await page.evaluate(()=>document.activeElement?.id),"v104-retro-credits","C64 pickup jump must move keyboard focus");
+    await catalogueRequest;
+    const firstTarget=testCase.name==="desktop"?"v106-enemy-credits":"v104-retro-credits";
+    const firstButton=testCase.name==="desktop"?"#v130-jump-bestiary":"#v130-jump-pickups";
+    await page.locator(firstButton).click();
+    assert.equal(await page.evaluate(()=>document.activeElement?.id),firstTarget,"first credits skip must focus target before catalogue resolves");
+    releaseCatalogue();
+    await page.waitForFunction(()=>Boolean(document.querySelector('#v104-retro-credits a[href="/games/bruce-lee/"]')),null,{timeout:10000});
+    assert.equal(await page.evaluate(()=>document.activeElement?.id),firstTarget,
+      "asynchronous catalogue enrichment must preserve keyboard focus on the original credit section");
+    const otherButton=testCase.name==="desktop"?"#v130-jump-pickups":"#v130-jump-bestiary";
+    const otherTarget=testCase.name==="desktop"?"v104-retro-credits":"v106-enemy-credits";
+    await page.locator(otherButton).click();
+    assert.equal(await page.evaluate(()=>document.activeElement?.id),otherTarget,"second credits skip must focus existing target after enrichment");
     const post=await page.evaluate(()=>({musicCalls:window.__r130MusicCalls,ceremonies:document.querySelectorAll("#v108-completion-credits").length}));
     assert.equal(post.musicCalls,1,"async catalogue enrichment must not replay music");
     assert.equal(post.ceremonies,1,"async catalogue enrichment must not duplicate finale");

@@ -51,7 +51,9 @@
       const killers=(row.killers||[]).map(k=>`${esc(k.name||"The Dungeon")} ×${Number(k.count||0)}`).join(" • ")||"The Dungeon";
       return `<article class="v106-enemy-credit ${row.named?"named":""}"><span class="v106-enemy-avatar">${avatar}</span><div><h4>${esc(row.name||"Enemy")} <b>×${Number(row.count||0)}</b></h4><p>${esc(floors||"Floor unknown")}</p><small>${row.named?"Freed by":"Defeated by"}: ${killers}</small></div></article>`
     }).join(""):'<div class="v104-credit-empty">No enemies were defeated on this run.</div>';
-    document.getElementById("v106-enemy-credits")?.remove();
+    // Enemy entries do not depend on the async games catalogue: retain the
+    // existing section and its focus target while game links are enriched.
+    if(document.getElementById("v106-enemy-credits"))return;
     UI.endText.insertAdjacentHTML("beforeend",`<section id="v106-enemy-credits" class="v104-retro-credits v106-enemy-credits"><h3>ENEMIES DEFEATED THIS RUN — ${total}</h3><div class="v106-enemy-grid">${block}</div>${rows.some(row=>row.named)?'<small>Named enemies are recorded as freed from the dungeon corruption, while all other enemies are recorded as defeated.</small>':""}</section>`);
     document.querySelectorAll("#v106-enemy-credits [data-enemy-avatar-index]").forEach(canvas=>{const row=rows[Number(canvas.dataset.enemyAvatarIndex)];try{window.CCGRenderEnemyCreditAvatar?.(canvas,row)}catch(error){console.warn("Enemy credit avatar render failed",error)}})
   }
@@ -145,8 +147,11 @@
       : '<div class="v104-credit-empty"><b>None collected.</b> Look for glowing boxed pickups marked C64 and labelled with a game title, then walk over one to register it. Keys, ammo, doors and ordinary loot do not count.</div>';
     const note=entries.length?'<small>Every title you picked up during this run is shown here, even if it was later lost with an unrecovered death cache.</small>':"";
     const old=document.getElementById("v104-retro-credits");
-    if(old)old.remove();
-    UI.endText.insertAdjacentHTML("beforeend",`<section id="v104-retro-credits" class="v104-retro-credits"><h3>C64 GAME PICKUPS COLLECTED THIS RUN — ${history.length}</h3>${block}${note}</section>`);
+    const content=`<h3>C64 GAME PICKUPS COLLECTED THIS RUN — ${history.length}</h3>${block}${note}`;
+    // Preserve the focused section node during async slug-link enrichment.
+    // Only its contents change; skip links retain a stable keyboard target.
+    if(old){if(old.innerHTML!==content)old.innerHTML=content}
+    else UI.endText.insertAdjacentHTML("beforeend",`<section id="v104-retro-credits" class="v104-retro-credits">${content}</section>`);
     renderCompletionCredits();
   }
 

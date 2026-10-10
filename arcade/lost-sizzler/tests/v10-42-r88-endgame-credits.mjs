@@ -84,8 +84,15 @@ victory.nodes.get("v130-jump-bestiary").events.get("click")();
 assert.deepEqual(victory.visited,["v106-enemy-credits","v106-enemy-credits:focus"],"skip must focus existing actual bestiary");
 victory.nodes.get("v130-jump-pickups").events.get("click")();
 assert.deepEqual(victory.visited.slice(-2),["v104-retro-credits","v104-retro-credits:focus"],"retro credits navigation must focus existing collected titles");
+const originalBestiaryTarget=victory.nodes.get("v106-enemy-credits");
+const originalGamesTarget=victory.nodes.get("v104-retro-credits");
 victory.ctx.endRun("Citadel cleared");
 assert.equal(victory.inserts.filter(x=>x.html.includes('id="v108-completion-credits"')).length,1,"re-entry must not restart or duplicate the ceremony");
+assert.strictEqual(victory.nodes.get("v106-enemy-credits"),originalBestiaryTarget,"catalogue enrichment/re-entry must retain focused bestiary DOM target");
+assert.strictEqual(victory.nodes.get("v104-retro-credits"),originalGamesTarget,"catalogue enrichment/re-entry must retain focused games DOM target");
+await new Promise(resolve=>setImmediate(resolve));
+assert.strictEqual(victory.nodes.get("v106-enemy-credits"),originalBestiaryTarget,"late catalogue Promise must retain enemy credits node");
+assert.strictEqual(victory.nodes.get("v104-retro-credits"),originalGamesTarget,"late catalogue Promise must retain C64 game credits node");
 assert.equal(victory.music.length,1,"re-entry must not replay the owner-supplied end music");
 for(const scenario of [{floor:14},{floor:15,complete:false},{floor:15,xpGameOver:true},{floor:15,dailyFailed:true}]){
   const sample=exerciseFinale(scenario);
