@@ -303,10 +303,12 @@ function drawCampaignSurfaceWear(s,h,wall,room,theme){
   const floor=Number(run?.floor)||1,k=h>>>0;
   if(floor!==4&&floor!==7)return;
   if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
-  if(room&&theme!==(floor===4?"BUDGET_BIN":"MOSS_CRYPT"))return;
+  // The campaign floor identity is not the same as each generated room theme.
+  // Draw sparse patina across the floor; treasury/crypt rooms receive more.
+  const core=floor===4?(theme==="BUDGET_BIN"||theme==="TREASURE_VAULT"):theme==="MOSS_CRYPT";
   if(floor===4){
     if(wall){
-      if(k%5!==0)return;
+      if(k%(core?5:11)!==0)return;
       // Brass-bound vault inspection plates, inset below chipped masonry.
       ctx.fillStyle="rgba(9,6,3,.56)";ctx.fillRect(s.x+7,s.y+10,28,20);
       ctx.fillStyle="rgba(162,103,39,.66)";ctx.fillRect(s.x+8,s.y+11,26,3);ctx.fillRect(s.x+8,s.y+26,26,2);
@@ -315,7 +317,7 @@ function drawCampaignSurfaceWear(s,h,wall,room,theme){
       ctx.fillStyle="rgba(235,190,93,.78)";ctx.fillRect(s.x+11,s.y+12,2,2);ctx.fillRect(s.x+29,s.y+12,2,2);ctx.fillRect(s.x+11,s.y+25,2,2);ctx.fillRect(s.x+29,s.y+25,2,2);
       ctx.fillStyle="rgba(154,96,40,.62)";ctx.fillRect(s.x+17,s.y+17,8,2);
     }else{
-      if(k%7!==0)return;
+      if(k%(core?7:17)!==0)return;
       // Partly buried treasury threshold, always under actors and pickups.
       ctx.fillStyle="rgba(15,9,4,.34)";ctx.fillRect(s.x+7,s.y+25,27,7);
       ctx.fillStyle="rgba(150,94,36,.56)";ctx.fillRect(s.x+8,s.y+25,25,2);
@@ -324,16 +326,15 @@ function drawCampaignSurfaceWear(s,h,wall,room,theme){
     }
     return;
   }
-  if(theme!=="MOSS_CRYPT"&&room)return;
   if(wall){
-    if(k%5!==0)return;
+    if(k%(core?5:11)!==0)return;
     // Lichen follows the lower mortar seam rather than coating entire blocks.
     ctx.fillStyle="rgba(12,25,19,.62)";ctx.fillRect(s.x+5,s.y+28,32,6);
     ctx.fillStyle="rgba(55,103,61,.72)";ctx.fillRect(s.x+7,s.y+28,15,2);ctx.fillRect(s.x+23,s.y+31,11,2);
     ctx.fillStyle="rgba(140,164,89,.58)";ctx.fillRect(s.x+10,s.y+27,4,2);ctx.fillRect(s.x+27,s.y+30,4,2);
     ctx.fillStyle="rgba(25,63,42,.66)";ctx.fillRect(s.x+16,s.y+33,10,2);
   }else{
-    if(k%7!==0)return;
+    if(k%(core?7:17)!==0)return;
     // Damp flagstone seam and sparse moss, below gameplay warning layers.
     ctx.fillStyle="rgba(6,19,23,.35)";ctx.fillRect(s.x+4,s.y+29,32,5);
     ctx.fillStyle="rgba(47,97,68,.53)";ctx.fillRect(s.x+6,s.y+29,13,2);ctx.fillRect(s.x+23,s.y+31,10,2);
