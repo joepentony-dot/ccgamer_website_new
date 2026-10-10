@@ -13,7 +13,7 @@ const CHECK_ONLY = process.argv.includes("--check");
 const SITE = "Cheeky Commodore Gamer";
 const CANONICAL = "https://www.cheekycommodoregamer.co.uk/games/";
 const TITLE = `C64 & Amiga Games Archive | ${SITE}`;
-const DESCRIPTION = "Explore the Cheeky Commodore Gamer C64 and Amiga games archive with searchable game pages, reviews, ratings, videos, genres, publishers, release years, collections and manuals.";
+const DESCRIPTION = "Browse C64 and Amiga games with reviews, ratings, screenshots, gameplay videos, manuals, genres and publishers in the Cheeky Commodore Gamer archive.";
 const STYLE = "/resources/css/ccg-games-index-omega.css";
 
 function fail(message) {
@@ -261,6 +261,9 @@ function normalizeWhitespace(html) {
 }
 
 function build(input, games = loadGames()) {
+    if (DESCRIPTION.length > 155 || !/[.!?]$/.test(DESCRIPTION) || /(?:…|\.\.\.)$/.test(DESCRIPTION)) {
+        fail("Games archive SEO description must be at most 155 characters and sentence-complete.");
+    }
     if (isCurrentGamesIndex(input, games)) return input;
 
     let html = input;
