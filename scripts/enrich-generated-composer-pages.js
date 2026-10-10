@@ -118,41 +118,74 @@ function extractGameTitles(html) {
     .filter(Boolean);
 }
 
+const MAX_COMPOSER_DESCRIPTION = 158;
+
+// Source-led composer snippets must never finish with cut-off punctuation.
 function firstSentence(value) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
-  if (!text) return "";
-  const match = text.match(/^.*?[.!?](?:\s|$)/);
-  return (match ? match[0] : text).trim();
+  for (const match of text.matchAll(/[.!?]+(?=["'’”]?\s|$)/g)) {
+    if (match[0].includes("...")) continue;
+    return text.slice(0, match.index + match[0].length).trim();
+  }
+  return text;
 }
 
-function clampMetaDescription(value) {
+function isCompleteSnippet(text) {
+  return text.length <= MAX_COMPOSER_DESCRIPTION
+    && /[.!?]["'’”]?$/.test(text)
+    && !/(?:…|\.\.\.)/.test(text)
+    && !/\b(?:and|with|or)\s*[.!?]$/i.test(text);
+}
+
+function completeSourcedSnippet(value) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
-  if (text.length <= 158) return text;
-  return `${text.slice(0, 155).replace(/[\s,;:.!-]+$/g, "")}…`;
+  if (!text) return "";
+  const sentence = firstSentence(text);
+  const finished = /[.!?]["'’”]?$/.test(sentence) ? sentence : sentence + ".";
+  if (isCompleteSnippet(finished)) return finished;
+
+  // Drop subordinate clauses only at grammatical boundaries established by
+  // the supplied biography, never at a fixed character offset.
+  const clause = sentence.match(/^(.{35,}?)(?:\s+(?:whose|who|which)\b|,\s+)/i);
+  if (clause) {
+    const concise = clause[1].replace(/[\s,;:.!-]+$/g, "") + ".";
+    if (isCompleteSnippet(concise)) return concise;
+  }
+  return "";
 }
 
 function buildDescription(route, profile, titles) {
+  const name = String(route?.name || "").trim();
+  const firstTitle = String(titles?.[0] || "").trim();
+  const label = platformLabel(route);
+  const titleCredit = firstTitle
+    ? name + " " + label + " game-music credits include " + firstTitle + "."
+    : "";
+  const neutral = name + " " + label + " game-music credits, linked releases and playable tracks where available.";
+  const fallback = completeSourcedSnippet(titleCredit)
+    || completeSourcedSnippet(name + " has " + (Number(route?.count) || 0) + " linked " + label + " game-music credits.")
+    || completeSourcedSnippet(neutral);
+
   if (profile?.seoDescription) {
-    return clampMetaDescription(profile.seoDescription);
+    const explicit = completeSourcedSnippet(profile.seoDescription);
+    if (explicit) return explicit;
   }
 
-  const firstTitle = titles[0] || "";
   if (profile?.bio) {
     let text = firstSentence(profile.bio);
-    if (text && !text.toLowerCase().includes(String(route.name || "").toLowerCase())) {
-      text = `${route.name}: ${text}`;
+    if (text && name && !text.toLowerCase().includes(name.toLowerCase())) {
+      text = name + ": " + text;
     }
-    if (text.length < 112 && firstTitle) {
-      text += ` Game-music credits include ${firstTitle}.`;
+    const sourced = completeSourcedSnippet(text);
+    if (sourced) {
+      if (sourced.length < 112 && firstTitle) {
+        const combined = sourced + " Game-music credits include " + firstTitle + ".";
+        if (isCompleteSnippet(combined)) return combined;
+      }
+      return sourced;
     }
-    return clampMetaDescription(text);
   }
-
-  const label = platformLabel(route);
-  const example = firstTitle ? `, including ${firstTitle}` : "";
-  return clampMetaDescription(
-    `${route.name} ${label} game-music credits${example}, linked releases and playable tracks where available.`
-  );
+  return fallback;
 }
 
 function buildProfileMarkup(route, profile) {
