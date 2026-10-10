@@ -194,13 +194,13 @@ const wearCase=(floor,hash,wall,theme,room=null)=>{
   vm.runInContext(`drawCampaignSurfaceWear({x:12,y:24},${hash},${wall},${JSON.stringify(room)},${JSON.stringify(theme)})`,stoneSandbox);
   return wearPixels.map(rect=>[...rect]);
 };
-for(const [floor,h,wall,theme] of [[4,35,true,"BUDGET_BIN"],[4,35,false,"BUDGET_BIN"],[7,35,true,"MOSS_CRYPT"],[7,35,false,"MOSS_CRYPT"]]){
+for(const [floor,h,wall,theme] of [[4,35,true,"BUDGET_BIN"],[4,35,false,"BUDGET_BIN"],[7,35,true,"MOSS_CRYPT"],[7,35,false,"MOSS_CRYPT"],[11,40,true,"EMBER_DUNGEON"],[11,40,false,"EMBER_DUNGEON"],[15,40,true,"BLOOD_CITADEL"],[15,40,false,"BLOOD_CITADEL"]]){
   const first=wearCase(floor,h,wall,theme);
   assert.ok(first.length>=4,`floor ${floor} must add tangible ${wall?"wall":"floor"} detail`);
   for(const [x,y,w,hgt] of first)assert.ok(x>=12&&y>=24&&w>0&&hgt>0&&x+w<=54&&y+hgt<=66,"wear must stay inside its tile");
   assert.deepEqual(wearCase(floor,h,wall,theme),first,"wear must be deterministic and animation-independent");
 }
-assert.equal(wearCase(11,35,true,"EMBER_DUNGEON").length,0,"other floors must keep original painter");
+assert.equal(wearCase(10,35,true,"SID_REACTOR").length,0,"other floors must keep original painter");
 assert.equal(wearCase(4,35,true,"BUDGET_BIN",{sanctuary:true}).length,0,"special rooms must remain unobstructed");
 assert.equal(wearCase(7,35,true,"IRON_KEEP",{variant:0}).length,0,"room-specific alternate theme must be preserved");
 assert.match(renderer,/drawCampaignSurfaceWear\(s,h,true,room,theme\)/,"rich walls must own wear");
@@ -216,7 +216,7 @@ vm.runInContext(readFileSync(new URL("../js/world.js",import.meta.url),"utf8"),w
 const generatedWorld=worldFixture.window.CCGWorld;
 const wearPainter=vm.runInContext("drawCampaignSurfaceWear",stoneSandbox);
 const actualHash=vm.runInContext("tileHash",stoneSandbox);
-for(const floor of [4,7]){
+for(const floor of [4,7,11,15]){
   stoneSandbox.run.floor=floor;
   const generated=generatedWorld.generate(`ccg-premium-visual-baseline-2026-10-09-F${floor}`);
   let decorated=0,starting=0,wallMarks=0,floorMarks=0;
@@ -240,6 +240,15 @@ assert.ok(wearCase(4,22,true,"C64_ARCHIVE",{variant:0}).length>0,"alternate Floo
 assert.ok(wearCase(7,22,true,"C64_ARCHIVE",{variant:0}).length>0,"alternate Floor 7 room themes must retain sparse moss identity");
 assert.ok(wearCase(7,34,false,"WARP_GALLERY").length>0,"Floor 7 corridors must retain damp flagstone detail");
 assert.equal(wearCase(7,22,true,"MOSS_CRYPT",{sanctuary:true}).length,0,"protected rooms must not gain patina");
+assert.ok(wearCase(11,36,true,"EMBER_DUNGEON",{variant:0}).length>0,"ember wall strata must appear in authored room variants");
+assert.ok(wearCase(11,45,true,"C64_ARCHIVE",{variant:0}).length>0,"late-floor ember identity must survive alternate room themes");
+assert.ok(wearCase(11,44,false,"WARP_GALLERY").length>0,"ember floor fissures must reach corridors");
+assert.ok(wearCase(15,36,true,"BLOOD_CITADEL",{variant:0}).length>0,"citadel carved walls must appear in authored room variants");
+assert.ok(wearCase(15,45,true,"C64_ARCHIVE",{variant:0}).length>0,"late-floor citadel identity must survive alternate room themes");
+assert.ok(wearCase(15,44,false,"WARP_GALLERY").length>0,"citadel floor insignia must reach corridors");
+assert.equal(wearCase(11,36,true,"EMBER_DUNGEON",{sanctuary:true}).length,0,"ember must not obscure sanctuary rooms");
+assert.equal(wearCase(15,40,false,"BLOOD_CITADEL",{traderRoom:true}).length,0,"citadel relief must not obscure traders");
+assert.equal(wearCase(15,40,true,"BLOOD_CITADEL",{grandHall:true}).length,0,"citadel must preserve grand-hall identity");
 assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawCampaignSurfaceWear"),renderer.indexOf("function drawTilePerformance")),/createElement|OffscreenCanvas|new Image|createLinearGradient/,"surface wear must not allocate canvas/images/gradients");
 
 console.log("Dungeon Carnage visual-overhaul asset-registry and cached stonework contracts passed.");
