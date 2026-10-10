@@ -1,0 +1,82 @@
+name: C64 Dungeon Carnage Visual Baseline (Manual)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/dungeon-carnage-visual-baseline.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dungeon-visual-baseline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-baseline:
+    name: Five-floor desktop and mobile evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install existing Chromium test runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          npx playwright install --with-deps chromium
+
+      - name: Run existing r51 full visual contract and opt-in baseline
+        shell: bash
+        timeout-minutes: 12
+        env:
+          CCG_DUNGEON_VISUAL_BASELINE_DIR: ${{ runner.temp }}/dungeon-r125-visual-baseline
+        run: |
+          set -euo pipefail
+          node arcade/lost-sizzler/tests/browser/v10-41-r51-visual-ui-overhaul.mjs
+
+      - name: Verify real screenshot and frame evidence
+        shell: bash
+        env:
+          CCG_DUNGEON_VISUAL_BASELINE_DIR: ${{ runner.temp }}/dungeon-r125-visual-baseline
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const dir=process.env.CCG_DUNGEON_VISUAL_BASELINE_DIR;
+          const cases=JSON.parse(fs.readFileSync(path.join(dir,'frame-baseline.json'),'utf8')).cases;
+          assert.equal(cases.length,10,'expected 10 authentic floor/device samples');
+          for(const device of ['desktop','mobile-reduced-motion']){
+            const rows=cases.filter(v=>v.device===device);
+            assert.deepEqual(rows.map(v=>v.floor),[1,4,7,11,15]);
+            for(const row of rows){
+              assert.equal(row.frameIntervalsMs.count,45);
+              assert.ok(row.canvas.width>0&&row.canvas.height>0&&row.generated.rooms>0);
+              for(const kind of ['canvas','hud']){
+                const png=path.join(dir,device+'-floor-'+row.floor+'-'+kind+'.png');
+                assert.ok(fs.statSync(png).size>1024,'missing gameplay image: '+png);
+              }
+            }
+          }
+          assert.ok(cases.filter(v=>v.device==='mobile-reduced-motion').every(v=>v.prefersReducedMotion));
+          console.log('Verified 10 floor/device cases, 20 screenshots and 450 RAF intervals.');
+          NODE
+
+      - name: Upload PNG frames and metrics even when capture fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-r125-visual-baseline-${{ github.run_number }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/dungeon-r125-visual-baseline/
+          if-no-files-found: warn
+          retention-days: 14

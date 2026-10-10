@@ -53,6 +53,7 @@ const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
 const warpLoadButton = document.querySelector("[data-warp-load]");
+const mobileWarpLoadButton = document.querySelector("[data-mobile-warp-load]");
 const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
 const loadDiskButton = document.querySelector("[data-load-disk]");
@@ -79,6 +80,7 @@ const vaultStatus = document.querySelector("[data-vault-status]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
+const mobileJoystickSwapButton = document.querySelector("[data-mobile-joystick-swap]");
 const keyboardJoystickButton = document.querySelector("[data-keyboard-joystick]");
 const joystickPortIndicator = document.querySelector("[data-joystick-port]");
 const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
@@ -89,6 +91,225 @@ const sizeButton = document.querySelector("[data-size-toggle]");
 const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
+
+/* Mobile/tablet gameplay: a viewport-filling console, with the screen above
+   uninterrupted touch controls. Desktop pointer/fine layouts never enter. */
+const mobilePlayConsole = document.querySelector(".ccg-c64-console");
+const mobilePlaybar = document.querySelector("[data-mobile-playbar]");
+const mobileExitButton = document.querySelector("[data-mobile-exit-game]");
+const mobilePlayTitle = document.querySelector("[data-mobile-play-title]");
+const mobileZoomButton = document.querySelector("[data-mobile-zoom-toggle]");
+const MOBILE_ZOOM_STORAGE_KEY = "ccg.emulator.c64.mobileZoom.v1";
+let mobileZoomEnabled = (() => {
+  try { return localStorage.getItem(MOBILE_ZOOM_STORAGE_KEY) === "1"; }
+  catch { return false; }
+})();
+const mobileKeyboardToggle = document.querySelector("[data-mobile-keyboard-toggle]");
+const mobileKeyboardClose = document.querySelector("[data-mobile-keyboard-close]");
+const mobileKeyboardPanel = document.querySelector("[id='ccg-c64-mobile-keyboard']");
+const mobileKeyboardKeys = document.querySelector("[data-mobile-keyboard-keys]");
+const mobilePlayMedia = window.matchMedia?.("(pointer: coarse)");
+let mobilePlayActive = false;
+const mobileVirtualHeld = new Map();
+const MIN_MOBILE_KEY_MS = 105;
+
+const mobileKeyRows = [
+  [["RESTORE", "F12"], ["F1", "F1"], ["F3", "F3"], ["F5", "F5"],
+    ["F7", "F7"], ["RUN/STOP", "F9"], ["CLR/HOME", "F11"]],
+  [["1", "Digit1"], ["2", "Digit2"], ["3", "Digit3"], ["4", "Digit4"],
+    ["5", "Digit5"], ["6", "Digit6"], ["7", "Digit7"], ["8", "Digit8"],
+    ["9", "Digit9"], ["0", "Digit0"], ["DEL", "Backspace"]],
+  [..."QWERTYUIOP".split("").map(k => [k, "Key" + k]),
+    ["@", "@"], ["+", "+"]],
+  [..."ASDFGHJKL".split("").map(k => [k, "Key" + k]),
+    [":", ":"], [";", ";"], ["RETURN", "Enter"]],
+  [["SHIFT", "ShiftLeft"], ..."ZXCVBNM".split("").map(k => [k, "Key" + k]),
+    [",", ","], [".", "."], ["/", "/"], ["SHIFT", "ShiftRight"]],
+  [["CTRL", "ControlLeft"], ["C=", "F10"], ["-", "-"], ["*", "*"],
+    ["SPACE", "Space"], ["LEFT", "ArrowLeft"], ["UP", "ArrowUp"],
+    ["DOWN", "ArrowDown"], ["RIGHT", "ArrowRight"]]
+];
+
+function mobileVirtualBinding(code) {
+  if (code === "F12") return { restore: true };
+  if (code === "ArrowLeft") return { col: 0, row: 2, shift: true };
+  if (code === "ArrowUp") return { col: 0, row: 7, shift: true };
+  const physical = KEY_MAP[code];
+  if (physical) return { col: physical[0], row: physical[1], shift: false };
+  const character = CHAR_MAP[code];
+  if (character) return { col: character.col, row: character.row, shift: character.shift };
+  return null;
+}
+
+function syncMobileMatrixBit(col, row) {
+  if (!machine) return;
+  const held = [...mobileVirtualHeld.values()].some(k =>
+    (k.col === col && k.row === row) || (col === 1 && row === 7 && k.shift)) ||
+    [...heldMatrixKeys.values()].some(k => k.col === col && k.row === row) ||
+    [...touchFunctionKeyHolds.values()].some(k => k.col === col && k.row === row) ||
+    (col === 1 && row === 7 && shiftLeftPhysical) ||
+    (col === 6 && row === 4 && shiftRightPhysical);
+  machine.cia1.setKey(col, row, held);
+}
+
+function releaseMobileVirtualKeys() {
+  if (!mobileVirtualHeld.size) return;
+  const released = [...mobileVirtualHeld.values()];
+  for (const held of released) if (held.timer) clearTimeout(held.timer);
+  mobileVirtualHeld.clear();
+  if (machine) {
+    for (const held of released) {
+      if (held.restore) machine.setRestoreNmiLine(false);
+      else syncMobileMatrixBit(held.col, held.row);
+    }
+    syncMobileMatrixBit(1, 7);
+  }
+  for (const button of mobileKeyboardKeys?.querySelectorAll("button.is-pressed") || []) {
+    button.classList.remove("is-pressed");
+  }
+}
+
+function setMobileKeyboardOpen(open) {
+  const active = Boolean(open && mobilePlayActive);
+  if (!active) releaseMobileVirtualKeys();
+  if (mobileKeyboardPanel) mobileKeyboardPanel.hidden = !active;
+  mobileKeyboardToggle?.setAttribute("aria-expanded", String(active));
+  mobileKeyboardToggle?.setAttribute("aria-pressed", String(active));
+  if (mobileKeyboardToggle) mobileKeyboardToggle.textContent = active ? "HIDE KEYS" : "KEYBOARD";
+}
+
+function syncMobileZoom() {
+  // Optical zoom only: the actual 384×272 PAL canvas and input matrix
+  // stay untouched. The existing bezel clips the outer C64 border.
+  const zooming = Boolean(mobilePlayActive && mobilePlayMedia?.matches && mobileZoomEnabled);
+  mobilePlayConsole?.classList.toggle("is-mobile-zoomed", zooming);
+  mobileZoomButton?.setAttribute("aria-pressed", String(zooming));
+  mobileZoomButton?.setAttribute("aria-label", zooming
+    ? "Disable mobile game zoom"
+    : "Enable mobile game zoom");
+  if (mobileZoomButton) mobileZoomButton.textContent = zooming ? "ZOOM: ON" : "ZOOM: OFF";
+}
+
+function toggleMobileZoom() {
+  if (!mobilePlayActive || !mobilePlayMedia?.matches) return;
+  mobileZoomEnabled = !mobileZoomEnabled;
+  try { localStorage.setItem(MOBILE_ZOOM_STORAGE_KEY, mobileZoomEnabled ? "1" : "0"); }
+  catch { /* Storage can be restricted in private browsing. */ }
+  syncMobileZoom();
+}
+
+function setMobilePlaying(active, label = "") {
+  const enabled = Boolean(active && mobilePlayMedia?.matches && mobilePlayConsole);
+  // Leaving the mobile library search focused can leave iOS/Android in a
+  // scrolled, keyboard-height visual viewport just as fixed gameplay starts.
+  // Blur only native form inputs; the screen itself is focused without scroll.
+  if (enabled) {
+    const focused = document.activeElement;
+    if (/^(INPUT|TEXTAREA|SELECT)$/i.test(focused?.tagName || "")) focused.blur?.();
+  }
+  mobilePlayActive = enabled;
+  mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
+  document.body?.classList.toggle("is-mobile-playing", enabled);
+  if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
+  if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
+  syncMobileZoom();
+  if (!enabled) setMobileKeyboardOpen(false);
+  requestAnimationFrame(() => {
+    if (enabled && mobilePlayActive) {
+      // The fixed console occupies the visual game viewport at the top.
+      // Reset any earlier search-results scroll before measuring FIT, without
+      // smooth scrolling or focusing the canvas into an arbitrary position.
+      window.scrollTo?.({ top: 0, left: 0, behavior: "instant" });
+      screen?.focus?.({ preventScroll: true });
+    }
+    fitScreenToStage();
+  });
+}
+
+function enterMobilePlayMode(name = "") {
+  setMobilePlaying(true, name);
+}
+
+function exitMobilePlayMode() {
+  setMobilePlaying(false);
+  if (document.fullscreenElement && document.exitFullscreen) {
+    void document.exitFullscreen().catch(() => {});
+  }
+  // EXIT GAME stops the current game, but leaves downloaded catalogue, firmware
+  // and saved vault slots intact for the next LOAD.
+  if (running) powerOff();
+  window.scrollTo?.({ top: 0, behavior: "instant" });
+}
+
+mobileExitButton?.addEventListener("click", exitMobilePlayMode);
+mobileZoomButton?.addEventListener("click", toggleMobileZoom);
+syncMobileZoom();
+mobileKeyboardToggle?.addEventListener("click", () =>
+  setMobileKeyboardOpen(Boolean(mobileKeyboardPanel?.hidden)));
+mobileKeyboardClose?.addEventListener("click", () => setMobileKeyboardOpen(false));
+mobilePlayMedia?.addEventListener?.("change", () => {
+  if (!mobilePlayMedia.matches && mobilePlayActive) setMobilePlaying(false);
+});
+
+// Use the real CIA keyboard matrix, including SHIFT and RESTORE. Button presses
+// never synthesise DOM KeyboardEvents, so Android/iOS keyboards cannot interrupt
+// the joystick; pointer capture supports simultaneous multi-touch keys.
+if (mobileKeyboardKeys) {
+  for (const rowKeys of mobileKeyRows) {
+    const row = document.createElement("div");
+    row.className = "ccg-c64-mobile-keyboard-row";
+    for (const [label, code] of rowKeys) {
+      if (!mobileVirtualBinding(code)) continue;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.setAttribute("data-c64-vkey", code);
+      button.setAttribute("aria-label", "C64 " + label);
+      row.appendChild(button);
+      const release = (event, force = false) => {
+        event?.preventDefault?.();
+        const held = mobileVirtualHeld.get(button);
+        if (!held || (!force && event?.pointerId != null && event.pointerId !== held.pointerId)) return;
+        const remaining = MIN_MOBILE_KEY_MS - (performance.now() - held.started);
+        if (!force && remaining > 0) {
+          if (!held.timer) held.timer = setTimeout(() => release(null, true), remaining);
+          return;
+        }
+        if (held.timer) clearTimeout(held.timer);
+        mobileVirtualHeld.delete(button);
+        button.classList.remove("is-pressed");
+        if (!machine) return;
+        if (held.restore) machine.setRestoreNmiLine(false);
+        else {
+          syncMobileMatrixBit(held.col, held.row);
+          if (held.shift) syncMobileMatrixBit(1, 7);
+        }
+      };
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        if (!mobilePlayActive || !running || !machine || paused ||
+            setup?.hidden === false || mobileVirtualHeld.has(button)) return;
+        const binding = mobileVirtualBinding(code);
+        const held = { ...binding, started: performance.now(), pointerId: event.pointerId, timer: null };
+        mobileVirtualHeld.set(button, held);
+        pollGamepad();
+        if (held.restore) machine.setRestoreNmiLine(true);
+        else {
+          if (held.shift) syncMobileMatrixBit(1, 7);
+          machine.cia1.setKey(held.col, held.row, true);
+        }
+        button.classList.add("is-pressed");
+        try { button.setPointerCapture?.(event.pointerId); } catch {}
+      });
+      for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+        button.addEventListener(type, event => release(event));
+      }
+      button.addEventListener("contextmenu", event => event.preventDefault());
+    }
+    mobileKeyboardKeys.appendChild(row);
+  }
+}
+
 
 // The same searchable game library belongs immediately below the C64 display
 // on phones. Keep its original position and all existing listeners on desktop.
@@ -145,7 +366,6 @@ let mountedCartridge = null;
 let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
 let keyboardJoystickEnabled = localStorage.getItem("ccg.emulator.c64.keyboardJoystick") === "1";
 const keyboardJoystickKeys = new Set();
-let keyboardPriorityUntil = 0;
 const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
   ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
   ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
@@ -154,6 +374,60 @@ const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
+const touchHeldButtons = new Map();
+const jumpToggle = document.querySelector("[data-jump-toggle]");
+const jumpButton = document.querySelector(".ccg-c64-touch-jump");
+const actionDeck = document.querySelector(".ccg-c64-touch-actions");
+const JUMP_PREF_KEY = "ccg.emulator.c64.jumpProfiles.v1";
+// Add entries only when UP-to-jump has been verified for that exact game.
+const VERIFIED_JUMP_UP_GAMES = Object.freeze({});
+let currentJumpGameId = null;
+let jumpEnabled = false;
+function readJumpPreferences() {
+  try {
+    const result = JSON.parse(localStorage.getItem(JUMP_PREF_KEY) || "{}");
+    return result && typeof result === "object" && !Array.isArray(result) ? result : {};
+  } catch { return {}; }
+}
+function syncTouchJoystick() {
+  touchHeldMask = 0;
+  for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask;
+  touchJoyByte = 0xFF & ~touchHeldMask;
+  // Re-sample physical gamepad alongside each touch edge, not one RAF later.
+  pollGamepad();
+  applyJoystickInput();
+}
+function configureJump(gameId) {
+  currentJumpGameId = gameId || null;
+  const saved = readJumpPreferences();
+  jumpEnabled = currentJumpGameId && typeof saved[currentJumpGameId] === "boolean"
+    ? saved[currentJumpGameId] : VERIFIED_JUMP_UP_GAMES[currentJumpGameId] === true;
+  if (!jumpEnabled && jumpButton) {
+    touchHeldButtons.delete(jumpButton);
+    syncTouchJoystick();
+  }
+  if (jumpButton) jumpButton.hidden = !jumpEnabled;
+  actionDeck?.classList.toggle("has-jump", jumpEnabled);
+  if (jumpToggle) {
+    jumpToggle.textContent = `JUMP: ${jumpEnabled ? "ON" : "OFF"}`;
+    jumpToggle.setAttribute("aria-pressed", String(jumpEnabled));
+  }
+}
+jumpToggle?.addEventListener("click", () => {
+  const next = !jumpEnabled;
+  if (currentJumpGameId) {
+    const saved = readJumpPreferences();
+    saved[currentJumpGameId] = next;
+    try { localStorage.setItem(JUMP_PREF_KEY, JSON.stringify(saved)); } catch {}
+  }
+  if (!currentJumpGameId) {
+    jumpEnabled = next;
+    if (!next && jumpButton) { touchHeldButtons.delete(jumpButton); syncTouchJoystick(); }
+    if (jumpButton) jumpButton.hidden = !next;
+    actionDeck?.classList.toggle("has-jump", next);
+    if (jumpToggle) { jumpToggle.textContent = `JUMP: ${next ? "ON" : "OFF"}`; jumpToggle.setAttribute("aria-pressed", String(next)); }
+  } else configureJump(currentJumpGameId);
+});
 let pendingMedia = null;
 let hostedFirmwareReadyPromise = null;
 let onlineLibraryEntries = [];
@@ -198,7 +472,8 @@ function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
   // Use every available pixel in fullscreen regardless of desktop breakpoints.
   // In the page, mobile layouts still size naturally from the canvas ratio.
-  if (document.fullscreenElement !== screenStage &&
+  if (!(typeof mobilePlayActive !== "undefined" && mobilePlayActive) &&
+      document.fullscreenElement !== screenStage &&
       !window.matchMedia?.("(min-width: 960px)")?.matches) {
     screenBezel.style.width = "";
     return;
@@ -323,9 +598,13 @@ function toggleAudioMute() {
 
 function updateJoystickUi() {
   if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
-  if (joystickSwapButton) {
-    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
-    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  for (const button of [joystickSwapButton, mobileJoystickSwapButton]) {
+    if (!button) continue;
+    button.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
+    button.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  }
+  if (mobileJoystickSwapButton) {
+    mobileJoystickSwapButton.textContent = `SWAP JOYSTICK · PORT ${joystickPort}`;
   }
   if (keyboardJoystickButton) {
     keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
@@ -342,12 +621,11 @@ function keyboardJoystickByte() {
 
 function applyJoystickInput() {
   if (!machine) return;
-  // A browser gamepad can keep a direction/fire held down continuously.
-  // Give physical C64 keys priority while held and briefly after the last
-  // keypress, preventing those joystick bits from masking the keyboard CIA.
-  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
-    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
-  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
+  // Active-low bits are held joystick directions/fire. Combine the live
+  // gamepad, touchscreen and optional keyboard-joystick state every frame;
+  // physical C64 keyboard keys use the separate CIA matrix without muting
+  // a gamepad direction (e.g. run right while SPACE drops a bomb).
+  const byte = gamepadJoyByte & touchJoyByte & keyboardJoystickByte();
   machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
   machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
   // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
@@ -364,10 +642,10 @@ function swapJoystickPort() {
 }
 
 joystickSwapButton?.addEventListener("click", swapJoystickPort);
+mobileJoystickSwapButton?.addEventListener("click", swapJoystickPort);
 keyboardJoystickButton?.addEventListener("click", () => {
   keyboardJoystickEnabled = !keyboardJoystickEnabled;
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   localStorage.setItem("ccg.emulator.c64.keyboardJoystick", keyboardJoystickEnabled ? "1" : "0");
   applyJoystickInput();
   updateJoystickUi();
@@ -473,7 +751,10 @@ function setC64Shift(left, right) {
   machine.cia1.setKey(6, 4, Boolean(right));
 }
 
-function releaseAllInput() {
+// Form focus releases held C64 keys, not gamepad or touch joystick directions.
+// Clearing those controller bytes while a key is pressed causes a perceptible
+// one-frame movement dropout until requestAnimationFrame polls again.
+function releaseKeyboardInput() {
   for (const [button, held] of touchFunctionKeyHolds) {
     if (held.timer) clearTimeout(held.timer);
     button.classList.remove("is-pressed");
@@ -486,18 +767,27 @@ function releaseAllInput() {
     }
     setC64Shift(false, false);
     machine.cia1.setKey(7, 2, false);
-    machine.joyPort1 = 0xFF;
-    gamepadJoyByte = 0xFF;
-    touchJoyByte = 0xFF;
-    touchHeldMask = 0;
-    machine.joyPort2 = 0xFF;
     machine.setRestoreNmiLine(false);
   }
   heldMatrixKeys.clear();
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
+  if (typeof releaseMobileVirtualKeys === "function") releaseMobileVirtualKeys();
+  applyJoystickInput();
+}
+
+function releaseAllInput() {
+  releaseKeyboardInput();
+  if (machine) {
+    machine.joyPort1 = 0xFF;
+    gamepadJoyByte = 0xFF;
+    touchJoyByte = 0xFF;
+    touchHeldMask = 0;
+    touchHeldButtons.clear();
+    machine.joyPort2 = 0xFF;
+    machine._updateLightpen?.();
+  }
 }
 
 function physicalMatrixBinding(event) {
@@ -611,6 +901,10 @@ function usesTextInput(target) {
 
 function handleC64Key(event, pressed) {
   if (!running || !machine) return;
+  // Sample the current pad on the SAME event turn as every physical key edge:
+  // a keyboard press/release must never leave stale joystick data waiting for
+  // the next animation frame, even when gameplay combines SPACE with motion.
+  pollGamepad();
 
   // A clicked toolbar button retains browser focus. That must NOT prevent game
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
@@ -632,18 +926,13 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
   }
 
-  // Physical keyboard always wins over the gamepad, including when a gamepad
-  // button remains pressed. The optional keyboard joystick converts arrow,
-  // WASD and fire presses to the currently selected joystick port, but does
-  // not suppress normal C64 keys (including S for game-start menus).
-  if (KEY_MAP[event.code] || CHAR_MAP[event.key] ||
-      ["ArrowLeft", "ArrowUp", "F2", "F4", "F6", "F8", "F12"].includes(event.code)) {
-    keyboardPriorityUntil = performance.now() + 1200;
-    const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
-    if (joystickMask && keyboardJoystickEnabled) {
-      if (pressed) keyboardJoystickKeys.add(event.code);
-      else keyboardJoystickKeys.delete(event.code);
-    }
+  // Physical C64 keys always reach the CIA matrix. If keyboard joystick
+  // mode is enabled, selected keys also add joystick bits; they must never
+  // suppress an independently held gamepad/touch direction.
+  const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
+  if (joystickMask && keyboardJoystickEnabled) {
+    if (pressed) keyboardJoystickKeys.add(event.code);
+    else keyboardJoystickKeys.delete(event.code);
     applyJoystickInput();
   }
 
@@ -804,6 +1093,14 @@ function setControlState(snapshot) {
     warpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
     const strong = warpLoadButton.querySelector("strong");
     if (strong) strong.textContent = warpLoadActive ? "ON · MAX" : "MAX";
+  }
+  if (mobileWarpLoadButton) {
+    mobileWarpLoadButton.disabled = !running || paused;
+    mobileWarpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
+    mobileWarpLoadButton.textContent = warpLoadActive ? "WARP: ON" : "WARP: OFF";
+    mobileWarpLoadButton.setAttribute("aria-label", warpLoadActive
+      ? "Turn off warp load and return to normal C64 speed"
+      : "Turn on warp load at maximum C64 speed");
   }
   if (loadMediaButton) loadMediaButton.disabled = false;
   if (loadDiskButton) loadDiskButton.disabled = false;
@@ -1061,6 +1358,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  if (typeof setMobilePlaying === "function") setMobilePlaying(false);
   captureMutableMedia();
   releaseAllInput();
   powerOffAudio();
@@ -1326,6 +1624,7 @@ powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", () => { resetMachine(); screen?.focus(); });
 pauseButton?.addEventListener("click", () => { togglePause(); screen?.focus(); });
 warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
+mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
 audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
 crtButton?.addEventListener("click", () => { cycleCrtMode(); screen?.focus(); });
 sizeButton?.addEventListener("click", () => { toggleScreenSize(); screen?.focus(); });
@@ -1611,7 +1910,9 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   const queued = pendingMedia;
   pendingMedia = null;
   try {
-    return await openMediaBytes(queued);
+    const loaded = await openMediaBytes(queued);
+    if (loaded && typeof enterMobilePlayMode === "function") enterMobilePlayMode(queued.name);
+    return loaded;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "The media could not be opened.";
     return false;
@@ -1839,6 +2140,7 @@ async function loadSelectedLibraryEntry() {
     const firstKey = ["d64", "d71", "d81", "g64"].includes(type)
       ? `library:${entry.id}:0` : null;
     activeLibraryEntryId = entry.id;
+    configureJump(entry.id);
     activeLibraryDiskIndex = 0;
     const queued = await queueMedia({
       name: filename, type, bytes, sourceKey: firstKey,
@@ -1875,8 +2177,10 @@ window.addEventListener("keydown", (event) => handleC64Key(event, true), { captu
 window.addEventListener("keyup", (event) => handleC64Key(event, false), { capture: true });
 window.addEventListener("blur", releaseAllInput);
 document.addEventListener("focusin", (event) => {
-  if (running && usesNativeKeyboard(event.target)) releaseAllInput();
+  if (running && usesNativeKeyboard(event.target)) releaseKeyboardInput();
 });
+window.addEventListener("gamepadconnected", pollGamepad);
+window.addEventListener("gamepaddisconnected", pollGamepad);
 
 document.addEventListener("visibilitychange", () => {
   if (!running) return;
@@ -2160,6 +2464,8 @@ async function loadGameVaultSlot() {
     if (stageNote) stageNote.textContent = "Machine state and its local disk, tape and cartridge media were restored from this browser.";
     updateMediaControls(vault.snapshot());
     await refreshVaultStatus();
+    if (typeof enterMobilePlayMode === "function") enterMobilePlayMode(
+      mountedCartridge?.name || mountedDisk?.name || mountedTape?.name || "SAVED GAME");
     screen?.focus();
   } catch (error) {
     if (!frameHandle && running && machine) frameHandle = requestAnimationFrame(frameLoop);
@@ -2184,26 +2490,29 @@ vaultSlot?.addEventListener("change", () => { void refreshVaultStatus(); });
 
 for (const button of document.querySelectorAll("[data-joy-mask]")) {
   const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
-  const press = (event) => {
+  const press = event => {
     event.preventDefault();
-    touchHeldMask |= mask;
-    touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickInput();
+    if (button.hidden) return;
+    touchHeldButtons.set(button, { mask, pointerId: event.pointerId });
+    syncTouchJoystick();
     if (inputStatus) inputStatus.textContent = `TOUCH // PORT ${joystickPort}`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
   };
-  const release = (event) => {
+  const release = event => {
     event.preventDefault();
-    touchHeldMask &= ~mask;
-    touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickInput();
+    const held = touchHeldButtons.get(button);
+    if (!held || (event.pointerId != null && held.pointerId !== event.pointerId)) return;
+    touchHeldButtons.delete(button);
+    syncTouchJoystick();
     if (!touchHeldMask && inputStatus && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
   };
   button.addEventListener("pointerdown", press);
   button.addEventListener("pointerup", release);
   button.addEventListener("pointercancel", release);
-  button.addEventListener("contextmenu", (event) => event.preventDefault());
+  button.addEventListener("lostpointercapture", release);
+  button.addEventListener("contextmenu", event => event.preventDefault());
 }
+configureJump(null);
 
 // On phones, make short taps long enough for the C64 keyboard scan to see them.
 // Pointer capture and cancellation ensure a released F-key never remains stuck.
@@ -2238,9 +2547,8 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     const prior = touchFunctionKeyHolds.get(button);
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
+    pollGamepad();
     machine.cia1.setKey(col, row, true);
-    keyboardPriorityUntil = performance.now() + 1200;
-    applyJoystickInput();
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
@@ -2270,6 +2578,7 @@ fullscreenButton?.addEventListener("click", async () => {
       const fullscreenTarget = touchLayout
         ? document.querySelector(".ccg-c64-console") || screenStage
         : screenStage;
+      if (mobilePlayMedia?.matches && running) enterMobilePlayMode("C64 GAMEPLAY");
       await fullscreenTarget.requestFullscreen({ navigationUI: "hide" });
     }
     fitScreenToStage();

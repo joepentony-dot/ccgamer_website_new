@@ -29,7 +29,13 @@ assert.match(render,/next="severe"/,"renderer must enter severe recovery mode af
 assert.match(render,/function drawTilePerformance\(x,y\)/,"severe mode must use the lightweight static-tile path");
 assert.match(render,/severe\?drawTilePerformance:drawTile/,"severe mode must preserve normal rich tiles outside the fallback path");
 assert.match(render,/drawExit\(\);drawWallLights\(\);drawHazards\(\)/,"physical wall torches must remain rendered at every quality tier");
-assert.match(render,/const quality=dungeonRenderQuality\(\),richFx=quality==="rich",severe=quality==="severe",now=performance\.now\(\)/,"torch animation must use the hysteretic R70 quality state");
+for(const name of ["drawWallLights","drawDynamicLighting"]){
+  const start=render.indexOf(`function ${name}()`),end=render.indexOf("\nfunction ",start+1);
+  assert.ok(start>=0,`${name} must retain its canonical renderer owner`);
+  assert.match(render.slice(start,end),/dungeonRenderQuality\(\)/,`${name} must consume the hysteretic quality owner`);
+}
+// Executable all-tier lighting/motion behaviour lives in the existing R69
+// contract; retain the R70 ownership guard without freezing declaration order.
 assert.match(render,/if\(!severe\)drawFog\(\);else drawDynamicLighting\(\)/,"severe mode must keep essential torch lighting instead of dropping the lighting pass entirely");
 assert.match(render,/if\(richFx\)drawAmbientMotes\(\)/,"ambient motes must be shed outside rich quality");
 assert.doesNotMatch(render,/CCGLostSizzlerV141R37GlobalPerformance\?\.state\?\.lowFps/,"torch and fog presentation must not flap on the legacy per-frame low-FPS boolean");

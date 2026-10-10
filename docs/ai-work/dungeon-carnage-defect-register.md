@@ -60,9 +60,9 @@ The R120 bug fixes are merged into `main` at `df598b1d3214151bebb5500236c7b6f607
 - Regression `tests/dungeon-carnage-r121-voice-latch-retry.test.mjs` instantiates the **real voice-director** in a Node VM with deterministic approved audio, verifying low/critical retry, immediate damage hook, once-per-floor gating and no delayed stale audio queue.
 - Mark **FIXED IN CANDIDATE CODE**, not owner-audibly-accepted, until exact-head PR/full Chromium qualification and subsequent hands-on testing.
 
-## R122 Banishment Flask transaction acceptance — new automated qualification
+## R122 Banishment Flask transaction contract — reconciliation 10 October 2026
 
-- **No new Flask code change:** `v10-42-artefact-shop-stability.js` already owns the exchange after #2090/R77. Historical source-only assertions did not establish the full transaction outcome.
-- `tests/dungeon-carnage-r122-flask-live-transaction.test.mjs` now executes the actual Alchemist shop wrapper in an isolated Node VM to verify: exactly three ordinary Vessel Essence produces exactly one Flask **without a previous Gold Flask purchase**; Gold and Score remain unchanged; insufficient Essence has no effect; an existing Alchemist's Seal reduces the required amount to two; legacy physical Artefacts and mixed payments are consumed exactly; failed inventory insertion restores spent items and Essence; non-Alchemist and deprecated Score-funded buttons fail closed.
-- This is deterministic automated transaction coverage, **not a substitute for the owner's deployed browser acceptance**. Do not mark the manual Defect 5 gate complete solely on green CI.
-- Development is bug-fix/verification only. The paid itch.io product, original-music extraction and installer production remain paused.
+- The Alchemist handler in `v10-42-artefact-shop-stability.js` is unchanged since the original R122 QA branch; this is **test and workflow registration only**, not a new Flask implementation.
+- `tests/dungeon-carnage-r122-flask-live-transaction.test.mjs` executes the actual shop wrapper in a deterministic Node VM. It covers three ordinary Vessel Essence producing exactly one Banishment Flask without a previous Gold purchase, unchanged Gold and Score, insufficient Essence, two-Essence Seal discount, legacy Artefact/mixed payment, transactional rollback and non-Alchemist/deprecated button rejection.
+- Register that regression in the existing Dungeon PR Qualification workflow alongside R120/R121 tests; preserve all newer main workflow entries and documentation.
+- **Automated contract coverage is not owner hands-on acceptance.** Defect 5 still requires an actual deployed browser run collecting three Essence and exchanging it with the Alchemist (without buying a Gold Flask first), verifying exactly one Flask and unchanged Gold/Score. No paid itch.io or Windows release is authorised by this QA merge.

@@ -1,3 +1,7 @@
+## New owner-approved request — premium visual upgrade, 9 October 2026
+
+**STATUS: OUTSTANDING / STAGED.** Reach the quality of the supplied atmospheric top-down pixel dungeon screenshot: weathered detailed wall/floor art, dark negative space, warm flickering torch lighting, room-purpose-aware props/moss/debris clusters, expressive but bounded combat VFX, state-driven enemy/player/environment animation, coherent large playable scene and compact legible HUD. Preserve fifteen distinct biomes, CCG hero identity, approved/verified artwork, collision and progression, accessibility, desktop/mobile and browser/itch/Windows parity. Reference is **not licensed game artwork to copy**. Full locked roadmap: [premium visual target](dungeon-carnage-premium-visual-target-2026-10-09.md). **No visual implementation is marked complete by recording this request.** Prioritise live audio/combat defects and red exact-head CI first.
+
 # C64 Dungeon Carnage — Master Owner Request Reconciliation
 
 Last reconciled: 8 October 2026 (R118 branch audit; not proof of deployed acceptance)

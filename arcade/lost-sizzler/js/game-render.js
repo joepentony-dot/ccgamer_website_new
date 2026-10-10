@@ -140,9 +140,14 @@ function sampleDungeonRenderPerformance(timestamp){
 function dungeonRenderQuality(){return dungeonRenderPerformance.quality||"rich"}
 function dungeonRenderSevere(){return dungeonRenderQuality()==="severe"}
 function dungeonRenderRichFx(){return dungeonRenderQuality()==="rich"}
+// Respect the OS reduced-motion preference independently of graphics quality.
+// Keep the MediaQueryList live: changing accessibility settings needs no reload.
+const dungeonMotionQuery=typeof window.matchMedia==="function"?window.matchMedia("(prefers-reduced-motion: reduce)"):null;
+function dungeonReducedMotion(){return dungeonMotionQuery?.matches===true}
 window.CCGLostSizzlerV142R70RenderPerformance={
   sampleFrame:sampleDungeonRenderPerformance,
   quality:dungeonRenderQuality,
+  reducedMotion:dungeonReducedMotion,
   get state(){return dungeonRenderPerformance}
 };
 function cameraClampFor(targetX,targetY,v){
@@ -170,6 +175,84 @@ function tileInRenderView(x,y,pad=2){
   return sx>=-margin&&sy>=-margin&&sx<=view.w+margin&&sy<=view.h+margin
 }
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}
+// Floor 1 pilot: exposed stone faces belong to presentation, never geometry.
+// Factor all edge combinations and three seeds into one atlas per material.
+// The 22 canonical materials fit regardless of viewport or camera position.
+const dungeonStoneReliefCache=new Map();
+const DUNGEON_STONE_ATLAS_LIMIT=32,DUNGEON_STONE_PIXEL_BUDGET=4*1024*1024;
+const DUNGEON_STONE_EDGE_MASKS=Object.freeze([4,1,8,2]);
+let dungeonStoneReliefWorld=null,dungeonStoneReliefTile=0,dungeonStoneReliefBytes=0,dungeonStoneReliefUnavailable=false;
+function retireDungeonStoneReliefWorld(){
+  if(world!==dungeonStoneReliefWorld||C.tile!==dungeonStoneReliefTile){
+    for(const atlas of dungeonStoneReliefCache.values()){atlas.width=0;atlas.height=0}
+    dungeonStoneReliefCache.clear();dungeonStoneReliefWorld=world;dungeonStoneReliefTile=C.tile;
+    dungeonStoneReliefBytes=0;dungeonStoneReliefUnavailable=false;
+  }
+}
+function drawDungeonStoneRelief(s,x,y,h){
+  retireDungeonStoneReliefWorld();
+  if(Number(run?.floor||1)!==1)return false;
+  const north=world.map[y-1]?.[x]===0,east=world.map[y]?.[x+1]===0,
+    south=world.map[y+1]?.[x]===0,west=world.map[y]?.[x-1]===0,
+    mask=(north?1:0)|(east?2:0)|(south?4:0)|(west?8:0);
+  if(!mask)return false;
+  // Borrow the adjoining room's material instead of the wall's corridor default.
+  const th=W.themeAt(world,x+(south?0:west?-1:east?1:0),y+(south?1:west||east?0:-1)),
+    tile=C.tile,key=`${tile}:${th.wall}:${th.hi}`;
+  let stone=dungeonStoneReliefCache.get(key);
+  if(!stone){
+    // Admit bounded world resources without evicting this frame's working set.
+    // Future/custom palettes beyond the budget retain authored wall fallback;
+    // they must not allocate and evict atlases again on every frame.
+    const bytes=tile*tile*4*3*4;
+    if(dungeonStoneReliefUnavailable||dungeonStoneReliefCache.size>=DUNGEON_STONE_ATLAS_LIMIT||
+      dungeonStoneReliefBytes+bytes>DUNGEON_STONE_PIXEL_BUDGET)return false;
+    try{
+      stone=document.createElement("canvas");stone.width=tile*4;stone.height=tile*3;
+      const g=stone.getContext("2d");if(!g){dungeonStoneReliefUnavailable=true;return false}
+      g.imageSmoothingEnabled=false;
+      let variant=0;
+      const depth=Math.max(8,Math.round(tile*.30)),cheek=Math.max(5,Math.round(tile*.15)),
+        face=(fx,fy,fw,fh,vertical=false)=>{
+          g.fillStyle="rgba(8,6,12,.80)";g.fillRect(fx,fy,fw,fh);
+          g.fillStyle="#48424a";g.fillRect(fx+1,fy+1,fw-2,fh-2);
+          g.fillStyle=th.wall;g.globalAlpha=.35;g.fillRect(fx+1,fy+1,fw-2,fh-2);g.globalAlpha=1;
+          g.fillStyle="rgba(199,186,166,.22)";g.fillRect(fx+1,fy+1,fw-2,2);
+          g.fillStyle="rgba(3,5,9,.44)";g.fillRect(fx+1,fy+fh-3,fw-2,2);
+          g.fillStyle=th.hi;g.globalAlpha=.35;g.fillRect(fx+1,fy+3,1,fh-6);g.globalAlpha=1;
+          g.fillStyle="rgba(6,5,10,.64)";
+          if(vertical){
+            for(let joint=8+variant;joint<fh-3;joint+=11)g.fillRect(fx+1,fy+joint,fw-2,1);
+          }else{
+            const seam=Math.floor(fh/2);g.fillRect(fx+1,fy+seam,fw-2,1);
+            for(let joint=9+variant*3;joint<fw-3;joint+=16){
+              g.fillRect(fx+joint,fy+2,1,seam-2);
+              if(joint+7<fw-3)g.fillRect(fx+joint+7,fy+seam+1,1,fh-seam-3);
+            }
+          }
+          // Chipped capstone exposes warm stone without another animation.
+          g.fillStyle="rgba(222,203,167,.38)";g.fillRect(fx+2+variant,fy+2,2,1);
+        };
+      // Rasterise in local tile coordinates so mortar/chips remain identical.
+      for(variant=0;variant<3;variant++)for(let edge=0;edge<4;edge++){
+        g.save();g.translate(edge*tile,variant*tile);
+        if(edge===0)face(0,tile-depth,tile,depth);
+        else if(edge===1)face(0,1,tile,cheek);
+        else if(edge===2)face(1,2,cheek,tile-4,true);
+        else face(tile-cheek-1,2,cheek,tile-4,true);
+        g.restore();
+      }
+      dungeonStoneReliefCache.set(key,stone);
+      dungeonStoneReliefBytes+=bytes;
+      dungeonRenderPerformance.stoneReliefRasterBuilds=(dungeonRenderPerformance.stoneReliefRasterBuilds||0)+1;
+    }catch(_){dungeonStoneReliefUnavailable=true;return false}
+  }
+  // Preserve original south/north/west/east compositing and tile clipping.
+  const dx=Math.round(s.x),dy=Math.round(s.y);
+  for(let edge=0;edge<4;edge++)
+    if(mask&DUNGEON_STONE_EDGE_MASKS[edge])ctx.drawImage(stone,edge*tile,(h%3)*tile,tile,tile,dx,dy,tile,tile);
+  return true
+}
 const FLOOR_TILE_PALETTES=Object.freeze({
   1:Object.freeze({id:"threshold-stone",name:"THRESHOLD STONE",floor:"rgba(105,99,94,.085)",wall:"rgba(88,84,82,.105)",accent:"#a8a39c"}),
   2:Object.freeze({id:"drive-steel",name:"1541 DRIVE STEEL",floor:"rgba(48,78,96,.11)",wall:"rgba(37,63,82,.14)",accent:"#72d7ff"}),
@@ -213,6 +296,95 @@ function drawCorridorDetail(s,x,y,h,th){
   const exits=[open(-1,0),open(1,0),open(0,-1),open(0,1)].filter(Boolean).length;
   if(exits>=3&&h%3===0){ctx.strokeStyle=accent+"70";ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle=accent+"45";ctx.fillRect(cx-3,cy-3,6,6)}
   ctx.restore()
+}
+// R128: zero-allocation floor-specific surface wear in the existing rich tile pass.
+// Deliberately decorative only: no new collision, light, world or save owner.
+function drawCampaignSurfaceWear(s,h,wall,room,theme){
+  const floor=Number(run?.floor)||1,k=h>>>0;
+  if(floor!==4&&floor!==7&&floor!==11&&floor!==15)return;
+  if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
+  // R129: late-floor inscriptions and burn damage belong to the campaign floor,
+  // not to a generated room theme. No animation or Canvas/image allocation.
+  if(floor===11){
+    const core=theme==="EMBER_DUNGEON"||theme==="SID_REACTOR";
+    if(wall){
+      if(k%(core?4:9)!==0)return;
+      // Coal-black stratum bands, fractured slag and buried orange embers.
+      ctx.fillStyle="rgba(13,9,14,.64)";ctx.fillRect(s.x+5,s.y+11,32,22);
+      ctx.fillStyle="rgba(92,57,44,.62)";ctx.fillRect(s.x+7,s.y+13,27,3);ctx.fillRect(s.x+8,s.y+29,26,2);
+      ctx.fillStyle="rgba(29,17,21,.80)";ctx.fillRect(s.x+14,s.y+17,3,10);ctx.fillRect(s.x+17,s.y+23,12,3);
+      ctx.fillStyle="rgba(157,62,31,.70)";ctx.fillRect(s.x+15,s.y+18,2,6);ctx.fillRect(s.x+19,s.y+23,7,2);
+      ctx.fillStyle="rgba(251,134,48,.78)";ctx.fillRect(s.x+15,s.y+20,2,2);ctx.fillRect(s.x+24,s.y+23,3,2);
+      ctx.fillStyle="rgba(237,191,91,.58)";ctx.fillRect(s.x+25,s.y+24,2,1);
+    }else{
+      if(k%(core?5:11)!==0)return;
+      // Two uneven charred fault lines with ember inclusions, under actors.
+      ctx.fillStyle="rgba(11,8,16,.52)";ctx.fillRect(s.x+7,s.y+12,12,3);ctx.fillRect(s.x+17,s.y+15,3,10);ctx.fillRect(s.x+19,s.y+23,16,3);
+      ctx.fillStyle="rgba(143,48,31,.73)";ctx.fillRect(s.x+9,s.y+13,9,2);ctx.fillRect(s.x+18,s.y+17,2,7);ctx.fillRect(s.x+21,s.y+24,11,2);
+      ctx.fillStyle="rgba(255,123,47,.73)";ctx.fillRect(s.x+13,s.y+13,3,2);ctx.fillRect(s.x+18,s.y+20,2,3);ctx.fillRect(s.x+27,s.y+24,3,2);
+      ctx.fillStyle="rgba(251,201,94,.43)";ctx.fillRect(s.x+18,s.y+21,1,2);
+    }
+    return;
+  }
+  if(floor===15){
+    const core=theme==="BLOOD_CITADEL"||theme==="IRON_KEEP";
+    if(wall){
+      if(k%(core?4:9)!==0)return;
+      // Inset iron-and-crimson heraldic relief, with a worn crenelated crown.
+      ctx.fillStyle="rgba(11,7,17,.70)";ctx.fillRect(s.x+7,s.y+8,28,27);
+      ctx.fillStyle="rgba(98,32,49,.78)";ctx.fillRect(s.x+8,s.y+9,26,3);ctx.fillRect(s.x+8,s.y+31,26,2);
+      ctx.fillStyle="rgba(42,22,32,.87)";ctx.fillRect(s.x+11,s.y+14,20,15);
+      ctx.fillStyle="rgba(137,46,61,.75)";ctx.fillRect(s.x+18,s.y+15,6,3);ctx.fillRect(s.x+19,s.y+18,4,8);ctx.fillRect(s.x+16,s.y+21,10,2);
+      ctx.fillStyle="rgba(207,85,92,.72)";ctx.fillRect(s.x+20,s.y+16,2,8);ctx.fillRect(s.x+17,s.y+21,8,2);
+      ctx.fillStyle="rgba(135,104,92,.68)";ctx.fillRect(s.x+9,s.y+11,2,2);ctx.fillRect(s.x+31,s.y+11,2,2);ctx.fillRect(s.x+9,s.y+30,2,2);ctx.fillRect(s.x+31,s.y+30,2,2);
+    }else{
+      if(k%(core?5:11)!==0)return;
+      // Damaged iron floor sigil, a geometric floor mark not a trap marker.
+      ctx.fillStyle="rgba(13,7,17,.48)";ctx.fillRect(s.x+8,s.y+8,26,26);
+      ctx.fillStyle="rgba(103,34,50,.60)";ctx.fillRect(s.x+10,s.y+10,22,2);ctx.fillRect(s.x+10,s.y+31,22,2);ctx.fillRect(s.x+10,s.y+12,2,19);ctx.fillRect(s.x+30,s.y+12,2,19);
+      ctx.fillStyle="rgba(47,20,29,.71)";ctx.fillRect(s.x+16,s.y+16,10,10);
+      ctx.fillStyle="rgba(171,57,66,.68)";ctx.fillRect(s.x+19,s.y+15,4,13);ctx.fillRect(s.x+15,s.y+19,12,4);
+      ctx.fillStyle="rgba(223,98,97,.40)";ctx.fillRect(s.x+20,s.y+17,2,8);
+    }
+    return;
+  }
+  // The campaign floor identity is not the same as each generated room theme.
+  // Draw sparse patina across the floor; treasury/crypt rooms receive more.
+  const core=floor===4?(theme==="BUDGET_BIN"||theme==="TREASURE_VAULT"):theme==="MOSS_CRYPT";
+  if(floor===4){
+    if(wall){
+      if(k%(core?5:11)!==0)return;
+      // Brass-bound vault inspection plates, inset below chipped masonry.
+      ctx.fillStyle="rgba(9,6,3,.56)";ctx.fillRect(s.x+7,s.y+10,28,20);
+      ctx.fillStyle="rgba(162,103,39,.66)";ctx.fillRect(s.x+8,s.y+11,26,3);ctx.fillRect(s.x+8,s.y+26,26,2);
+      ctx.fillStyle="rgba(214,164,76,.48)";ctx.fillRect(s.x+9,s.y+14,2,12);ctx.fillRect(s.x+31,s.y+14,2,12);
+      ctx.fillStyle="rgba(40,25,14,.70)";ctx.fillRect(s.x+13,s.y+15,16,10);
+      ctx.fillStyle="rgba(235,190,93,.78)";ctx.fillRect(s.x+11,s.y+12,2,2);ctx.fillRect(s.x+29,s.y+12,2,2);ctx.fillRect(s.x+11,s.y+25,2,2);ctx.fillRect(s.x+29,s.y+25,2,2);
+      ctx.fillStyle="rgba(154,96,40,.62)";ctx.fillRect(s.x+17,s.y+17,8,2);
+    }else{
+      if(k%(core?7:17)!==0)return;
+      // Partly buried treasury threshold, always under actors and pickups.
+      ctx.fillStyle="rgba(15,9,4,.34)";ctx.fillRect(s.x+7,s.y+25,27,7);
+      ctx.fillStyle="rgba(150,94,36,.56)";ctx.fillRect(s.x+8,s.y+25,25,2);
+      ctx.fillStyle="rgba(238,186,82,.44)";ctx.fillRect(s.x+11,s.y+26,2,3);ctx.fillRect(s.x+29,s.y+26,2,3);
+      ctx.fillStyle="rgba(61,38,20,.45)";ctx.fillRect(s.x+14,s.y+30,14,2);
+    }
+    return;
+  }
+  if(wall){
+    if(k%(core?5:11)!==0)return;
+    // Lichen follows the lower mortar seam rather than coating entire blocks.
+    ctx.fillStyle="rgba(12,25,19,.62)";ctx.fillRect(s.x+5,s.y+28,32,6);
+    ctx.fillStyle="rgba(55,103,61,.72)";ctx.fillRect(s.x+7,s.y+28,15,2);ctx.fillRect(s.x+23,s.y+31,11,2);
+    ctx.fillStyle="rgba(140,164,89,.58)";ctx.fillRect(s.x+10,s.y+27,4,2);ctx.fillRect(s.x+27,s.y+30,4,2);
+    ctx.fillStyle="rgba(25,63,42,.66)";ctx.fillRect(s.x+16,s.y+33,10,2);
+  }else{
+    if(k%(core?7:17)!==0)return;
+    // Damp flagstone seam and sparse moss, below gameplay warning layers.
+    ctx.fillStyle="rgba(6,19,23,.35)";ctx.fillRect(s.x+4,s.y+29,32,5);
+    ctx.fillStyle="rgba(47,97,68,.53)";ctx.fillRect(s.x+6,s.y+29,13,2);ctx.fillRect(s.x+23,s.y+31,10,2);
+    ctx.fillStyle="rgba(153,168,99,.43)";ctx.fillRect(s.x+9,s.y+28,4,2);ctx.fillRect(s.x+28,s.y+30,3,2);
+  }
 }
 function drawTilePerformance(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0,h=tileHash(x,y,variant+roomId);
@@ -262,6 +434,8 @@ function drawTile(x,y){
     else if(theme==="WARP_GALLERY"||theme==="MODEM_EXCHANGE"){ctx.strokeStyle=th.accent+"72";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+7,s.y+31);ctx.lineTo(s.x+14,s.y+20);ctx.lineTo(s.x+22,s.y+25);ctx.lineTo(s.x+34,s.y+9);ctx.stroke();for(const [nx,ny] of [[7,31],[14,20],[22,25],[34,9]]){ctx.fillStyle=th.accent;ctx.fillRect(s.x+nx-1,s.y+ny-1,3,3)}}
     else if(["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL"].includes(theme)){ctx.strokeStyle="rgba(20,12,10,.72)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x+6,s.y+8);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-8);ctx.stroke();ctx.fillStyle="#332821";ctx.fillRect(s.x+5,s.y+5,5,5);ctx.fillRect(s.x+C.tile-10,s.y+C.tile-10,5,5);ctx.fillStyle=th.accent+"70";ctx.fillRect(s.x+7,s.y+7,2,2);ctx.fillRect(s.x+C.tile-9,s.y+C.tile-9,2,2)}
     else if(theme==="SPIDER_NEST"){ctx.strokeStyle="rgba(225,232,244,.34)";ctx.lineWidth=1;const cx=s.x+C.tile/2,cy=s.y+C.tile/2;for(let n=0;n<5;n++){const a=n*Math.PI/4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*22,cy+Math.sin(a)*22);ctx.stroke()}ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.arc(cx,cy,15,0,Math.PI*2);ctx.stroke()}
+    drawCampaignSurfaceWear(s,h,true,room,theme);
+    drawDungeonStoneRelief(s,x,y,h);
     return;
   }
   const h=tileHash(x,y,variant+roomId),theme=room?.theme||"WARP_GALLERY";ctx.fillStyle=(x+y+variant)%2?th.floor:th.alt;ctx.fillRect(s.x,s.y,C.tile,C.tile);
@@ -292,6 +466,35 @@ function drawTile(x,y){
     const edge=x<=room.x+1||x>=room.x+room.w-2||y<=room.y+1||y>=room.y+room.h-2;if(edge){ctx.fillStyle="rgba(0,0,0,.12)";ctx.fillRect(s.x,s.y,C.tile,C.tile)}
     if(room.grandHall){const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),onCarpet=room.grandHallAxis==="horizontal"?Math.abs(y-cy)<=1:Math.abs(x-cx)<=1;if(onCarpet){ctx.fillStyle=((x+y)%2)?"#651527":"#76182d";ctx.fillRect(s.x+2,s.y+2,C.tile-4,C.tile-4);ctx.fillStyle="#b48832";if(room.grandHallAxis==="horizontal"){ctx.fillRect(s.x+2,s.y+2,C.tile-4,2);ctx.fillRect(s.x+2,s.y+C.tile-4,C.tile-4,2)}else{ctx.fillRect(s.x+2,s.y+2,2,C.tile-4);ctx.fillRect(s.x+C.tile-4,s.y+2,2,C.tile-4)}ctx.fillStyle="rgba(255,215,100,.10)";for(let py=7;py<C.tile-5;py+=8)for(let px=7;px<C.tile-5;px+=8)if((px+py+x+y)%3===0)ctx.fillRect(s.x+px,s.y+py,2,2)}}
   }
+  // R124: stone walls cast a thin, cool, static contact shadow onto the
+  // neighbouring flagstones. Decorative wear belongs underneath actors,
+  // loot and fog and uses no extra assets, gradients or animation state.
+  if(room){
+    const northWall=world.map[y-1]?.[x]!==0,westWall=world.map[y]?.[x-1]!==0,
+      southWall=world.map[y+1]?.[x]!==0,eastWall=world.map[y]?.[x+1]!==0;
+    if(northWall||westWall||southWall||eastWall){
+      ctx.fillStyle="rgba(5,9,14,.24)";
+      if(northWall)ctx.fillRect(s.x+2,s.y+2,C.tile-4,7);
+      if(westWall)ctx.fillRect(s.x+2,s.y+2,7,C.tile-4);
+      if(southWall)ctx.fillRect(s.x+2,s.y+C.tile-8,C.tile-4,6);
+      if(eastWall)ctx.fillRect(s.x+C.tile-8,s.y+2,6,C.tile-4);
+      // Moss grows along shaded mortar in the crypt; the first floor has
+      // sparse mineral stains instead. Both patterns are seeded, not animated.
+      if(theme==="MOSS_CRYPT"&&h%4===0){
+        const mx=westWall?4:eastWall?C.tile-12:9+(h%19),
+          my=northWall?5:southWall?C.tile-10:9+((h>>>6)%20);
+        ctx.fillStyle="rgba(43,99,54,.48)";ctx.fillRect(s.x+mx,s.y+my,8,3);
+        ctx.fillStyle="rgba(142,162,83,.42)";ctx.fillRect(s.x+mx+2,s.y+my-1,4,2);
+        ctx.fillStyle="rgba(29,71,43,.42)";ctx.fillRect(s.x+mx+5,s.y+my+3,3,2);
+      }else if(Number(run?.floor)===1&&h%6===0){
+        const mx=westWall?5:eastWall?C.tile-10:8+(h%19),
+          my=northWall?6:southWall?C.tile-9:8+((h>>>7)%20);
+        ctx.fillStyle="rgba(89,114,110,.30)";ctx.fillRect(s.x+mx,s.y+my,7,2);
+        ctx.fillStyle="rgba(12,25,28,.30)";ctx.fillRect(s.x+mx+2,s.y+my+2,4,1);
+      }
+    }
+  }
+  drawCampaignSurfaceWear(s,h,false,room,theme);
   // Every room gets a deterministic floor signature so even rooms sharing a theme are visually distinct.
   if(room){
     const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),sig=room.signature??room.id;
@@ -1028,12 +1231,16 @@ function drawPlayer(p,kind="p1"){
   if(hurt){ctx.fillStyle=P.cyan;ctx.fillRect(cx-12,cy-19,4,3);ctx.fillRect(cx+8,cy-18,4,3)}ctx.restore();if(kind==="remote")label(p.name,{x:s.x,y:s.y-2},col);drawTransientHealth(p,s,col);drawPlayerResources(p,s,col,kind)
 }
 function drawWallLights(){
-  const quality=dungeonRenderQuality(),richFx=quality==="rich",severe=quality==="severe",now=performance.now();
+  const quality=dungeonRenderQuality(),richFx=quality==="rich",animateFx=richFx&&!dungeonReducedMotion(),severe=quality==="severe",now=performance.now();
   for(const l of world.wallLights||[]){
     if(!tileInRenderView(l.x,l.y,4))continue;
     if(!visibleTo(focus,l.x,l.y)&&md(focus,l)>12)continue;
-    const s=ws(l.x,l.y),phase=richFx?now/90+l.x*2.7+l.y:(l.x*2.7+l.y),f=richFx?4+Math.sin(phase)*1.25:4,cx=s.x+C.tile/2;
+    const s=ws(l.x,l.y),phase=animateFx?now/90+l.x*2.7+l.y:(l.x*2.7+l.y),f=animateFx?4+Math.sin(phase)*1.25:4,cx=s.x+C.tile/2;
     ctx.save();ctx.imageSmoothingEnabled=false;
+    // A static soot-darkened stone niche and warm mortar glint add depth.
+    // Both are fixed pixels so reduced-motion players retain the same detail.
+    ctx.fillStyle="rgba(18,10,14,.33)";ctx.fillRect(cx-11,s.y+5,22,17);
+    ctx.fillStyle="rgba(146,79,42,.24)";ctx.fillRect(cx-8,s.y+7,16,3);
     ctx.fillStyle="#241712";ctx.fillRect(cx-7,s.y+13,14,4);ctx.fillRect(cx-3,s.y+10,6,17);
     ctx.fillStyle="#8b6031";ctx.fillRect(cx-5,s.y+14,10,2);ctx.fillRect(cx-2,s.y+11,4,14);
     ctx.fillStyle="#d2a35a";ctx.fillRect(cx-1,s.y+12,2,10);
@@ -1041,7 +1248,7 @@ function drawWallLights(){
     ctx.fillStyle="#d54b27";ctx.beginPath();ctx.moveTo(cx,s.y+12);ctx.quadraticCurveTo(cx-f,s.y+3,cx,s.y-8);ctx.quadraticCurveTo(cx+f,s.y+3,cx,s.y+12);ctx.fill();
     ctx.fillStyle=P.orange;ctx.beginPath();ctx.moveTo(cx-3,s.y+10);ctx.quadraticCurveTo(cx-2,s.y+3,cx,s.y-4);ctx.quadraticCurveTo(cx+3,s.y+3,cx+3,s.y+10);ctx.fill();
     ctx.fillStyle=P.gold;ctx.fillRect(cx-1,s.y+1,2,6);
-    if(richFx)for(let n=0;n<3;n++){const a=phase*.34+n*1.8,r=7+n*2;ctx.globalAlpha=.3+n*.12;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx+Math.sin(a)*r,s.y-4-((n*5+now/70)%18),2,2)}
+    if(animateFx)for(let n=0;n<3;n++){const a=phase*.34+n*1.8,r=7+n*2;ctx.globalAlpha=.3+n*.12;ctx.fillStyle=n%2?P.gold:P.orange;ctx.fillRect(cx+Math.sin(a)*r,s.y-4-((n*5+now/70)%18),2,2)}
     ctx.restore();
   }
 }
@@ -1053,7 +1260,7 @@ function dungeonAssetFitRect(image,x,y,width,height,alignBottom=false){
 }
 function drawFurniture(){
   for(const d of world.decor||[]){
-    if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
+    if(d.destroyed||d.blocking&&!d.structural&&!(host.blockingDecor||[]).some(b=>b.id===d.id))continue;if(!tileInRenderView(d.x,d.y,2)||!visibleTo(focus,d.x,d.y))continue;const q=ws(d.x,d.y),th=W.themeAt(world,d.x,d.y),dark="#241c2c",wood="#6f482b",woodHi="#a66a37",metal="#65707a",glow=th.accent,h=tileHash(d.x,d.y,d.variant||0),pulse=dungeonReducedMotion()?.82:.65+.35*Math.sin(performance.now()/240+(h%19));ctx.save();ctx.globalAlpha=.98;ctx.imageSmoothingEnabled=false;ctx.fillStyle="rgba(0,0,0,.34)";ctx.beginPath();ctx.ellipse(q.x+C.tile/2,q.y+C.tile-4,d.blocking?17:13,4,0,0,Math.PI*2);ctx.fill();
     const propArt=d.type==="crate"?lostSizzlerPixelAssets.propCrate
       :d.type==="barrel"?lostSizzlerPixelAssets.propBarrel
       :["bookcase","shelf"].includes(d.type)?lostSizzlerPixelAssets.propBookcase
@@ -1104,7 +1311,7 @@ function drawFurniture(){
     }else if(d.type==="pillar"){
       ctx.fillStyle="#8d7a71";ctx.fillRect(q.x+10,q.y+4,C.tile-20,C.tile-8);ctx.fillStyle="#c2ada0";ctx.fillRect(q.x+8,q.y+4,C.tile-16,5);ctx.fillRect(q.x+7,q.y+C.tile-9,C.tile-14,5);ctx.fillStyle="#b48b32";ctx.fillRect(q.x+9,q.y+10,3,C.tile-20);ctx.fillRect(q.x+C.tile-12,q.y+10,3,C.tile-20)
     }else if(d.type==="candleSconce"&&torchSconceFrames.length===4&&torchSconceFrames.every(image=>image?.complete&&image.naturalWidth>0)){
-      const frame=torchSconceFrames[Math.floor(performance.now()/120+(h%4))%torchSconceFrames.length];
+      const frame=torchSconceFrames[dungeonReducedMotion()?(h%torchSconceFrames.length):Math.floor(performance.now()/120+(h%4))%torchSconceFrames.length];
       ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor=P.orange;ctx.shadowBlur=10;
       const fit=dungeonAssetFitRect(frame,q.x+4,q.y+2,C.tile-8,C.tile-4);if(fit)ctx.drawImage(frame,fit.x,fit.y,fit.w,fit.h);ctx.restore();
     }else if(d.type==="candleSconce"){
@@ -1380,24 +1587,24 @@ function drawDedicatedHazards(){
 function drawWindyCorridor(){const nest=host.spiderNest;if(!nest)return;const now=performance.now();for(const q of nest.corridorCells||[]){if(!visibleTo(focus,q.x,q.y)&&md(focus,q)>7)continue;const s=ws(q.x,q.y);ctx.save();ctx.strokeStyle="rgba(188,216,235,.45)";ctx.lineWidth=1.5;for(let n=0;n<3;n++){const drift=(now/8+n*17+q.x*9)%C.tile;ctx.beginPath();ctx.moveTo(s.x+drift-18,s.y+10+n*9);ctx.bezierCurveTo(s.x+drift-8,s.y+5+n*9,s.x+drift+4,s.y+16+n*9,s.x+drift+16,s.y+9+n*9);ctx.stroke()}ctx.restore()}}
 function lightPool(x,y,r,rgb,strength=.22,core=8){if(x+r<view.x||y+r<view.y||x-r>view.x+view.w||y-r>view.y+view.h)return;const g=ctx.createRadialGradient(x,y,core,x,y,r);g.addColorStop(0,`rgba(${rgb},${strength})`);g.addColorStop(.25,`rgba(${rgb},${strength*.62})`);g.addColorStop(.68,`rgba(${rgb},${strength*.18})`);g.addColorStop(1,`rgba(${rgb},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2)}
 function drawDynamicLighting(){
-  const now=performance.now(),quality=dungeonRenderQuality(),richFx=quality==="rich",severe=quality==="severe";ctx.save();ctx.globalCompositeOperation="lighter";
+  const now=performance.now(),quality=dungeonRenderQuality(),richFx=quality==="rich",animateFx=richFx&&!dungeonReducedMotion(),severe=quality==="severe";ctx.save();ctx.globalCompositeOperation="lighter";
   if(focus.torchMs>0){
-    const s=ws(focus.rx,focus.ry),flicker=richFx?(.96+Math.sin(now/110)*.025):1;
+    const s=ws(focus.rx,focus.ry),flicker=animateFx?(.96+Math.sin(now/110)*.025):1;
     lightPool(s.x+C.tile/2,s.y+C.tile/2,C.player.torchRadius*C.tile*flicker,"255,177,67",severe?.15:.21,14);
     if(!severe)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*3.2,"255,229,139",.18,6)
   }
   for(const fire of world.fireplaces||[]){
     if(!tileInRenderView(fire.x,fire.y,8))continue;
-    const s=ws(fire.x,fire.y),flicker=richFx?(.96+Math.sin(now/105+fire.x)*.035):1;
+    const s=ws(fire.x,fire.y),flicker=animateFx?(.96+Math.sin(now/105+fire.x)*.035):1;
     lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*(severe?4.2:6)*flicker,"255,125,42",severe?.16:.22,8);
     if(richFx)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.5,"255,221,128",.18,4)
   }
   for(const l of world.wallLights||[]){
     if(!tileInRenderView(l.x,l.y,8))continue;
-    const s=ws(l.x,l.y),flicker=richFx?(.97+Math.sin(now/115+l.x*4)*.025):1;
+    const s=ws(l.x,l.y),flicker=animateFx?(.97+Math.sin(now/115+l.x*4)*.025):1;
     lightPool(s.x+C.tile/2,s.y+7,(l.radius||5)*C.tile*flicker,"255,157,54",severe?.11:.15,5)
   }
-  if(!severe)for(const e of host.enemies||[])if(e.alive&&e.follower&&tileInRenderView(e.x,e.y,10)){const visual=enemyVisuals.get(e.id),s=ws(visual?.rx??e.x,visual?.ry??e.y),r=(C.enemy.followerLightRadius||10)*C.tile,flicker=richFx?(.97+Math.sin(now/120+enemySpriteSeed(e)%17)*.025):1;lightPool(s.x+C.tile/2,s.y+C.tile/2,r*flicker,"255,142,48",.2,9)}
+  if(!severe)for(const e of host.enemies||[])if(e.alive&&e.follower&&tileInRenderView(e.x,e.y,10)){const visual=enemyVisuals.get(e.id),s=ws(visual?.rx??e.x,visual?.ry??e.y),r=(C.enemy.followerLightRadius||10)*C.tile,flicker=animateFx?(.97+Math.sin(now/120+enemySpriteSeed(e)%17)*.025):1;lightPool(s.x+C.tile/2,s.y+C.tile/2,r*flicker,"255,142,48",.2,9)}
   if(host.exitOpen){const s=ws(world.exit.x,world.exit.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*4.5,"164,94,255",.18,10);if(!severe)lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.2,"108,236,255",.16,5)}
   if(!severe)for(const g of host.generators||[])if(g.alive&&g.powered&&tileInRenderView(g.x,g.y,5)){const s=ws(g.x,g.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.6,"255,55,63",.15,5)}
   if(!severe)for(const sh of host.shrines||[])if(sh.active&&tileInRenderView(sh.x,sh.y,5)){const s=ws(sh.x,sh.y);lightPool(s.x+C.tile/2,s.y+C.tile/2,C.tile*2.3,"174,94,255",.14,5)}
@@ -1517,6 +1724,7 @@ function dungeonCameraZoom(v,p){
   return 1
 }
 function renderView(p,v){
+  retireDungeonStoneReliefWorld(); // Also retire old resources in severe quality.
   const zoom=dungeonCameraZoom(v,p),logical=zoom>1?{x:v.x,y:v.y,w:v.w/zoom,h:v.h/zoom}:v;
   view=logical;focus=p;cam=camFor(p,logical);
   window.__ccgDungeonCamera={zoom,viewportWidth:v.w,viewportHeight:v.h,logicalWidth:logical.w,logicalHeight:logical.h,tile:C.tile};

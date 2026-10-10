@@ -4,6 +4,7 @@
 import fs from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import vm from "node:vm";
 import assert from "node:assert";
 import { fileURLToPath } from "node:url";
 
@@ -30,8 +31,96 @@ const emulation = read("emulation.html");
 const onlineLibrary = JSON.parse(read("emulator/c64/library.json"));
 const coiBootstrap = read("js/ccg-c64/coi-bootstrap.js");
 const coiWorker = read("emulator/c64/coi-service-worker.js");
+const c64AppManifest = JSON.parse(read("emulator/c64/manifest.webmanifest"));
+const ccgMainManifest = JSON.parse(read("manifest.webmanifest"));
+const c64AppInstaller = read("js/ccg-c64/install-app.js");
+const c64AppIcon = read("emulator/c64/icons/ccg-c64-icon.svg");
+const c64AppMaskableIcon = read("emulator/c64/icons/ccg-c64-icon-maskable.svg");
+const c64IconRaster = [
+  ["ccg-c64-192.png", 192],
+  ["ccg-c64-512.png", 512],
+  ["ccg-c64-apple-180.png", 180],
+];
 
 assert(html.includes("CCG BROWSER C64") || html.includes("CCG C64"), "CCG identity is required");
+// The dedicated emulator PWA must not hijack the existing site-wide CCG app.
+assert.equal(c64AppManifest.id, "/emulator/c64/");
+assert.equal(c64AppManifest.scope, "/emulator/c64/");
+assert.equal(new URL(c64AppManifest.start_url, "https://www.cheekycommodoregamer.co.uk").pathname,
+  "/emulator/c64/");
+assert.equal(c64AppManifest.display, "standalone");
+assert.notEqual(c64AppManifest.id, ccgMainManifest.id,
+  "The C64 app must install separately from the primary CCG website");
+assert(c64AppManifest.icons.some(icon => icon.purpose === "any" && icon.src.endsWith("ccg-c64-icon.svg")),
+  "C64 home screen app icon must be present");
+assert(c64AppManifest.icons.some(icon => icon.purpose === "maskable" && icon.src.endsWith("ccg-c64-icon-maskable.svg")),
+  "An Android maskable app icon must exist");
+for (const [filename, edge] of c64IconRaster) {
+  const image = fs.readFileSync(path.join(root, "emulator/c64/icons", filename));
+  assert.equal(image.subarray(0, 8).toString("hex"), "89504e470d0a1a0a",
+    "App icon must be a PNG image: " + filename);
+  assert.equal(image.readUInt32BE(16), edge, "App icon width must match: " + filename);
+  assert.equal(image.readUInt32BE(20), edge, "App icon height must match: " + filename);
+}
+assert(c64AppManifest.icons.some(icon => icon.sizes === "192x192" && icon.type === "image/png") &&
+  c64AppManifest.icons.some(icon => icon.sizes === "512x512" && icon.type === "image/png"),
+  "Android app installation needs 192px and 512px raster icon fallback");
+assert(html.includes('rel="apple-touch-icon" sizes="180x180" href="/emulator/c64/icons/ccg-c64-apple-180.png"'),
+  "iPhone installation must show the dedicated raster C64 icon");
+assert(c64AppIcon.includes("<svg ") && c64AppMaskableIcon.includes("<svg "),
+  "Both installable emulator app icon files must contain SVG markup");
+assert(html.includes('rel="manifest" href="/emulator/c64/manifest.webmanifest"'),
+  "Emulator must explicitly declare its own app manifest");
+assert(html.includes("data-c64-app-install") && html.includes("data-c64-app-install-button") &&
+  html.includes('src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2"'),
+  "The mobile app needs a working installation entry point");
+assert(css.includes(".ccg-c64-install-promo[hidden]") &&
+  css.includes("@media (pointer: coarse)"),
+  "App installation instructions must be hidden on desktop");
+assert(c64AppInstaller.includes('window.addEventListener("beforeinstallprompt"') &&
+  c64AppInstaller.includes("await prompt.prompt()") &&
+  c64AppInstaller.includes('window.addEventListener("appinstalled"') &&
+  c64AppInstaller.includes('navigator.standalone === true'),
+  "Installer must support Android prompts, installed-state detection and iOS fallback");
+// The prompt must be a sibling of the hidden game-library section, so
+// errors or slow loading of game listings cannot hide the install option.
+assert(html.indexOf('data-c64-app-install aria-label=') > html.indexOf('data-mobile-playbar hidden') &&
+  html.indexOf('data-c64-app-install aria-label=') < html.indexOf('class="ccg-c64-display-head"') &&
+  html.indexOf('data-c64-app-install aria-label=') < html.indexOf('ccg-c64-panel--library" hidden'),
+  "C64 app install control must be visible before the library loads");
+assert(css.includes(".ccg-c64-console:not(.is-mobile-playing) > .ccg-c64-install-promo:not([hidden])"),
+  "C64 app install prompt must show independently during mobile library load");
+assert(css.includes(".ccg-c64-console:fullscreen > .ccg-c64-install-promo { display: none !important; }"),
+  "Installer must never obscure fullscreen gameplay");
+function probeC64InstallVisibility(search, isStandalone) {
+  const panel = { hidden: false };
+  const button = { disabled: false, textContent: "", addEventListener() {} };
+  const help = { open: false };
+  const status = { textContent: "" };
+  const elements = new Map([
+    ["[data-c64-app-install]", panel],
+    ["[data-c64-app-install-button]", button],
+    ["[data-c64-app-install-help]", help],
+    ["[data-c64-app-install-status]", status]
+  ]);
+  vm.runInNewContext(c64AppInstaller, {
+    document: { querySelector: selector => elements.get(selector) ?? null },
+    window: {
+      location: { search },
+      matchMedia: () => ({ matches: isStandalone, addEventListener() {} }),
+      addEventListener() {}
+    },
+    navigator: { standalone: isStandalone },
+    URLSearchParams
+  });
+  return { panel, button };
+}
+assert.equal(probeC64InstallVisibility("?source=pwa", true).panel.hidden, false,
+  "The separate CCG website PWA must not hide the C64 install button");
+assert.equal(probeC64InstallVisibility("", false).button.textContent, "HOW TO INSTALL",
+  "Normal iPhone/Android browsers must show installation guidance");
+assert.equal(probeC64InstallVisibility("?source=installed-c64-app", true).panel.hidden, true,
+  "The dedicated installed C64 app must hide its own installation prompt");
 assert(!/C64 READY\.?/i.test(html), "Upstream product branding must not appear in the CCG emulator UI");
 assert(html.includes('width="384" height="272"'), "Native C64 canvas dimensions must be reserved");
 assert(!html.includes("webkitdirectory"), "The emulator must not force a VICE-folder scan");
@@ -55,11 +144,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_snap_v2"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_snap_v2")'), "COI bootstrap must import the emulator only after isolation");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
@@ -72,6 +161,55 @@ assert(css.includes("grid-area: console"), "C64 display must stay in the left wo
 assert(css.includes("grid-area: controls"), "C64 controls must stay in the right workstation column");
 assert(css.includes(".ccg-c64-screen-stage"), "Large emulator display stage must be present");
 assert(css.includes("@media (max-width: 760px)"), "Mobile command-deck layout is required");
+assert(html.includes('data-jump-toggle aria-pressed="false">JUMP: OFF</button>') &&
+  html.includes('data-mobile-warp-load') &&
+  html.indexOf('data-jump-toggle') < html.indexOf('data-mobile-warp-load') &&
+  html.indexOf('data-mobile-warp-load') < html.indexOf('data-mobile-joystick-swap'),
+  "Mobile control order must be JUMP, WARP LOAD, SWAP JOYSTICK");
+assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-warp-load") &&
+  css.includes(".ccg-c64-mobile-warp-load { display: none !important; }"),
+  "Warp control must be isolated to mobile gameplay and not alter desktop");
+assert(app.includes('mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });'),
+  "Mobile warp button must use the existing warp toggle, not a second implementation");
+assert(html.includes("data-mobile-joystick-swap") && html.includes("SWAP JOYSTICK · PORT 2"),
+  "Mobile gameplay must expose a lower-right live joystick-port switch");
+assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick-swap") &&
+  css.includes(".ccg-c64-mobile-joystick-swap { display: none !important; }"),
+  "Mobile joystick switch must be visible during gameplay and absent from desktop");
+assert(app.includes('mobileJoystickSwapButton?.addEventListener("click", swapJoystickPort)'),
+  "Mobile and desktop joystick buttons must share the existing Port 1/2 switching logic");
+assert(html.includes('data-mobile-zoom-toggle') &&
+  html.indexOf("data-mobile-exit-game") < html.indexOf("data-mobile-zoom-toggle") &&
+  html.indexOf("data-mobile-zoom-toggle") < html.indexOf("data-mobile-keyboard-toggle"),
+  "Zoom must be the middle control in the mobile game playbar");
+const mobilePlaybarRule = css.match(/\.ccg-c64-console\.is-mobile-playing \.ccg-c64-mobile-playbar\s*\{([^}]+)\}/)?.[1] || "";
+assert(/display:\s*flex\s*;/.test(mobilePlaybarRule) &&
+  !/display:\s*grid\s*;/.test(mobilePlaybarRule) &&
+  /flex:\s*0 0 auto\s*;/.test(mobilePlaybarRule),
+  "Mobile playbar must retain the original single-row layout and height");
+assert(!css.includes("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);"),
+  "A three-column grid formerly caused mobile snap regression");
+assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title") &&
+  css.includes("display: none;"), "Game title must not add a second playbar row");
+assert(app.includes('window.scrollTo?.({ top: 0, left: 0, behavior: "instant" })') &&
+  app.includes('screen?.focus?.({ preventScroll: true })'),
+  "Game launch should not scroll the screen below the viewport top");
+assert(css.includes(".ccg-c64-console.is-mobile-playing.is-mobile-zoomed .ccg-c64-screen-bezel > #ccg-c64-screen") &&
+  css.includes("transform: scale(1.15)") && css.includes("transform-origin: center center"),
+  "Mobile zoom must crop the image within its existing bezel, without resizing the stage");
+assert(app.includes('mobileZoomButton?.addEventListener("click", toggleMobileZoom)') &&
+  app.includes("MOBILE_ZOOM_STORAGE_KEY") &&
+  app.includes('mobilePlayConsole?.classList.toggle("is-mobile-zoomed", zooming)'),
+  "Zoom must be reversible, persisted, and limited to mobile gameplay");
+assert(html.includes("data-mobile-exit-game") && html.includes("data-mobile-keyboard-toggle") &&
+  html.includes('id="ccg-c64-mobile-keyboard"'), "Mobile gameplay must provide Exit and the C64 keyboard overlay");
+assert(app.includes('if (loaded && typeof enterMobilePlayMode === "function")') &&
+  app.includes("function exitMobilePlayMode()"), "Successful LOAD should enter mobile gameplay with an exit route");
+assert(app.includes("machine.cia1.setKey(held.col, held.row, true)") &&
+  app.includes('setMobileKeyboardOpen(false)'), "The touch keyboard must drive real CIA keys and close on exit");
+assert(css.includes("@media (pointer: coarse)") &&
+  css.includes(".ccg-c64-console.is-mobile-playing") &&
+  css.includes("position: fixed !important"), "Immersive mode must be confined to touch devices");
 assert(vault.includes("ccg.emulator.c64.rom.kernal"), "CCG-local ROM namespace is required");
 assert(vault.includes("export function pickRomFiles"), "Generic ROM-set matching must replace VICE-only discovery");
 assert(vault.includes("async installFiles(files)"), "ROM vault must support installing a selected ROM set");
@@ -117,7 +255,9 @@ assert(app.includes("machine.cia1.setKey"), "Physical keyboard input must reach 
 assert(app.includes("machine.setRestoreNmiLine"), "RESTORE/NMI keyboard handling must be wired");
 assert(app.includes("navigator.getGamepads"), "Gamepad polling must be wired");
 assert(app.includes("gamepadJoyByte = byte"), "Gamepad input must feed the shared Port 2 merger");
-assert(app.includes("touchHeldMask |= mask"), "Touch controls must feed joystick Port 2");
+assert(app.includes("for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask") &&
+       app.includes("touchJoyByte = 0xFF & ~touchHeldMask;"),
+  "Independent multi-touch controls must feed the active-low joystick merger");
 assert(app.includes('event.code || `key:${event.key}`'), "Held keyboard identity must survive Shift changes");
 assert(cia.includes("'*': { col: 6, row: 1, shift: false }"), "C64 asterisk must remain the unshifted matrix key");
 assert(app.includes("else if (!charBinding.shift && shiftDown)"), "Symbol mapping must suppress host Shift when the C64 symbol is unshifted");
@@ -273,5 +413,46 @@ assert(app.includes("machine.injectRun()") &&
 
 assert(html.includes("data-keyboard-joystick"),
   "Players must be able to use a keyboard as C64 joystick");
+
+
+const ccgHome = read("home.html");
+const ccgEmulationGuide = read("emulation.html");
+const configuredStaticPages = JSON.parse(read("tools/seo/static-pages.json"));
+const canonicalSitemap = read("sitemap-pages.xml");
+const emulatorMetaTitle = html.match(/<title>([^<]+)<\/title>/)?.[1] || "";
+assert(/^C64 Emulator Online/.test(emulatorMetaTitle) && /Commodore 64 Games/.test(emulatorMetaTitle),
+  "Direct emulator landing page must target C64 emulator and Commodore 64 search intent");
+assert(html.includes('rel="canonical" href="https://www.cheekycommodoregamer.co.uk/emulator/c64/"') &&
+  html.includes('name="robots" content="index,follow'),
+  "Emulator must be indexable and canonicalize directly to its own route");
+assert(html.includes('<h1 class="ccg-c64-kicker">C64 Emulator') &&
+  html.includes('aria-labelledby="ccg-c64-discovery-title"') &&
+  html.includes("Play Commodore 64 games online"),
+  "Search engines and visitors need one visible H1 and useful introductory text");
+assert(html.includes('property="og:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/"') &&
+  html.includes('name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/"'),
+  "Social sharing must always link straight to the C64 emulator, not the hub");
+const ldBlock = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+assert(ldBlock, "Emulator needs search-engine readable WebApplication schema");
+const ld = JSON.parse(ldBlock);
+assert.equal(ld["@type"], "WebApplication");
+assert.equal(ld.url, "https://www.cheekycommodoregamer.co.uk/emulator/c64/");
+assert.equal(ld.offers.price, "0");
+assert(configuredStaticPages.includes("emulator/c64/index.html"),
+  "Sitemap generator config must include the actual emulator index.html");
+assert(canonicalSitemap.includes("<loc>https://www.cheekycommodoregamer.co.uk/emulator/c64/</loc>"),
+  "Published sitemap must list the canonical directory URL once");
+assert.equal((canonicalSitemap.match(/<loc>https:\/\/www\.cheekycommodoregamer\.co\.uk\/emulator\/c64\/<\/loc>/g) || []).length, 1,
+  "Emulator sitemap canonical must appear exactly once");
+assert(ccgHome.includes('class="home-c64-emulator-promo" href="/emulator/c64/"') &&
+  ccgHome.includes("Play Commodore 64 Games Online") &&
+  ccgHome.includes('href="/resources/css/home-c64-emulator-promo.css"'),
+  "Homepage must give users a static, crawlable C64 emulator link with intact existing tiles");
+assert(ccgEmulationGuide.includes('href="/emulator/c64/">Play C64 Games Online'),
+  "Emulation guide must also direct visitors to the interactive emulator");
+const homePromotionCss = read("resources/css/home-c64-emulator-promo.css");
+assert(homePromotionCss.includes("home-c64-emulator-promo") &&
+  homePromotionCss.includes("@media (max-width: 680px)"),
+  "Home emulator promotion must remain responsive and scoped outside home thumbnail rules");
 
 console.log("CCG browser C64 Stage 1 contract passed.");

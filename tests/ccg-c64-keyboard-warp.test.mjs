@@ -19,6 +19,8 @@ assert(html.includes("DRAG &amp; DROP A GAME HERE — AUTO START"), "The screen 
 assert(html.includes("id=\"ccg-c64-drop-instructions\""), "The drop instructions must be accessible");
 assert(html.includes("aria-describedby=\"ccg-c64-drop-instructions\""), "The display must reference drop instructions");
 assert(html.includes("<strong>MAX</strong>"), "The Warp Load button must advertise MAX");
+assert(html.includes('data-mobile-warp-load') && html.includes('aria-pressed="false" disabled'),
+  "Mobile Warp Load must be disabled until C64 boots");
 assert(css.includes("position: relative;"), "Drop overlay must be anchored to the screen");
 assert(css.includes("visibility: hidden;") &&
   css.includes(".ccg-c64-screen-stage.is-dragover .ccg-c64-drop-hint"),
@@ -76,10 +78,12 @@ const machine = {
   cia1, joyPort1: 0xff, joyPort2: 0xff,
   setRestoreNmiLine(value) { this.restore = value; },
 };
+let keyEdgePadSamples = 0;
 const context = vm.createContext({
   KEY_MAP, CHAR_MAP, machine, running: true, screen: canvas,
   document: { activeElement: canvas }, setup: { hidden: true },
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
+  touchHeldButtons: new Map(),
   inputStatus: { textContent: "" },
   keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
   keyboardPriorityUntil: 0,
@@ -90,8 +94,15 @@ const context = vm.createContext({
   },
   performance: { now: () => 1000 },
   applyJoystickInput() {},
+  pollGamepad() {
+    // Real pad RIGHT stays held throughout a keyboard SPACE transition.
+    keyEdgePadSamples++;
+    machine.joyPort2 = 0xf7;
+  },
 });
-vm.runInContext(app.slice(first, last) + "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;", context);
+vm.runInContext(app.slice(first, last) +
+  "\nglobalThis.dispatch = handleC64Key; globalThis.release = releaseAllInput;" +
+  "globalThis.releaseKeysOnly = releaseKeyboardInput;", context);
 function event(code, key, opts = {}) {
   const value = {
     code, key, target: opts.target || canvas,
@@ -124,6 +135,8 @@ function keyTest(code, key, col, row) {
 }
 keyTest("Enter", "Enter", 0, 1);
 keyTest("Space", " ", 7, 4);
+assert(keyEdgePadSamples >= 2, "Gamepad must be sampled synchronously on Space down AND up");
+assert.equal(machine.joyPort2, 0xf7, "Held gamepad RIGHT cannot drop while SPACE is tapped");
 keyTest("F1", "F1", 0, 4);
 keyTest("F3", "F3", 0, 5);
 keyTest("F5", "F5", 0, 6);
@@ -199,10 +212,15 @@ context.setup.hidden = false;
 assert(!down("F1", "F1").prevented, "ROM setup must keep keyboard input");
 context.setup.hidden = true;
 
-// A key held while focus moves must not become permanently stuck.
+// Form focus must release stale C64 keys WITHOUT neutralising gamepad motion.
+down("Space", " ");
+context.releaseKeysOnly();
+assert.equal(keys.size, 0, "Focusing a page control must release held C64 keys");
+assert.equal(machine.joyPort2, 0xf7, "Focusing a page control must preserve RIGHT gamepad input");
 down("Space", " ");
 context.release();
 assert.equal(keys.size, 0, "Leaving gameplay must release all held C64 keys");
+assert.equal(machine.joyPort2, 0xff, "Actual blur/power-off must still neutralise joystick inputs");
 assert.equal(machine.restore, false);
 
 // Warp should execute multiple frames in each budgeted browser tick, while
@@ -247,6 +265,11 @@ const joystickButton = {
   addEventListener(type, listener) { this.listeners.set(type, listener); },
 };
 const joystickStatus = { textContent: "" };
+const mobileJoystickButton = {
+  textContent: "", title: "", ariaLabel: "", listeners: new Map(),
+  setAttribute(name, value) { if (name === "aria-label") this.ariaLabel = value; },
+  addEventListener(type, listener) { this.listeners.set(type, listener); },
+};
 const joystickMachine = {
   joyPort1: 255, joyPort2: 255,
   _updateLightpen() { joystickUpdates++; },
@@ -260,7 +283,8 @@ const keyboardModeButton = {
 };
 const joystickContext = vm.createContext({
   joystickPort: 2, joystickPortIndicator: joystickStatus,
-  joystickSwapButton: joystickButton, keyboardJoystickButton: keyboardModeButton,
+  joystickSwapButton: joystickButton, mobileJoystickSwapButton: mobileJoystickButton,
+  keyboardJoystickButton: keyboardModeButton,
   machine: joystickMachine, keyboardJoystickEnabled: false,
   keyboardJoystickKeys: new Set(), keyboardPriorityUntil: 0,
   KEYBOARD_JOYSTICK_MASKS: {
@@ -288,23 +312,44 @@ assert.equal(joystickMachine.joyPort1, 0xee, "Selected port 1 must receive combi
 assert.equal(joystickMachine.joyPort2, 255, "Unselected port 2 must be idle");
 assert.equal(joystickStatus.textContent, "PORT 1");
 assert.equal(joystickStorage.get("ccg.emulator.c64.joystickPort"), "1");
+assert.equal(mobileJoystickButton.textContent, "SWAP JOYSTICK · PORT 1",
+  "Mobile in-game button must display the current joystick port");
+assert.equal(mobileJoystickButton.ariaLabel, "Swap joystick to C64 port 2",
+  "Mobile in-game button must announce the destination joystick port");
+mobileJoystickButton.listeners.get("click")();
+assert.equal(joystickMachine.joyPort1, 255, "Mobile switch must release previous port 1 immediately");
+assert.equal(joystickMachine.joyPort2, 0xee, "Mobile switch must reroute held input to port 2");
+assert.equal(mobileJoystickButton.textContent, "SWAP JOYSTICK · PORT 2");
+assert.equal(joystickStorage.get("ccg.emulator.c64.joystickPort"), "2");
+joystickContext.swapPort();
+assert.equal(joystickMachine.joyPort1, 0xee, "Desktop switch must share the same live port state");
 joystickContext.swapPort();
 assert.equal(joystickMachine.joyPort1, 255);
 assert.equal(joystickMachine.joyPort2, 0xee);
 assert(joystickUpdates >= 3, "Port 1 lightpen pin must be updated when joystick swaps");
 
-// A gamepad held down or firing must never mask a physical S key or its
-// CIA column while the player types. Gamepad resumes after a quiet interval.
+// Holding a gamepad direction must continue while physical keys are pressed,
+// held and released: SPACE is often the C64 game's bomb or secondary action.
+joystickContext.gamepadJoyByte = 0xf7; // Right
+joystickContext.touchJoyByte = 0xff;
+joystickContext.heldMatrixKeys.set("Space", { col: 7, row: 4 });
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xf7, "SPACE held must not interrupt gamepad RIGHT");
+joystickContext.heldMatrixKeys.delete("Space");
+joystickContext.keyboardPriorityUntil = 7000; // Regression guard against a key-release timeout.
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xf7, "SPACE release must not introduce a gamepad delay");
 joystickContext.heldMatrixKeys.set("KeyS", { col: 1, row: 5 });
 joystickContext.routeJoystick();
-assert.equal(joystickMachine.joyPort2, 255, "Held keyboard S must neutralize connected gamepad");
+assert.equal(joystickMachine.joyPort2, 0xf7, "Menu key S must not silence the joystick");
 joystickContext.heldMatrixKeys.delete("KeyS");
-joystickContext.keyboardPriorityUntil = 6000;
+joystickContext.touchJoyByte = 0xfe; // Touch UP while gamepad holds RIGHT.
 joystickContext.routeJoystick();
-assert.equal(joystickMachine.joyPort2, 255, "Keyboard priority must persist briefly after release");
-timeNow = 6100;
+assert.equal(joystickMachine.joyPort2, 0xf6, "Touch and gamepad directions must remain simultaneous");
+joystickContext.gamepadJoyByte = 0xff;
 joystickContext.routeJoystick();
-assert.equal(joystickMachine.joyPort2, 0xee, "Gamepad resumes after keyboard inactivity");
+assert.equal(joystickMachine.joyPort2, 0xfe, "Releasing gamepad must preserve touch held UP");
+joystickContext.touchJoyByte = 0xff;
 
 // Keyboard joystick is optional and routes WASD/arrows/SPACE as active-low
 // joystick bits to whichever port the player has chosen.
@@ -313,6 +358,10 @@ assert.equal(keyboardModeButton.textContent, "KEYBOARD JOY: ON");
 assert.equal(joystickStorage.get("ccg.emulator.c64.keyboardJoystick"), "1");
 joystickContext.keyboardJoystickKeys.add("KeyW");
 joystickContext.keyboardJoystickKeys.add("Space");
+joystickContext.gamepadJoyByte = 0xf7; // RIGHT + keyboard UP + FIRE.
+joystickContext.routeJoystick();
+assert.equal(joystickMachine.joyPort2, 0xe6, "Keyboard joystick and gamepad must combine without arbitration");
+joystickContext.gamepadJoyByte = 0xff;
 joystickContext.routeJoystick();
 assert.equal(joystickMachine.joyPort2, 0xee, "Keyboard W+SPACE must provide up+fire");
 joystickContext.keyboardJoystickKeys.delete("Space");
@@ -389,5 +438,266 @@ assert.equal(autoContext.warpLoadActive, true, "Waiting for RUN must remain acce
 autoContext.advance();
 assert.equal(autoContext.warpLoadActive, false, "RUN completion must restore 1x speed");
 assert.equal(speedTransitions.at(-1), false, "Automatic warp must restore normal SID timing");
+
+// Run the actual immersive mobile controller + virtual CIA keyboard in a
+// browser-like VM. This exercises touchscreen pointer holds, keyboard toggle,
+// EXIT, and verifies that desktop/fine-pointer devices cannot enter this mode.
+const mobileStart = app.indexOf('const mobilePlayConsole = document.querySelector(".ccg-c64-console");');
+const mobileEnd = app.indexOf("// The same searchable game library belongs", mobileStart);
+assert(mobileStart >= 0 && mobileEnd > mobileStart, "Immersive mobile implementation missing");
+function mobileNode() {
+  const classes = new Set();
+  const props = {};
+  return {
+    hidden: false, children: [], listeners: {}, style: {},
+    classList: {
+      toggle(c, on) { if (on) classes.add(c); else classes.delete(c); },
+      add(c) { classes.add(c); }, remove(c) { classes.delete(c); },
+      contains(c) { return classes.has(c); },
+    },
+    setAttribute(k, v) { props[k] = v; }, getAttribute(k) { return props[k]; },
+    addEventListener(name, fn) { (this.listeners[name] ||= []).push(fn); },
+    dispatch(name, pointerId = 1) {
+      for (const fn of this.listeners[name] || []) fn({ pointerId, preventDefault() {} });
+    },
+    setPointerCapture() {}, appendChild(child) { this.children.push(child); },
+    querySelectorAll() { return this.children.flatMap(row => row.children || [])
+      .filter(button => button.classList.contains("is-pressed")); },
+  };
+}
+const fakeConsole = mobileNode();
+const mobileBar = mobileNode();
+const mobileExit = mobileNode();
+const mobileTitle = mobileNode();
+const mobileZoom = mobileNode();
+const mobileToggle = mobileNode();
+const mobileClose = mobileNode();
+const mobilePanel = mobileNode();
+mobilePanel.hidden = true; // HTML keyboard overlay starts hidden.
+const mobileKeys = mobileNode();
+const mobileBody = mobileNode();
+const mobileNodes = new Map([
+  [".ccg-c64-console", fakeConsole],
+  ["[data-mobile-playbar]", mobileBar],
+  ["[data-mobile-exit-game]", mobileExit],
+  ["[data-mobile-play-title]", mobileTitle],
+  ["[data-mobile-zoom-toggle]", mobileZoom],
+  ["[data-mobile-keyboard-toggle]", mobileToggle],
+  ["[data-mobile-keyboard-close]", mobileClose],
+  ["[id='ccg-c64-mobile-keyboard']", mobilePanel],
+  ["[data-mobile-keyboard-keys]", mobileKeys],
+]);
+const mobileMedia = { matches: true, addEventListener() {} };
+const ciaMobile = new CIA(1);
+const mobileMachine = { cia1: ciaMobile, joyPort2: 0xf7, setRestoreNmiLine(on) { this.nmi = on; } };
+let mobileTime = 1000;
+let mobilePowerOffCount = 0;
+let mobileGamepadPolls = 0;
+const mobileFrameCallbacks = [];
+const mobileScrollTargets = [];
+const mobileCanvasFocusOptions = [];
+let mobileSearchBlurCount = 0;
+const mobileLibraryInput = {
+  tagName: "INPUT",
+  blur() { mobileSearchBlurCount++; },
+};
+const savedZoomSettings = new Map();
+const mobileContext = vm.createContext({
+  document: {
+    querySelector: selector => mobileNodes.get(selector) || null,
+    body: mobileBody, createElement: () => mobileNode(), fullscreenElement: null,
+    activeElement: mobileLibraryInput,
+  },
+  window: {
+    matchMedia: () => mobileMedia,
+    scrollTo(position) { mobileScrollTargets.push(position); },
+  },
+  screen: { focus(opts) { mobileCanvasFocusOptions.push(opts); } },
+  localStorage: {
+    getItem(key) { return savedZoomSettings.get(key) || null; },
+    setItem(key, value) { savedZoomSettings.set(key, String(value)); },
+  },
+  requestAnimationFrame(callback) { mobileFrameCallbacks.push(callback); },
+  performance: { now: () => mobileTime },
+  KEY_MAP, CHAR_MAP, machine: mobileMachine,
+  running: true, paused: false, setup: { hidden: true },
+  heldMatrixKeys: new Map(), touchFunctionKeyHolds: new Map(),
+  shiftLeftPhysical: false, shiftRightPhysical: false,
+  pollGamepad() { mobileGamepadPolls++; },
+  fitScreenToStage() {},
+  powerOff() { mobilePowerOffCount++; },
+  setTimeout, clearTimeout,
+});
+vm.runInContext(app.slice(mobileStart, mobileEnd) +
+  "\nglobalThis.playOnMobile = enterMobilePlayMode;" +
+  "globalThis.showMobileKeys = setMobileKeyboardOpen;", mobileContext);
+const findVirtual = (code) => mobileKeys.children.flatMap(row => row.children)
+  .find(key => key.getAttribute("data-c64-vkey") === code);
+assert(findVirtual("Space") && findVirtual("F7") && findVirtual("F12"),
+  "The full C64 keyboard needs SPACE, F-keys and RESTORE");
+mobileContext.playOnMobile("Paradroid");
+assert(fakeConsole.classList.contains("is-mobile-playing"), "Loading media should maximise the mobile game");
+assert.equal(mobileBar.hidden, false);
+assert.equal(mobileTitle.textContent, "Paradroid");
+assert.equal(mobileSearchBlurCount, 1,
+  "Mobile game entry should blur focused game search to dismiss soft keyboards");
+assert.equal(mobileScrollTargets.length, 0,
+  "Viewport must not snap before mobile play layout is committed");
+assert.equal(mobileFrameCallbacks.length, 1,
+  "Mobile entry should measure FIT on the next animation frame");
+mobileFrameCallbacks.shift()();
+assert.equal(mobileScrollTargets.length, 1,
+  "The first mobile gameplay frame must reset stale library scrolling");
+assert.equal(mobileScrollTargets[0].top, 0);
+assert.equal(mobileScrollTargets[0].behavior, "instant",
+  "Mobile snapping must never smoothly scroll the fixed screen out of view");
+assert.equal(mobileCanvasFocusOptions[0].preventScroll, true,
+  "Canvas focus must never scroll the viewport downward");
+assert.equal(mobileZoom.textContent, "ZOOM: OFF", "Mobile starts with uncropped full C64 borders");
+assert.equal(mobileZoom.getAttribute("aria-pressed"), "false");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Zoom defaults to off");
+mobileZoom.dispatch("click");
+assert.equal(mobileScrollTargets.length, 1,
+  "Zoom may change only the picture crop, never snap/scroll the page");
+assert.equal(mobileZoom.textContent, "ZOOM: ON", "Zoom button must show its actual state");
+assert.equal(mobileZoom.getAttribute("aria-pressed"), "true");
+assert.equal(mobileZoom.getAttribute("aria-label"), "Disable mobile game zoom");
+assert(fakeConsole.classList.contains("is-mobile-zoomed"), "Zoom should apply the CSS viewport crop");
+assert.equal(savedZoomSettings.get("ccg.emulator.c64.mobileZoom.v1"), "1",
+  "The selected zoom preference should persist between games and browser visits");
+mobileZoom.dispatch("click");
+assert.equal(mobileZoom.textContent, "ZOOM: OFF", "Zoom toggle must restore full picture");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Normal PAL frame must be restored");
+mobileZoom.dispatch("click");
+mobileToggle.dispatch("click");
+assert.equal(mobilePanel.hidden, false, "Keyboard toggle should open the in-game overlay");
+const mobileSpace = findVirtual("Space");
+mobileSpace.dispatch("pointerdown");
+assert(ciaMobile.isKeyDown(7, 4), "Mobile SPACE must reach CIA matrix immediately");
+assert.equal(mobileMachine.joyPort2, 0xf7, "Typing must not override gamepad RIGHT");
+mobileTime += 200;
+mobileSpace.dispatch("pointerup");
+assert(!ciaMobile.isKeyDown(7, 4), "Mobile SPACE should release after pointerup");
+assert(mobileGamepadPolls > 0, "Touch keyboard edges must poll gamepad");
+const mobileShift = findVirtual("ShiftLeft");
+const mobileA = findVirtual("KeyA");
+mobileShift.dispatch("pointerdown", 2);
+mobileA.dispatch("pointerdown", 3);
+assert(ciaMobile.isKeyDown(1, 7) && ciaMobile.isKeyDown(1, 2),
+  "SHIFT and a letter must support concurrent touch");
+mobileTime += 200;
+mobileA.dispatch("pointerup", 3);
+assert(ciaMobile.isKeyDown(1, 7), "Releasing A must not release held SHIFT");
+mobileShift.dispatch("pointerup", 2);
+assert(!ciaMobile.isKeyDown(1, 7), "SHIFT must release after its own pointerup");
+findVirtual("F12").dispatch("pointerdown", 4);
+assert.equal(mobileMachine.nmi, true, "RESTORE should assert the emulated NMI line");
+mobileTime += 200;
+findVirtual("F12").dispatch("pointerup", 4);
+assert.equal(mobileMachine.nmi, false, "RESTORE should release the NMI line");
+mobileClose.dispatch("click");
+assert.equal(mobilePanel.hidden, true, "Close must hide the keyboard");
+mobileExit.dispatch("click");
+assert.equal(mobilePowerOffCount, 1, "Exit Game must stop the running C64 session");
+assert(!fakeConsole.classList.contains("is-mobile-playing"), "Exit should restore library layout");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"), "Exiting must restore uncropped library preview");
+assert.equal(mobileZoom.getAttribute("aria-pressed"), "false", "Zoom controls reset while not playing");
+mobileContext.playOnMobile("New game");
+assert(fakeConsole.classList.contains("is-mobile-zoomed"), "New games should honour saved mobile zoom choice");
+mobileZoom.dispatch("click"); // Switch off before desktop/fine-pointer assertions.
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"));
+mobileMedia.matches = false;
+mobileContext.playOnMobile("Desktop test");
+assert(!fakeConsole.classList.contains("is-mobile-playing"),
+  "Fine-pointer/desktop mode must never activate mobile full-viewport layout");
+mobileZoom.dispatch("click");
+assert(!fakeConsole.classList.contains("is-mobile-zoomed"),
+  "Fine-pointer/desktop mode must never activate game zoom");
+assert.equal(savedZoomSettings.get("ccg.emulator.c64.mobileZoom.v1"), "0",
+  "Desktop clicks must not overwrite the last mobile preference");
+
+// Both desktop and mobile must use the same real Warp Load state machine.
+// Exercise a touch click, desktop click, boot/paused guards and automatic
+// warp state sync without starting a second emulation loop or speed control.
+const syncWarpStart = app.indexOf("function setControlState(snapshot) {");
+const syncWarpEnd = app.indexOf("function render(snapshot)", syncWarpStart);
+const warpToggleStart = app.indexOf("function setWarpLoad(value) {");
+const warpToggleEnd = app.indexOf("function togglePause()", warpToggleStart);
+const desktopWarpListener = 'warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });';
+const mobileWarpListener = 'mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });';
+assert(syncWarpStart >= 0 && syncWarpEnd > syncWarpStart &&
+  warpToggleStart >= 0 && warpToggleEnd > warpToggleStart &&
+  app.includes(desktopWarpListener) && app.includes(mobileWarpListener),
+  "Warp load buttons must both use the existing bounded C64 runtime");
+function warpButton(withStrong = false) {
+  const props = {};
+  const listeners = {};
+  const label = { textContent: "" };
+  return {
+    disabled: false, textContent: "", props, listeners,
+    setAttribute(name, value) { props[name] = value; },
+    querySelector(selector) { return withStrong && selector === "strong" ? label : null; },
+    addEventListener(name, callback) { listeners[name] = callback; },
+    label
+  };
+}
+const mainWarpButton = warpButton(true);
+const touchWarpButton = warpButton();
+const pauseWarpButton = { disabled: false, querySelector: () => ({ textContent: "" }) };
+const powerWarpButton = { disabled: false, querySelector: () => ({ textContent: "" }) };
+const audioWarpStates = [];
+let warpScreenFocus = 0;
+const warpContext = vm.createContext({
+  warpLoadButton: mainWarpButton, mobileWarpLoadButton: touchWarpButton,
+  resetButton: { disabled: false }, pauseButton: pauseWarpButton,
+  powerButton: powerWarpButton, loadMediaButton: { disabled: false },
+  loadDiskButton: { disabled: false },
+  running: true, paused: false, machine: {},
+  warpLoadActive: false, automaticWarpActive: true, automaticWarpFramesRemaining: 30,
+  audioMuted: false, frameAccumulator: 1, lastFrameTime: 2,
+  screen: { focus() { warpScreenFocus++; } },
+  vault: { snapshot() { return { allRequiredReady: true }; } },
+  machineState: { textContent: "" }, stageNote: { textContent: "" },
+  updateMediaControls() {}, updateAudioUi() {},
+  setAudioPaused(value) { audioWarpStates.push(value); },
+});
+vm.runInContext(app.slice(syncWarpStart, syncWarpEnd) +
+  "\n" + app.slice(warpToggleStart, warpToggleEnd) +
+  "\n" + desktopWarpListener + "\n" + mobileWarpListener +
+  "\nglobalThis.syncWarpControls = setControlState;" +
+  "\nglobalThis.setRealWarpLoad = setWarpLoad;", warpContext);
+warpContext.syncWarpControls({ allRequiredReady: true });
+assert.equal(touchWarpButton.textContent, "WARP: OFF");
+assert.equal(touchWarpButton.disabled, false, "Loaded C64 enables the mobile warp control");
+touchWarpButton.listeners.click();
+assert.equal(warpContext.warpLoadActive, true, "Touch Warp Load must accelerate the actual C64");
+assert.equal(mainWarpButton.label.textContent, "ON · MAX", "Desktop button must reflect mobile warp");
+assert.equal(touchWarpButton.textContent, "WARP: ON");
+assert.equal(touchWarpButton.props["aria-pressed"], "true");
+assert.equal(warpContext.automaticWarpActive, false,
+  "Manual mobile warp must cancel any automatic warp timer");
+assert.equal(warpContext.automaticWarpFramesRemaining, 0);
+assert.equal(audioWarpStates.at(-1), true, "SID must be muted during Warp Load");
+mainWarpButton.listeners.click();
+assert.equal(warpContext.warpLoadActive, false, "Desktop Warp Load must restore 1x speed");
+assert.equal(touchWarpButton.textContent, "WARP: OFF", "Mobile button must track desktop switch");
+assert.equal(touchWarpButton.props["aria-pressed"], "false");
+assert.equal(audioWarpStates.at(-1), false, "Normal-speed SID audio must resume");
+warpContext.setRealWarpLoad(true); // Simulate automatic disk/cart fast loading.
+assert.equal(touchWarpButton.textContent, "WARP: ON",
+  "Automatic loading must update mobile warp state in real time");
+warpContext.setRealWarpLoad(false);
+assert.equal(touchWarpButton.textContent, "WARP: OFF",
+  "Completing automatic loading must restore mobile control to OFF");
+warpContext.paused = true;
+warpContext.syncWarpControls({ allRequiredReady: true });
+assert.equal(touchWarpButton.disabled, true, "Paused C64 must disable mobile warp");
+touchWarpButton.listeners.click();
+assert.equal(warpContext.warpLoadActive, false, "Paused C64 must ignore mobile warp clicks");
+warpContext.paused = false;
+warpContext.running = false;
+warpContext.syncWarpControls({ allRequiredReady: true });
+assert.equal(touchWarpButton.disabled, true, "Powered-off C64 must disable mobile warp");
+assert(warpScreenFocus >= 2, "Both warp controls should return focus to the game");
 
 console.log("C64 F1-F8, CIA keyboard, automatic MAX Warp, responsive expanded FIT and fullscreen tests passed.");

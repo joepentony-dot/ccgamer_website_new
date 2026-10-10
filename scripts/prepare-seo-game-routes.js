@@ -13,6 +13,7 @@ const {
   mergeGameDescriptionEnrichments,
   readGameDescriptionEnrichments,
 } = require("./lib/game-description-enrichments");
+const { buildSnippet } = require("../js/ccg-game-seo-snippet");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -97,17 +98,7 @@ function resolvePublisher(game) {
 }
 
 function buildRuntimeDescription(game, title) {
-  const year = String(game?.year || "").trim();
-  const publisher = resolvePublisher(game);
-  const introParts = [];
-  if (year) introParts.push(`${title} (${year})`);
-  else introParts.push(title);
-  if (publisher) introParts.push(`from ${publisher}`);
-
-  const strippedDescription = stripHtml(game?.description || "");
-  const hook = strippedDescription || "retro gameplay, screenshots, reviews and Commodore history.";
-
-  return truncateSeoText(`${introParts.join(" ")} — ${hook}`, 160);
+  return buildSnippet(game, title);
 }
 
 function buildSchemaDescription(game, title, platformLong) {

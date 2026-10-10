@@ -84,6 +84,8 @@
 
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
+    <link rel="stylesheet" href="/resources/css/home-support-panel.css" />
+    <link rel="stylesheet" href="/resources/css/home-c64-emulator-promo.css" />
     <link rel="stylesheet" href="resources/css/home-debug.css" />
     <link rel="stylesheet" href="resources/css/ccg-mobile-lite.css">
     <script src="js/ccg-mobile-lite.js" defer></script>
@@ -467,6 +469,25 @@
                     </a>
                 </nav>
 
+                <!-- Direct, crawlable route to the interactive C64 emulator.
+                     Keep this separate from the locked home card/thumbnail contracts. -->
+                <a class="home-c64-emulator-promo" href="/emulator/c64/"
+                   aria-label="Open the free Commodore 64 emulator and play C64 games in your browser">
+                    <span class="home-c64-emulator-promo__icon" aria-hidden="true">
+                        <svg viewBox="0 0 40 40" focusable="false">
+                            <rect x="3" y="7" width="34" height="25" rx="4"></rect>
+                            <rect x="8" y="12" width="24" height="14" rx="1"></rect>
+                            <path d="M13 17l4 3-4 3M20 23h7M14 35h12"></path>
+                        </svg>
+                    </span>
+                    <span class="home-c64-emulator-promo__copy">
+                        <span class="home-c64-emulator-promo__eyebrow">PLAY STRAIGHT FROM YOUR BROWSER</span>
+                        <strong class="home-c64-emulator-promo__title">C64 Emulator — Play Commodore 64 Games Online</strong>
+                        <span class="home-c64-emulator-promo__description">Search the playable C64 library, load a game and get playing on desktop or mobile. No separate emulator download needed.</span>
+                    </span>
+                    <span class="home-c64-emulator-promo__action">LAUNCH C64 EMULATOR <span aria-hidden="true">→</span></span>
+                </a>
+
                 <div class="home-featured-videos" aria-labelledby="home-videos-heading">
                     <div class="home-featured-videos__copy">
                         <span class="home-highlight-card__eyebrow">From the channel</span>
@@ -503,26 +524,41 @@
                 </div>
             </section>
 
-            <!-- COMPACT SUPPORT STRIP -->
-            <section class="home-cta-upgrade home-cta-upgrade--streamlined" aria-label="Support Cheeky Commodore Gamer">
-                <div class="home-support-strip__copy">
-                    <span class="home-highlight-card__eyebrow">Keep the archive growing</span>
-                    <h2 class="home-support-strip__title">Enjoying CCG?</h2>
-                    <p class="home-support-strip__text">Support the project or follow the channel for more Commodore videos and deep dives.</p>
+            <!-- OPTIONAL HOME SUPPORT: EXACT ARTWORK WITH ACCESSIBLE LINK HOTSPOTS -->
+            <section class="home-support-art home-cta-upgrade" aria-label="Optional support for Cheeky Commodore Gamer">
+                <div class="home-support-art__canvas">
+                    <img class="home-support-art__image"
+                         src="/resources/images/ccg-home-support-neon.webp"
+                         width="2172"
+                         height="724"
+                         loading="lazy"
+                         decoding="async"
+                         alt="Enjoying CCG? The archive is free for everyone. If you'd like to help keep the website growing, you're welcome to chip in. No obligation." />
+                    <a class="home-support-art__hotspot home-support-art__hotspot--paypal"
+                       href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                       target="_blank" rel="noopener noreferrer"
+                       data-ccg-revenue-link="paypal-beer"
+                       aria-label="Buy Joe a Beer – optional PayPal donation">Buy Joe a Beer</a>
+                    <a class="home-support-art__hotspot home-support-art__hotspot--patreon"
+                       href="https://www.patreon.com/CheekyCommodoreGamer"
+                       target="_blank" rel="noopener noreferrer"
+                       data-ccg-revenue-link="patreon"
+                       aria-label="Support CCG on Patreon">Patreon</a>
+                    <a class="home-support-art__hotspot home-support-art__hotspot--youtube"
+                       href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       target="_blank" rel="noopener noreferrer"
+                       aria-label="Visit the Cheeky Commodore Gamer YouTube channel">YouTube</a>
+                    <a class="home-support-art__hotspot home-support-art__hotspot--more"
+                       href="/support.html" aria-label="View more optional support options">More support options</a>
                 </div>
-                <div class="home-support-strip__actions">
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="ccg-btn ccg-btn-blue">
-                        Support CCG
-                    </a>
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="ccg-btn ccg-btn-red">
-                        YouTube
-                    </a>
+                <div class="home-support-art__mobile" aria-label="Support links for smaller screens">
+                    <p>Enjoying CCG? The archive is free to everyone. If you'd like to help, you're welcome to chip in. No obligation.</p>
+                    <div class="home-support-art__mobile-links">
+                        <a class="home-support-art__mobile-primary" href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="paypal-beer">Buy Joe a Beer</a>
+                        <a href="https://www.patreon.com/CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="patreon">Patreon</a>
+                        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+                        <a href="/support.html">More options</a>
+                    </div>
                 </div>
             </section>
 

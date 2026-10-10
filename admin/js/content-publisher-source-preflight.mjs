@@ -229,6 +229,90 @@ function installDescriptionAutomation() {
   label.insertAdjacentElement('afterend', controls);
 }
 
+// Preview only. Source validation and the authoritative publishing workflow
+// still determine whether a game may be published.
+export function buildGameSeoPreview(source, snippetBuilder) {
+  const title = String(source?.title || '').trim();
+  const year = String(source?.year || '').trim();
+  const system = String(source?.system || '').trim().toUpperCase();
+  const slug = String(source?.slug || '').trim();
+  const platform = platformDetails(system);
+  const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+  const yearText = /^\d{4}$/.test(year) ? ` (${year})` : '';
+  const seoTitle = title && ['C64', 'AMIGA'].includes(system)
+    ? `${title}${yearText} – ${platform.short} | Review, Screens & History`
+    : 'Enter a game title and platform.';
+  const game = {
+    title,
+    system,
+    year,
+    publisher: source?.publisher,
+    description: source?.description
+  };
+  const snippet = typeof snippetBuilder?.buildSnippet === 'function' && title
+    ? snippetBuilder.buildSnippet(game, title)
+    : '';
+  const warnings = [];
+  if (title && seoTitle.length > 70) warnings.push('The page title is long and may be shortened in Google results.');
+  if (!safeSlug) warnings.push('Enter a valid lowercase hyphenated slug for the canonical URL.');
+  if (title && !snippet) warnings.push('SEO description preview is unavailable; source publishing validation remains active.');
+  // Advisory only: the authoritative publishing preflight remains unchanged.
+  // Detect when the snippet cannot use any meaningful editorial detail and
+  // has fallen back to known release metadata (title/year/platform/publisher).
+  if (title && snippet && typeof snippetBuilder?.buildSnippet === 'function') {
+    const factualFallback = snippetBuilder.buildSnippet({ ...game, description: '', desc: '' }, title);
+    if (snippet === factualFallback) {
+      warnings.push('Google snippet uses only basic release details. Add a verified game-specific gameplay or historical fact to the description.');
+    } else if (snippet.length < 70) {
+      warnings.push('Google snippet is very short. Consider including one additional verified game-specific fact.');
+    }
+  }
+  return {
+    url: safeSlug
+      ? `https://www.cheekycommodoregamer.co.uk/games/${slug}/`
+      : 'https://www.cheekycommodoregamer.co.uk/games/…/',
+    title: seoTitle,
+    description: snippet || 'Enter accurate game details to prepare a factual search description.',
+    warnings
+  };
+}
+
+function installSeoPreview(form) {
+  const panel = document.querySelector('[data-game-seo-preview]');
+  if (!panel || !form) return;
+  const urlNode = panel.querySelector('[data-seo-preview-url]');
+  const titleNode = panel.querySelector('[data-seo-preview-title]');
+  const descriptionNode = panel.querySelector('[data-seo-preview-description]');
+  const statusNode = panel.querySelector('[data-seo-preview-status]');
+
+  const update = () => {
+    const preview = buildGameSeoPreview({
+      title: field('title')?.value,
+      year: field('year')?.value,
+      system: field('system')?.value,
+      slug: field('slug')?.value,
+      publisher: field('publisher')?.value,
+      description: field('description')?.value
+    }, globalThis.CCGGameSeoSnippet);
+    if (urlNode) urlNode.textContent = preview.url;
+    if (titleNode) titleNode.textContent = preview.title;
+    if (descriptionNode) descriptionNode.textContent = preview.description;
+    if (statusNode) {
+      statusNode.textContent = preview.warnings.length
+        ? preview.warnings.join(' ')
+        : 'Draft preview based on supplied metadata. Google may choose different snippet text.';
+      statusNode.dataset.state = preview.warnings.length ? 'warning' : 'ok';
+    }
+  };
+
+  const handleChange = (event) => {
+    if (event.target?.matches?.('[data-game-field]')) update();
+  };
+  form.addEventListener('input', handleChange);
+  form.addEventListener('change', handleChange);
+  update();
+}
+
 function installThumbnailPathAutomation() {
   const title = field('title');
   const slug = field('slug');
@@ -308,6 +392,7 @@ function installPreflight() {
 
   removeLegacyLemonOverrides();
   installDescriptionAutomation();
+  installSeoPreview(form);
   installThumbnailPathAutomation();
   installLemonSourceAutomationHint();
 

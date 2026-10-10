@@ -1,0 +1,136 @@
+/*
+ * CCG homepage optional-support graphic: the supplied 2172x724 artwork.
+ * Isolated to one section near the end of home.html. No scripts, sticky UI,
+ * modals, animations, third-party image calls or fundraising tracker.
+ * Desktop hotspots align with the original image; mobile uses visible links.
+ */
+html[data-ccg-page="home"] .home-support-art {
+  display: block;
+  grid-template-columns: none;
+  gap: 0;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-inline: auto;
+  background: transparent;
+}
+html[data-ccg-page="home"] .home-support-art__canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 1;
+}
+html[data-ccg-page="home"] .home-support-art__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
+  object-fit: contain;
+  border: 0;
+}
+html[data-ccg-page="home"] .home-support-art__hotspot {
+  position: absolute;
+  z-index: 1;
+  box-sizing: border-box;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  text-decoration: none;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+html[data-ccg-page="home"] .home-support-art__hotspot--paypal {
+  left: 70.9%;
+  top: 46.7%;
+  width: 26.4%;
+  height: 16.0%;
+}
+html[data-ccg-page="home"] .home-support-art__hotspot--patreon {
+  left: 71.6%;
+  top: 66.1%;
+  width: 5.8%;
+  height: 6.8%;
+}
+html[data-ccg-page="home"] .home-support-art__hotspot--youtube {
+  left: 77.9%;
+  top: 66.1%;
+  width: 5.7%;
+  height: 6.8%;
+}
+html[data-ccg-page="home"] .home-support-art__hotspot--more {
+  left: 84.1%;
+  top: 66.1%;
+  width: 12.9%;
+  height: 6.8%;
+}
+html[data-ccg-page="home"] .home-support-art__hotspot:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  background: rgba(28, 83, 159, 0.12);
+}
+html[data-ccg-page="home"] .home-support-art__hotspot:hover {
+  background: rgba(150, 213, 255, 0.09);
+}
+html[data-ccg-page="home"] .home-support-art__mobile {
+  display: none;
+}
+@media (max-width: 700px) {
+  html[data-ccg-page="home"] .home-support-art {
+    overflow: hidden;
+    border: 1px solid rgba(120, 205, 255, 0.34);
+    border-radius: 14px;
+    background: rgba(7, 13, 36, 0.85);
+  }
+  html[data-ccg-page="home"][data-mode="amiga"] .home-support-art,
+  html[data-ccg-page="home"][data-ccg-mode="amiga"] .home-support-art {
+    border-color: rgba(237, 160, 255, 0.4);
+  }
+  html[data-ccg-page="home"] .home-support-art__canvas {
+    aspect-ratio: 3 / 1;
+    overflow: hidden;
+  }
+  html[data-ccg-page="home"] .home-support-art__hotspot {
+    display: none;
+  }
+  html[data-ccg-page="home"] .home-support-art__mobile {
+    display: block;
+    padding: 12px 14px 16px;
+    color: #e7f1ff;
+    text-align: left;
+  }
+  html[data-ccg-page="home"] .home-support-art__mobile p {
+    margin: 0 0 11px;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #d8e7f7;
+  }
+  html[data-ccg-page="home"] .home-support-art__mobile-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+  html[data-ccg-page="home"] .home-support-art__mobile-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    color: #a9dcff;
+    font-size: 0.82rem;
+    text-underline-offset: 3px;
+  }
+  html[data-ccg-page="home"] .home-support-art__mobile-links .home-support-art__mobile-primary {
+    padding: 10px 14px;
+    border: 1px solid #76bcff;
+    border-radius: 8px;
+    color: #f6fbff;
+    font-weight: 700;
+    text-decoration: none;
+    background: rgba(13, 54, 131, 0.7);
+  }
+  html[data-ccg-page="home"] .home-support-art__mobile-links a:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+}
