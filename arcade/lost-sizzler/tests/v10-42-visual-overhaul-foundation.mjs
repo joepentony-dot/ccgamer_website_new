@@ -186,4 +186,25 @@ assert.match(renderer,/function renderView\(p,v\)\{\s*retireDungeonStoneReliefWo
 assert.match(renderer.slice(renderer.indexOf("function drawTile(x,y)"),renderer.indexOf("function drawPickupGlyph")),/drawDungeonStoneRelief\(s,x,y,h\)/,"live detailed tiles must own the stone pass");
 assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawTilePerformance"),renderer.indexOf("function drawTile(x,y)")),/drawDungeonStoneRelief/,"severe static-tile fallback must retain its existing cost");
 
+// R128: run the real decorative painter, assert bounded pixels and no new
+// raster/cache/world owners. These checks share the existing visual VM harness.
+const wearPixels=[];stoneSandbox.ctx={fillRect(...rect){wearPixels.push(rect)}};
+const wearCase=(floor,hash,wall,theme,room=null)=>{
+  wearPixels.length=0;stoneSandbox.run.floor=floor;
+  vm.runInContext(`drawCampaignSurfaceWear({x:12,y:24},${hash},${wall},${JSON.stringify(room)},${JSON.stringify(theme)})`,stoneSandbox);
+  return wearPixels.map(rect=>[...rect]);
+};
+for(const [floor,h,wall,theme] of [[4,35,true,"BUDGET_BIN"],[4,35,false,"BUDGET_BIN"],[7,35,true,"MOSS_CRYPT"],[7,35,false,"MOSS_CRYPT"]]){
+  const first=wearCase(floor,h,wall,theme);
+  assert.ok(first.length>=4,`floor ${floor} must add tangible ${wall?"wall":"floor"} detail`);
+  for(const [x,y,w,hgt] of first)assert.ok(x>=12&&y>=24&&w>0&&hgt>0&&x+w<=54&&y+hgt<=66,"wear must stay inside its tile");
+  assert.deepEqual(wearCase(floor,h,wall,theme),first,"wear must be deterministic and animation-independent");
+}
+assert.equal(wearCase(11,35,true,"EMBER_DUNGEON").length,0,"other floors must keep original painter");
+assert.equal(wearCase(4,35,true,"BUDGET_BIN",{sanctuary:true}).length,0,"special rooms must remain unobstructed");
+assert.equal(wearCase(7,35,true,"IRON_KEEP",{variant:0}).length,0,"room-specific alternate theme must be preserved");
+assert.match(renderer,/drawCampaignSurfaceWear\(s,h,true,room,theme\)/,"rich walls must own wear");
+assert.match(renderer,/drawCampaignSurfaceWear\(s,h,false,room,theme\)/,"rich flagstones must own wear");
+assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawTilePerformance"),renderer.indexOf("function drawTile(x,y)")),/drawCampaignSurfaceWear/,"severe tile path must stay unchanged");
+
 console.log("Dungeon Carnage visual-overhaul asset-registry and cached stonework contracts passed.");

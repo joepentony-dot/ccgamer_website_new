@@ -297,6 +297,49 @@ function drawCorridorDetail(s,x,y,h,th){
   if(exits>=3&&h%3===0){ctx.strokeStyle=accent+"70";ctx.lineWidth=2;ctx.strokeRect(s.x+6,s.y+6,C.tile-12,C.tile-12);ctx.fillStyle=accent+"45";ctx.fillRect(cx-3,cy-3,6,6)}
   ctx.restore()
 }
+// R128: zero-allocation floor-specific surface wear in the existing rich tile pass.
+// Deliberately decorative only: no new collision, light, world or save owner.
+function drawCampaignSurfaceWear(s,h,wall,room,theme){
+  const floor=Number(run?.floor)||1,k=h>>>0;
+  if(floor!==4&&floor!==7)return;
+  if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
+  if(room&&theme!==(floor===4?"BUDGET_BIN":"MOSS_CRYPT"))return;
+  if(floor===4){
+    if(wall){
+      if(k%5!==0)return;
+      // Brass-bound vault inspection plates, inset below chipped masonry.
+      ctx.fillStyle="rgba(9,6,3,.56)";ctx.fillRect(s.x+7,s.y+10,28,20);
+      ctx.fillStyle="rgba(162,103,39,.66)";ctx.fillRect(s.x+8,s.y+11,26,3);ctx.fillRect(s.x+8,s.y+26,26,2);
+      ctx.fillStyle="rgba(214,164,76,.48)";ctx.fillRect(s.x+9,s.y+14,2,12);ctx.fillRect(s.x+31,s.y+14,2,12);
+      ctx.fillStyle="rgba(40,25,14,.70)";ctx.fillRect(s.x+13,s.y+15,16,10);
+      ctx.fillStyle="rgba(235,190,93,.78)";ctx.fillRect(s.x+11,s.y+12,2,2);ctx.fillRect(s.x+29,s.y+12,2,2);ctx.fillRect(s.x+11,s.y+25,2,2);ctx.fillRect(s.x+29,s.y+25,2,2);
+      ctx.fillStyle="rgba(154,96,40,.62)";ctx.fillRect(s.x+17,s.y+17,8,2);
+    }else{
+      if(k%7!==0)return;
+      // Partly buried treasury threshold, always under actors and pickups.
+      ctx.fillStyle="rgba(15,9,4,.34)";ctx.fillRect(s.x+7,s.y+25,27,7);
+      ctx.fillStyle="rgba(150,94,36,.56)";ctx.fillRect(s.x+8,s.y+25,25,2);
+      ctx.fillStyle="rgba(238,186,82,.44)";ctx.fillRect(s.x+11,s.y+26,2,3);ctx.fillRect(s.x+29,s.y+26,2,3);
+      ctx.fillStyle="rgba(61,38,20,.45)";ctx.fillRect(s.x+14,s.y+30,14,2);
+    }
+    return;
+  }
+  if(theme!=="MOSS_CRYPT"&&room)return;
+  if(wall){
+    if(k%5!==0)return;
+    // Lichen follows the lower mortar seam rather than coating entire blocks.
+    ctx.fillStyle="rgba(12,25,19,.62)";ctx.fillRect(s.x+5,s.y+28,32,6);
+    ctx.fillStyle="rgba(55,103,61,.72)";ctx.fillRect(s.x+7,s.y+28,15,2);ctx.fillRect(s.x+23,s.y+31,11,2);
+    ctx.fillStyle="rgba(140,164,89,.58)";ctx.fillRect(s.x+10,s.y+27,4,2);ctx.fillRect(s.x+27,s.y+30,4,2);
+    ctx.fillStyle="rgba(25,63,42,.66)";ctx.fillRect(s.x+16,s.y+33,10,2);
+  }else{
+    if(k%7!==0)return;
+    // Damp flagstone seam and sparse moss, below gameplay warning layers.
+    ctx.fillStyle="rgba(6,19,23,.35)";ctx.fillRect(s.x+4,s.y+29,32,5);
+    ctx.fillStyle="rgba(47,97,68,.53)";ctx.fillRect(s.x+6,s.y+29,13,2);ctx.fillRect(s.x+23,s.y+31,10,2);
+    ctx.fillStyle="rgba(153,168,99,.43)";ctx.fillRect(s.x+9,s.y+28,4,2);ctx.fillRect(s.x+28,s.y+30,3,2);
+  }
+}
 function drawTilePerformance(x,y){
   const s=ws(x,y),th=W.themeAt(world,x,y),wall=world.map[y][x]!==0,roomId=W.roomAt(world,x,y),room=world.rooms[roomId],variant=room?.variant||0,h=tileHash(x,y,variant+roomId);
   if(wall){
@@ -345,6 +388,7 @@ function drawTile(x,y){
     else if(theme==="WARP_GALLERY"||theme==="MODEM_EXCHANGE"){ctx.strokeStyle=th.accent+"72";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(s.x+7,s.y+31);ctx.lineTo(s.x+14,s.y+20);ctx.lineTo(s.x+22,s.y+25);ctx.lineTo(s.x+34,s.y+9);ctx.stroke();for(const [nx,ny] of [[7,31],[14,20],[22,25],[34,9]]){ctx.fillStyle=th.accent;ctx.fillRect(s.x+nx-1,s.y+ny-1,3,3)}}
     else if(["IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON","BLOOD_CITADEL"].includes(theme)){ctx.strokeStyle="rgba(20,12,10,.72)";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x+6,s.y+8);ctx.lineTo(s.x+C.tile-6,s.y+C.tile-8);ctx.stroke();ctx.fillStyle="#332821";ctx.fillRect(s.x+5,s.y+5,5,5);ctx.fillRect(s.x+C.tile-10,s.y+C.tile-10,5,5);ctx.fillStyle=th.accent+"70";ctx.fillRect(s.x+7,s.y+7,2,2);ctx.fillRect(s.x+C.tile-9,s.y+C.tile-9,2,2)}
     else if(theme==="SPIDER_NEST"){ctx.strokeStyle="rgba(225,232,244,.34)";ctx.lineWidth=1;const cx=s.x+C.tile/2,cy=s.y+C.tile/2;for(let n=0;n<5;n++){const a=n*Math.PI/4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*22,cy+Math.sin(a)*22);ctx.stroke()}ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.arc(cx,cy,15,0,Math.PI*2);ctx.stroke()}
+    drawCampaignSurfaceWear(s,h,true,room,theme);
     drawDungeonStoneRelief(s,x,y,h);
     return;
   }
@@ -404,6 +448,7 @@ function drawTile(x,y){
       }
     }
   }
+  drawCampaignSurfaceWear(s,h,false,room,theme);
   // Every room gets a deterministic floor signature so even rooms sharing a theme are visually distinct.
   if(room){
     const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),sig=room.signature??room.id;

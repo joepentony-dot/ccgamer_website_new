@@ -1,3 +1,9 @@
+## R128 Floor 4/7 campaign-surface pilot — 10 October 2026, draft source checkpoint
+
+- Proposed single renderer/tranche on main `dc59d8609151452921b2dca07e623411a482c0b4`: authored Floor 4 BUDGET VAULTS and Floor 7 MOSS CRYPT gain sparse, seeded static brass wall plates, worn treasury floor inlays, lichen-filled mortar and damp moss seams respectively. Existing rich drawTile only; alternate room themes and protected rooms keep their own art. No image import, Canvas creation, lighting/fog/collision/saves/world/access changes, or severe quality work. Existing R127 atlas remains untouched.
+- Existing visual foundation VM tests extended to execute four floor/wall cases, deterministic repeat, tile bounds, other-floor isolation, protected rooms and severe-path exclusion. These are source assertions; remote Node/Chromium, fixed-seed screenshot/RAF, packaging, review, merge, production deployment and owner manual acceptance are NOT YET VERIFIED. Do not claim them until real checks run.
+- R127 #2660 already merged; main has since advanced for unrelated game/SEO publishing. Separate Flask #2642 manual acceptance and missing original owner music/voices remain outstanding. No paid package release.
+
 ## R127 P1 explored-viewport cache repair — 9 October 2026, 18:00 UK
 
 - Verified live main `78ee87213150c9fd681c65125d743dabb4593b07`; sole active #2660 / `codex/seo/dungeon-r127-exposed-stonework-20261009` original head `f0bebaf73759ed7ab7418b1fc87fd5126d08a25a`. Independent P1 review `PRRT_kwDOQcoeX86q3ahd` disproved the initial warm-cache assurance outside the starting camera. Actual fixed-seed 40x24 region at (7,10) contains 78 material/mask/hash variations on 203 exposed tiles. Temporary existing-harness reproduction against the original painter fails zero-warm-allocation assertion: 78 new canvases and rasters on each of three warm passes, CPU submission 6.4/6.6/7.5ms. This is CPU Canvas work, not GPU or RAF timing.

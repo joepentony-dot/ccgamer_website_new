@@ -1,3 +1,9 @@
+## R128 Floor 4/7 campaign-surface pilot — 10 October 2026, draft source checkpoint
+
+- Proposed single renderer/tranche on main `dc59d8609151452921b2dca07e623411a482c0b4`: authored Floor 4 BUDGET VAULTS and Floor 7 MOSS CRYPT gain sparse, seeded static brass wall plates, worn treasury floor inlays, lichen-filled mortar and damp moss seams respectively. Existing rich drawTile only; alternate room themes and protected rooms keep their own art. No image import, Canvas creation, lighting/fog/collision/saves/world/access changes, or severe quality work. Existing R127 atlas remains untouched.
+- Existing visual foundation VM tests extended to execute four floor/wall cases, deterministic repeat, tile bounds, other-floor isolation, protected rooms and severe-path exclusion. These are source assertions; remote Node/Chromium, fixed-seed screenshot/RAF, packaging, review, merge, production deployment and owner manual acceptance are NOT YET VERIFIED. Do not claim them until real checks run.
+- R127 #2660 already merged; main has since advanced for unrelated game/SEO publishing. Separate Flask #2642 manual acceptance and missing original owner music/voices remain outstanding. No paid package release.
+
 ## R127 P1 cache repair on #2660 — 9 October 2026, 18:00 UK
 
 - Refreshed main `78ee87213150c9fd681c65125d743dabb4593b07`, #2660 original head `f0bebaf73759ed7ab7418b1fc87fd5126d08a25a`, and unresolved review thread `PRRT_kwDOQcoeX86q3ahd`. Its FIFO-thrashing finding is valid despite the original 18 green checks: the small starting-camera assertion did not qualify explored/fullscreen views. #2653 production and all post-merge checks passed.
