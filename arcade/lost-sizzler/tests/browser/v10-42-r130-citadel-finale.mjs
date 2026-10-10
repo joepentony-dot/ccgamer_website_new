@@ -61,7 +61,7 @@ try{
         mode:String(mode),runComplete:Boolean(run.runComplete),musicCalls:window.__r130MusicCalls,
         title:document.querySelector("#v130-victory-heading")?.textContent?.trim(),
         ceremony:document.querySelectorAll("#v108-completion-credits").length,
-        scoreboard:document.querySelector("#v130-victory-scoreboard")?.textContent?.replace(/\s+/g," ").trim(),
+        scoreboard:document.querySelector(".v130-victory-scoreboard")?.textContent?.replace(/\s+/g," ").trim(),
         bestiary:document.querySelector("#v106-enemy-credits")?.textContent?.includes("Dustweb Spider"),
         games:document.querySelector("#v104-retro-credits")?.textContent?.includes("Bruce Lee"),
         sprites:document.querySelectorAll("#v106-enemy-credits canvas[data-enemy-avatar-index]").length,
@@ -70,6 +70,7 @@ try{
         panelScrollable:Boolean(document.querySelector("#end>.panel")?.scrollHeight>=document.querySelector("#end>.panel")?.clientHeight)
       };
     });
+    console.log("R130 "+testCase.name+" runtime evidence: "+JSON.stringify(completion));
     assert.equal(completion.mode,"ended",testCase.name+" must use canonical ended mode");
     assert.equal(completion.runComplete,true);
     assert.equal(completion.ceremony,1,"one winning ceremony must be mounted");
