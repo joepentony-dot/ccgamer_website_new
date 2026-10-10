@@ -182,6 +182,7 @@ function stripApprovedHomeFooterCssDeferral(html) {
 }
 
 // Explicitly scoped allowance for the optional homepage support-art replacement.
+// Validate the exact approved graphic in both the current and baseline pages.
 // The rest of home.html is still byte-for-byte checked against origin/main.
 function stripApprovedHomeSupportArt(html, role) {
   let source = String(html);
@@ -191,7 +192,7 @@ function stripApprovedHomeSupportArt(html, role) {
   if (!panel) fail("The homepage optional support section is missing.");
 
   if (newPanel) {
-    if (role !== "current") fail("Unexpected graphic support panel in the baseline.");
+    if (role !== "current" && role !== "baseline") fail("Unexpected homepage support validation role.");
     const s = panel[0];
     const expected = [
       '/resources/images/ccg-home-support-neon.webp',
