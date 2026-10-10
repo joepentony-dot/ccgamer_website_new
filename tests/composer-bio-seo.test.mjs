@@ -131,7 +131,7 @@ test("research policy rejects generic CCG filler and adds verified biographies",
   const overridesPath = path.resolve("music/composers", manifest.overrides);
   const overrides = JSON.parse(fs.readFileSync(overridesPath, "utf8"));
 
-  assert.match(manifest.policy, /no generic Cheeky Commodore Gamer archive paragraph/i);
+  assert.match(manifest.policy, /without internal catalogue counts, platform labels, CCG archive wording/i);
   assert.ok(Object.keys(overrides.profiles).length >= 15);
   assert.ok(overrides.profiles["russell-lieblich"]?.sources?.some((source) => /mobygames\.com\/person\/342\//.test(source.url)));
   assert.ok(overrides.profiles["david-hanlon"]?.sources?.some((source) => /c64\.com\/gt_display_interview\.php\?interview=7/.test(source.url)));
@@ -145,7 +145,7 @@ test("Mark Cooksey uses a complete sourced SEO sentence rather than a clipped bi
   assert.ok(profile?.bio);
   const composer = { name: "Mark Cooksey", slug: "mark-cooksey", c64Count: 4, amigaCount: 0, count: 4 };
   const output = enrich.buildDescription(composer, profile, ["Ghosts 'n Goblins"]);
-  assert.equal(output, "Mark Cooksey is an English game composer and audio programmer.");
+  assert.equal(output, "Mark Cooksey is an English game composer and audio programmer. Game-music credits include Ghosts 'n Goblins.");
   assert.ok(output.length <= 158);
   assert.doesNotMatch(output, /…|\.\.\.$/);
   assert.match(output, /[.!?]$/);
