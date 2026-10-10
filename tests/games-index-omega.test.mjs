@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 const require = createRequire(import.meta.url);
-const { build: buildGamesIndex } = require('../scripts/upgrade-games-index.js');
+const { build: buildGamesIndex, DESCRIPTION: authoritativeDescription } = require('../scripts/upgrade-games-index.js');
 
 const games = fs.readFileSync('games/index.html', 'utf8');
 const css = fs.readFileSync('resources/css/ccg-games-index-omega.css', 'utf8');
@@ -16,7 +16,21 @@ const publishing = fs.readFileSync('.github/workflows/games-publishing.yml', 'ut
 
 test('games archive has strong static C64 and Amiga SEO', () => {
   assert.match(games, /<title>C64 &amp; Amiga Games Archive \| Cheeky Commodore Gamer<\/title>/);
-  assert.match(games, /Explore the Cheeky Commodore Gamer C64 and Amiga games archive/);
+  assert.ok(authoritativeDescription.length <= 155, 'authoritative SEO description is concise');
+  assert.match(authoritativeDescription, /[.!?]$/, 'authoritative SEO description ends with a sentence');
+  assert.doesNotMatch(authoritativeDescription, /(?:…|\\.\\.\\.)$/, 'no cut-off ellipsis');
+  for (const tag of [
+    '<meta name="description" content="',
+    '<meta property="og:description" content="',
+    '<meta name="twitter:description" content="'
+  ]) {
+    assert.ok(games.includes(tag + authoritativeDescription + '"'), tag + ' matches authoritative description');
+  }
+  const schemaMatch = games.match(/<script type="application\\/ld\\+json" data-ccg-games-index-schema>([\\s\\S]*?)<\\/script>/);
+  assert.ok(schemaMatch, 'games archive schema is present');
+  const graph = JSON.parse(schemaMatch[1])['@graph'];
+  assert.equal(graph.find((entry) => entry['@type'] === 'CollectionPage').description, authoritativeDescription,
+    'CollectionPage schema shares authoritative description');
   assert.match(games, /<meta name="robots" content="index,follow" \/>/);
   assert.match(games, /<h1 class="games-hero__title">C64 &amp; Amiga Games Archive<\/h1>/);
   assert.match(games, /data-ccg-games-index-schema/);
