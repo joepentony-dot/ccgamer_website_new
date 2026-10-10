@@ -281,10 +281,31 @@ function replaceJsonLd(html, route, profile) {
   }
 }
 
+// Both curated and generated composer pages share one idempotent metadata
+// writer, so search and social excerpts cannot silently diverge.
 function replaceMetaDescription(html, description) {
-  return html.replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
-    .replace(/<meta\s+property="og:description"\s+content="[^"]*">/i, `<meta property="og:description" content="${htmlEscape(description)}">`)
-    .replace(/<meta\s+name="twitter:description"\s+content="[^"]*">/i, `<meta name="twitter:description" content="${htmlEscape(description)}">`);
+  const safe = htmlEscape(description);
+  let next = String(html || "");
+  const standard = '<meta name="description" content="' + safe + '">';
+  if (/<meta\s+name="description"\s+content="[^"]*">/i.test(next)) {
+    next = next.replace(/<meta\s+name="description"\s+content="[^"]*">/i, standard);
+  } else {
+    next = next.replace(/<\/head>/i, standard + "\n</head>");
+  }
+
+  for (const [kind, selector] of [
+    ["property", "og:description"],
+    ["name", "twitter:description"]
+  ]) {
+    const pattern = new RegExp('<meta\\s+' + kind + '="' + selector + '"\\s+content="[^"]*">', 'i');
+    const tag = '<meta ' + kind + '="' + selector + '" content="' + safe + '">';
+    if (pattern.test(next)) {
+      next = next.replace(pattern, tag);
+    } else {
+      next = next.replace(standard, standard + "\n" + tag);
+    }
+  }
+  return next;
 }
 
 function replaceComposerIntro(html, route) {
@@ -414,6 +435,7 @@ module.exports = {
   buildDescription,
   buildEntitySchema,
   buildProfileMarkup,
+  replaceMetaDescription,
   exactSource,
   loadResearchDocument,
   neutralPageDescription,
