@@ -186,4 +186,60 @@ assert.match(renderer,/function renderView\(p,v\)\{\s*retireDungeonStoneReliefWo
 assert.match(renderer.slice(renderer.indexOf("function drawTile(x,y)"),renderer.indexOf("function drawPickupGlyph")),/drawDungeonStoneRelief\(s,x,y,h\)/,"live detailed tiles must own the stone pass");
 assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawTilePerformance"),renderer.indexOf("function drawTile(x,y)")),/drawDungeonStoneRelief/,"severe static-tile fallback must retain its existing cost");
 
+// R128: run the real decorative painter, assert bounded pixels and no new
+// raster/cache/world owners. These checks share the existing visual VM harness.
+const wearPixels=[];stoneSandbox.ctx={fillRect(...rect){wearPixels.push(rect)}};
+const wearCase=(floor,hash,wall,theme,room=null)=>{
+  wearPixels.length=0;stoneSandbox.run.floor=floor;
+  vm.runInContext(`drawCampaignSurfaceWear({x:12,y:24},${hash},${wall},${JSON.stringify(room)},${JSON.stringify(theme)})`,stoneSandbox);
+  return wearPixels.map(rect=>[...rect]);
+};
+for(const [floor,h,wall,theme] of [[4,35,true,"BUDGET_BIN"],[4,35,false,"BUDGET_BIN"],[7,35,true,"MOSS_CRYPT"],[7,35,false,"MOSS_CRYPT"]]){
+  const first=wearCase(floor,h,wall,theme);
+  assert.ok(first.length>=4,`floor ${floor} must add tangible ${wall?"wall":"floor"} detail`);
+  for(const [x,y,w,hgt] of first)assert.ok(x>=12&&y>=24&&w>0&&hgt>0&&x+w<=54&&y+hgt<=66,"wear must stay inside its tile");
+  assert.deepEqual(wearCase(floor,h,wall,theme),first,"wear must be deterministic and animation-independent");
+}
+assert.equal(wearCase(11,35,true,"EMBER_DUNGEON").length,0,"other floors must keep original painter");
+assert.equal(wearCase(4,35,true,"BUDGET_BIN",{sanctuary:true}).length,0,"special rooms must remain unobstructed");
+assert.equal(wearCase(7,35,true,"IRON_KEEP",{variant:0}).length,0,"room-specific alternate theme must be preserved");
+assert.match(renderer,/drawCampaignSurfaceWear\(s,h,true,room,theme\)/,"rich walls must own wear");
+assert.match(renderer,/drawCampaignSurfaceWear\(s,h,false,room,theme\)/,"rich flagstones must own wear");
+assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawTilePerformance"),renderer.indexOf("function drawTile(x,y)")),/drawCampaignSurfaceWear/,"severe tile path must stay unchanged");
+
+// R128 floor identity is a campaign property, not a room-theme requirement.
+// Generate real deterministic floors and exercise the production tile hash.
+const worldFixture={window:{}};
+vm.createContext(worldFixture);
+vm.runInContext(readFileSync(new URL("../js/config.js",import.meta.url),"utf8"),worldFixture,{timeout:1000});
+vm.runInContext(readFileSync(new URL("../js/world.js",import.meta.url),"utf8"),worldFixture,{timeout:1000});
+const generatedWorld=worldFixture.window.CCGWorld;
+const wearPainter=vm.runInContext("drawCampaignSurfaceWear",stoneSandbox);
+const actualHash=vm.runInContext("tileHash",stoneSandbox);
+for(const floor of [4,7]){
+  stoneSandbox.run.floor=floor;
+  const generated=generatedWorld.generate(`ccg-premium-visual-baseline-2026-10-09-F${floor}`);
+  let decorated=0,starting=0,wallMarks=0,floorMarks=0;
+  for(let y=0;y<generated.map.length;y++)for(let x=0;x<generated.map[y].length;x++){
+    const roomId=generatedWorld.roomAt(generated,x,y),room=generated.rooms[roomId],
+      wall=generated.map[y][x]!==0,variant=room?.variant||0;
+    wearPixels.length=0;
+    wearPainter({x:0,y:0},actualHash(x,y,wall?variant:variant+roomId),wall,room,room?.theme||"WARP_GALLERY");
+    if(wearPixels.length){
+      decorated++;
+      if(roomId===generated.startRoomId)starting++;
+      if(wall)wallMarks++;else floorMarks++;
+    }
+  }
+  assert.ok(decorated>100,`generated Floor ${floor} must actually display its campaign patina, not just pass a synthetic room tag`);
+  assert.ok(starting>0,`generated Floor ${floor} starting room must contain visible identity details`);
+  assert.ok(wallMarks>0&&floorMarks>0,`generated Floor ${floor} must decorate both masonry and flagstones`);
+}
+assert.ok(wearCase(4,35,true,"TREASURE_VAULT",{variant:0}).length>0,"treasury rooms must receive rich brass detail");
+assert.ok(wearCase(4,22,true,"C64_ARCHIVE",{variant:0}).length>0,"alternate Floor 4 room themes must retain sparse brass identity");
+assert.ok(wearCase(7,22,true,"C64_ARCHIVE",{variant:0}).length>0,"alternate Floor 7 room themes must retain sparse moss identity");
+assert.ok(wearCase(7,34,false,"WARP_GALLERY").length>0,"Floor 7 corridors must retain damp flagstone detail");
+assert.equal(wearCase(7,22,true,"MOSS_CRYPT",{sanctuary:true}).length,0,"protected rooms must not gain patina");
+assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawCampaignSurfaceWear"),renderer.indexOf("function drawTilePerformance")),/createElement|OffscreenCanvas|new Image|createLinearGradient/,"surface wear must not allocate canvas/images/gradients");
+
 console.log("Dungeon Carnage visual-overhaul asset-registry and cached stonework contracts passed.");

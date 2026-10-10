@@ -1,3 +1,15 @@
+## R128 generated-floor visibility repair — 10 October 2026, proposed unqualified source
+
+- The original #2673 painted brass/moss only if individual room theme matched the campaign floor. Fixed-seed W.generate instead produced zero BUDGET_BIN rooms on Floor 4 and one MOSS_CRYPT room on Floor 7, suppressing player-visible decoration. Corrected painter proposal varies density by TREASURE_VAULT/MOSS_CRYPT room material but permits sparse campaign identity on other generated rooms and corridors, excluding protected rooms. Existing Canvas rich painter and R127 cache remain the sole render owners; no new assets/canvases, collision/fog/save/progression/lighting changes.
+- Local generated-world V8 verification: Floor 4 955 painted cells (680 walls, 275 floor; 5 starting room), Floor 7 863 cells (672 walls, 191 floor; 6 starting room). These are decoration call counts, NOT actual screenshots or GPU/RAF performance; screenshot/visual acceptance must be obtained. Expanded existing visual-foundation test probes W.generate worlds, production tileHash, deterministic bounds, room priorities and severe path.
+- Old exact-head #2673 Full Qualification shard 2 FAILED solo combat endurance round 79 Space attack intent; this issue is not addressed by masonry art. No merge, owner acceptance, paid release or production deployment without all fresh head gates, real graphics evidence and independent review. Original sixteen tracks/voices and Flask exchange acceptance remain separate.
+
+## R128 Floor 4/7 campaign-surface pilot — 10 October 2026, draft source checkpoint
+
+- Proposed single renderer/tranche on main `dc59d8609151452921b2dca07e623411a482c0b4`: authored Floor 4 BUDGET VAULTS and Floor 7 MOSS CRYPT gain sparse, seeded static brass wall plates, worn treasury floor inlays, lichen-filled mortar and damp moss seams respectively. Existing rich drawTile only; alternate room themes and protected rooms keep their own art. No image import, Canvas creation, lighting/fog/collision/saves/world/access changes, or severe quality work. Existing R127 atlas remains untouched.
+- Existing visual foundation VM tests extended to execute four floor/wall cases, deterministic repeat, tile bounds, other-floor isolation, protected rooms and severe-path exclusion. These are source assertions; remote Node/Chromium, fixed-seed screenshot/RAF, packaging, review, merge, production deployment and owner manual acceptance are NOT YET VERIFIED. Do not claim them until real checks run.
+- R127 #2660 already merged; main has since advanced for unrelated game/SEO publishing. Separate Flask #2642 manual acceptance and missing original owner music/voices remain outstanding. No paid package release.
+
 ## R127 cache-thrashing repair — 9 October 2026
 
 - #2660 original green head's P1 review is valid: an explored 40x24 desktop region has 78 variants and FIFO rebuilds 78 canvases/frame. The initial starting-camera evidence was insufficient; do not use its 64-entry claim as performance acceptance.
