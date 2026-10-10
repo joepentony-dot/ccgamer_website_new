@@ -301,8 +301,53 @@ function drawCorridorDetail(s,x,y,h,th){
 // Deliberately decorative only: no new collision, light, world or save owner.
 function drawCampaignSurfaceWear(s,h,wall,room,theme){
   const floor=Number(run?.floor)||1,k=h>>>0;
-  if(floor!==4&&floor!==7)return;
+  if(floor!==4&&floor!==7&&floor!==11&&floor!==15)return;
   if(room&&(room.sanctuary||room.traderRoom||room.sigilRoom||room.voidRoom||room.grandHall))return;
+  // R129: late-floor inscriptions and burn damage belong to the campaign floor,
+  // not to a generated room theme. No animation or Canvas/image allocation.
+  if(floor===11){
+    const core=theme==="EMBER_DUNGEON"||theme==="SID_REACTOR";
+    if(wall){
+      if(k%(core?4:9)!==0)return;
+      // Coal-black stratum bands, fractured slag and buried orange embers.
+      ctx.fillStyle="rgba(13,9,14,.64)";ctx.fillRect(s.x+5,s.y+11,32,22);
+      ctx.fillStyle="rgba(92,57,44,.62)";ctx.fillRect(s.x+7,s.y+13,27,3);ctx.fillRect(s.x+8,s.y+29,26,2);
+      ctx.fillStyle="rgba(29,17,21,.80)";ctx.fillRect(s.x+14,s.y+17,3,10);ctx.fillRect(s.x+17,s.y+23,12,3);
+      ctx.fillStyle="rgba(157,62,31,.70)";ctx.fillRect(s.x+15,s.y+18,2,6);ctx.fillRect(s.x+19,s.y+23,7,2);
+      ctx.fillStyle="rgba(251,134,48,.78)";ctx.fillRect(s.x+15,s.y+20,2,2);ctx.fillRect(s.x+24,s.y+23,3,2);
+      ctx.fillStyle="rgba(237,191,91,.58)";ctx.fillRect(s.x+25,s.y+24,2,1);
+    }else{
+      if(k%(core?5:11)!==0)return;
+      // Two uneven charred fault lines with ember inclusions, under actors.
+      ctx.fillStyle="rgba(11,8,16,.52)";ctx.fillRect(s.x+7,s.y+12,12,3);ctx.fillRect(s.x+17,s.y+15,3,10);ctx.fillRect(s.x+19,s.y+23,16,3);
+      ctx.fillStyle="rgba(143,48,31,.73)";ctx.fillRect(s.x+9,s.y+13,9,2);ctx.fillRect(s.x+18,s.y+17,2,7);ctx.fillRect(s.x+21,s.y+24,11,2);
+      ctx.fillStyle="rgba(255,123,47,.73)";ctx.fillRect(s.x+13,s.y+13,3,2);ctx.fillRect(s.x+18,s.y+20,2,3);ctx.fillRect(s.x+27,s.y+24,3,2);
+      ctx.fillStyle="rgba(251,201,94,.43)";ctx.fillRect(s.x+18,s.y+21,1,2);
+    }
+    return;
+  }
+  if(floor===15){
+    const core=theme==="BLOOD_CITADEL"||theme==="IRON_KEEP";
+    if(wall){
+      if(k%(core?4:9)!==0)return;
+      // Inset iron-and-crimson heraldic relief, with a worn crenelated crown.
+      ctx.fillStyle="rgba(11,7,17,.70)";ctx.fillRect(s.x+7,s.y+8,28,27);
+      ctx.fillStyle="rgba(98,32,49,.78)";ctx.fillRect(s.x+8,s.y+9,26,3);ctx.fillRect(s.x+8,s.y+31,26,2);
+      ctx.fillStyle="rgba(42,22,32,.87)";ctx.fillRect(s.x+11,s.y+14,20,15);
+      ctx.fillStyle="rgba(137,46,61,.75)";ctx.fillRect(s.x+18,s.y+15,6,3);ctx.fillRect(s.x+19,s.y+18,4,8);ctx.fillRect(s.x+16,s.y+21,10,2);
+      ctx.fillStyle="rgba(207,85,92,.72)";ctx.fillRect(s.x+20,s.y+16,2,8);ctx.fillRect(s.x+17,s.y+21,8,2);
+      ctx.fillStyle="rgba(135,104,92,.68)";ctx.fillRect(s.x+9,s.y+11,2,2);ctx.fillRect(s.x+31,s.y+11,2,2);ctx.fillRect(s.x+9,s.y+30,2,2);ctx.fillRect(s.x+31,s.y+30,2,2);
+    }else{
+      if(k%(core?5:11)!==0)return;
+      // Damaged iron floor sigil, a geometric floor mark not a trap marker.
+      ctx.fillStyle="rgba(13,7,17,.48)";ctx.fillRect(s.x+8,s.y+8,26,26);
+      ctx.fillStyle="rgba(103,34,50,.60)";ctx.fillRect(s.x+10,s.y+10,22,2);ctx.fillRect(s.x+10,s.y+31,22,2);ctx.fillRect(s.x+10,s.y+12,2,19);ctx.fillRect(s.x+30,s.y+12,2,19);
+      ctx.fillStyle="rgba(47,20,29,.71)";ctx.fillRect(s.x+16,s.y+16,10,10);
+      ctx.fillStyle="rgba(171,57,66,.68)";ctx.fillRect(s.x+19,s.y+15,4,13);ctx.fillRect(s.x+15,s.y+19,12,4);
+      ctx.fillStyle="rgba(223,98,97,.40)";ctx.fillRect(s.x+20,s.y+17,2,8);
+    }
+    return;
+  }
   // The campaign floor identity is not the same as each generated room theme.
   // Draw sparse patina across the floor; treasury/crypt rooms receive more.
   const core=floor===4?(theme==="BUDGET_BIN"||theme==="TREASURE_VAULT"):theme==="MOSS_CRYPT";
