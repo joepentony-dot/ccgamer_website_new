@@ -143,9 +143,14 @@ test("Mark Cooksey uses a complete sourced SEO sentence rather than a clipped bi
   const research = enrich.loadResearchDocument(path.resolve("music/composers/research.json"));
   const profile = research.profiles["mark-cooksey"];
   assert.ok(profile?.bio);
+  assert.ok(profile.bio.trim().split(/\s+/).length >= 130);
+  assert.match(profile.bio, /Airwolf television theme/);
+  assert.match(profile.bio, /Felix and Storm Warrior/);
+  assert.ok(profile.sources.some((source) => source.url === "https://remix64.com/interviews/interview-mark-cooksey.html"));
+  assert.ok(profile.sources.some((source) => source.url === "https://www.8-bit-symphony.com/mark-cooksey.html"));
   const composer = { name: "Mark Cooksey", slug: "mark-cooksey", c64Count: 4, amigaCount: 0, count: 4 };
   const output = enrich.buildDescription(composer, profile, ["Ghosts 'n Goblins"]);
-  assert.equal(output, "Mark Cooksey is an English game composer and audio programmer. Game-music credits include Ghosts 'n Goblins.");
+  assert.equal(output, "Mark Cooksey is an English game composer and audio programmer whose Commodore 64 work is closely associated with Elite Systems.");
   assert.ok(output.length <= 158);
   assert.doesNotMatch(output, /…|\.\.\.$/);
   assert.match(output, /[.!?]$/);
