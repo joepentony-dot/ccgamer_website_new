@@ -66,3 +66,9 @@ The R120 bug fixes are merged into `main` at `df598b1d3214151bebb5500236c7b6f607
 - `tests/dungeon-carnage-r122-flask-live-transaction.test.mjs` executes the actual shop wrapper in a deterministic Node VM. It covers three ordinary Vessel Essence producing exactly one Banishment Flask without a previous Gold purchase, unchanged Gold and Score, insufficient Essence, two-Essence Seal discount, legacy Artefact/mixed payment, transactional rollback and non-Alchemist/deprecated button rejection.
 - Register that regression in the existing Dungeon PR Qualification workflow alongside R120/R121 tests; preserve all newer main workflow entries and documentation.
 - **Automated contract coverage is not owner hands-on acceptance.** Defect 5 still requires an actual deployed browser run collecting three Essence and exchanging it with the Alchemist (without buying a Gold Flask first), verifying exactly one Flask and unchanged Gold/Score. No paid itch.io or Windows release is authorised by this QA merge.
+
+## R131 Charger warning parity — 11 October 2026 (candidate, not owner accepted)
+
+- Reproducible visual defect: the normal Charger draws the preferred Puny orc-grunt animation and bypasses the procedural fallback's small charge warning despite active `ai.js` `chargeTelegraphMs` and `chargeTarget`.
+- Current R131 branch fixes only the Canvas warning visibility with a static high-contrast marker over all sprite sources; attack timing/damage/movement/game progress are unchanged. A Node VM renderer contract and existing Chromium visual browser contract have been extended; exact-head review, full tests and real desktop/mobile visual acceptance still required before merge.
+- This fix is independent of the outstanding live 3-Essence Flask owner test and unavailable original recorded audio. No paid or Windows/itch release is authorised by the visual change.
