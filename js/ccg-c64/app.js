@@ -1275,11 +1275,9 @@ function serviceAutoStart() {
   if (autoStartSteps && autoStartSteps.length === 0) cancelAutoStart();
 }
 
-async function prepareFreshGameSession() {
-  if (!machine || !running) return;
-  cancelAutoStart();
-  releaseAllInput();
-
+// A fresh game must not inherit a previous disk, tape or cartridge.
+// Keep verified firmware, the downloaded pack cache and Game Vault slots.
+function clearMountedGameMedia() {
   mountedDisk = null;
   mountedDiskKey = null;
   diskSideCache.clear();
@@ -1287,6 +1285,16 @@ async function prepareFreshGameSession() {
   mountedCartridge = null;
   driveMode = "fast";
   localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+  if (diskSlotStatus) diskSlotStatus.textContent = "D64 / D71 / D81 / G64";
+  if (tapeSlotStatus) tapeSlotStatus.textContent = "TAP / T64";
+  if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = "CRT / EASYFLASH";
+}
+
+async function prepareFreshGameSession() {
+  if (!machine || !running) return;
+  cancelAutoStart();
+  releaseAllInput();
+  clearMountedGameMedia();
 
   const fresh = new C64Machine();
   fresh.loadROMs({
@@ -1915,6 +1923,10 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   }
 
   const wasRunning = running;
+  // EXIT GAME powers off the machine but intentionally retains mounted media.
+  // Remove that media BEFORE powerOn() reattaches it to the new C64 instance.
+  // Otherwise a previous CRT can boot again instead of the selected PRG/D64.
+  if (freshBoot && !wasRunning) clearMountedGameMedia();
   if (!running) await powerOn();
   if (!running || !machine) return false;
   if (freshBoot && wasRunning) await prepareFreshGameSession();
