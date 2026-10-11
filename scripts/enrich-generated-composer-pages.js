@@ -118,41 +118,74 @@ function extractGameTitles(html) {
     .filter(Boolean);
 }
 
+const MAX_COMPOSER_DESCRIPTION = 158;
+
+// Source-led composer snippets must never finish with cut-off punctuation.
 function firstSentence(value) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
-  if (!text) return "";
-  const match = text.match(/^.*?[.!?](?:\s|$)/);
-  return (match ? match[0] : text).trim();
+  for (const match of text.matchAll(/[.!?]+(?=["'’”]?\s|$)/g)) {
+    if (match[0].includes("...")) continue;
+    return text.slice(0, match.index + match[0].length).trim();
+  }
+  return text;
 }
 
-function clampMetaDescription(value) {
+function isCompleteSnippet(text) {
+  return text.length <= MAX_COMPOSER_DESCRIPTION
+    && /[.!?]["'’”]?$/.test(text)
+    && !/(?:…|\.\.\.)/.test(text)
+    && !/\b(?:and|with|or)\s*[.!?]$/i.test(text);
+}
+
+function completeSourcedSnippet(value) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
-  if (text.length <= 158) return text;
-  return `${text.slice(0, 155).replace(/[\s,;:.!-]+$/g, "")}…`;
+  if (!text) return "";
+  const sentence = firstSentence(text);
+  const finished = /[.!?]["'’”]?$/.test(sentence) ? sentence : sentence + ".";
+  if (isCompleteSnippet(finished)) return finished;
+
+  // Drop subordinate clauses only at grammatical boundaries established by
+  // the supplied biography, never at a fixed character offset.
+  const clause = sentence.match(/^(.{35,}?)(?:\s+(?:whose|who|which)\b|,\s+)/i);
+  if (clause) {
+    const concise = clause[1].replace(/[\s,;:.!-]+$/g, "") + ".";
+    if (isCompleteSnippet(concise)) return concise;
+  }
+  return "";
 }
 
 function buildDescription(route, profile, titles) {
+  const name = String(route?.name || "").trim();
+  const firstTitle = String(titles?.[0] || "").trim();
+  const label = platformLabel(route);
+  const titleCredit = firstTitle
+    ? name + " " + label + " game-music credits include " + firstTitle + "."
+    : "";
+  const neutral = name + " " + label + " game-music credits, linked releases and playable tracks where available.";
+  const fallback = completeSourcedSnippet(titleCredit)
+    || completeSourcedSnippet(name + " has " + (Number(route?.count) || 0) + " linked " + label + " game-music credits.")
+    || completeSourcedSnippet(neutral);
+
   if (profile?.seoDescription) {
-    return clampMetaDescription(profile.seoDescription);
+    const explicit = completeSourcedSnippet(profile.seoDescription);
+    if (explicit) return explicit;
   }
 
-  const firstTitle = titles[0] || "";
   if (profile?.bio) {
     let text = firstSentence(profile.bio);
-    if (text && !text.toLowerCase().includes(String(route.name || "").toLowerCase())) {
-      text = `${route.name}: ${text}`;
+    if (text && name && !text.toLowerCase().includes(name.toLowerCase())) {
+      text = name + ": " + text;
     }
-    if (text.length < 112 && firstTitle) {
-      text += ` Game-music credits include ${firstTitle}.`;
+    const sourced = completeSourcedSnippet(text);
+    if (sourced) {
+      if (sourced.length < 112 && firstTitle) {
+        const combined = sourced + " Game-music credits include " + firstTitle + ".";
+        if (isCompleteSnippet(combined)) return combined;
+      }
+      return sourced;
     }
-    return clampMetaDescription(text);
   }
-
-  const label = platformLabel(route);
-  const example = firstTitle ? `, including ${firstTitle}` : "";
-  return clampMetaDescription(
-    `${route.name} ${label} game-music credits${example}, linked releases and playable tracks where available.`
-  );
+  return fallback;
 }
 
 function buildProfileMarkup(route, profile) {
@@ -248,10 +281,31 @@ function replaceJsonLd(html, route, profile) {
   }
 }
 
+// Both curated and generated composer pages share one idempotent metadata
+// writer, so search and social excerpts cannot silently diverge.
 function replaceMetaDescription(html, description) {
-  return html.replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
-    .replace(/<meta\s+property="og:description"\s+content="[^"]*">/i, `<meta property="og:description" content="${htmlEscape(description)}">`)
-    .replace(/<meta\s+name="twitter:description"\s+content="[^"]*">/i, `<meta name="twitter:description" content="${htmlEscape(description)}">`);
+  const safe = htmlEscape(description);
+  let next = String(html || "");
+  const standard = '<meta name="description" content="' + safe + '">';
+  if (/<meta\s+name="description"\s+content="[^"]*">/i.test(next)) {
+    next = next.replace(/<meta\s+name="description"\s+content="[^"]*">/i, standard);
+  } else {
+    next = next.replace(/<\/head>/i, standard + "\n</head>");
+  }
+
+  for (const [kind, selector] of [
+    ["property", "og:description"],
+    ["name", "twitter:description"]
+  ]) {
+    const pattern = new RegExp('<meta\\s+' + kind + '="' + selector + '"\\s+content="[^"]*">', 'i');
+    const tag = '<meta ' + kind + '="' + selector + '" content="' + safe + '">';
+    if (pattern.test(next)) {
+      next = next.replace(pattern, tag);
+    } else {
+      next = next.replace(standard, standard + "\n" + tag);
+    }
+  }
+  return next;
 }
 
 function replaceComposerIntro(html, route) {
@@ -381,6 +435,7 @@ module.exports = {
   buildDescription,
   buildEntitySchema,
   buildProfileMarkup,
+  replaceMetaDescription,
   exactSource,
   loadResearchDocument,
   neutralPageDescription,

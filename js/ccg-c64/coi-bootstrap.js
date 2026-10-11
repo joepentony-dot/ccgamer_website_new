@@ -7,6 +7,7 @@ const WORKER_URL = "/emulator/c64/coi-service-worker.js";
 const WORKER_SCOPE = "/emulator/c64/";
 const RELOAD_KEY = "ccg.c64.coi.reloadCount";
 const MAX_RELOADS = 2;
+const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261011_game_switch_v1";
 
 const machineState = document.querySelector("[data-machine-state]");
 const stageNote = document.querySelector("[data-stage-note]");
@@ -60,26 +61,33 @@ function waitForState(worker, wanted, timeoutMs = 8000) {
   });
 }
 
+async function startCompatibilityMode(reason) {
+  console.warn("[ccg-c64] Starting without shared SID audio:", reason);
+  setStatus("STARTING C64 IN COMPATIBILITY MODE",
+    "Browser isolation could not be enabled. Games will run without SID sound in this session.");
+  try {
+    await import(APP_URL);
+  } catch (error) {
+    console.error("[ccg-c64] Compatibility startup failed:", error);
+    setStatus("C64 STARTUP FAILED",
+      "The emulator could not start on this browser. Reload this page or try an up-to-date Safari tab.");
+  }
+}
+
 async function start() {
   if (isolated()) {
     clearReloadCount();
-    await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_snap_v2");
+    await import(APP_URL);
     return;
   }
 
   if (!window.isSecureContext || !("serviceWorker" in navigator)) {
-    setStatus(
-      "BROWSER ISOLATION UNAVAILABLE",
-      "This browser session cannot enable SharedArrayBuffer. Open the HTTPS page in a current Chrome, Edge or Firefox tab."
-    );
+    await startCompatibilityMode("Secure service-worker isolation is unavailable.");
     return;
   }
 
   if (reloadCount() >= MAX_RELOADS) {
-    setStatus(
-      "BROWSER ISOLATION FAILED",
-      "The emulator could not enable SharedArrayBuffer after reloading. Close this tab, reopen the emulator and try again."
-    );
+    await startCompatibilityMode("Cross-origin isolation was not enabled after reloading.");
     return;
   }
 
@@ -109,10 +117,7 @@ async function start() {
     location.reload();
   } catch (error) {
     console.error("[ccg-c64] Could not prepare isolated runtime:", error);
-    setStatus(
-      "BROWSER ISOLATION FAILED",
-      "The emulator could not prepare its SharedArrayBuffer runtime. Reload the page once; if it persists, reopen it in a current Chrome, Edge or Firefox tab."
-    );
+    await startCompatibilityMode("The isolation service worker could not be prepared.");
   }
 }
 
