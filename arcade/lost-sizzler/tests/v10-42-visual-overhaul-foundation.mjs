@@ -152,7 +152,7 @@ vm.runInContext(renderer,stoneSandbox,{timeout:1000});
   const fallbackArrow=draws.find(row=>typeof row==="object"&&row.kind==="arrow");
   const fallbackCircle=draws.find(row=>typeof row==="object"&&row.kind==="arc");
   assert.ok(fallbackArrow.args[0]<fallbackCircle.args[0],"missing charge target must use enemy facing rather than NaN coordinates");
-  assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawEnemyChargeTelegraph("),renderer.indexOf("function drawEnemy(e)")),/performance\\.now|Math\\.sin|requestAnimationFrame|createRadialGradient/,"the warning must remain static under reduced-motion and severe performance");
+  assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawEnemyChargeTelegraph("),renderer.indexOf("function drawEnemy(e)")),/performance\.now|Math\.sin|requestAnimationFrame|createRadialGradient/,"the warning must remain static under reduced-motion and severe performance");
   stoneSandbox.ctx=originalCtx;
 }
 
