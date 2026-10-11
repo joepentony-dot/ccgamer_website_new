@@ -16,6 +16,7 @@ const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
 const html = read("emulator/c64/index.html");
 const css = read("resources/css/ccg-c64-emulator.css");
 const app = read("js/ccg-c64/app.js");
+const machine = read("js/ccg-c64/core/machine.js");
 const cia = read("js/ccg-c64/core/cia.js");
 const audioWorklet = read("js/ccg-c64/core/sid/sid-worklet.js");
 const sidWasmBlob = read("js/ccg-c64/core/sid/sid-wasm-blob.js");
@@ -144,11 +145,16 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_snap_v2"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261011_ios_silent_fallback_v1"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_snap_v2")'), "COI bootstrap must import the emulator only after isolation");
+assert(coiBootstrap.includes('const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261011_ios_silent_fallback_v1"') &&
+  coiBootstrap.includes("await import(APP_URL)"), "COI bootstrap must import the versioned emulator entry");
+assert(coiBootstrap.includes("await startCompatibilityMode(") &&
+  machine.includes("this.sidShared = sharedSidAvailable ? new SharedArrayBuffer") &&
+  app.includes('updateAudioUi("SILENT COMPATIBILITY MODE")'),
+  "Browsers without shared memory must still boot C64 video and controls in silent mode");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
@@ -247,7 +253,7 @@ assert(app.includes("packedCatalogueError") &&
 assert(app.includes("directGameKeys") && app.includes("!directGameKeys.has("),
   "Archived game pack must not duplicate already hosted D64/CRT titles");
 assert(app.includes('fetch("/emulator/c64/library.json"'), "Online Library must load from the CCG manifest");
-assert(app.includes('import { C64Machine } from "./core/machine.js"'), "Machine core must be wired into the CCG app");
+assert(app.includes('import { C64Machine } from "./core/machine.js?ccg_rev=20261011_ios_silent_fallback_v1"'), "Machine core must be wired into the CCG app");
 assert(app.includes("machine.runFrame()"), "PAL frame execution must be wired");
 assert(app.includes("machine.loadPRG(bytes)"), "Stage 2 quick PRG loading must be wired");
 assert(app.includes('import { KEY_MAP, CHAR_MAP } from "./core/cia.js"'), "C64 keyboard matrix maps must be wired");

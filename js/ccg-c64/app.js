@@ -1,6 +1,6 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
 import { HOSTED_ROM_VERSION, fetchVerifiedHostedROMs, installHostedROMs } from "./hosted-roms.js";
-import { C64Machine } from "./core/machine.js";
+import { C64Machine } from "./core/machine.js?ccg_rev=20261011_ios_silent_fallback_v1";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
@@ -543,6 +543,10 @@ async function ensureAudioGraph() {
 
 async function wireAudioToMachine() {
   if (!machine) return false;
+  if (!machine.sidShared) {
+    updateAudioUi("SILENT COMPATIBILITY MODE");
+    return false;
+  }
   try {
     if (!await ensureAudioGraph()) return false;
     sidNode.port.postMessage({
@@ -561,6 +565,14 @@ async function wireAudioToMachine() {
     return false;
   }
 }
+
+// iOS Safari normally requires a real screen tap before starting or resuming Web Audio.
+// Keep desktop autoplay behaviour, but recover the SID graph on a later gesture.
+document.addEventListener("pointerdown", () => {
+  if (sidNode && machine?.sidShared && audioContext?.state === "suspended") {
+    void audioContext.resume().then(() => updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE")).catch(() => {});
+  }
+}, { passive: true });
 
 function resetAudioForMachine() {
   if (!sidNode || !machine) return;
@@ -1084,7 +1096,7 @@ function drawStatus(snapshot, message = null) {
 }
 
 function setControlState(snapshot) {
-  const canBoot = snapshot.allRequiredReady && typeof SharedArrayBuffer !== "undefined";
+  const canBoot = snapshot.allRequiredReady;
   if (powerButton) powerButton.disabled = !canBoot;
   if (resetButton) resetButton.disabled = !running;
   if (pauseButton) pauseButton.disabled = !running;
@@ -1142,8 +1154,8 @@ function render(snapshot) {
   if (romExportButton) romExportButton.disabled = !snapshot.allRequiredReady;
 
   if (!running && machineState) {
-    if (snapshot.allRequiredReady && typeof SharedArrayBuffer === "undefined") {
-      machineState.textContent = "ROM BANK READY // SECURE CORE HEADERS REQUIRED";
+    if (snapshot.allRequiredReady && !window.crossOriginIsolated) {
+      machineState.textContent = "ROM BANK READY // SILENT COMPATIBILITY MODE";
     } else {
       machineState.textContent = snapshot.allRequiredReady
         ? "SYSTEM ROMS READY // LOAD MEDIA OR BOOT"
@@ -1416,7 +1428,7 @@ async function powerOn() {
     running = false;
     if (machineState) machineState.textContent = "BOOT BLOCKED";
     drawStatus(snapshot, error?.message || "CORE START FAILED");
-    if (stageNote) stageNote.textContent = "Boot could not start. On the deployed route, the emulator requires the scoped secure COOP/COEP headers already added to this branch.";
+    if (stageNote) stageNote.textContent = "Boot could not start: " + (error?.message || "Unknown emulator error") + ". Reload the page and try again.";
     setControlState(snapshot);
   }
 }
@@ -2613,7 +2625,7 @@ async function bootWithHostedFirmware() {
       (error?.message || "");
     render(vault.snapshot());
   }
-  if (vault.snapshot().allRequiredReady && typeof SharedArrayBuffer !== "undefined" && !running) {
+  if (vault.snapshot().allRequiredReady && !running) {
     await powerOn();
   }
 }
