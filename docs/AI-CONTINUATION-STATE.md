@@ -1,3 +1,8 @@
+## R131 charger warning guarded draft — 11 October 2026
+
+- R122 #2642 Flask QA merged at main 47ce0891f25198fa87c24c94ea4bd8df1c033241; postmerge Site Safety, Pages, Workers, SEO and live navigation passed. Owner physical Flask acceptance remains outstanding.
+- Candidate R131 uses the existing R51 shared enemy-render wrapper to show the real 360ms/520ms AI charge wind-up across Puny/authored/boss/fallback art, static under reduced motion and severe, fog/viewport guarded, no gameplay/asset change. Existing R51 Node VM and focused Chromium viewport contracts extend with deterministic warning raster and RAF evidence. Await exact-head CI, all six shards, independent review, owner live combat screenshots and guarded merge. No commercial release; original 16 MP3s and voice cues remain unavailable.
+
 ## R130 Floor 15 ceremonial finale candidate — 10 October 2026, 13:20 BST (unqualified draft)
 
 - R128 Floor 4/7 and R129 Floor 11/15 environments are merged and present in latest main 92027150649bbaa35c94536f37ad5b44afd79c58. Start a single guarded R130 continuation from exact main; do not race Codex or modify the separate Flask, audio, C64 mobile and SEO PRs.

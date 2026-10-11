@@ -57,6 +57,38 @@ try{
   await page.waitForFunction(()=>mode==="playing"&&Boolean(p1));
   await page.waitForFunction(()=>Boolean(document.fullscreenElement));
   await page.waitForTimeout(200);
+
+  // R131: actual Chromium Canvas pixels and RAF evidence on desktop and touch.
+  if(width===1920||mobile){
+    await page.waitForFunction(()=>typeof window.CCGLostSizzlerV141R51VisualUIOverhaul?.drawEnemyChargeWarning==="function");
+    if(mobile)await page.emulateMedia({reducedMotion:"reduce"});
+    const evidence=await page.evaluate(async()=>{
+      const sample=document.createElement("canvas");sample.width=240;sample.height=180;
+      const brush=sample.getContext("2d",{willReadFrequently:true});
+      const enemy={kind:"charger",chargeTelegraphMs:360,chargeTarget:{x:7,y:6}},before=JSON.stringify(enemy);
+      const draw=window.CCGLostSizzlerV141R51VisualUIOverhaul.drawEnemyChargeWarning;
+      const paint=()=>{brush.fillStyle="#111019";brush.fillRect(0,0,240,180);return draw(enemy,{x:112,y:88,tile:48},brush)};
+      const rendered=paint(),png=sample.toDataURL("image/png");
+      const stable=paint()&&png===sample.toDataURL("image/png");
+      const border=Array.from(brush.getImageData(82,59,1,1).data);
+      const bar=Array.from(brush.getImageData(89,108,1,1).data);
+      const frames=[];await new Promise(resolve=>{const step=t=>{frames.push(t);if(frames.length<25)requestAnimationFrame(step);else resolve()};requestAnimationFrame(step)});
+      const intervals=frames.slice(1).map((t,i)=>t-frames[i]).sort((a,b)=>a-b);
+      return{rendered,stable,unchanged:JSON.stringify(enemy)===before,border,bar,png,
+        raf:{count:intervals.length,p50:intervals[Math.floor(intervals.length*.5)],p95:intervals[Math.floor(intervals.length*.95)]},
+        reducedMotion:matchMedia("(prefers-reduced-motion: reduce)").matches};
+    });
+    assert.equal(evidence.rendered,true,"charge warning must paint in Chromium");
+    assert.equal(evidence.stable,true,"charge warning must remain deterministic");
+    assert.equal(evidence.unchanged,true,"charge warning cannot mutate enemy state");
+    assert.ok(evidence.border[0]>evidence.border[1],"warning border must be red");
+    assert.ok(evidence.bar[0]>150&&evidence.bar[1]>100,"warning countdown must be gold");
+    assert.ok(evidence.raf.count>=24&&Number.isFinite(evidence.raf.p95),"RAF pacing must be recorded");
+    if(mobile)assert.equal(evidence.reducedMotion,true,"touch reduced-motion warning must be visible");
+    fs.writeFileSync(path.join(artifacts,`${label}-r131-charge-warning.png`),Buffer.from(evidence.png.split(",")[1],"base64"));
+    fs.writeFileSync(path.join(artifacts,`${label}-r131-charge-warning-raf.json`),JSON.stringify({viewport:{width,height},...evidence,png:undefined},null,2));
+    if(mobile)await page.emulateMedia({reducedMotion:"no-preference"});
+  }
   await page.evaluate(()=>{
     p1.inventorySlots=6;p1.bronzeKeys=4;host.keysCollected=3;host.exitSigilCollected=true;
     p1.inventory=[{kind:"potion",qty:3},{kind:"torch",qty:1},{kind:"teleport",qty:2},{kind:"banishment",qty:2},{kind:"artefact",qty:3},CCGLostSizzlerV142R80WearableEquipment.makeWearable({id:"viewport-gear",depth:4},p1)];

@@ -129,6 +129,20 @@
     if(!constrained()&&(e?.follower||e?.champion||e?.guardian||e?.exitWarden)){const pulse=reduced()?.4:.28+.12*Math.sin(t/380);ctx.globalAlpha=pulse;ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();ctx.arc(s.x,s.y,s.tile*.48,0,Math.PI*2);ctx.stroke()}
     ctx.restore()
   }
+  // R131: shared deterministic charge-warning frame after all enemy sprite routes.
+  function drawEnemyChargeWarning(e,s,paint=ctx){
+    const remaining=num(e?.chargeTelegraphMs);
+    if(!(remaining>0)||!e?.chargeTarget||!s)return false;
+    const duration=e?.follower?.name==="Swanh8ter"?520:360;
+    const progress=Math.max(0,Math.min(1,remaining/duration));
+    const x=Math.round(s.x-s.tile/2-6),y=Math.round(s.y-s.tile/2-5),w=s.tile+12,h=s.tile+10;
+    paint.save();paint.imageSmoothingEnabled=false;
+    paint.strokeStyle=P.red;paint.lineWidth=2;paint.strokeRect(x,y,w,h);
+    paint.fillStyle="#260d14";paint.fillRect(x+5,y+h-11,w-10,6);
+    paint.fillStyle=P.gold;paint.fillRect(x+6,y+h-10,Math.max(1,Math.round((w-12)*progress)),4);
+    paint.fillStyle=P.red;paint.fillRect(x-4,y+Math.round(h/2)-3,4,6);paint.fillRect(x+w,y+Math.round(h/2)-3,4,6);
+    paint.restore();return true
+  }
   function enemyTransform(e){
     if(reduced()||constrained())return{sx:1,sy:1,dy:0};const t=now(),walking=e?.aiState==="chase"||e?.aiState==="search",seed=String(e?.id||e?.kind||"").length;
     if(num(e?.flash)>0)return{sx:1.06,sy:.94,dy:1};
@@ -140,7 +154,7 @@
     const wrapped=function drawEnemyV141R51(e){
       if(!e?.alive)return current.apply(this,arguments);state.enemyFrames++;let s=null;try{s=enemyScreenPoint(e);drawEnemyBackdrop(e)}catch(error){state.lastError=String(error?.message||error)}
       if(!s)return current.apply(this,arguments);const tr=enemyTransform(e);ctx.save();ctx.translate(s.x,s.y+tr.dy);ctx.scale(tr.sx,tr.sy);ctx.translate(-s.x,-s.y);let result;try{result=current.apply(this,arguments)}finally{ctx.restore()}
-      try{drawEnemyOverlay(e)}catch(error){state.lastError=String(error?.message||error)}return result
+      try{drawEnemyOverlay(e);if(typeof visibleTo==="function"&&typeof tileInRenderView==="function"&&visibleTo(focus,e.x,e.y)&&tileInRenderView(e.x,e.y,3))drawEnemyChargeWarning(e,s)}catch(error){state.lastError=String(error?.message||error)}return result
     };
     wrapped.__ccgV141R51VisualPolish=true;wrapped.__ccgOriginal=current;window.drawEnemy=wrapped;state.enemySource=current;state.enemyWrapper=wrapped;return true
   }
@@ -167,7 +181,7 @@
       state.runObserver=new MutationObserver(handleRunChange);state.runObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});if(activeGameplay())scheduleGameplayVisuals()
     },STARTUP_DELAY_MS)
   }
-  window.CCGLostSizzlerV141R51VisualUIOverhaul={install,installGameplayVisuals,scheduleGameplayVisuals,enhanceMenu,updateLighting,playerTransform,enemyTransform,performanceTier,get state(){return state}};
+  window.CCGLostSizzlerV141R51VisualUIOverhaul={install,installGameplayVisuals,scheduleGameplayVisuals,enhanceMenu,updateLighting,playerTransform,enemyTransform,drawEnemyChargeWarning,performanceTier,get state(){return state}};
   start();
   addEventListener("pagehide",()=>{if(state.startupTimer)clearTimeout(state.startupTimer);if(state.gameplayTimer)clearTimeout(state.gameplayTimer);if(state.installTimer)clearInterval(state.installTimer);if(state.lightingTimer)clearInterval(state.lightingTimer);state.runObserver?.disconnect();state.startupTimer=state.gameplayTimer=state.installTimer=state.lightingTimer=0},{once:true});
 })();

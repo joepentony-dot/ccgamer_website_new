@@ -1,3 +1,9 @@
+## R131 charge telegraph render-owner checkpoint — 11 October 2026 (draft, not merged)
+
+- #2642 Flask QA merged to main 47ce0891f25198fa87c24c94ea4bd8df1c033241; postmerge Pages/Workers/SEO/live navigation/Site Safety green. Owner manual Flask browser exchange remains open.
+- Real AI chargeTelegraphMs is 360ms for standard charger and 520ms for named SwanH8ter. The small original warning only appears in procedural charger fallback; normal preferred Puny art misses it. R131 extends the existing R51 drawEnemy wrapper with a static post-sprite red frame and gold remaining-time bar, preserving fog and viewport checks, reduced-motion/severe, all enemy identities and unchanged combat timing/state. No new assets, gradients, timers, Canvas allocations, AI/collision/saves/access changes.
+- Existing R51 Node VM and focused Chromium viewport tests cover deterministic warning pixels, standard/named half/full timing, real browser Canvas PNG and RAF samples on desktop/mobile. Live combat screenshot and owner acceptance still needed. Guard exact-head full six shards, Node/browser, site/SEO/Workers and independent review before merge. Original soundtrack MP3s and voices remain external blockers; no paid release.
+
 ## R130 Floor 15 ceremonial finale candidate — 10 October 2026, 13:20 BST (unqualified draft)
 
 - R128 Floor 4/7 and R129 Floor 11/15 environments are merged and present in latest main 92027150649bbaa35c94536f37ad5b44afd79c58. Start a single guarded R130 continuation from exact main; do not race Codex or modify the separate Flask, audio, C64 mobile and SEO PRs.

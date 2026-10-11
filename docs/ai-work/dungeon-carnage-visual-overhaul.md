@@ -1,3 +1,9 @@
+## R131 charger warning candidate — 11 October 2026 (draft; not merged)
+
+- #2642 Flask QA merged to main 47ce0891f25198fa87c24c94ea4bd8df1c033241. Pages, Workers, SEO, live navigation and postmerge Site Safety run 38180130903 passed. Owner manual Flask transaction acceptance remains outstanding.
+- Real AI gives standard chargers 360ms chargeTelegraphMs and named SwanH8ter 520ms. The original fallback sprite alone showed a tiny charge glint, while preferred Puny orcGrunt art bypasses that fallback. R131 reuses the existing R51 shared drawEnemy wrapper to add one deterministic post-sprite red warning frame and gold shrinking countdown for all rendered enemy art paths. The tiny legacy fallback glint remains; no new animation owner, timer, image, gradient, game state, AI, collision, fog or save change. Visibility and viewport guards prevent warning through unexplored tiles.
+- Existing R51 Node VM contract executes the real warning helper for inactive, no target, standard full/half and named full/half states, stable geometry and Canvas state. Existing focused viewport Chromium owner records isolated warning Canvas PNGs and RAF samples for 1920px desktop and 390px touch with reduced motion. These synthetic marker captures do not prove a live encounter is accepted. Exact-head six-shard/fast/browser/site/SEO/Workers qualification and independent review required before guarded merge. Original owner 16 MP3s/voice assets and manual Flask QA remain blockers to commercial release.
+
 ## R130 Floor 15 ceremonial finale candidate — 10 October 2026, 13:20 BST (unqualified draft)
 
 - R128 Floor 4/7 and R129 Floor 11/15 environments are merged and present in latest main 92027150649bbaa35c94536f37ad5b44afd79c58. Start a single guarded R130 continuation from exact main; do not race Codex or modify the separate Flask, audio, C64 mobile and SEO PRs.

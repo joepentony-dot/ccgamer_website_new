@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 import {fileURLToPath} from "node:url";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -43,4 +44,26 @@ assert.match(css,/\.overlay:not\(\.hidden\)>\.panel/);
 assert.match(css,/\.online-lobby-card/);
 assert.match(css,/body\.ccg-reduced-motion/);
 for(const forbidden of [/p1\.x\s*=/,/p1\.y\s*=/,/e\.hp\s*=/,/health\s*[-+]=/,/score\s*=/,/net\.send\(/,/joinOrCreate\(/,/saveCheckpoint/,/Supabase/i])assert.doesNotMatch(src,forbidden,"R51 renderer/UI layer must not own gameplay, networking or persistence");
-console.log("Lost Sizzler V10.41 r51 visual/UI ownership, adaptive performance and usability contract passed.");
+
+const helper=src.match(/  function drawEnemyChargeWarning\(e,s,paint=ctx\)\{[\s\S]*?\n  \}/)?.[0];
+assert.ok(helper,"shared R131 charge painter must exist");
+assert.match(src,/drawEnemyOverlay\(e\);if\(typeof visibleTo==="function"&&typeof tileInRenderView==="function"/,"fog and viewport must guard warning");
+const paints=[],states=[];
+const sandbox={num:v=>Number(v)||0,C:{tile:48},P:{red:"#ff355b",gold:"#ffd65b"},
+  ctx:{save(){states.push(1)},restore(){states.push(-1)},strokeRect(...v){paints.push(["stroke",...v])},fillRect(...v){paints.push(["fill",...v])}}};
+vm.createContext(sandbox);vm.runInContext(helper+";globalThis.drawCharge=drawEnemyChargeWarning;",sandbox);
+const probe=e=>{paints.length=0;states.length=0;const old=JSON.stringify(e),result=sandbox.drawCharge(e,{x:112,y:88,tile:48});
+  assert.equal(JSON.stringify(e),old);assert.equal(states.reduce((a,b)=>a+b,0),0);return{result,ops:paints.map(v=>[...v])}};
+assert.equal(probe({chargeTelegraphMs:0,chargeTarget:{x:1,y:1}}).result,false);
+assert.equal(probe({chargeTelegraphMs:360}).result,false);
+const full=probe({chargeTelegraphMs:360,chargeTarget:{x:1,y:1}});
+assert.equal(full.result,true);
+assert.deepEqual(full.ops[0],["stroke",82,59,60,58]);
+assert.deepEqual(full.ops[2],["fill",88,107,48,4]);
+assert.deepEqual(probe({chargeTelegraphMs:180,chargeTarget:{x:1,y:1}}).ops[2],["fill",88,107,24,4]);
+assert.deepEqual(probe({chargeTelegraphMs:520,chargeTarget:{x:1,y:1},follower:{name:"Swanh8ter"}}).ops[2],["fill",88,107,48,4]);
+assert.deepEqual(probe({chargeTelegraphMs:260,chargeTarget:{x:1,y:1},follower:{name:"Swanh8ter"}}).ops[2],["fill",88,107,24,4]);
+assert.deepEqual(probe({chargeTelegraphMs:360,chargeTarget:{x:1,y:1}}).ops,full.ops);
+assert.doesNotMatch(helper,/performance\.now|Math\.sin|requestAnimationFrame|createElement|createRadialGradient|createLinearGradient/);
+
+console.log("Lost Sizzler V10.41 r51 visual/UI, charge-warning and usability contracts passed.");
