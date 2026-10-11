@@ -90,6 +90,48 @@ try{
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
 
+  // R131 charge warning browser: exercise the actual Canvas painter under
+  // reduced-motion AND severe quality, without changing player or enemy state.
+  await page.emulateMedia({reducedMotion:"reduce"});
+  const warning=await page.evaluate(()=>{
+    const painter=typeof drawEnemyChargeTelegraph==="function"?drawEnemyChargeTelegraph:null;
+    const graphics=typeof ctx!=="undefined"?ctx:null;
+    const perf=window.CCGLostSizzlerV142R70RenderPerformance;
+    if(!painter||!graphics||!perf)return{ready:false};
+    const originalArc=graphics.arc,hadOwnArc=Object.prototype.hasOwnProperty.call(graphics,"arc"),beforeQuality=perf.state.quality;
+    const before={x:p1.x,y:p1.y,health:p1.health,score:typeof score==="number"?score:null,gold:run?.gold};
+    const cx=Math.floor(graphics.canvas.width/2),cy=Math.floor(graphics.canvas.height/2),radius=Math.max(19,Math.round(C.tile*.45));
+    let arcs=0;
+    try{
+      perf.state.quality="severe";
+      graphics.arc=function(...args){arcs++;return originalArc.apply(this,args)};
+      graphics.save();graphics.setTransform(1,0,0,1,0,0);
+      try{
+        const charge={x:2,y:2,chargeTarget:{x:6,y:2},chargeTelegraphMs:360,facing:{x:1,y:0}};
+        const active=painter(charge,cx,cy),activeArcs=arcs;
+        const ringPixel=Array.from(graphics.getImageData(cx+radius,cy,1,1).data);
+        charge.chargeTelegraphMs=0;
+        const inactive=painter(charge,cx,cy),inactiveArcs=arcs-activeArcs;
+        const after={x:p1.x,y:p1.y,health:p1.health,score:typeof score==="number"?score:null,gold:run?.gold};
+        return{ready:true,reduced:perf.reducedMotion(),quality:perf.quality(),active,activeArcs,ringPixel,inactive,inactiveArcs,before,after};
+      }finally{graphics.restore()}
+    }finally{
+      perf.state.quality=beforeQuality;
+      if(hadOwnArc)graphics.arc=originalArc;else delete graphics.arc;
+    }
+  });
+  await page.emulateMedia({reducedMotion:"no-preference"});
+  assert.equal(warning.ready,true,"R131 charge painter must be loaded in the actual Dungeon browser");
+  assert.equal(warning.reduced,true,"R131 charge warning must remain visible in OS reduced-motion");
+  assert.equal(warning.quality,"severe","R131 charge painter must survive severe Canvas quality");
+  assert.equal(warning.active,true);
+  assert.equal(warning.activeArcs,2,"live Canvas must paint both high-contrast danger-ring outlines");
+  assert.ok(warning.ringPixel[0]>warning.ringPixel[2]&&warning.ringPixel[1]>warning.ringPixel[2],"charge ring must produce visible warm warning pixels");
+  assert.equal(warning.inactive,false);
+  assert.equal(warning.inactiveArcs,0,"no charge ring may remain after the wind-up expires");
+  assert.deepEqual(warning.after,warning.before,"R131 visual warning must never change gameplay state");
+
+
   // Exercise the review's real exploration/fullscreen working set, using the
   // actual generator and Canvas painter rather than the small starting camera.
   const stoneCacheWork=await page.evaluate(()=>{
