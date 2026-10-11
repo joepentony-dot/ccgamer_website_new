@@ -97,6 +97,65 @@ const stoneSandbox={window:{},document:{querySelector:()=>null,getElementById:()
   ctx:{drawImage(...args){submitted.push(args)}}};
 vm.createContext(stoneSandbox);
 vm.runInContext(renderer,stoneSandbox,{timeout:1000});
+
+// R131 charger telegraph renderer regression: exercise the real renderer's
+// sprite preference chain, not a duplicate warning implementation.
+{
+  const draws=[];
+  const originalCtx=stoneSandbox.ctx;
+  const canvasSpy={
+    save(){},restore(){},beginPath(){},ellipse(){},fill(){draws.push("fill")},
+    fillRect(){},fillText(){},strokeRect(){},closePath(){},
+    arc(...args){draws.push({kind:"arc",args})},
+    moveTo(...args){draws.push({kind:"arrow",args})},
+    lineTo(){},stroke(){draws.push("stroke")}
+  };
+  stoneSandbox.ctx=canvasSpy;
+  stoneSandbox.enemyVisuals=new Map();
+  stoneSandbox.focus={x:0,y:0};
+  stoneSandbox.visibleTo=()=>true;
+  stoneSandbox.P={red:"#f33",gold:"#fb4",cyan:"#4ff",white:"#fff",purple:"#c7f"};
+  stoneSandbox.r131Draws=draws;
+  stoneSandbox.r131Route="puny";
+  stoneSandbox.r131Charger={
+    id:"r131-charger",kind:"charger",alive:true,x:2,y:2,aiState:"idle",
+    hp:3,maxHp:3,facing:{x:1,y:0},chargeTarget:{x:7,y:2},chargeTelegraphMs:360
+  };
+  vm.runInContext(`
+    ws=(x,y)=>({x:x*48,y:y*48});
+    tileInRenderView=()=>true;
+    label=()=>{};
+    drawTransientHealth=()=>{};
+    drawGrotesqueBossSprite=()=>{r131Draws.push("sprite:boss");return r131Route==="boss"};
+    drawPunyEnemySprite=()=>{r131Draws.push("sprite:puny");return r131Route==="puny"};
+    drawAuthoredDungeonEnemySprite=()=>{r131Draws.push("sprite:authored");return r131Route==="authored"};
+    drawPixelEnemySprite=()=>{r131Draws.push("sprite:procedural")};
+  `,stoneSandbox);
+  for(const route of ["boss","puny","authored","procedural"]){
+    stoneSandbox.r131Route=route;draws.length=0;
+    assert.equal(vm.runInContext("drawEnemy(r131Charger)",stoneSandbox),undefined);
+    const arcs=draws.filter(row=>typeof row==="object"&&row.kind==="arc");
+    const arrows=draws.filter(row=>typeof row==="object"&&row.kind==="arrow");
+    assert.equal(arcs.length,2,route+" must paint both static charge warning ring outlines");
+    assert.equal(arrows.length,1,route+" must paint a target-direction arrow");
+    assert.ok(draws.indexOf("sprite:"+route)<draws.indexOf(arcs[0]),route+" warning must appear on top of the selected sprite");
+    assert.ok(arrows[0].args[0]>arcs[0].args[0],route+" must aim toward the charge target");
+  }
+  stoneSandbox.r131Charger.chargeTelegraphMs=0;draws.length=0;
+  vm.runInContext("drawEnemy(r131Charger)",stoneSandbox);
+  assert.equal(draws.filter(row=>typeof row==="object"&&row.kind==="arc").length,0,"expired charge must have no warning");
+  stoneSandbox.r131Charger.chargeTelegraphMs=520;
+  stoneSandbox.r131Charger.chargeTarget=null;
+  stoneSandbox.r131Charger.facing={x:-1,y:0};
+  draws.length=0;
+  vm.runInContext("drawEnemy(r131Charger)",stoneSandbox);
+  const fallbackArrow=draws.find(row=>typeof row==="object"&&row.kind==="arrow");
+  const fallbackCircle=draws.find(row=>typeof row==="object"&&row.kind==="arc");
+  assert.ok(fallbackArrow.args[0]<fallbackCircle.args[0],"missing charge target must use enemy facing rather than NaN coordinates");
+  assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawEnemyChargeTelegraph("),renderer.indexOf("function drawEnemy(e)")),/performance\\.now|Math\\.sin|requestAnimationFrame|createRadialGradient/,"the warning must remain static under reduced-motion and severe performance");
+  stoneSandbox.ctx=originalCtx;
+}
+
 function stoneWorld(mask){
   const map=Array.from({length:5},()=>Array(5).fill(1));
   if(mask&1)map[1][2]=0;if(mask&2)map[2][3]=0;
