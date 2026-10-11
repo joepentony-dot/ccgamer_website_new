@@ -1914,6 +1914,20 @@ async function queueMedia(media, { freshBoot = false } = {}) {
     return false;
   }
 
+  // A new game must never inherit media from an earlier powered-off session.
+  // EXIT GAME intentionally retains the old mounted media for manual power-on,
+  // but a fresh library LOAD must discard it before powerOn() can reattach it.
+  if (freshBoot && !running) {
+    cancelAutoStart();
+    mountedDisk = null;
+    mountedDiskKey = null;
+    diskSideCache.clear();
+    mountedTape = null;
+    mountedCartridge = null;
+    driveMode = "fast";
+    localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+  }
+
   const wasRunning = running;
   if (!running) await powerOn();
   if (!running || !machine) return false;
