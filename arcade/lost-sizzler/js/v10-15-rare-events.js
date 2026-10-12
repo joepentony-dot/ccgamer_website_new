@@ -119,10 +119,43 @@
   function movePassive(enemy,target,away=false){
     if(!enemy?.alive||!target)return;const dirs=[[1,0],[-1,0],[0,1],[0,-1]],candidates=[];for(const [dx,dy] of dirs){const x=enemy.x+dx,y=enemy.y+dy;if(!W.walkable(world.map,x,y,host)||occupiedExcept(x,y,enemy))continue;const d=dist({x,y},target);candidates.push({x,y,dx,dy,value:(away?d:-d)+(unit(`${enemy.id}|${x},${y}|${Math.floor(performance.now()/500)}`)*.01)})}candidates.sort((a,b)=>b.value-a.value);const q=candidates[0];if(!q)return;const ox=enemy.x,oy=enemy.y;enemy.x=q.x;enemy.y=q.y;enemy.facing={x:q.dx,y:q.dy};host.revision=(host.revision||0)+1;if(typeof particles!="undefined")for(let i=0;i<4;i++)particles.push({x:ox*C.tile+C.tile/2,y:oy*C.tile+C.tile*.75,vx:(Math.random()-.5)*1.2,vy:-Math.random()*.6,life:250+Math.random()*250,col:enemy.treasureBat?P.gold:"#b69a78",size:1+Math.random()*2,drag:.95});
   }
-  function occupiedExcept(x,y,enemy){return (host.enemies||[]).some(e=>e!==enemy&&e.alive&&e.x===x&&e.y===y)||(host.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||playersSafe().some(p=>p&&p.x===x&&p.y===y)}
+  function occupiedExcept(x,y,enemy){
+    // Passive rare creatures must not hide a locked chest or other collectible
+    // underneath their sprite: collision still treats that tile as a chest.
+    return (host.enemies||[]).some(e=>e!==enemy&&e.alive&&e.x===x&&e.y===y)||
+      (host.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||
+      (host.chests||[]).some(c=>c.active&&c.x===x&&c.y===y)||
+      (host.items||[]).some(i=>i.active&&i.x===x&&i.y===y)||
+      (host.shops||[]).some(s=>s.active&&s.x===x&&s.y===y)||
+      [host.trader,host.startShop].some(s=>s?.active&&s.x===x&&s.y===y)||
+      playersSafe().some(p=>p&&p.x===x&&p.y===y)
+  }
 
   function updateAdventurer(dt){const a=state.plans.adventurer;if(!a?.alive)return;a.rareMoveMs=Number(a.rareMoveMs||0)-dt;const target=[...playersSafe()].sort((x,y)=>dist(a,x)-dist(a,y))[0];if(!a.following&&target&&dist(a,target)<=3){a.following=true;showToast("LOST ADVENTURER","A trapped explorer joins you. Escort them into any sanctuary for +500 score.","cyan",8500)}if(a.following&&a.rareMoveMs<=0&&target){a.rareMoveMs=760;if(dist(a,target)>1)movePassive(a,target,false)}if(a.following){const sanctuary=(world.rooms||[]).find(r=>r.sanctuary&&roomAt(a.x,a.y)===r.id);if(sanctuary){a.alive=false;a.rescued=true;score+=500;showToast("ADVENTURER RESCUED","They made it to sanctuary. +500 score.","green",8000)}}}
-  function updateBat(dt){const b=state.plans.bat;if(!b?.alive)return;b.lifeMs-=dt;b.rareMoveMs-=dt;if(b.lifeMs<=0){b.alive=false;showToast("TREASURE BAT ESCAPED","The bat disappears into the darkness with its prize.","cyan",6500);return}const target=[...playersSafe()].sort((x,y)=>dist(b,x)-dist(b,y))[0];if(b.rareMoveMs<=0&&target){b.rareMoveMs=420;movePassive(b,target,true)}}
+  function updateBat(dt){
+    const b=state.plans.bat;
+    if(!b?.alive)return;
+    const players=playersSafe().filter(p=>p&&Number(p.health??1)>0);
+    // The twenty-second chase starts when someone actually discovers the bat,
+    // not while the player is still exploring a distant room.
+    if(!b.treasureBatSpotted){
+      const spotted=players.some(p=>dist(b,p)<=6&&(typeof visibleTo!=="function"||visibleTo(p,b.x,b.y)));
+      if(!spotted)return;
+      b.treasureBatSpotted=true;
+      b.lifeMs=20000;
+      showToast("TREASURE BAT SPOTTED","Slash or shoot it before it escapes! Defeat it to reveal an unlocked treasure cache.","gold",7600);
+    }
+    b.lifeMs=Math.max(0,Number(b.lifeMs||0)-Math.max(0,Number(dt)||0));
+    b.rareMoveMs-=dt;
+    if(b.lifeMs<=0){
+      b.alive=false;b._rareResolved=true;
+      host.revision=(host.revision||0)+1;
+      showToast("TREASURE BAT ESCAPED","The bat disappears into the darkness with its prize.","cyan",6500);
+      return
+    }
+    const target=players.sort((x,y)=>dist(b,x)-dist(b,y))[0];
+    if(b.rareMoveMs<=0&&target){b.rareMoveMs=420;movePassive(b,target,true)}
+  }
   function updateTaxman(dt){const t=state.plans.taxman;if(!t?.alive)return;t.rareMoveMs-=dt;const target=[...playersSafe()].sort((x,y)=>dist(t,x)-dist(t,y))[0];if(!target)return;if(!t.fleeing&&dist(t,target)<=1.2){const amount=Math.min(100,Math.max(0,Number(score||0)));if(amount>0){score-=amount;t.stolen+=amount;t.fleeing=true;showToast("THE TAXMAN!",`He pinched ${amount} score and is legging it. Kill him to recover it plus a bonus.`,"red",8000)}}if(t.rareMoveMs<=0){t.rareMoveMs=t.fleeing?450:700;movePassive(t,target,t.fleeing)}}
   function updateMerchant(dt){const m=state.plans.merchant;if(!m?.active)return;m.rareLifeMs-=dt;m.rareMoveMs-=dt;if(m.rareLifeMs<=0){m.active=false;showToast("WANDERING MERCHANT MOVES ON","The travelling shopkeeper has packed up and disappeared.","cyan",6000);return}if(m.rareMoveMs<=0&&!activeShop){m.rareMoveMs=4000;const room=world.rooms[m.roomId],q=freeCell(room,`merchant-move-${Math.floor(m.rareLifeMs/4000)}`);if(q){m.x=q.x;m.y=q.y;host.revision=(host.revision||0)+1}}}
   function updateTremor(){const t=state.plans.tremor;if(!t||t.done||Number(host.floorElapsed||0)<t.delayMs)return;t.done=true;const d=t.door;d.hidden=false;d.locked=false;d.open=true;d.opening=false;host.revision=(host.revision||0)+1;try{shake=Math.max(shake,11);S.sfx("explosion");burst(d.x,d.y,P.gold,30,1.6)}catch(_){}showToast("DUNGEON TREMOR","Stone cracks somewhere nearby. A previously sealed secret passage has been forced open.","gold",9000);}
@@ -196,7 +229,13 @@
   function specialDeath(enemy){
     if(!enemy||state.specialDeaths.has(enemy.id))return;state.specialDeaths.add(enemy.id);
     if(enemy.mimicEnemy){score+=550;host.chests.push({id:`mimic-reward-${Date.now()}`,x:enemy.x,y:enemy.y,locked:false,active:true,depth:15,roomId:roomAt(enemy.x,enemy.y),mimicReward:true});showToast("MIMIC DEFEATED","+550 score and a better-than-normal reward chest.","gold",8000)}
-    if(enemy.treasureBat){score+=350;host.chests.push({id:`bat-reward-${Date.now()}`,x:enemy.x,y:enemy.y,locked:false,active:true,depth:14,roomId:roomAt(enemy.x,enemy.y),treasureBatReward:true});showToast("TREASURE BAT DOWN","+350 score. It dropped the prize it was carrying.","gold",7500)}
+    if(enemy.treasureBat){
+      const q=safeNearby(enemy.x,enemy.y,`bat-reward|${enemy.id}`);
+      score+=350;
+      host.chests.push({id:`bat-reward-${Date.now()}`,x:q.x,y:q.y,locked:false,active:true,depth:14,roomId:roomAt(q.x,q.y),treasureBatReward:true});
+      host.revision=(host.revision||0)+1;
+      showToast("TREASURE BAT DOWN",`+350 score. An unlocked reward chest has appeared at ${q.x===enemy.x&&q.y===enemy.y?"its last position":"a nearby clear tile"}.`,"gold",7500)
+    }
     if(enemy.taxman){const refund=Number(enemy.stolen||0)+200;score+=refund;addCredits(enemy.x,enemy.y,Math.min(refund,200),"TAX REFUND");showToast("TAXMAN CAUGHT",`Recovered ${Number(enemy.stolen||0)} stolen score plus a 200 score bonus.`,"gold",8000)}
     if(state.plans.cabinet?.active)state.plans.cabinet.kills++;
   }
@@ -238,7 +277,41 @@
     const original=renderRadarPanel;renderRadarPanel=function renderRadarPanelV115Rare(){const result=original.apply(this,arguments);try{drawRadarHint()}catch(_){}return result};
   }
   if(typeof drawEnemy==="function"){
-    const original=drawEnemy;drawEnemy=function drawEnemyV115Rare(enemy){if(enemy?.lostAdventurer||enemy?.treasureBat||enemy?.taxman){const s=typeof enemyScreen==="function"?enemyScreen(enemy):ws(enemy.x,enemy.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2;ctx.save();ctx.shadowBlur=8;ctx.shadowColor=enemy.treasureBat?P.gold:enemy.taxman?P.red:P.cyan;ctx.fillStyle=enemy.treasureBat?"#7b4cc7":enemy.taxman?"#49352a":"#6aa9ff";ctx.beginPath();if(enemy.treasureBat){ctx.moveTo(cx,cy-7);ctx.lineTo(cx-15,cy);ctx.lineTo(cx,cy+5);ctx.lineTo(cx+15,cy);ctx.closePath()}else ctx.arc(cx,cy,C.tile*.28,0,Math.PI*2);ctx.fill();ctx.fillStyle=P.white;ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText(enemy.treasureBat?"TREASURE BAT":enemy.taxman?"TAXMAN":"LOST ADVENTURER",cx,s.y-5);ctx.restore();return}return original.apply(this,arguments)};
+    const original=drawEnemy;
+    drawEnemy=function drawEnemyV115Rare(enemy){
+      if(!(enemy?.lostAdventurer||enemy?.treasureBat||enemy?.taxman))return original.apply(this,arguments);
+      const s=typeof enemyScreen==="function"?enemyScreen(enemy):ws(enemy.x,enemy.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
+      ctx.save();
+      ctx.shadowBlur=8;
+      ctx.shadowColor=enemy.treasureBat?P.gold:enemy.taxman?P.red:P.cyan;
+      if(enemy.treasureBat){
+        // Give the rare encounter actual ears, scalloped wings and glinting
+        // treasure instead of the old featureless purple diamond.
+        ctx.fillStyle="#603891";
+        ctx.strokeStyle="#cf9ef2";
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx-2,cy-5);ctx.lineTo(cx-6,cy-9);ctx.lineTo(cx-8,cy-4);
+        ctx.lineTo(cx-15,cy-7);ctx.lineTo(cx-19,cy-4);ctx.lineTo(cx-14,cy+4);
+        ctx.lineTo(cx-10,cy+1);ctx.lineTo(cx-7,cy+7);ctx.lineTo(cx,cy+4);
+        ctx.lineTo(cx+7,cy+7);ctx.lineTo(cx+10,cy+1);ctx.lineTo(cx+14,cy+4);
+        ctx.lineTo(cx+19,cy-4);ctx.lineTo(cx+15,cy-7);ctx.lineTo(cx+8,cy-4);
+        ctx.lineTo(cx+6,cy-9);ctx.lineTo(cx+2,cy-5);ctx.closePath();
+        ctx.fill();ctx.stroke();
+        ctx.fillStyle="#ffe7a0";
+        ctx.fillRect(Math.round(cx)-5,Math.round(cy)-3,3,2);
+        ctx.fillRect(Math.round(cx)+2,Math.round(cy)-3,3,2);
+        ctx.fillStyle=P.gold;
+        ctx.fillRect(Math.round(cx)-2,Math.round(cy)+3,4,3);
+      }else{
+        ctx.fillStyle=enemy.taxman?"#49352a":"#6aa9ff";
+        ctx.beginPath();ctx.arc(cx,cy,C.tile*.28,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle=P.white;ctx.font="bold 9px monospace";ctx.textAlign="center";
+      ctx.fillText(enemy.treasureBat?"TREASURE BAT":enemy.taxman?"TAXMAN":"LOST ADVENTURER",cx,s.y-5);
+      ctx.restore();
+      return
+    };
   }
   if(typeof render==="function"){
     const original=render;render=function renderV115Rare(){const result=original.apply(this,arguments);try{drawGhost()}catch(_){}return result};

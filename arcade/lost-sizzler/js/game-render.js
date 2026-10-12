@@ -788,7 +788,13 @@ function drawAnimatedChestFallback(c,s,col,now,anim,pulse){
 function drawChests(){
   const now=performance.now(),customSheet=lostSizzlerPixelAssets.chestReplacement,frameSet=lostSizzlerPixelAssets.chestFrames||[],frameArtReady=frameSet.length===3&&frameSet.every(image=>image?.complete&&image.naturalWidth>=16&&image.naturalHeight>=16),pixelSheet=customSheet?.complete&&customSheet.naturalWidth>=160?customSheet:lostSizzlerPixelAssets.chests;
   for(const c of host.chests||[]){
-    const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;if(!tileInRenderView(c.x,c.y,2)||!visibleTo(focus,c.x,c.y))continue;
+    const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;
+    // A chest immediately in front of the player must remain drawable whenever
+    // their next movement step would trigger its lock. Fog/LOS may lag behind
+    // the exact movement boundary, otherwise the key prompt appears on an
+    // apparently empty tile. Distant undiscovered chests remain concealed.
+    const nextStepChest=Boolean(focus&&md(c,focus)<=1);
+    if(!tileInRenderView(c.x,c.y,2)||(!nextStepChest&&!visibleTo(focus,c.x,c.y)))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
     // Stage-1 CC0 chest frames are the default live presentation. Explicit
     // custom sheets can still override them; V10.34 and canvas art remain safe

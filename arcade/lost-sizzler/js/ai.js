@@ -59,6 +59,8 @@ window.CCGAI=(()=>{
     // The floor's roaming Death Stalker is intentionally global. Ordinary enemies
     // sleep outside the player's room neighbourhood and wake before they can interact.
     if(e.deathStalker||e.timedHunter||e.hunting)return true;
+    // A spotted Goblin's escape countdown remains live after the player leaves.
+    if(e.treasureGoblin&&e.treasureGoblinSpotted)return true;
     const roomId=W.roomAt(world,e.x,e.y);if(roomId>=0&&activeRooms.has(roomId))return true;
     let nearest=Infinity;for(const p of players||[])nearest=Math.min(nearest,dist(e,p));
     const wakeRange=Math.max(8,Number(C.enemy?.lineOfSightRange||14)+2);if(nearest<=wakeRange)return true;
@@ -67,6 +69,7 @@ window.CCGAI=(()=>{
   }
   function crowdPriority(e){
     if(!e?.alive)return true;
+    if(e.treasureGoblin&&e.treasureGoblinSpotted)return true;
     if(e.deathStalker||e.timedHunter||e.hunting||e.follower||e.guardian||e.keyGuardian||e.exitWarden||e.sigilDefender||e.champion||e.championName||e.ccgBoss||e.arenaId)return true;
     let nearest=Infinity;for(const p of activePlayers)nearest=Math.min(nearest,dist(e,p));
     if(nearest<=7)return true;
