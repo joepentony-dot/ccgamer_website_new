@@ -459,3 +459,11 @@ The following deliberately stay on bespoke/procedural art until matching license
 - Death Stalker and other named/special enemies.
 
 For each future enemy replacement, record: current enemy name, gameplay kind, proposed sprite family, source/licence, and whether the action is **match sprite to name** or **rename generic enemy to sprite**. Special/named enemies should normally keep their established names and receive matching art rather than being renamed for convenience.
+
+## R135 prepared chest sprite replacement — 12 October 2026 (STAGING ONLY)
+
+- Staging branch `codex/dungeon-r135-free-chest-staging-20261012`, based on currently full-24/24-qualified **R134** `217b18d4fcf05953b55f41ece6b31b8515e0eeb4`. The independent **R134** PR remains a draft; neither R134 nor R135 has been merged or publicly deployed, and this R135 branch has **NO pull request**.
+- Used ONLY the owner's unpaid `Super Pixel Objects Sample.zip` (SHA256 `9945dd9eb7e0a8848c5a7797319a9b18bcc60808ee886ff1d747ed59cd7ee002`); creator Will Tice, free-commercial with attribution, **not CC0**; no paid version or standalone source-library redistribution.
+- Imported byte-unchanged 32×32 `outline_dark/chest_large` frames `0000` closed, `0003` opening and `0007` open, keeping the game's existing three source-frame slots and its `openedAt` timer. Screenshot mock-up supports improved scale-matched styling but does NOT count as in-game owner acceptance.
+- Updated only candidate `asset-overrides.js`, JSON manifest, R135 source record and artist credits; the existing renderer, chest gameplay, loot, collision, save, animation timing, fallback assets and all R134 spike/mana fixes remain untouched. Extended visual-foundation safety checks for R135 exact approved chest paths; other override slots retain their existing null restriction.
+- Added a standalone hash/licence/dimensions/renderer-regression contract and extended the existing art-integrity workflow. These are **source candidates**, no R135 exact-head CI or runtime screenshots yet. Wait for authorised R134 merge, then rebase/reconstruct R135 on merged main, open just one new draft PR and run complete exact-head qualification before any deployment.

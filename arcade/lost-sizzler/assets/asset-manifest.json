@@ -68,6 +68,30 @@
       "r85PropBarrel": "assets/pixel/visual-overhaul/r85/prop-barrel.svg",
       "r85PropBookcase": "assets/pixel/visual-overhaul/r85/prop-bookcase.svg",
       "r85PropConsole": "assets/pixel/visual-overhaul/r85/prop-console.svg",
+      "r135FreeCommercial": {
+        "creator": "Will Tice",
+        "sourcePack": "Super Pixel Objects Sample.zip (free sample ONLY)",
+        "sourcePage": "https://untiedgames.itch.io/super-pixel-objects-sample",
+        "license": "Free commercial game use with Will Tice credit; standalone reusable asset redistribution prohibited; NOT CC0",
+        "sourceArchiveSHA256": "9945dd9eb7e0a8848c5a7797319a9b18bcc60808ee886ff1d747ed59cd7ee002",
+        "sourceFrames": [
+          "Super Pixel Objects Sample/outline_dark/chest_large/frame0000.png",
+          "Super Pixel Objects Sample/outline_dark/chest_large/frame0003.png",
+          "Super Pixel Objects Sample/outline_dark/chest_large/frame0007.png"
+        ],
+        "activeChestFrames": [
+          "assets/pixel/user-r135/will-tice-chest-0.png",
+          "assets/pixel/user-r135/will-tice-chest-1.png",
+          "assets/pixel/user-r135/will-tice-chest-2.png"
+        ],
+        "activeFrameSHA256": [
+          "df188678f04d6f1875e4c485fcf089d2fdf88cb004b99447a9d87fda48b05fac",
+          "b3ee6b134fef678b2c345b56e747b0a291b987bf59bc6886e692993ee1ae47b3",
+          "8e52b060fc94ad04d8a33a5646da849e51780c221256b596a42fd1ad81b8ab9d"
+        ],
+        "provenance": "assets/pixel/user-r135/PROVENANCE.md",
+        "scope": "32x32 visual-only three-stage closed/partly-open/open chest frames; existing loot, locks, animation timing and fallback unchanged"
+      },
       "r134FreeCommercial": {
         "creator": "Indie_Vova (Vladimir Ivanov)",
         "sourcePack": "Dungeons and Pixels — Free Demo.zip",

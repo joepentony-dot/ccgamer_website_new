@@ -34,3 +34,11 @@ All third-party names remain the property of their respective owners. The artist
 
 The updated sprite files have exact SHA-256/source-frame provenance in `assets/pixel/user-r134/PROVENANCE.md`. This is a candidate PR; the adjusted frame selection requires fresh exact-head Chromium/CI and owner live visual acceptance.
 
+
+## R135 supplemental artwork (staging only)
+
+| Creator | Artwork included | Source | Licence |
+| --- | --- | --- | --- |
+| **Will Tice** | Original 32×32 dark-outline `chest_large` frames `frame0000`, `frame0003`, `frame0007` from the free Super Pixel Objects Sample; unchanged PNG bytes, three renderer slots | [Super Pixel Objects Sample](https://untiedgames.itch.io/super-pixel-objects-sample) | Free commercial game use with creator credit; **not CC0**, and no standalone asset-pack redistribution. |
+
+R135 is staged on a separate branch derived from the fully qualified R134 head. It is **not merged or released**. Original 0x72 and V10.34 assets remain available as fallback. Exact-frame original-source fingerprint details: `assets/pixel/user-r135/PROVENANCE.md`.

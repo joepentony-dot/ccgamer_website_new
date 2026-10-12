@@ -25,6 +25,16 @@ for(const key of visualKeys){
     assert.ok(overrides.includes(`${key}:"${approved}"`),`unverified visual spike replacement forbidden: ${key}`);
     assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.activeSpikeTrapFrames[Number(spikeIndex[1])],approved,`R134 spike manifest path mismatch: ${key}`);
     assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.license,"CC0-1.0","Spike art must be licence-verified");
+  }else if(/^chestFrame([0-2])$/.test(key)){
+    // Preserve the R134 null-by-default safety policy for every other visual
+    // slot. Only the free-commercial, exact-file verified Will Tice chest may replace these.
+    const chestIndex=Number(/^chestFrame([0-2])$/.exec(key)[1]);
+    const path=`assets/pixel/user-r135/will-tice-chest-${chestIndex}.png`;
+    const approved=manifest.images.visualOverhaul.r135FreeCommercial;
+    assert.equal(overrides.includes(`${key}:"${path}"`),true,`Unverified chest override forbidden: ${key}`);
+    assert.equal(approved?.creator,"Will Tice","Chest frames must preserve original creator identity");
+    assert.equal(approved?.activeChestFrames?.[chestIndex],path,`Chest override source mismatch: ${key}`);
+    assert.match(approved.license,/Free commercial game use/,"Chest free-commercial grant required");
   }else{
     assert.match(overrides,new RegExp(`\\b${key}:null\\b`),`visual override must expose ${key}`);
   }
