@@ -14,7 +14,7 @@ function tryKnockPosition(ent,dx,dy){
   ent.x=nx;ent.y=ny;return true
 }
 function knockEnemyAway(e,from){if(!e||!from)return;const dx=Math.sign(e.x-from.x),dy=Math.sign(e.y-from.y);if(dx||dy){if(!tryKnockPosition(e,dx,dy)){if(dx)tryKnockPosition(e,dx,0);else if(dy)tryKnockPosition(e,0,dy)}}}
-function knockPlayerAway(p,from){if(!p||!from)return;const dx=Math.sign(p.x-from.x),dy=Math.sign(p.y-from.y),nx=p.x+dx,ny=p.y+dy;if((dx||dy)&&W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}
+function knockPlayerAway(p,from){if(!p||!from)return;const dx=Math.sign(p.x-from.x),dy=Math.sign(p.y-from.y),nx=p.x+dx,ny=p.y+dy;if((dx||dy)&&W.playerWalkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}
 function collideWithEnemy(p,e,fromX,fromY){
   if(!p||!e)return;
   if(e.treasureBat){
@@ -39,7 +39,7 @@ function collideWithEnemy(p,e,fromX,fromY){
   }
   // Contact pushes both combatants apart. The player takes the impact damage; the enemy does not.
   p.x=fromX;p.y=fromY;p.rx=p.x;p.ry=p.y;tryKnockPosition(e,dx,dy);
-  const backX=fromX-dx,backY=fromY-dy;if(W.walkable(world.map,backX,backY,host)&&!host.enemies.some(o=>o.alive&&o!==e&&o.x===backX&&o.y===backY)){p.x=backX;p.y=backY;p.rx=backX;p.ry=backY}
+  const backX=fromX-dx,backY=fromY-dy;if(W.playerWalkable(world.map,backX,backY,host)&&!host.enemies.some(o=>o.alive&&o!==e&&o.x===backX&&o.y===backY)){p.x=backX;p.y=backY;p.rx=backX;p.ry=backY}
   hurtPlayer(p,1,false,e.follower?.name||e.championName||e.kind);S.sfx("hit");showToast("COLLISION",`${e.follower?.name||e.championName||"An enemy"} knocks you back. -1 health.`,"red",5200)
 }
 function d1(){const l=input.has("ArrowLeft")||input.has("KeyA"),r=input.has("ArrowRight")||input.has("KeyD"),u=input.has("ArrowUp")||input.has("KeyW"),d=input.has("ArrowDown")||input.has("KeyS");const x=(r?1:0)-(l?1:0),y=(d?1:0)-(u?1:0);return x||y?{x,y}:null}
@@ -212,7 +212,7 @@ function tryChest(p,x,y){
   if((host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))return true;
   return openChest(p,c)
 }
-function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.walkable(world.map,p.x+dx,p.y,host)&&W.walkable(world.map,p.x,p.y+dy,host)}
+function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.playerWalkable(world.map,p.x+dx,p.y,host)&&W.playerWalkable(world.map,p.x,p.y+dy,host)}
 function activateSwitch(s,p,shot=false){
   if(!s?.active)return false;
   if(s.weightBridgeSwitch){
@@ -326,7 +326,7 @@ function triggerSigilRoom(p){
   host.sigilLockdown=true;for(const d of host.doors||[])if(d.sigilGate){d.locked=true;d.open=false;d.opening=false;d.openAt=0}
   for(const e of SYS.sigilDefendersAlive(host)){e.aiState="chase";e.lastSeen={x:p.x,y:p.y};e.memoryMs=999999;e.searchMs=0;e.moveCooldown=Math.min(e.moveCooldown||200,220)}host.revision++;S.sfx("alert");showToast("SIGIL CHAMBER LOCKDOWN",`${SYS.sigilDefendersAlive(host).length} defenders are active. The reinforced doors stay sealed until every one of them is defeated.`,"red",10000);
 }
-function puzzleFloorCells(roomId){const room=world.rooms[roomId],out=[];if(!room)return out;for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0&&W.walkable(world.map,x,y,host)&&!host.enemies.some(e=>e.alive&&e.x===x&&e.y===y)&&!localPlayers().some(p=>p.x===x&&p.y===y))out.push({x,y});return out}
+function puzzleFloorCells(roomId){const room=world.rooms[roomId],out=[];if(!room)return out;for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0&&W.playerWalkable(world.map,x,y,host)&&!host.enemies.some(e=>e.alive&&e.x===x&&e.y===y)&&!localPlayers().some(p=>p.x===x&&p.y===y))out.push({x,y});return out}
 function spawnPuzzleAmbush(roomId,p,count=3,prefix="puzzle"){
   const cells=puzzleFloorCells(roomId),kinds=["scout","ambusher","hunter","charger"],made=[];
   for(let i=0;i<count&&cells.length;i++){const ix=Math.floor(Math.random()*cells.length),q=cells.splice(ix,1)[0],kind=kinds[i%kinds.length],hp=3+(run.floor||1)+Math.floor(i/2);const e={id:`${prefix}-${Date.now()}-${i}-${Math.random().toString(36).slice(2,5)}`,...q,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:{x:p.x,y:p.y},memoryMs:999999,searchMs:0,moveCooldown:240+i*40,attackCooldown:620+i*70,chargeCooldown:850,healCooldown:999999,flash:0,hpBarMs:0,puzzleSpawn:true};host.enemies.push(e);made.push(e)}host.revision++;return made.length
@@ -456,7 +456,7 @@ function updateBossFight(dt){
   if(fight.attackMs<=0){bossBurst(fight,boss,phase);fight.attackMs=phase===3?1850:phase===2?2450:3100}
 }
 function triggerBoulder(p){const b=host.boulderTrap;if(!b||b.cleared||b.triggered||W.roomAt(world,p.x,p.y)!==b.roomId)return;const da=md(p,b.start),db=md(p,b.end),from=da>=db?b.start:b.end,to=da>=db?b.end:b.start;b.x=from.x;b.y=from.y;b.target={...to};b.dx=Math.sign(to.x-from.x);b.dy=Math.sign(to.y-from.y);b.warningMs=1000;b.moveMs=0;b.active=true;b.triggered=true;S.sfx("trap");showToast("BOULDER CORRIDOR — RUN!","A stone boulder has broken loose at the far end of the hall. Keep moving and get out of its lane before it reaches you.","red",7600);host.revision++;}
-function updateBoulder(dt){const b=host.boulderTrap;if(!b?.active||b.cleared)return;if(b.warningMs>0){b.warningMs=Math.max(0,b.warningMs-dt);return}b.moveMs-=dt;if(b.moveMs>0)return;b.moveMs=b.stepMs||155;b.x+=b.dx;b.y+=b.dy;shake=Math.max(shake,3);for(const p of localPlayers())if(p.x===b.x&&p.y===b.y){hurtPlayer(p,b.damage||2,false,"rolling boulder");const nx=p.x+b.dx,ny=p.y+b.dy;if(W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}if(b.x===b.target.x&&b.y===b.target.y){b.active=false;b.cleared=true;score+=250;S.sfx("door");showToast("BOULDER CORRIDOR SURVIVED","The boulder crashes into the far wall. +250 score.","green",7000)}host.revision++}
+function updateBoulder(dt){const b=host.boulderTrap;if(!b?.active||b.cleared)return;if(b.warningMs>0){b.warningMs=Math.max(0,b.warningMs-dt);return}b.moveMs-=dt;if(b.moveMs>0)return;b.moveMs=b.stepMs||155;b.x+=b.dx;b.y+=b.dy;shake=Math.max(shake,3);for(const p of localPlayers())if(p.x===b.x&&p.y===b.y){hurtPlayer(p,b.damage||2,false,"rolling boulder");const nx=p.x+b.dx,ny=p.y+b.dy;if(W.playerWalkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}if(b.x===b.target.x&&b.y===b.target.y){b.active=false;b.cleared=true;score+=250;S.sfx("door");showToast("BOULDER CORRIDOR SURVIVED","The boulder crashes into the far wall. +250 score.","green",7000)}host.revision++}
 function triggerHauntedCorridor(p){const nest=host.spiderNest;if(!nest||(nest.corridorCells||[]).every(q=>q.x!==p.x||q.y!==p.y))return;nest.whistledPlayers=nest.whistledPlayers||[];nest.extinguishedPlayers=nest.extinguishedPlayers||[];if(!nest.whistledPlayers.includes(p.id)){nest.whistledPlayers.push(p.id);S.windWhistle?.();showToast("A WIND WHISTLES THROUGH THE STONE","A one-in-twenty haunted corridor is feeding air into a nearby Dustweb Nest. The draught can extinguish an active torch.","cyan",9000)}if(p.torchMs>0&&!nest.extinguishedPlayers.includes(p.id)){nest.extinguishedPlayers.push(p.id);p.torchMs=0;S.sfx("pssst");for(let i=0;i<26;i++)particles.push({x:p.x*C.tile+C.tile/2,y:p.y*C.tile+C.tile/2,vx:1.2+Math.random()*3.2,vy:(Math.random()-.5)*2.2,life:300+Math.random()*520,col:i%2?"#c8d7e8":"#6cecff",size:1+Math.random()*3,drag:.975});floatText(p.x,p.y,"TORCH OUT!",P.cyan);showToast("PSST — TORCH EXTINGUISHED","The windy corridor has blown out your active torch. Spare torches in your inventory are untouched.","red",8500)}host.revision++}
 function movementTriggers(p,deliberate=false){
   // Snapshot an occupied ACTIVE floor trap at the exact movement boundary. The
@@ -477,8 +477,20 @@ function movePlayer(p,dx,dy,dash=false){
   if(mode!=="playing"||!p||(p.hitStunMs||0)>0)return;p.dir={x:dx,y:dy};const ox=p.x,oy=p.y;
   for(let n=0;n<(dash?2:1);n++){
     if(dx&&dy&&!diagonalClear(dx,dy,p)){if(n===0)S.sfx("wall");break}
-    const warp=(!dy)?W.tunnelDestination(world,p.x,p.y,dx,dy):null;if(warp){p.x=warp.x;p.y=warp.y;p.rx=warp.x;p.ry=warp.y;S.sfx("warp");burst(p.x,p.y,P.cyan,18,1.2);movementTriggers(p,true);continue}
-    const nx=p.x+dx,ny=p.y+dy;if(weightBridgeBlocks(p,nx,ny)||!tryDoor(p,nx,ny)||!tryChest(p,nx,ny))break;if(!W.walkable(world.map,nx,ny,host)){if(n===0)S.sfx("wall");break}
+    const warp=(!dy)?W.tunnelDestination(world,p.x,p.y,dx,dy):null;if(warp){if(!W.playerWalkable(world.map,warp.x,warp.y,host)){if(n===0)S.sfx("wall");break}p.x=warp.x;p.y=warp.y;p.rx=warp.x;p.ry=warp.y;S.sfx("warp");burst(p.x,p.y,P.cyan,18,1.2);movementTriggers(p,true);continue}
+    const nx=p.x+dx,ny=p.y+dy;
+    const liveGenerator=W.generatorAt(host,nx,ny);
+    if(liveGenerator){
+      if(n===0)S.sfx("wall");
+      const now=performance.now();
+      if(!Number.isFinite(liveGenerator._playerBlockNotifiedAt)||now-liveGenerator._playerBlockNotifiedAt>=4500){
+        liveGenerator._playerBlockNotifiedAt=now;
+        showToast("GENERATOR BLOCKS THE WAY","A living monster generator is solid. Slash or shoot it to clear the tile.","red",4800)
+      }
+      break
+    }
+    if(weightBridgeBlocks(p,nx,ny)||!tryDoor(p,nx,ny)||!tryChest(p,nx,ny))break;
+    if(!W.playerWalkable(world.map,nx,ny,host)){if(n===0)S.sfx("wall");break}
     p.x=nx;p.y=ny;for(const i of host.items)if(i.active&&i.x===nx&&i.y===ny)requestCollect(i,p);
     const collision=host.enemies.find(e=>e.alive&&e.x===nx&&e.y===ny);if(collision){if(dash&&p.dashDamage>0)damageEnemy(collision,p.dashDamage,"physical",p);collideWithEnemy(p,collision,ox,oy);break}
     if(host.stalker?.awake&&host.stalker.x===nx&&host.stalker.y===ny)hurtPlayer(p,C.stalker.hitDamage,false,C.stalker.name);
