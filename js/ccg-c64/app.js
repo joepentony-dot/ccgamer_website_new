@@ -2437,12 +2437,23 @@ onlineLibraryGrid?.addEventListener("click", (event) => {
 const iosLibraryTouch = /iPhone|iPad|iPod/.test(navigator.userAgent || "") ||
   (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 let pendingIosSuggestionTouch = null;
+let iosSuggestionPointerDown = false;
 if (iosLibraryTouch && onlineLibraryGrid) {
   // Distinguish the website's game loader from the local file picker.
   if (loadAnyMediaButton) {
     loadAnyMediaButton.textContent = "OPEN LOCAL GAME FILE";
     loadAnyMediaButton.setAttribute("aria-label", "Open a C64 game file stored on this iPhone or iPad");
   }
+
+  // Pointer events can precede touchstart on modern iOS. Preserve the
+  // suggestion through any early blur before touchstart is delivered.
+  onlineLibraryGrid.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch" &&
+        event.target.closest?.("[data-play-game]")) iosSuggestionPointerDown = true;
+  }, { passive: true, capture: true });
+  onlineLibraryGrid.addEventListener("pointercancel", () => {
+    iosSuggestionPointerDown = false;
+  }, { passive: true });
 
   onlineLibraryGrid.addEventListener("touchstart", (event) => {
     pendingIosSuggestionTouch = null;
@@ -2472,6 +2483,7 @@ if (iosLibraryTouch && onlineLibraryGrid) {
   onlineLibraryGrid.addEventListener("touchend", (event) => {
     const pending = pendingIosSuggestionTouch;
     pendingIosSuggestionTouch = null;
+    iosSuggestionPointerDown = false;
     if (!pending || pending.moved) return;
     const touch = Array.from(event.changedTouches).find((item) =>
       item.identifier === pending.identifier);
@@ -2484,13 +2496,14 @@ if (iosLibraryTouch && onlineLibraryGrid) {
 
   onlineLibraryGrid.addEventListener("touchcancel", () => {
     pendingIosSuggestionTouch = null;
+    iosSuggestionPointerDown = false;
   }, { passive: true });
 }
 onlineLibraryLoadButton?.addEventListener("click", () => { void loadSelectedLibraryEntry(); });
 onlineLibrarySearchWrap?.addEventListener("focusout", (event) => {
   // Safari may report relatedTarget=null while a suggestion is being tapped.
   // Let the in-progress touch select before hiding the popup.
-  if (pendingIosSuggestionTouch) return;
+  if (pendingIosSuggestionTouch || iosSuggestionPointerDown) return;
   if (!onlineLibrarySearchWrap.contains(event.relatedTarget)) setLibrarySuggestionsOpen(false);
 });
 document.addEventListener("pointerdown", (event) => {
