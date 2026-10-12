@@ -23,6 +23,11 @@ const render=read("js/game-render.js").toString("utf8");
 const credits=read("assets/THIRD-PARTY-ART-CREDITS.md").toString("utf8");
 const provenance=read("assets/pixel/user-r135/PROVENANCE.md").toString("utf8");
 assert.match(credits,/Will Tice/);
+const finalUi=read("js/v10-4-final-ui.js").toString("utf8");
+assert.match(finalUi,/<b>ARTWORK CREDIT<\/b><span>Treasure chest artwork: Will Tice/,"Required creator attribution must be visible in the game's completion credits");
+assert.match(finalUi,/if\(!campaignComplete\(\)\)\{existing\?\.remove\(\);return\}/,"Artwork credit must remain confined to the canonical completion screen");
+assert.match(finalUi,/SPECIAL THANKS/,"Existing Patreon and supporter credits must be preserved");
+
 assert.match(provenance,/free-commercial/);
 for(let i=0;i<3;i++){
   const source=originalPaths[i],bytes=read(source);
