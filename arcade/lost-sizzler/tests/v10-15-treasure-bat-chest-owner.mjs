@@ -20,6 +20,7 @@ const batSource=[
   section(rare,"  function updateBat(dt){","  function updateTaxman("),
   section(rare,"  function specialDeath(enemy){","  if(typeof startWorld"),
 ].join("\n");
+const knockSource=section(play,"function tryKnockPosition(ent,dx,dy){","function collideWithEnemy(p,e,fromX,fromY){");
 const chestSource=section(play,"function tryChest(p,x,y){","function diagonalClear(");
 const contactSource=section(play,"function collideWithEnemy(p,e,fromX,fromY){","function d1(){");
 const chestRenderSource=section(render,"function drawChests(){","function label(");
@@ -183,8 +184,51 @@ function testRecognisableBatSprite(){
   assert.ok(draws.some(d=>d.name==="arc"),"Existing rare adventurer representation must survive");
 }
 
+function testBatCombatKnockbackDoesNotBuryChest(){
+  const enemy={x:4,y:5,alive:true,treasureBat:true,passiveNpc:true};
+  const chest={x:5,y:5,active:true,locked:true};
+  const item={x:5,y:5,active:false};
+  const shop={x:5,y:5,active:false};
+  const trader={x:5,y:5,active:false};
+  const host={enemies:[enemy],chests:[chest],items:[item],shops:[shop],trader,blockingDecor:[]};
+  const map=Array.from({length:9},()=>Array(9).fill(0));
+  const env={
+    host,world:{map},W:{
+      // The ACTUAL W.walkable in world.js permits active chest/item tiles.
+      // The combat owner must supply this missing occupancy check.
+      walkable(grid,x,y){return Number.isInteger(x)&&Number.isInteger(y)&&grid[y]?.[x]===0;}
+    }
+  };
+  vm.createContext(env);
+  vm.runInContext(knockSource+";\nthis.knockEnemyAway=knockEnemyAway;",env,{filename:"game-play.js"});
+  const attacker={x:3,y:5};
+  const push=()=>env.knockEnemyAway(enemy,attacker);
+  push();
+  assert.deepEqual([enemy.x,enemy.y],[4,5],
+    "A hit must not knock Treasure Bat onto an active locked chest");
+  chest.active=false;item.active=true;push();
+  assert.deepEqual([enemy.x,enemy.y],[4,5],
+    "A hit must not knock Treasure Bat onto an active collectible");
+  item.active=false;shop.active=true;push();
+  assert.deepEqual([enemy.x,enemy.y],[4,5],
+    "A hit must not knock Treasure Bat onto an active shop");
+  shop.active=false;trader.active=true;push();
+  assert.deepEqual([enemy.x,enemy.y],[4,5],
+    "A hit must not knock Treasure Bat onto the active main trader");
+  trader.active=false;push();
+  assert.deepEqual([enemy.x,enemy.y],[5,5],
+    "The Bat must still be knocked back when the destination becomes clear");
+  const ordinaryEnemy={x:4,y:5,alive:true};
+  host.enemies=[ordinaryEnemy];
+  chest.active=true;
+  env.knockEnemyAway(ordinaryEnemy,attacker);
+  assert.deepEqual([ordinaryEnemy.x,ordinaryEnemy.y],[5,5],
+    "Existing normal enemy knockback mechanics must remain unchanged");
+}
+
 testRareBat();
 testChestCollision();
 testAdjacentChestRendering();
 testRecognisableBatSprite();
-console.log("R133 Bat pursuit, winged sprite, legitimate chest visibility/ownership, reward: PASS");
+testBatCombatKnockbackDoesNotBuryChest();
+console.log("R133 Bat pursuit, winged sprite, combat knockback, chest visibility/ownership, reward: PASS");
