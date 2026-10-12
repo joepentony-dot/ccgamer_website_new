@@ -129,6 +129,7 @@ function testAdjacentChestRendering(){
     host:{chests:[chest]},
     focus:{x:6,y:8},
     lostSizzlerPixelAssets:{chestReplacement:null,chestFrames:images,chests:null},
+    chestRenderDiagnostics:{assetFrames:0,richFallbackFrames:0,lastMode:"",lastAt:0},
     PGR:{colourForRarity:()=>"#fc0"},P:{gold:"#fc0"},
     C:{tile:32},ctx:pixels,Math,performance:{now:()=>1000},
     md:(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y),
