@@ -36,7 +36,6 @@ for(const [name,page] of [["source",index],["public",publicEntry]]){
     assert.ok(page.includes(script+"?v="+releaseCache),name+" must load current "+script+" code");
   }
 }
-}
 
 
 const canonical="/arcade/c64-dungeon-carnage/";
