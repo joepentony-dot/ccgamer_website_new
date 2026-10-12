@@ -51,3 +51,20 @@ jobs:
         run: |
           node --check arcade/lost-sizzler/js/v10-4-final-ui.js
           node arcade/lost-sizzler/tests/v10-42-r88-endgame-credits.mjs
+
+  chromium-chest-art:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser dependencies matching Dungeon full qualification
+        run: |
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Verify new chest artwork on desktop and portrait Chromium
+        run: |
+          node arcade/lost-sizzler/tests/browser/v10-42-r135-free-chest-visual.mjs
+          node arcade/lost-sizzler/tests/browser/v10-42-r56-chest-visual-resilience.mjs
