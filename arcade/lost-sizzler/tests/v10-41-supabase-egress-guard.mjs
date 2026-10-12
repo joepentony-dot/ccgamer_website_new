@@ -41,24 +41,27 @@ assert(adminWindow.CCG_ADMIN_AUDIO_READY===true,'Skipping remote audio must stil
 assert(adminWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,'Automated browser must expose that remote media was deliberately skipped.');
 assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detail?.remoteMediaSkipped===true),'Remote-media skip must dispatch the normal readiness event.');
 
-// A headed local browser on IPv6 uses the bracketed hostname [::1].
-// It must still skip the real Supabase catalogue before any request is made.
-let ipv6ClientCalls=0;
-const ipv6Window={
-  CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
-  ccgSupabase:{getClient:async()=>{ipv6ClientCalls++;throw new Error('IPv6 localhost must not fetch the Supabase audio catalogue')}},
-  addEventListener(){},dispatchEvent(){}
-};
-vm.runInNewContext(adminSource,{
-  window:ipv6Window,
-  navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
-  location:{hostname:'[::1]',protocol:'http:'},
-  CustomEvent:FakeCustomEvent,
-  console
-},{filename:'admin-audio-overrides-ipv6.js'});
-await new Promise(resolve=>setImmediate(resolve));
-assert(ipv6ClientCalls===0,'Bracketed IPv6 localhost must not request the Supabase audio catalogue.');
-assert(ipv6Window.CCG_ADMIN_AUDIO_READY===true&&ipv6Window.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,'Bracketed IPv6 localhost must preserve offline audio readiness.');
+// Local audio catalogue isolation must include all IPv4 loopback addresses,
+// bracketed IPv6 loopback and browser-local development hostnames even without WebDriver.
+for(const hostname of ['[::1]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0']){
+  let loopbackClientCalls=0;
+  const loopbackWindow={
+    CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
+    ccgSupabase:{getClient:async()=>{loopbackClientCalls++;throw new Error('Loopback browser must not fetch production audio')}},
+    addEventListener(){},dispatchEvent(){}
+  };
+  vm.runInNewContext(adminSource,{
+    window:loopbackWindow,
+    navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
+    location:{hostname,protocol:'http:'},
+    CustomEvent:FakeCustomEvent,
+    console
+  },{filename:'admin-audio-overrides-loopback-'+hostname+'.js'});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert(loopbackClientCalls===0,hostname+' must not request the Supabase audio catalogue.');
+  assert(loopbackWindow.CCG_ADMIN_AUDIO_READY===true&&loopbackWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,
+    hostname+' must preserve offline audio readiness.');
+}
 
 // Packaged builds must retain local audio when the remote catalogue is skipped.
 // Regresses the Windows EXE smoke failure where the admin loader emptied
