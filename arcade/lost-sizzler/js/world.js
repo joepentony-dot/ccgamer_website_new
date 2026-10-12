@@ -469,10 +469,18 @@ window.CCGWorld=(()=>{
     const d=doorAt(host,x,y);if(!d)return true;
     return Boolean(d.open)&&!d.locked;
   }
+  function generatorAt(host,x,y){
+    return (host?.generators||[]).find(g=>g?.alive&&g.x===x&&g.y===y)||null;
+  }
+  function playerWalkable(map,x,y,host=null){
+    // Live generators are solid to players, but bullets and enemy routing
+    // must retain ordinary walkable() so a generator can still be attacked.
+    return walkable(map,x,y,host)&&!generatorAt(host,x,y);
+  }
   function tunnelDestination(w,x,y,dx,dy){if(y!==w.tunnelY||dy!==0)return null;if(x===1&&dx<0)return{x:C.worldWidth-2,y};if(x===C.worldWidth-2&&dx>0)return{x:1,y};return null}
   function roomAt(w,x,y){for(let i=w.rooms.length-1;i>=0;i--){const r=w.rooms[i];if(inside(r,{x,y}))return r.id}return -1}
   function sameRoom(w,a,b){const ra=roomAt(w,a.x,a.y),rb=roomAt(w,b.x,b.y);return ra>=0&&ra===rb}
   function themeAt(w,x,y){const id=roomAt(w,x,y),r=id>=0?w.rooms[id]:null;return r?(THEMES[r.theme]||THEMES.C64_ARCHIVE):THEMES.WARP_GALLERY}
 
-  return{hashString:hash,generate,createHostState,walkable,tunnelDestination,roomAt,sameRoom,themeAt,doorAt,chestAt,themes:THEMES};
+  return{hashString:hash,generate,createHostState,walkable,playerWalkable,generatorAt,tunnelDestination,roomAt,sameRoom,themeAt,doorAt,chestAt,themes:THEMES};
 })();
