@@ -26,7 +26,7 @@ for(const key of visualKeys){
     assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.activeSpikeTrapFrames[Number(spikeIndex[1])],approved,`R134 spike manifest path mismatch: ${key}`);
     assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.license,"CC0-1.0","Spike art must be licence-verified");
   }else{
-    assert.match(overrides,new RegExp(`\\\\b${key}:null\\\\b`),`visual override must expose ${key}`);
+    assert.match(overrides,new RegExp(`\\b${key}:null\\b`),`visual override must expose ${key}`);
   }
   assert.ok(Object.prototype.hasOwnProperty.call(manifest.images.visualOverhaul,key),`asset manifest must expose ${key}`);
 }
