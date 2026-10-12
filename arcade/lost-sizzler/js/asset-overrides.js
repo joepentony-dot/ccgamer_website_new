@@ -81,7 +81,7 @@ window.CCG_ASSET_OVERRIDES={
     items:{
       health:"assets/pixel/visual-overhaul/r85/pickup-health.svg",
       ammo:"assets/pixel/visual-overhaul/r85/pickup-ammo.svg",
-      mana:"assets/pixel/visual-overhaul/r85/pickup-ammo.svg",
+      mana:"assets/pixel/user-r134/indie-vova-mana.png",
       potion:"assets/pixel/visual-overhaul/r85/pickup-health.svg",
       torch:null,teleport:null,banishment:null,inventorySlot:null,
       credits:"assets/pixel/visual-overhaul/r85/pickup-gold.svg",
