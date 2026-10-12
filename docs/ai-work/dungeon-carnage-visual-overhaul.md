@@ -1,3 +1,11 @@
+## R131 Charger charge-wind-up warning — 11 October 2026 (source candidate, unqualified)
+
+- Source branch `fix/dungeon-r131-charger-warning-all-sprites-20261011` was created from `main` `47ce0891f25198fa87c24c94ea4bd8df1c033241` after the R122 Flask QA-only PR #2642 successfully merged and passed post-merge Pages, Cloudflare Workers, live public navigation, SEO and Site Safety.
+- Confirmed visual gameplay defect: `ai.js` assigns positive `chargeTelegraphMs` (360 ms for Charger; 520 ms for Swanh8ter) and a `chargeTarget`. The normal `charger` sprite renders as the preferred Puny `orcGrunt`, bypassing the tiny charge tell drawn only inside the procedural fallback.
+- R131 draws a fixed, high-contrast danger ring and target-facing arrow **after** the selected bespoke/Puny/authored/procedural sprite, only while `chargeTelegraphMs>0`. No separate asset, timer, Canvas, animation, additional runtime state or changes to AI, damage, movement, collision, visibility, save, progression or soundtrack. The same fixed pixels are available under reduced motion and severe render quality.
+- Extended `arcade/lost-sizzler/tests/v10-42-visual-overhaul-foundation.mjs` to execute the actual renderer's four sprite routes in a Node VM, verify post-sprite painter order, expiry, target direction and facing fallback. Extended the existing R51 Chromium visual-owner test to check real Canvas pixels and state parity under reduced-motion plus severe rendering. Browser/Node additions are not yet claimed green until exact-head CI runs.
+- This is a guarded source candidate, **not merged or production deployed**. Require independent Codex review, no unresolved findings, current-main reconciliation, exact-head fast/Node and all six Chromium shards, browser visual evidence, cache/SEO/site safety and appropriate Windows/itch staging before guarded merge. Do not publish paid game. The live owner 3-Essence Flask exchange and recovery of 16 original owner music tracks remain separate release gates.
+
 ## R130 Floor 15 ceremonial finale candidate — 10 October 2026, 13:20 BST (unqualified draft)
 
 - R128 Floor 4/7 and R129 Floor 11/15 environments are merged and present in latest main 92027150649bbaa35c94536f37ad5b44afd79c58. Start a single guarded R130 continuation from exact main; do not race Codex or modify the separate Flask, audio, C64 mobile and SEO PRs.

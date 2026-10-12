@@ -1,3 +1,10 @@
+## R131 Charger visual warning — 11 October 2026 (candidate awaiting PR qualification)
+
+- R122 Flask QA-only PR #2642 has been guarded-merged at `47ce0891f25198fa87c24c94ea4bd8df1c033241`, with complete post-merge Pages, Workers, SEO, live navigation and Site Safety success. This automated QA merge does NOT close owner manual Flask acceptance.
+- R131 source branch `fix/dungeon-r131-charger-warning-all-sprites-20261011` adds a charge warning after all live enemy sprite paths in the existing `game-render.js` renderer. Normal Charger uses Puny `orcGrunt` rather than the fallback `drawPixelEnemySprite` where charge visuals were previously isolated. Use existing authoritative `ai.js` `chargeTelegraphMs` / `chargeTarget` without changing any combat decisions, damage, coordinates or cadence.
+- The static, contrast-safe ring and arrow use current `ctx` and `C.tile`; no extra images, timers, gradients, canvases or new runtime ownership. Reduced-motion and severe quality retain the warning. Node VM tests exercise bespoke/Puny/authored/procedural routes, expiry and direction; the R51 browser contract exercises the real Canvas warning under severe quality and reduced-motion. Require actual exact-head CI, independent Codex review and desktop/mobile visual qualification; **not merged or deployed** as of source candidate.
+- Keep R127 atlas limit, R118 wall sconce frames, R128/R129 floor appearances, R130 credits, floor 15 completion, fog/vision, player ownership, 24-hour gate, emulator, intro, PWA, Windows/itch and audio provenance untouched. Owner original music/voice availability and deployed Flask manual test remain release blockers.
+
 ## R130 Floor 15 ceremonial finale candidate — 10 October 2026, 13:20 BST (unqualified draft)
 
 - R128 Floor 4/7 and R129 Floor 11/15 environments are merged and present in latest main 92027150649bbaa35c94536f37ad5b44afd79c58. Start a single guarded R130 continuation from exact main; do not race Codex or modify the separate Flask, audio, C64 mobile and SEO PRs.
