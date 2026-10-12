@@ -47,9 +47,12 @@ assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detai
 
 // Local audio catalogue isolation must include all IPv4 loopback addresses,
 // bracketed IPv6 loopback and browser-local development hostnames even without WebDriver.
-for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.2.','[::1]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0']){
+for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.1','127.0.0.2.','::1','[::1]','::','[::]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0']){
   let loopbackClientCalls=0;
+  let loopbackRestCalls=0;
   const loopbackWindow={
+    CCG_SUPABASE_URL:'https://lcslgxpgmttaexsorxik.supabase.co',
+    CCG_SUPABASE_ANON_KEY:'test-anon-key',
     CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
     ccgSupabase:{getClient:async()=>{loopbackClientCalls++;throw new Error('Loopback browser must not fetch production audio')}},
     addEventListener(){},dispatchEvent(){}
@@ -58,11 +61,15 @@ for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.2.','
     window:loopbackWindow,
     navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
     location:{hostname,protocol:'http:'},
+    URLSearchParams,
+    fetch:async()=>{loopbackRestCalls++;throw new Error('Local browser must not fetch the production catalogue')},
+    setTimeout:()=>1,clearTimeout(){},
     CustomEvent:FakeCustomEvent,
     console
   },{filename:'admin-audio-overrides-loopback-'+hostname+'.js'});
   await new Promise(resolve=>setImmediate(resolve));
   assert(loopbackClientCalls===0,hostname+' must not request the Supabase audio catalogue.');
+  assert(loopbackRestCalls===0,hostname+' must not request the Supabase REST audio catalogue.');
   assert(loopbackWindow.CCG_ADMIN_AUDIO_READY===true&&loopbackWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,
     hostname+' must preserve offline audio readiness.');
 }

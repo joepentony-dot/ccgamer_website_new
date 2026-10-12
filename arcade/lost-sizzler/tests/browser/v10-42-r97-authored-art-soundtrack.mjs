@@ -23,7 +23,19 @@ const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usag
 try{
   for(const viewport of [{width:1440,height:900},{width:390,height:844}]){
     const page=await browser.newPage({viewport});
-    await page.goto(origin+"/arcade/lost-sizzler/version.json");
+    let attemptedProductionStorage=0;
+    await page.route("https://*.supabase.co/storage/v1/object/**",async route=>{
+      attemptedProductionStorage++;
+      await route.abort("blockedbyclient");
+    });
+    // Give the synthetic visitor a real public-site origin while serving every
+    // page/art byte from our local server. Localhost must remain egress-disabled.
+    const website="https://www.cheekycommodoregamer.co.uk";
+    await page.route(website+"/**",async route=>{
+      const url=new URL(route.request().url());
+      await route.fulfill({response:await route.fetch({url:origin+url.pathname+url.search})});
+    });
+    await page.goto(website+"/arcade/lost-sizzler/version.json");
     await page.setContent('<meta name="ccg-lost-sizzler-cache" content="20261002r97"><style>body{margin:0;background:#09040f;color:#eddbb8;font:12px Georgia}canvas{image-rendering:pixelated;max-width:100%}</style><canvas id="proof" width="780" height="420"></canvas>');
     await page.addScriptTag({content:'const canvas=document.getElementById("proof"),ctx=canvas.getContext("2d"),P={red:"#f00",cyan:"#0ff"};function enemySpriteSeed(){return 0}\n'+setup+"\n"+routes});
     await page.waitForFunction(()=>Object.values(lostSizzlerPixelAssets).filter(x=>x instanceof Image).every(x=>x.complete));
@@ -58,6 +70,10 @@ try{
       window.fetch=()=>new Promise(resolve=>window.__finishAdminRest=resolve);
       window.ccgSupabase=undefined;
     `});
+    const visitor=await page.evaluate(()=>({hostname:location.hostname,webdriver:navigator.webdriver,userAgent:navigator.userAgent}));
+    assert.equal(visitor.hostname,"www.cheekycommodoregamer.co.uk");
+    assert.equal(visitor.webdriver,false,"synthetic visitor must be configured before either audio runtime loads");
+    assert.ok(!/HeadlessChrome/i.test(visitor.userAgent));
     await page.addScriptTag({content:admin});
     await page.waitForFunction(()=>typeof window.__finishAdminRest==="function");
     await page.addScriptTag({content:playlist});
@@ -75,6 +91,7 @@ try{
     assert.equal(music.source,"rest","production soundtrack hydration must not depend on the supabase-js client");
     assert.ok(music.url.endsWith("/exploration-01.mp3"));
     assert.equal(music.playing,1);
+    assert.equal(attemptedProductionStorage,0,"synthetic production soundtrack must never request actual Supabase Storage bytes");
     await page.close();
   }
   console.log("R97 real PNG decode/draw desktop/mobile and deferred admin soundtrack integration passed.");

@@ -61,7 +61,7 @@
    * when asset-overrides.js pins a hardcoded Supabase music URL. */
   const isLocalPlaybackHost=()=>{
     const host=String(location.hostname||"").toLowerCase().replace(/\.$/,"");
-    return host==="localhost"||host.endsWith(".localhost")||host==="::1"||host==="[::1]"||host==="0.0.0.0"
+    return host==="localhost"||host.endsWith(".localhost")||host==="::1"||host==="[::1]"||host==="::"||host==="[::]"||host==="0.0.0.0"
       ||/^127(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(host);
   };
 

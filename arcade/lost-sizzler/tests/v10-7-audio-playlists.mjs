@@ -317,7 +317,7 @@ console.log('Lost Sizzler multi-track playlist, mobile recovery and late uploade
 /* The production site must play uploaded songs normally; automated CI, local
  * browser tests, and authorised offline packages must never fetch Supabase
  * Storage tracks pinned in asset-overrides.js. */
-function egressFixture({hostname,protocol,webdriver,userAgent,itchPackage}){
+async function egressFixture({hostname,protocol,webdriver,userAgent,itchPackage}){
   const callbacks=[];
   const custom={audio:{music:{
     exploration:uploadedNormal,
@@ -332,7 +332,7 @@ function egressFixture({hostname,protocol,webdriver,userAgent,itchPackage}){
     addEventListener:(name,fn)=>callbacks.push([name,fn])
   };
   const location={
-    href:`${protocol}//${hostname}/arcade/c64-dungeon-carnage/`,
+    href:`${protocol}//${hostname.includes(":")&&!hostname.startsWith("[")?`[${hostname}]`:hostname}/arcade/c64-dungeon-carnage/`,
     protocol,hostname
   };
   const sandbox={
@@ -342,16 +342,27 @@ function egressFixture({hostname,protocol,webdriver,userAgent,itchPackage}){
     setInterval:()=>1,clearInterval(){},setTimeout:()=>1,clearTimeout(){},
     console
   };
+  const firstAudio=FakeAudio.instances.length;
   vm.runInNewContext(patch,sandbox,{filename:"lost-sizzler-playlist-audio.js"});
-  return Array.from(fake.CCGLostSizzlerPlaylistAudio.getPlaylist("normal"));
+  await fake.CCGSound.start();
+  await Promise.resolve();
+  const sources=Array.from(fake.CCGLostSizzlerPlaylistAudio.getPlaylist("normal"));
+  const played=FakeAudio.instances.slice(firstAudio);
+  assert(played.length===1&&sources.includes(played[0].url),"Actual playback must construct exactly one selected track.");
+  return sources;
 }
 const site={hostname:"www.cheekycommodoregamer.co.uk",protocol:"https:",webdriver:false,userAgent:"Mozilla/5.0 Chrome/140.0 Safari/537.36",itchPackage:false};
-const uploaded=egressFixture(site);
+const uploaded=await egressFixture(site);
 assert(uploaded.includes(uploadedNormal),"Real website players must retain the published production soundtrack.");
 for(const [label,environment] of [
   ["headless browser on production hostname",{...site,webdriver:true,userAgent:"HeadlessChrome/140"}],
+  ["webdriver alone on public hostname",{...site,webdriver:true}],
+  ["headless user agent without webdriver",{...site,userAgent:"HeadlessChrome/140"}],
   ["localhost with webdriver flag disabled",{...site,hostname:"127.0.0.1"}],
   ["bracketed IPv6 localhost with webdriver disabled",{...site,hostname:"[::1]",protocol:"http:"}],
+  ["IPv6 loopback without brackets",{...site,hostname:"::1",protocol:"http:"}],
+  ["bracketed IPv6 bind-all without webdriver",{...site,hostname:"[::]",protocol:"http:"}],
+  ["IPv6 bind-all without brackets or webdriver",{...site,hostname:"::",protocol:"http:"}],
   ["exact localhost without webdriver",{...site,hostname:"localhost",webdriver:false,protocol:"http:"}],
   ["trailing-dot localhost without webdriver",{...site,hostname:"localhost.",webdriver:false,protocol:"http:"}],
   ["trailing-dot localhost subdomain",{...site,hostname:"play.localhost.",webdriver:false,protocol:"http:"}],
@@ -364,7 +375,7 @@ for(const [label,environment] of [
   ["offline itch/desktop release",{...site,itchPackage:true}],
   ["local file executable",{...site,protocol:"file:"}]
 ]){
-  const sources=egressFixture(environment);
+  const sources=await egressFixture(environment);
   assert(!sources.some(url=>/\.supabase\.co\/storage\/v1\/object\//i.test(url)),label+" requested billable Supabase audio.");
   assert(sources.includes("assets/audio/music/exploration.wav"),label+" must use its bundled authored track.");
 }
