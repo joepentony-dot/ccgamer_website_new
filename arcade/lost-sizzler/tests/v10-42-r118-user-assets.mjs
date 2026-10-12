@@ -87,7 +87,29 @@ assert(render.includes('d.type==="pillar"?lostSizzlerPixelAssets.propPillar:null
 assert(render.includes('if(d.type==="pillar"){')&&render.includes('ctx.fillRect(q.x+4,q.y+C.tile-9,C.tile-8,7)'),"Proportional narrow column must retain its wider existing blocking-plinth visual");
 
 for(let i=1;i<=8;i++)assert(visuals["floorTile"+i]===null,"Unknown-rights R118 floor override must remain disabled: "+i);
-for(let i=0;i<4;i++)assert(visuals["spikeTrapFrame"+i]===null,"Unknown-rights R118 spike art must remain disabled: "+i);
+// R118 excluded every unidentified-rights spike sprite. The later R134 intake
+// permits ONLY separately sourced, fingerprint-pinned Stealthix CC0 artwork.
+const r134Spikes=manifest.images?.visualOverhaul?.r134LicensedCC0;
+const r134SpikePaths=[0,1,2,3].map(i=>"assets/pixel/user-r134/stealthix-spikes-"+i+".png");
+const r134SpikeHashes=[
+  "99b508dbdd0416972b80d5aedbd5469eff223914980935b7a97c0b880a0d2d9b",
+  "66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f",
+  "d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581",
+  "66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f"
+];
+assert(r134Spikes?.creator==="Stealthix"&&r134Spikes?.license==="CC0-1.0","R134 spike replacements require documented Stealthix CC0 rights");
+assert(r134Spikes?.source==="https://stealthix.itch.io/animated-traps","R134 spike art must retain the original creator URL");
+assert(JSON.stringify(r134Spikes?.activeSpikeTrapFrames)===JSON.stringify(r134SpikePaths),"R134 manifest must pin only the four approved Stealthix spike frames");
+assert(releaseCredits.includes("Stealthix"),"R134 spike artwork must retain creator attribution");
+const r134Provenance=read("assets/pixel/user-r134/PROVENANCE.md");
+for(let i=0;i<4;i++){
+  const source=r134SpikePaths[i];
+  assert(visuals["spikeTrapFrame"+i]===source,"Unverified/noncommercial spike override forbidden: "+i);
+  const png=fs.readFileSync(new URL(source,root));
+  assert(png.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])),"R134 spikes must have PNG signatures: "+i);
+  assert(png.readUInt32BE(16)===32&&png.readUInt32BE(20)===32,"R134 Stealthix spike must remain a 32x32 crop: "+i);
+  assert(sha256(png)===r134SpikeHashes[i]&&r134Provenance.includes(r134SpikeHashes[i]),"Unaudited or modified spike sprite must be excluded: "+i);
+}
 for(let i=0;i<5;i++)assert(visuals["fireplaceFrame"+i]===null,"Unknown-rights R118 fireplace art must remain disabled: "+i);
 assert(visuals.propBarrel===folder+barrel,"Barrel must use separately licensed Kenney CC0 artwork, not excluded unidentified art");
 assert(visuals.propBookcase===null,"Unknown-rights bookcase override must remain disabled");
