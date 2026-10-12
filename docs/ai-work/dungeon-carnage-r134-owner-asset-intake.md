@@ -1,5 +1,22 @@
 # Owner-supplied asset intake — 12 October 2026
 
+## Owner-confirmed zero-cost rule — 12 October 2026
+
+The owner explicitly confirmed that **nothing has been paid for** in any supplied asset bundle and will not purchase or contribute any amount to obtain commercial rights. This supersedes older references to "confirm payment", "pay for commercial use" or possible upgrades.
+
+**Permanent intake gate:** use only assets covered by the exact free/no-payment download's commercial-video-game rights; either CC0/public-domain or free commercial-use permissions (including any required attribution and asset-source redistribution restrictions). A website displaying "free download", an archive being uploaded, or a permissive paid tier does **not** prove the downloaded free tier allows commercial games. No new spend, payment, Patreon contribution, paid expansion, membership purchase or commercial-license checkout is authorised. If free commercial permission cannot be verified, keep the candidate **excluded from the game and packages**, and search for an equivalent zero-cost alternative. Never assume ownership or permission simply because a file is present.
+
+**Hard exclusions for the owner's currently unpaid downloads:**
+- **Pine Druid Dungeon Tileset Mega Pack**: $0 download is non-commercial; paid commercial tier required. **Excluded permanently under the no-pay rule**; do not re-open payment eligibility unless the owner changes the rule.
+- **BDragon1727 750 Effect and FX Pixel**: commercial use requires a paid contribution. **Excluded permanently under the no-pay rule**.
+- **Caeora Deadly Dungeons Free**: free licence lacks video-game commercial rights. **Excluded**; use alternatives with explicit free commercial permission instead.
+- **Minifantasy Dungeon Free Edition**: non-commercial-only free tier. **Excluded**.
+- **Treasure+ and unresolved-source archives**: **not approved** until the exact free edition's commercial-game rights can be verified without payment. If not, exclude.
+
+**Free-commercial candidates retained:** Stealthix (CC0), 0x72 (CC0), Niji (CC0), Kenney (CC0), Spriteshift (CC0), KayKit CC0 material, ExiLove free pack (creator permission), JoseKolos free keys (creator permission), SnowHex free version (embedded permission), Pixel_Poem free-commercial graphics (not CC0), Indie_Vova free demo (not CC0), Super Pixel Objects free sample (creator licence/credit) and CraftPix freebies (commercial games permitted, non-CC0, no source-asset redistribution). Confirm individual version and redistribution terms before selection and do not substitute premium-only files.
+
+**Runtime safety remains essential:** free/legal is necessary but insufficient. Use only better-fitting artwork with proven character/prop role, scale, direction, animation states, colour coherence, honest credits, source hash, load fallback, and game-package compliance. No automatic wholesale replacement of an established better visual merely because another pack is free.
+
 This is a selection/permission review, NOT a representation that all supplied graphics are live.
 
 | Pack | Original source | Commercial-use decision | Visual judgement / integration |
@@ -9,9 +26,9 @@ This is a selection/permission review, NOT a representation that all supplied gr
 | JoseKolos Pixel Art RPG Keys FREE | https://josekolos.itch.io/pixel-art-rpg-keys-pack-48-variants-free-premium | Creator permits commercial use of free 32×32 iron/gold keys; free ZIP contains two presentation sheets, no paid-only special keys. | Candidate for enlarged inventory/HUD icon use; existing 16×16 Niji floor key still better fitting at ground tile scale, so no regression-prone override yet. |
 | Spriteshift Purple Dungeon | https://spriteshift.itch.io/purple-dungeon-tileset | CC0 commercial allowed | Source URL reviewed; actual PurpleDungeon.zip not supplied, and ExiLove ZIP is a DIFFERENT pack. Do not claim sprites have been imported. |
 | CraftPix Free Dungeon Props | https://craftpix.net/file-licenses/ | Freebie commercial game use allowed; prohibit redistribution of source files | Retain for selective assessment; do not bulk-copy PNG/PSD/Tiled sources to public repo or itch package. |
-| BDragon1727 750 Effect and FX Pixel FREE | https://bdragon1727.itch.io/750-effect-and-fx-pixel-all | Commercial licence requires a contribution of any amount; no payment evidence | Excluded until owner confirms qualifying contribution; paid full-version assets are not included in supplied ZIP. |
+| BDragon1727 750 Effect and FX Pixel FREE | https://bdragon1727.itch.io/750-effect-and-fx-pixel-all | Commercial licence requires a contribution; owner confirmed no payment | **EXCLUDED** under the zero-cost rule; do not use or request payment. |
 | Caeora Deadly Dungeons Free | https://www.caeora.com/content-use | Creator's free rights do not grant commercial video-game use | Excluded absent separate explicit video-game permission. |
-| Pine Druid Dungeon Tileset Mega Pack | https://pine-druid.itch.io/dungeon-tileset-mega-pack | Free $0 version non-commercial only; creator requires at least $1 for commercial use | Uploaded Tileset.png / .aseprite held out pending payment proof and redistribution-rule clarification. |
+| Pine Druid Dungeon Tileset Mega Pack | https://pine-druid.itch.io/dungeon-tileset-mega-pack | Free $0 version non-commercial only; commercial payment required; owner confirmed no payment | **EXCLUDED** under the zero-cost rule, including Tileset.png and Tileset.aseprite. |
 | 0x72 / Niji / Kenney / Pixel_Poem existing R118 | arcade/lost-sizzler/assets/THIRD-PARTY-ART-CREDITS.md | Existing project-verified permissions | Preserve currently active torches, chest/barrel/crate/column, key and coin art until stronger direct comparison passes. |
 
 Policy: no paid-only source, noncommercial pack, unverified licensing, source-only downloadable art bundle, gameplay rewrite, or unrelated site feature gets silently included. Compare each candidate at real 32 px in gameplay and HUD and keep existing image-load fallback; pixel scale, room perspective and role correctness decide replacements, not raw quantity.
@@ -37,7 +54,7 @@ The owner explicitly requests that **all** previous assets be reviewed for comme
 | Unidentified Dungeon tileset archive variants | Origin not substantiated in R118 for one uploaded ZIP | Held, do not assume all similarly named archives inherit 0x72 or another creator's licence. |
 | Basic asset pack.zip, mixed miscellaneous uploads | Not source/rights traced in this R134 scope | Hold pending source identification and compatible in-game quality. |
 
-Additional restrictions: CraftPix licence is not CC0; its prohibition on using its art to develop/test AI systems does not grant any special permission to redistribute individual asset sheets. Source rights and packaging must be checked **per pack**. User explicitly prefers no new paid licences. Do not treat a free download from a pay-if-commercial listing as permission for a commercial game; the Pine Druid and BDragon payment conditions require proof before activation.
+Additional restrictions: CraftPix licence is not CC0; its prohibition on using its art to develop/test AI systems does not grant any special permission to redistribute individual asset sheets. Source rights and packaging must be checked **per pack**. Owner confirms no payment was made for any asset and forbids any paid asset licensing. Do not treat a free download from a pay-if-commercial listing as commercial permission; Pine Druid and BDragon are excluded rather than pending payment.
 
 ### Visual acceptance order after R134 spike-frame candidate
 
@@ -50,7 +67,7 @@ Additional restrictions: CraftPix licence is not CC0; its prohibition on using i
 
 - Source candidate branch `codex/dungeon-r134-free-art-intake-20261012` from main `d3d73603468b5baca6044831be90d5dc0ead928d`.
 - Draft PR #2698. Stealthix CC0 spike states are imported as four active visual-only overrides; other newly supplied packs are held candidates or excluded as above.
-- R133 PR #2695 remains independent. No deployed/live acceptance, no paid original soundtrack recovery, no main-branch merge, and no change to game mechanics is implied.
+- R133 PR #2695 remains independent. No deployed/live acceptance, no main-branch merge, and no change to game mechanics is implied. Audio recovery is unrelated to and does not authorise payment for third-party artwork.
 
 ### Added role-correct item art candidate
 
