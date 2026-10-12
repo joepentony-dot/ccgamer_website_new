@@ -35,7 +35,7 @@ assert.equal(W.playerWalkable(map,-1,0,worldHost),false);
 
 // Real movePlayer and corner movement; no mock version of the movement function.
 const gameplay={
-  W,world,host:worldHost,mode:"playing",Math,
+  W,world,host:worldHost,mode:"playing",Math,p2:null,
   performance:{now:()=>5000},
   S:{sfx(){}},showToast(...args){gameplay.messages.push(args)},messages:[],
   C:{tile:32},P:{green:"#0f0",cyan:"#0ff"},
