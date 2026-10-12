@@ -46,7 +46,7 @@
     if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
     let automated=false,local=false;
     try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}
-    try{local=["localhost","127.0.0.1","::1"].includes(String(location.hostname||"").toLowerCase())}catch(_){}
+    try{local=["localhost","127.0.0.1","::1","[::1]"].includes(String(location.hostname||"").toLowerCase())}catch(_){}
     return !(automated||local);
   }
 
