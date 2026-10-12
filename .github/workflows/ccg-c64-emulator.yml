@@ -35,6 +35,9 @@ jobs:
       - name: Verify iPhone Safari startup and privacy fallbacks
         run: node --test tests/ccg-c64-ios-safari.test.mjs
 
+      - name: Verify iPhone touch selection and desktop Android isolation
+        run: node --test tests/ccg-c64-ios-game-selection.test.mjs
+
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
 
