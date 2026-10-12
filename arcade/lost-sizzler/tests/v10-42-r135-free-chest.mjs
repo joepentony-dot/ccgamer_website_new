@@ -45,21 +45,21 @@ const to=render.indexOf("\nfunction label(",from);
 assert.ok(from>0 && to>from,"Real chest renderer must remain accessible");
 const drawSource=render.slice(from,to)+"\ndrawChests();";
 const approvedFrames=[0,1,2].map(i=>({name:"r135-"+i,complete:true,naturalWidth:32,naturalHeight:32}));
-function probeDraw({now=2000,openedAt=0,frames=approvedFrames,custom=null,legacy={name:"legacy",complete:true,naturalWidth:160,naturalHeight:96}}={}){
-  const drawn=[];
+function probeDraw({now=2000,openedAt=0,active=true,locked=false,visible=true,inView=true,rarity="COMMON",near=false,frames=approvedFrames,custom=null,legacy={name:"legacy",complete:true,naturalWidth:160,naturalHeight:96}}={}){
+  const drawn=[],rects=[],labels=[],rarities=[];
   let richFallback=0;
-  const ctx={save(){},restore(){},beginPath(){},ellipse(){},fill(){},strokeRect(){},fillRect(){},drawImage(image){drawn.push(image?.name||"unknown");}};
+  const ctx={save(){},restore(){},beginPath(){},ellipse(){},fill(){},strokeRect(){},fillRect(x,y,w,h){rects.push({x,y,w,h,fill:this.fillStyle});},drawImage(image){drawn.push(image?.name||"unknown");}};
   const context={
     ctx,performance:{now:()=>now},
     lostSizzlerPixelAssets:{chestFrames:frames,chestReplacement:custom,chests:legacy},
-    host:{chests:[{x:4,y:4,active:true,locked:false,openedAt,loot:{rarity:"COMMON"}}]},
-    focus:{},PGR:{colourForRarity:()=>"#fff"},P:{gold:"#ffa"},C:{tile:42},
-    ws:(x,y)=>({x:x*42,y:y*42}),tileInRenderView:()=>true,visibleTo:()=>true,
-    md:()=>999,label(){},drawAnimatedChestFallback(){richFallback++;},
+    host:{chests:[{x:4,y:4,active,locked,openedAt,loot:{rarity}}]},
+    focus:{},PGR:{colourForRarity(x){rarities.push(x);return "#fff";}},P:{gold:"#ffa"},C:{tile:42},
+    ws:(x,y)=>({x:x*42,y:y*42}),tileInRenderView:()=>inView,visibleTo:()=>visible,
+    md:()=>near?1:999,label(...args){labels.push(args);},drawAnimatedChestFallback(){richFallback++;},
     chestRenderDiagnostics:{assetFrames:0,richFallbackFrames:0},Math
   };
   vm.runInNewContext(drawSource,context,{timeout:1000});
-  return {drawn,mode:context.chestRenderDiagnostics.lastMode,richFallback};
+  return {drawn,rects,labels,rarities,mode:context.chestRenderDiagnostics.lastMode,richFallback};
 }
 assert.deepEqual(probeDraw().drawn,["r135-0"],"Unopened chests must use the closed source frame");
 assert.deepEqual(probeDraw({openedAt:1700}).drawn,["r135-1"],"Opening chests must use the transitional frame");
@@ -69,4 +69,17 @@ assert.deepEqual(probeDraw({frames:brokenFrames}).drawn,["legacy"],"Failed chest
 assert.equal(probeDraw({frames:brokenFrames,legacy:null}).richFallback,1,"Missing assets must keep drawn Canvas fallback");
 assert.deepEqual(probeDraw({custom:{name:"owner-custom",complete:true,naturalWidth:160,naturalHeight:96}}).drawn,["owner-custom"],"Explicit owner sheet must preserve precedence");
 
-console.log("R135 free-commercial chest source, 32x32 PNGs, three-state lifecycle and fallbacks PASS");
+// These probes execute the real drawChests() function, not a reimplemented
+// animation: locked overlays, rarity feedback and visibility must survive R135.
+assert.deepEqual(probeDraw({locked:true}).drawn,["r135-0"],"Locked chest artwork must still render");
+assert.ok(probeDraw({locked:true}).rects.some(r=>r.w===4&&r.h===6&&r.fill==="#ffa"),"Locked chest retains a gold padlock");
+assert.equal(probeDraw().rects.filter(r=>r.w===4&&r.h===6).length,0,"Unrestricted chest must not render a lock");
+assert.deepEqual(probeDraw({active:false}).drawn,[],"Inactive unopened chests stay hidden");
+assert.deepEqual(probeDraw({active:false,openedAt:1800}).drawn,["r135-0"],"Opened inactive chest remains visible during opening");
+assert.deepEqual(probeDraw({visible:false}).drawn,[],"Chests outside discovered visibility remain hidden");
+assert.deepEqual(probeDraw({inView:false}).drawn,[],"Off-camera chests avoid drawing");
+assert.deepEqual(probeDraw({rarity:"GOLD",near:true}).drawn,["r135-0"],"Rare chests retain the same frame sequence");
+assert.equal(probeDraw({locked:true,near:true}).labels[0]?.[0],"LOCKED DUNGEON CHEST","Locked chest retains its interaction label");
+assert.equal(probeDraw({active:false,openedAt:1800,near:true}).labels[0]?.[0],"CHEST OPENED","Opened chest retains its completion label");
+
+console.log("R135 free-commercial chest source, 32x32 PNGs, animation, lock, rarity, visibility and fallbacks PASS");
