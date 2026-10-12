@@ -24,3 +24,11 @@ This credits page is descriptive, not a grant of new rights. Exact source URLs, 
 - `docs/ai-work/dungeon-carnage-r118-assets.md` (source repository)
 
 All third-party names remain the property of their respective owners. The artists do not endorse or sponsor C64 Dungeon Carnage.
+
+## R134 supplemental artwork (candidate)
+
+| Creator | Artwork included | Source | Permission |
+| --- | --- | --- | --- |
+| **Stealthix** | Four selected 32×32 spike trap animation states from the supplied 14-frame sheet | [Animated Traps](https://stealthix.itch.io/animated-traps) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+
+The updated sprite files have exact SHA-256/source-frame provenance in `assets/pixel/user-r134/PROVENANCE.md`. This is a candidate PR; it has not passed exact-head Chromium/CI or received owner live visual acceptance.
