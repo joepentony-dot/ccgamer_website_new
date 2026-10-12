@@ -469,10 +469,43 @@ window.CCGWorld=(()=>{
     const d=doorAt(host,x,y);if(!d)return true;
     return Boolean(d.open)&&!d.locked;
   }
+  function generatorAt(host,x,y){
+    return (host?.generators||[]).find(g=>g?.alive&&g.x===x&&g.y===y)||null;
+  }
+  function playerWalkable(map,x,y,host=null){
+    // Live generators are solid to players, but bullets and enemy routing
+    // must retain ordinary walkable() so a generator can still be attacked.
+    return walkable(map,x,y,host)&&!generatorAt(host,x,y);
+  }
+  function reconcileSolidFurniture(world,host){
+    if(!Array.isArray(world?.decor)||!host)return 0;
+    host.blockingDecor=Array.isArray(host.blockingDecor)?host.blockingDecor:[];
+    const nonBlocking=new Set(["cable","pipe","lightBar","candleSconce"]);
+    const existing=new Set(host.blockingDecor.map(d=>String(d?.id||"")));
+    let added=0;
+    for(const d of world.decor){
+      if(!d||d.destroyed||nonBlocking.has(d.type))continue;
+      // Tables, crates and other full-tile furniture need one authoritative
+      // collision/health record for both walkability and weapon damage.
+      d.blocking=true;
+      if(existing.has(String(d.id)))continue;
+      const structural=Boolean(d.structural||d.type==="pillar"||d.type==="fireplace");
+      const hp=structural?999:Math.max(1,Number(d.hp)||2);
+      d.structural=structural;
+      d.hp=hp;d.maxHp=structural?999:Math.max(hp,Number(d.maxHp)||2);
+      host.blockingDecor.push({
+        id:d.id,x:d.x,y:d.y,type:d.type,roomId:d.roomId,
+        hp,maxHp:d.maxHp,structural
+      });
+      existing.add(String(d.id));
+      added++;
+    }
+    return added;
+  }
   function tunnelDestination(w,x,y,dx,dy){if(y!==w.tunnelY||dy!==0)return null;if(x===1&&dx<0)return{x:C.worldWidth-2,y};if(x===C.worldWidth-2&&dx>0)return{x:1,y};return null}
   function roomAt(w,x,y){for(let i=w.rooms.length-1;i>=0;i--){const r=w.rooms[i];if(inside(r,{x,y}))return r.id}return -1}
   function sameRoom(w,a,b){const ra=roomAt(w,a.x,a.y),rb=roomAt(w,b.x,b.y);return ra>=0&&ra===rb}
   function themeAt(w,x,y){const id=roomAt(w,x,y),r=id>=0?w.rooms[id]:null;return r?(THEMES[r.theme]||THEMES.C64_ARCHIVE):THEMES.WARP_GALLERY}
 
-  return{hashString:hash,generate,createHostState,walkable,tunnelDestination,roomAt,sameRoom,themeAt,doorAt,chestAt,themes:THEMES};
+  return{hashString:hash,generate,createHostState,walkable,playerWalkable,generatorAt,reconcileSolidFurniture,tunnelDestination,roomAt,sameRoom,themeAt,doorAt,chestAt,themes:THEMES};
 })();
