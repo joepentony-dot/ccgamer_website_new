@@ -7,7 +7,7 @@ const WORKER_URL = "/emulator/c64/coi-service-worker.js";
 const WORKER_SCOPE = "/emulator/c64/";
 const RELOAD_KEY = "ccg.c64.coi.reloadCount";
 const MAX_RELOADS = 2;
-const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261011_game_switch_v1";
+const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261012_ios_startup_v2";
 
 const machineState = document.querySelector("[data-machine-state]");
 const stageNote = document.querySelector("[data-stage-note]");
@@ -61,6 +61,20 @@ function waitForState(worker, wanted, timeoutMs = 8000) {
   });
 }
 
+function isIOSDevice() {
+  // All iPhone browsers use WebKit. iPadOS can report itself as a Mac.
+  const ua = String(navigator.userAgent || "");
+  return /iPhone|iPad|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function startupFailed(error) {
+  const detail = String(error?.message || error || "Unknown module error")
+    .replace(/\s+/g, " ").slice(0, 180);
+  setStatus("C64 STARTUP FAILED",
+    "Could not initialise the emulator (" + detail + "). Reload the page, or tell CCG this message.");
+}
+
 async function startCompatibilityMode(reason) {
   console.warn("[ccg-c64] Starting without shared SID audio:", reason);
   setStatus("STARTING C64 IN COMPATIBILITY MODE",
@@ -69,15 +83,27 @@ async function startCompatibilityMode(reason) {
     await import(APP_URL);
   } catch (error) {
     console.error("[ccg-c64] Compatibility startup failed:", error);
-    setStatus("C64 STARTUP FAILED",
-      "The emulator could not start on this browser. Reload this page or try an up-to-date Safari tab.");
+    startupFailed(error);
   }
 }
 
 async function start() {
   if (isolated()) {
     clearReloadCount();
-    await import(APP_URL);
+    try {
+      await import(APP_URL);
+    } catch (error) {
+      console.error("[ccg-c64] Isolated startup failed:", error);
+      startupFailed(error);
+    }
+    return;
+  }
+
+  // iOS service-worker activation and its isolation reload can stall or loop.
+  // Keep an already-isolated Safari session above, but boot all other iOS
+  // sessions immediately in silent compatibility mode without reloading.
+  if (isIOSDevice()) {
+    await startCompatibilityMode("iOS WebKit does not have an isolated document.");
     return;
   }
 

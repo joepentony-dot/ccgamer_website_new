@@ -10,7 +10,26 @@ import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
 import { PACK_ROOT, PACK_CATALOG_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes } from "./game-catalog.js";
 
-const vault = new ROMVault();
+// Safari privacy settings can deny localStorage, even though the page and
+// emulator engine are otherwise usable. Preserve normal persistent storage
+// wherever available; use session-only memory if reads/writes are blocked.
+const localStorage = (() => {
+  try {
+    const store = window.localStorage;
+    const probe = "__ccg_c64_storage_probe__";
+    store.setItem(probe, "1");
+    store.removeItem(probe);
+    return store;
+  } catch {
+    const cache = new Map();
+    return {
+      getItem(key) { return cache.has(String(key)) ? cache.get(String(key)) : null; },
+      setItem(key, value) { cache.set(String(key), String(value)); },
+      removeItem(key) { cache.delete(String(key)); },
+    };
+  }
+})();
+const vault = new ROMVault(localStorage);
 const gameVault = new GameVault();
 const setup = document.querySelector("[data-rom-setup]");
 const finishSetup = document.querySelector("[data-finish-setup]");
@@ -335,7 +354,12 @@ function arrangePhoneLibrary() {
   }
 }
 arrangePhoneLibrary();
-phoneLibraryLayout.addEventListener("change", arrangePhoneLibrary);
+// Safari versions before MediaQueryList.addEventListener need addListener.
+if (typeof phoneLibraryLayout.addEventListener === "function") {
+  phoneLibraryLayout.addEventListener("change", arrangePhoneLibrary);
+} else if (typeof phoneLibraryLayout.addListener === "function") {
+  phoneLibraryLayout.addListener(arrangePhoneLibrary);
+}
 
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
