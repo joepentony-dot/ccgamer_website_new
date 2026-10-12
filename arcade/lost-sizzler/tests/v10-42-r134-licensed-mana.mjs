@@ -17,7 +17,7 @@ const info = manifest.images?.visualOverhaul?.r134FreeCommercial;
 assert.equal(info?.activeManaPickup, path);
 assert.equal(info?.activePNGSHA256, digest);
 assert.match(info.license, /not CC0/);
-assert.match(readFileSync(join(root, 'js/asset-overrides.js'), 'utf8'), /mana:"assets\\/pixel\\/user-r134\\/indie-vova-mana\\.png"/);
+assert.match(readFileSync(join(root, 'js/asset-overrides.js'), 'utf8'), /mana:"assets\/pixel\/user-r134\/indie-vova-mana\.png"/);
 const credits = readFileSync(join(root, 'assets/THIRD-PARTY-ART-CREDITS.md'), 'utf8');
 assert.match(credits, /Indie_Vova/);
 assert.match(credits, /standalone asset-pack redistribution/);
