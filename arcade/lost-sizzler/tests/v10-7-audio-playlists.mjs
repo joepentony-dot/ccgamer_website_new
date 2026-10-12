@@ -352,6 +352,10 @@ for(const [label,environment] of [
   ["headless browser on production hostname",{...site,webdriver:true,userAgent:"HeadlessChrome/140"}],
   ["localhost with webdriver flag disabled",{...site,hostname:"127.0.0.1"}],
   ["bracketed IPv6 localhost with webdriver disabled",{...site,hostname:"[::1]",protocol:"http:"}],
+  ["alternate IPv4 loopback 127.0.0.2",{...site,hostname:"127.0.0.2",protocol:"http:"}],
+  ["upper IPv4 loopback range",{...site,hostname:"127.255.255.254",protocol:"http:"}],
+  ["nested localhost domain",{...site,hostname:"play.localhost",protocol:"http:"}],
+  ["local bind-all host",{...site,hostname:"0.0.0.0",protocol:"http:"}],
   ["headless on localhost with test asset flag irrelevant",{...site,hostname:"localhost",webdriver:true}],
   ["offline itch/desktop release",{...site,itchPackage:true}],
   ["local file executable",{...site,protocol:"file:"}]
