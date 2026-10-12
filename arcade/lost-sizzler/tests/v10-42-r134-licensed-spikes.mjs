@@ -9,9 +9,9 @@ const assetRoot = 'assets/pixel/user-r134';
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const expected = [
   ['stealthix-spikes-0.png', '99b508dbdd0416972b80d5aedbd5469eff223914980935b7a97c0b880a0d2d9b'],
-  ['stealthix-spikes-1.png', '66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f'],
+  ['stealthix-spikes-1.png', 'd39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581'],
   ['stealthix-spikes-2.png', 'd39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581'],
-  ['stealthix-spikes-3.png', '66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f']
+  ['stealthix-spikes-3.png', 'd39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581']
 ];
 const manifest = JSON.parse(readFileSync(join(root, 'assets/asset-manifest.json'), 'utf8'));
 const approved = manifest.images?.visualOverhaul?.r134LicensedCC0;
@@ -39,4 +39,6 @@ for (let i = 0; i < expected.length; i++) {
   assert.ok(overrides.includes(`spikeTrapFrame${i}:"${relative}"`));
   assert.ok(provenance.includes(fingerprint));
 }
+assert.equal(expected[1][1], expected[2][1], 'Active spike frames must always show fully extended hazards');
+assert.equal(expected[2][1], expected[3][1], 'Active spike frames must never misleadingly retract during a damage cycle');
 console.log('R134 licensed spike art: fingerprints, PNG dimensions, runtime overrides, renderer and commercial credits PASS');

@@ -10,11 +10,11 @@ Original member SHA-256: f09639ecff91f06b204e6eb6273c78c433ef3c8eba5c153022a5e0f
 | Asset name | Extracted original frame (0-based) | Output SHA-256 |
 | --- | ---: | --- |
 | stealthix-spikes-0.png | 0 (inactive) | 99b508dbdd0416972b80d5aedbd5469eff223914980935b7a97c0b880a0d2d9b |
-| stealthix-spikes-1.png | 7 (raising) | 66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f |
+| stealthix-spikes-1.png | 8 (fully extended; active) | d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581 |
 | stealthix-spikes-2.png | 8 (extended) | d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581 |
-| stealthix-spikes-3.png | 12 (retracting, same source pixels as frame 7) | 66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f |
+| stealthix-spikes-3.png | 8 (fully extended; active) | d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581 |
 
-These are crops of the supplied original PNG. Runtime changes are visual only: existing spike timing, hitboxes, damage, accessibility status, fallback render, and local/itch packaging remain unchanged.
+These are crops of the supplied original PNG. All three ACTIVE renderer slots deliberately use original frame 8 (identical pixels), because the current renderer cycles those slots for the entire damaging phase. Raising/retracting transition frames would wrongly suggest a harmless cycle while damage remains active. Slot 0 uses source frame 0 (fully retracted / safe). Dynamic raising and lowering must only be added when the hazard renderer tracks real state transitions; these sprite substitutions do not change collision or damage. Runtime changes are visual only: existing spike timing, hitboxes, damage, accessibility status, fallback render, and local/itch packaging remain unchanged.
 
 ## Indie_Vova — free-commercial mana pickup
 

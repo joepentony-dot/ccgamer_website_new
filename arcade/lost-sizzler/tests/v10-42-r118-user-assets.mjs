@@ -93,9 +93,9 @@ const r134Spikes=manifest.images?.visualOverhaul?.r134LicensedCC0;
 const r134SpikePaths=[0,1,2,3].map(i=>"assets/pixel/user-r134/stealthix-spikes-"+i+".png");
 const r134SpikeHashes=[
   "99b508dbdd0416972b80d5aedbd5469eff223914980935b7a97c0b880a0d2d9b",
-  "66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f",
   "d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581",
-  "66ca01ec5b340fbd1ce87f94ba70bbffbbe646b1a91826dd03b2efd919849a6f"
+  "d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581",
+  "d39639a238d028dcf3b944017146b9366e1b514374f4333170f659e91e7f8581"
 ];
 assert(r134Spikes?.creator==="Stealthix"&&r134Spikes?.license==="CC0-1.0","R134 spike replacements require documented Stealthix CC0 rights");
 assert(r134Spikes?.source==="https://stealthix.itch.io/animated-traps","R134 spike art must retain the original creator URL");

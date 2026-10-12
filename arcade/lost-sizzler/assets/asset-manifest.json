@@ -91,7 +91,7 @@
           "assets/pixel/user-r134/stealthix-spikes-3.png"
         ],
         "stagedOnly": [],
-        "scope": "Visual-only sprite frame override for existing spike traps; existing hitboxes and hazard timing unchanged"
+        "scope": "Visual-only: dormant sprite retracted, all active frames fully extended so damaging hazards never misleadingly retract; hitboxes and timing unchanged"
       },
       "r118LicensedCC0": {
         "license": "CC0-1.0",
