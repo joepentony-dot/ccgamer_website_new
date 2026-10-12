@@ -72,3 +72,13 @@ Additional restrictions: CraftPix licence is not CC0; its prohibition on using i
 ### Added role-correct item art candidate
 
 The uploaded Indie_Vova/Dungeons & Pixels *free demo* includes two 32×32 potion icons. The existing `images.items.mana` mapped to the identical ammo icon; replacing only mana with the free-demo **blue mana flask** restores item semantic distinction without altering healing, ammo balance, item rewards or hitboxes. The existing health potion's green cross remains unchanged. Source-and-target fingerprints are in `assets/pixel/user-r134/PROVENANCE.md`. Source licence is commercial (not CC0); only the game-embedded optimised PNG is included.
+
+## 12 October continuation — baseline safety-contract repair
+
+- Reviewed draft #2698 canonical and fast GitHub Actions failure logs rather than accepting green candidate-only checks as a release gate.
+- First blocking guard: R118 asset contract enforced null for all spike overrides (appropriate for older unknown-rights sprites). Updated `v10-42-r118-user-assets.mjs` to permit **only** paths `user-r134/stealthix-spikes-0..3.png` with an explicit Stealthix CC0 licence record, four 32×32 PNGs, source URL, creator credit, and pinned SHA-256s. Unknown-rights sprite substitutions remain forbidden.
+- Second blocking guard: R85 sprite contract expected mana to reuse the ammunition SVG. Updated `v10-42-r85-object-sprites.mjs` to retain all original authored sprites but require the separately licensed Indie_Vova 32×32 blue potion with fingerprint and source record. No ammo/health artwork or runtime mechanics changed.
+- Third blocking guard: visual-overhaul foundation required null for all `spikeTrapFrame0..3` keys. Updated it to allow only exactly declared source-audited Stealthix paths, keep all other original null-by-default slots, and preserve renderer fallback coverage.
+- Reconciled branch against current main `e1984a3683da4eadb44a1d6425671377e48d39b5` via a non-conflicting Git merge commit `2edc37189e475315a9255845d7dbd4140520427a`. Main-only homepage/SEO/iPhone emulator changes were preserved; no branch files overlapped. Further main drift must be refreshed before review/merge.
+- Earlier runs confirmed successful source-integrity, image budgets, Windows/itch staging and Workers; Chromium shards were skipped because Node contracts failed. These are **historical check results only**, not claims that subsequent source commits passed.
+- Source candidate remains draft, never merged into main or deployed. It still requires current-head complete CI, all six Chromium shards with visual acceptance, packaging/site/cache checks, independent review, and owner approval before release.
