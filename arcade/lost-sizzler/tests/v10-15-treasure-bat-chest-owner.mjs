@@ -151,7 +151,40 @@ function testAdjacentChestRendering(){
   assert.equal(calls.length,1,"Normal discovered chest rendering must be unchanged");
 }
 
+function testRecognisableBatSprite(){
+  const draws=[],ctx=new Proxy({},{
+    get(_,name){return(...args)=>draws.push({name,args})},
+    set(){return true}
+  });
+  let defaultDraws=0;
+  const env={
+    drawEnemy:()=>{defaultDraws++},
+    enemyScreen:()=>({x:20,y:30}),
+    ws:()=>({x:20,y:30}),
+    C:{tile:32},P:{gold:"#ffd85a",red:"#f44",cyan:"#0ff",white:"#fff"},
+    ctx
+  };
+  vm.createContext(env);
+  const realWrapper=section(rare,'  if(typeof drawEnemy==="function"){','  if(typeof render==="function"){');
+  vm.runInContext(realWrapper,env,{filename:"v10-15-rare-events.js"});
+  env.drawEnemy({treasureBat:true,x:1,y:1});
+  assert.ok(draws.filter(d=>d.name==="lineTo").length>=14,
+    "Treasure Bat must have a recognisable winged outline rather than a four-point diamond");
+  assert.ok(draws.some(d=>d.name==="stroke"),"Bat wing outline must have a visible highlight");
+  assert.equal(draws.filter(d=>d.name==="fillRect").length,3,
+    "Treasure Bat must show both eyes and its gold treasure accent");
+  assert.ok(draws.some(d=>d.name==="fillText"&&d.args[0]==="TREASURE BAT"));
+  assert.equal(defaultDraws,0);
+  draws.length=0;
+  env.drawEnemy({kind:"scout",x:2,y:2});
+  assert.equal(defaultDraws,1,"Unrelated enemies must retain their original art");
+  draws.length=0;
+  env.drawEnemy({lostAdventurer:true,x:2,y:2});
+  assert.ok(draws.some(d=>d.name==="arc"),"Existing rare adventurer representation must survive");
+}
+
 testRareBat();
 testChestCollision();
 testAdjacentChestRendering();
-console.log("R133 Bat encounter, legitimate chest visibility/ownership, reward: PASS");
+testRecognisableBatSprite();
+console.log("R133 Bat pursuit, winged sprite, legitimate chest visibility/ownership, reward: PASS");
