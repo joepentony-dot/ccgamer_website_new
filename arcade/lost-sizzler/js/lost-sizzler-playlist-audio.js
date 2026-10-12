@@ -59,12 +59,17 @@
 
   /* Test and standalone releases must not fetch production CDN songs, even
    * when asset-overrides.js pins a hardcoded Supabase music URL. */
+  const isLocalPlaybackHost=()=>{
+    const host=String(location.hostname||"").toLowerCase();
+    return host==="localhost"||host.endsWith(".localhost")||host==="::1"||host==="[::1]"||host==="0.0.0.0"
+      ||/^127(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(host);
+  };
+
   function remoteProductionAudioDisabled(){
     try{
-      const host=String(location.hostname||"").toLowerCase();
       return window.CCGDungeonCarnageItchPackage===true
         || location.protocol==="file:"
-        || ["localhost","127.0.0.1","::1","[::1]"].includes(host)
+        || isLocalPlaybackHost()
         || navigator.webdriver===true
         || /HeadlessChrome/i.test(String(navigator.userAgent||""));
     }catch(_){return true}
