@@ -2492,6 +2492,9 @@ if (iosLibraryTouch && onlineLibraryGrid) {
     if (!option || option.dataset.playGame !== pending.id) return;
     event.preventDefault(); // Suppress a delayed Safari synthetic click.
     selectOnlineLibraryEntry(pending.id, false);
+    // The user has picked a title: dismiss the iPhone's virtual keyboard
+    // without moving focus to LOAD (which can shift the viewport).
+    onlineLibrarySearch?.blur();
   }, { passive: false });
 
   onlineLibraryGrid.addEventListener("touchcancel", () => {
