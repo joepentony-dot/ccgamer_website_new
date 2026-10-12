@@ -354,6 +354,9 @@ async function egressFixture({hostname,protocol,webdriver,userAgent,itchPackage}
 const site={hostname:"www.cheekycommodoregamer.co.uk",protocol:"https:",webdriver:false,userAgent:"Mozilla/5.0 Chrome/140.0 Safari/537.36",itchPackage:false};
 const uploaded=await egressFixture(site);
 assert(uploaded.includes(uploadedNormal),"Real website players must retain the published production soundtrack.");
+for(const hostname of ["[::ffff:126.255.255.255]","[::ffff:128.0.0.1]","[2001:db8::1]"]){
+  assert((await egressFixture({...site,hostname})).includes(uploadedNormal),hostname+" must retain non-local uploaded music.");
+}
 for(const [label,environment] of [
   ["headless browser on production hostname",{...site,webdriver:true,userAgent:"HeadlessChrome/140"}],
   ["webdriver alone on public hostname",{...site,webdriver:true}],
@@ -363,6 +366,7 @@ for(const [label,environment] of [
   ["IPv6 loopback without brackets",{...site,hostname:"::1",protocol:"http:"}],
   ["bracketed IPv6 bind-all without webdriver",{...site,hostname:"[::]",protocol:"http:"}],
   ["IPv6 bind-all without brackets or webdriver",{...site,hostname:"::",protocol:"http:"}],
+  ...["[::ffff:127.0.0.1]","[::ffff:7f00:1]","::ffff:7f00:2","[::ffff:127.255.255.254]","[::ffff:7fff:fffe]","[::ffff:0.0.0.0]","[0:0:0:0:0:0:0:1]","[0:0:0:0:0:0:0:0]"].map(hostname=>["mapped/expanded local IPv6 "+hostname,{...site,hostname,protocol:"http:"}]),
   ["exact localhost without webdriver",{...site,hostname:"localhost",webdriver:false,protocol:"http:"}],
   ["trailing-dot localhost without webdriver",{...site,hostname:"localhost.",webdriver:false,protocol:"http:"}],
   ["trailing-dot localhost subdomain",{...site,hostname:"play.localhost.",webdriver:false,protocol:"http:"}],

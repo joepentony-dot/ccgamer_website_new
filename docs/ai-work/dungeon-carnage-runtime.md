@@ -1,4 +1,11 @@
-## R132 blocker repair — 12 October 2026, 16:33 BST
+## R132 independent mapped-IPv6 review repair — 12 October 2026, 16:35 BST
+
+- Codex reviewed source head 162916da61a524b7dcc430555f13c1d1fe3ab09e and identified valid P2 PRRT_kwDOQcoeX86rhjfs: IPv4-mapped IPv6 127/8 is canonicalized to [::ffff:7f00:1] by URL parsing. Both owners now canonicalize IPv6 using URL, then recognize exactly mapped 127/8 and mapped bind-all zero; expanded IPv6 loopback/unspecified forms follow the same parser. Non-local mapped 126/8, 128/8 and ordinary public IPv6 retain uploaded music.
+- Both real-source Node contracts FAIL against prior owners for [::ffff:127.0.0.1] and PASS with repair; R97 desktop/mobile, canonical real headless egress and R106 production mood transitions pass again. Previous ::/[::] guard-removal mutation also made both contracts fail. No source assertions weakened; no real Storage media transferred.
+- Prior source head passed canonical/fast Node, focused Chromium, Workers build, SEO/cache, Site Safety run 38270596726, Windows preview and itch staging; full run 38270543024 had shard 1 green and other shards ongoing when follow-up was needed. These older checks DO NOT qualify the next head. An optional Workers preview raw-source GET returned HTTP 405, so raw byte verification was unavailable; build success is recorded separately.
+- New exact-head full qualification/re-review required; same #2694 branch, main 9ebc51e33a46f077bedadfaa3650541b233190ba, no merge/commercial publication. See PR for subsequent exact-head results. Original MP3/voice recovery and owner manual release acceptance remain open.
+
+## R132 blocker repair — 12 October 2026, 16:28 BST
 
 - Refreshed PR #2694 head bd2af280f20e88d43ce3d16de8abc4dc8ac40ea3 and main 9ebc51e33a46f077bedadfaa3650541b233190ba; branch fix/dungeon-r132-supabase-audio-egress-20261012 remains the sole vehicle, zero behind. Full run 38266762377 passed Node and shards 1/2/4/5/6, but shard 3 failed R97 line 76; older green checks do not qualify this repair.
 - Diagnosed/reproduced unchanged R97 failure in real local Chromium: navigator flags were already set BEFORE both audio owners, but location.hostname remained 127.0.0.1. Synthetic production visitor now uses the public-site URL with every page/art byte routed to the local server; inert fetch/Audio and an abort-and-count Supabase Storage route prevent production media transfer. Original MP3 and readiness/ownership assertions retained; desktop/mobile pass with zero Storage attempts.

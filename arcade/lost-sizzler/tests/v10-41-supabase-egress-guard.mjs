@@ -47,7 +47,7 @@ assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detai
 
 // Local audio catalogue isolation must include all IPv4 loopback addresses,
 // bracketed IPv6 loopback and browser-local development hostnames even without WebDriver.
-for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.1','127.0.0.2.','::1','[::1]','::','[::]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0']){
+for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.1','127.0.0.2.','::1','[::1]','::','[::]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0','[::ffff:127.0.0.1]','[::ffff:7f00:1]','::ffff:7f00:2','[::ffff:127.255.255.254]','[::ffff:7fff:fffe]','[::ffff:0.0.0.0]','[0:0:0:0:0:0:0:1]','[0:0:0:0:0:0:0:0]']){
   let loopbackClientCalls=0;
   let loopbackRestCalls=0;
   const loopbackWindow={
@@ -62,6 +62,7 @@ for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.1','1
     navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
     location:{hostname,protocol:'http:'},
     URLSearchParams,
+    URL,
     fetch:async()=>{loopbackRestCalls++;throw new Error('Local browser must not fetch the production catalogue')},
     setTimeout:()=>1,clearTimeout(){},
     CustomEvent:FakeCustomEvent,
