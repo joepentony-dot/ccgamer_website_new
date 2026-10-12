@@ -14,6 +14,10 @@ const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 assert(adminSource.includes('navigator.webdriver===true'),'Remote audio policy must identify automated browsers.');
 assert(adminSource.includes('__CCG_ALLOW_REMOTE_TEST_ASSETS__'),'Remote audio tests need an explicit opt-in escape hatch.');
 assert(playlistSource.includes('isMeteredRemoteTrack'),'Playlist must identify metered Supabase Storage music.');
+const localHostPredicate=source=>source.match(/const isLocalPlaybackHost=\(\)=>\{[\s\S]*?\n  \};/)?.[0]||'';
+assert(localHostPredicate(adminSource)&&localHostPredicate(adminSource)===localHostPredicate(playlistSource),
+  'Admin audio and playlist must keep identical local-host safety classification.');
+
 assert(playlistSource.includes('audio.loop=meteredRemote'),'Metered remote songs must loop within the current run instead of auto-advancing.');
 assert(adminUploaderSource.includes("LOST_SIZZLER_MUSIC_CACHE_SECONDS='31536000'"),'Future Lost Sizzler music uploads must use a one-year browser/CDN cache lifetime.');
 assert(adminUploaderSource.includes('cacheControl:LOST_SIZZLER_MUSIC_CACHE_SECONDS'),'Lost Sizzler playlist uploads must apply the long cache policy.');
@@ -40,6 +44,36 @@ assert(clientCalls===0,'Headless/local validation must not query the remote arca
 assert(adminWindow.CCG_ADMIN_AUDIO_READY===true,'Skipping remote audio must still complete the admin-audio readiness contract.');
 assert(adminWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,'Automated browser must expose that remote media was deliberately skipped.');
 assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detail?.remoteMediaSkipped===true),'Remote-media skip must dispatch the normal readiness event.');
+
+// Local audio catalogue isolation must include all IPv4 loopback addresses,
+// bracketed IPv6 loopback and browser-local development hostnames even without WebDriver.
+for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.1','127.0.0.2.','::1','[::1]','::','[::]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0','[::ffff:127.0.0.1]','[::ffff:7f00:1]','::ffff:7f00:2','[::ffff:127.255.255.254]','[::ffff:7fff:fffe]','[::ffff:0.0.0.0]','[0:0:0:0:0:0:0:1]','[0:0:0:0:0:0:0:0]']){
+  let loopbackClientCalls=0;
+  let loopbackRestCalls=0;
+  const loopbackWindow={
+    CCG_SUPABASE_URL:'https://lcslgxpgmttaexsorxik.supabase.co',
+    CCG_SUPABASE_ANON_KEY:'test-anon-key',
+    CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
+    ccgSupabase:{getClient:async()=>{loopbackClientCalls++;throw new Error('Loopback browser must not fetch production audio')}},
+    addEventListener(){},dispatchEvent(){}
+  };
+  vm.runInNewContext(adminSource,{
+    window:loopbackWindow,
+    navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
+    location:{hostname,protocol:'http:'},
+    URLSearchParams,
+    URL,
+    fetch:async()=>{loopbackRestCalls++;throw new Error('Local browser must not fetch the production catalogue')},
+    setTimeout:()=>1,clearTimeout(){},
+    CustomEvent:FakeCustomEvent,
+    console
+  },{filename:'admin-audio-overrides-loopback-'+hostname+'.js'});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert(loopbackClientCalls===0,hostname+' must not request the Supabase audio catalogue.');
+  assert(loopbackRestCalls===0,hostname+' must not request the Supabase REST audio catalogue.');
+  assert(loopbackWindow.CCG_ADMIN_AUDIO_READY===true&&loopbackWindow.CCG_ADMIN_AUDIO?.remoteMediaSkipped===true,
+    hostname+' must preserve offline audio readiness.');
+}
 
 // Packaged builds must retain local audio when the remote catalogue is skipped.
 // Regresses the Windows EXE smoke failure where the admin loader emptied
@@ -99,7 +133,10 @@ const playlistSandbox={
   window:playlistWindow,
   Audio:FakeAudio,
   URL,
-  location:{href:'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/'},
+  // Exercise real-site remote looping here; the automated/local exclusion is
+  // independently asserted in v10-7-audio-playlists.mjs.
+  location:{href:'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/',hostname:'www.cheekycommodoregamer.co.uk',protocol:'https:'},
+  navigator:{webdriver:false,userAgent:'Mozilla/5.0 Chrome/140.0 Safari/537.36'},
   performance:{now:()=>0},
   setInterval:()=>1,
   clearInterval(){},
