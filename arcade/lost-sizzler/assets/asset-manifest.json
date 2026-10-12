@@ -68,6 +68,20 @@
       "r85PropBarrel": "assets/pixel/visual-overhaul/r85/prop-barrel.svg",
       "r85PropBookcase": "assets/pixel/visual-overhaul/r85/prop-bookcase.svg",
       "r85PropConsole": "assets/pixel/visual-overhaul/r85/prop-console.svg",
+      "r134LicensedCC0": {
+        "license": "CC0-1.0",
+        "creator": "Stealthix",
+        "source": "https://stealthix.itch.io/animated-traps",
+        "provenance": "assets/pixel/user-r134/PROVENANCE.md",
+        "activeSpikeTrapFrames": [
+          "assets/pixel/user-r134/stealthix-spikes-0.png",
+          "assets/pixel/user-r134/stealthix-spikes-1.png",
+          "assets/pixel/user-r134/stealthix-spikes-2.png",
+          "assets/pixel/user-r134/stealthix-spikes-3.png"
+        ],
+        "stagedOnly": [],
+        "scope": "Visual-only sprite frame override for existing spike traps; existing hitboxes and hazard timing unchanged"
+      },
       "r118LicensedCC0": {
         "license": "CC0-1.0",
         "activeWallTorchFrames": [
