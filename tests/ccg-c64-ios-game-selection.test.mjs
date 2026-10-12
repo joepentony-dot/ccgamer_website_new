@@ -73,6 +73,16 @@ test("iPhone touch selects game even when focusout happens before touchend/click
   assert.equal(h.selection[0][1], false, "iPhone must not scroll to LOAD by synthetic focus");
 });
 
+test("iPhone early blur after pointerdown does not dismiss the dropdown", () => {
+  const h = harness(), target = h.option();
+  h.fire("pointerdown", { pointerType: "touch", target });
+  h.fire("focusout", { relatedTarget: null });
+  assert.equal(h.closes.length, 0);
+  h.fire("touchstart", { touches: [h.touch(9, 30, 40)], target });
+  h.fire("touchend", { changedTouches: [h.touch(9, 30, 40)], target, preventDefault() {} });
+  assert.equal(h.selection.length, 1);
+});
+
 test("Scrolling iPhone suggestions never selects a game", () => {
   const h = harness(), target = h.option();
   h.fire("touchstart", { touches: [h.touch(8, 30, 40)], target });
