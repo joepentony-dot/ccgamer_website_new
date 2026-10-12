@@ -18,11 +18,24 @@ for(const name of assets){
 }
 
 for(const [kind,file] of Object.entries({
-  health:"pickup-health.svg",ammo:"pickup-ammo.svg",mana:"pickup-ammo.svg",potion:"pickup-health.svg",
+  health:"pickup-health.svg",ammo:"pickup-ammo.svg",potion:"pickup-health.svg",
   credits:"pickup-gold.svg",xpOrb:"pickup-xp.svg",armour:"pickup-armour.svg",weapon:"pickup-firearm-upgrade.svg"
 })){
   assert(overrides.includes(`${kind}:"assets/pixel/visual-overhaul/r85/${file}"`),`Pickup override missing for ${kind}`);
 }
+
+
+// R134 improves the semantically incorrect R85 ammo-as-mana icon only.
+// All original R85 assets remain bundled; the replacement must be a
+// separately licensed, fingerprint-pinned, 32x32 commercial-free sprite.
+const manaPath="assets/pixel/user-r134/indie-vova-mana.png";
+const manaRecord=JSON.parse(fs.readFileSync(new URL("assets/asset-manifest.json",root),"utf8")).images?.visualOverhaul?.r134FreeCommercial;
+assert(manaRecord?.creator==="Indie_Vova (Vladimir Ivanov)","Mana icon must identify the free-commercial creator");
+assert(manaRecord?.activeManaPickup===manaPath&&manaRecord?.license?.includes("not CC0"),"Mana override must retain commercial free-edition licence");
+assert(overrides.includes(`mana:"${manaPath}"`),"Mana must have only the approved non-ammunition R134 art");
+const manaBytes=fs.readFileSync(new URL(manaPath,root));
+assert(manaBytes.readUInt32BE(16)===32&&manaBytes.readUInt32BE(20)===32,"Mana icon must remain a 32x32 pixel sprite");
+assert(manaRecord.activePNGSHA256==="2e41a3939fcb5e1a6a560962b8875be85c023fb418f44345302494ac5f8f741e","Mana icon must preserve original audited fingerprint");
 
 for(const key of ["propCrate","propBarrel","propBookcase","propConsole"]){
   assert(render.includes(`${key}:make(selected("${key}"`),`Renderer asset missing: ${key}`);

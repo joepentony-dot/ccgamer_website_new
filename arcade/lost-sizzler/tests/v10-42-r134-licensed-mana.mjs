@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const path = 'assets/pixel/user-r134/indie-vova-mana.png';
+const bytes = readFileSync(join(root, path));
+const digest = createHash('sha256').update(bytes).digest('hex');
+assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+assert.equal(bytes.readUInt32BE(16), 32);
+assert.equal(bytes.readUInt32BE(20), 32);
+assert.equal(digest, '2e41a3939fcb5e1a6a560962b8875be85c023fb418f44345302494ac5f8f741e');
+const manifest = JSON.parse(readFileSync(join(root, 'assets/asset-manifest.json'), 'utf8'));
+const info = manifest.images?.visualOverhaul?.r134FreeCommercial;
+assert.equal(info?.activeManaPickup, path);
+assert.equal(info?.activePNGSHA256, digest);
+assert.match(info.license, /not CC0/);
+assert.match(readFileSync(join(root, 'js/asset-overrides.js'), 'utf8'), /mana:"assets\/pixel\/user-r134\/indie-vova-mana\.png"/);
+const credits = readFileSync(join(root, 'assets/THIRD-PARTY-ART-CREDITS.md'), 'utf8');
+assert.match(credits, /Indie_Vova/);
+assert.match(credits, /standalone asset-pack redistribution/);
+const provenance = readFileSync(join(root, 'assets/pixel/user-r134/PROVENANCE.md'), 'utf8');
+assert.ok(provenance.includes(digest));
+assert.match(provenance, /Creator: Indie_Vova/);
+console.log('R134 licensed mana icon: 32x32 PNG, exact source-bound hash, approved free-commercial usage, override and credits PASS');

@@ -1,0 +1,30 @@
+name: Dungeon Carnage licensed artwork
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/assets/pixel/user-r134/**'
+      - 'arcade/lost-sizzler/assets/asset-manifest.json'
+      - 'arcade/lost-sizzler/assets/THIRD-PARTY-ART-CREDITS.md'
+      - 'arcade/lost-sizzler/js/asset-overrides.js'
+      - 'arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs'
+      - 'arcade/lost-sizzler/tests/v10-42-r134-licensed-mana.mjs'
+      - '.github/workflows/dungeon-carnage-licensed-art.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-runtime-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source fingerprints, runtime wiring, separate licences and credits
+        run: |
+          node arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs
+          node arcade/lost-sizzler/tests/v10-42-r134-licensed-mana.mjs

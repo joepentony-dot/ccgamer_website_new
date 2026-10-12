@@ -68,6 +68,31 @@
       "r85PropBarrel": "assets/pixel/visual-overhaul/r85/prop-barrel.svg",
       "r85PropBookcase": "assets/pixel/visual-overhaul/r85/prop-bookcase.svg",
       "r85PropConsole": "assets/pixel/visual-overhaul/r85/prop-console.svg",
+      "r134FreeCommercial": {
+        "creator": "Indie_Vova (Vladimir Ivanov)",
+        "sourcePack": "Dungeons and Pixels — Free Demo.zip",
+        "sourcePage": "https://indie-vova.itch.io/dungeons-and-pixels-starter-pack",
+        "license": "Creator-free-commercial; attribution appreciated, not CC0; standalone asset-pack redistribution prohibited",
+        "provenance": "assets/pixel/user-r134/PROVENANCE.md",
+        "activeManaPickup": "assets/pixel/user-r134/indie-vova-mana.png",
+        "sourceMemberSHA256": "2fa77fc343cf8b1f69a167209df06070219a8bfea32ad17fc3f57f28a5931bf8",
+        "activePNGSHA256": "2e41a3939fcb5e1a6a560962b8875be85c023fb418f44345302494ac5f8f741e",
+        "status": "32x32 blue mana-potion artwork replacing earlier ammo-style mana art only"
+      },
+      "r134LicensedCC0": {
+        "license": "CC0-1.0",
+        "creator": "Stealthix",
+        "source": "https://stealthix.itch.io/animated-traps",
+        "provenance": "assets/pixel/user-r134/PROVENANCE.md",
+        "activeSpikeTrapFrames": [
+          "assets/pixel/user-r134/stealthix-spikes-0.png",
+          "assets/pixel/user-r134/stealthix-spikes-1.png",
+          "assets/pixel/user-r134/stealthix-spikes-2.png",
+          "assets/pixel/user-r134/stealthix-spikes-3.png"
+        ],
+        "stagedOnly": [],
+        "scope": "Visual-only: dormant sprite retracted, all active frames fully extended so damaging hazards never misleadingly retract; hitboxes and timing unchanged"
+      },
       "r118LicensedCC0": {
         "license": "CC0-1.0",
         "activeWallTorchFrames": [

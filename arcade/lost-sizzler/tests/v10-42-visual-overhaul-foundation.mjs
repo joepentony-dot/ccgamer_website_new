@@ -18,7 +18,16 @@ const visualKeys=[
 
 assert.match(overrides,/visuals:\s*\{/,"visual override registry must exist");
 for(const key of visualKeys){
-  assert.match(overrides,new RegExp(`\\b${key}:null\\b`),`visual override must expose ${key}`);
+  const spikeIndex=/^spikeTrapFrame([0-3])$/.exec(key);
+  if(spikeIndex){
+    // Only the source-verified CC0 replacements may replace R118's disabled spike slots.
+    const approved=`assets/pixel/user-r134/stealthix-spikes-${spikeIndex[1]}.png`;
+    assert.ok(overrides.includes(`${key}:"${approved}"`),`unverified visual spike replacement forbidden: ${key}`);
+    assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.activeSpikeTrapFrames[Number(spikeIndex[1])],approved,`R134 spike manifest path mismatch: ${key}`);
+    assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.license,"CC0-1.0","Spike art must be licence-verified");
+  }else{
+    assert.match(overrides,new RegExp(`\\b${key}:null\\b`),`visual override must expose ${key}`);
+  }
   assert.ok(Object.prototype.hasOwnProperty.call(manifest.images.visualOverhaul,key),`asset manifest must expose ${key}`);
 }
 
