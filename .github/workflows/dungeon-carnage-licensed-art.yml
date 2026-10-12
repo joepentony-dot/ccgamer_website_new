@@ -8,6 +8,7 @@ on:
       - 'arcade/lost-sizzler/assets/THIRD-PARTY-ART-CREDITS.md'
       - 'arcade/lost-sizzler/js/asset-overrides.js'
       - 'arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs'
+      - 'arcade/lost-sizzler/tests/v10-42-r134-licensed-mana.mjs'
       - '.github/workflows/dungeon-carnage-licensed-art.yml'
   workflow_dispatch:
 
@@ -23,5 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify CC0 original source fingerprints, runtime wiring and credits
-        run: node arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs
+      - name: Verify source fingerprints, runtime wiring, separate licences and credits
+        run: |
+          node arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs
+          node arcade/lost-sizzler/tests/v10-42-r134-licensed-mana.mjs
