@@ -1,3 +1,9 @@
+## Dungeon R132 headless production-music egress guard — 12 October 2026 (current-main source candidate)
+
+- Latest `main` at branch start `9ebc51e33a46f077bedadfaa3650541b233190ba`; R131 Charger warning #2693 **merged**, full postmerge CI/Pages/Workers/SEO/Site Safety/live navigation success. R132 branch `fix/dungeon-r132-supabase-audio-egress-20261012` is a fresh-main reconciliation of the still-open, old-base audio egress draft #2594. **Do not blindly merge stale #2594**.
+- Current main hardcoded all 16 owner Supabase music URLs in asset overrides despite excluding automated catalogue hydration; the active playlist selection did not remove these pinned URLs for headless/localhost/offline tests. R132 preserves live website music selection while filtering billable URLs in automated and offline selection, extends Node regression and adds fail-closed browser route interception. Eight affected tracked audio/test files have been committed; this checkpoint is NOT evidence of successful full CI, merged code, live bandwidth recovery or recovered original owner audio.
+- Preserve owner bug-fix-only release hold, R127–R131 rendering/campaign and final credits, all CCG Omega/emulator/SEO/admin assets, 15-floor progression, save/collision and access rules. Require exact-head full qualification, independent review, zero behind and post-merge verification. Original 16 MP3 bytes and owner manual Flask/voice/gameplay acceptance remain unresolved.
+
 ## R131 Charger charge-wind-up warning — 11 October 2026 (source candidate, unqualified)
 
 - Source branch `fix/dungeon-r131-charger-warning-all-sprites-20261011` was created from `main` `47ce0891f25198fa87c24c94ea4bd8df1c033241` after the R122 Flask QA-only PR #2642 successfully merged and passed post-merge Pages, Cloudflare Workers, live public navigation, SEO and Site Safety.
