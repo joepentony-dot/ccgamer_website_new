@@ -14,6 +14,10 @@ const assert=(condition,message)=>{if(!condition)throw new Error(message)};
 assert(adminSource.includes('navigator.webdriver===true'),'Remote audio policy must identify automated browsers.');
 assert(adminSource.includes('__CCG_ALLOW_REMOTE_TEST_ASSETS__'),'Remote audio tests need an explicit opt-in escape hatch.');
 assert(playlistSource.includes('isMeteredRemoteTrack'),'Playlist must identify metered Supabase Storage music.');
+const localHostPredicate=source=>source.match(/const isLocalPlaybackHost=\(\)=>\{[\s\S]*?\n  \};/)?.[0]||'';
+assert(localHostPredicate(adminSource)&&localHostPredicate(adminSource)===localHostPredicate(playlistSource),
+  'Admin audio and playlist must keep identical local-host safety classification.');
+
 assert(playlistSource.includes('audio.loop=meteredRemote'),'Metered remote songs must loop within the current run instead of auto-advancing.');
 assert(adminUploaderSource.includes("LOST_SIZZLER_MUSIC_CACHE_SECONDS='31536000'"),'Future Lost Sizzler music uploads must use a one-year browser/CDN cache lifetime.');
 assert(adminUploaderSource.includes('cacheControl:LOST_SIZZLER_MUSIC_CACHE_SECONDS'),'Lost Sizzler playlist uploads must apply the long cache policy.');
@@ -43,7 +47,7 @@ assert(adminEvents.some(event=>event.type==='ccg:admin-audio-ready'&&event.detai
 
 // Local audio catalogue isolation must include all IPv4 loopback addresses,
 // bracketed IPv6 loopback and browser-local development hostnames even without WebDriver.
-for(const hostname of ['[::1]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0']){
+for(const hostname of ['localhost','localhost.','play.localhost.','127.0.0.2.','[::1]','127.0.0.2','127.255.255.254','play.localhost','0.0.0.0']){
   let loopbackClientCalls=0;
   const loopbackWindow={
     CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{}},voice:{}}},
