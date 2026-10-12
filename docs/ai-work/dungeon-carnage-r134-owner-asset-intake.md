@@ -15,3 +15,39 @@ This is a selection/permission review, NOT a representation that all supplied gr
 | 0x72 / Niji / Kenney / Pixel_Poem existing R118 | arcade/lost-sizzler/assets/THIRD-PARTY-ART-CREDITS.md | Existing project-verified permissions | Preserve currently active torches, chest/barrel/crate/column, key and coin art until stronger direct comparison passes. |
 
 Policy: no paid-only source, noncommercial pack, unverified licensing, source-only downloadable art bundle, gameplay rewrite, or unrelated site feature gets silently included. Compare each candidate at real 32 px in gameplay and HUD and keep existing image-load fallback; pixel scale, room perspective and role correctness decide replacements, not raw quantity.
+
+## Historical owner archives cross-check (7–8 October)
+
+The owner explicitly requests that **all** previous assets be reviewed for commercial eligibility AND whether they improve the current graphics. A legal right to use an image does not automatically mean it is a better or suitable gameplay sprite. These are the known uploaded source groups; this inventory is not proof of activation:
+
+| Uploaded pack or group | Licence evidence / restriction | Integration decision |
+| --- | --- | --- |
+| 0x72 16x16 DungeonTileset v5 and DungeonTileset II v1.7 | Creator CC0 | Partially integrated and credited in R118. Retain working torches, crate, column, doors/room art until a superior matched replacement passes. |
+| Niji DungeonTileset Extended v1.0/v1.1 | Creator CC0, verified original v1.1 | R118 gold key active. Distinguish from JoseKolos glossy 32×32 free icons. |
+| 2D Pixel Dungeon Asset Pack v2.0 (Pixel_Poem) | Creator commercial use, not CC0 | R118 rotating gold coins active; do not relabel as CC0. |
+| SnowHex Dungeon Gathering FREE .rar | Free-version internal licence confirms commercial | Eligible, not yet a proven improvement at floor/room scale; earlier R118 recorded held candidate. No full paid edition. |
+| KayKit Dungeon Pack 1.1 FREE (two uploads) | Creator CC0, commercial OK | Contains low-poly **3D FBX/GLTF/OBJ models**, while the current game is 2D Canvas pixel art. Do not insert raw 3D model source into browser sprites. Only revisit after separately authorised consistent sprite renders. |
+| Dungeons & Pixels Free Demo | Internal LICENSE.txt permits commercial games, disallows standalone asset repack | 32×32 animated torch/trap, chest, doors and blue/red potion candidates; existing torches and player render remain stronger/coherent in baseline, potential item icon/hazard improvement needs direct in-game check. The hero is front idle only; not a usable full hero replacement. |
+| Super Pixel Objects Sample | Embedded licence grants commercial use **with credit to Will Tice**; not an asset export tool licence | Candidate animated coins/gems, key, chest, potions. Current Pixel_Poem rotating coin already exists; do not downgrade or double load overlapping coin animations. |
+| Treasure+.zip | No licence file found in supplied ZIP | Hold until original creator/page commercial rights are established; cannot infer from ZIP name. |
+| CraftPix Free Pixel Dungeon Objects (multiple uploads) | CraftPix freebie commercial game licence, no raw asset redistribution | Candidate for a few role-correct props only. R118 already rejected this pack's wooden shelf as bookcase replacement. |
+| CraftPix free character/enemy series | CraftPix freebie permission subject to CraftPix terms | Uploaded swordsman, warrior, orc, base male, fantasy enemies, skeleton and slime sprite collections. Check animation layout, palette and source-role exactness before altering established authored enemies. No automatic wholesale switch. |
+| CraftPix free magic book / bridges / paths / top-down dungeon | CraftPix freebie permission subject to CraftPix terms | Candidate environment/item/FX only where semantics and perspective match. Never publish PSD source packs. |
+| Minifantasy Dungeon v2.3 FREE | Non-commercial free tier | Excluded from commercial release. |
+| Unidentified Dungeon tileset archive variants | Origin not substantiated in R118 for one uploaded ZIP | Held, do not assume all similarly named archives inherit 0x72 or another creator's licence. |
+| Basic asset pack.zip, mixed miscellaneous uploads | Not source/rights traced in this R134 scope | Hold pending source identification and compatible in-game quality. |
+
+Additional restrictions: CraftPix licence is not CC0; its prohibition on using its art to develop/test AI systems does not grant any special permission to redistribute individual asset sheets. Source rights and packaging must be checked **per pack**. User explicitly prefers no new paid licences. Do not treat a free download from a pay-if-commercial listing as permission for a commercial game; the Pine Druid and BDragon payment conditions require proof before activation.
+
+### Visual acceptance order after R134 spike-frame candidate
+
+1. Retain the existing 15-floor tile/hero/enemy baseline from R128–R133. Sample 32×32 mockups from ExiLove, SnowHex, Dungeons & Pixels and CraftPix on floors that already have corresponding biomes; reject palette/perspective mismatches.
+2. Review in-world pickups separately from larger inventory/HUD sprites: JoseKolos's 32×32 keys and Dungeons & Pixels free 32×32 potion art may improve inventory while Niji 16×16 and the R85 healing artwork remain superior or more recognisable on the floor.
+3. Do not change combat behaviours to fit an art asset. Selective updates to wall/fire/shock hazard visuals require matching runtime kind and active/safe semantic states; no unqualified render rewrites while PR #2695 touches game-render.
+4. For every active addition: original creator page + archive fingerprint + sprite dimensions/frame slice + SHA256 + attribution obligations + image fallback + exact-head Chromium/Node visual+itch packaging acceptance before merge.
+
+### Current R134 checkpoint
+
+- Source candidate branch `codex/dungeon-r134-free-art-intake-20261012` from main `d3d73603468b5baca6044831be90d5dc0ead928d`.
+- Draft PR #2698. Stealthix CC0 spike states are imported as four active visual-only overrides; other newly supplied packs are held candidates or excluded as above.
+- R133 PR #2695 remains independent. No deployed/live acceptance, no paid original soundtrack recovery, no main-branch merge, and no change to game mechanics is implied.
