@@ -42,7 +42,7 @@
   function remoteMediaAllowed(){
     // A packaged offline game must never consult Supabase, even when a test
     // harness explicitly opts into remote media for the website build.
-    if(window.CCGDungeonCarnageItchPackage===true)return false;
+    if(window.CCGDungeonCarnageItchPackage===true||location.protocol==="file:")return false;
     if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
     let automated=false,local=false;
     try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}
