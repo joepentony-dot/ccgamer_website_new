@@ -204,6 +204,15 @@ function startWorld(seed,_modePlaceholder=false,preserve=false,checkpointRestore
   // retired. Dedicated hazard rooms are the only floor-hazard owner.
   host.traps=[];
 
+  // Late floor decorators and compatible checkpoint loads may leave full-size
+  // tables or crates visible without their blockingDecor collision record.
+  // Repair only missing solid furniture records; do not revive destroyed props
+  // or turn small floor and wall details into solid obstacles.
+  if(typeof W.reconcileSolidFurniture==="function"){
+    const missingBlockers=W.reconcileSolidFurniture(world,host);
+    if(missingBlockers)host.revision=(host.revision||0)+1;
+  }
+
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer("P1",playerName(),world.start.x,world.start.y);p2=null;
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;retainedToast=false;UI.toast?.classList.remove("show");stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;
   host.worldRef=world;host.enteredRoomIds=[];for(const p of localPlayers()){resetCamp(p);reveal(p);if(checkpointRestore){const rid=W.roomAt(world,p.x,p.y),set=new Set();if(rid>=0){set.add(rid);host.enteredRoomIds.push(rid)}roomVisits.set(p.id,set)}else markRoomVisit(p);rememberTrail(p);updateRoomMessage(p,true)}levelQueue.length=0;for(const p of localPlayers())rememberPendingLevelChoice(p);A.stageUnenteredEnemies?.(host,world);
