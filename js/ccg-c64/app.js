@@ -1995,7 +1995,7 @@ function updateSelectedLibraryGame() {
   }
 }
 
-function selectOnlineLibraryEntry(id) {
+function selectOnlineLibraryEntry(id, focusLoadButton = true) {
   if (onlineLibraryLoadingGame) return;
   const entry = onlineLibraryEntries.find((item) => item.id === id);
   if (!entry) return;
@@ -2004,7 +2004,9 @@ function selectOnlineLibraryEntry(id) {
   refreshOnlineLibrarySuggestions();
   setLibrarySuggestionsOpen(false);
   updateSelectedLibraryGame();
-  onlineLibraryLoadButton?.focus();
+  // iOS touch selection must not programmatically scroll/focus the button
+  // during Safari's keyboard-dismissal and visual-viewport transition.
+  if (focusLoadButton) onlineLibraryLoadButton?.focus();
 }
 
 function setLibrarySuggestionsOpen(open) {
@@ -2427,8 +2429,85 @@ onlineLibraryGrid?.addEventListener("click", (event) => {
   const id = event.target.closest("[data-play-game]")?.dataset.playGame;
   if (id) selectOnlineLibraryEntry(id);
 });
+
+// On iOS Safari, tapping a suggestion can blur the search input and hide
+// its popup before the synthetic click fires. A completed touch is a more
+// reliable commit point. Track movement so scrolling the suggestions never
+// selects a game. Android and desktop retain the existing click path.
+const iosLibraryTouch = typeof navigator !== "undefined" &&
+  (/iPhone|iPad|iPod/.test(navigator.userAgent || "") ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+let pendingIosSuggestionTouch = null;
+let iosSuggestionPointerDown = false;
+if (iosLibraryTouch && onlineLibraryGrid) {
+  // Distinguish the website's game loader from the local file picker.
+  if (loadAnyMediaButton) {
+    loadAnyMediaButton.textContent = "OPEN LOCAL GAME FILE";
+    loadAnyMediaButton.setAttribute("aria-label", "Open a C64 game file stored on this iPhone or iPad");
+  }
+
+  // Pointer events can precede touchstart on modern iOS. Preserve the
+  // suggestion through any early blur before touchstart is delivered.
+  onlineLibraryGrid.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch" &&
+        event.target.closest?.("[data-play-game]")) iosSuggestionPointerDown = true;
+  }, { passive: true, capture: true });
+  onlineLibraryGrid.addEventListener("pointercancel", () => {
+    iosSuggestionPointerDown = false;
+  }, { passive: true });
+
+  onlineLibraryGrid.addEventListener("touchstart", (event) => {
+    pendingIosSuggestionTouch = null;
+    if (event.touches.length !== 1) return;
+    const option = event.target.closest?.("[data-play-game]");
+    if (!option || option.disabled) return;
+    const touch = event.touches[0];
+    pendingIosSuggestionTouch = {
+      id: option.dataset.playGame,
+      identifier: touch.identifier,
+      x: touch.clientX,
+      y: touch.clientY,
+      moved: false,
+    };
+  }, { passive: true });
+
+  onlineLibraryGrid.addEventListener("touchmove", (event) => {
+    if (!pendingIosSuggestionTouch) return;
+    const touch = Array.from(event.touches).find((item) =>
+      item.identifier === pendingIosSuggestionTouch.identifier);
+    if (!touch || Math.hypot(touch.clientX - pendingIosSuggestionTouch.x,
+        touch.clientY - pendingIosSuggestionTouch.y) > 12) {
+      pendingIosSuggestionTouch.moved = true;
+    }
+  }, { passive: true });
+
+  onlineLibraryGrid.addEventListener("touchend", (event) => {
+    const pending = pendingIosSuggestionTouch;
+    pendingIosSuggestionTouch = null;
+    iosSuggestionPointerDown = false;
+    if (!pending || pending.moved) return;
+    const touch = Array.from(event.changedTouches).find((item) =>
+      item.identifier === pending.identifier);
+    if (!touch || Math.hypot(touch.clientX - pending.x, touch.clientY - pending.y) > 12) return;
+    const option = event.target.closest?.("[data-play-game]");
+    if (!option || option.dataset.playGame !== pending.id) return;
+    event.preventDefault(); // Suppress a delayed Safari synthetic click.
+    selectOnlineLibraryEntry(pending.id, false);
+    // The user has picked a title: dismiss the iPhone's virtual keyboard
+    // without moving focus to LOAD (which can shift the viewport).
+    onlineLibrarySearch?.blur();
+  }, { passive: false });
+
+  onlineLibraryGrid.addEventListener("touchcancel", () => {
+    pendingIosSuggestionTouch = null;
+    iosSuggestionPointerDown = false;
+  }, { passive: true });
+}
 onlineLibraryLoadButton?.addEventListener("click", () => { void loadSelectedLibraryEntry(); });
 onlineLibrarySearchWrap?.addEventListener("focusout", (event) => {
+  // Safari may report relatedTarget=null while a suggestion is being tapped.
+  // Let the in-progress touch select before hiding the popup.
+  if (pendingIosSuggestionTouch || iosSuggestionPointerDown) return;
   if (!onlineLibrarySearchWrap.contains(event.relatedTarget)) setLibrarySuggestionsOpen(false);
 });
 document.addEventListener("pointerdown", (event) => {
