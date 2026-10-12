@@ -173,7 +173,8 @@ const fakeWindow={
 const sandbox={
   window:fakeWindow,
   Audio:FakeAudio,
-  URL,location:{href:"https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/"},
+  URL,location:{href:"https://www.cheekycommodoregamer.co.uk/arcade/c64-dungeon-carnage/",hostname:"www.cheekycommodoregamer.co.uk",protocol:"https:"},
+  navigator:{webdriver:false,userAgent:"Mozilla/5.0 Chrome/140.0 Safari/537.36"},
   performance:{now:()=>0},
   setInterval:()=>1,
   clearInterval:()=>{},
@@ -311,3 +312,51 @@ assert(FakeAudio.instances.at(-1).url===uploadedDanger&&!FakeAudio.instances.at(
 
 console.log('Lost Sizzler multi-track playlist, mobile recovery and late uploaded soundtrack contracts passed.');
 
+
+
+/* The production site must play uploaded songs normally; automated CI, local
+ * browser tests, and authorised offline packages must never fetch Supabase
+ * Storage tracks pinned in asset-overrides.js. */
+function egressFixture({hostname,protocol,webdriver,userAgent,itchPackage}){
+  const callbacks=[];
+  const custom={audio:{music:{
+    exploration:uploadedNormal,
+    playlists:{normal:[uploadedNormal]}
+  }}};
+  const fake={
+    CCGSound:{start:async()=>true,startMusic(){},stopMusic(){},isEnabled:()=>true},
+    CCG_AUDIO_ASSETS:{music:{playlists:{normal:["assets/audio/music/exploration.wav"]}}},
+    CCG_ASSET_OVERRIDES:custom,
+    CCG_ADMIN_AUDIO:{},
+    CCGDungeonCarnageItchPackage:itchPackage,
+    addEventListener:(name,fn)=>callbacks.push([name,fn])
+  };
+  const location={
+    href:`${protocol}//${hostname}/arcade/c64-dungeon-carnage/`,
+    protocol,hostname
+  };
+  const sandbox={
+    window:fake,location,URL,Audio:FakeAudio,
+    navigator:{webdriver,userAgent},
+    performance:{now:()=>0},
+    setInterval:()=>1,clearInterval(){},setTimeout:()=>1,clearTimeout(){},
+    console
+  };
+  vm.runInNewContext(patch,sandbox,{filename:"lost-sizzler-playlist-audio.js"});
+  return Array.from(fake.CCGLostSizzlerPlaylistAudio.getPlaylist("normal"));
+}
+const site={hostname:"www.cheekycommodoregamer.co.uk",protocol:"https:",webdriver:false,userAgent:"Mozilla/5.0 Chrome/140.0 Safari/537.36",itchPackage:false};
+const uploaded=egressFixture(site);
+assert(uploaded.includes(uploadedNormal),"Real website players must retain the published production soundtrack.");
+for(const [label,environment] of [
+  ["headless browser on production hostname",{...site,webdriver:true,userAgent:"HeadlessChrome/140"}],
+  ["localhost with webdriver flag disabled",{...site,hostname:"127.0.0.1"}],
+  ["headless on localhost with test asset flag irrelevant",{...site,hostname:"localhost",webdriver:true}],
+  ["offline itch/desktop release",{...site,itchPackage:true}],
+  ["local file executable",{...site,protocol:"file:"}]
+]){
+  const sources=egressFixture(environment);
+  assert(!sources.some(url=>/\.supabase\.co\/storage\/v1\/object\//i.test(url)),label+" requested billable Supabase audio.");
+  assert(sources.includes("assets/audio/music/exploration.wav"),label+" must use its bundled authored track.");
+}
+console.log("Dungeon audio egress contracts passed: zero Supabase Storage music for automation/local/itch/file, live production preserved.");
