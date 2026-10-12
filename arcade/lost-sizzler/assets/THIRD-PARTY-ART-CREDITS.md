@@ -30,7 +30,7 @@ All third-party names remain the property of their respective owners. The artist
 | Creator | Artwork included | Source | Permission |
 | --- | --- | --- | --- |
 | **Stealthix** | Four selected 32×32 spike trap animation states from the supplied 14-frame sheet | [Animated Traps](https://stealthix.itch.io/animated-traps) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Indie_Vova (Vladimir Ivanov)** | One 32×32 blue mana potion PNG drawn from the free *Dungeons & Pixels* demo, recompressed losslessly for the existing mana item slot | [Dungeons & Pixels Free Demo](https://indie-vova.itch.io/dungeons-and-pixels-starter-pack) | Creator's free-demo licence expressly allows commercial games and modification; **not CC0**, and does not allow standalone asset-pack redistribution. |
 
 The updated sprite files have exact SHA-256/source-frame provenance in `assets/pixel/user-r134/PROVENANCE.md`. This is a candidate PR; it has not passed exact-head Chromium/CI or received owner live visual acceptance.
 
-| **Indie_Vova (Vladimir Ivanov)** | One 32×32 blue mana potion PNG drawn from the free *Dungeons & Pixels* demo, recompressed losslessly for the existing mana item slot | [Dungeons & Pixels Free Demo](https://indie-vova.itch.io/dungeons-and-pixels-starter-pack) | Creator's free-demo licence expressly allows commercial games and modification; **not CC0**, and does not allow standalone asset-pack redistribution. |
