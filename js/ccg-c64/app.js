@@ -2434,8 +2434,9 @@ onlineLibraryGrid?.addEventListener("click", (event) => {
 // its popup before the synthetic click fires. A completed touch is a more
 // reliable commit point. Track movement so scrolling the suggestions never
 // selects a game. Android and desktop retain the existing click path.
-const iosLibraryTouch = /iPhone|iPad|iPod/.test(navigator.userAgent || "") ||
-  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const iosLibraryTouch = typeof navigator !== "undefined" &&
+  (/iPhone|iPad|iPod/.test(navigator.userAgent || "") ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
 let pendingIosSuggestionTouch = null;
 let iosSuggestionPointerDown = false;
 if (iosLibraryTouch && onlineLibraryGrid) {
