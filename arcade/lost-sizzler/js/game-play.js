@@ -1,4 +1,18 @@
-function tryKnockPosition(ent,dx,dy){const nx=ent.x+dx,ny=ent.y+dy;if(!W.walkable(world.map,nx,ny,host))return false;if(host.enemies?.some(e=>e!==ent&&e.alive&&e.x===nx&&e.y===ny))return false;ent.x=nx;ent.y=ny;return true}
+function tryKnockPosition(ent,dx,dy){
+  const nx=ent.x+dx,ny=ent.y+dy;
+  if(!W.walkable(world.map,nx,ny,host))return false;
+  if(host.enemies?.some(e=>e!==ent&&e.alive&&e.x===nx&&e.y===ny))return false;
+  // Unlike the Bat's own rare-event movement, combat knockback runs through
+  // this separate owner. Do not knock a passive rare creature onto a chest or
+  // collectible that would then be hidden beneath its visible sprite.
+  if(ent?.passiveNpc){
+    if((host.chests||[]).some(c=>c.active&&c.x===nx&&c.y===ny))return false;
+    if((host.items||[]).some(i=>i.active&&i.x===nx&&i.y===ny))return false;
+    if((host.shops||[]).some(s=>s.active&&s.x===nx&&s.y===ny))return false;
+    if([host.trader,host.startShop].some(s=>s?.active&&s.x===nx&&s.y===ny))return false;
+  }
+  ent.x=nx;ent.y=ny;return true
+}
 function knockEnemyAway(e,from){if(!e||!from)return;const dx=Math.sign(e.x-from.x),dy=Math.sign(e.y-from.y);if(dx||dy){if(!tryKnockPosition(e,dx,dy)){if(dx)tryKnockPosition(e,dx,0);else if(dy)tryKnockPosition(e,0,dy)}}}
 function knockPlayerAway(p,from){if(!p||!from)return;const dx=Math.sign(p.x-from.x),dy=Math.sign(p.y-from.y),nx=p.x+dx,ny=p.y+dy;if((dx||dy)&&W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}
 function collideWithEnemy(p,e,fromX,fromY){
