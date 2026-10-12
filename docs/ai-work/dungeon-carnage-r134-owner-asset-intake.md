@@ -51,3 +51,7 @@ Additional restrictions: CraftPix licence is not CC0; its prohibition on using i
 - Source candidate branch `codex/dungeon-r134-free-art-intake-20261012` from main `d3d73603468b5baca6044831be90d5dc0ead928d`.
 - Draft PR #2698. Stealthix CC0 spike states are imported as four active visual-only overrides; other newly supplied packs are held candidates or excluded as above.
 - R133 PR #2695 remains independent. No deployed/live acceptance, no paid original soundtrack recovery, no main-branch merge, and no change to game mechanics is implied.
+
+### Added role-correct item art candidate
+
+The uploaded Indie_Vova/Dungeons & Pixels *free demo* includes two 32×32 potion icons. The existing `images.items.mana` mapped to the identical ammo icon; replacing only mana with the free-demo **blue mana flask** restores item semantic distinction without altering healing, ammo balance, item rewards or hitboxes. The existing health potion's green cross remains unchanged. Source-and-target fingerprints are in `assets/pixel/user-r134/PROVENANCE.md`. Source licence is commercial (not CC0); only the game-embedded optimised PNG is included.
