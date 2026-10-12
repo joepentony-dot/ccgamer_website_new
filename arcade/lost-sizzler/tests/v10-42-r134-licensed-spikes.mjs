@@ -24,9 +24,9 @@ const credits = readFileSync(join(root, 'assets/THIRD-PARTY-ART-CREDITS.md'), 'u
 const provenance = readFileSync(join(root, `${assetRoot}/PROVENANCE.md`), 'utf8');
 const render = readFileSync(join(root, 'js/game-render.js'), 'utf8');
 assert.match(credits, /Stealthix/);
-assert.match(provenance, /CC0 1\\.0/);
-assert.match(render, /if\\(t\\.kind==="spike"&&spikeArtReady\\)/);
-assert.match(render, /spikeArtReady=spikeFrames\\.length===4/);
+assert.match(provenance, /CC0 1\.0/);
+assert.match(render, /if\(t\.kind==="spike"&&spikeArtReady\)/);
+assert.match(render, /spikeArtReady=spikeFrames\.length===4/);
 for (let i = 0; i < expected.length; i++) {
   const [filename, fingerprint] = expected[i];
   const relative = `${assetRoot}/${filename}`;
