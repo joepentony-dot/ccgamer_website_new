@@ -23,6 +23,8 @@ function harness({ ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4) AppleWebKit/60
   const listeners = {};
   const selection = [];
   const closes = [];
+  let blurs = 0;
+  const search = { blur() { blurs++; } };
   const button = { textContent: "LOAD & AUTO START", attrs: {}, setAttribute(key, value) { this.attrs[key] = value; } };
   const grid = {
     addEventListener(name, handler, options) {
@@ -36,6 +38,7 @@ function harness({ ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4) AppleWebKit/60
   const context = {
     navigator: { userAgent: ua, platform, maxTouchPoints: points },
     onlineLibraryGrid: grid,
+    onlineLibrarySearch: search,
     loadAnyMediaButton: button,
     onlineLibrarySearchWrap: wrap,
     selectOnlineLibraryEntry: (...args) => selection.push(args),
@@ -52,7 +55,7 @@ function harness({ ua = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4) AppleWebKit/60
     };
   }
   function touch(identifier, x, y) { return { identifier, clientX: x, clientY: y }; }
-  return { listeners, selection, closes, button, fire, option, touch };
+  return { listeners, selection, closes, button, fire, option, touch, blurCount: () => blurs };
 }
 
 test("iPhone touch selects game even when focusout happens before touchend/click", () => {
@@ -71,6 +74,7 @@ test("iPhone touch selects game even when focusout happens before touchend/click
   assert.equal(h.selection.length, 1);
   assert.equal(h.selection[0][0], "bruce-lee-trilogy");
   assert.equal(h.selection[0][1], false, "iPhone must not scroll to LOAD by synthetic focus");
+  assert.equal(h.blurCount(), 1, "Successful selection must dismiss the iPhone keyboard");
 });
 
 test("iPhone early blur after pointerdown does not dismiss the dropdown", () => {
