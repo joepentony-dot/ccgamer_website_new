@@ -42,28 +42,28 @@ html[data-ccg-page="home"] .home-support-art__hotspot {
   white-space: nowrap;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--paypal {
-  left: 70.9%;
-  top: 46.7%;
-  width: 26.4%;
+  left: 69.3%;
+  top: 55.7%;
+  width: 23.2%;
   height: 16.0%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--patreon {
-  left: 71.6%;
-  top: 66.1%;
-  width: 5.8%;
-  height: 6.8%;
+  left: 69.9%;
+  top: 75.7%;
+  width: 4.5%;
+  height: 6.3%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--youtube {
-  left: 77.9%;
-  top: 66.1%;
-  width: 5.7%;
-  height: 6.8%;
+  left: 75.6%;
+  top: 75.7%;
+  width: 4.2%;
+  height: 6.3%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--more {
-  left: 84.1%;
-  top: 66.1%;
-  width: 12.9%;
-  height: 6.8%;
+  left: 81.3%;
+  top: 75.7%;
+  width: 10.9%;
+  height: 6.3%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot:focus-visible {
   outline: 3px solid #fff;
