@@ -2,7 +2,19 @@ function tryKnockPosition(ent,dx,dy){const nx=ent.x+dx,ny=ent.y+dy;if(!W.walkabl
 function knockEnemyAway(e,from){if(!e||!from)return;const dx=Math.sign(e.x-from.x),dy=Math.sign(e.y-from.y);if(dx||dy){if(!tryKnockPosition(e,dx,dy)){if(dx)tryKnockPosition(e,dx,0);else if(dy)tryKnockPosition(e,0,dy)}}}
 function knockPlayerAway(p,from){if(!p||!from)return;const dx=Math.sign(p.x-from.x),dy=Math.sign(p.y-from.y),nx=p.x+dx,ny=p.y+dy;if((dx||dy)&&W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}
 function collideWithEnemy(p,e,fromX,fromY){
-  if(!p||!e)return;const dx=Math.sign(e.x-fromX),dy=Math.sign(e.y-fromY);
+  if(!p||!e)return;
+  if(e.treasureBat){
+    // A bat is a fleeing treasure opportunity, not a contact-damage monster.
+    // Keep the player out of its occupied tile and explain the intended attack.
+    p.x=fromX;p.y=fromY;p.rx=fromX;p.ry=fromY;
+    const now=performance.now();
+    if(!Number.isFinite(e._batContactHintAt)||now-e._batContactHintAt>=2000){
+      e._batContactHintAt=now;
+      showToast("TREASURE BAT","Use ATTACK (SPACE) to slash or shoot the bat before it escapes. A defeated bat drops an unlocked chest.","gold",5400);
+    }
+    return
+  }
+  const dx=Math.sign(e.x-fromX),dy=Math.sign(e.y-fromY);
   const meleeOnly=!(p.firearmUnlocked&&p.weapon&&Number(p.mana||0)>0);
   if(meleeOnly){
     // Sword combat happens from the adjacent tile. Walking into a target must
@@ -177,7 +189,15 @@ function openChest(p,chest){
   setTimeout(()=>{if(["playing","inventory"].includes(mode)){floatPickupText(p,name,col);applyLoot(loot,p)}},500);
   return true
 }
-function tryChest(p,x,y){const c=W.chestAt(host,x,y);return c?openChest(p,c):true}
+function tryChest(p,x,y){
+  const c=W.chestAt(host,x,y);
+  if(!c)return true;
+  // A rare creature may be standing on a chest in an older save or mid-frame.
+  // Resolve the visible enemy encounter first instead of issuing a key warning
+  // for a chest completely hidden under its sprite.
+  if((host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))return true;
+  return openChest(p,c)
+}
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.walkable(world.map,p.x+dx,p.y,host)&&W.walkable(world.map,p.x,p.y+dy,host)}
 function activateSwitch(s,p,shot=false){
   if(!s?.active)return false;
