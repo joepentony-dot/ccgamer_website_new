@@ -277,7 +277,41 @@
     const original=renderRadarPanel;renderRadarPanel=function renderRadarPanelV115Rare(){const result=original.apply(this,arguments);try{drawRadarHint()}catch(_){}return result};
   }
   if(typeof drawEnemy==="function"){
-    const original=drawEnemy;drawEnemy=function drawEnemyV115Rare(enemy){if(enemy?.lostAdventurer||enemy?.treasureBat||enemy?.taxman){const s=typeof enemyScreen==="function"?enemyScreen(enemy):ws(enemy.x,enemy.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2;ctx.save();ctx.shadowBlur=8;ctx.shadowColor=enemy.treasureBat?P.gold:enemy.taxman?P.red:P.cyan;ctx.fillStyle=enemy.treasureBat?"#7b4cc7":enemy.taxman?"#49352a":"#6aa9ff";ctx.beginPath();if(enemy.treasureBat){ctx.moveTo(cx,cy-7);ctx.lineTo(cx-15,cy);ctx.lineTo(cx,cy+5);ctx.lineTo(cx+15,cy);ctx.closePath()}else ctx.arc(cx,cy,C.tile*.28,0,Math.PI*2);ctx.fill();ctx.fillStyle=P.white;ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText(enemy.treasureBat?"TREASURE BAT":enemy.taxman?"TAXMAN":"LOST ADVENTURER",cx,s.y-5);ctx.restore();return}return original.apply(this,arguments)};
+    const original=drawEnemy;
+    drawEnemy=function drawEnemyV115Rare(enemy){
+      if(!(enemy?.lostAdventurer||enemy?.treasureBat||enemy?.taxman))return original.apply(this,arguments);
+      const s=typeof enemyScreen==="function"?enemyScreen(enemy):ws(enemy.x,enemy.y),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
+      ctx.save();
+      ctx.shadowBlur=8;
+      ctx.shadowColor=enemy.treasureBat?P.gold:enemy.taxman?P.red:P.cyan;
+      if(enemy.treasureBat){
+        // Give the rare encounter actual ears, scalloped wings and glinting
+        // treasure instead of the old featureless purple diamond.
+        ctx.fillStyle="#603891";
+        ctx.strokeStyle="#cf9ef2";
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx-2,cy-5);ctx.lineTo(cx-6,cy-9);ctx.lineTo(cx-8,cy-4);
+        ctx.lineTo(cx-15,cy-7);ctx.lineTo(cx-19,cy-4);ctx.lineTo(cx-14,cy+4);
+        ctx.lineTo(cx-10,cy+1);ctx.lineTo(cx-7,cy+7);ctx.lineTo(cx,cy+4);
+        ctx.lineTo(cx+7,cy+7);ctx.lineTo(cx+10,cy+1);ctx.lineTo(cx+14,cy+4);
+        ctx.lineTo(cx+19,cy-4);ctx.lineTo(cx+15,cy-7);ctx.lineTo(cx+8,cy-4);
+        ctx.lineTo(cx+6,cy-9);ctx.lineTo(cx+2,cy-5);ctx.closePath();
+        ctx.fill();ctx.stroke();
+        ctx.fillStyle="#ffe7a0";
+        ctx.fillRect(Math.round(cx)-5,Math.round(cy)-3,3,2);
+        ctx.fillRect(Math.round(cx)+2,Math.round(cy)-3,3,2);
+        ctx.fillStyle=P.gold;
+        ctx.fillRect(Math.round(cx)-2,Math.round(cy)+3,4,3);
+      }else{
+        ctx.fillStyle=enemy.taxman?"#49352a":"#6aa9ff";
+        ctx.beginPath();ctx.arc(cx,cy,C.tile*.28,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle=P.white;ctx.font="bold 9px monospace";ctx.textAlign="center";
+      ctx.fillText(enemy.treasureBat?"TREASURE BAT":enemy.taxman?"TAXMAN":"LOST ADVENTURER",cx,s.y-5);
+      ctx.restore();
+      return
+    };
   }
   if(typeof render==="function"){
     const original=render;render=function renderV115Rare(){const result=original.apply(this,arguments);try{drawGhost()}catch(_){}return result};
