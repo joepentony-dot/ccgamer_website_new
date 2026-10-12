@@ -33,7 +33,7 @@ for(let i=0;i<3;i++){
   assert.ok(overrides.includes(`chestFrame${i}:"${source}"`));
   assert.ok(provenance.includes(hash));
 }
-assert.match(render,/chestFrames:\\s*\\[/,"Original frame-based chest renderer must remain");
+assert.match(render,/chestFrames:\s*\[/,"Original frame-based chest renderer must remain");
 assert.ok(render.includes('chestReplacement:make(selected("chestSheet"))'),"Explicit owner chest-sheet precedence must remain");
 assert.ok(render.includes("frameArtReady=frameSet.length===3"),"Fallback remains when any chest frame does not load");
 assert.ok(render.includes("const index=c.openedAt?Math.min(2,Math.floor(anim*3)):0"),"Visual opening phase must derive from actual chest state");
