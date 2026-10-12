@@ -64,7 +64,7 @@
       const host=String(location.hostname||"").toLowerCase();
       return window.CCGDungeonCarnageItchPackage===true
         || location.protocol==="file:"
-        || ["localhost","127.0.0.1","::1"].includes(host)
+        || ["localhost","127.0.0.1","::1","[::1]"].includes(host)
         || navigator.webdriver===true
         || /HeadlessChrome/i.test(String(navigator.userAgent||""));
     }catch(_){return true}
