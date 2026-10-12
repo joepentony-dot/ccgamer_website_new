@@ -39,6 +39,12 @@
     return root.audio;
   }
 
+  const isLocalPlaybackHost=()=>{
+    const host=String(location.hostname||"").toLowerCase();
+    return host==="localhost"||host.endsWith(".localhost")||host==="::1"||host==="[::1]"||host==="0.0.0.0"
+      ||/^127(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(host);
+  };
+
   function remoteMediaAllowed(){
     // A packaged offline game must never consult Supabase, even when a test
     // harness explicitly opts into remote media for the website build.
@@ -46,7 +52,7 @@
     if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
     let automated=false,local=false;
     try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}
-    try{local=["localhost","127.0.0.1","::1","[::1]"].includes(String(location.hostname||"").toLowerCase())}catch(_){}
+    try{local=isLocalPlaybackHost()}catch(_){}
     return !(automated||local);
   }
 
