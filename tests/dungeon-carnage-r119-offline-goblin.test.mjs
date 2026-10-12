@@ -77,3 +77,54 @@ assert.equal(items[0].loot.name,"Gold Medal Artefact");
 assert.equal(knock.length,0,"Fatal hit must not knock loot away");
 assert.ok(calls.some(row=>row[0]==="TREASURE GOBLIN CAUGHT"));
 console.log("R119 treasure goblin kill: one accessible drop and major alert: PASS");
+
+// Exercise actual generated Goblins and their real AI selection/countdown,
+// including leaving the room neighbourhood after the first sighting.
+const generated={window:{},console,Math,Date,performance};
+vm.createContext(generated);
+for(const file of ["config.js","progression.js","world.js","systems.js","ai.js"]){
+  vm.runInContext(read(game+"js/"+file),generated,{filename:file});
+}
+const {CCGWorld:W,CCGSystems:SYS,CCGAI:AI}=generated.window;
+let goblinCases=0;
+for(const floor of [1,9,15])for(let trial=0;trial<3;trial++){
+  const seed=`ccg-r133-goblin-${floor}-${trial}`,world=W.generate(seed),host=W.createHostState(world);
+  SYS.decorate(world,host,{floor,seed,stats:{}});
+  const goblin=host.enemies.find(enemy=>enemy.treasureGoblin);
+  const ordinary=host.enemies.find(enemy=>!enemy.treasureGoblin&&!enemy.follower&&!enemy.guardian);
+  assert.ok(goblin,`${seed}: generated floor must retain its Treasure Goblin`);
+  const near=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:goblin.x+dx,y:goblin.y+dy})).find(p=>W.walkable(world.map,p.x,p.y,host));
+  assert.ok(near,`${seed}: generated Goblin must be reachable`);
+  const player={id:"goblin-acceptance",...near,health:8,torchMs:0,dir:{x:1,y:0}},notices=[];
+  const hooks={notice:(...args)=>notices.push(args)};
+  // Isolate this generated actor from unrelated combat without changing its
+  // authored fields, placement, timer or the real AI implementation.
+  host.enemies=[goblin];
+  const far=world.rooms.map(room=>({x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)})).find(p=>Math.hypot(p.x-goblin.x,p.y-goblin.y)>40&&!AI.simulationEligibleForTest(goblin,world,[{...player,...p}],AI.simulationRoomsForPlayersForTest(world,[p])));
+  assert.ok(far,`${seed}: distant room outside the unseen Goblin's active neighbourhood required`);
+  Object.assign(player,far);
+  for(let tick=0;tick<240;tick++)AI.stepEnemies(host,world.map,[player],100,hooks,world);
+  assert.equal(goblin.escapeMs,22000,"unseen offscreen Goblin must retain its untouched escape clock");
+  assert.equal(goblin.treasureGoblinSpotted,undefined);
+  Object.assign(player,near);
+  AI.stepEnemies(host,world.map,[player],100,hooks,world);
+  assert.equal(goblin.treasureGoblinSpotted,true,"actual sighting must start the escape countdown");
+  assert.equal(goblin.escapeMs,21900);
+  Object.assign(player,far);
+  // A crowded active room must not quantize this one-shot timer by the ordinary
+  // enemy stride. These ordinary fixtures exercise the real crowd scheduler.
+  assert.ok(ordinary);
+  host.enemies.push(...Array.from({length:30},(_,index)=>({...ordinary,id:`crowd-${index}`,x:far.x,y:far.y,alive:true,attackCooldown:999999})));
+  for(let tick=0;tick<218;tick++)AI.stepEnemies(host,world.map,[player],100,hooks,world);
+  assert.equal(AI.getSimulationDiagnostics().crowdStride,3,"escape must be tested under real crowded-AI scheduling");
+  assert.equal(goblin.alive,true,"Goblin must not escape before its full authored countdown");
+  assert.equal(goblin.escapeMs,100,"spotted offscreen Goblin must keep counting while the player is elsewhere");
+  AI.stepEnemies(host,world.map,[player],100,hooks,world);
+  assert.equal(goblin.alive,false);assert.equal(goblin.treasureGoblinEscaped,true);
+  for(let tick=0;tick<20;tick++)AI.stepEnemies(host,world.map,[player],100,hooks,world);
+  assert.equal(notices.filter(args=>args[0].includes("SPOTTED")).length,1);
+  assert.equal(notices.filter(args=>args[0].includes("ESCAPED")).length,1,"escape must announce exactly once");
+  assert.equal(goblin.treasureGoblinDefeated,undefined,"escape must not count as a defeat");
+  goblinCases++;
+}
+console.log(`R133 generated Goblin sighting/offscreen escape: ${goblinCases} seeded early/late cases PASS`);
