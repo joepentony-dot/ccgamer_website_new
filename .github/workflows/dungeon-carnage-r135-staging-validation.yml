@@ -1,0 +1,53 @@
+name: Dungeon Carnage R135 staging validation
+
+on:
+  push:
+    branches:
+      - codex/dungeon-r135-free-chest-staging-20261012
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - 'docs/ai-work/dungeon-carnage-visual-overhaul.md'
+      - '.github/workflows/dungeon-carnage-r135-staging-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  free-commercial-chest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check original frame hashes, commercial rights, animation states and fallbacks
+        run: node arcade/lost-sizzler/tests/v10-42-r135-free-chest.mjs
+
+  existing-renderer-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preserve existing chest, spike and sprite fallbacks
+        run: |
+          node arcade/lost-sizzler/tests/v10-42-visual-overhaul-foundation.mjs
+          node arcade/lost-sizzler/tests/v10-42-r118-user-assets.mjs
+          node arcade/lost-sizzler/tests/v10-42-r85-object-sprites.mjs
+
+  finale-credits-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check final screen script syntax and established completion credits
+        run: |
+          node --check arcade/lost-sizzler/js/v10-4-final-ui.js
+          node arcade/lost-sizzler/tests/v10-42-r88-endgame-credits.mjs
