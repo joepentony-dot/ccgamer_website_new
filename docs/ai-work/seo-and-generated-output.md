@@ -1,5 +1,13 @@
 # SEO and generated output
 
+## Omega Race non-indexed editorial-snippet recovery candidate — 13 October 2026
+
+- Search Console inspection on 13 October: canonical `/games/omega-race/` is **Crawled - currently not indexed**, last Google crawl 2026-06-04; fresh live on-page audit returned HTTP 200, indexable, self-canonical, 503 words and a generic 64-character meta description. This is NOT a demonstrated technical indexing block, and improvements cannot guarantee indexing.
+- Existing source editorial description contains the verified-for-this-site sentence “Omega Race arrived on the Commodore 64 in 1982 as a remarkably faithful home conversion of the arcade original.” The common snippet builder accepts only a limited list of title-subject verbs and previously excluded “arrived”, falling back to generic year/platform/publisher text.
+- This review candidate adds just `arrived` to the constrained title-subject-verb salvage allowlist, preserving all existing source-only, complete-sentence and length safeguards; adds regression asserting shared generator, canonical and admin preview parity. No game JSON, generated HTML, intro loader or public runtime changes are authored in the candidate.
+- **Not yet deployed/indexed.** Require exact candidate-head Node snippet and canonical metadata tests, SEO, Site Safety and applicable workflows green, independent review and explicit merge authorisation before merging. Generated HTML and social metadata must be rebuilt through the existing authoritative publishing workflow after an approved merge, with live verification and GSC recrawl observation.
+
+
 ## Smart Emulation Hub current-main reconciliation — 2026-09-25
 
 - Search Console remediation PR #2343 has merged as `ece6c9d942036bde9979bf6515cf3627c23e5206`; automated SEO/video output #2350 subsequently merged as `d728434c4e0ebef4675c911951f67167eb071985`.
