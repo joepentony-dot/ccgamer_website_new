@@ -40,7 +40,7 @@ export function mountCatalogueBrowser({ games, play }) {
       if (!entry || !entry.title || !entry.id) return false;
       if (type !== "all" && kind(entry) !== type) return false;
       const first = entry.title.trim().charAt(0).toLocaleUpperCase();
-      if (initial !== "all" && (initial === "#" ? /^[A-Z]$/.test(first) : first === initial) === false) return false;
+      if (initial !== "all" && !(initial === "#" ? !/^[A-Z]$/.test(first) : first === initial)) return false;
       return !query || entry.title.toLocaleLowerCase().includes(query);
     }).sort((a, b) => collator.compare(a.title, b.title));
 
