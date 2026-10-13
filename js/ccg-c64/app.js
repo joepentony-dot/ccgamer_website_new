@@ -8,7 +8,10 @@ import { GameVault } from "./game-vault.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
-import { PACK_ROOT, PACK_CATALOG_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes } from "./game-catalog.js";
+import {
+  PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
+  ARCHIVE_READY_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
+} from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
 // emulator engine are otherwise usable. Preserve normal persistent storage
@@ -2159,19 +2162,77 @@ async function initialiseOnlineLibrary() {
     console.warn("[ccg-c64] Blast catalogue unavailable:", error);
   }
 
-  onlineLibraryEntries = [...regular, ...packed];
+  // The owner's optional PRG archive is activated only after all pack files
+  // have been uploaded and the SHA-bound ready.json marker is published LAST.
+  // An absent marker is normal: the existing Blast/direct libraries keep working.
+  let archived = [];
+  let archiveError = null;
+  try {
+    const readyResponse = await fetch(ARCHIVE_READY_URL, {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (readyResponse.ok) {
+      const ready = await readyResponse.json();
+      if (ready?.version !== 1 || !Number.isInteger(ready.recordCount) ||
+          !Number.isInteger(ready.packCount) || ready.recordCount < 1 ||
+          ready.packCount < 1 || !/^[a-f0-9]{64}$/i.test(ready.catalogSHA256 || "")) {
+        throw new Error("Invalid PRG archive activation marker.");
+      }
+      const archiveResponse = await fetch(ARCHIVE_CATALOG_URL, {
+        cache: "no-store", credentials: "same-origin",
+      });
+      if (!archiveResponse.ok) {
+        throw new Error(`PRG archive catalogue HTTP ${archiveResponse.status}`);
+      }
+      const catalogueText = await archiveResponse.text();
+      if (!globalThis.crypto?.subtle) {
+        throw new Error("Secure hashing is required for this PRG archive.");
+      }
+      const catalogueDigest = await crypto.subtle.digest(
+        "SHA-256", new TextEncoder().encode(catalogueText));
+      const catalogueSHA = Array.from(new Uint8Array(catalogueDigest),
+        byte => byte.toString(16).padStart(2, "0")).join("");
+      if (catalogueSHA !== ready.catalogSHA256.toLowerCase()) {
+        throw new Error("PRG archive catalogue did not match the activation marker.");
+      }
+      const parsedArchive = parsePackedCatalog(
+        JSON.parse(catalogueText), { packRoot: ARCHIVE_PACK_ROOT });
+      if (parsedArchive.entries.length !== ready.recordCount ||
+          parsedArchive.packs.length !== ready.packCount) {
+        throw new Error("PRG archive record or pack counts do not match.");
+      }
+      const alreadyListed = new Set([...regular, ...packed].map((entry) =>
+        `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+      // The standalone Bruce Lee PRG remains deliberately withheld: the
+      // existing tested Trilogy CRT is the supported option on all devices.
+      archived = parsedArchive.entries.filter((entry) =>
+        entry.title.trim().toLocaleLowerCase() !== "bruce lee" &&
+        !alreadyListed.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
+    } else if (readyResponse.status !== 404) {
+      throw new Error(`PRG archive activation HTTP ${readyResponse.status}`);
+    }
+  } catch (error) {
+    archiveError = error;
+    console.warn("[ccg-c64] Optional PRG archive unavailable:", error);
+  }
+
+  onlineLibraryEntries = [...regular, ...packed, ...archived];
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
-  onlineLibraryStatus.textContent = packedCatalogueError
-    ? `${regular.length.toLocaleString("en-GB")} READY · BLAST UNAVAILABLE`
+  const unavailable = [];
+  if (packedCatalogueError) unavailable.push("BLAST UNAVAILABLE");
+  if (archiveError) unavailable.push("ARCHIVE UNAVAILABLE");
+  onlineLibraryStatus.textContent = unavailable.length
+    ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY · ${unavailable.join(" · ")}`
     : onlineLibraryEntries.length
       ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
-  if (packedCatalogueError && onlineLibraryCount) {
+  if ((packedCatalogueError || archiveError) && onlineLibraryCount) {
     onlineLibraryCount.textContent =
-      "Additional game catalogue unavailable. Check connection and retry.";
+      "Some additional games are unavailable. Check connection and retry.";
   }
-  if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden = !packedCatalogueError;
+  if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden =
+    !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
 }
 

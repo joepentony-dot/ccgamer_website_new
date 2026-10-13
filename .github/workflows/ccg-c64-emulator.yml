@@ -50,6 +50,9 @@ jobs:
       - name: Verify searchable and SHA-256-protected C64 game browser
         run: node tests/ccg-c64-game-catalog.test.mjs
 
+      - name: Verify optional clean-name archive activation and 10k-title search
+        run: node tests/ccg-c64-clean-prg-archive.test.mjs
+
       - name: Verify explicit select-then-LOAD GAME interaction
         run: node tests/ccg-c64-library-select-load.test.mjs
 
@@ -98,6 +101,7 @@ jobs:
       - name: Syntax-check CCG adapter
         run: |
           node --check js/ccg-c64/app.js
+          node --check js/ccg-c64/game-catalog.js
           node --check js/ccg-c64/coi-bootstrap.js
           node --check emulator/c64/coi-service-worker.js
           node --check js/ccg-c64/game-vault.js

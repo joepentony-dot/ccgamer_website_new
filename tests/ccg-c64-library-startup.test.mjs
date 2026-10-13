@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
-import { parsePackedCatalog, PACK_CATALOG_URL } from "../js/ccg-c64/game-catalog.js";
+import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL } from "../js/ccg-c64/game-catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
@@ -31,6 +31,7 @@ async function execute(catalogueAvailable) {
     controlsDeck: { classList: { toggle() {} } },
     SUPPORTED_MEDIA_TYPES: new Set(["prg", "d64", "crt", "tap", "t64", "d71", "d81", "g64"]),
     PACK_CATALOG_URL,
+    ARCHIVE_READY_URL,
     parsePackedCatalog,
     refreshOnlineLibrarySuggestions() { statuses.refreshed = true; },
     updateSelectedLibraryGame() { statuses.selectionUpdated = true; },
@@ -42,6 +43,9 @@ async function execute(catalogueAvailable) {
       }
       if (url === "/emulator/c64/library.json") {
         return { ok: true, json: async () => direct };
+      }
+      if (url === ARCHIVE_READY_URL) {
+        return { ok: false, status: 404 }; // No optional archive media is published yet.
       }
       if (url === PACK_CATALOG_URL) {
         return catalogueAvailable
@@ -64,7 +68,8 @@ assert.equal(good.context.onlineLibraryEntries.length, 1882,
 assert.equal(good.context.onlineLibraryStatus.textContent, "1,882 READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
-assert.equal(good.fetchRequests.length, 2, "Only the two JSON catalogues must be fetched at startup");
+assert.equal(good.fetchRequests.length, 3, "Two library catalogues plus one optional activation probe are fetched at startup");
+assert.equal(good.fetchRequests.filter(r => r.url === ARCHIVE_READY_URL).length, 1, "Absent archive activation must be checked once");
 assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 

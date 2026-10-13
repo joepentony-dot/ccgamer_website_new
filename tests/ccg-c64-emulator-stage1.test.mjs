@@ -145,11 +145,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261013_mobile_touch_selection_v1"'), "Emulator shell must start through the COI bootstrap");
+assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261013_clean_prg_archive_v1"'), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261013_mobile_touch_selection_v1"') &&
+assert(coiBootstrap.includes('const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261013_clean_prg_archive_v1"') &&
   coiBootstrap.includes("await import(APP_URL)"), "COI bootstrap must import the versioned emulator entry");
 assert(coiBootstrap.includes("await startCompatibilityMode(") &&
   machine.includes("this.sidShared = sharedSidAvailable ? new SharedArrayBuffer") &&
