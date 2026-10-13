@@ -16536,6 +16536,48 @@
   },
   {
     "system": "C64",
+    "id": "olli_and_lissa",
+    "slug": "olli-and-lissa",
+    "title": "Olli & Lissa",
+    "sorttitle": "Olli & Lissa",
+    "year": 1987,
+    "genres": [
+      "platform"
+    ],
+    "collections": [],
+    "videoid": "iSBLT9C9xh4",
+    "thumbnail": "resources/images/thumbnails/all/olli-and-lissa.webp",
+    "pdf": "https://drive.google.com/file/d/1PTBEdMdlwefFeoahP-0hihgzzZ3u9vfU/view?usp=drivesdk",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://www.lemon64.com/game/olli-and-lissa"
+    ],
+    "zzap": [],
+    "description": "Olli & Lissa: The Ghost of Shilmoore Castle is a single-player Commodore 64 platform game published by Firebird in 1987. Paul Johnson converted the game for the C64, Ben Daglish composed the music, and Stephen Robertson is credited with the title screen. The story sends Olli through a haunted Scottish castle to collect eight ingredients for a potion that will restore Sir Humphrey's invisibility and frighten away the millionaire planning to ship the castle to America. Olli must retrieve each ingredient from the castle grounds and bring it back to Lissa's cauldron before time runs out. Ghosts, bats, spiders and other enemies patrol the flick-screen rooms, while narrow platforms and unforgiving jumps demand exact positioning. Olli cannot change direction mid-jump, and every outward journey must be repeated in reverse. The colourful cartoon presentation and unusual story have charm, but unreliable jumping makes progress frustrating. Critics disagreed, with Zzap!64 rating it 50% and Computer & Video Games awarding 9/10.",
+    "ccg_rating": 5,
+    "ccg_rating_reason": "Charming characters and a good haunted-castle premise, but the unforgiving fixed jumps, lack of mid-air control and repeated return journeys make this far more frustrating than enjoyable.",
+    "credits": {
+      "publisher": [
+        "Firebird"
+      ],
+      "producer": "",
+      "coder": [
+        "Paul Johnson"
+      ],
+      "graphics": [],
+      "musician": [
+        "Ben Daglish"
+      ],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "ollie_s_follies",
     "slug": "ollie-s-follies",
     "title": "Ollie's Follies",
