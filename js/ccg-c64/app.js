@@ -607,7 +607,7 @@ async function ensureAudioGraph() {
 async function wireAudioToMachine() {
   if (!machine) return false;
   if (!machine.sidShared) {
-    updateAudioUi("SILENT COMPATIBILITY MODE — SID NEEDS BROWSER ISOLATION");
+    updateAudioUi("SILENT COMPATIBILITY MODE");
     return false;
   }
   try {
