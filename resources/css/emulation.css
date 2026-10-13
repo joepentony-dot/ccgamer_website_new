@@ -137,6 +137,166 @@
     border-radius: 8px;
 }
 
+/* Own C64 emulator — the primary way to play, with other setup paths retained. */
+.ccg-page--emulation .emu-play-now {
+    position: relative;
+    min-width: 0;
+    display: grid;
+    gap: 0.82rem;
+    margin-top: 1.15rem;
+    padding: clamp(1rem, 2vw, 1.35rem);
+    border: 1px solid rgba(var(--accent-rgb), 0.72);
+    border-radius: 14px;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(var(--accent-rgb), 0.20), transparent 56%),
+        linear-gradient(135deg, rgba(14, 23, 48, 0.98), rgba(2, 9, 22, 0.95));
+    box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        0 14px 38px rgba(0, 0, 0, 0.38);
+}
+
+.ccg-page--emulation .emu-play-now::before {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    top: 0;
+    height: 2px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--accent), rgba(255, 212, 92, 0.8), transparent);
+}
+
+.ccg-page--emulation .emu-play-now__eyebrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.48rem;
+    color: var(--emu-amber);
+    font-family: var(--ccg-font-main);
+    font-weight: 800;
+    letter-spacing: 0.095em;
+    font-size: 0.62rem;
+    line-height: 1.4;
+}
+
+.ccg-page--emulation .emu-play-now__light {
+    flex: 0 0 8px;
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.75);
+}
+
+.ccg-page--emulation .emu-play-now__tag {
+    display: inline-flex;
+    padding: 0.25rem 0.38rem;
+    border: 1px solid rgba(255, 212, 92, 0.42);
+    border-radius: 4px;
+    background: rgba(255, 212, 92, 0.09);
+    color: #ffdf8b;
+    font-family: inherit;
+    font-size: 0.56rem;
+    letter-spacing: 0.05em;
+}
+
+.ccg-page--emulation .emu-play-now h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--ccg-font-main);
+    font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+    line-height: 1.3;
+    letter-spacing: 0.025em;
+}
+
+.ccg-page--emulation .emu-play-now p {
+    margin: 0;
+    color: var(--emu-copy);
+    font-size: 0.88rem;
+    line-height: 1.62;
+}
+
+.ccg-page--emulation .emu-play-now__launch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    width: 100%;
+    min-height: 55px;
+    padding: 0.8rem 1rem;
+    border: 1px solid rgba(255, 221, 131, 0.78);
+    border-radius: 9px;
+    background: linear-gradient(115deg, #ffe295, #ffc956);
+    color: #161222;
+    font-family: var(--ccg-font-main);
+    font-weight: 900;
+    font-size: clamp(0.78rem, 1.4vw, 0.92rem);
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    box-shadow: 0 4px 22px rgba(255, 203, 84, 0.2);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.ccg-page--emulation .emu-play-now__launch span:last-child {
+    font-size: 1.35em;
+    line-height: 1;
+}
+
+.ccg-page--emulation .emu-play-now__launch:hover,
+.ccg-page--emulation .emu-play-now__launch:focus-visible {
+    transform: translateY(-2px);
+    background: #ffeca9;
+    color: #161222;
+    box-shadow: 0 5px 28px rgba(255, 203, 84, 0.33);
+}
+
+.ccg-page--emulation .emu-play-now__launch:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.ccg-page--emulation .emu-play-now__features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.ccg-page--emulation .emu-play-now__features span {
+    padding: 0.34rem 0.55rem;
+    border: 1px solid rgba(var(--accent-rgb), 0.26);
+    border-radius: 6px;
+    background: rgba(var(--accent-rgb), 0.07);
+    color: var(--emu-muted);
+    font-size: 0.68rem;
+    font-weight: 650;
+    line-height: 1.3;
+}
+
+.ccg-page--emulation .emu-cta-row .emu-cta-row__play {
+    border-color: rgba(var(--accent-rgb), 0.62);
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.17);
+}
+
+.ccg-page--emulation .emu-route-card a {
+    color: var(--emu-amber);
+    font-weight: 800;
+    text-underline-offset: 3px;
+}
+
+.ccg-page--emulation .emu-route-card a:hover,
+.ccg-page--emulation .emu-route-card a:focus-visible {
+    color: #fff;
+}
+
+.ccg-page--emulation .emu-smart-nav .emu-smart-nav__play {
+    border-color: rgba(255, 212, 92, 0.55);
+    color: #ffe295;
+}
+
+.ccg-page--emulation .ccg-emulation-jump .emu-browser-route__play {
+    border-color: rgba(255, 212, 92, 0.45);
+}
+
 .ccg-page--emulation .emu-burst-card {
     display: flex;
     flex-direction: column;
@@ -1228,6 +1388,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .ccg-page--emulation .emu-play-now__launch {
+        transition: none;
+    }
+    .ccg-page--emulation .emu-play-now__launch:hover,
+    .ccg-page--emulation .emu-play-now__launch:focus-visible {
+        transform: none;
+    }
     .ccg-page--emulation .ccg-btn {
         transition: none;
     }
