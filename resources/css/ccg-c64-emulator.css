@@ -2599,3 +2599,280 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-vault-game-row select,
   .ccg-c64-vault-backup-row button { min-height: 44px; font-size: 0.7rem; }
 }
+
+
+/* CCG C64 usability refresh — scoped entirely to the emulator.
+   Keep the mobile joystick, iOS selector and existing screen-sizing rules. */
+.ccg-c64-play-help {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(215px, 0.56fr);
+  gap: 0.55rem;
+  align-items: center;
+  margin: 0.4rem 0 0;
+  border: 1px solid rgba(112, 124, 199, 0.36);
+  border-radius: 9px;
+  padding: 0.55rem 0.65rem;
+  background: linear-gradient(110deg, rgba(41, 54, 105, 0.44), rgba(10, 18, 47, 0.84));
+}
+.ccg-c64-play-help > p {
+  margin: 0;
+  color: #c5c9e8;
+  font-size: 0.69rem;
+  line-height: 1.65;
+}
+.ccg-c64-play-help > p strong { color: #f6edff; }
+.ccg-c64-play-help kbd {
+  display: inline-block;
+  margin: 0 0.1rem;
+  padding: 0.08rem 0.36rem;
+  border: 1px solid #868ad7;
+  border-radius: 4px;
+  background: #151b40;
+  color: #f7f5ff;
+  font: 800 0.7rem var(--ccg-font-mono, "Courier New", monospace);
+}
+.ccg-c64-warp-action {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+}
+.ccg-c64-warp-action button {
+  width: 100%;
+  min-height: 43px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.42rem 0.7rem;
+  border: 1px solid #e0c56c;
+  border-radius: 7px;
+  background: linear-gradient(120deg, #655023, #957020);
+  color: #fffaf0;
+  font: 900 0.74rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-warp-action button span { font-size: 0.65rem; }
+.ccg-c64-warp-action button strong { font-size: 0.78rem; }
+.ccg-c64-warp-action button:hover:not(:disabled),
+.ccg-c64-warp-action button:focus-visible { border-color: #fff3af; box-shadow: 0 0 14px rgba(238, 197, 92, 0.25); }
+.ccg-c64-warp-action button[aria-pressed="true"] {
+  border-color: #a3eac1;
+  background: linear-gradient(120deg, #175b53, #168365);
+}
+.ccg-c64-warp-action button:disabled { opacity: 0.5; cursor: default; }
+.ccg-c64-warp-action small { color: #aab4d6; font-size: 0.57rem; line-height: 1.4; text-align: center; }
+.ccg-c64-play-help.is-loading { border-color: rgba(239, 194, 67, 0.65); box-shadow: 0 0 15px rgba(200, 164, 55, 0.1); }
+
+.ccg-c64-panel--library .ccg-c64-panel-title {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.45rem;
+}
+.ccg-c64-panel--library .ccg-c64-panel-title > em { grid-column: 3; }
+.ccg-c64-catalogue-open {
+  grid-column: 1 / -1;
+  min-height: 40px;
+  border: 1px solid #45c8e5;
+  border-radius: 7px;
+  padding: 0.55rem;
+  background: linear-gradient(140deg, #075887, #0a416a);
+  color: #f3faff;
+  font: 900 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+  letter-spacing: 0.035em;
+  cursor: pointer;
+}
+.ccg-c64-catalogue-open:hover:not(:disabled), .ccg-c64-catalogue-open:focus-visible {
+  background: linear-gradient(140deg, #0c7ca8, #145477);
+  box-shadow: 0 0 14px rgba(21, 199, 227, 0.22);
+}
+.ccg-c64-catalogue-open:disabled { opacity: 0.55; cursor: progress; }
+
+.ccg-c64-advanced {
+  grid-column: 1 / -1;
+  min-width: 0;
+  border: 1px solid #353b78;
+  border-radius: 9px;
+  background: rgba(15, 18, 47, 0.82);
+}
+.ccg-c64-advanced > summary,
+.ccg-c64-vault-backups > summary {
+  padding: 0.72rem 0.8rem;
+  color: #e6e5ff;
+  font: 800 0.67rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-advanced > summary span {
+  color: #a0abcf;
+  font-size: 0.58rem;
+  font-weight: 400;
+  margin-left: 0.65rem;
+}
+.ccg-c64-advanced[open] > summary { border-bottom: 1px solid #353b78; }
+.ccg-c64-advanced-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.65rem;
+}
+.ccg-c64-advanced-grid > .ccg-c64-panel { grid-area: auto; grid-row: auto; grid-column: auto; margin: 0; }
+.ccg-c64-advanced-grid > .ccg-c64-panel--rom { grid-column: 1 / -1; }
+.ccg-c64-vault-backups { margin-top: 0.42rem; border-top: 1px solid rgba(135, 127, 205, 0.35); }
+.ccg-c64-vault-backups > summary { padding: 0.42rem 0; font-size: 0.59rem; color: #9ca9d6; }
+.ccg-c64-vault-feedback {
+  min-height: 1.2rem;
+  color: #c2eecf;
+  font-size: 0.65rem;
+  line-height: 1.45;
+  margin: 0.45rem 0 0;
+}
+.ccg-c64-vault-feedback.is-error { color: #ffd59d; }
+.ccg-c64-panel--vault .ccg-c64-vault-row button[data-vault-save],
+.ccg-c64-panel--vault .ccg-c64-vault-row button[data-vault-load] {
+  border-color: #248ab5;
+  background: #095379;
+  color: #fff;
+  font-size: 0.67rem;
+}
+.ccg-c64-panel--vault .ccg-c64-vault-row button:disabled { opacity: 0.52; cursor: default; }
+
+/* Catalogue browser is separate from the workspace and does not alter gameplay
+   on iOS/Android. Render only 60 games at a time, even in large archives. */
+.ccg-c64-catalogue[hidden] { display: none !important; }
+.ccg-c64-catalogue {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.6rem, 2vw, 1.4rem);
+}
+body.ccg-c64-catalogue-open { overflow: hidden; }
+.ccg-c64-catalogue-backdrop { position: absolute; inset: 0; background: rgba(2, 5, 21, 0.84); backdrop-filter: blur(5px); }
+.ccg-c64-catalogue-dialog {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 1120px);
+  height: min(93dvh, 920px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #6670c0;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #141941, #080e2a);
+  color: #f2f1ff;
+  box-shadow: 0 25px 90px rgba(0, 0, 0, 0.7);
+}
+.ccg-c64-catalogue-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.25rem 0.85rem;
+  border-bottom: 1px solid #343d79;
+}
+.ccg-c64-catalogue-kicker { margin: 0; color: #69d8ed; font: 800 0.59rem var(--ccg-font-mono, "Courier New", monospace); letter-spacing: 0.1em; }
+.ccg-c64-catalogue-head h2 { margin: 0.2rem 0; font-size: clamp(1.1rem, 2.3vw, 1.7rem); line-height: 1.2; }
+.ccg-c64-catalogue-head p:not(.ccg-c64-catalogue-kicker) { margin: 0.3rem 0 0; color: #b7bfdc; font-size: 0.78rem; line-height: 1.45; }
+.ccg-c64-catalogue-head button,
+.ccg-c64-catalogue-pager button {
+  border: 1px solid #5968a5; border-radius: 7px; background: #172150;
+  color: #eef2ff; padding: 0.65rem 0.9rem;
+  font: 800 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-catalogue-filters {
+  display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: 0.7rem; padding: 0.85rem 1.25rem;
+}
+.ccg-c64-catalogue-filters label { display: grid; gap: 0.28rem; min-width: 0; color: #c7ccee; font: 800 0.57rem var(--ccg-font-mono, "Courier New", monospace); }
+.ccg-c64-catalogue-filters input, .ccg-c64-catalogue-filters select {
+  min-height: 43px; min-width: 0; width: 100%; border: 1px solid #4f5a9a; border-radius: 7px;
+  padding: 0.55rem 0.7rem; color: #fff; background: #0c1438; font-size: 0.82rem;
+}
+.ccg-c64-catalogue-summary {
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  padding: 0 1.25rem 0.65rem; color: #b7cae8; font-size: 0.73rem;
+}
+.ccg-c64-catalogue-summary strong { color: #8ce7ef; }
+.ccg-c64-catalogue-results {
+  flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start; gap: 0.45rem; padding: 0.65rem 1.25rem 1.1rem;
+  overflow-y: auto; scrollbar-color: #5763ad #111632;
+  border-top: 1px solid #31386d;
+}
+.ccg-c64-catalogue-item {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 0.4rem;
+  min-width: 0; min-height: 74px; padding: 0.65rem 0.75rem; text-align: left;
+  border: 1px solid #34427c; border-radius: 8px;
+  background: #151d48; color: #f5f5ff; cursor: pointer;
+}
+.ccg-c64-catalogue-item strong { width: 100%; font-size: 0.81rem; overflow-wrap: anywhere; line-height: 1.3; }
+.ccg-c64-catalogue-item span { color: #9cbbe7; font-size: 0.55rem; letter-spacing: 0.035em; }
+.ccg-c64-catalogue-item:hover, .ccg-c64-catalogue-item:focus-visible {
+  border-color: #56d4ef; background: #23346a; box-shadow: inset 3px 0 0 #49d7f5;
+}
+.ccg-c64-catalogue-empty { grid-column: 1 / -1; color: #cbd0ee; text-align: center; padding: 1.5rem; }
+.ccg-c64-catalogue-pager {
+  display: flex; justify-content: center; align-items: center; gap: 1rem;
+  padding: 0.75rem; border-top: 1px solid #373c77; background: #0d1536;
+}
+.ccg-c64-catalogue-pager strong { min-width: 95px; text-align: center; font-size: 0.66rem; }
+.ccg-c64-catalogue-pager button:disabled { opacity: 0.45; cursor: default; }
+
+@media (min-width: 960px) {
+  .ccg-c64-control-stack,
+  .ccg-c64-control-stack.has-online-library {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "online online online online online online"
+      "controls controls controls controls controls controls"
+      "port port port quick quick quick"
+      "vault vault vault vault vault vault"
+      "advanced advanced advanced advanced advanced advanced";
+    align-items: start;
+  }
+  .ccg-c64-control-stack .ccg-c64-advanced { grid-area: advanced; }
+  .ccg-c64-panel--quickload { align-self: stretch; }
+  .ccg-c64-panel--controls { grid-row: auto; }
+  .ccg-c64-panel--library .ccg-c64-panel-title {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+  .ccg-c64-panel--library .ccg-c64-panel-title > em { grid-column: 3; }
+  .ccg-c64-catalogue-open { grid-column: 4; min-height: 31px; padding: 0.35rem 0.6rem; }
+  .ccg-c64-button-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.36rem; }
+  .ccg-c64-button-grid button { min-height: 42px; padding: 0.45rem; }
+  .ccg-c64-button-grid button span { display: none; }
+  .ccg-c64-button-grid button strong { font-size: 0.63rem; white-space: normal; }
+  .ccg-c64-button-grid [data-load-media],
+  .ccg-c64-button-grid [data-open-setup] { display: none; }
+  .ccg-c64-quickload p { font-size: 0.62rem; }
+  .ccg-c64-quickload .ccg-c64-primary-load { min-height: 36px; }
+  .ccg-c64-panel--vault { grid-column: auto; }
+  .ccg-c64-discovery { max-width: 1200px; }
+}
+@media (max-width: 959px) {
+  .ccg-c64-play-help { grid-template-columns: 1fr; }
+  .ccg-c64-advanced-grid { grid-template-columns: 1fr; }
+  .ccg-c64-advanced-grid > .ccg-c64-panel--rom { grid-column: auto; }
+}
+@media (max-width: 760px) {
+  .ccg-c64-play-help { display: none; } /* mobile play has its existing dedicated WARP and virtual keyboard */
+  .ccg-c64-advanced > summary span { display: block; margin: 0.25rem 0 0; }
+  .ccg-c64-catalogue { padding: 0; }
+  .ccg-c64-catalogue-dialog { width: 100%; height: 100dvh; border-radius: 0; }
+  .ccg-c64-catalogue-head { padding: 0.8rem; }
+  .ccg-c64-catalogue-head p:not(.ccg-c64-catalogue-kicker) { display: none; }
+  .ccg-c64-catalogue-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0.65rem; gap: 0.5rem; }
+  .ccg-c64-catalogue-filters label:first-child { grid-column: 1 / -1; }
+  .ccg-c64-catalogue-summary { padding: 0 0.7rem 0.5rem; font-size: 0.62rem; }
+  .ccg-c64-catalogue-results { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0.55rem; }
+  .ccg-c64-catalogue-item { min-height: 68px; padding: 0.5rem; }
+  .ccg-c64-catalogue-item strong { font-size: 0.7rem; }
+  .ccg-c64-catalogue-item span { font-size: 0.5rem; }
+  .ccg-c64-catalogue-open { font-size: 0.63rem; }
+}
+@media (max-width: 400px) {
+  .ccg-c64-catalogue-results { grid-template-columns: 1fr; }
+  .ccg-c64-catalogue-item { min-height: 58px; }
+}
