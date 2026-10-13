@@ -15,7 +15,7 @@ const voice=read("v10-16-voice-director.js"),npc=read("v10-41-stage8-npc-dialogu
 const voiceEnd=cut(voice,"function finishActive(active=state.active){","function stopActive(");
 const activeAudio={paused:false,pause(){this.paused=true},onended(){},onerror(){}};
 const voiceCtx={state:{active:{audio:activeAudio,priority:45},activePriority:45},cleaned:0,fx:0,
-clearActiveTimers(){this.cleaned++},releaseDungeonFx(){this.fx++}};
+clearActiveTimers:()=>{voiceCtx.cleaned++},releaseDungeonFx:()=>{voiceCtx.fx++}};
 vm.createContext(voiceCtx);
 vm.runInContext(voiceEnd+";this.finish=finishActive;",voiceCtx,{timeout:1200});
 assert.equal(voiceCtx.finish(),true,"Watchdog/clip completion must stop the active clip");
