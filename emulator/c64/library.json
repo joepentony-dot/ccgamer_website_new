@@ -953,6 +953,394 @@
                                           "sha256":  "0938ac6510534c1ca11a57999016ee01d2cf08d1717526c1594db47401064094"
                                       }
                                   ]
-                    }
-                ]
+                    },
+{
+        "id":  "last-ninja-2",
+        "title":  "Last Ninja 2",
+        "filename":  "last-ninja-2-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/last-ninja-2-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "38d2a7f244992ff36f7001c940037dab45a550d9b1e7bcc3834f4eec40e85ba1",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk 1",
+                          "filename":  "last-ninja-2-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/last-ninja-2-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "38d2a7f244992ff36f7001c940037dab45a550d9b1e7bcc3834f4eec40e85ba1"
+                      },
+                      {
+                          "label":  "Disk 2",
+                          "filename":  "last-ninja-2-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/last-ninja-2-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "07dbea9b5fe9bf3b3a87a3d8dc51c0633176f9e28d601df55b24624cca0e7962"
+                      }
+                  ]
+    },
+    {
+        "id":  "red-storm-rising",
+        "title":  "Red Storm Rising",
+        "filename":  "red-storm-rising.crt",
+        "format":  "crt",
+        "description":  "EasyFlash cartridge; boots when selected.",
+        "url":  "/emulator/c64/media/red-storm-rising.crt",
+        "bytes":  664912,
+        "sha256":  "0bce16722539abf7d4637d474229f15121c8054adcd5d1d2a4c7e730e4c6193f",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "ghosts-n-goblins-arcade",
+        "title":  "Ghosts \u0027n Goblins Arcade",
+        "filename":  "ghosts-n-goblins-arcade.crt",
+        "format":  "crt",
+        "description":  "EasyFlash cartridge; boots when selected.",
+        "url":  "/emulator/c64/media/ghosts-n-goblins-arcade.crt",
+        "bytes":  229888,
+        "sha256":  "4d3f65c2c945d5a0e21ec764199be64e6999d7fb1428674800d1be6751d4ae08",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "wasteland",
+        "title":  "Wasteland",
+        "filename":  "wasteland.crt",
+        "format":  "crt",
+        "description":  "EasyFlash cartridge; boots when selected.",
+        "url":  "/emulator/c64/media/wasteland.crt",
+        "bytes":  1050688,
+        "sha256":  "b72b8425de8bd0d4707e2d04d0573bfa51db0c0c9cef33740137f7caf69458e5",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "ultima-iv-quest-of-the-avatar",
+        "title":  "Ultima IV: Quest of the Avatar",
+        "filename":  "ultima-iv-quest-of-the-avatar-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "7efd0e7c3d06342722c63eb036adae7b2e3cf92de8214c2a85cd9ae855f25118",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk 1",
+                          "filename":  "ultima-iv-quest-of-the-avatar-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "7efd0e7c3d06342722c63eb036adae7b2e3cf92de8214c2a85cd9ae855f25118"
+                      },
+                      {
+                          "label":  "Disk 2",
+                          "filename":  "ultima-iv-quest-of-the-avatar-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "01148f5348737607b39590136aa739ef136599625871eb8e28e7d4cf660dac27"
+                      },
+                      {
+                          "label":  "Britannia Disk (Alternate)",
+                          "filename":  "ultima-iv-quest-of-the-avatar-disk-3.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-3.d64",
+                          "bytes":  174848,
+                          "sha256":  "7943b483c80d75d898e7ff4d30735d88eaa0c39ed106241ab2aa6efcd148aaab"
+                      }
+                  ]
+    },
+    {
+        "id":  "bomberland",
+        "title":  "Bomberland",
+        "filename":  "bomberland.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/bomberland.d64",
+        "bytes":  174848,
+        "sha256":  "e3ed1709d9b106732bb1e78b6bf9d14a0d9267355b3ecf178a7fb8f9719fe60a",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "zak-mckracken-and-the-alien-mindbenders",
+        "title":  "Zak McKracken and the Alien Mindbenders",
+        "filename":  "zak-mckracken-and-the-alien-mindbenders-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "f16f95e8a34de5241f484aaf5e28b43289cb6b2cb7cad645d8da51d6551c3c28",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk A",
+                          "filename":  "zak-mckracken-and-the-alien-mindbenders-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "f16f95e8a34de5241f484aaf5e28b43289cb6b2cb7cad645d8da51d6551c3c28"
+                      },
+                      {
+                          "label":  "Disk B",
+                          "filename":  "zak-mckracken-and-the-alien-mindbenders-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "34f51b28200c134ef4e1435ad77771c02d39fff8da358e2f26111f852ab5ee88"
+                      },
+                      {
+                          "label":  "Disk C",
+                          "filename":  "zak-mckracken-and-the-alien-mindbenders-disk-3.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-3.d64",
+                          "bytes":  174848,
+                          "sha256":  "ad93cc9bc3dddf01f651b584f120e0957df4ad0339ce2898e8999c6a0ee8a76f"
+                      }
+                  ]
+    },
+    {
+        "id":  "maniac-mansion",
+        "title":  "Maniac Mansion",
+        "filename":  "maniac-mansion-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/maniac-mansion-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "aa6898d3a053ee5b2cc1823f68b64aad7c20d7e813d24b50f76c742a48333a01",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk 1",
+                          "filename":  "maniac-mansion-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/maniac-mansion-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "aa6898d3a053ee5b2cc1823f68b64aad7c20d7e813d24b50f76c742a48333a01"
+                      },
+                      {
+                          "label":  "Disk 2",
+                          "filename":  "maniac-mansion-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/maniac-mansion-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "5372c01e38b4cc0c0e809634c605312f418b10706e6a67e1c8b556c2863a31d6"
+                      }
+                  ]
+    },
+    {
+        "id":  "sonic-the-hedgehog",
+        "title":  "Sonic the Hedgehog",
+        "filename":  "sonic-the-hedgehog-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/sonic-the-hedgehog-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "8bf81014da548e78094317450e2600afc9a4ede7bd274f5f5752ea310467bb3e",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Side A",
+                          "filename":  "sonic-the-hedgehog-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/sonic-the-hedgehog-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "8bf81014da548e78094317450e2600afc9a4ede7bd274f5f5752ea310467bb3e"
+                      },
+                      {
+                          "label":  "Side B",
+                          "filename":  "sonic-the-hedgehog-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/sonic-the-hedgehog-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "36913ea98f419cd615e4e14f78bbf09550a58b867c06fb67fd055517970c04b1"
+                      }
+                  ]
+    },
+    {
+        "id":  "neuromancer",
+        "title":  "Neuromancer",
+        "filename":  "neuromancer.d81",
+        "format":  "d81",
+        "description":  "D81 Commodore 1581 disk game; auto-loads when selected.",
+        "url":  "/emulator/c64/media/neuromancer.d81",
+        "bytes":  819200,
+        "sha256":  "a728126a3045bc6da1a06a70638b15c96826bfc455bcc565956ac6054141336d",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "laser-squad",
+        "title":  "Laser Squad",
+        "filename":  "laser-squad.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/laser-squad.d64",
+        "bytes":  174848,
+        "sha256":  "47e2bfb6efee7a2d544e1f08494c7c6ab3031ceed4162042285cb1609c6318e5",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "world-class-leaderboard",
+        "title":  "World Class Leaderboard",
+        "filename":  "world-class-leaderboard-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/world-class-leaderboard-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "32b6e5cc33b3b507f3abc0601fab0e6e7639ea944d178cba57ce64146fb2ff83",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk 1",
+                          "filename":  "world-class-leaderboard-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/world-class-leaderboard-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "32b6e5cc33b3b507f3abc0601fab0e6e7639ea944d178cba57ce64146fb2ff83"
+                      },
+                      {
+                          "label":  "Disk 2",
+                          "filename":  "world-class-leaderboard-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/world-class-leaderboard-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "e7e324ee253e3d6a702ad9244a5769b9f051e99c2b19cfbd152b011b8b76e689"
+                      }
+                  ]
+    },
+    {
+        "id":  "metal-warrior-4-agents-of-metal",
+        "title":  "Metal Warrior 4: Agents of Metal",
+        "filename":  "metal-warrior-4-agents-of-metal-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "354c0dac95db8bb4cf0362566347f100b48946123771755a50cfa98b75c8b2c5",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk 1",
+                          "filename":  "metal-warrior-4-agents-of-metal-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "354c0dac95db8bb4cf0362566347f100b48946123771755a50cfa98b75c8b2c5"
+                      },
+                      {
+                          "label":  "Disk 2",
+                          "filename":  "metal-warrior-4-agents-of-metal-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "9b1e59f7b2b837172996d778098d6491ce1225c8d0eaac92b0f953f4182699a3"
+                      }
+                  ]
+    },
+    {
+        "id":  "commando-arcade-special-edition",
+        "title":  "Commando Arcade Special Edition",
+        "filename":  "commando-arcade-special-edition.crt",
+        "format":  "crt",
+        "description":  "EasyFlash cartridge; boots when selected.",
+        "url":  "/emulator/c64/media/commando-arcade-special-edition.crt",
+        "bytes":  221680,
+        "sha256":  "a6dd99b55a02680ad95336fcfcd3fd709f0ff610816eb739bb1da2a4c866126e",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true
+    },
+    {
+        "id":  "ultima-v-warriors-of-destiny",
+        "title":  "Ultima V: Warriors of Destiny",
+        "filename":  "ultima-v-warriors-of-destiny-disk-1.d64",
+        "format":  "d64",
+        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
+        "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-1.d64",
+        "bytes":  174848,
+        "sha256":  "5ef48720e1b8da8cbb0b5e3ec2e5a9cf660ad81037165b8272dba4be8612ef67",
+        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+        "approved":  true,
+        "disks":  [
+                      {
+                          "label":  "Disk 1",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-1.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-1.d64",
+                          "bytes":  174848,
+                          "sha256":  "5ef48720e1b8da8cbb0b5e3ec2e5a9cf660ad81037165b8272dba4be8612ef67"
+                      },
+                      {
+                          "label":  "Disk 2",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-2.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-2.d64",
+                          "bytes":  174848,
+                          "sha256":  "c4374489e2acc16350f6c4d577556aa288b401227d7bd64cf8b890492758343e"
+                      },
+                      {
+                          "label":  "Disk 3",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-3.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-3.d64",
+                          "bytes":  174848,
+                          "sha256":  "d9ce23afe61edd428d627cd0fed849d1cf4e2f4ca7a608c816734e03f1b2d8b3"
+                      },
+                      {
+                          "label":  "Disk 4",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-4.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-4.d64",
+                          "bytes":  174848,
+                          "sha256":  "1095d4b75b618dce08c52ab7b53f169728aaa5709b810289ab6f829c4daa670d"
+                      },
+                      {
+                          "label":  "Disk 5",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-5.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-5.d64",
+                          "bytes":  174848,
+                          "sha256":  "c9f0fa1cba6cfb7e13a3801944568c468259f3bcbc4dedaa4d0c8148eb3025aa"
+                      },
+                      {
+                          "label":  "Disk 6",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-6.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-6.d64",
+                          "bytes":  174848,
+                          "sha256":  "e5494da28fc2a3b02774a4afd65893cc2e7cb27681b99424e629cdaa285d9d8c"
+                      },
+                      {
+                          "label":  "Disk 7",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-7.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-7.d64",
+                          "bytes":  174848,
+                          "sha256":  "d23ecddeffc77f0af2ada2607bc25246288932584a8f1ff101058bf2cdc04677"
+                      },
+                      {
+                          "label":  "Disk 8",
+                          "filename":  "ultima-v-warriors-of-destiny-disk-8.d64",
+                          "format":  "d64",
+                          "url":  "/emulator/c64/media/ultima-v-warriors-of-destiny-disk-8.d64",
+                          "bytes":  174848,
+                          "sha256":  "15db166172c261d0dfc6c7e9837d499191effb67f628ca525cb033e3b0b4eed3"
+                      }
+                  ]
+    }
+]
 }
