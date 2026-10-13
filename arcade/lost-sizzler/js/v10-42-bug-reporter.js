@@ -411,6 +411,26 @@
         performanceTier:document.body?.dataset?.v141R47PerformanceTier||"normal"
       },
       player1:playerState(player),player2:playerState(second),
+      floorProgress:safe(()=>{
+        const roomId=W.roomAt(world,player?.x,player?.y),
+          arena=(host?.arenas||[]).find(a=>a?.roomId===roomId)||null,
+          doors=(host?.doors||[]).filter(d=>Number(d.roomId)===Number(roomId)&&d.type==="room"),
+          generators=host?.generators||[],torch=host?.sequenceTorchPuzzle,rescue=host?.rescue;
+        return{
+          roomId,objective:String(host?.objective?.type||""),objectiveComplete:Boolean(host?.objective?.complete),
+          activeGenerators:generators.filter(g=>g?.alive).map(g=>({id:String(g.id),roomId:g.roomId,x:g.x,y:g.y})),
+          totalGenerators:generators.length,
+          arena:arena?{id:String(arena.id),wave:arena.wave,triggered:Boolean(arena.triggered),cleared:Boolean(arena.cleared),
+            enemies:(host.enemies||[]).filter(e=>e?.alive&&e.arenaId===arena.id).map(e=>({id:String(e.id),x:e.x,y:e.y}))}:null,
+          roomDoors:doors.map(d=>({id:String(d.id),x:d.x,y:d.y,locked:Boolean(d.locked),open:Boolean(d.open)})),
+          stalker:host?.stalker?{awake:Boolean(host.stalker.awake),x:host.stalker.x,y:host.stalker.y,permanentlyBanished:Boolean(host.stalker.permanentlyBanished)}:null,
+          flaskHeld:(player?.inventory||[]).some(item=>item?.kind==="banishment"),
+          scout:rescue?{following:Boolean(rescue.following),rescued:Boolean(rescue.rescued),x:rescue.x,y:rescue.y}:null,
+          torch:torch?{roomId:torch.roomId,progress:torch.progress,solved:Boolean(torch.solved),
+            cells:(torch.torches||[]).map(t=>({dir:String(t.dir),x:t.x,y:t.y,lit:Boolean(t.lit)})),
+            entryByPlayer:torch.entryByPlayer||{}}:null
+        }
+      },null),
       trapUnderPlayer:trapSnapshot(player),
       shopState:safe(()=>({
         open:Boolean(activeShop&&UI?.shop&&!UI.shop.classList.contains("hidden")),
