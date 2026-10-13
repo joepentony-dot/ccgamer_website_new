@@ -421,6 +421,8 @@ assert(autoStartBegin >= 0 && autoStartEnd > autoStartBegin, "Automatic warp hel
 const speedTransitions = [];
 const autoContext = vm.createContext({
   automaticWarpActive: false, automaticWarpFramesRemaining: 0,
+  automaticWarpPostRunFrames: -1, automaticWarpIdleFrames: 0,
+  automaticWarpMediaType: "prg",
   warpLoadActive: false, autoStartSteps: null, autoStartTypeRest: "",
   autoStartSawBusy: false, autoStartBudget: 0,
   machine: { bufferKeyboardText: (text) => text.length },
@@ -430,13 +432,18 @@ const autoContext = vm.createContext({
   stageNote: { textContent: "" },
 });
 vm.runInContext(app.slice(autoStartBegin, autoStartEnd) +
-  "\nglobalThis.enqueue = queueAutoStart; globalThis.advance = serviceAutoStart;", autoContext);
+  "\nglobalThis.enqueue = queueAutoStart; globalThis.advance = serviceAutoStart;" +
+  " globalThis.tick = tickAutomaticWarpAfterRun;", autoContext);
 autoContext.enqueue([{ ready: true }, { type: "RUN\\r" }]);
 assert.equal(speedTransitions.at(-1), true, "Auto-start must enable maximum warp");
 autoContext.advance();
 assert.equal(autoContext.warpLoadActive, true, "Waiting for RUN must remain accelerated");
 autoContext.advance();
-assert.equal(autoContext.warpLoadActive, false, "RUN completion must restore 1x speed");
+assert.equal(autoContext.warpLoadActive, true,
+  "RUN completion must not falsely assume the game finished loading");
+for (let i = 0; i < 150; i++) autoContext.tick();
+assert.equal(autoContext.warpLoadActive, false,
+  "A quiet direct PRG must restore real-time speed after post-RUN settling");
 assert.equal(speedTransitions.at(-1), false, "Automatic warp must restore normal SID timing");
 
 // Run the actual immersive mobile controller + virtual CIA keyboard in a
