@@ -160,6 +160,24 @@ test('single-letter initials inside a factual sentence are not false sentence en
   assert.equal(snippet.firstCompleteSentence(spaced + ' Another factual sentence.', 155), spaced);
 });
 
+test('Bubble Bobble factual game subject recovers game-specific meta and social summary', () => {
+  const game = {
+    title: 'Bubble Bobble',
+    slug: 'bubble-bobble',
+    year: 1987,
+    system: 'C64',
+    publisher: 'Firebird',
+    description: 'Bubble Bobble (1987) – Commodore 64 Arcade Platform Classic with Co-Op Magic Originally developed by Taito in 1986 and expertly brought to the Commodore 64 in 1987 by Software Creations and Firebird, Bubble Bobble stars Bub and Bob—two bubble-blowing dragons on a quest to rescue their girlfriends from the Cave of Monsters. The adventure unfolds across 100 single-screen stages.'
+  };
+  const expected = 'Bubble Bobble stars Bub and Bob—two bubble-blowing dragons on a quest to rescue their girlfriends from the Cave of Monsters.';
+  const actual = snippet.buildSnippet(game, game.title);
+  assert.equal(actual, expected);
+  assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+  assert.equal(buildGameSeoPreview(game, snippet).description, expected);
+  assert.ok(actual.length <= 155);
+  assert.doesNotMatch(actual, /…|\.\.\.$/);
+});
+
 test('does not salvage an arbitrary dangling clause without the game title as subject', () => {
   const game = {
     title: 'Kingpin',
