@@ -21,6 +21,7 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/generate-sitemaps.js
           node scripts/validate-seo-game-routes.js --root .
           node <<'NODE'
           const fs = require('fs');
@@ -38,7 +39,7 @@ jobs:
           if(html.includes('http-equiv="refresh"'))throw new Error('Refusing legacy redirect shell');
           console.log('Olli and Lissa canonical full page verified at',html.length,'characters');
           NODE
-          git add -- games/olli-and-lissa/index.html games/olli-and-lissa.html
+          git add -- games/olli-and-lissa/index.html games/olli-and-lissa.html sitemap-games.xml
           git diff --cached --check
           git config user.name "ccg-game-page-automation"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
