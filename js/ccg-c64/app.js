@@ -397,6 +397,9 @@ let paused = false;
 let warpLoadActive = false;
 let automaticWarpActive = false;
 let automaticWarpFramesRemaining = 0;
+let automaticWarpPostRunFrames = -1;
+let automaticWarpIdleFrames = 0;
+let automaticWarpMediaType = "prg";
 let frameImage = null;
 let frameHandle = 0;
 let lastFrameTime = 0;
@@ -1344,8 +1347,27 @@ function basicReady() {
   return Boolean(ram && ram[0x00C6] === 0 && ram[0x00CC] === 0 && ram[0x002C] === 0x08);
 }
 
+// Issuing RUN is not proof that a C64 program has finished loading.
+// Many disk games execute a second loader and initialise for several seconds.
+// Keep automatic warp until a quiet period AFTER RUN, extending that period
+// every time the emulated KERNAL/virtual drive requests more disk data.
+function noteAutomaticWarpLoadActivity() {
+  if (automaticWarpActive) automaticWarpIdleFrames = 0;
+}
+
+function connectAutoWarpLoadActivity(target) {
+  if (!target) return;
+  const original = target.onLoadTrap;
+  target.onLoadTrap = (device) => {
+    if (typeof original === "function") original(device);
+    if (device === 8 || device === 9) noteAutomaticWarpLoadActivity();
+  };
+}
+
 function finishAutomaticWarp() {
   automaticWarpFramesRemaining = 0;
+  automaticWarpPostRunFrames = -1;
+  automaticWarpIdleFrames = 0;
   if (!automaticWarpActive) return;
   automaticWarpActive = false;
   if (warpLoadActive) setWarpLoad(false);
@@ -1354,7 +1376,36 @@ function finishAutomaticWarp() {
 function beginAutomaticWarp(frames = 0) {
   automaticWarpActive = true;
   automaticWarpFramesRemaining = frames;
+  automaticWarpPostRunFrames = -1;
+  automaticWarpIdleFrames = 0;
   setWarpLoad(true);
+}
+
+function settleAutomaticWarpAfterRun() {
+  if (!automaticWarpActive || automaticWarpFramesRemaining > 0) return;
+  automaticWarpPostRunFrames = 0;
+  automaticWarpIdleFrames = 0;
+  if (stageNote) stageNote.textContent =
+    "RUN sent. Warp remains active while the game completes its own loading and initialisation. Press WARP to take manual control.";
+}
+
+function tickAutomaticWarpAfterRun() {
+  if (!automaticWarpActive || automaticWarpPostRunFrames < 0) return;
+  automaticWarpPostRunFrames++;
+  automaticWarpIdleFrames++;
+  // Emulated PAL frames: disk/tape programs can unpack and load extra files
+  // after the initial BASIC RUN. Avoid a premature transition after 2 seconds.
+  // A bounded fallback prevents endless warp on an unattended menu or a
+  // game that continuously polls the disk.
+  const diskOrTape = ["d64", "d71", "d81", "g64", "tap"].includes(automaticWarpMediaType);
+  const minFrames = diskOrTape ? 750 : 150; // 15s disk/tape, 3s direct PRG/T64.
+  const quietFrames = diskOrTape ? 400 : 100; // No new load for 8s / 2s.
+  const maxFrames = diskOrTape ? 6000 : 600; // Up to 120s / 12s emulated.
+  if ((automaticWarpPostRunFrames >= minFrames &&
+       automaticWarpIdleFrames >= quietFrames) ||
+      automaticWarpPostRunFrames >= maxFrames) {
+    finishAutomaticWarp();
+  }
 }
 
 function cancelAutoStart() {
@@ -1365,8 +1416,9 @@ function cancelAutoStart() {
   finishAutomaticWarp();
 }
 
-function queueAutoStart(steps) {
+function queueAutoStart(steps, mediaType = "prg") {
   autoStartSteps = steps.slice();
+  automaticWarpMediaType = mediaType;
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 10 * 60 * 60;
@@ -1410,7 +1462,12 @@ function serviceAutoStart() {
     autoStartSteps.shift();
   }
 
-  if (autoStartSteps && autoStartSteps.length === 0) cancelAutoStart();
+  if (autoStartSteps && autoStartSteps.length === 0) {
+    autoStartSteps = null;
+    autoStartTypeRest = "";
+    autoStartBudget = 0;
+    settleAutomaticWarpAfterRun();
+  }
 }
 
 // A fresh game must not inherit a previous disk, tape or cartridge.
@@ -1436,6 +1493,7 @@ async function prepareFreshGameSession() {
   clearMountedGameMedia();
 
   const fresh = new C64Machine();
+  connectAutoWarpLoadActivity(fresh);
   fresh.loadROMs({
     kernal: vault.getBytes("kernal"),
     basic: vault.getBytes("basic"),
@@ -1476,6 +1534,7 @@ function frameLoop(now) {
         machine.runFrame();
         frames++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
+        tickAutomaticWarpAfterRun();
         if (automaticWarpActive && automaticWarpFramesRemaining > 0 &&
             --automaticWarpFramesRemaining === 0) finishAutomaticWarp();
       } while (warpLoadActive && frames < WARP_MAX_FRAMES_PER_TICK &&
@@ -1491,6 +1550,7 @@ function frameLoop(now) {
       }
       if (frames) serviceAutoStart();
     }
+    if (frames && !warpLoadActive) tickAutomaticWarpAfterRun();
     if (frames) blitMachine();
     if (!speedSampleTime) speedSampleTime = now;
     speedSampleFrames += frames;
@@ -1546,6 +1606,7 @@ async function powerOn() {
 
   try {
     machine = new C64Machine();
+    connectAutoWarpLoadActivity(machine);
     machine.loadROMs({
       kernal: vault.getBytes("kernal"),
       basic: vault.getBytes("basic"),
@@ -1623,10 +1684,11 @@ function setWarpLoad(value) {
 
 function toggleWarpLoad() {
   if (!machine || !running || paused) return;
-  // A manual click overrides automatic loading; don't switch the user's
-  // chosen speed again when the remaining LOAD/RUN steps finish.
+  // A manual click overrides automatic loading, even during post-RUN
+  // stabilisation. Never force warp back on after manual intervention.
   automaticWarpActive = false;
   automaticWarpFramesRemaining = 0;
+  automaticWarpPostRunFrames = -1;
   setWarpLoad(!warpLoadActive);
 }
 
@@ -1965,7 +2027,7 @@ async function openMediaBytes(media) {
       { type: 'LOAD"*",8,1\r' },
       { loadDone: true },
       { type: "RUN\r" },
-    ]);
+    ], type);
 
     if (diskSlotStatus) {
       const label = disk.diskName ? `${disk.diskName} // ${name}` : name;
@@ -2010,7 +2072,7 @@ async function openMediaBytes(media) {
       { run: () => machine.setTapeKey("PLAY") },
       { loadDone: true },
       { type: "RUN\r" },
-    ]);
+    ], "tap");
     if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP AUTO-START // ${name}`;
     if (machineState) machineState.textContent = `TAP AUTO-START // ${name.toUpperCase()}`;
     if (stageNote) stageNote.textContent = "Tape mounted. LOAD and PLAY will be handled automatically; RUN is entered if the tape returns to BASIC.";
@@ -2796,6 +2858,7 @@ async function loadGameVaultSlot() {
     }
 
     const restored = new C64Machine();
+    connectAutoWarpLoadActivity(restored);
     restored.loadROMs({
       kernal: vault.getBytes("kernal"),
       basic: vault.getBytes("basic"),
