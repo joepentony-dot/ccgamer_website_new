@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import {
   parsePackedCatalog, filterCatalog, suggestCatalogGames, loadPackedGameBytes,
-  PACK_CATALOG_URL, PACK_ROOT, GAME_PAGE_SIZE,
+  PACK_CATALOG_URL, PACK_ROOT, GAME_PAGE_SIZE, preferSelectedCartridges,
 } from "../js/ccg-c64/game-catalog.js";
 
 assert.equal(PACK_CATALOG_URL, "/emulator/c64/media/blast/catalog.json");
@@ -92,4 +92,29 @@ try {
 } finally {
   globalThis.fetch = savedFetch;
 }
+// Cartridge promotion must be explicit, deterministic and title-exact across
+// independent direct/Blast/archive entries, not inferred from format alone.
+const versions = [
+  { id: "disk-myth", title: "Myth: History in the Making", format: "d64" },
+  { id: "archive-myth", title: "Myth - History in the Making", format: "prg" },
+  { id: "crt-myth", title: "Myth - History in the Making", format: "crt",
+    preferOverOtherFormats: true },
+  { id: "other-myth", title: "Myth II", format: "prg" },
+  { id: "disk-pirates", title: "Pirates!", format: "d64" },
+  { id: "crt-pirates", title: "Pirates!", format: "crt" },
+  { id: "archive-pirates", title: "Pirates!", format: "prg" },
+];
+assert.deepEqual(preferSelectedCartridges(versions).map(row => row.id),
+  ["crt-myth", "other-myth", "disk-pirates", "crt-pirates", "archive-pirates"]);
+assert.equal(preferSelectedCartridges(versions.filter(row => row.id !== "crt-myth")).length, 6,
+  "An absent promoted cartridge must never hide its existing fallback");
+assert.strictEqual(preferSelectedCartridges([]).length, 0);
+assert.equal(preferSelectedCartridges([{ title: "Gorf", format: "crt",
+  preferOverOtherFormats: false }, { title: "Gorf", format: "prg" }]).length, 2);
+assert.deepEqual(preferSelectedCartridges([
+  { id: "gorf", title: "Gorf", format: "crt", preferOverOtherFormats: true },
+  { id: "gorf-variant", title: "Gorf", format: "crt", preferOverOtherFormats: true },
+  { id: "gorf-prg", title: "Gorf", format: "prg" },
+]).map(row => row.id), ["gorf"], "Only one explicitly chosen CRT may win a title");
+
 console.log("CCG C64 game catalogue, bounded typeahead, search ranking, pack caching and SHA-256 checks passed.");
