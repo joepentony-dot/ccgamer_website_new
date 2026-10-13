@@ -24,6 +24,18 @@ test("Emulation hero gives the playable C64 emulator first-class priority", () =
   assert.match(html, /id="emu-play-now-title"/);
 });
 
+test("The smaller navigation grid has five distinct setup links, not a second C64 play button", () => {
+  const match = html.match(/<div class="emu-cta-row">([\s\S]*?)<\/div>/);
+  assert(match, "Retain the emulation guide's secondary navigation grid");
+  const destinations = [...match[1].matchAll(/href="([^"]+)"/g)].map((item) => item[1]);
+  assert.deepEqual(destinations, [
+    "#smart-picker", "#c64-options", "#amiga-options",
+    "#video-tutorials", "#emulation-community"
+  ]);
+  assert(!match[1].includes("Play C64 Games Online"),
+    "The large Play C64 Games Now panel is already the dedicated primary action");
+});
+
 test("No lost external emulator or CCG game discovery routes", () => {
   for (const target of ["#smart-picker", "#c64-options", "#amiga-options",
     "#video-tutorials", "#emulation-community", "games/index.html",
