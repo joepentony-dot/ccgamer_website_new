@@ -1620,10 +1620,21 @@ function renderGame(game) {
             videoFacade.hidden = false;
             videoFacade.onclick = () => {
                 if (!videoEmbed) return;
+                // Keyboard activation must not strand focus on the hidden Play
+                // button. The revealed iframe is the next usable control.
+                const transferKeyboardFocus = document.activeElement === videoFacade;
                 const src = videoEmbed.dataset.videoSrc || embedUrl;
                 videoEmbed.src = src.includes("?") ? `${src}&autoplay=1` : `${src}?autoplay=1`;
                 videoEmbed.hidden = false;
                 videoFacade.hidden = true;
+                if (transferKeyboardFocus) {
+                    videoEmbed.tabIndex = 0;
+                    try {
+                        videoEmbed.focus({ preventScroll: true });
+                    } catch (error) {
+                        videoEmbed.focus();
+                    }
+                }
             };
         }
         if (videoBtn) {
