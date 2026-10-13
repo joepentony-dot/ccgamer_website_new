@@ -660,6 +660,7 @@
       `Music: state=${music.state||"-"} started=${Boolean(music.started)} enabled=${Boolean(music.enabled)} uploaded=${Boolean(music.customSoundtrackOwned)} ready=${Boolean(music.adminAudioReady)} paused=${music.slots?.[music.state]?.paused??"-"} pending=${music.pendingGestureState||"none"} asset=${music.url||"none"}`,
       `Input: ${g.inputKeys.join(", ")||"none"}`,
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
+      `Room state: ${JSON.stringify(s.floorProgress||{})}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
       `Trap monitor: contacts=${state.trapContacts} verifiedHits=${state.trapVerifiedHits} trapAnomalies=${state.trapAnomalies}`,
       `Loop monitor: acceptedFrames=${s.diagnostics.soloClock?.acceptedFrames??"-"} duplicateFrames=${s.diagnostics.soloClock?.duplicateFramesSkipped??"-"} watchdogRecoveries=${s.diagnostics.soloClock?.loopWatchdogRecoveries??"-"} lastAcceptedWallAt=${s.diagnostics.soloClock?.lastAcceptedWallAt??"-"}`,
