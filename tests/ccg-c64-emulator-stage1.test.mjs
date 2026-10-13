@@ -335,6 +335,20 @@ assert(html.includes("data-vault-feedback") && html.includes("RESUME SAVE") &&
 assert(css.includes(".ccg-c64-advanced-grid") && css.includes(".ccg-c64-catalogue-dialog"),
   "Advanced tools and the full catalogue require responsive emulator-only styles");
 
+// Regression: desktop Save / Resume must occupy the complete six-track control
+// deck, not the narrow first track that stretches every control vertically.
+const desktopUsabilityCss = css.slice(css.indexOf("/* CCG C64 usability refresh"));
+assert(desktopUsabilityCss.includes("@media (min-width: 960px)") &&
+  /\.ccg-c64-control-stack\s*>\s*\.ccg-c64-panel--vault\s*\{[^}]*grid-area:\s*vault;[^}]*grid-column:\s*1\s*\/\s*-1;[^}]*\}/.test(desktopUsabilityCss),
+  "Desktop Save / Resume must explicitly span all six control columns");
+assert(!/\.ccg-c64-panel--vault\s*\{\s*grid-column:\s*auto;\s*\}/.test(desktopUsabilityCss),
+  "Never reintroduce the one-column desktop Game Vault squeeze");
+assert(html.includes('class="ccg-c64-panel ccg-c64-panel--vault"') &&
+  html.includes('class="ccg-c64-advanced"') &&
+  html.indexOf('class="ccg-c64-panel ccg-c64-panel--vault"') <
+    html.indexOf('class="ccg-c64-advanced"'),
+  "Save / Resume must remain a top-level grid item before the collapsible advanced tools");
+
 assert(app.includes("{ loadDone: true }"), "Disk/tape auto-start must wait for loading to finish before RUN");
 assert(app.includes("prepareFreshGameSession()"), "Primary file loading must be able to start a clean C64 session");
 

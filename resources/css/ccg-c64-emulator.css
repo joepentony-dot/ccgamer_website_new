@@ -2848,7 +2848,15 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   .ccg-c64-button-grid [data-open-setup] { display: none; }
   .ccg-c64-quickload p { font-size: 0.62rem; }
   .ccg-c64-quickload .ccg-c64-primary-load { min-height: 36px; }
-  .ccg-c64-panel--vault { grid-column: auto; }
+  /* A grid-column:auto override here discarded the named "vault" column span.
+     It reduced Save / Resume to one 1/6-width track and inflated the page
+     height. Explicitly span the full right-hand control deck on desktop. */
+  .ccg-c64-control-stack > .ccg-c64-panel--vault {
+    grid-area: vault;
+    grid-column: 1 / -1;
+    min-width: 0;
+    width: 100%;
+  }
   .ccg-c64-discovery { max-width: 1200px; }
 }
 @media (max-width: 959px) {
