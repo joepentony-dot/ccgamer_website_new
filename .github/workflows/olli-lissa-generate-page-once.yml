@@ -1,0 +1,55 @@
+name: "One-time Olli and Lissa canonical game page generation"
+on:
+  push:
+    branches:
+      - ccg/olli-and-lissa-1987-staging
+    paths:
+      - ".github/workflows/olli-lissa-generate-page-once.yml"
+permissions:
+  contents: write
+jobs:
+  generate-only-olli-and-lissa:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/ccg/olli-and-lissa-1987-staging'
+    steps:
+      - name: Check out staging branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Use existing canonical single-game generator for new game only
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const {processChangedGamesOnly} = require('./scripts/generate-slug-pages.js');
+          const games = JSON.parse(fs.readFileSync('games/games.json','utf8'));
+          const matched = games.filter(game => game.slug === 'olli-and-lissa');
+          if(games.length !== 666 || matched.length !== 1 ||
+             matched[0].thumbnail !== 'resources/images/thumbnails/all/olli-and-lissa.webp' ||
+             matched[0].ccg_rating !== 5 ||
+             matched[0].videoid !== 'iSBLT9C9xh4') {
+            throw new Error('Olli and Lissa catalogue input has changed');
+          }
+          const result = processChangedGamesOnly(matched);
+          if(result.planned !== 1 || result.removed !== 0) {
+            throw new Error('Expected exactly one game and no deletions');
+          }
+          const page='games/olli-and-lissa/index.html';
+          const stub='games/olli-and-lissa.html';
+          for (const p of [page,stub]) if(!fs.existsSync(p))throw new Error('Required page missing: '+p);
+          const html=fs.readFileSync(page,'utf8');
+          if(!html.includes('Olli &amp; Lissa') && !html.includes('Olli & Lissa')) {
+            throw new Error('Generated canonical HTML does not have the expected title');
+          }
+          if(!html.includes('https://www.cheekycommodoregamer.co.uk/games/olli-and-lissa/')) {
+            throw new Error('Canonical URL is missing from generated HTML');
+          }
+          console.log('Generated only the two new Olli and Lissa route artifacts.');
+          NODE
+          git add -- games/olli-and-lissa/index.html games/olli-and-lissa.html
+          git diff --cached --check
+          git config user.name "ccg-game-page-automation"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Olli and Lissa canonical game page from existing site template"
+          git push origin HEAD:ccg/olli-and-lissa-1987-staging
