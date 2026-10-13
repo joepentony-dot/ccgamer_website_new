@@ -35,15 +35,15 @@ def key(value: str) -> str:
     value = unicodedata.normalize("NFKD", str(value))
     value = "".join(c for c in value if not unicodedata.combining(c))
     value = value.lower().replace("&", " and ")
-    value = re.sub(r"['\\u2018\\u2019\\x60]", "", value)
-    return re.sub(r"\\s+", " ", re.sub(r"[^a-z0-9]+", " ", value)).strip()
+    value = value.replace("'", "").replace("’", "").replace("‘", "").replace("`", "")
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", value)).strip()
 
 
 def crt_name(filename: str) -> str:
     stem = Path(filename).stem
     # File-edition qualifiers are not game-title components; keep compilations
     # separate because their base titles still must match an existing title.
-    return re.sub(r"\\s*\\([^()]*\\)", "", stem).strip()
+    return re.sub(r"\s*\([^()]*\)", "", stem).strip()
 
 
 def quality(filename: str) -> tuple[int, int, int, str]:
