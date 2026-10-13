@@ -57,10 +57,21 @@
     let match;
     while ((match = endings.exec(text)) !== null) {
       const end = endings.lastIndex;
-      // Neither an ellipsis nor a single-letter initial (U. S. Gold,
-      // U.S. Gold, J. R. R. Tolkien) ends an editorial sentence.
+      // A single letter is an initial only when it belongs to a genuine
+      // sequence (U. S. Gold, U.S. Gold, J. R. R. Tolkien), not when a
+      // sentence really ends in "mode A." or in the title "H.E.R.O.".
       if (text.slice(Math.max(0, end - 3), end) === "...") continue;
-      if (match[0][0] === "." && /(?:^|[\s.])[A-Z]\.[”"']?$/.test(text.slice(0, end))) continue;
+      if (match[0][0] === ".") {
+        const before = text.slice(0, end);
+        const next = text.slice(end).trimStart();
+        const run = before.match(/(?:^|\s)((?:[A-Z]\.\s*)+)[”"']?$/);
+        const initials = run ? (run[1].match(/[A-Z]\./g) || []).length : 0;
+        const moreInitials = /^[A-Z]\.(?=\s|$)/.test(next);
+        const followingName = /^[A-Z][a-z]{2,}\b/.test(next);
+        if (initials && (moreInitials ||
+          (initials >= 2 && initials <= 3 && followingName) ||
+          (initials >= 2 && /^[a-z]/.test(next)))) continue;
+      }
       if (end >= minLength) return end;
     }
     return -1;
