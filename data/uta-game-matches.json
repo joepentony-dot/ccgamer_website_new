@@ -4666,6 +4666,21 @@
         }
       ]
     },
+    "olli-and-lissa": {
+      "title": "Olli & Lissa",
+      "releases": [
+        {
+          "archiveId": "2333",
+          "publisher": "Firebird Silver",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Olli_and_Lissa_(1987_Firebird_Silver)_%5b2333%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "ollie-s-follies": {
       "title": "Ollie's Follies",
       "releases": [
