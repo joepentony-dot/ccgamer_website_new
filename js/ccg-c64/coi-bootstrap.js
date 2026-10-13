@@ -7,6 +7,7 @@ const WORKER_URL = "/emulator/c64/coi-service-worker.js";
 const WORKER_SCOPE = "/emulator/c64/";
 const RELOAD_KEY = "ccg.c64.coi.reloadCount";
 const MAX_RELOADS = 2;
+const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261013_emulator_library_ux_v2";
 
 const machineState = document.querySelector("[data-machine-state]");
 const stageNote = document.querySelector("[data-stage-note]");
@@ -60,26 +61,59 @@ function waitForState(worker, wanted, timeoutMs = 8000) {
   });
 }
 
+function isIOSDevice() {
+  // All iPhone browsers use WebKit. iPadOS can report itself as a Mac.
+  const ua = String(navigator.userAgent || "");
+  return /iPhone|iPad|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function startupFailed(error) {
+  const detail = String(error?.message || error || "Unknown module error")
+    .replace(/\s+/g, " ").slice(0, 180);
+  setStatus("C64 STARTUP FAILED",
+    "Could not initialise the emulator (" + detail + "). Reload the page, or tell CCG this message.");
+}
+
+async function startCompatibilityMode(reason) {
+  console.warn("[ccg-c64] Starting without shared SID audio:", reason);
+  setStatus("STARTING C64 IN COMPATIBILITY MODE",
+    "Browser isolation could not be enabled. Games will run without SID sound in this session.");
+  try {
+    await import(APP_URL);
+  } catch (error) {
+    console.error("[ccg-c64] Compatibility startup failed:", error);
+    startupFailed(error);
+  }
+}
+
 async function start() {
   if (isolated()) {
     clearReloadCount();
-    await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_snap_v2");
+    try {
+      await import(APP_URL);
+    } catch (error) {
+      console.error("[ccg-c64] Isolated startup failed:", error);
+      startupFailed(error);
+    }
+    return;
+  }
+
+  // iOS service-worker activation and its isolation reload can stall or loop.
+  // Keep an already-isolated Safari session above, but boot all other iOS
+  // sessions immediately in silent compatibility mode without reloading.
+  if (isIOSDevice()) {
+    await startCompatibilityMode("iOS WebKit does not have an isolated document.");
     return;
   }
 
   if (!window.isSecureContext || !("serviceWorker" in navigator)) {
-    setStatus(
-      "BROWSER ISOLATION UNAVAILABLE",
-      "This browser session cannot enable SharedArrayBuffer. Open the HTTPS page in a current Chrome, Edge or Firefox tab."
-    );
+    await startCompatibilityMode("Secure service-worker isolation is unavailable.");
     return;
   }
 
   if (reloadCount() >= MAX_RELOADS) {
-    setStatus(
-      "BROWSER ISOLATION FAILED",
-      "The emulator could not enable SharedArrayBuffer after reloading. Close this tab, reopen the emulator and try again."
-    );
+    await startCompatibilityMode("Cross-origin isolation was not enabled after reloading.");
     return;
   }
 
@@ -109,10 +143,7 @@ async function start() {
     location.reload();
   } catch (error) {
     console.error("[ccg-c64] Could not prepare isolated runtime:", error);
-    setStatus(
-      "BROWSER ISOLATION FAILED",
-      "The emulator could not prepare its SharedArrayBuffer runtime. Reload the page once; if it persists, reopen it in a current Chrome, Edge or Firefox tab."
-    );
+    await startCompatibilityMode("The isolation service worker could not be prepared.");
   }
 }
 

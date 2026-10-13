@@ -32,14 +32,35 @@ jobs:
       - name: Check CCG shell and ROM contract
         run: node tests/ccg-c64-emulator-stage1.test.mjs
 
+      - name: Verify iPhone Safari startup and privacy fallbacks
+        run: node --test tests/ccg-c64-ios-safari.test.mjs
+
+      - name: Verify iPhone touch selection and desktop Android isolation
+        run: node --test tests/ccg-c64-ios-game-selection.test.mjs
+
+      - name: Verify mobile game buttons prevent native text selection and keep search editable
+        run: node --test tests/ccg-c64-mobile-button-selection.test.mjs
+
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
+
+      - name: Verify automatic warp remains active through post-RUN disk and tape loads
+        run: node --test tests/ccg-c64-auto-warp-loading.test.mjs
 
       - name: Verify hot disk swapping and multi-disk library controls
         run: node tests/ccg-c64-disk-swap.test.mjs
 
+      - name: Verify per-game vault slots, preserved legacy saves and backup transfers
+        run: node --test tests/ccg-c64-game-vault.test.mjs
+
+      - name: Verify Game Vault cross-tab IndexedDB upgrade and non-destructive retry
+        run: node --test tests/ccg-c64-game-vault-blocked.test.mjs
+
       - name: Verify searchable and SHA-256-protected C64 game browser
         run: node tests/ccg-c64-game-catalog.test.mjs
+
+      - name: Verify optional clean-name archive activation and 10k-title search
+        run: node tests/ccg-c64-clean-prg-archive.test.mjs
 
       - name: Verify explicit select-then-LOAD GAME interaction
         run: node tests/ccg-c64-library-select-load.test.mjs
@@ -89,6 +110,7 @@ jobs:
       - name: Syntax-check CCG adapter
         run: |
           node --check js/ccg-c64/app.js
+          node --check js/ccg-c64/game-catalog.js
           node --check js/ccg-c64/coi-bootstrap.js
           node --check emulator/c64/coi-service-worker.js
           node --check js/ccg-c64/game-vault.js

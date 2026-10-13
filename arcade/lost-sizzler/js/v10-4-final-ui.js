@@ -109,6 +109,7 @@
         <button type="button" id="v130-jump-pickups">C64 Games Collected</button>
       </div>
       <div class="v108-special-thanks"><b>SPECIAL THANKS</b><span>Patreon and long-term supporters, including AZALEA and CPU, for supporting C64 Dungeon Carnage and the Cheeky Commodore Gamer channel.</span></div>
+      <div class="v108-special-thanks" aria-label="Artwork credits"><b>ARTWORK CREDIT</b><span>Treasure chest artwork: Will Tice — Super Pixel Objects Sample (free edition). More third-party artwork credits are included with the game.</span></div>
       <div class="v108-end-actions">
         <button id="v108-end-share" type="button" class="primary">Share Completion</button>
         <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer">Donate / Buy Joe a Beer</a>

@@ -94,7 +94,7 @@ function rememberTrail(p){let a=playerTrails.get(p.id);if(!a){a=[];playerTrails.
 function baseWeapon(){return{id:"pulse",name:"Pulse Blaster",displayName:"COMMON Pulse Blaster",rarity:"COMMON",power:1,delay:1,shots:1,ammo:1,element:"energy",ttl:18,mods:[],rating:1,desc:"Reliable single-shot blaster."}}
 function makePlayer(id,name,x,y){return{id,name,x,y,rx:x,ry:y,health:C.player.maxHealth,maxHealth:C.player.maxHealth,mana:C.player.maxMana,maxMana:C.player.maxMana,armor:0,bronzeKeys:0,magicSacks:0,level:1,xp:0,totalXp:0,xpDebt:0,everEarnedXp:false,pendingLevels:0,lostLevelProgression:[],inventory:[],inventorySlots:C.player.startingInventorySlots||3,weapon:baseWeapon(),weaponLevel:1,dir:{x:1,y:0},invuln:0,hitStunMs:0,torchMs:0,rapidMs:0,lastRoom:-99,skills:[],damageBonus:0,dashDamage:0,potionBonus:0,torchBonusMs:0,moveMultiplier:1,scavenger:0,killsSinceHeal:0,hpBarMs:0,ammoFlashMs:0,emergencyRechargeMs:0}}
 function preservePlayer(old,x,y){const p=makePlayer(old.id,old.name,x,y);for(const key of ["maxHealth","maxMana","health","mana","armor","magicSacks","level","xp","totalXp","xpDebt","everEarnedXp","pendingLevels","lostLevelProgression","inventory","inventorySlots","weapon","weaponLevel","skills","damageBonus","dashDamage","potionBonus","torchBonusMs","moveMultiplier","scavenger","killsSinceHeal","hpBarMs","ammoFlashMs","emergencyRechargeMs"]){if(old[key]!==undefined)p[key]=Array.isArray(old[key])?[...old[key]]:(old[key]&&typeof old[key]==="object"?{...old[key]}:old[key])}p.x=p.rx=x;p.y=p.ry=y;p.bronzeKeys=0;p.torchMs=0;p.rapidMs=0;p.lastRoom=-99;return p}
-function nearbyOpen(x,y,avoid=[]){for(let r=1;r<7;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const nx=x+dx,ny=y+dy;if(W.walkable(world.map,nx,ny,host)&&!avoid.some(p=>p.x===nx&&p.y===ny))return{x:nx,y:ny}}return{x,y}}
+function nearbyOpen(x,y,avoid=[]){for(let r=1;r<7;r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const nx=x+dx,ny=y+dy;if(W.playerWalkable(world.map,nx,ny,host)&&!avoid.some(p=>p.x===nx&&p.y===ny))return{x:nx,y:ny}}return{x,y}}
 function clearCampHazards(playerId){for(let i=hazards.length-1;i>=0;i--)if(hazards[i].campOwner===playerId)hazards.splice(i,1)}
 function resetCamp(p,clearPending=true){if(clearPending)clearCampHazards(p.id);campStates.set(p.id,{lastX:p.x,lastY:p.y,originX:p.x,originY:p.y,elapsed:0,active:false,nextBlast:0,blastCount:0})}
 function effectiveSight(p){return PGR.effectiveSight(p,run)}
@@ -203,6 +203,15 @@ function startWorld(seed,_modePlaceholder=false,preserve=false,checkpointRestore
   // R67: ordinary procedurally generated FIRE/SPIKE/SHOCK floor traps are
   // retired. Dedicated hazard rooms are the only floor-hazard owner.
   host.traps=[];
+
+  // Late floor decorators and compatible checkpoint loads may leave full-size
+  // tables or crates visible without their blockingDecor collision record.
+  // Repair only missing solid furniture records; do not revive destroyed props
+  // or turn small floor and wall details into solid obstacles.
+  if(typeof W.reconcileSolidFurniture==="function"){
+    const missingBlockers=W.reconcileSolidFurniture(world,host);
+    if(missingBlockers)host.revision=(host.revision||0)+1;
+  }
 
   p1=old1?preservePlayer(old1,world.start.x,world.start.y):makePlayer("P1",playerName(),world.start.x,world.start.y);p2=null;
   remote.clear();enemyVisuals.clear();bullets.length=enemyBullets.length=particles.length=rings.length=floaters.length=hazards.length=0;pendingItems.clear();cameras.clear();explored.clear();campStates.clear();roomVisits.clear();playerTrails.clear();questDone.clear();toastQueue.length=0;toastTimer=0;retainedToast=false;UI.toast?.classList.remove("show");stats.games=stats.elites=stats.doors=stats.weapons=stats.secrets=stats.generators=0;shake=damageFlash=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;specialCD=0;inventoryReminderMs=300000;

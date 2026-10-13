@@ -18,7 +18,26 @@ const visualKeys=[
 
 assert.match(overrides,/visuals:\s*\{/,"visual override registry must exist");
 for(const key of visualKeys){
-  assert.match(overrides,new RegExp(`\\b${key}:null\\b`),`visual override must expose ${key}`);
+  const spikeIndex=/^spikeTrapFrame([0-3])$/.exec(key);
+  if(spikeIndex){
+    // Only the source-verified CC0 replacements may replace R118's disabled spike slots.
+    const approved=`assets/pixel/user-r134/stealthix-spikes-${spikeIndex[1]}.png`;
+    assert.ok(overrides.includes(`${key}:"${approved}"`),`unverified visual spike replacement forbidden: ${key}`);
+    assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.activeSpikeTrapFrames[Number(spikeIndex[1])],approved,`R134 spike manifest path mismatch: ${key}`);
+    assert.equal(manifest.images.visualOverhaul.r134LicensedCC0?.license,"CC0-1.0","Spike art must be licence-verified");
+  }else if(/^chestFrame([0-2])$/.test(key)){
+    // Preserve the R134 null-by-default safety policy for every other visual
+    // slot. Only the free-commercial, exact-file verified Will Tice chest may replace these.
+    const chestIndex=Number(/^chestFrame([0-2])$/.exec(key)[1]);
+    const path=`assets/pixel/user-r135/will-tice-chest-${chestIndex}.png`;
+    const approved=manifest.images.visualOverhaul.r135FreeCommercial;
+    assert.equal(overrides.includes(`${key}:"${path}"`),true,`Unverified chest override forbidden: ${key}`);
+    assert.equal(approved?.creator,"Will Tice","Chest frames must preserve original creator identity");
+    assert.equal(approved?.activeChestFrames?.[chestIndex],path,`Chest override source mismatch: ${key}`);
+    assert.match(approved.license,/Free commercial game use/,"Chest free-commercial grant required");
+  }else{
+    assert.match(overrides,new RegExp(`\\b${key}:null\\b`),`visual override must expose ${key}`);
+  }
   assert.ok(Object.prototype.hasOwnProperty.call(manifest.images.visualOverhaul,key),`asset manifest must expose ${key}`);
 }
 
@@ -97,6 +116,65 @@ const stoneSandbox={window:{},document:{querySelector:()=>null,getElementById:()
   ctx:{drawImage(...args){submitted.push(args)}}};
 vm.createContext(stoneSandbox);
 vm.runInContext(renderer,stoneSandbox,{timeout:1000});
+
+// R131 charger telegraph renderer regression: exercise the real renderer's
+// sprite preference chain, not a duplicate warning implementation.
+{
+  const draws=[];
+  const originalCtx=stoneSandbox.ctx;
+  const canvasSpy={
+    save(){},restore(){},beginPath(){},ellipse(){},fill(){draws.push("fill")},
+    fillRect(){},fillText(){},strokeRect(){},closePath(){},
+    arc(...args){draws.push({kind:"arc",args})},
+    moveTo(...args){draws.push({kind:"arrow",args})},
+    lineTo(){},stroke(){draws.push("stroke")}
+  };
+  stoneSandbox.ctx=canvasSpy;
+  stoneSandbox.enemyVisuals=new Map();
+  stoneSandbox.focus={x:0,y:0};
+  stoneSandbox.visibleTo=()=>true;
+  stoneSandbox.P={red:"#f33",gold:"#fb4",cyan:"#4ff",white:"#fff",purple:"#c7f"};
+  stoneSandbox.r131Draws=draws;
+  stoneSandbox.r131Route="puny";
+  stoneSandbox.r131Charger={
+    id:"r131-charger",kind:"charger",alive:true,x:2,y:2,aiState:"idle",
+    hp:3,maxHp:3,facing:{x:1,y:0},chargeTarget:{x:7,y:2},chargeTelegraphMs:360
+  };
+  vm.runInContext(`
+    ws=(x,y)=>({x:x*48,y:y*48});
+    tileInRenderView=()=>true;
+    label=()=>{};
+    drawTransientHealth=()=>{};
+    drawGrotesqueBossSprite=()=>{r131Draws.push("sprite:boss");return r131Route==="boss"};
+    drawPunyEnemySprite=()=>{r131Draws.push("sprite:puny");return r131Route==="puny"};
+    drawAuthoredDungeonEnemySprite=()=>{r131Draws.push("sprite:authored");return r131Route==="authored"};
+    drawPixelEnemySprite=()=>{r131Draws.push("sprite:procedural")};
+  `,stoneSandbox);
+  for(const route of ["boss","puny","authored","procedural"]){
+    stoneSandbox.r131Route=route;draws.length=0;
+    assert.equal(vm.runInContext("drawEnemy(r131Charger)",stoneSandbox),undefined);
+    const arcs=draws.filter(row=>typeof row==="object"&&row.kind==="arc");
+    const arrows=draws.filter(row=>typeof row==="object"&&row.kind==="arrow");
+    assert.equal(arcs.length,2,route+" must paint both static charge warning ring outlines");
+    assert.equal(arrows.length,1,route+" must paint a target-direction arrow");
+    assert.ok(draws.indexOf("sprite:"+route)<draws.indexOf(arcs[0]),route+" warning must appear on top of the selected sprite");
+    assert.ok(arrows[0].args[0]>arcs[0].args[0],route+" must aim toward the charge target");
+  }
+  stoneSandbox.r131Charger.chargeTelegraphMs=0;draws.length=0;
+  vm.runInContext("drawEnemy(r131Charger)",stoneSandbox);
+  assert.equal(draws.filter(row=>typeof row==="object"&&row.kind==="arc").length,0,"expired charge must have no warning");
+  stoneSandbox.r131Charger.chargeTelegraphMs=520;
+  stoneSandbox.r131Charger.chargeTarget=null;
+  stoneSandbox.r131Charger.facing={x:-1,y:0};
+  draws.length=0;
+  vm.runInContext("drawEnemy(r131Charger)",stoneSandbox);
+  const fallbackArrow=draws.find(row=>typeof row==="object"&&row.kind==="arrow");
+  const fallbackCircle=draws.find(row=>typeof row==="object"&&row.kind==="arc");
+  assert.ok(fallbackArrow.args[0]<fallbackCircle.args[0],"missing charge target must use enemy facing rather than NaN coordinates");
+  assert.doesNotMatch(renderer.slice(renderer.indexOf("function drawEnemyChargeTelegraph("),renderer.indexOf("function drawEnemy(e)")),/performance\.now|Math\.sin|requestAnimationFrame|createRadialGradient/,"the warning must remain static under reduced-motion and severe performance");
+  stoneSandbox.ctx=originalCtx;
+}
+
 function stoneWorld(mask){
   const map=Array.from({length:5},()=>Array(5).fill(1));
   if(mask&1)map[1][2]=0;if(mask&2)map[2][3]=0;

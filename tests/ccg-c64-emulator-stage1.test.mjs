@@ -7,6 +7,7 @@ import path from "node:path";
 import vm from "node:vm";
 import assert from "node:assert";
 import { fileURLToPath } from "node:url";
+import { d64Variant } from "../js/ccg-c64/core/media/d64.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +17,7 @@ const read = (rel) => fs.readFileSync(path.join(root, rel), "utf8");
 const html = read("emulator/c64/index.html");
 const css = read("resources/css/ccg-c64-emulator.css");
 const app = read("js/ccg-c64/app.js");
+const machine = read("js/ccg-c64/core/machine.js");
 const cia = read("js/ccg-c64/core/cia.js");
 const audioWorklet = read("js/ccg-c64/core/sid/sid-worklet.js");
 const sidWasmBlob = read("js/ccg-c64/core/sid/sid-wasm-blob.js");
@@ -144,12 +146,24 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261009_mobilezoom_snap_v2"'), "Emulator shell must start through the COI bootstrap");
+assert(/src="\/js\/ccg-c64\/coi-bootstrap\.js\?ccg_rev=[a-z0-9_]+"/.test(html), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('await import("/js/ccg-c64/app.js?ccg_rev=20261009_mobilezoom_snap_v2")'), "COI bootstrap must import the emulator only after isolation");
+assert(/const APP_URL = "\/js\/ccg-c64\/app\.js\?ccg_rev=[a-z0-9_]+"/.test(coiBootstrap) &&
+  coiBootstrap.includes("await import(APP_URL)"), "COI bootstrap must import the versioned emulator entry");
+assert(coiBootstrap.includes("await startCompatibilityMode(") &&
+  machine.includes("this.sidShared = sharedSidAvailable ? new SharedArrayBuffer") &&
+  app.includes('updateAudioUi("SILENT COMPATIBILITY MODE")'),
+  "Browsers without shared memory must still boot C64 video and controls in silent mode");
 assert(coiBootstrap.includes('location.reload()'), "COI bootstrap must reload once under the isolated document response");
+assert(coiBootstrap.includes("if (isIOSDevice())") &&
+  coiBootstrap.indexOf("if (isIOSDevice())") < coiBootstrap.indexOf("navigator.serviceWorker.register("),
+  "iOS Safari must bypass isolation reloads but retain the already-isolated fast path");
+assert(app.includes('phoneLibraryLayout.addListener(arrangePhoneLibrary)'),
+  "Older iOS Safari media query listeners must not stop boot");
+assert(app.includes("const localStorage = (() =>") && app.includes("new ROMVault(localStorage)"),
+  "Restricted storage must not stop C64 firmware installation on iPhone");
 assert(coiWorker.includes('Cross-Origin-Opener-Policy'), "COI worker must stamp COOP on emulator navigation responses");
 assert(coiWorker.includes('Cross-Origin-Embedder-Policy'), "COI worker must stamp COEP on emulator navigation responses");
 assert(coiWorker.includes('request.mode !== "navigate"'), "COI worker must remain scoped to document navigations");
@@ -247,7 +261,7 @@ assert(app.includes("packedCatalogueError") &&
 assert(app.includes("directGameKeys") && app.includes("!directGameKeys.has("),
   "Archived game pack must not duplicate already hosted D64/CRT titles");
 assert(app.includes('fetch("/emulator/c64/library.json"'), "Online Library must load from the CCG manifest");
-assert(app.includes('import { C64Machine } from "./core/machine.js"'), "Machine core must be wired into the CCG app");
+assert(app.includes('import { C64Machine } from "./core/machine.js?ccg_rev=20261011_ios_silent_fallback_v1"'), "Machine core must be wired into the CCG app");
 assert(app.includes("machine.runFrame()"), "PAL frame execution must be wired");
 assert(app.includes("machine.loadPRG(bytes)"), "Stage 2 quick PRG loading must be wired");
 assert(app.includes('import { KEY_MAP, CHAR_MAP } from "./core/cia.js"'), "C64 keyboard matrix maps must be wired");
@@ -272,13 +286,98 @@ assert(app.includes('let driveMode = "fast"'), "Each emulator visit must start i
 assert(app.includes("firstSupportedDroppedFile"), "Screen drop loading must choose a supported C64 media file");
 assert(app.includes('mediaDropzone?.addEventListener("drop"'), "The C64 screen stage must accept dropped game media");
 assert(app.includes("await queueMediaFile(file, { freshBoot: true })"), "Dropped media must use the same clean automatic boot/load route as primary file selection");
-assert(html.includes("LOAD &amp; AUTO START"), "Primary file loader must advertise automatic game start");
+assert(html.includes("OPEN C64 GAME FILE") && html.includes("data-load-any-media"), "Primary file loader must keep an obvious local-media entry point");
 assert(app.includes("function basicReady()"), "Auto-start must wait for a real BASIC READY prompt");
 assert(app.includes("function queueAutoStart(steps)"), "Auto-start must use a staged load sequence");
 assert(app.includes("function serviceAutoStart()"), "Auto-start sequence must advance from the emulation loop");
 assert(app.includes("machine.bufferKeyboardText(autoStartTypeRest)"), "Long LOAD commands must be chunk-fed through the C64 keyboard buffer");
+
+/* Fast virtual disk regression: a complete KERNAL LOAD can happen between
+   two staged-loader ticks. READY must advance to RUN once a disk-load event
+   has been observed, but not when no load or busy transition occurred. */
+const basicReadyFn = app.match(/^function basicReady\(\) \{[\s\S]*?^\}/m)?.[0];
+const serviceAutoStartFn = app.match(/^function serviceAutoStart\(\) \{[\s\S]*?^\}/m)?.[0];
+assert(basicReadyFn && serviceAutoStartFn, "Auto-start behavioural probe requires the current loader");
+function probeAutoRun({ trapEvent, sawBusy }) {
+  let typed = "";
+  const ram = new Uint8Array(65536);
+  ram[0x002C] = 0x08;
+  const ctx = {
+    machine: { mem: { ram }, bufferKeyboardText(value) { typed += value; return value.length; } },
+    running: true, paused: false, autoStartBudget: 1000,
+    autoStartSteps: [{ loadDone: true }, { type: "RUN\r" }],
+    autoStartTypeRest: "", autoStartSawBusy: sawBusy,
+    autoWarpLoadEvents: trapEvent ? 1 : 0,
+    stageNote: null,
+    cancelAutoStart() { ctx.autoStartSteps = null; },
+  };
+  vm.runInNewContext(basicReadyFn + "\n" + serviceAutoStartFn +
+    "\nserviceAutoStart();\nserviceAutoStart();", ctx);
+  return { typed, remaining: ctx.autoStartSteps?.length ?? 0 };
+}
+assert.equal(probeAutoRun({ trapEvent: true, sawBusy: false }).typed, "RUN\r",
+  "A completed fast disk LOAD must not stall at BASIC READY without RUN");
+assert.equal(probeAutoRun({ trapEvent: false, sawBusy: true }).typed, "RUN\r",
+  "Slower LOAD still needs to advance to RUN after BASIC becomes ready");
+assert.equal(probeAutoRun({ trapEvent: false, sawBusy: false }).typed, "",
+  "Do not inject RUN before a LOAD event or busy transition has been observed");
+assert(html.includes("data-catalogue-dialog") && html.includes("data-catalogue-open") &&
+  html.includes("data-catalogue-query") && html.includes("data-catalogue-results"),
+  "Complete games browser must be discoverable, searchable and keyboard accessible");
+const browser = read("js/ccg-c64/catalogue-browser.js");
+assert(browser.includes("PAGE_SIZE = 60") && browser.includes('event.key === "Escape"') &&
+  browser.includes("play(id)") && app.includes("mountCatalogueBrowser"),
+  "Games catalogue must be paginated, dismissible and launch existing verified library entries");
+assert(html.includes("data-vault-feedback") && html.includes("RESUME SAVE") &&
+  app.includes('showVaultFeedback("✓ "') &&
+  !/async function loadGameVaultSlot\(\) \{\s*if \(!running\) return;/.test(app),
+  "Save/restore must report results and support resuming a stored state after C64 power-off");
+assert(css.includes(".ccg-c64-advanced-grid") && css.includes(".ccg-c64-catalogue-dialog"),
+  "Advanced tools and the full catalogue require responsive emulator-only styles");
+
 assert(app.includes("{ loadDone: true }"), "Disk/tape auto-start must wait for loading to finish before RUN");
 assert(app.includes("prepareFreshGameSession()"), "Primary file loading must be able to start a clean C64 session");
+
+// Regression: Bruce Lee Trilogy CRT -> EXIT GAME -> Thing On A Spring PRG
+// must cold-boot without the previous cartridge or disk/tape mounted.
+// The old implementation only cleared media for an ALREADY running C64.
+const clearMountedGameMediaSource = app.match(/^function clearMountedGameMedia\(\) \{[\s\S]*?^\}/m)?.[0];
+assert(clearMountedGameMediaSource, "A shared media clear function must exist");
+const freshGameQueueSource = app.slice(
+  app.indexOf("async function queueMedia("), app.indexOf("async function queueMediaFile("));
+assert(/if \(freshBoot && !wasRunning\) clearMountedGameMedia\(\);\s*if \(!running\) await powerOn\(\);/.test(freshGameQueueSource),
+  "New game must remove old cartridge/disk/tape before powerOn reattaches old media");
+assert(freshGameQueueSource.includes("if (freshBoot && wasRunning) await prepareFreshGameSession();"),
+  "Switching games while C64 is running must retain its existing clean-start route");
+const activeFreshSessionSource = app.slice(
+  app.indexOf("async function prepareFreshGameSession()"),
+  app.indexOf("function frameLoop("));
+assert(activeFreshSessionSource.includes("clearMountedGameMedia();"),
+  "Running-machine clean boots must use the same media clear function");
+const savedDriveMode = [];
+const oldMedia = {
+  mountedDisk: { name: "previous.d64" },
+  mountedDiskKey: "library:previous:0",
+  diskSideCache: new Map([["library:previous:0", { name: "previous.d64" }]]),
+  mountedTape: { name: "previous.tap" },
+  mountedCartridge: { name: "Bruce-Lee-Trilogy.crt" },
+  driveMode: "true",
+  diskSlotStatus: { textContent: "PREVIOUS D64" },
+  tapeSlotStatus: { textContent: "PREVIOUS TAP" },
+  cartridgeSlotStatus: { textContent: "BRUCE LEE TRILOGY" },
+  localStorage: { setItem: (...args) => savedDriveMode.push(args) },
+};
+vm.runInNewContext(clearMountedGameMediaSource + "\nclearMountedGameMedia();", oldMedia);
+assert.equal(oldMedia.mountedDisk, null, "Previous game's disk must not survive a new LOAD");
+assert.equal(oldMedia.mountedDiskKey, null, "Previous game's disk identity must be removed");
+assert.equal(oldMedia.diskSideCache.size, 0, "Previous game's swapped disk sides must not carry over");
+assert.equal(oldMedia.mountedTape, null, "Previous game's tape must not survive a new LOAD");
+assert.equal(oldMedia.mountedCartridge, null, "Previous CRT must not boot when selecting a PRG");
+assert.equal(oldMedia.driveMode, "fast", "A new game should default to Fast Load");
+assert.equal(savedDriveMode[0]?.[1], "fast", "Saved drive mode should match fresh game state");
+assert.equal(oldMedia.cartridgeSlotStatus.textContent, "CRT / EASYFLASH",
+  "Previous cartridge title must disappear from the media slot UI");
+
 assert(app.includes("queueMediaFile(file, { freshBoot: true })"), "Primary file and drop routes must request a clean auto-start session");
 assert(app.includes("{ type: 'LOAD\"*\",8,1\\r' }"), "Disk auto-start must enter LOAD wildcard on device 8");
 assert(app.includes('{ type: "RUN\\r" }'), "Disk/tape auto-start must enter RUN after loading");
@@ -343,6 +442,12 @@ assert(onlineLibrary.entries.every((entry) => entry.approved === true &&
   ((typeof entry.url === "string" && entry.url.startsWith("/emulator/c64/media/")) ||
    (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0))),
   "Public games need explicit redistribution approval, licence and media");
+for (const [id, title] of [["zork-i", "Zork I"], ["zork-ii", "Zork II"], ["zork-iii", "Zork III"]]) {
+  const entry = onlineLibrary.entries.find(item => item.id === id);
+  assert(entry && entry.title === title && entry.format === "d64" &&
+    entry.url === "/emulator/c64/media/" + id + ".d64",
+    "Zork disk must have the exact approved title and a usable same-origin URL: " + id);
+}
 assert(html.includes('class="ccg-c64-panel ccg-c64-panel--library" hidden'),
   "Online Library must be hidden until approved titles are available");
 assert(app.includes("onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0"),
@@ -375,8 +480,8 @@ for (const entry of onlineLibrary.entries) {
     assert.equal(program[0] | (program[1] << 8), 0x0801,
       "PRG must contain the expected C64 BASIC load address: " + entry.id);
   } else if (entry.format === "d64") {
-    assert.equal(program.length, 174848,
-      "35-track D64 must have exactly 174,848 bytes: " + entry.id);
+    assert.equal(d64Variant(program.length)?.kind, "d64",
+      "Hosted D64 must have supported disk geometry (including original error-byte variants): " + entry.id);
   } else if (entry.format === "crt") {
     assert.equal(program.subarray(0, 16).toString("ascii"), "C64 CARTRIDGE   ",
       "CRT game must have Commodore cartridge header: " + entry.id);
@@ -448,8 +553,9 @@ assert(ccgHome.includes('class="home-c64-emulator-promo" href="/emulator/c64/"')
   ccgHome.includes("Play Commodore 64 Games Online") &&
   ccgHome.includes('href="/resources/css/home-c64-emulator-promo.css"'),
   "Homepage must give users a static, crawlable C64 emulator link with intact existing tiles");
-assert(ccgEmulationGuide.includes('href="/emulator/c64/">Play C64 Games Online'),
-  "Emulation guide must also direct visitors to the interactive emulator");
+assert(ccgEmulationGuide.includes('class="emu-play-now__launch" href="/emulator/c64/"') &&
+  ccgEmulationGuide.includes("<span>PLAY C64 GAMES NOW</span>"),
+  "Emulation guide must have a prominent first-party interactive emulator launch link");
 const homePromotionCss = read("resources/css/home-c64-emulator-promo.css");
 assert(homePromotionCss.includes("home-c64-emulator-promo") &&
   homePromotionCss.includes("@media (max-width: 680px)"),

@@ -788,7 +788,13 @@ function drawAnimatedChestFallback(c,s,col,now,anim,pulse){
 function drawChests(){
   const now=performance.now(),customSheet=lostSizzlerPixelAssets.chestReplacement,frameSet=lostSizzlerPixelAssets.chestFrames||[],frameArtReady=frameSet.length===3&&frameSet.every(image=>image?.complete&&image.naturalWidth>=16&&image.naturalHeight>=16),pixelSheet=customSheet?.complete&&customSheet.naturalWidth>=160?customSheet:lostSizzlerPixelAssets.chests;
   for(const c of host.chests||[]){
-    const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;if(!tileInRenderView(c.x,c.y,2)||!visibleTo(focus,c.x,c.y))continue;
+    const anim=c.openedAt?Math.max(0,Math.min(1,(now-c.openedAt)/650)):0;if(!c.active&&!c.openedAt)continue;
+    // A chest immediately in front of the player must remain drawable whenever
+    // their next movement step would trigger its lock. Fog/LOS may lag behind
+    // the exact movement boundary, otherwise the key prompt appears on an
+    // apparently empty tile. Distant undiscovered chests remain concealed.
+    const nextStepChest=Boolean(focus&&md(c,focus)<=1);
+    if(!tileInRenderView(c.x,c.y,2)||(!nextStepChest&&!visibleTo(focus,c.x,c.y)))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
     // Stage-1 CC0 chest frames are the default live presentation. Explicit
     // custom sheets can still override them; V10.34 and canvas art remain safe
@@ -1082,10 +1088,31 @@ function drawGrotesqueBossSprite(e,cx,cy){
   return true
 }
 
+// R131: the charge warning is an attack tell, not part of any one sprite atlas.
+// Draw it after whichever enemy sprite wins the render fallback chain.
+function drawEnemyChargeTelegraph(e,cx,cy){
+  if(!(Number(e?.chargeTelegraphMs)>0))return false;
+  const target=e?.chargeTarget;
+  let vx=Number(target?.x)-Number(e?.x),vy=Number(target?.y)-Number(e?.y);
+  if(!Number.isFinite(vx)||!Number.isFinite(vy)||(!vx&&!vy)){
+    vx=Number(e?.facing?.x)||0;vy=Number(e?.facing?.y)||0;
+    if(!vx&&!vy)vx=1;
+  }
+  const length=Math.hypot(vx,vy)||1,ux=vx/length,uy=vy/length,radius=Math.max(19,Math.round(C.tile*.45));
+  const tipX=cx+ux*(radius+10),tipY=cy+uy*(radius+10);
+  const baseX=cx+ux*(radius-7),baseY=cy+uy*(radius-7);
+  ctx.save();ctx.imageSmoothingEnabled=false;
+  // Fixed contrast (no flashing): equally visible with reduced motion or severe quality.
+  ctx.strokeStyle="#18090c";ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle="#ffd36b";ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(tipX,tipY);ctx.lineTo(baseX-uy*8,baseY+ux*8);ctx.lineTo(baseX+uy*8,baseY-ux*8);ctx.closePath();
+  ctx.strokeStyle="#18090c";ctx.lineWidth=3;ctx.stroke();ctx.fillStyle="#ff633f";ctx.fill();
+  ctx.restore();return true
+}
 function drawEnemy(e){
   if(!e.alive||!tileInRenderView(e.x,e.y,3)||!visibleTo(focus,e.x,e.y))return;const s=enemyScreen(e),f=e.follower,isDeathStalker=Boolean(e.deathStalker&&e.voidStalker),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
   if(f){const r=(C.enemy.followerLightRadius||5)*C.tile,g=ctx.createRadialGradient(cx,cy,8,cx,cy,r);g.addColorStop(0,"rgba(255,213,112,.13)");g.addColorStop(.45,"rgba(255,160,70,.05)");g.addColorStop(1,"rgba(255,140,50,0)");ctx.fillStyle=g;ctx.fillRect(s.x-r,s.y-r,r*2,r*2)}
-  if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawGrotesqueBossSprite(e,cx,cy)&&!drawPunyEnemySprite(e,cx,cy)&&!drawAuthoredDungeonEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);
+  if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawGrotesqueBossSprite(e,cx,cy)&&!drawPunyEnemySprite(e,cx,cy)&&!drawAuthoredDungeonEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);drawEnemyChargeTelegraph(e,cx,cy);
   const identityName=window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1),guardianName:"FLOOR GUARDIAN"});const name=e.r114BossName||identityName||e.r114Archetype||(e.exitWarden?"SIGIL WARDEN":e.guardian?"FLOOR GUARDIAN":isDeathStalker?"DEATH STALKER":e.champion?e.championName:e.treasureGoblin?"TREASURE GOBLIN":f?.name||({spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Tape Scout",hunter:"Joystick Hunter",ambusher:"Raster Ambusher",guard:"1541 Guard",ghost:"Ghost Byte",charger:"Charger",ranger:"Ranger",root:"Root Crawler",cook:"CPU Cook",firebreather:"Firebreather"}[e.kind]||"Enemy"));
   label(isDeathStalker?`${name} — INDESTRUCTIBLE`:name,s,isDeathStalker?P.red:e.exitWarden?P.gold:e.guardian?P.red:e.champion?P.cyan:f?P.gold:P.white);if(!isDeathStalker)drawTransientHealth(e,s,f?P.gold:P.white);
   if((e.hitStunMs||0)>0){ctx.font='bold 9px "Courier New"';ctx.textAlign="center";ctx.fillStyle=P.cyan;ctx.fillText("STUNNED",cx,s.y-25)}else if(e.aiState==="chase"||e.aiState==="search"){ctx.font='bold 14px "Courier New"';ctx.textAlign="center";ctx.fillStyle=e.aiState==="chase"?P.red:P.gold;ctx.fillText(e.aiState==="chase"?"!":"?",cx,s.y-25)}

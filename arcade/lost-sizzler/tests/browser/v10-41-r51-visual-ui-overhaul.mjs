@@ -51,6 +51,8 @@ try{
   const ownershipRecovery=await page.evaluate(()=>{
     const owner=window.CCGLostSizzlerV141R51RenderOwnershipFinalizer,api=window.CCGLostSizzlerV141R51VisualUIOverhaul;
     const before=owner.state.enemyRepairs;
+    // Preserve the real wrapped renderer before this existing ownership-recovery fixture replaces it.
+    window.__ccgR131CanonicalEnemyRenderer=window.drawEnemy;
     const lateRenderer=function r51SyntheticLateEnemyRenderer(){return "synthetic-late-renderer"};
     window.drawEnemy=lateRenderer;
     const detached=Boolean(typeof window.drawEnemy==="function"&&!window.drawEnemy.__ccgV141R51VisualPolish);
@@ -89,6 +91,66 @@ try{
   assert.ok(visual.diag.playerFrames>0,"real player renderer must pass through R51");
   assert.ok(visual.diag.enemyFrames>=0);
   assert.ok(visual.diag.lightingUpdates>0);
+
+  // R131: draw an active Charger through the restored REAL wrapped renderer.
+  // The earlier ownership test deliberately injected a synthetic drawEnemy,
+  // so it must not remain active for the combat-visibility regression.
+  await page.waitForFunction(()=>typeof lostSizzlerPixelAssets!=="undefined"&&
+    lostSizzlerPixelAssets.enemyOrcGrunt?.complete&&lostSizzlerPixelAssets.enemyOrcGrunt.naturalWidth>=32);
+  await page.emulateMedia({reducedMotion:"reduce"});
+  const warning=await page.evaluate(()=>{
+    const canonical=window.__ccgR131CanonicalEnemyRenderer;
+    const graphics=typeof ctx!=="undefined"?ctx:null;
+    const perf=window.CCGLostSizzlerV142R70RenderPerformance;
+    if(typeof canonical!=="function"||!canonical.__ccgV141R51VisualPolish||!graphics||!perf)return{ready:false};
+    window.drawEnemy=canonical;
+    delete window.__ccgR131CanonicalEnemyRenderer;
+    window.CCGLostSizzlerV141R51RenderOwnershipFinalizer?.repair?.();
+    if(!window.drawEnemy?.__ccgV141R51VisualPolish)return{ready:false};
+    const stateBefore={x:p1.x,y:p1.y,health:p1.health,score:typeof score==="number"?score:null,gold:run?.gold};
+    const priorArc=graphics.arc,hadOwnArc=Object.prototype.hasOwnProperty.call(graphics,"arc"),priorQuality=perf.state.quality;
+    const priorTier=document.body.dataset.v141R47PerformanceTier;
+    const enemy={id:"r131-live-charger",kind:"charger",alive:true,x:p1.x,y:p1.y,aiState:"idle",
+      hp:3,maxHp:3,chargeTarget:{x:p1.x+3,y:p1.y},chargeTelegraphMs:360,facing:{x:1,y:0}};
+    const puny=window.CCGPunyEnemyVisuals?.diagnostics;
+    const beforeDraws=Number(puny?.draws)||0;
+    let arcs=0;
+    try{
+      perf.state.quality="severe";
+      document.body.dataset.v141R47PerformanceTier="severe";
+      graphics.arc=function(...args){arcs++;return priorArc.apply(this,args)};
+      graphics.save();graphics.setTransform(1,0,0,1,0,0);
+      try{
+        const s=enemyScreen(enemy),cx=s.x+C.tile/2,cy=s.y+C.tile/2,radius=Math.max(19,Math.round(C.tile*.45));
+        window.drawEnemy(enemy);
+        const activeArcs=arcs,activePunyDraws=(Number(puny?.draws)||0)-beforeDraws;
+        const ringPixel=Array.from(graphics.getImageData(Math.round(cx+radius),Math.round(cy),1,1).data);
+        enemy.chargeTelegraphMs=0;
+        window.drawEnemy(enemy);
+        const inactiveArcs=arcs-activeArcs;
+        const stateAfter={x:p1.x,y:p1.y,health:p1.health,score:typeof score==="number"?score:null,gold:run?.gold};
+        return{ready:true,reduced:perf.reducedMotion(),quality:perf.quality(),activeArcs,activePunyDraws,
+          ringPixel,inactiveArcs,stateBefore,stateAfter,restored:Boolean(window.drawEnemy.__ccgV141R51VisualPolish)};
+      }finally{graphics.restore()}
+    }finally{
+      perf.state.quality=priorQuality;
+      document.body.dataset.v141R47PerformanceTier=priorTier;
+      if(hadOwnArc)graphics.arc=priorArc;else delete graphics.arc;
+      if(typeof enemyVisuals!=="undefined"&&typeof enemyVisuals.delete==="function")enemyVisuals.delete(enemy.id);
+    }
+  });
+  await page.emulateMedia({reducedMotion:"no-preference"});
+  assert.equal(warning.ready,true,"R131 must restore and use the actual wrapped enemy renderer");
+  assert.equal(warning.restored,true);
+  assert.equal(warning.reduced,true,"live Charger warning must remain visible with reduced motion");
+  assert.equal(warning.quality,"severe","live Charger warning must survive severe Canvas quality");
+  assert.equal(warning.activePunyDraws,1,"fixture must actually use the preferred Puny Charger sprite");
+  assert.equal(warning.activeArcs,2,"live enemy-renderer path must draw the two-ring charge warning");
+  assert.ok(warning.ringPixel[0]>warning.ringPixel[2]&&warning.ringPixel[1]>warning.ringPixel[2],
+    "the live post-sprite warning must leave actual warm warning pixels");
+  assert.equal(warning.inactiveArcs,0,"the live enemy renderer must not draw expired charge warnings");
+  assert.deepEqual(warning.stateAfter,warning.stateBefore,"Charger warning must leave gameplay state unchanged");
+
 
   // Exercise the review's real exploration/fullscreen working set, using the
   // actual generator and Canvas painter rather than the small starting camera.
