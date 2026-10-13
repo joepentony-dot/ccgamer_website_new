@@ -21,9 +21,31 @@ export class GameVault {
       return Promise.reject(new Error("IndexedDB is unavailable in this browser."));
     }
 
-    this._dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
+    // A v1 tab can temporarily block the one-time v2 schema upgrade.
+    // 'blocked' is a notification, NOT a failed request: the same IDBOpenDBRequest
+    // can still complete when the older tab releases its connection.
+    const opening = new Promise((resolve, reject) => {
+      let request;
+      let settled = false;
+      let blockedTimer = null;
+      const settle = (success, value) => {
+        if (settled) return false;
+        settled = true;
+        if (blockedTimer !== null) clearTimeout(blockedTimer);
+        if (success) resolve(value);
+        else reject(value);
+        return true;
+      };
+
+      try {
+        request = indexedDB.open(DB_NAME, DB_VERSION);
+      } catch (error) {
+        settle(false, error);
+        return;
+      }
       request.onupgradeneeded = () => {
+        // Never delete or recreate the original 'states' store. Existing
+        // legacy slots remain intact through this additive upgrade.
         const db = request.result;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME, { keyPath: "slot" });
@@ -33,13 +55,42 @@ export class GameVault {
         }
       };
       request.onsuccess = () => {
-        request.result.onversionchange = () => { request.result.close(); this._dbPromise = null; };
-        resolve(request.result);
+        const db = request.result;
+        if (settled) {
+          // A blocked attempt may finish AFTER the UI offered Retry.
+          // Never leave that abandoned database connection open: doing so
+          // could block the user's subsequent attempts.
+          db.close();
+          return;
+        }
+        db.onversionchange = () => {
+          db.close();
+          if (this._dbPromise === connection) this._dbPromise = null;
+        };
+        db.onclose = () => {
+          if (this._dbPromise === connection) this._dbPromise = null;
+        };
+        settle(true, db);
       };
-      request.onerror = () => { this._dbPromise = null; reject(request.error || new Error("Could not open the Game Vault.")); };
-      request.onblocked = () => { this._dbPromise = null; reject(new Error("Game Vault storage is blocked by another open tab.")); };
+      request.onerror = () =>
+        settle(false, request.error || new Error("Could not open the Game Vault."));
+      request.onblocked = () => {
+        if (settled || blockedTimer !== null) return;
+        // Allow older tabs time to respond to onversionchange and close.
+        // If one is still open, provide a recoverable message, not a data wipe.
+        blockedTimer = setTimeout(() => {
+          const error = new Error("Close other C64 emulator tabs, then retry Game Vault. Your saves are preserved.");
+          error.name = "GameVaultBlockedError";
+          settle(false, error);
+        }, 2000);
+      };
     });
-    return this._dbPromise;
+    const connection = opening.catch((error) => {
+      if (this._dbPromise === connection) this._dbPromise = null;
+      throw error;
+    });
+    this._dbPromise = connection;
+    return connection;
   }
 
   async save(slot, payload) {
