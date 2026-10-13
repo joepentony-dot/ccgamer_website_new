@@ -286,11 +286,69 @@ assert(app.includes('let driveMode = "fast"'), "Each emulator visit must start i
 assert(app.includes("firstSupportedDroppedFile"), "Screen drop loading must choose a supported C64 media file");
 assert(app.includes('mediaDropzone?.addEventListener("drop"'), "The C64 screen stage must accept dropped game media");
 assert(app.includes("await queueMediaFile(file, { freshBoot: true })"), "Dropped media must use the same clean automatic boot/load route as primary file selection");
-assert(html.includes("LOAD &amp; AUTO START"), "Primary file loader must advertise automatic game start");
+assert(html.includes("OPEN C64 GAME FILE") && html.includes("data-load-any-media"), "Primary file loader must keep an obvious local-media entry point");
 assert(app.includes("function basicReady()"), "Auto-start must wait for a real BASIC READY prompt");
 assert(app.includes("function queueAutoStart(steps)"), "Auto-start must use a staged load sequence");
 assert(app.includes("function serviceAutoStart()"), "Auto-start sequence must advance from the emulation loop");
 assert(app.includes("machine.bufferKeyboardText(autoStartTypeRest)"), "Long LOAD commands must be chunk-fed through the C64 keyboard buffer");
+
+/* Fast virtual disk regression: a complete KERNAL LOAD can happen between
+   two staged-loader ticks. READY must advance to RUN once a disk-load event
+   has been observed, but not when no load or busy transition occurred. */
+const basicReadyFn = app.match(/^function basicReady\(\) \{[\s\S]*?^\}/m)?.[0];
+const serviceAutoStartFn = app.match(/^function serviceAutoStart\(\) \{[\s\S]*?^\}/m)?.[0];
+assert(basicReadyFn && serviceAutoStartFn, "Auto-start behavioural probe requires the current loader");
+function probeAutoRun({ trapEvent, sawBusy }) {
+  let typed = "";
+  const ram = new Uint8Array(65536);
+  ram[0x002C] = 0x08;
+  const ctx = {
+    machine: { mem: { ram }, bufferKeyboardText(value) { typed += value; return value.length; } },
+    running: true, paused: false, autoStartBudget: 1000,
+    autoStartSteps: [{ loadDone: true }, { type: "RUN\r" }],
+    autoStartTypeRest: "", autoStartSawBusy: sawBusy,
+    autoWarpLoadEvents: trapEvent ? 1 : 0,
+    stageNote: null,
+    cancelAutoStart() { ctx.autoStartSteps = null; },
+  };
+  vm.runInNewContext(basicReadyFn + "\n" + serviceAutoStartFn +
+    "\nserviceAutoStart();\nserviceAutoStart();", ctx);
+  return { typed, remaining: ctx.autoStartSteps?.length ?? 0 };
+}
+assert.equal(probeAutoRun({ trapEvent: true, sawBusy: false }).typed, "RUN\r",
+  "A completed fast disk LOAD must not stall at BASIC READY without RUN");
+assert.equal(probeAutoRun({ trapEvent: false, sawBusy: true }).typed, "RUN\r",
+  "Slower LOAD still needs to advance to RUN after BASIC becomes ready");
+assert.equal(probeAutoRun({ trapEvent: false, sawBusy: false }).typed, "",
+  "Do not inject RUN before a LOAD event or busy transition has been observed");
+assert(html.includes("data-catalogue-dialog") && html.includes("data-catalogue-open") &&
+  html.includes("data-catalogue-query") && html.includes("data-catalogue-results"),
+  "Complete games browser must be discoverable, searchable and keyboard accessible");
+const browser = read("js/ccg-c64/catalogue-browser.js");
+assert(browser.includes("PAGE_SIZE = 60") && browser.includes('event.key === "Escape"') &&
+  browser.includes("play(id)") && app.includes("mountCatalogueBrowser"),
+  "Games catalogue must be paginated, dismissible and launch existing verified library entries");
+assert(html.includes("data-vault-feedback") && html.includes("RESUME SAVE") &&
+  app.includes('showVaultFeedback("✓ "') &&
+  !/async function loadGameVaultSlot\(\) \{\s*if \(!running\) return;/.test(app),
+  "Save/restore must report results and support resuming a stored state after C64 power-off");
+assert(css.includes(".ccg-c64-advanced-grid") && css.includes(".ccg-c64-catalogue-dialog"),
+  "Advanced tools and the full catalogue require responsive emulator-only styles");
+
+// Regression: desktop Save / Resume must occupy the complete six-track control
+// deck, not the narrow first track that stretches every control vertically.
+const desktopUsabilityCss = css.slice(css.indexOf("/* CCG C64 usability refresh"));
+assert(desktopUsabilityCss.includes("@media (min-width: 960px)") &&
+  /\.ccg-c64-control-stack\s*>\s*\.ccg-c64-panel--vault\s*\{[^}]*grid-area:\s*vault;[^}]*grid-column:\s*1\s*\/\s*-1;[^}]*\}/.test(desktopUsabilityCss),
+  "Desktop Save / Resume must explicitly span all six control columns");
+assert(!/\.ccg-c64-panel--vault\s*\{\s*grid-column:\s*auto;\s*\}/.test(desktopUsabilityCss),
+  "Never reintroduce the one-column desktop Game Vault squeeze");
+assert(html.includes('class="ccg-c64-panel ccg-c64-panel--vault"') &&
+  html.includes('class="ccg-c64-advanced"') &&
+  html.indexOf('class="ccg-c64-panel ccg-c64-panel--vault"') <
+    html.indexOf('class="ccg-c64-advanced"'),
+  "Save / Resume must remain a top-level grid item before the collapsible advanced tools");
+
 assert(app.includes("{ loadDone: true }"), "Disk/tape auto-start must wait for loading to finish before RUN");
 assert(app.includes("prepareFreshGameSession()"), "Primary file loading must be able to start a clean C64 session");
 

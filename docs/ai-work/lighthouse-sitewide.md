@@ -1,5 +1,11 @@
 # Site-wide Lighthouse programme
 
+## Video facade reconciliation onto public cache v128 — 14 October 2026
+
+- Existing draft PR **#2719** remains the sole performance integration vehicle. Current main at reconciliation: `aea758ccdc3c789ac6de6410c34aa5b0ee57a99f` with cache `2026-10-14-public-code-v128`, including merged game SEO #2717 and all recent C64 emulator changes. Since old PR base `762342ee887205e912828eef17b3852605e5505e`, the only overlapping path is `service-worker.js`; all other 12 intended performance files remain source-exclusive to this PR.
+- The reconciled candidate is built from the exact current main tree and 13 intended PR source files, with the shared service-worker cache advanced monotonically to `2026-10-14-public-code-v129`. No public release logic, protected intro, game JSON, emulator or unrelated generated page is reverted.
+- The earlier 30/30 green CI, resolved review threads and review feedback apply to the PRIOR PR head and do not qualify this new merge head. Repeat all triggered exact-head CI and Codex review. The draft remains unmerged until the poster-to-player interaction and offsite action are visually verified at representative desktop/mobile widths, wheel/keyboard/pointer interaction remains usable, and measured Lighthouse comparison has no unacceptable regression. Owner merge approval is still required.
+
 ## Deferred video facade — current-main reconciliation, 13 October 2026
 
 - Current performance candidate: **draft PR #2719**. The original exact head `7a678b35df4c93b0d0712d7f9fda8496f03686ce` passed **21/21 GitHub Actions workflows** (including dedicated Lighthouse protocol, first paint, native physical-wheel Chromium, Site Safety, SEO and publishing); independent Codex review on that exact head completed with **no major findings**.
