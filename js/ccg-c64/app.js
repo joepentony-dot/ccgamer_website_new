@@ -391,6 +391,12 @@ const PAL_FRAME_MS = 1000 / 50.125;
 // Keep a little time for rendering, real keyboard events and browser accessibility.
 const WARP_FRAME_BUDGET_MS = 12;
 const WARP_MAX_FRAMES_PER_TICK = 1024;
+// After RUN the first loader may still have stages to fetch. Do not mistake
+// "RUN typed" for "game ready". These are emulated PAL frames, not wall time.
+const AUTO_WARP_POST_RUN_MIN_FRAMES = 300;   // observe six seconds after RUN
+const AUTO_WARP_POST_RUN_QUIET_FRAMES = 125; // finish only after 2.5 quiet seconds
+const AUTO_WARP_POST_RUN_MAX_FRAMES = 12000; // four-minute safety cap
+
 let machine = null;
 let running = false;
 let paused = false;
@@ -494,6 +500,13 @@ let autoStartSteps = null;
 let autoStartTypeRest = "";
 let autoStartSawBusy = false;
 let autoStartBudget = 0;
+let autoWarpFrameCount = 0;
+let autoWarpPostRunStart = null;
+let autoWarpLastActivity = 0;
+let autoWarpObservedLoads = 0;
+let autoWarpLoadEvents = 0;
+let autoWarpTrackedMachine = null;
+let autoWarpPreviousLoadTrap = null;
 let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
 if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
 let displayExpanded = ["2x", "expanded"].includes(localStorage.getItem("ccg.emulator.c64.size"));
@@ -1362,14 +1375,36 @@ function cancelAutoStart() {
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 0;
+  // Remove only our own load watcher. Do not modify the machine's original
+  // callback, or leave a callback attached to an abandoned machine.
+  if (autoWarpTrackedMachine) {
+    autoWarpTrackedMachine.onLoadTrap = autoWarpPreviousLoadTrap;
+  }
+  autoWarpTrackedMachine = null;
+  autoWarpPreviousLoadTrap = null;
+  autoWarpPostRunStart = null;
+  autoWarpLoadEvents = 0;
   finishAutomaticWarp();
 }
 
 function queueAutoStart(steps) {
+  cancelAutoStart();
   autoStartSteps = steps.slice();
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 10 * 60 * 60;
+  autoWarpFrameCount = 0;
+  autoWarpPostRunStart = null;
+  autoWarpObservedLoads = 0;
+  if (machine && steps.some(step => step.postRun === "disk")) {
+    autoWarpTrackedMachine = machine;
+    autoWarpPreviousLoadTrap = machine.onLoadTrap;
+    const previous = autoWarpPreviousLoadTrap;
+    machine.onLoadTrap = (...args) => {
+      autoWarpLoadEvents++;
+      if (typeof previous === "function") previous(...args);
+    };
+  }
   beginAutomaticWarp();
 }
 
@@ -1406,6 +1441,41 @@ function serviceAutoStart() {
       return;
     }
     autoStartSteps.shift();
+  } else if (step.postRun) {
+    // BASIC returning from LOAD is only the *first* stage. RUN often starts
+    // another loader. Observe live drive/tape activity before ending warp.
+    if (autoWarpPostRunStart === null) {
+      autoWarpPostRunStart = autoWarpFrameCount;
+      autoWarpLastActivity = autoWarpFrameCount;
+      autoWarpObservedLoads = autoWarpLoadEvents;
+    }
+    let loading = false;
+    if (autoWarpObservedLoads !== autoWarpLoadEvents) {
+      autoWarpObservedLoads = autoWarpLoadEvents;
+      loading = true;
+    }
+    if (step.postRun === "disk" && machine.truedriveEnabled && machine.drive1541) {
+      // Idle 1541 firmware is not a reason to prolong warp, even if the game
+      // itself continues executing. Active IEC/drive traffic keeps it on.
+      loading = loading || !machine.drive1541.canIdleSkip();
+    }
+    if (step.postRun === "tape" && machine.datasette) {
+      loading = loading || (machine.datasette.motorOn &&
+        machine.datasette.playPressed && !machine.datasette.atEnd);
+    }
+    if (loading) autoWarpLastActivity = autoWarpFrameCount;
+    const elapsed = autoWarpFrameCount - autoWarpPostRunStart;
+    const quiet = autoWarpFrameCount - autoWarpLastActivity;
+    if (elapsed >= AUTO_WARP_POST_RUN_MAX_FRAMES) {
+      autoStartSteps.shift();
+      if (stageNote) stageNote.textContent =
+        "Auto Warp reached its safety limit. If the game is still loading, use MAX to continue.";
+    } else if (elapsed >= AUTO_WARP_POST_RUN_MIN_FRAMES &&
+        quiet >= AUTO_WARP_POST_RUN_QUIET_FRAMES) {
+      autoStartSteps.shift();
+      if (stageNote) stageNote.textContent =
+        "Auto Warp stopped after loading activity settled. If the game needs more loading, use MAX.";
+    }
   } else {
     autoStartSteps.shift();
   }
@@ -1475,6 +1545,7 @@ function frameLoop(now) {
       do {
         machine.runFrame();
         frames++;
+        if (autoStartSteps) autoWarpFrameCount++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
         if (automaticWarpActive && automaticWarpFramesRemaining > 0 &&
             --automaticWarpFramesRemaining === 0) finishAutomaticWarp();
@@ -1486,6 +1557,7 @@ function frameLoop(now) {
       frameAccumulator += delta;
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
+        if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
       }
@@ -1965,6 +2037,7 @@ async function openMediaBytes(media) {
       { type: 'LOAD"*",8,1\r' },
       { loadDone: true },
       { type: "RUN\r" },
+      { postRun: "disk" },
     ]);
 
     if (diskSlotStatus) {
@@ -2010,6 +2083,7 @@ async function openMediaBytes(media) {
       { run: () => machine.setTapeKey("PLAY") },
       { loadDone: true },
       { type: "RUN\r" },
+      { postRun: "tape" },
     ]);
     if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP AUTO-START // ${name}`;
     if (machineState) machineState.textContent = `TAP AUTO-START // ${name.toUpperCase()}`;
