@@ -34,7 +34,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          APPLY_DELETIONS: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          APPLY_DELETIONS: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Retire next batch of old merged branches') }}
         run: |
           set -euo pipefail
           if [[ "$GITHUB_REPOSITORY" != "joepentony-dot/ccgamer_website_new" ]]; then
@@ -62,9 +62,9 @@ jobs:
           eligible=0
           deleted=0
           failed=0
-          max_deletions=50
+          max_deletions=65
           mode="DRY RUN"
-          [[ "$APPLY_DELETIONS" == 'true' ]] && mode="LIVE (up to 50)"
+          [[ "$APPLY_DELETIONS" == 'true' ]] && mode="LIVE (up to 65)"
           echo "Mode: $mode"
           echo "Base: $main_sha"
           echo "Age threshold: 120 days; original tip must be an ancestor of main"
