@@ -2572,6 +2572,29 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   font-size: 0.6rem;
   line-height: 1.5;
 }
+.ccg-c64-vault-recovery { margin-top: 0.5rem; }
+.ccg-c64-vault-recovery [hidden] { display: none !important; }
+.ccg-c64-vault-recovery p {
+  margin: 0 0 0.42rem;
+  color: #f0d89e;
+  font-size: 0.67rem;
+  line-height: 1.5;
+}
+.ccg-c64-vault-recovery button {
+  min-height: 36px;
+  border: 1px solid #817ec2;
+  border-radius: 8px;
+  padding: 0.46rem 0.8rem;
+  color: #e7e9ff;
+  background: #242647;
+  font: inherit;
+  font-size: 0.69rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ccg-c64-vault-recovery button:hover:not(:disabled),
+.ccg-c64-vault-recovery button:focus-visible { border-color: var(--emu-accent); }
+.ccg-c64-vault-recovery button:disabled { opacity: 0.6; cursor: wait; }
 @media (max-width: 760px), (pointer: coarse) {
   .ccg-c64-vault-game-row select,
   .ccg-c64-vault-backup-row button { min-height: 44px; font-size: 0.7rem; }
