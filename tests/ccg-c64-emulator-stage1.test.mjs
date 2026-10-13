@@ -7,6 +7,7 @@ import path from "node:path";
 import vm from "node:vm";
 import assert from "node:assert";
 import { fileURLToPath } from "node:url";
+import { d64Variant } from "../js/ccg-c64/core/media/d64.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -145,11 +146,11 @@ assert(html.includes("data-emulator-back"), "The emulator route must expose a vi
 assert(html.includes('href="/home.html"') && html.includes('href="/games/"') && html.includes('href="/emulation.html"'), "The emulator route must expose core CCG site navigation");
 assert(!/<iframe\b/i.test(html), "Stage 1 must not introduce eager third-party frames");
 assert(!/<script[^>]+https?:/i.test(html), "Emulator shell must not load third-party scripts");
-assert(html.includes('src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261013_clean_prg_archive_v1"'), "Emulator shell must start through the COI bootstrap");
+assert(/src="\/js\/ccg-c64\/coi-bootstrap\.js\?ccg_rev=[a-z0-9_]+"/.test(html), "Emulator shell must start through the COI bootstrap");
 assert(!html.includes('src="/js/ccg-c64/app.js"'), "The C64 app must not start before cross-origin isolation is ready");
 assert(coiBootstrap.includes('navigator.serviceWorker.register(WORKER_URL'), "COI bootstrap must register the route-scoped worker");
 assert(coiBootstrap.includes('window.crossOriginIsolated === true'), "COI bootstrap must verify browser isolation before importing the emulator");
-assert(coiBootstrap.includes('const APP_URL = "/js/ccg-c64/app.js?ccg_rev=20261013_clean_prg_archive_v1"') &&
+assert(/const APP_URL = "\/js\/ccg-c64\/app\.js\?ccg_rev=[a-z0-9_]+"/.test(coiBootstrap) &&
   coiBootstrap.includes("await import(APP_URL)"), "COI bootstrap must import the versioned emulator entry");
 assert(coiBootstrap.includes("await startCompatibilityMode(") &&
   machine.includes("this.sidShared = sharedSidAvailable ? new SharedArrayBuffer") &&
@@ -397,6 +398,12 @@ assert(onlineLibrary.entries.every((entry) => entry.approved === true &&
   ((typeof entry.url === "string" && entry.url.startsWith("/emulator/c64/media/")) ||
    (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0))),
   "Public games need explicit redistribution approval, licence and media");
+for (const [id, title] of [["zork-i", "Zork I"], ["zork-ii", "Zork II"], ["zork-iii", "Zork III"]]) {
+  const entry = onlineLibrary.entries.find(item => item.id === id);
+  assert(entry && entry.title === title && entry.format === "d64" &&
+    entry.url === "/emulator/c64/media/" + id + ".d64",
+    "Zork disk must have the exact approved title and a usable same-origin URL: " + id);
+}
 assert(html.includes('class="ccg-c64-panel ccg-c64-panel--library" hidden'),
   "Online Library must be hidden until approved titles are available");
 assert(app.includes("onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0"),
@@ -429,8 +436,8 @@ for (const entry of onlineLibrary.entries) {
     assert.equal(program[0] | (program[1] << 8), 0x0801,
       "PRG must contain the expected C64 BASIC load address: " + entry.id);
   } else if (entry.format === "d64") {
-    assert.equal(program.length, 174848,
-      "35-track D64 must have exactly 174,848 bytes: " + entry.id);
+    assert.equal(d64Variant(program.length)?.kind, "d64",
+      "Hosted D64 must have supported disk geometry (including original error-byte variants): " + entry.id);
   } else if (entry.format === "crt") {
     assert.equal(program.subarray(0, 16).toString("ascii"), "C64 CARTRIDGE   ",
       "CRT game must have Commodore cartridge header: " + entry.id);
