@@ -358,7 +358,7 @@ function activateSequenceTorch(torch,p){
   host.revision++;return false
 }
 function triggerSequenceTorch(p,deliberate=false){
-  const z=host.sequenceTorchPuzzle;if(!z||z.solved||!p)return false;
+  const z=host.sequenceTorchPuzzle;if(!z||z.solved||!deliberate||!p)return false;
   z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
   const playerId=String(p.id||p.name||"P1"),torch=(z.torches||[]).find(t=>Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y)),current=torch?String(torch.dir||""):"",previous=String(z.entryByPlayer[playerId]||"");
   if(current===previous)return false;
