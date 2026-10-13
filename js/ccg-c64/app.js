@@ -570,7 +570,11 @@ if (screenStage && typeof ResizeObserver !== "undefined") {
 window.addEventListener("resize", fitScreenToStage);
 
 function updateAudioUi(label = null) {
-  if (audioStatus && label) audioStatus.textContent = label;
+  // A created SID node is not necessarily audible: browsers can leave Web
+  // Audio suspended until the visitor taps. Never mislabel that as active.
+  const actualLabel = machine?.sidShared && sidNode && audioContext?.state === "suspended" &&
+    !warpLoadActive && !audioMuted ? "TAP TO ENABLE SOUND" : label;
+  if (audioStatus && actualLabel) audioStatus.textContent = actualLabel;
   if (audioButton) {
     audioButton.disabled = !running || !audioContext || !sidNode;
     const strong = audioButton.querySelector("strong");
@@ -595,13 +599,15 @@ async function ensureAudioGraph() {
   masterGain.gain.value = 0;
   sidNode.connect(masterGain);
   masterGain.connect(audioContext.destination);
+  audioContext.addEventListener?.("statechange", () =>
+    updateAudioUi(warpLoadActive ? "WARP SILENT" : audioMuted ? "MUTED" : "SID ACTIVE"));
   return true;
 }
 
 async function wireAudioToMachine() {
   if (!machine) return false;
   if (!machine.sidShared) {
-    updateAudioUi("SILENT COMPATIBILITY MODE");
+    updateAudioUi("SILENT COMPATIBILITY MODE — SID NEEDS BROWSER ISOLATION");
     return false;
   }
   try {
@@ -613,8 +619,12 @@ async function wireAudioToMachine() {
       engine: "wasm",
     });
     masterGain.gain.setValueAtTime(audioMuted ? 0 : 0.72, audioContext.currentTime);
-    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
-    updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE");
+    if (audioContext.state === "suspended") {
+      void audioContext.resume().then(() =>
+        updateAudioUi(audioMuted ? "MUTED" : warpLoadActive ? "WARP SILENT" : "SID ACTIVE")
+      ).catch(() => updateAudioUi("TAP TO ENABLE SOUND"));
+    }
+    updateAudioUi(warpLoadActive ? "WARP SILENT" : audioMuted ? "MUTED" : "SID ACTIVE");
     return true;
   } catch (error) {
     console.warn("[ccg-c64] SID audio unavailable:", error);
@@ -623,12 +633,19 @@ async function wireAudioToMachine() {
   }
 }
 
-// iOS Safari normally requires a real screen tap before starting or resuming Web Audio.
-// Keep desktop autoplay behaviour, but recover the SID graph on a later gesture.
-document.addEventListener("pointerdown", () => {
-  if (sidNode && machine?.sidShared && audioContext?.state === "suspended") {
-    void audioContext.resume().then(() => updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE")).catch(() => {});
-  }
+// AudioContext can remain suspended after async firmware/media fetching.
+// Recover it from a real user gesture (pointer OR keyboard), without forcing
+// iPhone's established silent compatibility runtime into an isolation loop.
+function unlockSidAudioFromGesture() {
+  if (!sidNode || !machine?.sidShared || audioContext?.state !== "suspended") return;
+  void audioContext.resume().then(() => {
+    setAudioPaused(warpLoadActive || paused);
+    updateAudioUi(warpLoadActive ? "WARP SILENT" : audioMuted ? "MUTED" : "SID ACTIVE");
+  }).catch(() => updateAudioUi("TAP TO ENABLE SOUND"));
+}
+document.addEventListener("pointerdown", unlockSidAudioFromGesture, { passive: true });
+document.addEventListener("keydown", (event) => {
+  if (!event.repeat) unlockSidAudioFromGesture();
 }, { passive: true });
 
 function resetAudioForMachine() {
