@@ -10,6 +10,11 @@ Update ONLY `data/composer-research/part-01.json` (Ben Daglish) and `part-07.jso
 
 Sources: Lemon64 and Remix64 interviews with Ben Daglish, Chris Abbott's C64Audio obituary; Remix64 Rob Hubbard interview, MobyGames career biography and C64-Wiki's cited Hubbard interviews. No unsourced credits or private information added.
 
+
+## Exact regression inclusion
+
+- The initial 4/4 green checks did not execute the newly created focused `tests/composer-nonindexed-biographies.test.mjs`, because the existing composer-archive workflow listed only three older tests. This draft now adds the new regression to both workflow path filters and the existing `node --test` command. Requalify the exact new PR head; do not cite the previous 4/4 status as coverage for this test.
+
 ## Release gate
 
 **Review draft only.** Do not merge without exact-head qualification, independent review and owner authorisation. Composer pages are generated output: after an approved source merge, use the authoritative composer generation/publishing workflow, verify rendered biography/source links, structured/social metadata, Site Safety and live deployment, and monitor GSC recrawls. Google alone determines eventual indexing.
