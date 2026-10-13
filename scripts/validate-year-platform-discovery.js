@@ -40,6 +40,10 @@ const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
     "videos/index.html"
 ]);
 const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
+    // Approved addition of one new canonical game; existing archive baselines stay protected.
+    ["sitemap-games.xml", new Set([
+        `${SITE_ORIGIN}/games/olli-and-lissa/`
+    ])],
     ["sitemap.xml", new Set([
         `${SITE_ORIGIN}/sitemap-retro-videos.xml`
     ])],
