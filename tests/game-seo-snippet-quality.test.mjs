@@ -163,10 +163,10 @@ test('single-letter initials inside a factual sentence are not false sentence en
 test('single-letter mode labels and H.E.R.O. titles retain real sentence boundaries', () => {
   const endings = [
     {
-      title: 'Demo',
-      slug: 'demo',
-      description: 'The three difficulty settings each have a choice of mode A. Another mode is available.',
-      expected: 'The three difficulty settings each have a choice of mode A.'
+      title: 'Modes',
+      slug: 'modes',
+      description: 'The three difficulty settings in Modes each have a choice of mode A. Another mode is available.',
+      expected: 'The three difficulty settings in Modes each have a choice of mode A.'
     },
     {
       title: 'H.E.R.O.',
