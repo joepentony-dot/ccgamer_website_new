@@ -148,7 +148,8 @@ export class GameVault {
 }
 
 function assertGameKey(value) {
-  if (typeof value !== "string" || !value.trim() || value.length > 300 ||
+  if (typeof value !== "string" || !value.trim() ||
+      value === "__current__" || value === "__legacy__" || value.length > 300 ||
       /[\u0000-\u001f]/.test(value)) {
     throw new Error("Invalid saved-game identity.");
   }
