@@ -51,6 +51,10 @@ test("both composer profiles remain compatible with the shared SEO/social snippe
     };
     const output = enrich.buildDescription(route, profile, ["Example Game"]);
     assert.ok(output.length > 45 && output.length <= 158);
+    if (entry.slug === "rob-hubbard") {
+      assert.equal(output, "Rob Hubbard is an English game composer whose Commodore 64 soundtracks include Commando, Monty on the Run and International Karate.");
+      assert.doesNotMatch(output, /Game-music credits include Example Game/);
+    }
     assert.match(output, /[.!?]$/);
     assert.doesNotMatch(output, /(?:…|\.\.\.)$/);
     assert.equal(output, enrich.buildDescription(route, profile, ["Example Game"]));
