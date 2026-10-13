@@ -2073,8 +2073,8 @@ async function queueMedia(media, { freshBoot = false } = {}) {
     if (loaded) {
       currentSessionGame = sessionForMedia(queued);
       void refreshVaultGameList("__current__");
-      if (typeof enterMobilePlayMode === "function") enterMobilePlayMode(queued.name);
     }
+    if (loaded && typeof enterMobilePlayMode === "function") enterMobilePlayMode(queued.name);
     return loaded;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "The media could not be opened.";
