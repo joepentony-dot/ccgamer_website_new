@@ -90,7 +90,7 @@
     const subject = normalize(title).toLowerCase();
     if (!subject || !candidate.toLowerCase().startsWith(subject)) return "";
     const remainder = candidate.slice(subject.length);
-    if (!/\b(?:is|was|are|were|has|have|features|combines|takes|offers|delivers)\b/i.test(remainder)) return "";
+    if (!/\b(?:is|was|are|were|has|have|features|combines|takes|offers|delivers|arrived)\b/i.test(remainder)) return "";
     if (candidate.length < MIN_SENTENCE_LENGTH || candidate.length > maxLength) return "";
     return candidate;
   }
