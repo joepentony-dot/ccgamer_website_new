@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-10-08T17:32:48.060Z",
+  "updatedAt": "2026-10-13T17:52:04.278Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -3105,6 +3105,15 @@
       "uploadDate": "2024-05-31T17:30:04Z",
       "duration": "PT5M36S",
       "thumbnailUrl": "https://i.ytimg.com/vi/Ir4WiCfflKY/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "iSBLT9C9xh4": {
+      "title": "Olli & Lissa – Revisiting My Childhood C64 Frustration!",
+      "description": "🕹️ Olli & Lissa (1987) – Commodore 64 | Haunted Castle Platformer & Controversial Reviews\nOlli & Lissa: The Ghost of Shilmoore Castle is a 1987 Commodore 64 platform game published by Firebird, featuring a C64 conversion by Paul Johnson and music by Ben Daglish. Originally released for the ZX Spectrum in 1986, this £1.99 budget adventure takes players through a haunted Scottish castle on a rather peculiar rescue mission. \n\n🌐 Full game info, manual & download:\n👉 https://www.cheekycommodoregamer.co.uk/games/olli-and-lissa/\n\nThe story follows Olli and Lissa as they attempt to save Shilmoore Castle from Eugene Port-Cullis, an American millionaire determined to dismantle the building and ship it across the Atlantic. Unfortunately, the resident ghost, Sir Humphrey, has lost his ability to turn invisible. Olli must therefore collect eight ingredients for a magical potion while Lissa remains beside the cauldron, waiting for his return.\n\nGameplay involves exploring eight increasingly difficult sections of the castle and its grounds, collecting the requested items and carrying them back to Lissa before time runs out. You'll encounter bats, spiders, ghosts and other troublesome creatures while negotiating staircases, narrow platforms and dangerous water sections. Every outward journey must also be completed in reverse, making even a successful collection only half the battle.\n\nThe biggest difficulty comes from Olli's unforgiving jumping mechanics. Once you've committed to a jump, there's no adjusting your direction in mid-air, leaving you reliant on extremely precise positioning and timing. Enemy collisions drain your energy, falls can prove fatal, and Sir Humphrey isn't particularly sympathetic when you take too long. Even the earliest screens can become surprisingly frustrating.\n\nDespite the difficulty, Olli & Lissa has some enjoyable cartoon-style graphics, amusing character animations and a memorable Ben Daglish title tune. As for that red enemy on the second screen, I'd be quite happy if Eugene took him back to America with the castle.\n\n💬 Did you ever manage to finish Olli & Lissa, or did its jumping drive you round the bend? \n\n▶️ PLAYLISTS\nFirebird Software – Commodore 64 Games:\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSew4-_NuMjsLqWFr737xVWOe\nCommodore 64 Platform Games:\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezH0fpV5Kx-9a693P0iLKWd\nCommodore 64 Games of 1987:\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezyiztFykyKnRxJTvcdlqbA\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#OlliAndLissa #Commodore64 #C64Games #FirebirdSoftware #RetroGaming",
+      "uploadDate": "2026-10-13T17:30:33Z",
+      "duration": "PT8M26S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/iSBLT9C9xh4/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
