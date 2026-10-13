@@ -135,6 +135,31 @@ test('Omega Race recovers the verified C64 conversion clause from its editorial 
   assert.doesNotMatch(expected, /…|\.\.\.$/);
 });
 
+test('publisher initials do not cut off Gauntlet SEO descriptions', () => {
+  const game = {
+    title: 'Gauntlet',
+    slug: 'gauntlet',
+    system: 'C64',
+    year: 1986,
+    publisher: 'US Gold',
+    description: 'Gauntlet (1986) – Commodore 64 Co-Op Dungeon Crawling Arcade Legend Released in 1986 and brought to the Commodore 64 by U. S. Gold, Gauntlet delivers a faithful home version of Atari’s iconic arcade dungeon crawler. You choose from four classic heroes.'
+  };
+  const expected = 'Released in 1986 and brought to the Commodore 64 by U. S. Gold, Gauntlet delivers a faithful home version of Atari’s iconic arcade dungeon crawler.';
+  const actual = snippet.buildSnippet(game, game.title);
+  assert.equal(actual, expected);
+  assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+  assert.equal(buildGameSeoPreview(game, snippet).description, actual);
+  assert.ok(actual.length <= 155);
+  assert.doesNotMatch(actual, /^Gauntlet: Released in 1986 and brought to the Commodore 64 by U\.$/);
+});
+
+test('single-letter initials inside a factual sentence are not false sentence endings', () => {
+  const complete = 'The 1986 Commodore 64 game was published by U.S. Gold and features colourful arcade action.';
+  assert.equal(snippet.firstCompleteSentence(complete + ' Another factual sentence.', 155), complete);
+  const spaced = 'The 1986 Commodore 64 game was published by U. S. Gold and features colourful arcade action.';
+  assert.equal(snippet.firstCompleteSentence(spaced + ' Another factual sentence.', 155), spaced);
+});
+
 test('does not salvage an arbitrary dangling clause without the game title as subject', () => {
   const game = {
     title: 'Kingpin',
