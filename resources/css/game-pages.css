@@ -1173,12 +1173,23 @@
     justify-self: end;
 }
 
+.ccg-page--single-game #game-video-section .game-video__stage {
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+}
+
 .ccg-page--single-game #game-video-section .game-video__frame {
     display: block;
     width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
+    height: 100%;
+    aspect-ratio: auto;
     border-radius: 10px;
+}
+
+/* The single-game display:block rule is more specific than the shared [hidden]
+   rule. Keep the unactivated YouTube iframe out of layout until Play is pressed. */
+.ccg-page--single-game #game-video-section .game-video__frame[hidden] {
+    display: none;
 }
 
 .ccg-page--single-game #game-video-section .game-video__actions {
@@ -1366,8 +1377,12 @@
 }
 
 @media (max-width: 560px) {
-    .ccg-page--single-game #game-video-section .game-video__frame {
+    .ccg-page--single-game #game-video-section .game-video__stage {
         aspect-ratio: 16 / 10;
+    }
+
+    .ccg-page--single-game #game-video-section .game-video__frame {
+        aspect-ratio: auto;
     }
 
     .ccg-page--single-game #game-discovery-links:not([hidden]) {
