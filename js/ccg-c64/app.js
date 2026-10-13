@@ -141,8 +141,8 @@ if (mobilePlayMedia?.matches) {
     const control = element?.closest?.("button, summary");
     if (control?.closest?.("body.ccg-c64-lab-body")) event.preventDefault();
   };
-  document.addEventListener("selectstart", suppressMobileControlSelection, true);
-  document.addEventListener("contextmenu", suppressMobileControlSelection, true);
+  document.addEventListener?.("selectstart", suppressMobileControlSelection, true);
+  document.addEventListener?.("contextmenu", suppressMobileControlSelection, true);
 }
 // END C64 MOBILE BUTTON SELECTION GUARD
 
