@@ -2447,7 +2447,7 @@ async function initialiseOnlineLibrary() {
   if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden =
     !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
-  catalogueBrowser?.refresh();
+  if (typeof catalogueBrowser !== "undefined") catalogueBrowser?.refresh();
 }
 
 async function loadSelectedLibraryEntry() {
