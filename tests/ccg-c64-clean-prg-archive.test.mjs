@@ -78,6 +78,8 @@ assert.equal(suggestCatalogGames(large.entries, "archive game", 8).games.length,
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
 assert.match(app, /readyResponse\.status !== 404/, "The absent archive must remain optional");
 assert.match(app, /catalogueSHA !== ready\.catalogSHA256/, "Activation must verify the catalogue hash");
+assert.match(app, /entry\.title\.trim\(\)\.toLocaleLowerCase\(\) !== "bruce lee"/,
+  "The original Bruce Lee PRG must remain hidden in favour of the tested Trilogy CRT");
 assert.match(app, /onlineLibraryEntries = \[\.\.\.regular, \.\.\.packed, \.\.\.archived\]/,
   "Old hosted catalogue entries must remain when archive is enabled");
 console.log("PASS: optional archive, clean searchable names, independent packs, activation and 10k titles");
