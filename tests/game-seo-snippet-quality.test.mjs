@@ -118,6 +118,128 @@ test('recovers a game-specific factual clause after a long introductory phrase',
   }
 });
 
+test('Omega Race recovers the verified C64 conversion clause from its editorial introduction', () => {
+  const game = {
+    title: 'Omega Race',
+    slug: 'omega-race',
+    system: 'C64',
+    year: 1982,
+    publisher: 'Commodore',
+    description: 'Omega Race (1982) – Commodore 64 Vector Arcade Shooter Classic Originally developed by Ron Haliburton and released by Midway in 1981, Omega Race arrived on the Commodore 64 in 1982 as a remarkably faithful home conversion of the arcade original. It delivers fast, precision-based shooting action.'
+  };
+  const expected = 'Omega Race arrived on the Commodore 64 in 1982 as a remarkably faithful home conversion of the arcade original.';
+  assert.equal(snippet.buildSnippet(game, game.title), expected);
+  assert.equal(routes.buildRuntimeDescription(game, game.title), expected);
+  assert.equal(buildGameSeoPreview(game, snippet).description, expected);
+  assert.ok(expected.length <= 155);
+  assert.doesNotMatch(expected, /…|\.\.\.$/);
+});
+
+test('publisher initials do not cut off Gauntlet SEO descriptions', () => {
+  const game = {
+    title: 'Gauntlet',
+    slug: 'gauntlet',
+    system: 'C64',
+    year: 1986,
+    publisher: 'US Gold',
+    description: 'Gauntlet (1986) – Commodore 64 Co-Op Dungeon Crawling Arcade Legend Released in 1986 and brought to the Commodore 64 by U. S. Gold, Gauntlet delivers a faithful home version of Atari’s iconic arcade dungeon crawler. You choose from four classic heroes.'
+  };
+  const expected = 'Released in 1986 and brought to the Commodore 64 by U. S. Gold, Gauntlet delivers a faithful home version of Atari’s iconic arcade dungeon crawler.';
+  const actual = snippet.buildSnippet(game, game.title);
+  assert.equal(actual, expected);
+  assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+  assert.equal(buildGameSeoPreview(game, snippet).description, actual);
+  assert.ok(actual.length <= 155);
+  assert.doesNotMatch(actual, /^Gauntlet: Released in 1986 and brought to the Commodore 64 by U\.$/);
+});
+
+test('single-letter initials inside a factual sentence are not false sentence endings', () => {
+  const complete = 'The 1986 Commodore 64 game was published by U.S. Gold and features colourful arcade action.';
+  assert.equal(snippet.firstCompleteSentence(complete + ' Another factual sentence.', 155), complete);
+  const spaced = 'The 1986 Commodore 64 game was published by U. S. Gold and features colourful arcade action.';
+  assert.equal(snippet.firstCompleteSentence(spaced + ' Another factual sentence.', 155), spaced);
+});
+
+test('single-letter mode labels and H.E.R.O. titles retain real sentence boundaries', () => {
+  const endings = [
+    {
+      title: 'Modes',
+      slug: 'modes',
+      description: 'The three difficulty settings in Modes each have a choice of mode A. Another mode is available.',
+      expected: 'The three difficulty settings in Modes each have a choice of mode A.'
+    },
+    {
+      title: 'H.E.R.O.',
+      slug: 'h-e-r-o',
+      description: 'A wide range of home-computer games includes the Commodore 64 title H.E.R.O. Another classic follows.',
+      expected: 'A wide range of home-computer games includes the Commodore 64 title H.E.R.O.'
+    },
+    {
+      title: 'H.E.R.O.',
+      slug: 'h-e-r-o',
+      description: 'A wide range of home-computer games includes H.E.R.O. as a playable Commodore 64 title. More details follow.',
+      expected: 'A wide range of home-computer games includes H.E.R.O. as a playable Commodore 64 title.'
+    }
+  ];
+  for (const game of endings) {
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), game.expected, game.title);
+    assert.equal(snippet.buildSnippet(game, game.title), game.expected, game.title);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
+});
+
+test('terminal U.S. and Chase H.Q. acronyms do not consume the next sentence', () => {
+  const cases = [
+    {
+      title: 'US Test',
+      slug: 'us-test',
+      description: 'The US Test game was first sold to American players in the U.S. Players elsewhere bought it later.',
+      expected: 'The US Test game was first sold to American players in the U.S.'
+    },
+    {
+      title: 'Chase H.Q.',
+      slug: 'chase-h-q',
+      description: 'Retro gaming enthusiasts still talk about the arcade conversion Chase H.Q. Another racing game followed.',
+      expected: 'Retro gaming enthusiasts still talk about the arcade conversion Chase H.Q.'
+    }
+  ];
+  for (const game of cases) {
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), game.expected);
+    assert.equal(snippet.buildSnippet(game, game.title), game.expected);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
+});
+
+test('publisher and author multi-letter initials retain their complete factual sentence', () => {
+  for (const text of [
+    'The Commodore 64 game was published by U.S. Gold and includes arcade action.',
+    'The Commodore 64 game was published by U. S. Gold and includes arcade action.',
+    'The fantasy game was written by J. R. R. Tolkien and sold worldwide.'
+  ]) {
+    assert.equal(snippet.firstCompleteSentence(text + ' Another sentence follows.', 155), text);
+  }
+});
+
+test('Bubble Bobble factual game subject recovers game-specific meta and social summary', () => {
+  const game = {
+    title: 'Bubble Bobble',
+    slug: 'bubble-bobble',
+    year: 1987,
+    system: 'C64',
+    publisher: 'Firebird',
+    description: 'Bubble Bobble (1987) – Commodore 64 Arcade Platform Classic with Co-Op Magic Originally developed by Taito in 1986 and expertly brought to the Commodore 64 in 1987 by Software Creations and Firebird, Bubble Bobble stars Bub and Bob—two bubble-blowing dragons on a quest to rescue their girlfriends from the Cave of Monsters. The adventure unfolds across 100 single-screen stages.'
+  };
+  const expected = 'Bubble Bobble stars Bub and Bob—two bubble-blowing dragons on a quest to rescue their girlfriends from the Cave of Monsters.';
+  const actual = snippet.buildSnippet(game, game.title);
+  assert.equal(actual, expected);
+  assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+  assert.equal(buildGameSeoPreview(game, snippet).description, expected);
+  assert.ok(actual.length <= 155);
+  assert.doesNotMatch(actual, /…|\.\.\.$/);
+});
+
 test('does not salvage an arbitrary dangling clause without the game title as subject', () => {
   const game = {
     title: 'Kingpin',
@@ -178,4 +300,25 @@ test('three-dot punctuation inside a long Super Pipeline sentence is not a compl
 test('rejects an editorial sentence ending in three dots even when short enough', () => {
   const result = snippet.firstCompleteSentence('A lengthy historic description that was abruptly cut off...', 155);
   assert.equal(result, '');
+});
+
+test('new initial-led sentences do not join preceding mode labels', () => {
+  const cases = [
+    {
+      title: 'Mode Trial', slug: 'mode-trial', system: 'C64', year: 1987,
+      description: 'Mode Trial is a Commodore 64 game in which players select difficulty A. B. Smith designed another mode.',
+      expected: 'Mode Trial is a Commodore 64 game in which players select difficulty A.'
+    },
+    {
+      title: 'Modes', slug: 'modes', system: 'C64', year: 1987,
+      description: 'Modes offers several Commodore 64 difficulty settings including mode B. C. Jones introduced a further setting.',
+      expected: 'Modes offers several Commodore 64 difficulty settings including mode B.'
+    }
+  ];
+  for (const game of cases) {
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), game.expected);
+    assert.equal(snippet.buildSnippet(game, game.title), game.expected);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
 });
