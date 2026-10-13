@@ -358,7 +358,7 @@ function activateSequenceTorch(torch,p){
   host.revision++;return false
 }
 function triggerSequenceTorch(p,deliberate=false){
-  const z=host.sequenceTorchPuzzle;if(!z||z.solved||!deliberate||!p)return false;
+  const z=host.sequenceTorchPuzzle;if(!z||z.solved||!p)return false;
   z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
   const playerId=String(p.id||p.name||"P1"),torch=(z.torches||[]).find(t=>Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y)),current=torch?String(torch.dir||""):"",previous=String(z.entryByPlayer[playerId]||"");
   if(current===previous)return false;
@@ -858,7 +858,10 @@ function updateRescue(){
   if(distance>1){const next=SYS.pathStep(world,host,r,target,true);if(next){r.x=next.x;r.y=next.y}}
   if(SYS.inSanctuary(world,r.x,r.y)){
     r.rescued=true;r.following=false;
-    showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green");
+    // The rescue state changes here (not in triggerRescue): give the scout,
+    // rather than the sanctuary keeper, ownership of the completion line.
+    try{window.CCGLostSizzlerStage8NpcDialogue?.presentScout?.(null,{force:true,stateKey:"rescued"})}catch(_){}
+    showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green",7000,{ccgDialogueVoiceHandled:true});
     SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(target.id)||new Set(),world)*100))
   }
 }
