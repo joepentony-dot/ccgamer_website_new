@@ -45,7 +45,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261013_mobile_touch_selection_v1">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261013_per_game_vault_v1">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -277,6 +277,13 @@
 
       <section class="ccg-c64-panel ccg-c64-panel--vault">
         <header class="ccg-c64-panel-title"><span>••</span><strong>GAME VAULT</strong><em data-vault-status>CHECKING…</em></header>
+        <div class="ccg-c64-vault-game-row">
+          <label for="ccg-c64-vault-game">SAVED GAME</label>
+          <select id="ccg-c64-vault-game" data-vault-game aria-label="Choose current game or a previously saved game">
+            <option value="__current__">CURRENT GAME</option>
+            <option value="__legacy__">LEGACY SLOTS (ORIGINAL SAVES)</option>
+          </select>
+        </div>
         <div class="ccg-c64-vault-row">
           <select data-vault-slot aria-label="Game Vault slot">
             <option value="1">SLOT 1</option>
@@ -287,6 +294,12 @@
           <button type="button" data-vault-load disabled>RESTORE</button>
           <button type="button" data-vault-clear>CLEAR</button>
         </div>
+        <div class="ccg-c64-vault-backup-row">
+          <button type="button" data-vault-export>EXPORT SLOT</button>
+          <button type="button" data-vault-import>IMPORT BACKUP</button>
+          <input type="file" id="ccg-c64-vault-backup-input" accept=".json,.ccg64save" data-vault-backup-input hidden>
+        </div>
+        <p class="ccg-c64-vault-help">Three slots per game, stored in this browser. Export important saves to keep a separate backup or move them to another device. Original slots are preserved under Legacy.</p>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--rom">
@@ -394,6 +407,6 @@
   </div>
 
   <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2" defer></script>
-  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261013_clean_prg_archive_v1"></script>
+  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261013_per_game_vault_v1"></script>
 </body>
 </html>

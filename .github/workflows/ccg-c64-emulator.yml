@@ -47,6 +47,9 @@ jobs:
       - name: Verify hot disk swapping and multi-disk library controls
         run: node tests/ccg-c64-disk-swap.test.mjs
 
+      - name: Verify per-game vault slots, preserved legacy saves and backup transfers
+        run: node --test tests/ccg-c64-game-vault.test.mjs
+
       - name: Verify searchable and SHA-256-protected C64 game browser
         run: node tests/ccg-c64-game-catalog.test.mjs
 

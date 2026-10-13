@@ -2524,3 +2524,55 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-discovery { margin: 0.65rem 0.4rem 1rem; padding: 0.8rem; }
   .ccg-c64-discovery p { font-size: 0.8rem; }
 }
+
+
+/* Per-game vault controls. Scoped to Game Vault so the mobile joystick and
+   existing game-selection layout remain unchanged. */
+.ccg-c64-vault-game-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.ccg-c64-vault-game-row label {
+  color: #a5aed5;
+  font-size: 0.57rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+.ccg-c64-vault-game-row select,
+.ccg-c64-vault-backup-row button {
+  min-width: 0;
+  min-height: 35px;
+  border: 1px solid #373b74;
+  border-radius: 8px;
+  background: #131633;
+  color: #bfc0e3;
+  padding: 0.42rem 0.48rem;
+  font: inherit;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+.ccg-c64-vault-game-row select { width: 100%; appearance: auto; }
+.ccg-c64-vault-backup-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.ccg-c64-vault-backup-row button {
+  cursor: pointer;
+}
+.ccg-c64-vault-backup-row button:hover:not(:disabled),
+.ccg-c64-vault-game-row select:hover { border-color: var(--emu-accent); }
+.ccg-c64-vault-help {
+  margin: 0.42rem 0 0;
+  color: #a5aed5;
+  font-size: 0.6rem;
+  line-height: 1.5;
+}
+@media (max-width: 760px), (pointer: coarse) {
+  .ccg-c64-vault-game-row select,
+  .ccg-c64-vault-backup-row button { min-height: 44px; font-size: 0.7rem; }
+}
