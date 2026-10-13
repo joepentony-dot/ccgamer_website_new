@@ -819,7 +819,35 @@ function surroundingsTick(){
   else text=`<strong>${W.themeAt(world,p1.x,p1.y).name.toUpperCase()}.</strong> ${W.themeAt(world,p1.x,p1.y).message}`;
   if(text!==lastAmbientMessage){lastAmbientMessage=text;say(text)}
 }
-function spawnArenaWave(a,count){const room=world.rooms[a.roomId];for(let i=0;i<count;i++){const x=Math.max(room.x+1,Math.min(room.x+room.w-1,room.x+2+(i*3)%Math.max(2,room.w-2))),y=Math.max(room.y+1,Math.min(room.y+room.h-1,room.y+2+(i*2)%Math.max(2,room.h-2)));host.enemies.push({id:`arena-${a.id}-${a.wave}-${i}-${Date.now()}`,x,y,kind:i%3===0?"hunter":"scout",hp:3+run.floor,maxHp:3+run.floor,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:{x:p1.x,y:p1.y},memoryMs:5000,searchMs:0,moveCooldown:100,attackCooldown:500,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,arenaId:a.id})}host.revision++}
+function spawnArenaWave(a,count){
+  const room=world.rooms[a.roomId];if(!room||!p1)return;
+  // Arena doors are locked for this challenge. Every summoned enemy must
+  // occupy a reachable room tile: a monster behind an unbreakable furnishing
+  // can otherwise keep the room sealed forever.
+  const inside=q=>q.x>=room.x+1&&q.x<room.x+room.w&&q.y>=room.y+1&&q.y<room.y+room.h;
+  const key=q=>q.x+","+q.y,origin={x:p1.x,y:p1.y},queue=inside(origin)?[origin]:[],seen=new Set(queue.map(key)),reachable=[];
+  for(let at=0;at<queue.length;at++){
+    const pos=queue[at];reachable.push(pos);
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const next={x:pos.x+dx,y:pos.y+dy},id=key(next);
+      if(seen.has(id)||!inside(next)||!W.playerWalkable(world.map,next.x,next.y,host))continue;
+      seen.add(id);queue.push(next);
+    }
+  }
+  const occupied=q=>(host.enemies||[]).some(e=>e?.alive&&e.x===q.x&&e.y===q.y)
+    ||(host.items||[]).some(item=>item?.active&&item.x===q.x&&item.y===q.y)
+    ||(host.chests||[]).some(chest=>chest?.active&&chest.x===q.x&&chest.y===q.y)
+    ||(host.switches||[]).some(sw=>sw?.active&&sw.x===q.x&&sw.y===q.y)
+    ||(host.generators||[]).some(g=>g?.alive&&g.x===q.x&&g.y===q.y)
+    ||[host.trader,host.startShop].some(shop=>shop?.active&&shop.x===q.x&&shop.y===q.y);
+  const available=reachable.filter(q=>!(q.x===origin.x&&q.y===origin.y)&&!occupied(q))
+    .sort((b,c)=>(Math.abs(b.x-origin.x)+Math.abs(b.y-origin.y))-(Math.abs(c.x-origin.x)+Math.abs(c.y-origin.y))||b.y-c.y||b.x-c.x);
+  for(let i=0;i<count&&available.length;i++){
+    const {x,y}=available.shift(),hp=3+run.floor;
+    host.enemies.push({id:`arena-${a.id}-${a.wave}-${i}-${Date.now()}`,x,y,kind:i%3===0?"hunter":"scout",hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:{x:p1.x,y:p1.y},memoryMs:5000,searchMs:0,moveCooldown:100,attackCooldown:500,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,arenaId:a.id});
+  }
+  host.revision++;
+}
 function updateArena(){for(const a of host.arenas||[])if(a.triggered&&!a.cleared){const alive=host.enemies.some(e=>e.alive&&e.arenaId===a.id);if(!alive){if(a.wave<2){a.wave++;showToast("ARENA WAVE TWO","Apparently one ambush was considered insufficient.","red");spawnArenaWave(a,5)}else{a.cleared=true;SYS.lockRoomDoors(host,a.roomId,false);for(const d of host.doors||[])if(d.type==="room"&&d.roomId===a.roomId)beginDoorOpening(d,900);showToast("ARENA CLEARED","The room doors swing open. A Sizzler-quality chest has appeared.","green");const room=world.rooms[a.roomId],c={id:`arena-chest-${Date.now()}`,x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2),locked:false,active:true,depth:(room.depth||0)+5,roomId:a.roomId};c.loot=PGR.lootForChest(c,run,()=>Math.random()*.7);host.chests.push(c)}}}}
 function updateTimed(dt){let active=null;for(const t of host.timedRooms||[])if(t.triggered&&!t.cleared){const p=localPlayers().find(p=>W.roomAt(world,p.x,p.y)===t.roomId),hunter=host.enemies.find(e=>e.id===t.hunterId);if(!p){if(hunter){hunter.aiState="search";hunter.memoryMs=5000}t.triggered=false;t.timeLeft=30000;timedChamberCountdown(null);showToast("TIMED CHALLENGE FAILED","You left the chamber before the timer expired. The Death Stalker remains somewhere on this floor.","red");continue}if(hunter){hunter.aiState="chase";hunter.lastSeen={x:p.x,y:p.y};hunter.memoryMs=999999}t.timeLeft-=dt;active=t;if(t.timeLeft<=0){t.cleared=true;t.triggered=false;active=null;if(hunter){hunter.aiState="search";hunter.memoryMs=5000}timedChamberCountdown(null);showToast("TIMED CHAMBER CLEARED","Thirty seconds survived. The Death Stalker remains until permanently destroyed with a Banishment Flask. Bonus armour awarded.","green");applyLoot({kind:"armour",amount:3,rarity:"SIZZLER",name:"SIZZLER Survival Plate"},p)}}timedChamberCountdown(active)}
 function generatorIlluminated(g){
