@@ -122,3 +122,150 @@ test("wheel guard follows a deferred player into its facade stage", () => {
   assert.match(globalJs, /guarded\.delete\(frame\)/);
   assert.match(globalJs, /previousShield\?\.remove\?\.\(\)/);
 });
+
+
+test("keyboard activation focuses the revealed player without trapping pointer interaction", () => {
+  const handlerBody = runtime.match(/videoFacade\.onclick = \(\) => \{([\s\S]*?)\n            \};/)?.[1];
+  assert.ok(handlerBody, "video facade click handler exists");
+  const activate = new Function("videoEmbed", "videoFacade", "embedUrl", "document", handlerBody);
+  const iframe = {
+    dataset: { videoSrc: "https://www.youtube-nocookie.com/embed/TEST" },
+    hidden: true,
+    tabIndex: -1,
+    focusCalls: [],
+    focus(options) { this.focusCalls.push(options); }
+  };
+  const facade = { hidden: false };
+  const document = { activeElement: facade };
+  activate(iframe, facade, iframe.dataset.videoSrc, document);
+  assert.equal(iframe.src, "https://www.youtube-nocookie.com/embed/TEST?autoplay=1");
+  assert.equal(iframe.hidden, false);
+  assert.equal(facade.hidden, true);
+  assert.equal(iframe.tabIndex, 0);
+  assert.deepEqual(iframe.focusCalls, [{ preventScroll: true }]);
+
+  const pointerIframe = {
+    dataset: { videoSrc: "https://www.youtube-nocookie.com/embed/TEST" },
+    hidden: true,
+    focus() { assert.fail("pointer activation must not force keyboard focus"); }
+  };
+  const pointerFacade = { hidden: false };
+  activate(pointerIframe, pointerFacade, pointerIframe.dataset.videoSrc, { activeElement: null });
+  assert.equal(pointerIframe.hidden, false);
+  assert.equal(pointerFacade.hidden, true);
+});
+
+test("wheel guard retires stale shields when iframe src clears or its host moves", () => {
+  const start = globalJs.indexOf("function setupEmbeddedFrameWheelGuards()");
+  const end = globalJs.indexOf("function setupScrollPerfPause()", start);
+  assert.ok(start >= 0 && end > start, "shared embedded wheel guard source exists");
+
+  const makeClassList = () => {
+    const values = new Set();
+    return {
+      add(value) { values.add(value); },
+      remove(...items) { items.forEach(item => values.delete(item)); },
+      contains(value) { return values.has(value); }
+    };
+  };
+  class FakeElement {}
+  const createHost = () => ({
+    offsetWidth: 500,
+    offsetHeight: 280,
+    scrollLeft: 0,
+    scrollTop: 0,
+    children: [],
+    classList: makeClassList(),
+    appendChild(node) { this.children.push(node); node.isConnected = true; },
+    addEventListener() {},
+    removeEventListener() {},
+    getBoundingClientRect() { return { left: 0, top: 0, width: 500, height: 280 }; }
+  });
+  class FakeFrame extends FakeElement {
+    constructor(host) {
+      super();
+      this.parentElement = host;
+      this.offsetParent = host;
+      this.offsetLeft = 0;
+      this.offsetTop = 0;
+      this.offsetWidth = 500;
+      this.offsetHeight = 280;
+      this.isConnected = true;
+      this.attrs = { src: "https://www.youtube-nocookie.com/embed/VIDEO" };
+      this.dataset = {};
+      this.classList = makeClassList();
+    }
+    getAttribute(name) { return this.attrs[name] || null; }
+    closest() { return null; }
+    matches() { return true; }
+    getBoundingClientRect() { return { left: 0, top: 0, width: 500, height: 280 }; }
+  }
+  const firstHost = createHost();
+  const frame = new FakeFrame(firstHost);
+  const shields = [];
+  const fakeDocument = {
+    documentElement: { hasAttribute() { return true; } },
+    querySelectorAll() { return [frame]; },
+    createElement() {
+      const shield = {
+        isConnected: false,
+        style: { setProperty() {} },
+        setAttribute() {},
+        addEventListener() {},
+        remove() { this.isConnected = false; },
+        getBoundingClientRect() { return { left: 0, top: 0, width: 500, height: 280 }; }
+      };
+      shields.push(shield);
+      return shield;
+    }
+  };
+  let mutationCallback;
+  let disconnectCount = 0;
+  class FakeMutationObserver {
+    constructor(callback) { mutationCallback = callback; }
+    observe() {}
+  }
+  class FakeResizeObserver {
+    observe() {}
+    disconnect() { disconnectCount += 1; }
+  }
+  const fakeWindow = { addEventListener() {}, removeEventListener() {} };
+  const functionSource = globalJs.slice(start, end);
+  const createSetup = new Function(
+    "document", "window", "HTMLIFrameElement", "Element",
+    "MutationObserver", "ResizeObserver", "requestAnimationFrame",
+    functionSource + "\nreturn setupEmbeddedFrameWheelGuards;"
+  );
+  const setup = createSetup(
+    fakeDocument, fakeWindow, FakeFrame, FakeElement,
+    FakeMutationObserver, FakeResizeObserver, () => {}
+  );
+  setup();
+  assert.equal(shields.length, 1);
+  assert.equal(frame.dataset.ccgWheelGuard, "ready");
+  assert.equal(firstHost.classList.contains("ccg-wheel-guard-host"), true);
+
+  delete frame.attrs.src;
+  mutationCallback([{ type: "attributes", target: frame, addedNodes: [] }]);
+  assert.equal(shields[0].isConnected, false, "old shield is removed immediately");
+  assert.equal(firstHost.classList.contains("ccg-wheel-guard-host"), false);
+  assert.equal(frame.dataset.ccgWheelGuard, undefined);
+  assert.equal(frame.__ccgWheelGuardShield, undefined);
+  assert.equal(disconnectCount, 1, "stale ResizeObserver was disconnected");
+
+  frame.attrs.src = "https://www.youtube-nocookie.com/embed/VIDEO";
+  mutationCallback([{ type: "attributes", target: frame, addedNodes: [] }]);
+  assert.equal(shields.length, 2);
+  assert.equal(frame.dataset.ccgWheelGuard, "ready");
+
+  const secondHost = createHost();
+  frame.parentElement = secondHost;
+  frame.offsetParent = secondHost;
+  mutationCallback([{ type: "childList", target: secondHost, addedNodes: [frame] }]);
+  assert.equal(shields.length, 3, "reparenting installs a new shield");
+  assert.equal(shields[1].isConnected, false, "former host shield retired");
+  assert.equal(firstHost.classList.contains("ccg-wheel-guard-host"), false);
+  assert.equal(secondHost.classList.contains("ccg-wheel-guard-host"), true);
+  assert.equal(frame.dataset.ccgWheelGuard, "ready");
+  assert.equal(disconnectCount, 2);
+});
