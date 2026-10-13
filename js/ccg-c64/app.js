@@ -128,6 +128,24 @@ const mobileKeyboardClose = document.querySelector("[data-mobile-keyboard-close]
 const mobileKeyboardPanel = document.querySelector("[id='ccg-c64-mobile-keyboard']");
 const mobileKeyboardKeys = document.querySelector("[data-mobile-keyboard-keys]");
 const mobilePlayMedia = window.matchMedia?.("(pointer: coarse)");
+
+// Mobile-only safety net for Safari's long-press callout and Android's
+// text-selection menu on buttons. Never suppress text selection in the
+// search field, actual inputs, dropdowns, or ordinary page content.
+// Capture handlers do not alter pointerdown/up, click or touch gestures.
+// BEGIN C64 MOBILE BUTTON SELECTION GUARD
+if (mobilePlayMedia?.matches) {
+  const suppressMobileControlSelection = (event) => {
+    const element = event.target?.nodeType === 1
+      ? event.target : event.target?.parentElement;
+    const control = element?.closest?.("button, summary");
+    if (control?.closest?.("body.ccg-c64-lab-body")) event.preventDefault();
+  };
+  document.addEventListener?.("selectstart", suppressMobileControlSelection, true);
+  document.addEventListener?.("contextmenu", suppressMobileControlSelection, true);
+}
+// END C64 MOBILE BUTTON SELECTION GUARD
+
 let mobilePlayActive = false;
 const mobileVirtualHeld = new Map();
 const MIN_MOBILE_KEY_MS = 105;
