@@ -760,7 +760,8 @@ function updateMediaControls(snapshot = vault.snapshot()) {
   if (tapePlayButton) tapePlayButton.disabled = !active || mountedTape?.kind !== "tap";
   if (tapeStopButton) tapeStopButton.disabled = !active || mountedTape?.kind !== "tap";
   if (tapeRewindButton) tapeRewindButton.disabled = !active || mountedTape?.kind !== "tap";
-  if (vaultSaveButton) vaultSaveButton.disabled = !active;
+  if (vaultSaveButton) vaultSaveButton.disabled = !active ||
+    (vaultGameSelect?.value !== "__current__" && vaultGameSelect?.value !== currentSessionGame.gameKey);
   // Restore availability is based on the saved slot, even when C64 power is off.
   // refreshVaultStatus() owns the RESUME SAVE disabled state.
   if (vaultClearButton) vaultClearButton.disabled = false;
@@ -2823,6 +2824,7 @@ async function saveGameVaultSlot() {
       vaultGameSelect?.value !== currentSessionGame.gameKey) {
     if (stageNote) stageNote.textContent =
       "Choose CURRENT GAME before saving. Other games' slots are restore-only.";
+    showVaultFeedback("Choose CURRENT GAME above to save; other games and Legacy slots can only be resumed.", true);
     return;
   }
   try {
