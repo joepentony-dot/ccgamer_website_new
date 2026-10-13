@@ -5,6 +5,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { createHash } from "node:crypto";
+import { C64Machine } from "../js/ccg-c64/core/machine.js";
+import { D64 } from "../js/ccg-c64/core/media/d64.js";
 
 const app = fs.readFileSync("js/ccg-c64/app.js", "utf8");
 
@@ -98,4 +101,44 @@ test("Musketeer D64 is the intended uploaded game and is not a missing file", ()
   assert.equal(item.bytes, 174848);
   const disk = fs.readFileSync("emulator/c64/media/musketeer.d64");
   assert.equal(disk.length, item.bytes);
+});
+
+test("Real Musketeer disk boots authentic C64 and emits SID music/effect events", () => {
+  const image = fs.readFileSync("emulator/c64/media/musketeer.d64");
+  const sha256 = createHash("sha256").update(image).digest("hex");
+  assert.equal(sha256, "fd639e98ca3114b6cbd2edbfbf5f8bfabc1d62cdfc5d00f4edf77ae6d5e71fdf");
+  const machine = new C64Machine();
+  machine.loadROMs({
+    kernal: new Uint8Array(fs.readFileSync("emulator/c64/firmware/kernal-901227-03.bin")),
+    basic: new Uint8Array(fs.readFileSync("emulator/c64/firmware/basic-901226-01.bin")),
+    charRom: new Uint8Array(fs.readFileSync("emulator/c64/firmware/chargen-901225-01.bin")),
+  });
+  machine.setD64(new D64(new Uint8Array(image)));
+  machine.setTrueDrive(false);
+  let loadEvents = 0, sidEvents = 0, volumeWrites = 0, soundGateWrites = 0;
+  machine.onLoadTrap = (device) => { if (device === 8) loadEvents++; };
+  const write = machine._sidWrite.bind(machine);
+  machine._sidWrite = (reg, val, chip = 0) => {
+    sidEvents++;
+    if ((reg & 31) === 24 && (val & 15)) volumeWrites++;
+    if ([4, 11, 18].includes(reg & 31) && (val & 1)) soundGateWrites++;
+    write(reg, val, chip);
+  };
+  const isBasicReady = () => machine.mem.ram[0xC6] === 0 &&
+    machine.mem.ram[0xCC] === 0 && machine.mem.ram[0x2C] === 8;
+  let ready = false;
+  for (let i = 0; i < 250; i++) {
+    machine.runFrame();
+    if (isBasicReady()) { ready = true; break; }
+  }
+  assert(ready, "Authentic C64 BASIC must start before testing Musketeer");
+  machine.injectLoadAndRun();
+  for (let i = 0; i < 1500; i++) {
+    machine.runFrame();
+    if (loadEvents && sidEvents > 150 && volumeWrites && soundGateWrites) break;
+  }
+  assert(loadEvents > 0, "Musketeer disk must issue a real C64 loading operation");
+  assert(sidEvents > 0, "The game's C64 software must write to SID registers");
+  assert(volumeWrites > 0, "The game's SID volume must be raised above zero");
+  assert(soundGateWrites > 0, "The game must enable a SID oscillator voice");
 });
