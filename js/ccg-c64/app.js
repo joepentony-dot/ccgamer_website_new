@@ -789,7 +789,16 @@ function sessionForMedia(media) {
   }
   const name = String(media?.name || "C64 BASIC");
   const kind = String(media?.type || mediaTypeFromName(name) || "basic");
-  return { gameKey: "local:" + kind + ":" + name.toLowerCase(), gameTitle: name };
+  // Same filename can refer to different user-supplied disks. Include a
+  // content fingerprint so one local upload cannot replace another's saves.
+  const bytes = media?.bytes;
+  let hash = 2166136261;
+  if (bytes) for (const byte of bytes) hash = Math.imul(hash ^ byte, 16777619);
+  const fingerprint = (hash >>> 0).toString(16).padStart(8, "0");
+  return {
+    gameKey: "local:" + kind + ":" + name.toLowerCase() + ":" + fingerprint,
+    gameTitle: name,
+  };
 }
 
 function vaultSelection() {
