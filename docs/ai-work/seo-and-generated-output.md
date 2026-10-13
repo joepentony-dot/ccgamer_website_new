@@ -1,5 +1,11 @@
 # SEO and generated output
 
+## SEO #2717 v128 current-main reconciliation — 14 October 2026
+
+- On the EXISTING #2717 branch, the previous merge-head `7b563ffaca2b240f168680bc6c6d3ae9a68252b3` reconciled against main `9237c14ac82b7fc8bc9db32c62f2421d1cc0d449`, but concurrent emulator #2735 advanced main to `6867bcc1d1354fff5d7dd3768fab97ca3f170d66` and public-code cache v127. This continuation preserves the complete newer main tree and overlays only this PR's four authored SEO/source/checkpoint/test files, advancing the public-code cache to `2026-10-14-public-code-v128`.
+- Latest-head Codex P2: `... difficulty A. B. Smith ...` was incorrectly split after `B.`. Reproduced against the exact source and fixed by recognising only documented `U. S. Gold` / `J. R. R. Tolkien` internal initial sequences. Added generator, canonical runtime and admin-preview regression tests for mode A / mode B sentences. Existing U.S. Gold, J. R. R. Tolkien, H.E.R.O. and terminal acronym tests must continue passing.
+- The preceding v126 section below is a historical checkpoint, not current branch guidance. This v128 candidate is NOT merged or deployed; exact new head source/Node, SEO, cache, accessibility, Lighthouse, site-safety, all triggered CI and independent Codex re-review are required. Confirm current main/head prior to merge. Indexing changes cannot be guaranteed.
+
 ## Current-main reconciliation v126 — 13 October 2026
 
 - On the guarded SEO review branch, the prior main reconciliation produced draft commit `021718aeada3e3939b2d5406f03eeee23e86e39f` based on main `8402243669effaeaf2ae2adf8de2ad3e964e1b95` and cache v124. All 14 exact-head workflow checks passed before main advanced again.

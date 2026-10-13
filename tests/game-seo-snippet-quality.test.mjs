@@ -301,3 +301,24 @@ test('rejects an editorial sentence ending in three dots even when short enough'
   const result = snippet.firstCompleteSentence('A lengthy historic description that was abruptly cut off...', 155);
   assert.equal(result, '');
 });
+
+test('new initial-led sentences do not join preceding mode labels', () => {
+  const cases = [
+    {
+      title: 'Mode Trial', slug: 'mode-trial', system: 'C64', year: 1987,
+      description: 'Mode Trial is a Commodore 64 game in which players select difficulty A. B. Smith designed another mode.',
+      expected: 'Mode Trial is a Commodore 64 game in which players select difficulty A.'
+    },
+    {
+      title: 'Modes', slug: 'modes', system: 'C64', year: 1987,
+      description: 'Modes offers several Commodore 64 difficulty settings including mode B. C. Jones introduced a further setting.',
+      expected: 'Modes offers several Commodore 64 difficulty settings including mode B.'
+    }
+  ];
+  for (const game of cases) {
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), game.expected);
+    assert.equal(snippet.buildSnippet(game, game.title), game.expected);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
+});

@@ -66,7 +66,12 @@
         const next = text.slice(end).trimStart();
         const run = before.match(/(?:^|\s)((?:[A-Z]\.\s*)+)[”"']?$/);
         const initials = run ? (run[1].match(/[A-Z]\./g) || []).length : 0;
-        const moreInitials = /^[A-Z]\.(?=\s|$)/.test(next);
+        // Do not join a completed "mode A." to a new "B. Smith" sentence.
+        // Protect only documented multi-initial publisher/author sequences.
+        const moreInitials =
+          (/(?:^|\s)U\.$/.test(before) && /^S\.\s*Gold\b/.test(next)) ||
+          (/(?:^|\s)J\.$/.test(before) && /^R\.\s*R\.\s*Tolkien\b/.test(next)) ||
+          (/(?:^|\s)J\.\s*R\.$/.test(before) && /^R\.\s*Tolkien\b/.test(next));
         // A capitalised word after "U.S." might begin a NEW sentence.
         // Retain only source-observed complete names, not arbitrary proper
         // nouns after a two-letter acronym (e.g. "U.S. Players...").
