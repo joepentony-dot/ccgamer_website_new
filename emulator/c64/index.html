@@ -45,7 +45,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261013_game_vault_recovery_v1">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261013_catalogue_desktop_v2">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -117,10 +117,17 @@
       <div class="ccg-c64-screen-foot">
         <span>C64 PAL DISPLAY</span>
         <span data-emulator-speed title="Measured PAL playback speed; 100% is real time">PAL SPEED // --%</span>
-        <span>DRAG A DISK, TAPE OR CARTRIDGE ONTO THE SCREEN</span>
+        <span>LOAD A GAME OR DROP A FILE ON THE SCREEN</span>
       </div>
 
-      <p class="ccg-c64-stage-note" data-stage-note id="ccg-c64-drop-instructions">DRAG &amp; DROP your C64 game file onto the screen to load and start it automatically. Or use LOAD &amp; AUTO START. Accepts D64, D71, D81, G64, TAP, T64, PRG and CRT.</p>
+      <p class="ccg-c64-stage-note" data-stage-note id="ccg-c64-drop-instructions" role="status" aria-live="polite">Find a game in the library and press PLAY, or open your own C64 file.</p>
+      <div class="ccg-c64-play-help" data-play-help>
+        <p><strong>Stuck at READY.?</strong> After a disk finishes loading, type <kbd>RUN</kbd> and press <kbd>RETURN</kbd>. Some games use their own startup command.</p>
+        <div class="ccg-c64-warp-action">
+          <button type="button" data-warp-load aria-pressed="false" disabled title="Run the emulator at maximum safe browser speed; use during lengthy loading"><span>WARP SPEED</span><strong>MAX</strong></button>
+          <small data-warp-hint>Loading is accelerated automatically. Use WARP to speed up further loading.</small>
+        </div>
+      </div>
 
       <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
         <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
@@ -164,23 +171,23 @@
 
     <aside class="ccg-c64-control-stack" aria-label="C64 controls and media">
       <section class="ccg-c64-panel ccg-c64-panel--quickload">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>PLAY C64 MEDIA</strong><em>FILE FIRST</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>LOAD YOUR OWN GAME</strong><em>OPTIONAL</em></header>
         <div class="ccg-c64-quickload">
-          <button type="button" class="ccg-c64-primary-load" data-load-any-media>LOAD &amp; AUTO START</button>
+          <button type="button" class="ccg-c64-primary-load" data-load-any-media>OPEN C64 GAME FILE</button>
           <input id="ccg-c64-any-media-input" type="file" accept=".prg,.d64,.d71,.d81,.g64,.tap,.t64,.crt" hidden>
-          <p>Choose a PRG, disk, tape or cartridge, or drop it onto the screen. Automatic start is enabled.</p>
+          <p>Have a game file? Open it here or drag it onto the screen.</p>
         </div>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--library" hidden aria-label="Searchable C64 game library">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>GAME LIBRARY</strong><em data-online-library-status>LOADING</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>FIND A GAME</strong><em data-online-library-status>LOADING</em><button type="button" class="ccg-c64-catalogue-open" data-catalogue-open disabled>BROWSE ALL GAMES</button></header>
         <div class="ccg-c64-library-search-wrap" data-library-search-wrap>
           <input type="search" id="ccg-c64-library-search" data-online-library-search
             role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
             aria-controls="ccg-c64-library-options" aria-expanded="false"
             aria-describedby="ccg-c64-library-search-help"
             aria-label="Search playable C64 games"
-            placeholder="TYPE A GAME NAME TO SEARCH..."
+            placeholder="Search by game title..."
             autocomplete="off" spellcheck="false">
           <div class="ccg-c64-library-suggestions" data-online-library-suggestions hidden>
             <div id="ccg-c64-library-options" data-online-library-grid role="listbox"
@@ -204,29 +211,20 @@
         </div>
       </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--status">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>STATUS</strong><em data-audio-status>STARTS ON BOOT</em></header>
-        <div class="ccg-c64-status-grid">
-          <div><span>SYSTEM ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
-          <div><span>1541 DOS</span><strong data-drive-status>OPTIONAL</strong></div>
-          <div><span>SID</span><strong>6581 / 8580</strong></div>
-          <div><span>VIDEO</span><strong>PAL 50 HZ</strong></div>
-        </div>
-      </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--controls">
         <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROLS</strong></header>
         <div class="ccg-c64-button-grid">
           <button type="button" class="is-power" data-machine-power disabled><span>POWER</span><strong>BOOT C64</strong></button>
-          <button type="button" data-machine-reset disabled><span>RESET</span><strong>RESET</strong></button>
-          <button type="button" data-machine-pause disabled><span>PAUSE</span><strong>PAUSE</strong></button>
-          <button type="button" data-warp-load aria-pressed="false" disabled title="Run the emulator at the maximum speed this browser can sustain"><span>WARP LOAD</span><strong>MAX</strong></button>
-          <button type="button" data-crt-toggle><span>CRT</span><strong>TUBE</strong></button>
-          <button type="button" data-size-toggle><span>SIZE</span><strong>FIT</strong></button>
-          <button type="button" data-fullscreen><span>DISPLAY</span><strong>FULL</strong></button>
-          <button type="button" data-load-media><span>PROGRAM</span><strong>LOAD PRG</strong></button>
-          <button type="button" data-audio-toggle disabled><span>SID AUDIO</span><strong>MUTE</strong></button>
-          <button type="button" data-open-setup><span>SYSTEM ROMS</span><strong>SETUP</strong></button>
+          <button type="button" data-machine-reset disabled><span></span><strong>RESET</strong></button>
+          <button type="button" data-machine-pause disabled><span></span><strong>PAUSE</strong></button>
+          
+          <button type="button" data-crt-toggle><span></span><strong>CRT EFFECT</strong></button>
+          <button type="button" data-size-toggle><span></span><strong>SCREEN SIZE</strong></button>
+          <button type="button" data-fullscreen><span></span><strong>FULL SCREEN</strong></button>
+          <button type="button" data-load-media><span></span><strong>LOAD PRG</strong></button>
+          <button type="button" data-audio-toggle disabled><span></span><strong>MUTE SOUND</strong></button>
+          <button type="button" data-open-setup><span></span><strong>ROM SETTINGS</strong></button>
         </div>
         <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
       </section>
@@ -244,43 +242,15 @@
         </div>
       </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--disk">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
-        <div class="ccg-c64-media-row ccg-c64-media-row--three">
-          <button type="button" data-load-disk title="Load and automatically run a game from disk">LOAD DISK</button>
-          <button type="button" data-swap-disk disabled title="Change a disk while the game keeps running; no reset, LOAD or RUN">SWAP DISK</button>
-          <button type="button" data-drive-mode aria-pressed="false" disabled title="Default mode: mount disk and automatically LOAD/RUN">FAST LOAD</button>
-        </div>
-        <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
-        <input id="ccg-c64-swap-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
-      </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--tape">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>DATASETTE</strong><em data-tape-slot-status>TAP / T64</em></header>
-        <div class="ccg-c64-media-row ccg-c64-media-row--four">
-          <button type="button" data-load-tape>LOAD</button>
-          <button type="button" data-tape-play disabled>PLAY</button>
-          <button type="button" data-tape-stop disabled>STOP</button>
-          <button type="button" data-tape-rewind disabled>REW</button>
-        </div>
-        <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
-      </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--cartridge">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>CARTRIDGE</strong><em data-cartridge-slot-status>CRT / EASYFLASH</em></header>
-        <div class="ccg-c64-media-row">
-          <button type="button" data-load-cartridge>LOAD CRT</button>
-          <button type="button" data-eject-cartridge disabled>EJECT</button>
-        </div>
-        <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
-      </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--vault">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>GAME VAULT</strong><em data-vault-status>CHECKING…</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>SAVE / RESUME</strong><em data-vault-status>CHECKING…</em></header>
         <div class="ccg-c64-vault-game-row">
-          <label for="ccg-c64-vault-game">SAVED GAME</label>
+          <label for="ccg-c64-vault-game">GAME</label>
           <select id="ccg-c64-vault-game" data-vault-game aria-label="Choose current game or a previously saved game">
-            <option value="__current__">CURRENT GAME</option>
+            <option value="__current__">CURRENT GAME — SAVE HERE</option>
             <option value="__legacy__">LEGACY SLOTS (ORIGINAL SAVES)</option>
           </select>
         </div>
@@ -290,31 +260,100 @@
             <option value="2">SLOT 2</option>
             <option value="3">SLOT 3</option>
           </select>
-          <button type="button" data-vault-save disabled>SAVE</button>
-          <button type="button" data-vault-load disabled>RESTORE</button>
+          <button type="button" data-vault-save disabled>SAVE GAME</button>
+          <button type="button" data-vault-load disabled>RESUME SAVE</button>
           <button type="button" data-vault-clear>CLEAR</button>
         </div>
-        <div class="ccg-c64-vault-backup-row">
+        <details class="ccg-c64-vault-backups"><summary>BACKUP AND IMPORT OPTIONS</summary><div class="ccg-c64-vault-backup-row">
           <button type="button" data-vault-export>EXPORT SLOT</button>
           <button type="button" data-vault-import>IMPORT BACKUP</button>
           <input type="file" id="ccg-c64-vault-backup-input" accept=".json,.ccg64save" data-vault-backup-input hidden>
-        </div>
-        <p class="ccg-c64-vault-help">Three slots per game, stored in this browser. Export important saves to keep a separate backup or move them to another device. Original slots are preserved under Legacy.</p>
+        </div></details>
+        <p class="ccg-c64-vault-help">Save the current game in Slot 1, 2 or 3. To resume a previous game later, select it here and press RESUME SAVE. Saves stay in this browser unless exported.</p>
+        <p class="ccg-c64-vault-feedback" data-vault-feedback role="status" aria-live="polite">Choose CURRENT GAME to save. Older slots remain available under Legacy.</p>
         <div class="ccg-c64-vault-recovery" data-vault-recovery>
           <p data-vault-storage-notice role="status" aria-live="polite" hidden></p>
           <button type="button" data-vault-retry hidden>RETRY VAULT</button>
         </div>
       </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--rom">
+      <details class="ccg-c64-advanced">
+        <summary>ADVANCED MEDIA AND SYSTEM SETTINGS <span>Disk drive · Datasette · Cartridge · ROMs</span></summary>
+        <div class="ccg-c64-advanced-grid">
+          <section class="ccg-c64-panel ccg-c64-panel--status">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>STATUS</strong><em data-audio-status>STARTS ON BOOT</em></header>
+        <div class="ccg-c64-status-grid">
+          <div><span>SYSTEM ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
+          <div><span>1541 DOS</span><strong data-drive-status>OPTIONAL</strong></div>
+          <div><span>SID</span><strong>6581 / 8580</strong></div>
+          <div><span>VIDEO</span><strong>PAL 50 HZ</strong></div>
+        </div>
+      </section>
+          <section class="ccg-c64-panel ccg-c64-panel--disk">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
+        <div class="ccg-c64-media-row ccg-c64-media-row--three">
+          <button type="button" data-load-disk title="Load and automatically run a game from disk">LOAD DISK</button>
+          <button type="button" data-swap-disk disabled title="Change a disk while the game keeps running; no reset, LOAD or RUN">SWAP DISK</button>
+          <button type="button" data-drive-mode aria-pressed="false" disabled title="Default mode: mount disk and automatically LOAD/RUN">FAST LOAD</button>
+        </div>
+        <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
+        <input id="ccg-c64-swap-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
+      </section>
+          <section class="ccg-c64-panel ccg-c64-panel--tape">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>DATASETTE</strong><em data-tape-slot-status>TAP / T64</em></header>
+        <div class="ccg-c64-media-row ccg-c64-media-row--four">
+          <button type="button" data-load-tape>LOAD</button>
+          <button type="button" data-tape-play disabled>PLAY</button>
+          <button type="button" data-tape-stop disabled>STOP</button>
+          <button type="button" data-tape-rewind disabled>REW</button>
+        </div>
+        <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
+      </section>
+          <section class="ccg-c64-panel ccg-c64-panel--cartridge">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>CARTRIDGE</strong><em data-cartridge-slot-status>CRT / EASYFLASH</em></header>
+        <div class="ccg-c64-media-row">
+          <button type="button" data-load-cartridge>LOAD CRT</button>
+          <button type="button" data-eject-cartridge disabled>EJECT</button>
+        </div>
+        <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
+      </section>
+          <section class="ccg-c64-panel ccg-c64-panel--rom">
         <header class="ccg-c64-panel-title"><span>••</span><strong>SYSTEM ROMS</strong><em>ONE-TIME BROWSER SETUP</em></header>
         <div class="ccg-c64-media-row">
           <button type="button" data-open-setup>ADD / CHANGE</button>
           <button type="button" data-clear-roms>CLEAR</button>
         </div>
       </section>
+        </div>
+      </details>
     </aside>
   </main>
+
+  <div class="ccg-c64-catalogue" data-catalogue-dialog hidden>
+    <div class="ccg-c64-catalogue-backdrop" data-catalogue-backdrop></div>
+    <section class="ccg-c64-catalogue-dialog" role="dialog" aria-modal="true" aria-labelledby="ccg-catalogue-title" aria-describedby="ccg-catalogue-description">
+      <header class="ccg-c64-catalogue-head">
+        <div>
+          <p class="ccg-c64-catalogue-kicker">CHEEKY COMMODORE GAMER · PLAY ONLINE</p>
+          <h2 id="ccg-catalogue-title">C64 GAME CATALOGUE</h2>
+          <p id="ccg-catalogue-description">Browse the complete searchable library. Choose a game to load it in the emulator.</p>
+        </div>
+        <button type="button" data-catalogue-close-button aria-label="Close the games catalogue">CLOSE ×</button>
+      </header>
+      <div class="ccg-c64-catalogue-filters">
+        <label>SEARCH TITLES<input type="search" data-catalogue-query placeholder="Find a C64 game..." autocomplete="off" spellcheck="false"></label>
+        <label>COLLECTION<select data-catalogue-source><option value="all">All games</option><option value="hosted">CCG collection</option><option value="archive">Game archive</option></select></label>
+        <label>BEGINS WITH<select data-catalogue-letter><option value="all">Any letter</option><option value="#">0–9 / Other</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option><option value="L">L</option><option value="M">M</option><option value="N">N</option><option value="O">O</option><option value="P">P</option><option value="Q">Q</option><option value="R">R</option><option value="S">S</option><option value="T">T</option><option value="U">U</option><option value="V">V</option><option value="W">W</option><option value="X">X</option><option value="Y">Y</option><option value="Z">Z</option></select></label>
+      </div>
+      <div class="ccg-c64-catalogue-summary"><strong data-catalogue-count>Loading games...</strong><span>SELECT ANY GAME TO PLAY</span></div>
+      <div class="ccg-c64-catalogue-results" data-catalogue-results></div>
+      <footer class="ccg-c64-catalogue-pager">
+        <button type="button" data-catalogue-previous disabled>← PREVIOUS</button>
+        <strong data-catalogue-page>PAGE 1 / 1</strong>
+        <button type="button" data-catalogue-next disabled>NEXT →</button>
+      </footer>
+    </section>
+  </div>
 
   <section class="ccg-c64-discovery" aria-labelledby="ccg-c64-discovery-title">
     <h2 id="ccg-c64-discovery-title">Play Commodore 64 games online — no emulator download</h2>
