@@ -67,9 +67,12 @@
         const run = before.match(/(?:^|\s)((?:[A-Z]\.\s*)+)[”"']?$/);
         const initials = run ? (run[1].match(/[A-Z]\./g) || []).length : 0;
         const moreInitials = /^[A-Z]\.(?=\s|$)/.test(next);
-        const followingName = /^[A-Z][a-z]{2,}\b/.test(next);
-        if (initials && (moreInitials ||
-          (initials >= 2 && initials <= 3 && followingName) ||
+        // A capitalised word after "U.S." might begin a NEW sentence.
+        // Retain only source-observed complete names, not arbitrary proper
+        // nouns after a two-letter acronym (e.g. "U.S. Players...").
+        const publisher = /(?:^|\s)U\.\s*S\.$/.test(before) && /^Gold\b/.test(next);
+        const author = /(?:^|\s)J\.\s*R\.\s*R\.$/.test(before) && /^Tolkien\b/.test(next);
+        if (initials && (moreInitials || publisher || author ||
           (initials >= 2 && /^[a-z]/.test(next)))) continue;
       }
       if (end >= minLength) return end;
