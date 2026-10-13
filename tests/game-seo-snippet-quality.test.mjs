@@ -160,6 +160,45 @@ test('single-letter initials inside a factual sentence are not false sentence en
   assert.equal(snippet.firstCompleteSentence(spaced + ' Another factual sentence.', 155), spaced);
 });
 
+test('single-letter mode labels and H.E.R.O. titles retain real sentence boundaries', () => {
+  const endings = [
+    {
+      title: 'Demo',
+      slug: 'demo',
+      description: 'The three difficulty settings each have a choice of mode A. Another mode is available.',
+      expected: 'The three difficulty settings each have a choice of mode A.'
+    },
+    {
+      title: 'H.E.R.O.',
+      slug: 'h-e-r-o',
+      description: 'A wide range of home-computer games includes the Commodore 64 title H.E.R.O. Another classic follows.',
+      expected: 'A wide range of home-computer games includes the Commodore 64 title H.E.R.O.'
+    },
+    {
+      title: 'H.E.R.O.',
+      slug: 'h-e-r-o',
+      description: 'A wide range of home-computer games includes H.E.R.O. as a playable Commodore 64 title. More details follow.',
+      expected: 'A wide range of home-computer games includes H.E.R.O. as a playable Commodore 64 title.'
+    }
+  ];
+  for (const game of endings) {
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), game.expected, game.title);
+    assert.equal(snippet.buildSnippet(game, game.title), game.expected, game.title);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
+});
+
+test('publisher and author multi-letter initials retain their complete factual sentence', () => {
+  for (const text of [
+    'The Commodore 64 game was published by U.S. Gold and includes arcade action.',
+    'The Commodore 64 game was published by U. S. Gold and includes arcade action.',
+    'The fantasy game was written by J. R. R. Tolkien and sold worldwide.'
+  ]) {
+    assert.equal(snippet.firstCompleteSentence(text + ' Another sentence follows.', 155), text);
+  }
+});
+
 test('Bubble Bobble factual game subject recovers game-specific meta and social summary', () => {
   const game = {
     title: 'Bubble Bobble',
