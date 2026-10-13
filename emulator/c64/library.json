@@ -229,6 +229,346 @@
                         "sha256":  "fd639e98ca3114b6cbd2edbfbf5f8bfabc1d62cdfc5d00f4edf77ae6d5e71fdf",
                         "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
                         "approved":  true
+                    },
+                    {
+                        "id":  "knight-n-grail-preview",
+                        "title":  "Knight \u0027n\u0027 Grail (Preview)",
+                        "filename":  "knight-n-grail-preview.d64",
+                        "format":  "d64",
+                        "description":  "D64 preview; not the full release.",
+                        "url":  "/emulator/c64/media/knight-n-grail-preview.d64",
+                        "bytes":  174848,
+                        "sha256":  "5d3ad5db75f93ae1d6ec19731665d6b0c9513072a286f14db86a58d951cbe59b",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "rodland",
+                        "title":  "Rodland",
+                        "filename":  "rodland.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/rodland.d64",
+                        "bytes":  174848,
+                        "sha256":  "0982faaaf5d160a413685db5354946284c145fcace6a75d7b918f28c7e942471",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "the-castles-of-dr-creep",
+                        "title":  "The Castles of Dr. Creep",
+                        "filename":  "the-castles-of-dr-creep.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/the-castles-of-dr-creep.d64",
+                        "bytes":  174848,
+                        "sha256":  "0e300fb762f0521fa27fab09ee6a8f27c729607770da53e6d58cdcaeaf72454d",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "myth-history-in-the-making",
+                        "title":  "Myth: History in the Making",
+                        "filename":  "myth-history-in-the-making.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/myth-history-in-the-making.d64",
+                        "bytes":  174848,
+                        "sha256":  "bc36c6f50cb63a5c8b0fa22329c674a9491b640530884357412f670b08641b2e",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "rick-dangerous-2",
+                        "title":  "Rick Dangerous 2",
+                        "filename":  "rick-dangerous-2.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/rick-dangerous-2.d64",
+                        "bytes":  174848,
+                        "sha256":  "01ce6a9eb968b150a9eb5da1ab53d90d967f8838672ed7460a7058b257d6cfa5",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "slicks",
+                        "title":  "Slicks",
+                        "filename":  "slicks.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/slicks.d64",
+                        "bytes":  174848,
+                        "sha256":  "dba29901ef780361a4f35d9adc274269cdbd6683a8a13b5d814c61e6e475210c",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "x-out",
+                        "title":  "X-Out",
+                        "filename":  "x-out-disk-1.d64",
+                        "format":  "d64",
+                        "description":  "Multi-disk C64 game. Use the online SWAP DISK control as requested during play.",
+                        "url":  "/emulator/c64/media/x-out-disk-1.d64",
+                        "bytes":  174848,
+                        "sha256":  "be754e1d3647cde23a2ed90f2dbc2f5fbca36616abfb12eb2b6d2e40c02108ad",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+                        "disks":  [
+                                      {
+                                          "label":  "Disk 1",
+                                          "filename":  "x-out-disk-1.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/x-out-disk-1.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "be754e1d3647cde23a2ed90f2dbc2f5fbca36616abfb12eb2b6d2e40c02108ad"
+                                      },
+                                      {
+                                          "label":  "Disk 2",
+                                          "filename":  "x-out-disk-2.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/x-out-disk-2.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "a7d3ba9ac804bc36deca8f6be31fc29ba4886acac05bf62aa894220b36eb61d3"
+                                      }
+                                  ]
+                    },
+                    {
+                        "id":  "racing-destruction-set",
+                        "title":  "Racing Destruction Set",
+                        "filename":  "racing-destruction-set.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/racing-destruction-set.d64",
+                        "bytes":  174848,
+                        "sha256":  "a588a1faf851f485a3912db848daba93112d8c6d85d4a528a14b75c3272da34e",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "tass-times-in-tonetown",
+                        "title":  "Tass Times in Tonetown",
+                        "filename":  "tass-times-in-tonetown-disk-1.d64",
+                        "format":  "d64",
+                        "description":  "Multi-disk C64 game. Use the online SWAP DISK control as requested during play.",
+                        "url":  "/emulator/c64/media/tass-times-in-tonetown-disk-1.d64",
+                        "bytes":  174848,
+                        "sha256":  "489c653840cddbce3dbbc35270b2c1dde3c3ab780ac4401c28dfd343ca889dd2",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+                        "disks":  [
+                                      {
+                                          "label":  "Disk 1",
+                                          "filename":  "tass-times-in-tonetown-disk-1.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/tass-times-in-tonetown-disk-1.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "489c653840cddbce3dbbc35270b2c1dde3c3ab780ac4401c28dfd343ca889dd2"
+                                      },
+                                      {
+                                          "label":  "Disk 2",
+                                          "filename":  "tass-times-in-tonetown-disk-2.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/tass-times-in-tonetown-disk-2.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "48b4a703d8c3a9d5f437521169f0ce6cec1f7d9f47ef8b013179de0c41647922"
+                                      }
+                                  ]
+                    },
+                    {
+                        "id":  "boulder-dash-construction-kit",
+                        "title":  "Boulder Dash Construction Kit",
+                        "filename":  "boulder-dash-construction-kit.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/boulder-dash-construction-kit.d64",
+                        "bytes":  174848,
+                        "sha256":  "4cf1b19d40ae2d5e61f52ef1a93d30cf3b90ed00a20389d1dd061140a1c832a9",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "the-bards-tale",
+                        "title":  "The Bard\u0027s Tale",
+                        "filename":  "the-bards-tale-disk-1.d64",
+                        "format":  "d64",
+                        "description":  "Multi-disk C64 game. Use the online SWAP DISK control as requested during play.",
+                        "url":  "/emulator/c64/media/the-bards-tale-disk-1.d64",
+                        "bytes":  174848,
+                        "sha256":  "17a3e9eed99ef372de0483d7d62cf2f433bdaf839ab759f2a9d957335b3bf412",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+                        "disks":  [
+                                      {
+                                          "label":  "Disk 1",
+                                          "filename":  "the-bards-tale-disk-1.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/the-bards-tale-disk-1.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "17a3e9eed99ef372de0483d7d62cf2f433bdaf839ab759f2a9d957335b3bf412"
+                                      },
+                                      {
+                                          "label":  "Disk 2",
+                                          "filename":  "the-bards-tale-disk-2.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/the-bards-tale-disk-2.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "5f866608a905e36a32be96075b1910e783cdb01c215b180343b5b22383b5879b"
+                                      }
+                                  ]
+                    },
+                    {
+                        "id":  "oil-imperium",
+                        "title":  "Oil Imperium",
+                        "filename":  "oil-imperium-disk-1.d64",
+                        "format":  "d64",
+                        "description":  "Multi-disk C64 game. Use the online SWAP DISK control as requested during play.",
+                        "url":  "/emulator/c64/media/oil-imperium-disk-1.d64",
+                        "bytes":  174848,
+                        "sha256":  "86cdc6b99c2eb0b7b6951c020b93600ca73f3690aefd5b07d16e94ac68fd3b4d",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+                        "disks":  [
+                                      {
+                                          "label":  "Disk 1",
+                                          "filename":  "oil-imperium-disk-1.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/oil-imperium-disk-1.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "86cdc6b99c2eb0b7b6951c020b93600ca73f3690aefd5b07d16e94ac68fd3b4d"
+                                      },
+                                      {
+                                          "label":  "Disk 2",
+                                          "filename":  "oil-imperium-disk-2.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/oil-imperium-disk-2.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "d6ab62b16eadf085cb216c6efa400b05330c09f763e1cad60ca1a3a38ab44ec4"
+                                      }
+                                  ]
+                    },
+                    {
+                        "id":  "silent-service",
+                        "title":  "Silent Service",
+                        "filename":  "silent-service.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/silent-service.d64",
+                        "bytes":  175531,
+                        "sha256":  "e1b57c44e8c04518614cc6875ddd574a85988da6e3c15decb738c734e2f441bb",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "ultimate-wizard",
+                        "title":  "Ultimate Wizard",
+                        "filename":  "ultimate-wizard.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/ultimate-wizard.d64",
+                        "bytes":  174848,
+                        "sha256":  "4f3998e084706954e62228087a77b8ea6d7edf1978b6fc1e530aeaeeab32e526",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "the-bards-tale-iii",
+                        "title":  "The Bard\u0027s Tale III: Thief of Fate",
+                        "filename":  "the-bards-tale-iii-disk-1.d64",
+                        "format":  "d64",
+                        "description":  "Multi-disk C64 game. Use the online SWAP DISK control as requested during play.",
+                        "url":  "/emulator/c64/media/the-bards-tale-iii-disk-1.d64",
+                        "bytes":  174848,
+                        "sha256":  "852d6fc0fb04ef7dfeffa5d042055560a09583dfd24baea0665a5b2edf6b4365",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+                        "disks":  [
+                                      {
+                                          "label":  "Disk 1",
+                                          "filename":  "the-bards-tale-iii-disk-1.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/the-bards-tale-iii-disk-1.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "852d6fc0fb04ef7dfeffa5d042055560a09583dfd24baea0665a5b2edf6b4365"
+                                      },
+                                      {
+                                          "label":  "Disk 2",
+                                          "filename":  "the-bards-tale-iii-disk-2.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/the-bards-tale-iii-disk-2.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "da00a55d7113c92c4bc06efa3502d0ff7251401f75b8b91a48d5f08c3f6dc184"
+                                      },
+                                      {
+                                          "label":  "Disk 3",
+                                          "filename":  "the-bards-tale-iii-disk-3.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/the-bards-tale-iii-disk-3.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "0854ad26983ccaa15c795d2d97a334b958ccd3d3f3ab88b1adbd0cea88637303"
+                                      },
+                                      {
+                                          "label":  "Disk 4",
+                                          "filename":  "the-bards-tale-iii-disk-4.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/the-bards-tale-iii-disk-4.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "73f56a6dfcec2e9bf5ab43374002bf406e9da3dc92c1eb8a9ca79f89179a3525"
+                                      }
+                                  ]
+                    },
+                    {
+                        "id":  "puzzle-bobble",
+                        "title":  "Puzzle Bobble",
+                        "filename":  "puzzle-bobble.d64",
+                        "format":  "d64",
+                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
+                        "url":  "/emulator/c64/media/puzzle-bobble.d64",
+                        "bytes":  174848,
+                        "sha256":  "c0c34147e3fad441660166cc9c3c716a850941b8ba200a88f547940c37a61aff",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "champions-of-krynn",
+                        "title":  "Champions of Krynn",
+                        "filename":  "champions-of-krynn.crt",
+                        "format":  "crt",
+                        "description":  "C64 EasyFlash cartridge; boots on selection.",
+                        "url":  "/emulator/c64/media/champions-of-krynn.crt",
+                        "bytes":  459712,
+                        "sha256":  "e9afdb75172f728d1846386ecc78b6f9f206a10813cb7fa28ce1cfbcac6a810f",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
+                    },
+                    {
+                        "id":  "california-games",
+                        "title":  "California Games",
+                        "filename":  "california-games-disk-1.d64",
+                        "format":  "d64",
+                        "description":  "Multi-disk C64 game. Use the online SWAP DISK control as requested during play.",
+                        "url":  "/emulator/c64/media/california-games-disk-1.d64",
+                        "bytes":  174848,
+                        "sha256":  "9db8ebde521371372df8adbb8e61d1a2a9a0e1348a891a09903e877a6774eff7",
+                        "approved":  true,
+                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
+                        "disks":  [
+                                      {
+                                          "label":  "Disk 1",
+                                          "filename":  "california-games-disk-1.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/california-games-disk-1.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "9db8ebde521371372df8adbb8e61d1a2a9a0e1348a891a09903e877a6774eff7"
+                                      },
+                                      {
+                                          "label":  "Disk 2",
+                                          "filename":  "california-games-disk-2.d64",
+                                          "format":  "d64",
+                                          "url":  "/emulator/c64/media/california-games-disk-2.d64",
+                                          "bytes":  174848,
+                                          "sha256":  "942ff819e253739db65980bf182002ac307c80427bc1ef30e54c01d9f273d299"
+                                      }
+                                  ]
                     }
                 ]
 }

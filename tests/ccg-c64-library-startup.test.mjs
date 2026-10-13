@@ -62,7 +62,7 @@ async function execute(catalogueAvailable) {
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 19);
+assert.equal(direct.entries.length, 37);
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
@@ -81,9 +81,9 @@ for (const [id, title] of [
     game.url === "/emulator/c64/media/" + id + ".crt" && game.approved,
     "Verified EasyFlash title must remain published at its exact local URL: " + id);
 }
-assert.equal(good.context.onlineLibraryEntries.length, 1896,
+assert.equal(good.context.onlineLibraryEntries.length, 1914,
   "All approved titles except the withdrawn Bruce Lee PRG must appear even if HEAD is unavailable");
-assert.equal(good.context.onlineLibraryStatus.textContent, "1,896 READY");
+assert.equal(good.context.onlineLibraryStatus.textContent, "1,914 READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
 assert.equal(good.fetchRequests.length, 3, "Two library catalogues plus one optional activation probe are fetched at startup");
@@ -92,11 +92,31 @@ assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 
 const failed = await execute(false);
-assert.equal(failed.context.onlineLibraryEntries.length, 19,
+assert.equal(failed.context.onlineLibraryEntries.length, 37,
   "Already hosted direct games must survive catalogue fetch errors");
 assert.match(failed.context.onlineLibraryStatus.textContent, /BLAST UNAVAILABLE/);
 assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
 assert(failed.statuses.warning, "A catalogue failure must be logged instead of swallowed");
 
-console.log("PASS: 1896 selectable library entries appear without HEAD, direct CRT games survive catalogue errors, and retry is exposed.");
+console.log("PASS: 1914 selectable library entries appear without HEAD, direct CRT games survive catalogue errors, and retry is exposed.");
+
+// CCG_BATCH_VERIFIED_MEDIA â€” owner-supplied individual disks and every swap side.
+const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"rodland","title":"Rodland"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"slicks","title":"Slicks"},{"id":"x-out","title":"X-Out"},{"id":"racing-destruction-set","title":"Racing Destruction Set"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"}];
+const { createHash: batchHash } = await import("node:crypto");
+for (const expected of verifiedBatchGames) {
+  const game = direct.entries.find(item => item.id === expected.id);
+  assert(game && game.title === expected.title && game.approved === true,
+    "Missing or renamed approved batch game: " + expected.id);
+  const sides = Array.isArray(game.disks) && game.disks.length >= 2 ? game.disks : [game];
+  assert.equal(sides[0].url, game.url, "The game's boot side must be listed first: " + expected.id);
+  for (const side of sides) {
+    assert(/^\/emulator\/c64\/media\/[a-z0-9.-]+\.(?:d64|crt)$/.test(side.url),
+      "Batch disk must have a secure root-relative media URL: " + expected.id);
+    const filename = path.join(root, side.url.slice(1));
+    const raw = fs.readFileSync(filename);
+    assert.equal(raw.length, side.bytes, "Batch media size changed: " + side.filename);
+    assert.equal(batchHash("sha256").update(raw).digest("hex"), side.sha256,
+      "Batch media SHA-256 changed: " + side.filename);
+  }
+}
