@@ -1,5 +1,14 @@
 # Site-wide Lighthouse programme
 
+## Deferred video facade — current-main reconciliation, 13 October 2026
+
+- Current performance candidate: **draft PR #2719**. The original exact head `7a678b35df4c93b0d0712d7f9fda8496f03686ce` passed **21/21 GitHub Actions workflows** (including dedicated Lighthouse protocol, first paint, native physical-wheel Chromium, Site Safety, SEO and publishing); independent Codex review on that exact head completed with **no major findings**.
+- Subsequently, `main` advanced to `762342ee887205e912828eef17b3852605e5505e` and public cache namespace **v125**. A new bounded 13-file source-equivalent candidate was reconstructed on that `main` (the only overlap since old base was `service-worker.js`); it preserves all previously reviewed video/player/SEO/CSS/test changes, and only updates the public cache version to **v126**, without overwriting the new emulator, SEO and website files.
+- The previously reported P1 legacy iframe generator closer issue and hidden-iframe CSS-specificity issue remain guarded by focused regression tests. New-head automated qualification and fresh independent review must be checked; the original green verdict does **not** automatically extend to the rebased commit.
+- GitHub reports a Cloudflare **branch preview** for the previous exact head; network/browser access to live preview from this review environment was unavailable. Desktop/mobile visible playback, offsite video action and non-YouTube override manual acceptance remain **unverified**. The source-level protocol is **not** a real before/after Lighthouse speed measurement. No performance uplift is claimed, and no source or generated output has yet been merged/deployed from this performance PR.
+- Release gating: do not merge without current-head green CI, independent code review, browser-visible playback acceptance, comparison to then-current main and owner approval. On a qualified mainline merge, ensure authoritative publishing/SEO generators upgrade existing static canonical game pages; then run measured desktop/mobile representative and site-wide Lighthouse audits.
+
+
 ## Performance pass 2 — refreshed on current main, 6 October 2026
 
 - Pass 1 merged through PR #2512.
