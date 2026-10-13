@@ -118,6 +118,23 @@ test('recovers a game-specific factual clause after a long introductory phrase',
   }
 });
 
+test('Omega Race recovers the verified C64 conversion clause from its editorial introduction', () => {
+  const game = {
+    title: 'Omega Race',
+    slug: 'omega-race',
+    system: 'C64',
+    year: 1982,
+    publisher: 'Commodore',
+    description: 'Omega Race (1982) – Commodore 64 Vector Arcade Shooter Classic Originally developed by Ron Haliburton and released by Midway in 1981, Omega Race arrived on the Commodore 64 in 1982 as a remarkably faithful home conversion of the arcade original. It delivers fast, precision-based shooting action.'
+  };
+  const expected = 'Omega Race arrived on the Commodore 64 in 1982 as a remarkably faithful home conversion of the arcade original.';
+  assert.equal(snippet.buildSnippet(game, game.title), expected);
+  assert.equal(routes.buildRuntimeDescription(game, game.title), expected);
+  assert.equal(buildGameSeoPreview(game, snippet).description, expected);
+  assert.ok(expected.length <= 155);
+  assert.doesNotMatch(expected, /…|\.\.\.$/);
+});
+
 test('does not salvage an arbitrary dangling clause without the game title as subject', () => {
   const game = {
     title: 'Kingpin',
