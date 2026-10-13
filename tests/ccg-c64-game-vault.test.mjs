@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import { GameVault, encodeGameVaultBackup, decodeGameVaultBackup } from "../js/ccg-c64/game-vault.js";
+import { C64Machine } from "../js/ccg-c64/core/machine.js";
 
 function sample(seed = 1) {
   return {
@@ -150,6 +151,33 @@ test("Invalid, corrupt or unsupported backup cannot reach IndexedDB", () => {
   good.version = 1;
   good.payload.state.memory.bytes = "not-base64!";
   assert.throws(() => decodeGameVaultBackup(JSON.stringify(good)), /valid Game Vault backup/);
+});
+
+
+test("Real C64 machine state survives backup roundtrip and restores CPU RAM", () => {
+  const firmware = {
+    kernal: new Uint8Array(fs.readFileSync("emulator/c64/firmware/kernal.rom")),
+    basic: new Uint8Array(fs.readFileSync("emulator/c64/firmware/basic.rom")),
+    charRom: new Uint8Array(fs.readFileSync("emulator/c64/firmware/chargen.rom")),
+  };
+  const first = new C64Machine();
+  first.loadROMs(firmware);
+  for (let i = 0; i < 3; i++) first.runFrame();
+  const state = first.serializeState();
+  const backup = encodeGameVaultBackup({
+    gameKey: "library:real-cpu", gameTitle: "Real CPU smoke test", slot: 1,
+    payload: {
+      format: "ccg-c64-vault", version: 1, driveMode: "fast",
+      state, media: { disk: null, tape: null, cartridge: null },
+    },
+  });
+  const decoded = decodeGameVaultBackup(backup);
+  const second = new C64Machine();
+  second.loadROMs(firmware);
+  second.restoreState(decoded.payload.state);
+  assert.deepEqual(second.mem.ram, first.mem.ram);
+  assert.equal(second.cpu.PC, first.cpu.PC);
+  assert.equal(second.runFrame(), true, "Restored CPU must continue executing");
 });
 
 test("Game Vault UI never overwrites another game's named slot and retains legacy access", () => {
