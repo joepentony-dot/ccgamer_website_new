@@ -47,7 +47,7 @@
         const title=article.querySelector("h3"),price=article.querySelector(".price"),copy=article.querySelector("p");
         if(title)title.textContent="DISTIL BANISHMENT FLASK";
         if(price)price.textContent=`${need} ESSENCE`;
-        if(copy)copy.textContent="Consumes Banishment Essence from the Vessel and creates exactly one Banishment Flask. Score and Gold are unchanged.";
+        if(copy)copy.textContent="Consumes Banishment Essence and creates one Ward-Break Charge. A charge needs an UNLOCKED inventory slot and only one can be carried at a time. Score and Gold are unchanged.";
       }
       return removed;
     }catch(_){return 0}
@@ -108,6 +108,20 @@
       exactly instead of routing legacy Artefacts through the V10.42 essence
       inventory wrapper during rollback.
     */
+    // One Ward-Break Charge is the designed carry limit. An existing charge
+    // must not be misreported as an inventory capacity failure.
+    const owned=typeof PGR.firstInventory==="function"?PGR.firstInventory(player,"banishment")>=0:
+      (player.inventory||[]).some(item=>item?.kind==="banishment");
+    if(owned){
+      try{showToast("WARD-BREAK CHARGE ALREADY CARRIED","You already have one Banishment Flask. Press B near Count Loadula or a Death Stalker before distilling another.","cyan",7000)}catch(_){}
+      return false;
+    }
+    const availableSlots=Math.max(0,Number(PGR.inventoryCapacity(player))||0);
+    const usedSlots=Array.isArray(player.inventory)?player.inventory.length:0;
+    if(!PGR.inventoryCanAdd(player,{kind:"banishment"})){
+      try{showToast("NO UNLOCKED FLASK SLOT",`Your inventory has ${usedSlots}/${availableSlots} unlocked slots occupied. Any remaining slots marked LOCKED must be purchased at a dungeon shop before you can carry a Flask. Your Essence has not been spent.`,"red",8500)}catch(_){}
+      return false;
+    }
     const snapshot=snapshotPaymentState(player);
     let remaining=need;
     while(remaining>0&&physicalArtefactCount(player)>0){
@@ -128,7 +142,7 @@
     const flask={kind:"banishment",name:"Banishment Flask",short:"BANISH"};
     if(!PGR.inventoryAdd(player,flask)){
       restorePaymentState(player,snapshot);diagnostics.rollbacks++;
-      try{showToast("INVENTORY FULL","The Flask still needs a free slot. Your Essence and any legacy Artefacts were restored.","red",6500)}catch(_){}
+      try{showToast("FLASK TRANSFER FAILED","The Flask could not be added although a slot appeared available. Your Essence and any legacy Artefacts have been restored; report this transaction to CCG.","red",8500)}catch(_){}
       return false;
     }
 
