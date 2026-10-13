@@ -1618,11 +1618,12 @@ function renderGame(game) {
             const titleText = String(game.title || "game").trim();
             videoFacade.setAttribute("aria-label", `Play ${titleText} video`);
             videoFacade.hidden = false;
-            videoFacade.onclick = () => {
+            videoFacade.onclick = (event) => {
                 if (!videoEmbed) return;
-                // Keyboard activation must not strand focus on the hidden Play
-                // button. The revealed iframe is the next usable control.
-                const transferKeyboardFocus = document.activeElement === videoFacade;
+                // Native pointer clicks can also focus a button. Only keyboard
+                // or accessibility-generated clicks (detail 0) transfer focus
+                // into the revealed iframe when hiding the active Play button.
+                const transferKeyboardFocus = event.detail === 0 && document.activeElement === videoFacade;
                 const src = videoEmbed.dataset.videoSrc || embedUrl;
                 videoEmbed.src = src.includes("?") ? `${src}&autoplay=1` : `${src}?autoplay=1`;
                 videoEmbed.hidden = false;
