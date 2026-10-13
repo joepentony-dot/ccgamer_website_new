@@ -1377,7 +1377,13 @@ function connectAutoWarpLoadActivity(target) {
   const original = target.onLoadTrap;
   target.onLoadTrap = (device) => {
     if (typeof original === "function") original(device);
-    if (device === 8 || device === 9) noteAutomaticWarpLoadActivity();
+    if (device === 8 || device === 9) {
+      noteAutomaticWarpLoadActivity();
+      // Trap-backed LOAD can complete between auto-start polling ticks.
+      // Record the real device activity so LOAD→RUN cannot hang waiting for
+      // an otherwise missed moment of BASIC busy.
+      if (autoStartSteps?.some(step => step.loadDone)) autoStartSawBusy = true;
+    }
   };
 }
 
