@@ -1,5 +1,15 @@
 # Site-wide Lighthouse programme
 
+## Performance pass 2 — refreshed on current main, 6 October 2026
+
+- Pass 1 merged through PR #2512.
+- The original Pass 2 branch/PR #2517 became stale after substantial mainline Dungeon and website activity and is not the merge vehicle.
+- Fresh branch `codex/sitewide-performance-pass-2-video-facade-v2` is rebuilt from the current main. It preserves the current Omega single-game presentation while replacing the initial YouTube iframe payload with a poster/play facade. The YouTube player is created only after an explicit click.
+- Canonical video generation now writes `data-video-src` instead of an eager iframe `src`, retains video structured data/sitemap ownership, and upgrades older iframe-only canonical markup idempotently.
+- External non-YouTube video overrides retain their explicit iframe source and suppress the YouTube facade.
+- The native mouse-wheel qualification deliberately clicks the facade before checking the existing post-play iframe wheel shield, so deferred loading does not weaken the scrolling contract.
+- This pass targets the multi-megabyte initial YouTube transfer identified in the supplied Lighthouse reports; it does not remove the video section, direct YouTube link, artwork, typography or Omega effects.
+
 ## Site-wide remediation + permanent protocol — 5 October 2026
 
 - User supplied 12 Lighthouse JSON reports covering Home, Games, Collections, Summer Games, Retro Events and Music in desktop/mobile modes. The evidence shows the site is not at its performance ceiling: repeated large CLS, mobile LCP delays, heavy third-party/video work, image-delivery waste and short static cache lifetimes remain.
