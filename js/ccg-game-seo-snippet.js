@@ -52,19 +52,25 @@
     return description.slice(match.index);
   }
 
-  function firstCompleteSentence(value, maxLength) {
-    const text = normalize(value);
+  function firstSentenceEnd(text, minLength = 0) {
     const endings = /[.!?](?:[”"']?)(?=\s|$)/g;
     let match;
     while ((match = endings.exec(text)) !== null) {
       const end = endings.lastIndex;
-      // Three consecutive dots are editorial punctuation, not a sentence end.
-      // Treating them as a terminal period can publish cut-off search snippets.
+      // Neither an ellipsis nor a single-letter initial (U. S. Gold,
+      // U.S. Gold, J. R. R. Tolkien) ends an editorial sentence.
       if (text.slice(Math.max(0, end - 3), end) === "...") continue;
-      if (end < MIN_SENTENCE_LENGTH) continue;
-      if (end > maxLength) return "";
-      return text.slice(0, end).trim();
+      if (match[0][0] === "." && /(?:^|[\s.])[A-Z]\.[”"']?$/.test(text.slice(0, end))) continue;
+      if (end >= minLength) return end;
     }
+    return -1;
+  }
+
+  function firstCompleteSentence(value, maxLength) {
+    const text = normalize(value);
+    const end = firstSentenceEnd(text, MIN_SENTENCE_LENGTH);
+    if (end > maxLength) return "";
+    if (end >= 0) return text.slice(0, end).trim();
     return text.length >= MIN_SENTENCE_LENGTH && text.length <= maxLength && /[.!?]$/.test(text) && !/(?:…|\.\.\.)$/.test(text)
       ? text
       : "";
@@ -81,9 +87,9 @@
    */
   function conciseSubjectSentence(value, title, maxLength) {
     const text = normalize(value);
-    const match = /[.!?][”"']?(?=\s|$)/.exec(text);
-    if (!match) return "";
-    const sentence = text.slice(0, match.index + match[0].length).trim();
+    const end = firstSentenceEnd(text);
+    if (end < 0) return "";
+    const sentence = text.slice(0, end).trim();
     const comma = sentence.indexOf(",");
     if (comma < 0 || comma > 190) return "";
     const candidate = sentence.slice(comma + 1).trim();
