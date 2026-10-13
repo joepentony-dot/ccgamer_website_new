@@ -237,7 +237,7 @@ const frameContext = vm.createContext({
   PAL_FRAME_MS: 1000 / 50.125,
   WARP_FRAME_BUDGET_MS: 12, WARP_MAX_FRAMES_PER_TICK: 1024,
   performance: { now: () => ticks++ * 0.5 },
-  pollGamepad() {}, serviceAutoStart() {}, blitMachine() {},
+  pollGamepad() {}, serviceAutoStart() {}, tickAutomaticWarpAfterRun() {}, blitMachine() {},
   autoStartSteps: null, requestAnimationFrame: () => 1,
   frameHandle: 0, speedSampleTime: 0, speedSampleFrames: 0,
   emulatorSpeedStatus: { textContent: "", title: "" },
