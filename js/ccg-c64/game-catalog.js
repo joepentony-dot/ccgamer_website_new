@@ -54,6 +54,28 @@ export function parsePackedCatalog(data, { packRoot = PACK_ROOT } = {}) {
   return { packs, entries };
 }
 
+// Only explicitly promoted cartridge images replace other formats. A title alone
+// never grants an untested CRT priority: pack contents and the owner's original
+// media stay untouched until a reviewed, verified, owner-approved CRT is listed.
+// Matching is punctuation-insensitive but never substring-based ("Pitfall" must
+// not hide "Pitfall II", nor a compilation hide its individual games).
+export function preferSelectedCartridges(entries) {
+  if (!Array.isArray(entries)) return [];
+  const preferred = new Map();
+  for (const entry of entries) {
+    if (entry?.preferOverOtherFormats !== true ||
+        String(entry.format || "").toLowerCase() !== "crt" ||
+        typeof entry.title !== "string") continue;
+    const key = normaliseCatalogSearch(entry.title);
+    if (key && !preferred.has(key)) preferred.set(key, entry);
+  }
+  if (!preferred.size) return entries;
+  return entries.filter(entry => {
+    const key = typeof entry?.title === "string" ? normaliseCatalogSearch(entry.title) : "";
+    return !preferred.has(key) || preferred.get(key) === entry;
+  });
+}
+
 // Indexing punctuation as optional lets "Daley Thompsons" find "Daley Thompson's".
 const searchTitleCache = new WeakMap();
 export function normaliseCatalogSearch(value) {
