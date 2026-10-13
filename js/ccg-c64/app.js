@@ -5,6 +5,7 @@ import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault, encodeGameVaultBackup, decodeGameVaultBackup } from "./game-vault.js";
+import { mountCatalogueBrowser } from "./catalogue-browser.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
@@ -105,6 +106,9 @@ const vaultClearButton = document.querySelector("[data-vault-clear]");
 const vaultStatus = document.querySelector("[data-vault-status]");
 const vaultStorageNotice = document.querySelector("[data-vault-storage-notice]");
 const vaultRetryButton = document.querySelector("[data-vault-retry]");
+const vaultFeedback = document.querySelector("[data-vault-feedback]");
+const warpHint = document.querySelector("[data-warp-hint]");
+const playHelp = document.querySelector("[data-play-help]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
@@ -757,7 +761,8 @@ function updateMediaControls(snapshot = vault.snapshot()) {
   if (tapeStopButton) tapeStopButton.disabled = !active || mountedTape?.kind !== "tap";
   if (tapeRewindButton) tapeRewindButton.disabled = !active || mountedTape?.kind !== "tap";
   if (vaultSaveButton) vaultSaveButton.disabled = !active;
-  if (vaultLoadButton) vaultLoadButton.disabled = !active;
+  // Restore availability is based on the saved slot, even when C64 power is off.
+  // refreshVaultStatus() owns the RESUME SAVE disabled state.
   if (vaultClearButton) vaultClearButton.disabled = false;
   if (swapDiskButton) swapDiskButton.disabled = !active || !mountedDisk;
   if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled =
@@ -834,10 +839,17 @@ async function vaultRecord(selection, slot) {
     : gameVault.loadGame(selection.gameKey, slot);
 }
 
+function showVaultFeedback(message, error = false) {
+  if (!vaultFeedback) return;
+  vaultFeedback.textContent = message;
+  vaultFeedback.classList.toggle("is-error", Boolean(error));
+}
+
 function showVaultConnectionFailure(error) {
   const blocked = error?.name === "GameVaultBlockedError";
   if (vaultStatus) vaultStatus.textContent = blocked
     ? "VAULT BUSY — ANOTHER TAB" : (error?.message || "Game Vault unavailable");
+  showVaultFeedback(error?.message || "Game Vault storage unavailable.", true);
   if (vaultStorageNotice) {
     vaultStorageNotice.hidden = false;
     vaultStorageNotice.textContent = blocked
@@ -867,7 +879,7 @@ async function refreshVaultStatus() {
     if (vaultRetryButton) vaultRetryButton.hidden = true;
     if (vaultExportButton) vaultExportButton.disabled = !record;
     if (vaultClearButton) vaultClearButton.disabled = !record;
-    if (vaultLoadButton) vaultLoadButton.disabled = !record || !running;
+    if (vaultLoadButton) vaultLoadButton.disabled = !record;
     if (vaultSaveButton) vaultSaveButton.disabled = !running ||
       (vaultGameSelect?.value !== "__current__" &&
        vaultGameSelect?.value !== currentSessionGame.gameKey);
@@ -888,7 +900,7 @@ async function refreshVaultGameList(prefer = null) {
     knownVaultGames = games;
     knownLegacySlots = legacy;
     const selected = prefer ?? vaultGameSelect.value;
-    const currentOption = new Option("CURRENT: " + currentSessionGame.gameTitle, "__current__");
+    const currentOption = new Option("CURRENT GAME: " + currentSessionGame.gameTitle, "__current__");
     const options = [currentOption];
     for (const game of games) {
       options.push(new Option(game.gameTitle + " (" +
@@ -1271,7 +1283,7 @@ function setControlState(snapshot) {
     warpLoadButton.disabled = !running || paused;
     warpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
     const strong = warpLoadButton.querySelector("strong");
-    if (strong) strong.textContent = warpLoadActive ? "ON · MAX" : "MAX";
+    if (strong) strong.textContent = warpLoadActive ? "WARP ON" : "MAX SPEED";
   }
   if (mobileWarpLoadButton) {
     mobileWarpLoadButton.disabled = !running || paused;
@@ -1401,6 +1413,8 @@ function cancelAutoStart() {
   autoWarpPostRunStart = null;
   autoWarpLoadEvents = 0;
   finishAutomaticWarp();
+  playHelp?.classList.remove("is-loading");
+  if (warpHint) warpHint.textContent = "WARP speeds up loading. Switch it off to return to normal speed.";
 }
 
 function queueAutoStart(steps) {
@@ -1422,6 +1436,8 @@ function queueAutoStart(steps) {
     };
   }
   beginAutomaticWarp();
+  playHelp?.classList.add("is-loading");
+  if (warpHint) warpHint.textContent = "Game starting — WARP speeds up longer loads. Audio pauses during warp.";
 }
 
 function serviceAutoStart() {
@@ -1445,8 +1461,12 @@ function serviceAutoStart() {
     autoStartTypeRest = autoStartTypeRest.slice(machine.bufferKeyboardText(autoStartTypeRest));
     if (autoStartTypeRest === "") autoStartSteps.shift();
   } else if (step.loadDone) {
+    // Fast virtual disks can finish between consecutive auto-start ticks.
+    // Their KERNAL load event is observed, but BASIC's brief busy interval
+    // can be missed. Accept that completed LOAD handshake once READY returns;
+    // slower disk/tape loads still take the existing busy-then-ready path.
     if (!basicReady()) autoStartSawBusy = true;
-    if (autoStartSawBusy && basicReady()) {
+    if (basicReady() && (autoStartSawBusy || autoWarpLoadEvents > 0)) {
       autoStartSawBusy = false;
       autoStartSteps.shift();
     }
@@ -2427,6 +2447,7 @@ async function initialiseOnlineLibrary() {
   if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden =
     !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
+  catalogueBrowser?.refresh();
 }
 
 async function loadSelectedLibraryEntry() {
@@ -2787,6 +2808,13 @@ document.addEventListener("pointerdown", (event) => {
   if (!onlineLibrarySearchWrap?.contains(event.target)) setLibrarySuggestionsOpen(false);
 });
 onlineLibraryDiskSwapButton?.addEventListener("click", () => { void swapOnlineLibraryDisk(); });
+const catalogueBrowser = mountCatalogueBrowser({
+  games: () => onlineLibraryEntries,
+  play(id) {
+    selectOnlineLibraryEntry(id, false);
+    void loadSelectedLibraryEntry();
+  },
+});
 void initialiseOnlineLibrary();
 
 async function saveGameVaultSlot() {
@@ -2825,6 +2853,8 @@ async function saveGameVaultSlot() {
     if (stageNote) stageNote.textContent =
       "Saved " + currentSessionGame.gameTitle + " to Slot " + slot +
       " in this browser. Export a backup for long-term safekeeping.";
+    showVaultFeedback("✓ " + currentSessionGame.gameTitle + " saved to Slot " + slot +
+      ". You can resume it after reloading this page.");
     await refreshVaultGameList("__current__");
     if (vaultStatus) vaultStatus.textContent =
       currentSessionGame.gameTitle + " // SLOT " + slot + " SAVED " +
@@ -2832,11 +2862,16 @@ async function saveGameVaultSlot() {
     screen?.focus();
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "Game Vault save failed.";
+    showVaultFeedback("Save failed: " + (error?.message || "Game Vault storage unavailable."), true);
   }
 }
 
 async function loadGameVaultSlot() {
-  if (!running) return;
+  if (!vault.snapshot().allRequiredReady) {
+    showVaultFeedback("System ROMs are needed before a saved game can resume. Open ROM SETTINGS.", true);
+    showSetup();
+    return;
+  }
   const selection = vaultSelection();
   const slot = currentVaultSlot();
   let stopped = false;
@@ -2857,7 +2892,7 @@ async function loadGameVaultSlot() {
     old = {
       machine, mountedDisk, mountedTape, mountedCartridge, driveMode,
       mountedDiskKey, activeLibraryEntryId, activeLibraryDiskIndex,
-      currentSessionGame, diskSides: [...diskSideCache.entries()],
+      currentSessionGame, running, diskSides: [...diskSideCache.entries()],
     };
     stopFrameLoop();
     stopped = true;
@@ -2916,6 +2951,7 @@ async function loadGameVaultSlot() {
       "GAME VAULT // " + selection.gameTitle + " SLOT " + slot + " RESTORED";
     if (stageNote) stageNote.textContent =
       "Resumed " + selection.gameTitle + " from saved Slot " + slot + ".";
+    showVaultFeedback("✓ " + selection.gameTitle + " restored from Slot " + slot + ".");
     updateMediaControls(vault.snapshot());
     updateOnlineDiskUi();
     await refreshVaultGameList("__current__");
@@ -2934,12 +2970,14 @@ async function loadGameVaultSlot() {
       activeLibraryEntryId = old.activeLibraryEntryId;
       activeLibraryDiskIndex = old.activeLibraryDiskIndex;
       currentSessionGame = old.currentSessionGame;
+      running = old.running;
       diskSideCache.clear();
       for (const [key, media] of old.diskSides) diskSideCache.set(key, media);
     }
     if (!frameHandle && running && machine) frameHandle = requestAnimationFrame(frameLoop);
     setAudioPaused(false);
     if (stageNote) stageNote.textContent = error?.message || "Game Vault restore failed.";
+    showVaultFeedback("Restore failed: " + (error?.message || "Unknown Game Vault error."), true);
   }
 }
 
@@ -3032,7 +3070,15 @@ vaultClearButton?.addEventListener("click", async () => {
   }
 });
 vaultSlot?.addEventListener("change", () => { void refreshVaultStatus(); });
-vaultGameSelect?.addEventListener("change", () => { void refreshVaultStatus(); });
+vaultGameSelect?.addEventListener("change", () => {
+  const selection = vaultSelection();
+  showVaultFeedback(selection.legacy
+    ? "Original legacy saves can be resumed here. Select CURRENT GAME to save new progress."
+    : selection.gameKey === currentSessionGame.gameKey
+      ? "Saving uses the current running game. You can resume any available slot later."
+      : "Previous saved game selected. Choose a slot and press RESUME SAVE.");
+  void refreshVaultStatus();
+});
 
 for (const button of document.querySelectorAll("[data-joy-mask]")) {
   const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
