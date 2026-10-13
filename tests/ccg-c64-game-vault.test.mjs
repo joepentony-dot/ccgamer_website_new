@@ -156,9 +156,9 @@ test("Invalid, corrupt or unsupported backup cannot reach IndexedDB", () => {
 
 test("Real C64 machine state survives backup roundtrip and restores CPU RAM", () => {
   const firmware = {
-    kernal: new Uint8Array(fs.readFileSync("emulator/c64/firmware/kernal.rom")),
-    basic: new Uint8Array(fs.readFileSync("emulator/c64/firmware/basic.rom")),
-    charRom: new Uint8Array(fs.readFileSync("emulator/c64/firmware/chargen.rom")),
+    kernal: new Uint8Array(fs.readFileSync("emulator/c64/firmware/kernal-901227-03.bin")),
+    basic: new Uint8Array(fs.readFileSync("emulator/c64/firmware/basic-901226-01.bin")),
+    charRom: new Uint8Array(fs.readFileSync("emulator/c64/firmware/chargen-901225-01.bin")),
   };
   const first = new C64Machine();
   first.loadROMs(firmware);
