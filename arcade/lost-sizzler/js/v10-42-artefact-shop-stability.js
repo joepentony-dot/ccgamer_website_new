@@ -113,12 +113,14 @@
     const owned=typeof PGR.firstInventory==="function"?PGR.firstInventory(player,"banishment")>=0:
       (player.inventory||[]).some(item=>item?.kind==="banishment");
     if(owned){
+      diagnostics.rollbacks++;
       try{showToast("WARD-BREAK CHARGE ALREADY CARRIED","You already have one Banishment Flask. Press B near Count Loadula or a Death Stalker before distilling another.","cyan",7000)}catch(_){}
       return false;
     }
     const availableSlots=Math.max(0,Number(PGR.inventoryCapacity(player))||0);
     const usedSlots=Array.isArray(player.inventory)?player.inventory.length:0;
     if(!PGR.inventoryCanAdd(player,{kind:"banishment"})){
+      diagnostics.rollbacks++;
       try{showToast("NO UNLOCKED FLASK SLOT",`Your inventory has ${usedSlots}/${availableSlots} unlocked slots occupied. Any remaining slots marked LOCKED must be purchased at a dungeon shop before you can carry a Flask. Your Essence has not been spent.`,"red",8500)}catch(_){}
       return false;
     }
