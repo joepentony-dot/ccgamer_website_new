@@ -69,6 +69,12 @@ function removeBooleanAttribute(tag, name) {
   return tag.replace(attrRe, "");
 }
 
+function setBooleanAttribute(tag, name) {
+  const attrRe = new RegExp(`\\s${name}(?=\\s|>|/)`, "i");
+  if (attrRe.test(tag)) return tag;
+  return tag.replace(/\s*>$/, ` ${name}>`);
+}
+
 function patchGamePage(html, override) {
   const sectionRe = /(<section\b[^>]*\bid=(["'])game-video-section\2[^>]*>)([\s\S]*?)(<\/section>)/i;
   const sectionMatch = html.match(sectionRe);
@@ -87,6 +93,22 @@ function patchGamePage(html, override) {
   iframe = removeAttribute(iframe, "data-video-id");
   iframe = removeBooleanAttribute(iframe, "hidden");
   body = body.replace(iframeRe, iframe);
+
+  const facadeRe = /<button\b[^>]*\bid=(["'])game-video-facade\1[^>]*>/i;
+  const facadeMatch = body.match(facadeRe);
+  if (facadeMatch) {
+    let facade = facadeMatch[0];
+    facade = setBooleanAttribute(facade, "hidden");
+    body = body.replace(facadeRe, facade);
+  }
+
+  const posterRe = /<img\b[^>]*\bid=(["'])game-video-poster\1[^>]*>/i;
+  const posterMatch = body.match(posterRe);
+  if (posterMatch) {
+    let poster = posterMatch[0];
+    poster = removeAttribute(poster, "src");
+    body = body.replace(posterRe, poster);
+  }
 
   const buttonRe = /<a\b[^>]*\bid=(["'])gameVideoBtn\1[^>]*>[\s\S]*?<\/a>/i;
   const buttonMatch = body.match(buttonRe);
