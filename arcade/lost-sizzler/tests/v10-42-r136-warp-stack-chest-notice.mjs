@@ -54,6 +54,30 @@ assert.equal(PGR.inventoryAdd(makePlayer(),{kind:"banishment",qty:1}),true);
 const limited=makePlayer([{kind:"banishment",qty:1}]);
 assert.equal(PGR.inventoryCanAdd(limited,{kind:"banishment"}),false,"Special Banishment Flask ownership must be unchanged");
 
+const partialPlayer=makePlayer([{...warp(),qty:2},{kind:"potion",qty:3},{kind:"torch",qty:1}],0,3);
+const deathCache={active:true,inventory:[{...warp(),qty:3}],games:[],armour:0,score:0,xp:0};
+const deathRun={floorGames:[],stats:{deathCachesRecovered:0}};
+const conservedWarps=()=>PGR.inventoryKindCount(partialPlayer,"teleport")+deathCache.inventory.reduce((n,it)=>n+(it.kind==="teleport"?it.qty||1:0),0);
+assert.equal(conservedWarps(),5);
+assert.equal(PGR.inventoryAdd(partialPlayer,{...warp(),qty:3}),false,
+  "A multi-spell add must fail when only part of a stack would fit");
+assert.equal(PGR.inventoryKindCount(partialPlayer,"teleport"),2,
+  "Failed multi-spell add must roll back edits to the partially filled Warp stack");
+const firstAttempt=PGR.recoverDeathCache(partialPlayer,deathRun,deathCache);
+assert.equal(firstAttempt.recovered,0,"Full inventory cannot partially claim a multi-spell cache row");
+assert.equal(firstAttempt.remaining,3,"The entire unclaimed cache row stays available");
+assert.equal(deathCache.active,true);
+assert.equal(conservedWarps(),5,"A failed death-cache recovery must not duplicate Warp spells");
+assert.equal(deathRun.stats.deathCachesRecovered,0);
+PGR.inventoryRemove(partialPlayer,PGR.firstInventory(partialPlayer,"torch"));
+const secondAttempt=PGR.recoverDeathCache(partialPlayer,deathRun,deathCache);
+assert.equal(secondAttempt.recovered,3,"A retry after freeing a slot can claim all cached Warps");
+assert.equal(secondAttempt.remaining,0);
+assert.equal(deathCache.active,false);
+assert.equal(PGR.inventoryKindCount(partialPlayer,"teleport"),5);
+assert.equal(conservedWarps(),5,"Retrying recovery must conserve Warp quantity");
+assert.equal(deathRun.stats.deathCachesRecovered,1,"Fully collected death cache must count once");
+
 const toastSource=between(core,"function displayToast(entry){","function rememberTrail(p){");
 const chestSource=between(play,"function chestScoreReward(chest){","function diagonalClear(");
 const displayed=[];
