@@ -178,6 +178,8 @@
     if(!soloDungeon()||!String(args[0]||"").toUpperCase().startsWith("SANCTUARY —"))return args;
     const room=sanctuaryRoom(),line=lines.sanctuary.keeper;
     if(!room)return args;
+    // Do not speak the keeper greeting over a live scout hand-off.
+    try{if(host?.rescue?.following&&!host.rescue.rescued)return args}catch(_){}
     const now=clockNow(),previous=memory.get(room);
     if(previous?.key===line.key&&now-previous.at<REPEAT_MS){state.suppressed++;return args}
     args[1]=`${String(args[1]||"")} ${line.speaker}: ${line.text}`.trim();
@@ -340,8 +342,8 @@
       try{
         const rescue=host?.rescue;if(!rescue)return result;
         if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lines.scout.trapped,{player});
-        else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lines.scout.rescued,{player});
-        else if(rescue.following&&withinReach(player,rescue))present(rescue,lines.scout.following,{player});
+        // The rescue transition occurs in updateRescue(), not in triggerRescue().
+        // Repeated movement beside a following scout must never replay 'I'll follow you'.
       }catch(_){}
       return result
     };
