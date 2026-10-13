@@ -30,7 +30,7 @@ test("runtime loads YouTube only after the play facade is activated", () => {
   assert.match(runtime, /document\.createElement\("img"\)/);
   assert.match(runtime, /videoEmbed\.removeAttribute\("src"\)/);
   assert.match(runtime, /videoEmbed\.dataset\.videoSrc = embedUrl/);
-  assert.match(runtime, /videoFacade\.onclick = \(\) =>/);
+  assert.match(runtime, /videoFacade\.onclick = \(event\) =>/);
   assert.match(runtime, /autoplay=1/);
   assert.match(runtime, /i\.ytimg\.com\/vi\/\$\{vid\}\/hqdefault\.jpg/);
   assert.match(runtime, /videoFacade\.hidden = true/);
@@ -125,9 +125,9 @@ test("wheel guard follows a deferred player into its facade stage", () => {
 
 
 test("keyboard activation focuses the revealed player without trapping pointer interaction", () => {
-  const handlerBody = runtime.match(/videoFacade\.onclick = \(\) => \{([\s\S]*?)\n            \};/)?.[1];
+  const handlerBody = runtime.match(/videoFacade\.onclick = \(event\) => \{([\s\S]*?)\n            \};/)?.[1];
   assert.ok(handlerBody, "video facade click handler exists");
-  const activate = new Function("videoEmbed", "videoFacade", "embedUrl", "document", handlerBody);
+  const activate = new Function("event", "videoEmbed", "videoFacade", "embedUrl", "document", handlerBody);
   const iframe = {
     dataset: { videoSrc: "https://www.youtube-nocookie.com/embed/TEST" },
     hidden: true,
@@ -137,7 +137,7 @@ test("keyboard activation focuses the revealed player without trapping pointer i
   };
   const facade = { hidden: false };
   const document = { activeElement: facade };
-  activate(iframe, facade, iframe.dataset.videoSrc, document);
+  activate({ detail: 0 }, iframe, facade, iframe.dataset.videoSrc, document);
   assert.equal(iframe.src, "https://www.youtube-nocookie.com/embed/TEST?autoplay=1");
   assert.equal(iframe.hidden, false);
   assert.equal(facade.hidden, true);
@@ -150,7 +150,7 @@ test("keyboard activation focuses the revealed player without trapping pointer i
     focus() { assert.fail("pointer activation must not force keyboard focus"); }
   };
   const pointerFacade = { hidden: false };
-  activate(pointerIframe, pointerFacade, pointerIframe.dataset.videoSrc, { activeElement: null });
+  activate({ detail: 1 }, pointerIframe, pointerFacade, pointerIframe.dataset.videoSrc, { activeElement: pointerFacade });
   assert.equal(pointerIframe.hidden, false);
   assert.equal(pointerFacade.hidden, true);
 });
