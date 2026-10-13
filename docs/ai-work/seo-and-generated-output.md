@@ -1,5 +1,11 @@
 # SEO and generated output
 
+## Current-main reconciliation v126 — 13 October 2026
+
+- On the guarded SEO review branch, the prior main reconciliation produced draft commit `021718aeada3e3939b2d5406f03eeee23e86e39f` based on main `8402243669effaeaf2ae2adf8de2ad3e964e1b95` and cache v124. All 14 exact-head workflow checks passed before main advanced again.
+- Newer independent emulator/emulation commits advanced main to `762342ee887205e912828eef17b3852605e5505e`, with cache v125. Rebuilt the same existing draft from that exact main tree, overlaying only existing source `js/ccg-game-seo-snippet.js` and `tests/game-seo-snippet-quality.test.mjs`, plus this SEO checkpoint, and incrementing the *current main* service-worker cache namespace only to `2026-10-13-public-code-v126`. All newer emulation, media, generated and social pages stay in current-main ownership.
+- The draft remains unmerged and undeployed. Require all exact-new-head cache, safety, SEO, publishing, browser, Lighthouse and remaining triggered CI to pass and independent review plus owner merge authorisation. Changes to live `main` after this rebase require renewed reconciliation and current-head qualification, not assumptions from older green checks.
+
 ## Omega Race non-indexed editorial-snippet recovery candidate — 13 October 2026
 
 - Search Console inspection on 13 October: canonical `/games/omega-race/` is **Crawled - currently not indexed**, last Google crawl 2026-06-04; fresh live on-page audit returned HTTP 200, indexable, self-canonical, 503 words and a generic 64-character meta description. This is NOT a demonstrated technical indexing block, and improvements cannot guarantee indexing.

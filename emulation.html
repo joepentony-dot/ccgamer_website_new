@@ -64,7 +64,7 @@
     <link rel="stylesheet" href="resources/css/info-pages.css" />
 
     <!-- PAGE CSS -->
-    <link rel="stylesheet" href="resources/css/emulation.css" />
+    <link rel="stylesheet" href="resources/css/emulation.css?ccg_rev=20261013_play_c64_spotlight_v1" />
     <link rel="stylesheet" href="resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="resources/css/ccg-mobile-lite.css">
     <script src="js/ccg-mobile-lite.js" defer></script>
@@ -271,13 +271,23 @@
                     <div class="emu-hero-grid">
                         <div class="emu-marquee">
                             <div class="emu-marquee__kicker">CCG Smart Emulation Hub</div>
-                            <h1 class="emu-marquee__title" id="emulation-hero-title">The smarter way to set up C64 and Amiga emulation</h1>
+                            <h1 class="emu-marquee__title" id="emulation-hero-title">Play Commodore 64 games online — or explore C64 and Amiga emulation</h1>
                             <p class="emu-marquee__text">
-                                Pick what you want to run and the page will point you towards the most suitable emulator, written setup path
-                                and a matching video walkthrough. No enormous embeds, no hunting through twenty tabs, and no need to know the jargon first.
+                                Play C64 games here on the Cheeky Commodore Gamer website, without installing a separate emulator.
+                                Prefer your own PC emulator or dedicated hardware? The guides, tutorials and recommendations are still here too.
                             </p>
+                            <section class="emu-play-now" aria-labelledby="emu-play-now-title">
+                                <div class="emu-play-now__eyebrow"><span class="emu-play-now__light" aria-hidden="true"></span> CCG'S OWN C64 EMULATOR <span class="emu-play-now__tag">PLAY ON THIS SITE</span></div>
+                                <h2 id="emu-play-now-title">Fancy a game? Play your Commodore 64 favourites here.</h2>
+                                <p>Search the built-in game library, choose a title and load it into the browser emulator. Use your keyboard, gamepad or on-screen mobile controls, with Game Vault save slots for returning to your games later.</p>
+                                <a class="emu-play-now__launch" href="/emulator/c64/" aria-label="Play Commodore 64 games now in the CCG browser emulator">
+                                    <span>PLAY C64 GAMES NOW</span><span aria-hidden="true">→</span>
+                                </a>
+                                <div class="emu-play-now__features" aria-label="Browser emulator features">
+                                    <span>No separate install</span><span>Search &amp; auto-load games</span><span>Save &amp; restore progress</span>
+                                </div>
+                            </section>
                             <div class="emu-cta-row">
-                                <a class="ccg-btn ccg-btn--primary" href="/emulator/c64/">🎛️ CCG Browser C64</a>
                                 <a class="ccg-btn ccg-btn--primary" href="#smart-picker">🧭 Find My Emulator</a>
                                 <a class="ccg-btn ccg-btn--primary" href="#c64-options">🕹️ C64 Setup</a>
                                 <a class="ccg-btn ccg-btn--primary" href="#amiga-options">🖥️ Amiga Setup</a>
@@ -290,8 +300,8 @@
                             <h2 class="emu-burst-card__title">Which route suits you?</h2>
                             <div class="emu-route-grid" role="list">
                                 <article class="emu-route-card" role="listitem">
-                                    <h3>Browser / site exploration</h3>
-                                    <p>Great for discovering titles quickly with videos, manual notes, and game context in one place.</p>
+                                    <h3>Play C64 games in your browser</h3>
+                                    <p>Open the CCG emulator, search the game library and play without a separate installation. <a href="/emulator/c64/">Launch the C64 emulator →</a></p>
                                 </article>
                                 <article class="emu-route-card" role="listitem">
                                     <h3>Emulator on PC</h3>
@@ -309,7 +319,7 @@
                 <div class="ccg-omega-divider" aria-hidden="true"><span class="ccg-omega-core"></span></div>
 
                 <nav class="emu-smart-nav" aria-label="Emulation hub shortcuts">
-                    <a href="/emulator/c64/"><span aria-hidden="true">🎛️</span> Browser C64</a>
+                    <a class="emu-smart-nav__play" href="/emulator/c64/"><span aria-hidden="true">🕹️</span> Play C64 Online</a>
                     <a href="#smart-picker"><span aria-hidden="true">🧭</span> Find My Emulator</a>
                     <a href="#c64-options"><span aria-hidden="true">🕹️</span> C64</a>
                     <a href="#amiga-options"><span aria-hidden="true">🖥️</span> Amiga</a>
@@ -410,12 +420,13 @@
                     <div class="ccg-emulation-box ccg-info-panel">
                         <h2 class="ccg-section-title" id="browser-route-title">Play directly in your browser with CCG</h2>
                         <p class="ccg-body-text">
-                            Before diving into full emulator setup, explore the CCG library to discover what to play. Many entries include
-                            contextual videos, quick facts, and platform notes, so you can shortlist titles faster and then choose your preferred
-                            route: browser, emulator, or dedicated TV hardware.
+                            The <strong>Cheeky Commodore Gamer browser C64 emulator</strong> lets you play compatible Commodore 64 games on this website.
+                            Search the playable library or load your own supported C64 disk, tape, cartridge and program files.
+                            There are keyboard and gamepad controls on desktop, on-screen controls for phones and tablets, and three Game Vault save slots per game.
+                            Your saves are kept in your browser, so export a backup if you want to move them to another device.
                         </p>
                         <div class="ccg-emulation-jump">
-                            <a class="ccg-btn ccg-btn--primary" href="/emulator/c64/">Play C64 Games Online — Open Browser Emulator</a>
+                            <a class="ccg-btn ccg-btn--primary emu-browser-route__play" href="/emulator/c64/">Play Commodore 64 Games — Launch CCG Emulator →</a>
                             <a class="ccg-btn ccg-btn--secondary" href="games/index.html">Browse all games</a>
                             <a class="ccg-btn ccg-btn--secondary" href="games/genres/index.html">Explore genre hubs</a>
                             <a class="ccg-btn ccg-btn--secondary" href="games/collections/index.html">Visit collections</a>

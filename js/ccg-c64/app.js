@@ -103,6 +103,8 @@ const vaultSaveButton = document.querySelector("[data-vault-save]");
 const vaultLoadButton = document.querySelector("[data-vault-load]");
 const vaultClearButton = document.querySelector("[data-vault-clear]");
 const vaultStatus = document.querySelector("[data-vault-status]");
+const vaultStorageNotice = document.querySelector("[data-vault-storage-notice]");
+const vaultRetryButton = document.querySelector("[data-vault-retry]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
@@ -832,6 +834,23 @@ async function vaultRecord(selection, slot) {
     : gameVault.loadGame(selection.gameKey, slot);
 }
 
+function showVaultConnectionFailure(error) {
+  const blocked = error?.name === "GameVaultBlockedError";
+  if (vaultStatus) vaultStatus.textContent = blocked
+    ? "VAULT BUSY — ANOTHER TAB" : (error?.message || "Game Vault unavailable");
+  if (vaultStorageNotice) {
+    vaultStorageNotice.hidden = false;
+    vaultStorageNotice.textContent = blocked
+      ? "Another C64 emulator tab is holding the old save database open. Close only the other emulator tabs, then press RETRY VAULT. Your saved games are not deleted. Do not clear browser data."
+      : "Game Vault could not open. Check whether your browser permits site storage, then press RETRY VAULT. Do not clear saved site data.";
+  }
+  if (vaultRetryButton) vaultRetryButton.hidden = false;
+  if (vaultExportButton) vaultExportButton.disabled = true;
+  if (vaultClearButton) vaultClearButton.disabled = true;
+  if (vaultLoadButton) vaultLoadButton.disabled = true;
+  if (vaultSaveButton) vaultSaveButton.disabled = true;
+}
+
 async function refreshVaultStatus() {
   if (!vaultStatus) return;
   const version = ++vaultStatusVersion;
@@ -844,6 +863,8 @@ async function refreshVaultStatus() {
       ? (selection.gameTitle + " // SLOT " + slot + " SAVED " +
           new Date(record.savedAt).toLocaleString())
       : (selection.gameTitle + " // SLOT " + slot + " EMPTY");
+    if (vaultStorageNotice) vaultStorageNotice.hidden = true;
+    if (vaultRetryButton) vaultRetryButton.hidden = true;
     if (vaultExportButton) vaultExportButton.disabled = !record;
     if (vaultClearButton) vaultClearButton.disabled = !record;
     if (vaultLoadButton) vaultLoadButton.disabled = !record || !running;
@@ -852,10 +873,7 @@ async function refreshVaultStatus() {
        vaultGameSelect?.value !== currentSessionGame.gameKey);
   } catch (error) {
     if (version !== vaultStatusVersion) return;
-    vaultStatus.textContent = error?.message || "Game Vault unavailable";
-    if (vaultExportButton) vaultExportButton.disabled = true;
-    if (vaultLoadButton) vaultLoadButton.disabled = true;
-    if (vaultSaveButton) vaultSaveButton.disabled = true;
+    showVaultConnectionFailure(error);
   }
 }
 
@@ -883,9 +901,7 @@ async function refreshVaultGameList(prefer = null) {
       ? selected : "__current__";
     await refreshVaultStatus();
   } catch (error) {
-    if (version === vaultListingVersion && vaultStatus) {
-      vaultStatus.textContent = error?.message || "Game Vault unavailable";
-    }
+    if (version === vaultListingVersion) showVaultConnectionFailure(error);
   }
 }
 
@@ -2980,6 +2996,19 @@ async function importGameVaultBackup(file) {
   }
 }
 
+vaultRetryButton?.addEventListener("click", () => {
+  if (vaultRetryButton.disabled) return;
+  vaultRetryButton.disabled = true;
+  if (vaultStatus) vaultStatus.textContent = "RECONNECTING VAULT…";
+  void refreshVaultGameList().finally(() => { vaultRetryButton.disabled = false; });
+});
+// Returning after closing another emulator tab is an opportunity to retry.
+// This does not reset the machine or touch any saved state.
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && vaultRetryButton && !vaultRetryButton.hidden) {
+    void refreshVaultGameList();
+  }
+});
 vaultSaveButton?.addEventListener("click", () => { void saveGameVaultSlot(); });
 vaultLoadButton?.addEventListener("click", () => { void loadGameVaultSlot(); });
 vaultExportButton?.addEventListener("click", () => { void exportGameVaultSlot(); });
