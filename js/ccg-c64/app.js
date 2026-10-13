@@ -2203,7 +2203,10 @@ async function initialiseOnlineLibrary() {
       }
       const alreadyListed = new Set([...regular, ...packed].map((entry) =>
         `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+      // The standalone Bruce Lee PRG remains deliberately withheld: the
+      // existing tested Trilogy CRT is the supported option on all devices.
       archived = parsedArchive.entries.filter((entry) =>
+        entry.title.trim().toLocaleLowerCase() !== "bruce lee" &&
         !alreadyListed.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
     } else if (readyResponse.status !== 404) {
       throw new Error(`PRG archive activation HTTP ${readyResponse.status}`);
