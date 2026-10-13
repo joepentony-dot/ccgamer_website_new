@@ -12,6 +12,7 @@ import { CRT_MODES, presetParams } from "./core/crt-params.js";
 import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
+  preferSelectedCartridges,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -2431,6 +2432,10 @@ async function initialiseOnlineLibrary() {
   }
 
   onlineLibraryEntries = [...regular, ...packed, ...archived];
+  // Only verified, owner-selected CRT records bearing the explicit preference
+  // flag suppress the matching PRG/disk versions in both packed archives.
+  // Do not rewrite shared binary packs or hide unrelated titles.
+  onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   const unavailable = [];
