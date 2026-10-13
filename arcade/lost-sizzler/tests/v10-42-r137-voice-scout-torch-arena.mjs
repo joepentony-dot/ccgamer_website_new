@@ -35,10 +35,11 @@ const puzzleCtx={host:{sequenceTorchPuzzle:puzzle,chests:[],enemies:[],revision:
   awardXP:(p,n)=>xp.push(n),spawnPuzzleAmbush:()=>0};
 vm.createContext(puzzleCtx);
 vm.runInContext(movement+";this.stepTorch=triggerSequenceTorch;",puzzleCtx,{timeout:1200});
-assert.equal(puzzleCtx.stepTorch(player,false),true,"Visible N torch works when wrapper flags non-deliberate entry");
+assert.equal(puzzleCtx.stepTorch(player,false),false,"Passive/non-deliberate updates must not activate a torch");
+assert.equal(puzzleCtx.stepTorch(player,true),true,"Deliberately entering the N torch activates it");
 assert.equal(puzzle.progress,1);
-assert.equal(puzzleCtx.stepTorch(player,false),false,"Standing still cannot collect one torch twice");
-player.x=3;assert.equal(puzzleCtx.stepTorch(player,false),true,"A new torch tile activates next step");
+assert.equal(puzzleCtx.stepTorch(player,true),false,"Standing still cannot collect one torch twice");
+player.x=3;assert.equal(puzzleCtx.stepTorch(player,true),true,"A deliberate new torch tile activates next step");
 assert.equal(puzzle.solved,true,"All torch tiles solve puzzle exactly once");
 assert.deepEqual(xp,[10],"Torch reward awarded once");
 
