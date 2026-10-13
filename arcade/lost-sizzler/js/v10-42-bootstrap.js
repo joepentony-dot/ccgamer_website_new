@@ -4,8 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V142_BOOTSTRAP__=true;
 
-  const BUILD="V10.42 r134";
-  const CACHE="20261012r134";
+  const BUILD="V10.42 r135";
+  const CACHE="20261013r135";
   const prerequisites=[
     ["v10-41-r30-owner-seal.js","CCGLostSizzlerV141R30OwnerSeal"],
     ["v10-41-mode-runtime.js","CCGLostSizzlerModeRuntime"],

@@ -25,7 +25,7 @@ This credits page is descriptive, not a grant of new rights. Exact source URLs, 
 
 All third-party names remain the property of their respective owners. The artists do not endorse or sponsor C64 Dungeon Carnage.
 
-## R134 supplemental artwork (candidate)
+## R134 supplemental artwork (released in R134)
 
 | Creator | Artwork included | Source | Permission |
 | --- | --- | --- | --- |
@@ -34,3 +34,11 @@ All third-party names remain the property of their respective owners. The artist
 
 The updated sprite files have exact SHA-256/source-frame provenance in `assets/pixel/user-r134/PROVENANCE.md`. This is a candidate PR; the adjusted frame selection requires fresh exact-head Chromium/CI and owner live visual acceptance.
 
+
+## R135 supplemental artwork (included in R135 candidate)
+
+| Creator | Artwork included | Source | Licence |
+| --- | --- | --- | --- |
+| **Will Tice** | Original 32×32 dark-outline `chest_large` frames `frame0000`, `frame0003`, `frame0007` from the free Super Pixel Objects Sample; unchanged PNG bytes, three renderer slots | [Super Pixel Objects Sample](https://untiedgames.itch.io/super-pixel-objects-sample) | Free commercial game use with creator credit; **not CC0**, and no standalone asset-pack redistribution. |
+
+R135 includes only the original no-cost free commercial-use sample with the required creator attribution. Original 0x72 and V10.34 assets remain available as fallback. Exact-frame original-source fingerprint details: `assets/pixel/user-r135/PROVENANCE.md`.

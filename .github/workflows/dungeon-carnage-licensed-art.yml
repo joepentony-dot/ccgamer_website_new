@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'arcade/lost-sizzler/assets/pixel/user-r134/**'
+      - 'arcade/lost-sizzler/assets/pixel/user-r135/**'
       - 'arcade/lost-sizzler/assets/asset-manifest.json'
       - 'arcade/lost-sizzler/assets/THIRD-PARTY-ART-CREDITS.md'
       - 'arcade/lost-sizzler/js/asset-overrides.js'
       - 'arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs'
       - 'arcade/lost-sizzler/tests/v10-42-r134-licensed-mana.mjs'
+      - 'arcade/lost-sizzler/tests/v10-42-r135-free-chest.mjs'
       - '.github/workflows/dungeon-carnage-licensed-art.yml'
   workflow_dispatch:
 
@@ -28,3 +30,4 @@ jobs:
         run: |
           node arcade/lost-sizzler/tests/v10-42-r134-licensed-spikes.mjs
           node arcade/lost-sizzler/tests/v10-42-r134-licensed-mana.mjs
+          node arcade/lost-sizzler/tests/v10-42-r135-free-chest.mjs
