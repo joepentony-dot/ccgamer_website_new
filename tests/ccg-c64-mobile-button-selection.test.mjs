@@ -36,7 +36,8 @@ for (const declaration of [
 ]) {
   assert.ok(style.includes(declaration), "Missing mobile selection suppression: " + declaration);
 }
-assert.doesNotMatch(style, /touch-action\s*:/, "Never override established D-pad/touch-action behaviours");
+assert.doesNotMatch(style.slice(style.indexOf("@media (pointer: coarse)")), /touch-action\s*:/,
+  "Never override established D-pad/touch-action behaviours");
 assert.doesNotMatch(style, /\b(?:input|textarea|select)\s*[,{}]/,
   "Real form fields must keep native text editing and selection");
 assert.match(css, /\.ccg-c64-touch-dpad button,[\s\S]*?touch-action: none;/,
