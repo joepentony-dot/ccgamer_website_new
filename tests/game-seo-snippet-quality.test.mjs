@@ -189,6 +189,29 @@ test('single-letter mode labels and H.E.R.O. titles retain real sentence boundar
   }
 });
 
+test('terminal U.S. and Chase H.Q. acronyms do not consume the next sentence', () => {
+  const cases = [
+    {
+      title: 'US Test',
+      slug: 'us-test',
+      description: 'The US Test game was first sold to American players in the U.S. Players elsewhere bought it later.',
+      expected: 'The US Test game was first sold to American players in the U.S.'
+    },
+    {
+      title: 'Chase H.Q.',
+      slug: 'chase-h-q',
+      description: 'Retro gaming enthusiasts still talk about the arcade conversion Chase H.Q. Another racing game followed.',
+      expected: 'Retro gaming enthusiasts still talk about the arcade conversion Chase H.Q.'
+    }
+  ];
+  for (const game of cases) {
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), game.expected);
+    assert.equal(snippet.buildSnippet(game, game.title), game.expected);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
+});
+
 test('publisher and author multi-letter initials retain their complete factual sentence', () => {
   for (const text of [
     'The Commodore 64 game was published by U.S. Gold and includes arcade action.',
