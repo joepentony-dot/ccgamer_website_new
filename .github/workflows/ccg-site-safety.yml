@@ -162,6 +162,9 @@ jobs:
       - name: Run smart emulation hub regression guard
         run: node --test tests/emulation-smart-hub.test.mjs
 
+      - name: Verify first-class C64 browser emulator play option
+        run: node --test tests/emulation-browser-play-spotlight.test.mjs
+
       - name: Run deployment and production identity regression guard
         run: node --test tests/deployment-current-main-contract.mjs
 
