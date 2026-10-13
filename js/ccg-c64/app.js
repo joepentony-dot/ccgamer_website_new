@@ -1283,7 +1283,7 @@ function setControlState(snapshot) {
     warpLoadButton.disabled = !running || paused;
     warpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
     const strong = warpLoadButton.querySelector("strong");
-    if (strong) strong.textContent = warpLoadActive ? "WARP ON" : "MAX SPEED";
+    if (strong) strong.textContent = warpLoadActive ? "ON · MAX" : "MAX";
   }
   if (mobileWarpLoadButton) {
     mobileWarpLoadButton.disabled = !running || paused;
