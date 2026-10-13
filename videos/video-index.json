@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 703,
-    "gameVideos": 666,
+    "total": 702,
+    "gameVideos": 665,
     "retroVideos": 37,
-    "c64GameVideos": 563,
+    "c64GameVideos": 562,
     "amigaGameVideos": 103
   },
   "items": [
@@ -9170,19 +9170,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "ght7u1k_tqw",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "The Happiest Days Of Your Life",
-      "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64. You control a schoolboy named G. McFat, wrongly accused of stealing…",
-      "url": "/games/the-happiest-days-of-your-life/",
-      "thumbnail": "https://i.ytimg.com/vi/ght7u1k_tqw/mqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1986,
-      "publisher": "Firebird"
     }
   ]
 }
