@@ -62,10 +62,23 @@ async function execute(catalogueAvailable) {
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 8);
-assert.equal(good.context.onlineLibraryEntries.length, 1885,
+assert.equal(direct.entries.length, 18);
+for (const [id, title] of [
+  ["pirates", "Pirates!"], ["creatures", "Creatures"],
+  ["creatures-2", "Creatures 2"], ["defender-of-the-crown", "Defender of the Crown"],
+  ["curse-of-the-azure-bonds", "Curse of the Azure Bonds"],
+  ["turrican-trilogy", "Turrican Trilogy"], ["tusker", "Tusker"],
+  ["below-the-root", "Below the Root"], ["a-pig-quest", "A Pig Quest"],
+  ["arcade-daze", "Arcade Daze"],
+]) {
+  const game = direct.entries.find(entry => entry.id === id);
+  assert(game && game.title === title && game.format === "crt" &&
+    game.url === "/emulator/c64/media/" + id + ".crt" && game.approved,
+    "Verified EasyFlash title must remain published at its exact local URL: " + id);
+}
+assert.equal(good.context.onlineLibraryEntries.length, 1895,
   "All approved titles except the withdrawn Bruce Lee PRG must appear even if HEAD is unavailable");
-assert.equal(good.context.onlineLibraryStatus.textContent, "1,885 READY");
+assert.equal(good.context.onlineLibraryStatus.textContent, "1,895 READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
 assert.equal(good.fetchRequests.length, 3, "Two library catalogues plus one optional activation probe are fetched at startup");
@@ -74,11 +87,11 @@ assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 
 const failed = await execute(false);
-assert.equal(failed.context.onlineLibraryEntries.length, 8,
+assert.equal(failed.context.onlineLibraryEntries.length, 18,
   "Already hosted direct games must survive catalogue fetch errors");
 assert.match(failed.context.onlineLibraryStatus.textContent, /BLAST UNAVAILABLE/);
 assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
 assert(failed.statuses.warning, "A catalogue failure must be logged instead of swallowed");
 
-console.log("PASS: 1885 selectable library entries appear without HEAD, direct CRT games survive catalogue errors, and retry is exposed.");
+console.log("PASS: 1895 selectable library entries appear without HEAD, direct CRT games survive catalogue errors, and retry is exposed.");
