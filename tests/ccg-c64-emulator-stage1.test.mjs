@@ -288,7 +288,7 @@ assert(app.includes('mediaDropzone?.addEventListener("drop"'), "The C64 screen s
 assert(app.includes("await queueMediaFile(file, { freshBoot: true })"), "Dropped media must use the same clean automatic boot/load route as primary file selection");
 assert(html.includes("LOAD &amp; AUTO START"), "Primary file loader must advertise automatic game start");
 assert(app.includes("function basicReady()"), "Auto-start must wait for a real BASIC READY prompt");
-assert(app.includes("function queueAutoStart(steps)"), "Auto-start must use a staged load sequence");
+assert(/function queueAutoStart\(steps(?:,\s*mediaType\s*=\s*"prg")?\)/.test(app), "Auto-start must use a staged load sequence");
 assert(app.includes("function serviceAutoStart()"), "Auto-start sequence must advance from the emulation loop");
 assert(app.includes("machine.bufferKeyboardText(autoStartTypeRest)"), "Long LOAD commands must be chunk-fed through the C64 keyboard buffer");
 assert(app.includes("{ loadDone: true }"), "Disk/tape auto-start must wait for loading to finish before RUN");
