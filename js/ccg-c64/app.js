@@ -1413,8 +1413,8 @@ function cancelAutoStart() {
   autoWarpPostRunStart = null;
   autoWarpLoadEvents = 0;
   finishAutomaticWarp();
-  playHelp?.classList.remove("is-loading");
-  if (warpHint) warpHint.textContent = "WARP speeds up loading. Switch it off to return to normal speed.";
+  if (typeof playHelp !== "undefined") playHelp?.classList.remove("is-loading");
+  if (typeof warpHint !== "undefined" && warpHint) warpHint.textContent = "WARP speeds up loading. Switch it off to return to normal speed.";
 }
 
 function queueAutoStart(steps) {
@@ -1436,8 +1436,8 @@ function queueAutoStart(steps) {
     };
   }
   beginAutomaticWarp();
-  playHelp?.classList.add("is-loading");
-  if (warpHint) warpHint.textContent = "Game starting — WARP speeds up longer loads. Audio pauses during warp.";
+  if (typeof playHelp !== "undefined") playHelp?.classList.add("is-loading");
+  if (typeof warpHint !== "undefined" && warpHint) warpHint.textContent = "Game starting — WARP speeds up longer loads. Audio pauses during warp.";
 }
 
 function serviceAutoStart() {
