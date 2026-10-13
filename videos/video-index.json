@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "iSBLT9C9xh4",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Olli & Lissa – Revisiting My Childhood C64 Frustration!",
+      "description": "Olli & Lissa: The Ghost of Shilmoore Castle is a single-player Commodore 64 platform game published by Firebird in 1987. Paul Johnson converted the game for the C64, Ben Daglish composed th…",
+      "url": "/games/olli-and-lissa/",
+      "thumbnail": "https://i.ytimg.com/vi/iSBLT9C9xh4/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Firebird"
+    },
+    {
       "id": "9Wlh2bEIRWM",
       "kind": "game",
       "filter": "c64",
@@ -9169,19 +9182,6 @@
       "thumbnail": "https://i.ytimg.com/vi/ght7u1k_tqw/mqdefault.jpg",
       "platform": "Commodore 64",
       "year": 1986,
-      "publisher": "Firebird"
-    },
-    {
-      "id": "iSBLT9C9xh4",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Olli & Lissa",
-      "description": "Olli & Lissa: The Ghost of Shilmoore Castle is a single-player Commodore 64 platform game published by Firebird in 1987. Paul Johnson converted the game for the C64, Ben Daglish composed th…",
-      "url": "/games/olli-and-lissa/",
-      "thumbnail": "https://i.ytimg.com/vi/iSBLT9C9xh4/mqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1987,
       "publisher": "Firebird"
     }
   ]
