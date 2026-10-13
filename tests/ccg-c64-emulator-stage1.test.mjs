@@ -509,8 +509,9 @@ assert(ccgHome.includes('class="home-c64-emulator-promo" href="/emulator/c64/"')
   ccgHome.includes("Play Commodore 64 Games Online") &&
   ccgHome.includes('href="/resources/css/home-c64-emulator-promo.css"'),
   "Homepage must give users a static, crawlable C64 emulator link with intact existing tiles");
-assert(ccgEmulationGuide.includes('href="/emulator/c64/">Play C64 Games Online'),
-  "Emulation guide must also direct visitors to the interactive emulator");
+assert(ccgEmulationGuide.includes('class="emu-play-now__launch" href="/emulator/c64/"') &&
+  ccgEmulationGuide.includes("<span>PLAY C64 GAMES NOW</span>"),
+  "Emulation guide must have a prominent first-party interactive emulator launch link");
 const homePromotionCss = read("resources/css/home-c64-emulator-promo.css");
 assert(homePromotionCss.includes("home-c64-emulator-promo") &&
   homePromotionCss.includes("@media (max-width: 680px)"),
