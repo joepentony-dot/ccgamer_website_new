@@ -57,9 +57,10 @@ assert.equal(PGR.inventoryCanAdd(limited,{kind:"banishment"}),false,"Special Ban
 const toastSource=between(core,"function displayToast(entry){","function rememberTrail(p){");
 const chestSource=between(play,"function chestScoreReward(chest){","function diagonalClear(");
 const displayed=[];
+let clock=2000;
 const ui={toast:{classList:{add(){},remove(){}},className:""},toastTitle:{textContent:""},toastText:{textContent:""},toastIcon:null};
 const e={UI:ui,toastQueue:[],toastTimer:0,retainedToast:false,Math,
-  performance:{now:()=>2000},host:{doors:[],enemies:[],chests:[]},
+  performance:{now:()=>clock},host:{doors:[],enemies:[],chests:[]},
   PGR:{},S:{sfx(){}},W:{chestAt:(_,x,y)=>e.host.chests.find(c=>c.active&&c.x===x&&c.y===y)||null},
   itemIconSVG(){return""},requestAnimationFrame(fn){fn()},window:{dispatchEvent(){}},CustomEvent:class{},
   console,displayed
@@ -77,6 +78,7 @@ assert.equal(e.owner.tryChest(player,4,4),false,"Blocked chest still stops movem
 assert.equal(e.toastQueue.length,0,"Locked chest notice must not be queued behind a retained banner");
 e.owner.updateToast(10000);
 assert.notEqual(ui.toastTitle.textContent,"LOCKED CHEST","An obsolete warning must not appear after the player has moved away");
+clock=3500;
 assert.equal(e.owner.tryChest(player,4,4),false);
 assert.equal(ui.toastTitle.textContent,"LOCKED CHEST","When in contact with an unoccluded locked chest the warning still appears");
 assert.equal(e.owner.tryChest(player,9,9),true);
