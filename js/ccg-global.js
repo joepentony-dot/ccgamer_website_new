@@ -330,13 +330,31 @@ if (IS_ADMIN_PATH) {
         ].join(","));
 
         const installGuard = (frame) => {
-            if (!(frame instanceof HTMLIFrameElement) || guarded.has(frame) || !isInlinePlayer(frame)) return;
+            if (!(frame instanceof HTMLIFrameElement) || !isInlinePlayer(frame)) return;
 
             const source = String(frame.getAttribute("src") || "");
             if (!/youtube(?:-nocookie)?\.com\/embed\//i.test(source)) return;
 
             const host = frame.parentElement;
             if (!host) return;
+
+            /*
+             * A deferred single-game facade can wrap an already-discovered
+             * iframe into a dedicated stage before the player is activated.
+             * If the iframe's host changes, retire the old shield and install a
+             * fresh one against the new geometry instead of leaving the frame
+             * marked "ready" with its shield on the previous parent.
+             */
+            const previousHost = frame.__ccgWheelGuardHost || null;
+            const previousShield = frame.__ccgWheelGuardShield || null;
+            if (guarded.has(frame) && previousHost === host && previousShield?.isConnected) return;
+            if (guarded.has(frame)) {
+                guarded.delete(frame);
+                previousShield?.remove?.();
+                previousHost?.classList?.remove("ccg-wheel-guard-host", "ccg-wheel-guard-host--active");
+                frame.classList.remove("ccg-wheel-guard-frame");
+                delete frame.dataset.ccgWheelGuard;
+            }
 
             guarded.add(frame);
             frame.classList.add("ccg-wheel-guard-frame");
@@ -347,6 +365,8 @@ if (IS_ADMIN_PATH) {
             // Global CTA/button minimum sizing can otherwise make the transparent
             // wheel shield larger than the iframe it is meant to cover.
             const shield = document.createElement("span");
+            frame.__ccgWheelGuardHost = host;
+            frame.__ccgWheelGuardShield = shield;
             shield.className = "ccg-wheel-guard";
             shield.setAttribute("role", "button");
             shield.setAttribute("tabindex", "0");
