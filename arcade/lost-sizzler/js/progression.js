@@ -178,7 +178,7 @@ window.CCGProgression=(()=>{
   function magicSackTier(player){return Math.max(0,Math.min(3,Math.floor(Number(player?.magicSacks)||0)))}
   function stackLimit(item,player=null){
     if(item?.kind==="artefact")return Number.POSITIVE_INFINITY;
-    const base=({potion:3,torch:1,teleport:1,banishment:1,mapReveal:1})[item?.kind];
+    const base=({potion:3,torch:1,teleport:3,banishment:1,mapReveal:1})[item?.kind];
     return base==null?Number.POSITIVE_INFINITY:base+magicSackTier(player)
   }
   function compactInventory(player){
