@@ -506,6 +506,36 @@ test('editorial source platform checks reject new C64-versus-Amiga misattributio
   assert.deepEqual(unexpected, [], 'New source descriptions must not misidentify the game platform');
 });
 
+test('authoritative generator retains platform-correct curated game copy', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const enriched = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8')).games;
+  const { curatedGameOverrides, selectDescription, descriptionErrors, normalizeText } =
+    require('../scripts/build-game-description-enrichments.js');
+  for (const [slug, expectedPlatform] of [
+    ['the-immortal', 'AMIGA'],
+    ['santas-xmas-caper', 'AMIGA'],
+    ['shadow-of-the-beast', 'C64']
+  ]) {
+    const game = catalogue.find(item => item.slug === slug);
+    assert.ok(game, slug);
+    assert.equal(String(game.system).toUpperCase(), expectedPlatform, slug);
+    const override = curatedGameOverrides[slug];
+    assert.ok(override?.sources?.length > 0, slug);
+    const selected = selectDescription(game, { description: 'Stale wrong-platform source.' }, override);
+    assert.equal(selected.sourceKind, 'override', slug);
+    assert.deepEqual(descriptionErrors(selected.description), [], slug);
+    assert.equal(enriched[slug].description, normalizeText(override.description), slug);
+    assert.deepEqual(enriched[slug].sources, override.sources, slug);
+    const record = { ...game, description: selected.description };
+    const result = snippet.buildSnippet(record, game.title);
+    assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(result, buildGameSeoPreview(record, snippet).description, slug);
+  }
+});
+
 test('rejects a wrong-platform editorial source before mining later sentences', () => {
   const game = {
     title: 'Example Quest', slug: 'example-quest', system: 'C64',
@@ -528,7 +558,7 @@ test('six reviewed catalogue-specific copy repairs retain canonical/admin parity
     ['double-dragon-2-the-revenge', /fight your way through gangs/],
     ['bismark', /outgun the enemy/],
     ['the-immortal', /1990 Amiga action-adventure/],
-    ['santas-xmas-caper', /1992 Amiga shooter/],
+    ['santas-xmas-caper', /1992 Amiga scrolling platform game/],
     ['shadow-of-the-beast', /1990 Commodore 64 side-scrolling platformer/]
   ]);
   for (const [slug, expected] of reviewed) {
