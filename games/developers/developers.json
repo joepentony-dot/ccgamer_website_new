@@ -253,6 +253,17 @@
     "url": "/games/developers/infogrames/"
   },
   {
+    "name": "Interplay Productions",
+    "slug": "interplay-productions",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "indexable": false,
+    "url": "/games/developers/interplay-productions/"
+  },
+  {
     "name": "Konami",
     "slug": "konami",
     "count": 2,

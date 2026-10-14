@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "source": "https://uta.pokefinder.org/Ultimate_Tape_Archive/",
   "summary": {
-    "c64Games": 562,
+    "c64Games": 563,
     "archiveReleasesScanned": 2900,
     "matchedGames": 415,
     "manualReviewGames": 15,
-    "noTitleCandidateGames": 132,
-    "unmatchedGames": 147
+    "noTitleCandidateGames": 133,
+    "unmatchedGames": 148
   },
   "unmatched": [
     {
@@ -1477,6 +1477,16 @@
       "year": 1982,
       "publishers": [
         "Commodore"
+      ],
+      "reReleasers": [],
+      "status": "no-title-candidate"
+    },
+    {
+      "slug": "wasteland",
+      "title": "Wasteland",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
       ],
       "reReleasers": [],
       "status": "no-title-candidate"

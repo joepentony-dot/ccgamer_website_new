@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 702,
-    "gameVideos": 665,
+    "total": 703,
+    "gameVideos": 666,
     "retroVideos": 37,
-    "c64GameVideos": 562,
+    "c64GameVideos": 563,
     "amigaGameVideos": 103
   },
   "items": [
@@ -9170,6 +9170,19 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
+    },
+    {
+      "id": "7Cn_7PWy3_w",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Wasteland",
+      "description": "Wasteland is a 1988 Commodore 64 post-apocalyptic role-playing adventure developed by Interplay Productions and published by Electronic Arts. Set in 2087 after nuclear war, it follows the D…",
+      "url": "/games/wasteland/",
+      "thumbnail": "https://i.ytimg.com/vi/7Cn_7PWy3_w/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1988,
+      "publisher": "Electronic Arts"
     }
   ]
 }
