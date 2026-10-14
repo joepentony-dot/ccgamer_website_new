@@ -1,5 +1,12 @@
 # SEO and generated output
 
+## Standalone-letter boundary repair — 14 October 2026, 15:43 BST (unmerged)
+
+- **Verified source commit `4c43c7a6bb312665c2086f3c263c7ce9f90feabc`** supersedes source `1558ef564c5910cb32c11f5a336b975ad9cac812` / documentation tip `4cac924f027f71e99cd9a2c65f4440deeaa7ab0f`. Independent review of `4cac924f` found P2 `PRRT_kwDOQcoeX86sXiC8`: a labelled sentence ending `checkpoint X.` or `route B.` swallowed a capitalised next sentence as a surname. No protected-file finding.
+- Single-letter continuations now require a personal-name context or an established source acronym; multi-initial source names, US Army/Navy/Gold, B.C., M.U.L.E., S.W.I.V., M.A.D. and H.E.R.O. remain supported. New regression covers lower/title-case checkpoint/route labels with short, overlength, initial-led, parenthesised and Roman-labelled next sentences, and actual Kevin A. Moughtin/Schoolboy G. McFat/Wile E. Coyote/Ben E. Factor continuations. Actual all-666 scan retains exactly the same five corrected outputs and 24 existing fallbacks; no extra catalogue output changed.
+- Ran the combined five-file targeted Node suite on this source (71/71) and `git diff --check` (pass). Original corpus/punctuation/platform/pronoun/canonical/admin/source-generator and byte-exact Batman tests remain intact. Prior Workers failure was superseded by successful exact-`4cac924f` Workers build `83c2926a-e5aa-428d-be8b-a5b39cacb02f`; do not transfer that check to this new head. Its fresh full CI/review and publishing validation are still required.
+- This following commit records documentation only and cannot embed its own Git hash; final-tip SHA belongs in the PR description/review request. Merge only after that final tip's complete qualification, Workers success, independent review, zero material unresolved findings, main freshness and expected-head guard. Post-merge publisher/Pages/navigation/PWA verification and exact merge SHA precede other SEO reconciliation.
+
 ## Exact source-head checkpoint — 14 October 2026, 15:32 BST (unmerged)
 
 - **Current verified source commit: `1558ef564c5910cb32c11f5a336b975ad9cac812`** on the same #2747 branch, based on main `ee4e7dc90b015c2555c916b1def88e63c9d302d0`. This documentation commit follows that source commit without changing its code/data/tests; qualify the final PR tip independently, as reported by GitHub, before merge. A document cannot contain its own commit hash.
