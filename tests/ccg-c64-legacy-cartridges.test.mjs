@@ -137,6 +137,20 @@ assert.equal(memory.peekForCpu(0x8000), 3);
 assert.equal(zax.bank, 1);
 assert.equal(memory.read(0x8000), 3);
 assert.equal(memory.read(0xa000), 4);
+// Unchanged ROML selections are the common CPU-fetch path; never rebuild
+// the entire 256-page dispatch map for each instruction byte.
+const originalApply = memory._applyCartridgeDeviceMapping.bind(memory);
+let redundantRemaps = 0;
+memory._applyCartridgeDeviceMapping = device => {
+  redundantRemaps++;
+  return originalApply(device);
+};
+memory.read(0x8000);
+memory.read(0x8001);
+memory.read(0x8002);
+assert.equal(redundantRemaps, 0, "Stable Zaxxon ROML reads must not remap memory");
+memory.read(0x9000);
+assert.equal(redundantRemaps, 1, "Bank transition must remap memory once");
 memory.installCartridge(null);
 
 // Reject corrupt or incomplete manifests before accepting public images.
