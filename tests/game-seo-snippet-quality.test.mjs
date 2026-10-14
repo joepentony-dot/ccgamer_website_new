@@ -572,9 +572,9 @@ test('six reviewed catalogue-specific copy repairs retain canonical/admin parity
     ['bounder', /time each bounce and landing/],
     ['double-dragon-2-the-revenge', /fight your way through gangs/],
     ['bismark', /outgun the enemy/],
-    ['the-immortal', /1990 Amiga action-adventure/],
+    ['the-immortal', /1990 Amiga isometric action-adventure/],
     ['santas-xmas-caper', /1992 Amiga scrolling platform game/],
-    ['shadow-of-the-beast', /1990 Commodore 64 side-scrolling platformer/]
+    ['shadow-of-the-beast', /1990 Commodore 64 scrolling platform game/]
   ]);
   for (const [slug, expected] of reviewed) {
     const game = games.find(item => item.slug === slug);
