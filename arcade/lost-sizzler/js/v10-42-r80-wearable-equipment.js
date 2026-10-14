@@ -117,20 +117,54 @@
     if(slot==="hands")setHandsBonus(player,0);
     else if(slot==="feet")setFeetFactor(player,1)
   }
+  function wearableSlot(item){
+    if(item?.kind!=="wearable")return null;
+    if(SLOT_ORDER.includes(item.slot))return item.slot;
+    // Legacy/reward-modified wearables can retain a recognisable name while
+    // losing their slot field. Never infer that an ordinary torch is a helmet.
+    const name=String(item.name||item.short||"").toUpperCase();
+    const matches=[];
+    if(/\b(HELM|HELMET|HOOD|CIRCLET|VISOR)\b/.test(name))matches.push("head");
+    if(/\b(GLOVES|GAUNTLETS)\b/.test(name))matches.push("hands");
+    if(/\bBOOTS\b/.test(name))matches.push("feet");
+    return matches.length===1?matches[0]:null
+  }
+  function wearableGrade(item){
+    const tier=String(item?.gearTier||gearTierFor(item?.rarity).name).toUpperCase();
+    const level=({COMMON:0,RARE:1,SUPERIOR:2,ENCHANTED:3})[tier]??0;
+    return Math.max(level,Math.max(0,Number(item?.armourBonus)||0))
+  }
+  function equipmentSwapLabel(current,next){
+    if(!current)return"EQUIP";
+    return wearableGrade(next)>wearableGrade(current)?"UPGRADE":"REPLACE"
+  }
+  function wearableEquipNotice(title,message,tone="red"){
+    try{showToast(title,message,tone,7000)}catch(_){}
+  }
   function equipWearable(player,index){
-    const item=player?.inventory?.[index];
-    if(!item||item.kind!=="wearable"||!SLOT_ORDER.includes(item.slot))return false;
-    const slots=wearables(player),slot=item.slot,old=slots[slot]?{...slots[slot]}:null;
-    const removed=PGR.inventoryRemove(player,index);if(!removed)return false;
-    clearSlotEffect(player,slot);
-    if(old&&!PGR.inventoryAdd(player,old)){
-      PGR.inventoryAdd(player,removed);applySlotEffect(player,slot,old);slots[slot]=old;
-      try{showToast("EQUIPMENT SWAP FAILED","There is no inventory space to return the currently equipped item.","red",6500)}catch(_){}
+    const item=player?.inventory?.[index],slot=wearableSlot(item);
+    if(!item||item.kind!=="wearable")return false;
+    if(!slot){
+      wearableEquipNotice("CANNOT EQUIP",`${item.name||"This wearable"} has no identifiable Head, Hands or Feet slot. The item has not been consumed.`);
       return false
     }
-    slots[slot]={...removed};applySlotEffect(player,slot,removed);state.equips++;
+    const slots=wearables(player),old=slots[slot]?{...slots[slot]}:null;
+    // Preserve a complete inventory snapshot for a failed transaction. This
+    // avoids losing the candidate or the old item when an inventory capacity
+    // check or an unexpected compaction prevents the swap.
+    const before=(player.inventory||[]).map(row=>row&&typeof row==="object"?{...row}:row);
+    const removed=PGR.inventoryRemove(player,index);
+    if(!removed){player.inventory=before;return false}
+    const next={...removed,slot};
+    if(old&&!PGR.inventoryAdd(player,old)){
+      player.inventory=before;
+      wearableEquipNotice("EQUIPMENT SWAP FAILED","The original equipped item could not be returned to your inventory. Neither item has been lost.");
+      return false
+    }
+    clearSlotEffect(player,slot);
+    slots[slot]=next;applySlotEffect(player,slot,next);state.equips++;
     try{S?.sfx?.("armour")}catch(_){}
-    try{showToast(`${SLOT_LABELS[slot]} EQUIPPED`,`${removed.name}. ${effectText(removed)}.`,"green",7000)}catch(_){}
+    wearableEquipNotice(`${SLOT_LABELS[slot]} ${old?"REPLACED":"EQUIPPED"}`,old?`${next.name} equipped. ${old.name} returned to inventory.`:`${next.name}. ${effectText(next)}.`,"green");
     try{if(typeof sync==="function")sync()}catch(_){}
     try{renderInventoryPanel?.()}catch(_){}
     return true
@@ -214,14 +248,14 @@
     inventoryVisualKind=function r80InventoryVisualKind(item){return item?.kind==="wearable"?"armour":baseInventoryVisualKind(item)};
   }
   function wearableComparison(player,item){
-    if(!item?.slot)return"";
-    const current=wearables(player)[item.slot];
-    return `CURRENT: ${current?current.name+" · "+effectText(current):"EMPTY"} · NEW: ${item.name||"WEARABLE GEAR"} · ${effectText(item)}`
+    const slot=wearableSlot(item);if(!slot)return"UNKNOWN EQUIPMENT SLOT";
+    const current=wearables(player)[slot];
+    return `CURRENT: ${current?current.name+" · "+effectText(current):"EMPTY"} · NEW: ${item.name||"WEARABLE GEAR"} · ${effectText(item)} · ACTION: ${equipmentSwapLabel(current,item)}`
   }
   if(typeof itemInfoDetails==="function"){
     const baseInfo=itemInfoDetails;
     itemInfoDetails=function r80WearableInfo(item){
-      if(item?.kind==="wearable"){const player=currentPlayer();return{name:item.name||"WEARABLE GEAR",kind:"armour",desc:item.desc||effectText(item),why:`${SLOT_LABELS[item.slot]||"GEAR"} SLOT · ${wearableComparison(player,item)}. Equip it from TAB; swapping returns the old item to your carried inventory.`}}
+      if(item?.kind==="wearable"){const player=currentPlayer();return{name:item.name||"WEARABLE GEAR",kind:"armour",desc:item.desc||effectText(item),why:`${SLOT_LABELS[wearableSlot(item)]||"UNKNOWN"} SLOT · ${wearableComparison(player,item)}. Equip it from TAB; swapping returns the old item to your carried inventory.`}}
       return baseInfo(item)
     };
   }
@@ -271,7 +305,16 @@
     list.querySelectorAll(".inventory-slot").forEach((slot,index)=>{
       const item=player.inventory?.[index];if(item?.kind!=="wearable")return;
       const actions=slot.querySelector(".slot-actions");if(!actions||actions.querySelector("[data-r80-equip]"))return;
-      const button=document.createElement("button");button.type="button";button.textContent="EQUIP";button.dataset.r80Equip=String(index);button.addEventListener("click",()=>equipWearable(player,index));actions.prepend(button)
+      const target=wearableSlot(item),current=target?wearables(player)[target]:null;
+      const button=document.createElement("button");button.type="button";
+      button.textContent=equipmentSwapLabel(current,item);
+      button.title=target?`${SLOT_LABELS[target]}: ${current?"Replace "+current.name:"Equip in empty slot"}`:"Equipment slot unavailable — inspect this item";
+      button.dataset.r80Equip=String(index);
+      button.addEventListener("click",event=>{
+        event.preventDefault();event.stopPropagation();
+        equipWearable(player,Number(button.dataset.r80Equip))
+      });
+      actions.prepend(button)
     })
   }
   if(typeof renderInventoryPanel==="function"){
@@ -355,6 +398,6 @@
   ensureStyle();
   try{renderLoadout();decorateInventory()}catch(_){}
   window.CCGLostSizzlerV142R80WearableEquipment=Object.freeze({
-    version:"V10.42-r80",state,slots:[...SLOT_ORDER],gearTierFor,makeWearable,effectText,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
+    version:"V10.42-r80",state,slots:[...SLOT_ORDER],gearTierFor,makeWearable,effectText,wearableSlot,equipmentSwapLabel,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
   });
 })();
