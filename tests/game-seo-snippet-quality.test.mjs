@@ -551,7 +551,11 @@ test('mechanic-specific descriptions for Gribbly Joe Blade and Stifflip', () => 
   const examples = [
     ['gribblys-day-out', /hops and levitates.*psychic bubble shots/],
     ['joe-blade-2', /rescue kidnapped civilians.*gangs/],
-    ['stifflip-and-co', /Rubbertronic Ray.*properties of rubber/]
+    ['stifflip-and-co', /Rubbertronic Ray.*properties of rubber/],
+    // Keep the two existing stronger summaries that a broad scoring penalty
+    // mistakenly replaced in the research-only candidate.
+    ['nightbreed-the-action-game', /side-scrolling platforming with combat and light exploration/],
+    ['the-lost-patrol', /strategic map of Vietnam/]
   ];
   for (const [slug, matcher] of examples) {
     const game = games.find((row) => row.slug === slug);
