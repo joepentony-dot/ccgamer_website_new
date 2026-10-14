@@ -260,6 +260,25 @@ test('terminal U.S. and Chase H.Q. acronyms do not consume the next sentence', (
   }
 });
 
+test('parenthesised years after compact acronym game titles keep complete factual sentences', () => {
+  for (const [title, first] of [
+    ['H.E.R.O.', 'Released by Activision for Commodore 64 players worldwide, H.E.R.O. (1984) sends the player into underground rescue missions.'],
+    ['Chase H.Q.', 'The Commodore 64 conversion Chase H.Q. (1989) puts players in pursuit of fleeing suspects across multiple stages.']
+  ]) {
+    const game = {
+      title,
+      slug: title === 'H.E.R.O.' ? 'h-e-r-o' : 'chase-h-q',
+      system: 'C64',
+      description: first + ' More factual details follow.'
+    };
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), first, title);
+    assert.equal(snippet.buildSnippet(game, title), first, title);
+    assert.equal(routes.buildRuntimeDescription(game, title), first, title);
+    assert.equal(buildGameSeoPreview(game, snippet).description, first, title);
+    assert.ok(first.length <= 155, title);
+  }
+});
+
 test('publisher and author multi-letter initials retain their complete factual sentence', () => {
   for (const text of [
     'The Commodore 64 game was published by U.S. Gold and includes arcade action.',
