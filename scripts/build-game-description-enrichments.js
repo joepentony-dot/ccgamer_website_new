@@ -18,6 +18,27 @@ const TARGET_WORDS = 135;
 const MAX_WORDS = 165;
 
 const overrides = {
+  "the-immortal": {
+    description: "The Immortal is a 1990 Amiga isometric action-adventure developed by Sandcastle and published by Electronic Arts. You control an ageing wizard searching for his missing mentor, Mordamir, through eight levels of a dangerous dungeon. Each floor combines exploration, deadly traps, hostile creatures and puzzles that demand close attention to the environment. Collected objects can be used to overcome obstacles, while friendly characters may offer information or trade items. Combat involves reading an opponent's impending attack and choosing when to strike or evade. Some hazards require unusual solutions, including riding a magical carpet past flames or travelling underground on a barrel. Mistakes can be fatal, and learning the layout and timing of encounters is central to progressing deeper into the labyrinth.",
+    sources: [
+      "https://www.mobygames.com/game/2532/the-immortal/",
+      "https://gamefaqs.gamespot.com/amiga/951872-the-immortal"
+    ]
+  },
+  "santas-xmas-caper": {
+    description: "Santa's Xmas Caper is a 1992 Amiga scrolling platform game published by Zeppelin Games, in which Santa must recover lost presents. After his sleigh overturns, the gifts are scattered around Lapland and every present in an area must be collected before he can advance. Santa runs and jumps through snowy stages while avoiding enemies and hazardous objects. He can fire snowballs to freeze opponents temporarily, creating a chance to get past them, while certain pickups help or hinder his progress. Jelly can increase his jumping ability, but contact with dangerous items or enemies can cost a life. A counter shows how many gifts remain in the current area, alongside the score and lives display. The emphasis is on collecting presents and negotiating platforms rather than flying a sleigh in a shooter.",
+    sources: [
+      "https://www.lemonamiga.com/doc/santas-xmas-caper/1397",
+      "https://www.lemonamiga.com/game/santas-xmas-caper"
+    ]
+  },
+  "shadow-of-the-beast": {
+    description: "Shadow Of The Beast is a 1990 Commodore 64 scrolling platform game published by Ocean, following warrior Aarbron on a dangerous quest. The game mixes movement through hostile landscapes with combat against enemies, hazards and obstacles. Aarbron can punch nearby foes and must time jumps across gaps and platforms, because a long fall can be fatal. Some sections require using exits to move between areas, while finding objects and understanding the layout helps you progress. The adventure shifts between outdoor scenery and more confined locations, with threats positioned to punish careless movement. Its fantasy setting and demanding action grew out of the original Psygnosis game, but this description concerns the Commodore 64 conversion rather than the original computer version. Survival depends on carefully judging the next hazard and choosing a route.",
+    sources: [
+      "https://www.lemon64.com/doc/shadow-of-the-beast/530",
+      "https://www.lemon64.com/game/shadow-of-the-beast"
+    ]
+  },
   "the-activision-decathlon": {
     description: "The Activision Decathlon is the 1984 Commodore 64 conversion of Activision's athletics game, based on David Crane's original design. Up to four players can contest all ten events in sequence or practise them individually: the 100 metres, long jump, shot put, high jump, 400 metres, 110-metre hurdles, discus, pole vault, javelin and 1500 metres. Running events demand fast, steady joystick movement, while jumps and throws add a precisely timed fire-button press to set the angle or release point. Each performance earns points according to its time, height or distance, and the highest combined score wins the decathlon. The C64 edition retains the multiplayer rivalry and demanding physical controls that made the game famous, while adding colourful presentation, animated athletes and crowd effects suited to Commodore hardware.",
     sources: [
@@ -207,6 +228,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  curatedGameOverrides: overrides,
   descriptionErrors,
   extractEditorialDescription,
   normalizeText,
