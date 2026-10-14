@@ -39,7 +39,7 @@ assert.equal(floors[2].challenge,"memory5","Floor 3 must feature the five-pad Me
 assert.equal(floors[3].challenge,"torch4","Floor 4 must feature the clue-driven torch sequence");
 assert.equal(floors[4].challenge,"bridge","Floor 5 must feature the Trickster bridge recovery quest");
 assert.equal(floors[11].challenge,"memory7","Floor 12 must feature the seven-pad Memory Vault");
-assert.equal(floors[13].challenge,"arenaTimed","Floor 14 must require the combined arena/timed challenge");
+assert.equal(floors[13].challenge,"surveyTimed","Floor 14 must require exploration and the timed chamber without the cancelled arena");
 assert.equal(floors[14].challenge,"boss","Floor 15 must culminate in the grotesque boss challenge");
 assert.match(coreSource,/function floorChallengeComplete\(spec,explorePct=0\)/,"featured floor challenges must have one derived completion owner");
 assert.match(coreSource,/r114-floor-challenge-cache-f/,"featured floor challenges must create a high-tier reward cache");
@@ -79,7 +79,7 @@ assert.match(coreSource,/TRICKSTER BRIDGE — Find and kill the Dungeon Thief/,"
 assert.match(renderSource,/BRIDGE COLLAPSED — SHOOT THE SWITCH/,"collapsed bridge state must be visible in-world");
 assert.match(renderSource,/BRIDGE RESTORED — HUNT THE THIEF/,"rebuilt bridge state must lead the player into the thief hunt");
 assert.match(bootstrap,/v10-42-r115-floor-trials\.js","CCGLostSizzlerV142R115FloorTrials"/,"R115 floor trials must load through the ordered canonical bootstrap");
-for(const [floor,id] of [[6,"tape-relays"],[7,"crypt-braziers"],[8,"arena-lockdown"],[9,"timed-lockdown"],[11,"coolant-valves"],[13,"high-score-hunt"],[14,"crt-sequence"]]){
+for(const [floor,id] of [[6,"tape-relays"],[7,"crypt-braziers"],[8,"undercroft-lockdown"],[9,"timed-lockdown"],[11,"coolant-valves"],[13,"high-score-hunt"],[14,"crt-sequence"]]){
   assert.match(floorTrials,new RegExp(`${floor}:Object\\.freeze\\(\\{id:"${id}"`),`Floor ${floor} must own its distinct R115 trial identity`)
 }
 assert.match(floorTrials,/target:10/,"Floor 7 crypt trial must require all ten braziers");
@@ -133,7 +133,11 @@ for(const floor of [6,7,8,9,11,13,14]){
     }
     if(floor===7)assert.ok(host.items.some(item=>item.r115TrialSupply&&item.kind==="torch"),"Crypt must supply usable torches: "+seed);
     if([11,14].includes(floor))assert.ok(host.items.some(item=>item.r115TrialSupply&&item.kind==="ammo"),"Shoot-only trials require ammo: "+seed);
-    if(floor===8)assert.ok(host.arenas.some(arena=>arena.id===trial.sourceId),"Arena trial source must exist: "+seed);
+    if(floor===8){
+      assert.equal(host.arenas.length,0,"Cancelled arena must not return on Floor 8: "+seed);
+      assert.equal(trial.kind,"undercroft-lockdown","Solo Floor 8 trial must use its dedicated timed lockdown: "+seed);
+      assert.ok(host.timedRooms.some(room=>room.id===trial.sourceId),"Floor 8 timed lockdown source must exist: "+seed);
+    }
     if(floor===9)assert.ok(host.timedRooms.some(room=>room.id===trial.sourceId),"Timed trial source must exist: "+seed);
     if(floor===13){
       assert.equal(trial.enemyIds.length,trial.target,"Warden hunt must mark every target: "+seed);
