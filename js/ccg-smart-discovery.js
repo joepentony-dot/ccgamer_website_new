@@ -396,12 +396,13 @@
 
     async function loadGames() {
         if (state.gamesPromise) return state.gamesPromise;
+        const directLoad = () => fetch(DATA_PATH, { cache: "force-cache" }).then((response) => {
+            if (!response.ok) throw new Error(`Games data HTTP ${response.status}`);
+            return response.json();
+        });
         const request = typeof window.ccgLoadSharedGames === "function"
-            ? window.ccgLoadSharedGames()
-            : fetch(DATA_PATH, { cache: "force-cache" }).then((response) => {
-                if (!response.ok) throw new Error(`Games data HTTP ${response.status}`);
-                return response.json();
-            });
+            ? window.ccgLoadSharedGames().catch(directLoad)
+            : directLoad();
         state.gamesPromise = request.then((data) => Array.isArray(data) ? data : []);
         return state.gamesPromise;
     }
