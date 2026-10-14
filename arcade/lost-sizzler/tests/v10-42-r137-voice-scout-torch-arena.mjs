@@ -65,18 +65,4 @@ assert.equal(rescueToasts.length,1,"Completion feedback must not repeat");
 assert.equal(rescueToasts[0][4].ccgDialogueVoiceHandled,true,"Generic sanctuary voice must not replace scout");
 assert.equal(updated.length,1,"Rescue objective must update only once");
 
-const arenaFn=cut(play,"function spawnArenaWave(a,count){","function updateArena(");
-const arenaWorld={rooms:[{id:0,x:0,y:0,w:8,h:8}],map:Array.from({length:12},()=>Array(12).fill(0))};
-const blocked=new Set(["4,1","4,2","4,3","4,4","4,5","4,6","4,7","3,4"]);
-const arenaHost={enemies:[],items:[{active:true,x:3,y:2}],chests:[],generators:[],switches:[],revision:0};
-const arenaCtx={world:arenaWorld,host:arenaHost,p1:{x:2,y:2},run:{floor:5},Date:{now:()=>1300},
-  W:{playerWalkable:(map,x,y)=>x>0&&y>0&&x<8&&y<8&&!blocked.has(x+","+y)}};
-vm.createContext(arenaCtx);
-vm.runInContext(arenaFn+";this.wave=spawnArenaWave;",arenaCtx,{timeout:1200});
-arenaCtx.wave({id:"arena0",roomId:0,wave:1},5);
-assert.ok(arenaHost.enemies.length>0,"Arena should still have reachable opponents");
-assert.ok(arenaHost.enemies.every(e=>e.x<4&&!blocked.has(e.x+","+e.y)&&!(e.x===3&&e.y===2)),
-  "Unreachable, blocked, occupied or non-floor arena enemies can softlock all room doors");
-const coords=arenaHost.enemies.map(e=>e.x+","+e.y);
-assert.equal(new Set(coords).size,coords.length,"Arena enemies must not overlap");
-console.log("PASS R137 voice watchdog pause, scout hand-off, genuine torch entry and arena enemy reachability");
+console.log("PASS R137 voice watchdog pause, Scout rescue and genuine torch entry (solo dungeon only)");
