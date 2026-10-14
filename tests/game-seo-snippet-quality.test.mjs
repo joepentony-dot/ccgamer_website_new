@@ -570,3 +570,50 @@ test('mechanic-specific descriptions for Gribbly Joe Blade and Stifflip', () => 
   }
 });
 
+test('one-time Batman correction preserves all other catalogue bytes in both PWA guards', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const current = readFileSync(join(root, 'games/games.json'), 'utf8');
+  const target = JSON.parse(current).find((game) => game.slug === 'batman-the-movie');
+  assert.equal(target.year, 1989);
+  const originalDescription = "Batman: The Movie is a Commodore 64 action-adventure game released by Ocean in 1986. Inspired by the iconic film character rather than a specific movie plot, the game mixes side-scrolling action with puzzle elements. It became one of Ocean's most recognisable licensed releases.";
+  const changedDescription = "Batman: The Movie is Ocean Software's 1989 Commodore 64 adaptation of Tim Burton's Batman film. Its five stages mix platform action, Batmobile driving, puzzles and Batwing sequences.";
+  assert.equal(target.description, changedDescription);
+  const anchor = '"slug": "batman-the-movie"';
+  const start = current.indexOf(anchor);
+  const end = current.indexOf('\n  },', start);
+  assert.ok(start > 0 && end > start);
+  const currentSection = current.slice(start, end);
+  assert.equal(currentSection.split('"year": 1989').length, 2);
+  assert.equal(currentSection.split('"description": ' + JSON.stringify(changedDescription)).length, 2);
+  const previousSection = currentSection
+    .replace('"year": 1989', '"year": 1986')
+    .replace('"description": ' + JSON.stringify(changedDescription),
+      '"description": ' + JSON.stringify(originalDescription));
+  const original = current.slice(0, start) + previousSection + current.slice(end);
+
+  for (const path of ['scripts/audit-installable-pwa.js', 'scripts/audit-visible-pwa-install.js']) {
+    const source = readFileSync(join(root, path), 'utf8');
+    const marker = 'function isApprovedBatman1989CatalogueCorrection(relativePath) {';
+    const begin = source.indexOf(marker);
+    const finish = source.indexOf('\n}\n', begin);
+    assert.ok(begin > 0 && finish > begin, path + ' missing one-time gate');
+    const body = source.slice(begin, finish + 2);
+    const check = (baseline, candidate, relativePath = 'games/games.json') =>
+      new Function('readGitFile', 'read',
+        body + '\nreturn isApprovedBatman1989CatalogueCorrection;')(
+          (ref, file) => ref === 'origin/main' && file === 'games/games.json' ? baseline : null,
+          () => candidate
+        )(relativePath);
+
+    assert.equal(check(original, current), true, path + ' rejects exact approved migration');
+    assert.equal(check(original, current + '\n'), false, path + ' ignores incidental byte changes');
+    assert.equal(check(original, current.replace('"year": 1989', '"year": 1990')),
+      false, path + ' ignores other year changes');
+    assert.equal(check(current, current), false, path + ' remains open after main is corrected');
+    assert.equal(check(original, original), false, path + ' should not match unchanged source');
+    assert.equal(check(original, current, 'index.html'), false, path + ' must protect intro');
+  }
+});
+
