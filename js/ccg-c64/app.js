@@ -181,6 +181,7 @@ const MIN_MOBILE_KEY_MS = 105;
 const mobileKeyRows = [
   [["RESTORE", "F12"], ["F1", "F1"], ["F3", "F3"], ["F5", "F5"],
     ["F7", "F7"], ["RUN/STOP", "F9"], ["CLR/HOME", "F11"]],
+  [["F2", "F2"], ["F4", "F4"], ["F6", "F6"], ["F8", "F8"]],
   [["1", "Digit1"], ["2", "Digit2"], ["3", "Digit3"], ["4", "Digit4"],
     ["5", "Digit5"], ["6", "Digit6"], ["7", "Digit7"], ["8", "Digit8"],
     ["9", "Digit9"], ["0", "Digit0"], ["DEL", "Backspace"]],
@@ -197,6 +198,11 @@ const mobileKeyRows = [
 
 function mobileVirtualBinding(code) {
   if (code === "F12") return { restore: true };
+  const shiftedFn = { F2: "F1", F4: "F3", F6: "F5", F8: "F7" }[code];
+  if (shiftedFn) {
+    const key = KEY_MAP[shiftedFn];
+    return key ? { col: key[0], row: key[1], shift: true } : null;
+  }
   if (code === "ArrowLeft") return { col: 0, row: 2, shift: true };
   if (code === "ArrowUp") return { col: 0, row: 7, shift: true };
   const physical = KEY_MAP[code];

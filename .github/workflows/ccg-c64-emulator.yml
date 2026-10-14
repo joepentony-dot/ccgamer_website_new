@@ -78,6 +78,9 @@ jobs:
       - name: Check function key touch controls
         run: node tests/ccg-c64-function-keys.test.mjs
 
+      - name: Verify C64 secondary F2/F4/F6/F8 mobile key matrix
+        run: node --test tests/ccg-c64-mobile-consolidation.test.mjs
+
       - name: Verify dual FIRE/JUMP and saved mobile control preferences
         run: node tests/ccg-c64-dual-action-controls.test.mjs
 
