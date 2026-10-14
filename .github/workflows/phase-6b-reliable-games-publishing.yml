@@ -11,6 +11,7 @@ on:
       - js/ccg-game-seo-snippet.js
       - scripts/build-game-description-enrichments.js
       - tests/game-seo-snippet-quality.test.mjs
+      - tests/game-description-enrichment-fallback.test.mjs
       - scripts/build-games.js
       - scripts/upgrade-category-pages.js
       - js/ccg-category-omega.js
@@ -161,6 +162,9 @@ jobs:
 
       - name: Run magazine publishing regression
         run: node --test tests/magazine-publishing-pipeline.test.mjs tests/lemon-source-discovery.test.mjs tests/new-game-enrichment-validation.test.mjs
+
+      - name: Verify curated game SEO source remains authoritative after YouTube refresh
+        run: node --test tests/game-description-enrichment-fallback.test.mjs tests/game-seo-snippet-quality.test.mjs
 
       - name: Run single-game community and UTA regression
         run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs
