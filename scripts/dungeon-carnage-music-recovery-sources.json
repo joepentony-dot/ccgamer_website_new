@@ -1,0 +1,105 @@
+{
+  "schema": "ccg-original-dungeon-soundtrack-recovery-v1",
+  "purpose": "One-time recovery of owner-uploaded production MP3s; never used as a live fetch manifest",
+  "storageDirectory": "arcade/lost-sizzler/assets/audio/music/ccg-originals",
+  "expectedTrackCount": 16,
+  "expectedTotalBytes": 72233137,
+  "files": [
+    {
+      "category": "normal",
+      "filename": "exploration-01.mp3",
+      "sizeBytes": 7227773,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411626645-5-exploration-01.mp3"
+    },
+    {
+      "category": "normal",
+      "filename": "exploration-02.mp3",
+      "sizeBytes": 4186493,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411628149-6-exploration-02.mp3"
+    },
+    {
+      "category": "normal",
+      "filename": "exploration-03.mp3",
+      "sizeBytes": 6875261,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411629062-7-exploration-03.mp3"
+    },
+    {
+      "category": "normal",
+      "filename": "exploration-04.mp3",
+      "sizeBytes": 4794749,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411630429-8-exploration-04.mp3"
+    },
+    {
+      "category": "normal",
+      "filename": "exploration-05.mp3",
+      "sizeBytes": 5446781,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerExploration/1787411631439-9-exploration-05.mp3"
+    },
+    {
+      "category": "danger",
+      "filename": "combat-01.mp3",
+      "sizeBytes": 3360888,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411621547-0-combat-01.mp3"
+    },
+    {
+      "category": "danger",
+      "filename": "combat-02.mp3",
+      "sizeBytes": 5665656,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411636390-14-combat-02.mp3"
+    },
+    {
+      "category": "danger",
+      "filename": "combat-03.mp3",
+      "sizeBytes": 3999864,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerDanger/1787411622953-1-combat-03.mp3"
+    },
+    {
+      "category": "sanctuary",
+      "filename": "sanctuary-01.mp3",
+      "sizeBytes": 5025147,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerSanctuary/1787411634411-12-sanctuary-01.mp3"
+    },
+    {
+      "category": "sanctuary",
+      "filename": "sanctuary-02.mp3",
+      "sizeBytes": 4168059,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerSanctuary/1787411635463-13-sanctuary-02.mp3"
+    },
+    {
+      "category": "named",
+      "filename": "named-01.mp3",
+      "sizeBytes": 5085047,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411632588-10-named-01.mp3"
+    },
+    {
+      "category": "named",
+      "filename": "named-02.mp3",
+      "sizeBytes": 3331703,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411633643-11-named-02.mp3"
+    },
+    {
+      "category": "named",
+      "filename": "named-03.mp3",
+      "sizeBytes": 5134967,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerNamed/1787411637581-15-named-03.mp3"
+    },
+    {
+      "category": "stalker",
+      "filename": "count-loadula-01.mp3",
+      "sizeBytes": 2001535,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411624060-2-count-loadula-01.mp3"
+    },
+    {
+      "category": "stalker",
+      "filename": "count-loadula-02.mp3",
+      "sizeBytes": 1946239,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411624977-3-count-loadula-02.mp3"
+    },
+    {
+      "category": "stalker",
+      "filename": "count-loadula-03.mp3",
+      "sizeBytes": 3982975,
+      "sourceUrl": "https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/music/lostSizzlerStalker/1787411625578-4-count-loadula-03.mp3"
+    }
+  ]
+}

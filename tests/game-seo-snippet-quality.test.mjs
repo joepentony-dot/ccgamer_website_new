@@ -189,6 +189,54 @@ test('single-letter mode labels and H.E.R.O. titles retain real sentence boundar
   }
 });
 
+test('standalone checkpoint and route letters retain their actual sentence boundary', () => {
+  for (const label of ['checkpoint X', 'route B', 'Checkpoint X', 'Route B', 'Sector C', 'Waypoint Z', 'Site A', 'Base B', 'Bridge C', 'Building D', 'UnlistedStructure Q']) {
+    for (const prefix of [
+      'The Example game requires players to reach the marked ',
+      'The Example game sends players to take control of ',
+      'The Example game assigns players the role of defending '
+    ]) {
+    const first = prefix + label + '.';
+    for (const next of [
+      'Players can explore another route.',
+      'Players can explore another route containing many additional obstacles and hazards that deliberately extend beyond the allocated search snippet limit.',
+      'B. Smith designed another route containing several extra hazards.',
+      '(Another route contains several extra hazards.)',
+      'IV is the label for another route containing several extra hazards.'
+    ]) {
+      assert.equal(snippet.firstCompleteSentence(first + ' ' + next, 155), first, label);
+      const game = { title: 'Example', slug: 'example', system: 'C64', description: first + ' ' + next };
+      assert.equal(snippet.buildSnippet(game, game.title), first, label);
+      assert.equal(routes.buildRuntimeDescription(game, game.title), first, label);
+      assert.equal(buildGameSeoPreview(game, snippet).description, first, label);
+    }
+    }
+  }
+  for (const first of [
+    'The Example game was developed by Kevin A. Moughtin and features pirate ship rooms.',
+    'The Example game follows Schoolboy G. McFat as he explores the school.',
+    'The Example game features the cartoon character Wile E. Coyote chasing a fast runner.',
+    'The Example game puts you in the role of Ben E. Factor as he solves puzzles.'
+  ]) {
+    assert.equal(snippet.firstCompleteSentence(first + ' Players can explore another route.', 155), first);
+  }
+  const labelled = 'The Example game sends players to take control of Site P.';
+  assert.equal(snippet.firstCompleteSentence(labelled + ' Rawling designed another stage.', 155), labelled);
+});
+
+test('compact US organisation initials stay within the complete factual sentence', () => {
+  for (const organisation of ['Army', 'Navy', 'Gold']) {
+    for (const initials of ['U.S.', 'U. S.']) {
+      const first = 'The Example game places the decorated soldier in a strategic simulation with the ' + initials + ' ' + organisation + ' during the mission.';
+      const game = { title: 'Example', slug: 'example', system: 'C64', description: first + ' Players can explore another route.' };
+      assert.equal(snippet.firstCompleteSentence(game.description, 155), first);
+      assert.equal(snippet.buildSnippet(game, game.title), first);
+      assert.equal(routes.buildRuntimeDescription(game, game.title), first);
+      assert.equal(buildGameSeoPreview(game, snippet).description, first);
+    }
+  }
+});
+
 test('terminal U.S. and Chase H.Q. acronyms do not consume the next sentence', () => {
   const cases = [
     {
@@ -209,6 +257,25 @@ test('terminal U.S. and Chase H.Q. acronyms do not consume the next sentence', (
     assert.equal(snippet.buildSnippet(game, game.title), game.expected);
     assert.equal(routes.buildRuntimeDescription(game, game.title), game.expected);
     assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
+  }
+});
+
+test('parenthesised years after compact acronym game titles keep complete factual sentences', () => {
+  for (const [title, first] of [
+    ['H.E.R.O.', 'Released by Activision for Commodore 64 players worldwide, H.E.R.O. (1984) sends the player into underground rescue missions.'],
+    ['Chase H.Q.', 'The Commodore 64 conversion Chase H.Q. (1989) puts players in pursuit of fleeing suspects across multiple stages.']
+  ]) {
+    const game = {
+      title,
+      slug: title === 'H.E.R.O.' ? 'h-e-r-o' : 'chase-h-q',
+      system: 'C64',
+      description: first + ' More factual details follow.'
+    };
+    assert.equal(snippet.firstCompleteSentence(game.description, 155), first, title);
+    assert.equal(snippet.buildSnippet(game, title), first, title);
+    assert.equal(routes.buildRuntimeDescription(game, title), first, title);
+    assert.equal(buildGameSeoPreview(game, snippet).description, first, title);
+    assert.ok(first.length <= 155, title);
   }
 });
 
@@ -258,7 +325,7 @@ test('admin warns about generic fallback SEO snippets without blocking a valid r
     year: 1986,
     publisher: 'Elite',
     slug: '1942',
-    description: 'A long promotional introduction without a complete sentence that fits the search snippet limit and without a factual subject clause, followed much later by other sentences. The historical detail stays in the editorial description.'
+    description: 'A long promotional introduction without a complete sentence that fits the search snippet limit and without a factual subject clause continues for hundreds of characters without a full stop or any later independent sourced gameplay sentence that could safely be promoted into a factual search description without fabricating the missing mechanics and specific game details.'
   };
   const preview = buildGameSeoPreview(source, snippet);
   assert.equal(preview.url, 'https://www.cheekycommodoregamer.co.uk/games/1942/');
@@ -322,3 +389,471 @@ test('new initial-led sentences do not join preceding mode labels', () => {
     assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
   }
 });
+
+test('five independently sourced C64 game summaries retain complete unique SEO snippets', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalog = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const source = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  for (const [slug, expected] of [
+    ['barbarian-2-the-dungeon-of-drax', "Barbarian II: The Dungeon of Drax (1988) is a C64 action-adventure from Palace Software in which you fight monsters across three regions."],
+    ['cybernoid', "Cybernoid: The Fighting Machine (1988) is a C64 flip-screen shooter from Hewson in which you recover stolen cargo from space pirates."],
+    ['the-new-zealand-story', "The New Zealand Story (1989) is Ocean's C64 platformer starring Tiki the kiwi, who must rescue his kidnapped friends."],
+    ['asterix-and-the-magic-cauldron', "Asterix and the Magic Cauldron (1986) is a C64 adventure from Melbourne House where Asterix searches for seven pieces of Getafix's cauldron."],
+    ['donald-ducks-playground', "Donald Duck's Playground (1984) is a C64 educational game from Sierra On-Line where Donald earns wages to build a playground for his nephews."]
+  ]) {
+    const game = catalog.find((item) => item.slug === slug);
+    assert.ok(game, slug + ' missing from current catalogue');
+    assert.equal(game.system, 'C64', slug);
+    const editorial = source.games[slug];
+    assert.ok(editorial && editorial.sources.length > 1, slug + ' must preserve original video and independent sources');
+    const record = { ...game, description: editorial.description };
+    assert.equal(snippet.buildSnippet(record, game.title), expected, slug);
+    assert.equal(routes.buildRuntimeDescription(record, game.title), expected, slug);
+    assert.equal(buildGameSeoPreview(record, snippet).description, expected, slug);
+    assert.ok(expected.length <= 155, slug);
+  }
+});
+
+test('all 665 current enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enrichments = payload.games || payload;
+  assert.equal(games.length, 665, 'Unexpected catalogue change; review before regenerating metadata');
+  assert.ok(!games.some((game) => game.slug === 'the-happiest-days-of-your-life'), 'Retired video-less game returned to the catalogue');
+
+  let generic = 0;
+  let complete = 0;
+  const pending = [];
+  for (const game of games) {
+    const enriched = enrichments[game.slug]?.description || game.description;
+    const record = { ...game, description: enriched };
+    const description = snippet.buildSnippet(record, game.title);
+    assert.ok(description.length <= 155, game.slug);
+    assert.match(description, /[.!?]$/, game.slug);
+    assert.doesNotMatch(description, /…|\.\.\.$/, game.slug);
+    assert.equal(routes.buildRuntimeDescription(record, game.title), description, game.slug);
+
+    const isBasic = description === snippet.buildSnippet({ ...record, description: '' }, game.title);
+    if (isBasic) {
+      generic++;
+      pending.push(game.slug);
+    } else {
+      complete++;
+    }
+  }
+  const permittedSourceFallbacks = new Set([
+    'asterix-and-the-magic-cauldron',
+    'barbarian-2-the-dungeon-of-drax',
+    'blagger-goes-to-hollywood',
+    'cybernoid',
+    'davy-king-of-the-wild-frontier',
+    'desert-strike',
+    'donald-ducks-playground',
+    'eye-of-the-beholder-2-the-legend-of-darkmoon',
+    'force-seven',
+    'he-man-and-the-masters-of-the-universe-the-ilearth-stone',
+    'he-man-and-the-masters-of-the-universe-the-movie',
+    'hunchback-at-the-olympics',
+    'indiana-jones-and-the-fate-of-atlantis',
+    'danny-sullivans-indy-heat',
+    'insects-in-space',
+    'antheads-it-came-from-the-desert-2',
+    'monkey-island-2-lechucks-revenge',
+    'montezumas-revenge',
+    'mountie-micks-death-ride',
+    'mr-robot-and-his-robot-factory',
+    'the-new-zealand-story',
+    'nightbreed-the-interactive-movie',
+    'teenage-mutant-hero-turtles-the-coin-op',
+    'tir-na-nog'
+  ]);
+  assert.deepEqual(pending.filter((slug) => !permittedSourceFallbacks.has(slug)), [],
+    'A game not in the previously audited source backlog fell back to generic metadata');
+  // Rich editorial text is present, but some source sentences still require
+  // manual fact-checked editing; never invent detail to force this to zero.
+  assert.ok(complete >= games.length - 24, 'Specific source snippets regressed: ' + pending.join(', '));
+  assert.ok(generic <= 24, 'More basic snippets than reviewed threshold: ' + pending.join(', '));
+});
+
+test('recover complete later gameplay facts from an oversized enriched introduction', () => {
+  for (const game of [
+    {
+      title: 'B.C. Bill', slug: 'bc-bill', system: 'C64', year: 1984,
+      description: 'A detailed historical introduction about development, publication and reception that deliberately exceeds the permitted search-description space while remaining a single oversized sentence and cannot be shortened without dropping essential claims. You take on the role of Bill, a caveman protecting his family in a dangerous stone-age world. The controls are simple.'
+    },
+    {
+      title: '720 Degrees', slug: '720-degrees', system: 'C64', year: 1987,
+      description: 'This unusually lengthy piece of source history introduces the original arcade design and publisher while deliberately exceeding the entire search snippet allocation, preventing any complete opening sentence being used for metadata. You skate through Skate City completing timed arcade challenges. More discussion.'
+    }
+  ]) {
+    const actual = snippet.buildSnippet(game, game.title);
+    assert.match(actual, /(?:Bill, a caveman|Skate City)/);
+    assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+    assert.equal(buildGameSeoPreview(game, snippet).description, actual);
+    assert.ok(actual.length <= 155, game.title);
+  }
+});
+
+test('editorial fallback does not assert contradictory dates or fabricate absent facts', () => {
+  const game = {
+    title: 'Example Racer', slug: 'example-racer', system: 'C64', year: 1989,
+    publisher: 'Example',
+    description: 'A long single-sentence introduction that continues beyond the available search snippet length and gives no safe grammatical clause to extract even though it provides an extensive overview of publisher credits and game development for this example computer game. Released on another system in 1987, the game had unrelated hardware. The remaining brief fragment is incomplete'
+  };
+  assert.equal(snippet.buildSnippet(game, game.title),
+    'Example Racer (1989) is a Commodore 64 game published by Example.');
+});
+
+test('Batman: The Movie and RoboCop C64 catalogue years match owner-approved 1989', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const records = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'games/games.json'), 'utf8'));
+  const batman = records.find((game) => game.slug === 'batman-the-movie');
+  const robocop = records.find((game) => game.slug === 'robocop');
+  assert.equal(batman.year, 1989);
+  assert.match(batman.description, /1989 Commodore 64 adaptation of Tim Burton's Batman film/);
+  assert.doesNotMatch(batman.description, /released by Ocean in 1986|rather than a specific movie plot/);
+  assert.equal(robocop.year, 1989);
+});
+
+test('C64 names and spaced acronyms survive initials without swallowing actual sentence boundaries', () => {
+  const examples = [
+    [
+      'Released in 1984 by Firebird and developed by Kevin A. Moughtin, Booty features pirate ship rooms. More info.',
+      'Released in 1984 by Firebird and developed by Kevin A. Moughtin, Booty features pirate ship rooms.'
+    ],
+    [
+      'The soldier is an elite U. S. Army Ranger operating deep behind enemy lines. Other tasks follow.',
+      'The soldier is an elite U. S. Army Ranger operating deep behind enemy lines.'
+    ],
+    [
+      'The Commodore 64 game features M. A. D. label credits before describing dungeon combat. Other games follow.',
+      'The Commodore 64 game features M. A. D. label credits before describing dungeon combat.'
+    ],
+    [
+      'The long-running Commodore 64 game is called H. E. R. O. Another classic game follows.',
+      'The long-running Commodore 64 game is called H. E. R. O.'
+    ],
+    [
+      'The Commodore 64 game requires players to choose difficulty type B. Another difficulty can be selected.',
+      'The Commodore 64 game requires players to choose difficulty type B.'
+    ],
+    [
+      'The Commodore 64 arcade conversion is known as Chase H.Q. Another notable game followed.',
+      'The Commodore 64 arcade conversion is known as Chase H.Q.'
+    ],
+    [
+      'The Commodore 64 game was originally launched in the U.S. Players in Europe found another edition.',
+      'The Commodore 64 game was originally launched in the U.S.'
+    ]
+  ];
+  for (const [source, expected] of examples) {
+    assert.equal(snippet.firstCompleteSentence(source, 155), expected);
+  }
+});
+
+test('all existing enriched game snippets avoid accidental standalone initials and doubled stops', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = payload.games || payload;
+  assert.equal(games.length, 665);
+  assert.ok(!games.some((game) => game.slug === 'the-happiest-days-of-your-life'));
+  for (const game of games) {
+    const record = { ...game, description: enriched[game.slug]?.description || game.description };
+    const actual = snippet.buildSnippet(record, game.title);
+    assert.ok(actual.length <= 155, game.slug);
+    assert.doesNotMatch(actual, /(?:^|\s)[A-Z]\.$/, game.slug + ' has a broken initial');
+    assert.doesNotMatch(actual, /\.\.$/, game.slug + ' has doubled punctuation');
+    assert.equal(actual, routes.buildRuntimeDescription(record, game.title), game.slug);
+  }
+});
+
+test('editorial source platform checks reject new C64-versus-Amiga misattribution', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = payload.games || payload;
+  // The three former source-platform conflicts were repaired in the
+  // authoritative enrichment source. No exception remains acceptable.
+  const knownEditorialDefects = new Set();
+  const unexpected = [];
+  for (const game of games) {
+    const description = String(enriched[game.slug]?.description || game.description || '')
+      .replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+    const saysC64 = /\b(?:Commodore 64|C64)\b/i.test(description);
+    const saysAmiga = /\bAmiga\b/i.test(description);
+    const isAmiga = /amiga/i.test(String(game.system || game.platform || ''));
+    const conflict = isAmiga ? saysC64 && !saysAmiga : saysAmiga && !saysC64;
+    if (conflict && !knownEditorialDefects.has(game.slug)) {
+      unexpected.push({ slug: game.slug, system: game.system, opening: description });
+    }
+  }
+  assert.deepEqual(unexpected, [], 'New source descriptions must not misidentify the game platform');
+});
+
+test('game title Chaos Engine is never rewritten by the publisher-normaliser', () => {
+  const { normalizeText } = require('../scripts/build-game-description-enrichments.js');
+  assert.equal(normalizeText('The Chaos Engine is a 1993 Amiga game.'),
+    'The Chaos Engine is a 1993 Amiga game.');
+  assert.equal(normalizeText('The word chaos in ordinary prose.'),
+    'The word mayhem in ordinary prose.');
+});
+
+test('authoritative generator retains platform-correct curated game copy', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const enriched = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8')).games;
+  const { curatedGameOverrides, selectDescription, descriptionErrors, normalizeText } =
+    require('../scripts/build-game-description-enrichments.js');
+  for (const [slug, expectedPlatform] of [
+    ['the-immortal', 'AMIGA'],
+    ['santas-xmas-caper', 'AMIGA'],
+    ['shadow-of-the-beast', 'C64'],
+    ['red-heat', 'C64'],
+    ['robocop', 'C64'],
+    ['the-chaos-engine', 'AMIGA'],
+    ['bismark', 'C64'],
+    ['bounder', 'C64'],
+    ['double-dragon-2-the-revenge', 'C64'],
+    ['stifflip-and-co', 'C64'],
+    ['donkey-kong', 'C64']
+  ]) {
+    const game = catalogue.find(item => item.slug === slug);
+    assert.ok(game, slug);
+    assert.equal(String(game.system).toUpperCase(), expectedPlatform, slug);
+    const override = curatedGameOverrides[slug];
+    assert.ok(override?.sources?.length > 0, slug);
+    const selected = selectDescription(game, { description: 'Stale wrong-platform source.' }, override);
+    assert.equal(selected.sourceKind, 'override', slug);
+    assert.deepEqual(descriptionErrors(selected.description), [], slug);
+    assert.equal(enriched[slug].description, normalizeText(override.description), slug);
+    assert.deepEqual(enriched[slug].sources, override.sources, slug);
+    assert.ok(selected.description.split(/\s+/).length >= 90, slug + ' source too short');
+    const record = { ...game, description: selected.description };
+    const result = snippet.buildSnippet(record, game.title);
+    assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(result, buildGameSeoPreview(record, snippet).description, slug);
+  }
+});
+
+test('rejects a wrong-platform editorial source before mining later sentences', () => {
+  const game = {
+    title: 'Example Quest', slug: 'example-quest', system: 'C64',
+    year: 1990, publisher: 'Example',
+    description: 'The Amiga edition introduced a lengthy sequence of challenges to players with several interactive puzzles and battle systems that are too detailed for one search description. You collect weapons and explore 350 large screens.'
+  };
+  assert.equal(snippet.buildSnippet(game, game.title),
+    'Example Quest (1990) is a Commodore 64 game published by Example.');
+});
+
+test('six reviewed catalogue-specific copy repairs retain canonical/admin parity', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = payload.games || payload;
+  const reviewed = new Map([
+    ['bounder', /time each bounce and landing/],
+    ['double-dragon-2-the-revenge', /fight your way through gangs/],
+    ['bismark', /outgun the enemy/],
+    ['the-immortal', /1990 Amiga isometric action-adventure/],
+    ['santas-xmas-caper', /1992 Amiga scrolling platform game/],
+    ['shadow-of-the-beast', /1990 Commodore 64 scrolling platform game/]
+  ]);
+  for (const [slug, expected] of reviewed) {
+    const game = games.find(item => item.slug === slug);
+    assert.ok(game, slug);
+    const record = { ...game, description: enriched[slug]?.description || game.description };
+    const result = snippet.buildSnippet(record, game.title);
+    assert.match(result, expected, slug);
+    assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(result, buildGameSeoPreview(record, snippet).description, slug);
+    assert.ok(result.length <= 155 && /[.!?]$/.test(result), slug);
+  }
+});
+
+test('prefers documented gameplay objectives over shorter editorial filler', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const data = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enrichments = data.games || data;
+  const examples = new Map([
+    ['olli-and-lissa', /Olli must therefore collect eight ingredients/],
+    ['up-n-down', /collect ten coloured flags/],
+    ['doriath', /16×16 screen map/],
+    ['the-castles-of-dr-creep', /conveyor belts, force fields, switches/],
+    ['dino-eggs', /build and maintain fire to keep Mama Dino at bay/],
+    ['cadaver', /push barrels, collect keys, trigger mechanisms/],
+    ['up-up-and-away', /careful balloon control as the screen scrolls/],
+    ['dan-dare-iii-the-escape', /side-view shooting and multi-directional scrolling/]
+  ]);
+  for (const [slug, expected] of examples) {
+    const game = catalogue.find((item) => item.slug === slug);
+    assert.ok(game, slug);
+    const editorial = enrichments[slug]?.description || game.description;
+    const record = { ...game, description: editorial };
+    const result = snippet.buildSnippet(record, game.title);
+    assert.match(result, expected, slug);
+    assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(result, buildGameSeoPreview(record, snippet).description, slug);
+    assert.ok(result.length <= 155 && /[.!?]$/.test(result), slug);
+  }
+});
+
+test('mechanic-specific descriptions for Gribbly Joe Blade and Stifflip', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const data = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = data.games || data;
+  // All three details were checked against source documentation for the C64.
+  const examples = [
+    ['gribblys-day-out', /hops and levitates.*psychic bubble shots/],
+    ['joe-blade-2', /rescue kidnapped civilians.*gangs/],
+    ['stifflip-and-co', /Count Chameleon.*Rubbertronic Ray.*properties of rubber/],
+    // Keep the two existing stronger summaries that a broad scoring penalty
+    // mistakenly replaced in the research-only candidate.
+    ['nightbreed-the-action-game', /side-scrolling platforming with combat and light exploration/],
+    ['the-lost-patrol', /strategic map of Vietnam/]
+  ];
+  for (const [slug, matcher] of examples) {
+    const game = games.find((row) => row.slug === slug);
+    assert.ok(game, slug);
+    // The Lost Patrol is the Amiga entry; the three authored C64 gameplay
+    // checks and Nightbreed action port remain tied to their C64 catalogue.
+    const isAmiga = /amiga/i.test(game.system || game.platform || '');
+    assert.equal(isAmiga, slug === 'the-lost-patrol', slug);
+    const record = { ...game, description: enriched[slug]?.description || game.description };
+    const description = snippet.buildSnippet(record, game.title);
+    assert.match(description, matcher, slug);
+    assert.equal(description, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(buildGameSeoPreview(record, snippet).description, description, slug);
+    assert.ok(description.length <= 155, slug);
+  }
+});
+
+test('one-time Batman correction preserves all other catalogue bytes in both PWA guards', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const current = readFileSync(join(root, 'games/games.json'), 'utf8');
+  const target = JSON.parse(current).find((game) => game.slug === 'batman-the-movie');
+  assert.equal(target.year, 1989);
+  const originalDescription = "Batman: The Movie is a Commodore 64 action-adventure game released by Ocean in 1986. Inspired by the iconic film character rather than a specific movie plot, the game mixes side-scrolling action with puzzle elements. It became one of Ocean's most recognisable licensed releases.";
+  const changedDescription = "Batman: The Movie is Ocean Software's 1989 Commodore 64 adaptation of Tim Burton's Batman film. Its five stages mix platform action, Batmobile driving, puzzles and Batwing sequences.";
+  assert.equal(target.description, changedDescription);
+  const anchor = '"slug": "batman-the-movie"';
+  const start = current.indexOf(anchor);
+  const end = current.indexOf('\n  },', start);
+  assert.ok(start > 0 && end > start);
+  const currentSection = current.slice(start, end);
+  assert.equal(currentSection.split('"year": 1989').length, 2);
+  assert.equal(currentSection.split('"description": ' + JSON.stringify(changedDescription)).length, 2);
+  const previousSection = currentSection
+    .replace('"year": 1989', '"year": 1986')
+    .replace('"description": ' + JSON.stringify(changedDescription),
+      '"description": ' + JSON.stringify(originalDescription));
+  const original = current.slice(0, start) + previousSection + current.slice(end);
+
+  for (const path of ['scripts/audit-installable-pwa.js', 'scripts/audit-visible-pwa-install.js']) {
+    const source = readFileSync(join(root, path), 'utf8');
+    const marker = 'function isApprovedBatman1989CatalogueCorrection(relativePath) {';
+    const begin = source.indexOf(marker);
+    const finish = source.indexOf('\n}\n', begin);
+    assert.ok(begin > 0 && finish > begin, path + ' missing one-time gate');
+    const body = source.slice(begin, finish + 2);
+    const check = (baseline, candidate, relativePath = 'games/games.json', mainHead = false, parent = baseline) =>
+      new Function('readGitFile', 'read', 'childProcess', 'root',
+        body + '\nreturn isApprovedBatman1989CatalogueCorrection;')(
+          (ref, file) => file !== 'games/games.json' ? null : ref === 'origin/main' ? baseline : ref === 'HEAD^' ? parent : null,
+          () => candidate,
+          { execFileSync: (_command, args) => args[1] === 'HEAD' || mainHead ? 'main-sha\n' : 'branch-sha\n' },
+          root
+        )(relativePath);
+
+    assert.equal(check(original, current), true, path + ' rejects exact approved migration');
+    assert.equal(check(original, current + '\n'), false, path + ' ignores incidental byte changes');
+    assert.equal(check(original, current.replace('"year": 1989', '"year": 1990')),
+      false, path + ' ignores other year changes');
+    assert.equal(check(current, current), false, path + ' remains open after main is corrected');
+    assert.equal(check(current, current, 'games/games.json', true, original), true,
+      path + ' rejects the first exact merged-main transition');
+    assert.equal(check(current, current, 'games/games.json', true, current), false,
+      path + ' must close after the corrected main transition');
+    assert.equal(check(current, current, 'games/games.json', false, original), false,
+      path + ' must not reuse an old parent on another branch');
+    assert.equal(check(current, current + '\n', 'games/games.json', true, original), false,
+      path + ' must reject other bytes even on merged main');
+    assert.equal(check(original, original), false, path + ' should not match unchanged source');
+    assert.equal(check(original, current, 'index.html'), false, path + ' must protect intro');
+  }
+});
+
+test('follow-ups reject review narration and missing antecedents before scoring', () => {
+  const intro = 'A long historical introduction describing publication and reception with several extended clauses deliberately exceeds the search snippet allocation and provides no safe game-title subject clause to extract for this example.';
+  const fact = 'You collect keys and explore rooms while avoiding traps.';
+  for (const rejected of [
+    "In this review I'm revisiting the game I grew up playing.",
+    'In this video we compare the original with another computer version.',
+    'These sequences are woven directly into the puzzles and add variety.',
+    'Those challenges demand timing and patience throughout the adventure.',
+    'However, the computer conversion is less fluid than the arcade original.',
+    'They require careful planning and precise control to reach the exit.',
+    'His latest invention changes the way rubber behaves during the adventure.',
+    'Her latest invention changes the way rubber behaves during the adventure.',
+    'Their inventions change the way rubber behaves during the adventure.',
+    'In both releases, you climb platforms to rescue a captured friend.',
+    'In these versions, you climb platforms to rescue a captured friend.'
+  ]) {
+    const game = { title: 'Example', slug: 'example', system: 'C64', year: 1989,
+      description: intro + ' ' + rejected + ' ' + fact };
+    const expected = 'Example: ' + fact;
+    assert.equal(snippet.buildSnippet(game, game.title), expected, rejected);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, expected);
+    const withoutFact = { ...game, description: intro + ' ' + rejected };
+    assert.equal(snippet.buildSnippet(withoutFact, game.title),
+      snippet.buildSnippet({ ...game, description: '' }, game.title), rejected);
+  }
+});
+
+test('reported review/context snippets retain source facts and canonical/admin parity', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const enrichments = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8')).games;
+  for (const [slug, expected] of [
+    ['donkey-kong', 'You control Jumpman as he climbs girders, ladders, and elevators to rescue Lady from the clutches of Donkey Kong.'],
+    ['stifflip-and-co', "Stifflip & Co.: Count Chameleon's latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber."],
+    ['road-rash', 'Finish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way.'],
+    ['herberts-dummy-run', 'A standout feature is the inclusion of clever mini-games that parody classic arcade hits such as Breakout, Space Invaders, and Duck Shoot.'],
+    ['final-fight', 'Gameplay follows traditional side-scrolling brawler mechanics, featuring punches, kicks, throws, jumping attacks, and waves of on-screen enemies.']
+  ]) {
+    const game = catalogue.find(item => item.slug === slug);
+    const record = { ...game, description: enrichments[slug].description };
+    const fact = expected.startsWith(game.title + ': ') ? expected.slice(game.title.length + 2) : expected;
+    assert.ok(record.description.includes(fact), slug + ' must use exact authored facts');
+    assert.equal(snippet.buildSnippet(record, game.title), expected, slug);
+    assert.equal(routes.buildRuntimeDescription(record, game.title), expected, slug);
+    assert.equal(buildGameSeoPreview(record, snippet).description, expected, slug);
+    assert.ok(expected.length <= 155 && /[.!?]$/.test(expected), slug);
+  }
+});
+

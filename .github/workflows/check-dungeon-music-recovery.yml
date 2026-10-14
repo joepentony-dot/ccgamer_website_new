@@ -1,0 +1,35 @@
+name: Check Dungeon Carnage music recovery manifest
+
+on:
+  pull_request:
+    paths:
+      - "scripts/recover-dungeon-carnage-music.mjs"
+      - "scripts/dungeon-carnage-music-recovery-sources.json"
+      - ".github/workflows/recover-dungeon-original-music.yml"
+      - ".github/workflows/check-dungeon-music-recovery.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/recover-dungeon-carnage-music.mjs"
+      - "scripts/dungeon-carnage-music-recovery-sources.json"
+      - ".github/workflows/check-dungeon-music-recovery.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  manifest-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check recovery script syntax and approved 16-track manifest
+        run: |
+          set -euo pipefail
+          node --check scripts/recover-dungeon-carnage-music.mjs
+          node scripts/recover-dungeon-carnage-music.mjs --validate
+          echo "Manifest test does not make network requests."

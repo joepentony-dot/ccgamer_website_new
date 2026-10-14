@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { getContentLastmod } = require('./git-content-lastmod');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
 const gamesJsonPath = path.join(repoRoot, 'games', 'games.json');
@@ -174,22 +174,9 @@ function toRepoRelative(filePath) {
 }
 
 function getGitLastMod(filePath) {
-  const relativePath = toRepoRelative(filePath);
-  try {
-    const output = execFileSync('git', ['log', '-1', '--format=%cI', '--', relativePath], {
-      cwd: repoRoot,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
-
-    if (output) {
-      return output.slice(0, 10);
-    }
-  } catch (err) {
-    // Fall through to date fallback.
-  }
-
-  return new Date().toISOString().slice(0, 10);
+  // Publishing regenerates HTML before Git commits it. Reflect meaningful
+  // changed bytes in the outgoing sitemap instead of the previous commit date.
+  return getContentLastmod(repoRoot, filePath);
 }
 
 function escapeXml(value) {

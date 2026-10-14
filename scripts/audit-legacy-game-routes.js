@@ -153,6 +153,13 @@ if (!Array.isArray(games) || games.length === 0) {
         const match = line.trim().match(/^\/games\/([a-z0-9-]+)\/\s+\/games\/game\.html\?slug=\1\s+200!?$/i);
         if (match) staticRewrites.add(match[1]);
     });
+    // Every forced route must still exist in the authoritative catalogue.
+    // Otherwise a retired page is silently served through the query handler.
+    const retiredRewrites = [...staticRewrites].filter((slug) => !slugs.has(slug));
+    if (retiredRewrites.length) {
+        errors.push(`_redirects contains ${retiredRewrites.length} orphaned game rewrite(s): ${retiredRewrites.join(", ")}.`);
+    }
+
     const missingExplicitRewrites = [...slugs].filter((slug) => !staticRewrites.has(slug));
     if (missingExplicitRewrites.length) {
         warnings.push(`${missingExplicitRewrites.length} game(s) rely on their physical folder page rather than an explicit _redirects rewrite: ${missingExplicitRewrites.join(", ")}.`);
