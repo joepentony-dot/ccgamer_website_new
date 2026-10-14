@@ -104,6 +104,9 @@ jobs:
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
 
+      - name: Verify Ocean Type 1 CRT hardware mapping and restoration
+        run: node tests/ccg-c64-ocean-type1.test.mjs
+
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
 
