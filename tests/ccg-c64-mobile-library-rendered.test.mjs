@@ -129,6 +129,52 @@ try {
     console.log("PASS C64 viewport "+width+"x"+height+(touch?" touch":" desktop"));
   }
 
+
+  // Exercise the immersive layout rather than only the library. Geometry
+  // is measured in real Chromium at small portrait and landscape viewports.
+  for (const [width, height] of [[320, 680], [390, 844], [844, 390]]) {
+    await emulate(session, width, height, true);
+    const v = await evaluate(session, [
+      'var e=s=>document.querySelector(s);',
+      'var shell=e(".ccg-c64-console");shell.classList.add("is-mobile-playing");',
+      'document.body.classList.add("is-mobile-playing");',
+      'e("[data-mobile-playbar]").hidden=false;',
+      'e("[data-mobile-game-actions]").hidden=false;',
+      'e(".ccg-c64-touch-jump").hidden=false;',
+      'var rect=s=>{var r=e(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};};',
+      'var control=rect("[data-mobile-game-actions]"), bar=rect("[data-mobile-playbar]"),',
+      'screen=rect(".ccg-c64-screen-stage"), touch=rect(".ccg-c64-touch-controls"),',
+      'opts=rect(".ccg-c64-touch-options"), body=rect(".ccg-c64-console");',
+      'return {bar,control,screen,touch,opts,body,sw:document.documentElement.scrollWidth,',
+      'vw:document.documentElement.clientWidth,',
+      'pause:rect("[data-mobile-pause]"), save:rect("[data-mobile-save-state]"),',
+      'load:rect("[data-mobile-load-state]"), jump:rect(".ccg-c64-touch-jump"),',
+      'fire:rect(".ccg-c64-touch-fire"),crt:rect("[data-mobile-crt-mode]"),',
+      'jumpToggle:document.querySelector("[data-jump-toggle]")!==null};',
+    ].join("\\n"));
+    assert(v.sw-v.vw<5, "Immersive C64 horizontal overflow at "+width+"x"+height);
+    assert(v.control.width > width * .80 && v.control.height >= 30,
+      "Mobile pause/save/load row is missing at "+width+"x"+height);
+    assert(v.pause.width >= 70 && v.save.width >= 70 && v.load.width >= 70,
+      "Mobile save controls are too narrow at "+width+"x"+height);
+    assert(v.jump.width >= 60 && v.fire.width >= 60,
+      "FIRE and JUMP must both remain touch-sized");
+    assert(v.crt.width >= 55 && !v.jumpToggle, "CRT must replace JUMP toggle");
+    assert(v.control.top >= v.bar.bottom-3 && v.screen.top >= v.control.bottom-3,
+      "Controls must appear above the game screen");
+    assert(v.touch.top >= v.screen.bottom-3 && v.opts.top >= v.touch.bottom-3,
+      "Touch controls and bottom selector must appear after game screen");
+    assert(v.opts.bottom <= height+4 && v.screen.height >= 35,
+      "Immersive game screen or bottom buttons fall outside mobile viewport");
+    console.log("PASS C64 immersive mobile controls "+width+"x"+height);
+    await evaluate(session, [
+      'document.querySelector(".ccg-c64-console").classList.remove("is-mobile-playing");',
+      'document.body.classList.remove("is-mobile-playing");',
+      'document.querySelector("[data-mobile-playbar]").hidden=true;',
+      'document.querySelector("[data-mobile-game-actions]").hidden=true;',
+      'return true;'
+    ].join("\\n"));
+  }
   await emulate(session,390,844,true);
   const drop=await evaluate(session,[
     'var l=document.querySelector(".ccg-c64-panel--library");l.hidden=false;',
