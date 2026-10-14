@@ -38,6 +38,17 @@
     return raw.includes("amiga") ? "Amiga" : "Commodore 64";
   }
 
+  // Validate the editorial opening's platform before extracting any
+  // platform-neutral gameplay sentence from later in a description.
+  function wrongPlatformEditorial(description, game) {
+    const lead = normalize(description).slice(0, 300);
+    const saysC64 = /\b(?:Commodore 64|C64)\b/i.test(lead);
+    const saysAmiga = /\bAmiga\b/i.test(lead);
+    return platformLabel(game) === "Amiga"
+      ? saysC64 && !saysAmiga
+      : saysAmiga && !saysC64;
+  }
+
   function skipRedundantEditorialHeader(description, title) {
     if (!description || !title) return description;
     const opening = description.slice(0, title.length).toLowerCase();
@@ -162,6 +173,11 @@
           /https?:\/\/|www\./i.test(sentence) ||
           /…|\.\.\./.test(sentence)) continue;
 
+      // Reject mismatched-person player-action claims without excluding
+      // grammatical third-person objects such as "your crew ... their roles".
+      const incoherentAction = /\byou\b[^.!?]*\b(?:fight\s+their\s+way|time\s+their\s+(?:movements|landings)|outgun\s+their\s+enemy)\b/i.test(sentence);
+      if (incoherentAction) continue;
+
       const candidate = sentence.toLowerCase().includes(title.toLowerCase())
         ? sentence
         : title + ": " + sentence;
@@ -211,6 +227,7 @@
     const title = normalize(suppliedTitle || (game && game.title) || "Game");
     const limit = Math.max(80, Math.min(160, Number(maxLength) || DEFAULT_MAX_LENGTH));
     const raw = normalize(game && (game.description || game.desc));
+    if (wrongPlatformEditorial(raw, game)) return sourceFallback(game, title, limit);
     const editorial = skipRedundantEditorialHeader(raw, title);
 
     // The existing editorial review can supply an individual, complete fact.
