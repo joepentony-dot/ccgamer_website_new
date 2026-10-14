@@ -63,7 +63,10 @@ async function execute(catalogueAvailable) {
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 70);
+assert.equal(direct.entries.length, 222,
+  "Retain 70 original directly hosted games plus 152 owner-approved CRT replacements");
+assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 153,
+  "152 new CRT-first entries and existing Pirates! preference must survive");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
@@ -93,7 +96,7 @@ assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 
 const failed = await execute(false);
-assert.equal(failed.context.onlineLibraryEntries.length, 70,
+assert.equal(failed.context.onlineLibraryEntries.length, 222,
   "Already hosted direct games must survive catalogue fetch errors");
 assert.match(failed.context.onlineLibraryStatus.textContent, /BLAST UNAVAILABLE/);
 assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
