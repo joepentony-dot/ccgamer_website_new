@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Caveman Ugh-Lympics (1988) – Commodore 64 Prehistoric Multi-Event Sports Comedy Released in 1988 by Dynamix and published by Electronic Arts for the Commodore 64, Caveman Ugh-Lympics is a tongue-in-cheek sports game that reimagines the Olympic Games through a prehistoric lens. Packed with slapstick humour and over-the-top animation, it turns athletic competition into pure caveman mayhem. The game features six distinct events, each with its own mechanics and timing challenges. From outrunning a rival while a saber-toothed tiger gives chase, to spinning and launching your partner in the absurd Matetoss, every event puts reflexes and precision to the test. Other contests include frantic fire-starting, brutal clubbing duels, dinosaur racing, and pole-vaulting over a very unimpressed Tyrannosaurus rex. Large, expressive sprites and exaggerated animations give the game its unmistakable personality, while simple sound effects reinforce the lighthearted tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Caveman Ugh-Lympics C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KnqVkopfODI" data-video-id="KnqVkopfODI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Caveman Ugh-Lympics video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KnqVkopfODI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Caveman Ugh-Lympics C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KnqVkopfODI" data-video-id="KnqVkopfODI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KnqVkopfODI" target="_blank" rel="noopener">Open on YouTube</a>

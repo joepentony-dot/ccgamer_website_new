@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Outlaws (1985) – Commodore 64 Wild West Action Shooter Released in 1985 by Ultimate Play the Game for the Commodore 64, Outlaws is a Wild West–themed action shooter developed by Dave and Robert Thomas that puts players in the role of the mysterious Lone Rider. Riding on horseback across prairie landscapes and frontier towns, players must take down roaming bandits and hostile threats before they cause mayhem. Gameplay combines fast scrolling movement with shooting, jumping, and obstacle avoidance. Players gallop through varied environments, ducking under hazards, leaping over barriers, and firing on enemies in cabins, streets, and open terrain. The balance of movement and combat delivers a classic arcade-style challenge. Visually, the game features crisp sprite work and detailed Western-inspired scenery that helps establish its frontier atmosphere. The SID soundtrack and sound effects further enhance the game’s gritty tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Outlaws C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ovt2tWhUAaA" data-video-id="ovt2tWhUAaA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Outlaws video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ovt2tWhUAaA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Outlaws C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ovt2tWhUAaA" data-video-id="ovt2tWhUAaA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ovt2tWhUAaA" target="_blank" rel="noopener">Open on YouTube</a>

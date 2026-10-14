@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1991 by Virgin Games and developed by Archer Maclean for the Commodore Amiga, Jimmy White’s Whirlwind Snooker set a new standard for cue sports on home computers. Endorsed by professional snooker legend Jimmy White, the game delivers a remarkably authentic and feature-rich snooker experience. You are given complete control over the table, with the ability to rotate the view, zoom in on any ball, and apply spin or swerve to shots. Multiple modes are included, ranging from competitive one- and two-player matches to practice sessions, trick shots, and demo play, all supported by four adjustable skill levels. What truly sets the game apart is its smooth 3D presentation and highly accurate ball physics. Each break-off plays differently, maximum 147 breaks are possible, and games can be saved mid-frame. Digitised crowd applause and sound effects add to the atmosphere, while playful visual touches appear if you take too long to line up a shot.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jimmy White&#39;s Whirlwind Snooker Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qZQECHrZ6gQ" data-video-id="qZQECHrZ6gQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jimmy White&#39;s Whirlwind Snooker video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qZQECHrZ6gQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jimmy White&#39;s Whirlwind Snooker Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qZQECHrZ6gQ" data-video-id="qZQECHrZ6gQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qZQECHrZ6gQ" target="_blank" rel="noopener">Open on YouTube</a>

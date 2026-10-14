@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Crazy Comets (1985) – Commodore 64 Multidirectional Arcade Shooter Classic Released in 1985 by Martech for the Commodore 64, Crazy Comets is a fast-paced multidirectional shooter inspired by Gottlieb’s arcade hit Mad Planets. You are tasked with defending a vulnerable planet from waves of unpredictable comets and space debris. You control a rotating spaceship positioned at the centre of the screen, firing in all directions to intercept incoming threats. Each stage increases in speed and intensity, demanding sharper reflexes and tighter control as the screen fills with hostile objects. The minimalist design keeps the focus firmly on pure arcade action. With no distractions, success depends entirely on positioning, timing, and managing multiple attack angles at once. The steadily rising difficulty ensures constant pressure throughout every session. One of the game’s defining features is its iconic soundtrack by Rob Hubbard.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Crazy Comets C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FmMKi8k01fw" data-video-id="FmMKi8k01fw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Crazy Comets video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FmMKi8k01fw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Crazy Comets C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FmMKi8k01fw" data-video-id="FmMKi8k01fw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FmMKi8k01fw" target="_blank" rel="noopener">Open on YouTube</a>

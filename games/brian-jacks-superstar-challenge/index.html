@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Brian Jacks Superstar Challenge (1985) – Commodore 64 Multi-Event Sports Classic Released in 1985 by Martech for the Commodore 64, Brian Jacks Superstar Challenge is a licensed multi-event sports simulation based on British judo champion and TV “Superstars” legend Brian Jacks. You compete across a series of athletic challenges designed to test speed, strength, timing, and coordination, aiming to achieve the highest possible overall score. The game features eight varied events, including running, weightlifting, and gym-based tests, each requiring different control techniques and reactions. A major highlight is the one-load format, which allows players to move smoothly between events without lengthy loading times, keeping the pace fast and competitive. Gameplay focuses on mastering individual disciplines while maintaining consistency across the full competition, rewarding practice and precision. Visually, the game delivers simple but clear graphics typical of mid-1980s C64 titles, while sound effects provide basic feedback during each event.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Brian Jacks Superstar Challenge C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/YkhL3WBrw1g" data-video-id="YkhL3WBrw1g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Brian Jacks Superstar Challenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/YkhL3WBrw1g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Brian Jacks Superstar Challenge C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/YkhL3WBrw1g" data-video-id="YkhL3WBrw1g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=YkhL3WBrw1g" target="_blank" rel="noopener">Open on YouTube</a>

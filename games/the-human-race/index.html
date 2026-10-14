@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Human Race (1985) – Commodore 64 Evolution-Themed Platform Challenge Released in 1985, The Human Race is a single-player platform game for the Commodore 64 developed by John D. Ferrari and published by Mastertronic. The game takes a bold and unusual approach, charting a journey through human evolution that begins with you controlling an ape and progresses through different stages of humanity. Each level represents a distinct era, with gameplay mechanics and environments changing dramatically as you advance. Early stages feature jungle-based platforming with banana collecting and prehistoric hazards, while later levels introduce lava-filled landscapes, rolling logs, and fast-paced sequences set in a modern city. This constant reinvention keeps the experience unpredictable and varied. A major highlight is the dynamic soundtrack by Rob Hubbard, whose music shifts between levels to reflect each evolutionary stage.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Human Race C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iW2AvpF7NfQ" data-video-id="iW2AvpF7NfQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Human Race video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iW2AvpF7NfQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Human Race C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iW2AvpF7NfQ" data-video-id="iW2AvpF7NfQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iW2AvpF7NfQ" target="_blank" rel="noopener">Open on YouTube</a>

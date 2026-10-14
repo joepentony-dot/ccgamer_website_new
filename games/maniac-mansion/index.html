@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Maniac Mansion (1987) – Commodore 64 Graphic Adventure That Changed Gaming Released in 1987 by Lucasfilm Games for the Commodore 64, Maniac Mansion is a landmark graphic adventure that redefined how games told stories. Built on the newly created SCUMM engine, it introduced a point-and-click interface that made interaction more intuitive and opened the door to deeper, more expressive game narratives. You control Dave Miller and choose two friends from a cast of six unique characters, each with different abilities, as they infiltrate the bizarre mansion of Dr. Fred Edison to rescue Dave’s kidnapped girlfriend, Sandy Pantz. The non-linear design allows multiple solutions to puzzles, encouraging experimentation and replayability as different character combinations unlock new paths and outcomes. The Commodore 64 version delivers colourful visuals, atmospheric music, and animated cutscenes that push the story forward, helping the mansion feel alive and unpredictable.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Maniac Mansion C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GFmxH4WY2BI" data-video-id="GFmxH4WY2BI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Maniac Mansion video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GFmxH4WY2BI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Maniac Mansion C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GFmxH4WY2BI" data-video-id="GFmxH4WY2BI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GFmxH4WY2BI" target="_blank" rel="noopener">Open on YouTube</a>

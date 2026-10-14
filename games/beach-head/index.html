@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Beach-Head (1983) – Commodore 64 Multi-Stage WWII Action Classic Released in 1983 by Access Software for the Commodore 64, Beach-Head is a landmark World War II action game that tasks you with launching a full-scale assault on a heavily fortified enemy island. Rather than focusing on a single gameplay style, the game unfolds across multiple distinct stages, each representing a different phase of the invasion. The opening sequence sees you navigating a fleet of ships through dangerous waters, choosing between a direct route under enemy fire or a hidden passage filled with mines and torpedoes. This is followed by a shift to anti-aircraft defence, where quick reflexes are required to protect the fleet from waves of enemy planes. Later stages introduce artillery combat against enemy battleships and a side-scrolling beach assault, where tanks must survive long enough to reach the enemy fortress.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Beach-Head C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_ThSf8hdKWQ" data-video-id="_ThSf8hdKWQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Beach-Head video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_ThSf8hdKWQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Beach-Head C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_ThSf8hdKWQ" data-video-id="_ThSf8hdKWQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_ThSf8hdKWQ" target="_blank" rel="noopener">Open on YouTube</a>

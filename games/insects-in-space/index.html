@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Insects in Space is a 1989 Commodore 64 side-scrolling shooter published by Hewson and created by Sensible Software, with Chris Yates credited for the design and programming. Its structure recalls Defender: the player patrols a horizontally scrolling landscape while hostile insects descend to capture the babies scattered below. Abducted survivors must be rescued before the insects carry them away and transform them, so watching the radar and deciding when to attack or recover a captive is as important as firing accurately. The playfield wraps around and supports rapid changes of direction, creating a continuous defence mission rather than a fixed procession of stages. A simultaneous two-player option lets both pilots share the rescue effort, adding coordination to a game already built around speed, prioritisation and constant movement.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Insects In Space C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rn_hzXvVYes" data-video-id="rn_hzXvVYes"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Insects In Space video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rn_hzXvVYes/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Insects In Space C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rn_hzXvVYes" data-video-id="rn_hzXvVYes"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rn_hzXvVYes" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Black Hawk (1984) – Commodore 64 Vertical Scrolling Combat Shooter Released in 1984 for the Commodore 64, Black Hawk is a vertical-scrolling shoot-’em-up developed by Dean M. Lock and published by Creative Sparks. You take control of the Black Hawk aircraft, flying missions over heavily defended island bases packed with tanks, missile launchers, radar installations, and anti-aircraft fire. The gameplay is split into two distinct phases that give the game its unique structure. In Missile Camera Mode, you guide a targeting camera from an overhead view, locking onto enemy installations by holding the fire button before releasing a missile at the chosen target. Precision and timing are essential to maximise damage and reduce enemy strength. Any surviving threats then trigger a shift into Cockpit Combat Mode. Here, the view moves inside the aircraft, and you must directly engage enemy planes and remaining ground units in fast-paced combat.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Black Hawk C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6lWnUXNVhdw" data-video-id="6lWnUXNVhdw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Black Hawk video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6lWnUXNVhdw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Black Hawk C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6lWnUXNVhdw" data-video-id="6lWnUXNVhdw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6lWnUXNVhdw" target="_blank" rel="noopener">Open on YouTube</a>

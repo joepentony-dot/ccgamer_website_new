@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Wonder Boy (1987) – Commodore 64 Arcade Conversion by Activision Why did Zzap! 64 give Wonder Boy on the Commodore 64 just 52%? I loved Sega’s arcade game, pumped plenty of 10p pieces into it and couldn&#39;t wait to get the C64 conversion home – so nearly forty years later, I’m going back to see whether that score was really deserved. Released for the C64 by Activision in 1987, Wonder Boy takes the Sega arcade platformer and squeezes its fruit collecting, axes, skateboards, fairies, enemies and rapidly disappearing vitality bar onto the Commodore. The C64 conversion was programmed by James Smart, who also handled the music, with graphics by Andrew Pang and the C64 version credited to Images Design. There’s plenty here I still enjoy: big colourful sprites, smooth scrolling, familiar arcade details and that constant pressure to keep moving and collecting food.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Wonder Boy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/raMcxhNFUCI" data-video-id="raMcxhNFUCI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Wonder Boy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/raMcxhNFUCI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Wonder Boy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/raMcxhNFUCI" data-video-id="raMcxhNFUCI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=raMcxhNFUCI" target="_blank" rel="noopener">Open on YouTube</a>

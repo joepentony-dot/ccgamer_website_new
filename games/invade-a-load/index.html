@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Invade-a-Load (1987) – Commodore 64 Cassette Loader Shoot-’Em-Up Released in 1987 by Mastertronic and developed by Richard Aplin, Invade-a-Load is one of the most inventive ideas to appear on the Commodore 64. Rather than staring at a static loading screen, you’re dropped straight into a Space Invaders-style shooter that runs while the main game loads from cassette in the background. You control a small ship at the bottom of the screen, blasting descending alien waves as they speed up and become more aggressive. It’s simple, immediate, and surprisingly addictive, turning unavoidable loading time into a playable challenge instead of dead air. What makes Invade-a-Load truly special is how seamlessly it integrates with the fast loader itself, running without slowing the loading process. Add Rob Hubbard’s unmistakable SID music into the mix and you’ve got a loading screen that became more memorable than some full games.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Invade-A-Load C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ztUnbvKXHQU" data-video-id="ztUnbvKXHQU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Invade-A-Load video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ztUnbvKXHQU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Invade-A-Load C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ztUnbvKXHQU" data-video-id="ztUnbvKXHQU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ztUnbvKXHQU" target="_blank" rel="noopener">Open on YouTube</a>

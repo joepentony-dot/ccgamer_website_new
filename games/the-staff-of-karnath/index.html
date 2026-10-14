@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Staff of Karnath (1984) – Commodore 64 Isometric Action-Adventure Classic Released in 1984 by Ultimate Play the Game and developed by Dave and Bob Thomas, The Staff of Karnath introduced Commodore 64 players to the dark and dangerous world of Sir Arthur Pendragon. Set inside a vast haunted castle, the game tasks you with stopping an ancient evil before it can consume the world. Exploration is presented in an isometric 3D view, with Sir Arthur navigating rooms and corridors filled with hostile creatures, deadly traps, and hidden secrets. Your primary objective is to locate the 16 scattered pieces of a pentacle and deliver them to the tomb in the castle basement, where the Staff of Karnath can finally be destroyed. Magic plays a central role in survival. Sir Arthur has access to ten spells, each serving a specific purpose, from revealing hidden items to eliminating enemies or manipulating objects.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Staff Of Karnath C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cxRHAOQrp5g" data-video-id="cxRHAOQrp5g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Staff Of Karnath video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cxRHAOQrp5g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Staff Of Karnath C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cxRHAOQrp5g" data-video-id="cxRHAOQrp5g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cxRHAOQrp5g" target="_blank" rel="noopener">Open on YouTube</a>

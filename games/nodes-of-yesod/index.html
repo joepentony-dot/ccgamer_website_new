@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nodes of Yesod (1985) – Commodore 64 Sci-Fi Exploration Platform Classic Released in 1985 by Odin Computer Graphics for the Commodore 64, Nodes of Yesod is a side-scrolling platform adventure set on a mysterious lunar landscape. You take control of astronaut Charlemagne “Charlie” Fotheringham-Grunes, sent to investigate strange signals coming from a towering black monolith buried deep beneath the Moon’s surface. Gameplay focuses on careful exploration and puzzle-solving as Charlie navigates interconnected caverns filled with hazards, enemies, and hidden routes. The main objective is to locate and collect eight coloured crystals known as alchiems, each required to progress deeper into the underground maze. A defining feature is the ability to capture and release lunar moles, which can burrow through walls to open new paths and uncover secrets. This mechanic adds a strong strategic layer, forcing you to think ahead rather than rely purely on reflexes.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nodes Of Yesod C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/38rFGiOr4_c" data-video-id="38rFGiOr4_c"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nodes Of Yesod video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/38rFGiOr4_c/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nodes Of Yesod C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/38rFGiOr4_c" data-video-id="38rFGiOr4_c"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=38rFGiOr4_c" target="_blank" rel="noopener">Open on YouTube</a>

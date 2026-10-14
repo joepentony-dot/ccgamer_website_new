@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Simon the Sorcerer (1993) – Commodore Amiga Fantasy Point-and-Click Adventure Released in 1993 by Adventure Soft for the Commodore Amiga, Simon the Sorcerer is a classic point-and-click adventure that places players in the role of Simon, a sarcastic teenage wizard-in-training unexpectedly pulled into a colourful fantasy world. His task is to rescue the imprisoned wizard Calypso from the grip of the villainous sorcerer Sordid. Gameplay follows a traditional verb-based adventure interface, featuring twelve commands that allow players to explore environments, manipulate objects, and solve layered puzzles. Progress depends on observation, logic, and creative item use rather than reflexes, rewarding patience and experimentation. The Amiga version stands out for its richly detailed hand-drawn graphics and vibrant colour palette, bringing its fairy-tale world to life. The game is especially well remembered for its sharp dialogue, playful humour, and frequent nods to classic fantasy stories, delivered with a distinctly British tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Simon The Sorcerer Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/t6p983kN-ps" data-video-id="t6p983kN-ps"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Simon The Sorcerer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/t6p983kN-ps/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Simon The Sorcerer Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/t6p983kN-ps" data-video-id="t6p983kN-ps"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=t6p983kN-ps" target="_blank" rel="noopener">Open on YouTube</a>

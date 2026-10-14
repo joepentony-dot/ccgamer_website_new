@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rambo: First Blood Part II (1986) – Commodore 64 Tactical Jungle Action Released in 1986 by Ocean Software and developed by Platinum Productions, Rambo: First Blood Part II adapts the 1985 action film into a tense top-down action-adventure for the Commodore 64. Rather than straightforward run-and-gun mayhem, the game leans into survival, stealth, and tactical decision-making. You guide Rambo through dense jungle environments on a mission to rescue prisoners of war from enemy camps. Progress requires careful navigation, avoiding patrols, and choosing when to strike. Rambo can arm himself with a knife, bow and arrows—including explosive variants—and an M16 rifle, each weapon offering different risks and rewards. A standout mechanic is how noise affects enemy behaviour. Loud weapons attract reinforcements, encouraging a more considered approach and rewarding those who balance stealth with aggression. Limited lives and tough enemy placement make every encounter feel high stakes.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rambo: First Blood Part II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QGqZ7kFO0iI" data-video-id="QGqZ7kFO0iI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rambo: First Blood Part II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QGqZ7kFO0iI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rambo: First Blood Part II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QGqZ7kFO0iI" data-video-id="QGqZ7kFO0iI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QGqZ7kFO0iI" target="_blank" rel="noopener">Open on YouTube</a>

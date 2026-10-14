@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Flying Feathers (1984) – Commodore 64 Arcade Shooter Fish-Defence Classic Released in 1984 by T. Owen and published by Bubble Bus Software for the Commodore 64, Flying Feathers is a fast-paced arcade-style shooter that challenges you to protect helpless fish from relentless swooping eagles. Taking control of a warden in a small boat, you use a crosshair to shoot down incoming birds before they can steal their prey. Gameplay takes place on a single screen, where quick reactions and accurate shooting are essential. You begin with five fish to defend, and even if an eagle manages to grab one, well-timed shots can force it to drop the fish back into the water. After a set time, a passing duck and her family provide an extra fish, giving you a valuable second chance to extend their run.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Flying Feathers C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/z9wZ-ckCC8g" data-video-id="z9wZ-ckCC8g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Flying Feathers video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/z9wZ-ckCC8g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Flying Feathers C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/z9wZ-ckCC8g" data-video-id="z9wZ-ckCC8g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=z9wZ-ckCC8g" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Pinball Dreams (1992) – Commodore Amiga Classic Pinball Simulation Released in 1992 by Digital Illusions for the Commodore Amiga, Pinball Dreams is a landmark pinball simulation and one of the earliest titles from the studio that would later become DICE. It set a new standard for realism, presentation, and table design on home computers. The game features four expertly crafted tables, each with its own theme and rule set. Ignition is built around space travel and rocket launches, Steel Wheel takes inspiration from the Old West with steam trains and frontier imagery, Beat Box reflects the music industry with charts and touring bands, while Nightmare delivers a dark graveyard setting filled with supernatural elements. Gameplay focuses on precise flipper control, table knowledge, and chaining bonuses through skilful shots. Each table introduces unique mechanics and scoring strategies, encouraging players to learn layouts thoroughly and aim for high-risk, high-reward play.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Pinball Dreams Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ib_js5qBqgY" data-video-id="Ib_js5qBqgY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Pinball Dreams video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Ib_js5qBqgY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Pinball Dreams Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Ib_js5qBqgY" data-video-id="Ib_js5qBqgY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Ib_js5qBqgY" target="_blank" rel="noopener">Open on YouTube</a>

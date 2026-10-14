@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Action Service (1989) – Commodore 64 Military Training Simulation Classic Released in 1989 by CobraSoft for the Commodore 64, Action Service is an ambitious military training simulation, also known in North America as Combat Course. Players step into the boots of a trainee soldier, facing a series of demanding exercises designed to test endurance, reflexes, and tactical awareness. The game uses a split-screen interface, with the upper display showing vital status information and the lower section presenting the action. Gameplay centres on completing structured training modules, including obstacle courses, combat drills, and manoeuvre challenges that require precise timing and coordination. Players must master a wide range of actions such as running, crawling, jumping, and weapon handling in order to progress. Each course demands careful control and planning, rewarding patience and disciplined execution over fast reflexes alone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Action Service C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iC5l_D9c0II" data-video-id="iC5l_D9c0II"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Action Service video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iC5l_D9c0II/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Action Service C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iC5l_D9c0II" data-video-id="iC5l_D9c0II"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iC5l_D9c0II" target="_blank" rel="noopener">Open on YouTube</a>

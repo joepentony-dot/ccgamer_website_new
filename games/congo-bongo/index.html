@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Congo Bongo (1983) – Commodore 64 Isometric Arcade Platform Adventure Originally released in arcades in 1983 by Sega, Congo Bongo is an isometric platform game that puts you in the role of a wronged safari explorer seeking revenge on the mischievous ape Bongo. After your camp is destroyed, the chase takes you through a series of hazard-filled environments viewed from a distinctive angled perspective. Gameplay revolves around timing and positioning as you climb cliffs while dodging coconuts, cross swamps by hopping between hippos and lily pads, and avoid aggressive wildlife along the way. The isometric viewpoint adds depth and challenge, requiring careful judgement of jumps and movement. The Commodore 64 saw two notable versions. The early 1983 release included only the first two stages, trimmed back to suit hardware limits. A later 1985 European release by U.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Congo Bongo C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/3W1e4Smi7vs" data-video-id="3W1e4Smi7vs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Congo Bongo video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/3W1e4Smi7vs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Congo Bongo C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/3W1e4Smi7vs" data-video-id="3W1e4Smi7vs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=3W1e4Smi7vs" target="_blank" rel="noopener">Open on YouTube</a>

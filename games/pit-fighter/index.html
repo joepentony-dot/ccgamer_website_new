@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Pit-Fighter (1991) – Commodore 64 Arcade Fighting Brawler Released in 1991 for the Commodore 64, Pit-Fighter brings the raw intensity of underground combat to home computers. Developed by Atari Games and ported by Ocean Software, it delivers a gritty, arcade-style brawler where brutal one-on-one fights take place in hostile arenas packed with danger. The game mixes classic beat-’em-up mechanics with digitised fighters, a bold technical move at the time. You can choose from three distinct characters, each with their own fighting style and special moves, and battle through a roster of hard-hitting opponents ranging from street brawlers to trained martial artists. While the C64 version can’t fully match the visual impact of the arcade machine, it still captures the aggressive feel and fast-paced combat that made Pit-Fighter stand out. The action remains fluid, with colourful sprites and punchy animations keeping fights lively and unpredictable.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Pit-Fighter C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/5Srsb1xM1bc" data-video-id="5Srsb1xM1bc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Pit-Fighter video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/5Srsb1xM1bc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Pit-Fighter C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/5Srsb1xM1bc" data-video-id="5Srsb1xM1bc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=5Srsb1xM1bc" target="_blank" rel="noopener">Open on YouTube</a>

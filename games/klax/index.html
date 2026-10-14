@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Klax (1990) – Commodore 64 Arcade Tile-Matching Puzzle Challenge Released in 1990 by Atari Games and published by Domark for the Commodore 64, Klax is a fast-thinking puzzle game that puts reflexes and pattern recognition to the test. Adapted from the arcade hit, it delivers a fresh twist on tile-matching at a time when the genre was rapidly evolving. Gameplay revolves around catching coloured tiles as they slide down a conveyor belt and stacking them to form rows, columns, or diagonals of matching colours. Points are awarded for completed patterns, but poor placement can quickly lead to stack overflow and an abrupt game over. As levels progress, speed increases and decision-making becomes increasingly demanding. The Commodore 64 version successfully captures the addictive core of the arcade original, combining simple controls with rising pressure and satisfying scoring chains.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Klax C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6zKBOsnJkvA" data-video-id="6zKBOsnJkvA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Klax video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6zKBOsnJkvA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Klax C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6zKBOsnJkvA" data-video-id="6zKBOsnJkvA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6zKBOsnJkvA" target="_blank" rel="noopener">Open on YouTube</a>

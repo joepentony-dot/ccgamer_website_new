@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Wizard of Wor (1983) – Commodore 64 Co-Op Maze Shooter Arcade Classic Released in 1983 by CBS Electronics and developed by Dave Nutting Associates, Wizard of Wor is a top-down maze shooter that quickly became a standout title on the Commodore 64. You control armoured “Worriors” battling through dungeon-style arenas filled with aggressive monsters and constant pressure. Gameplay focuses on clearing each maze by eliminating enemies such as Burwors, Garwors, and the fast-moving Thorwors, all with distinct movement patterns. Once a maze is cleared, the deadly Worluk appears, followed by the Wizard of Wor himself, taunting you with digitised speech. A radar system helps track invisible enemies, while special stages like The Arena and The Pit introduce additional twists. The game shines in cooperative two-player mode, where teamwork and positioning become just as important as shooting accuracy.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Wizard Of Wor C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/E9zwNkSIFBc" data-video-id="E9zwNkSIFBc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Wizard Of Wor video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/E9zwNkSIFBc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Wizard Of Wor C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/E9zwNkSIFBc" data-video-id="E9zwNkSIFBc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=E9zwNkSIFBc" target="_blank" rel="noopener">Open on YouTube</a>

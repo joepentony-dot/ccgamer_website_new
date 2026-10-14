@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Android Nim (1982) – Commodore 64 Puzzle Strategy Mind Game Released in 1982 by Courbois Software for the Commodore 64, Android Nim is a clever one-player adaptation of the classic Nim strategy game, later redeveloped in 1985 by Don Dennis and Pete Gerrard for Argus Press Software and 64 Tape Computing. You face off against an android opponent, taking turns to remove figures from multiple stacks, with the goal of forcing the computer to take the final piece. Each turn is enhanced by animated android characters that move, aim, and react before making their choice, adding personality and tension to an otherwise minimalist puzzle format. The game supports both keyboard and joystick control, allowing players to carefully calculate winning positions and engage in a pure battle of logic and foresight. Its intelligent AI and clear presentation make every match feel like a genuine mental duel, rewarding players who learn optimal strategies.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Android Nim C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/C2kMyPfgFX8" data-video-id="C2kMyPfgFX8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Android Nim video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/C2kMyPfgFX8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Android Nim C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/C2kMyPfgFX8" data-video-id="C2kMyPfgFX8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=C2kMyPfgFX8" target="_blank" rel="noopener">Open on YouTube</a>

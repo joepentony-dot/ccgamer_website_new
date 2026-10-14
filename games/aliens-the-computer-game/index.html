@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Aliens: The Computer Game (1986) – Commodore 64 Action-Strategy Movie Tie-In Released in 1986 for the Commodore 64, Aliens: The Computer Game arrived in two distinct versions. The US release was developed by Activision, while the European version was handled by Software Studios and published by Electric Dreams. Both were based on James Cameron’s Aliens, but each took a very different approach to translating the film onto 8-bit hardware. The Activision version is built around six mini-missions that mirror key moments from the movie. These range from piloting the Sulaco dropship and navigating air-duct mazes to managing a squad of marines and confronting the Alien Queen. Gameplay switches between fast joystick-driven action and tactical decision-making inside the Mobile Tactical Operations Bay, where you monitor stamina, ammunition, and marine status. Exploration plays a major role, with a sprawling maze of up to 255 rooms filled with aliens, acid pools, and limited resources.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Aliens: The Computer Game C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/sCn0FCZBbAU" data-video-id="sCn0FCZBbAU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Aliens: The Computer Game video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/sCn0FCZBbAU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Aliens: The Computer Game C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/sCn0FCZBbAU" data-video-id="sCn0FCZBbAU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=sCn0FCZBbAU" target="_blank" rel="noopener">Open on YouTube</a>

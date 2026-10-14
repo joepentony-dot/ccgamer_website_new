@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Prince Clumsy (1990) – Commodore 64 Comedy Platformer Ghosts ’n Goblins Spoof Released in 1990 by Codemasters, Prince Clumsy is a tongue-in-cheek platformer that playfully pokes fun at the Ghosts ’n Goblins formula. You guide the hopelessly accident-prone Prince Clumsy on a quest to rescue the princess from her evil sister, armed with an unlimited supply of throwing daggers and very little dignity. The game keeps things approachable with smooth, forgiving jumping and straightforward combat, making it far less punishing than its inspirations. Along the way you’ll battle zombies, grim reapers, and other familiar foes while collecting bread and ale to restore health and avoiding hazards like poison and sticky traps. Levels are designed to be readable and welcoming, encouraging steady progress rather than memorisation. The light-hearted tone runs throughout, helped along by Allister Brimble’s upbeat music, which perfectly matches the game’s playful mood.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Prince Clumsy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Qi0EvV7mkeA" data-video-id="Qi0EvV7mkeA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Prince Clumsy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Qi0EvV7mkeA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Prince Clumsy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Qi0EvV7mkeA" data-video-id="Qi0EvV7mkeA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Qi0EvV7mkeA" target="_blank" rel="noopener">Open on YouTube</a>

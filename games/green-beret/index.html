@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Green Beret (1986) – Commodore 64 Side-Scrolling Military Action Released in 1986 by Konami and published on the Commodore 64 by Imagine Software, Green Beret is a fast-moving side-scrolling action game set against a Cold War backdrop. You take control of an elite soldier tasked with infiltrating enemy territory and rescuing prisoners of war from heavily guarded installations. Gameplay focuses on forward momentum and precision combat. Starting with only a knife, you must defeat enemy troops, avoid traps, and survive relentless attacks while pushing through locations such as missile bases, harbours, bridges, and prison camps. Additional weapons including grenades, bazookas, and flamethrowers provide brief power boosts, but timing and positioning remain critical throughout. The Commodore 64 version delivers confident scrolling and tightly tuned enemy patterns that keep the pressure high. Martin Galway’s powerful soundtrack adds urgency and atmosphere, driving the action forward and standing out as one of the game’s most memorable elements.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Green Beret C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QIXiO2FzV-Y" data-video-id="QIXiO2FzV-Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Green Beret video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QIXiO2FzV-Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Green Beret C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QIXiO2FzV-Y" data-video-id="QIXiO2FzV-Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QIXiO2FzV-Y" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zaxxon (1984) – Commodore 64 Isometric Shoot ’Em Up Arcade Classic Released in 1984 by Sega and ported to the Commodore 64 by Synapse Software, with European distribution by US Gold, Zaxxon brings one of the most innovative arcade shooters of the early 1980s to home computers. You pilot a futuristic spacecraft on a dangerous assault through a heavily fortified enemy fortress. The game’s defining feature is its isometric perspective, which creates a pseudo-3D battlefield unlike most traditional vertical or horizontal shooters. You must constantly manage altitude and positioning, weaving between walls, fuel tanks, gun turrets, and enemy fire while maintaining forward momentum. Progression depends on precise control, spatial awareness, and careful resource management. Fuel must be conserved, shots timed accurately, and key targets destroyed in order to reach the later stages and complete each mission successfully.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zaxxon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/h3H0HBVtIpY" data-video-id="h3H0HBVtIpY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zaxxon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/h3H0HBVtIpY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zaxxon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/h3H0HBVtIpY" data-video-id="h3H0HBVtIpY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=h3H0HBVtIpY" target="_blank" rel="noopener">Open on YouTube</a>

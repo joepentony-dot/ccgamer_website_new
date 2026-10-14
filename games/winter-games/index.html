@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Winter Games (1985) – Commodore 64 Olympic Multi-Sport Classic Released in 1985 by Epyx, Winter Games brings the spectacle and pressure of Olympic winter sports to the Commodore 64. As the third entry in the celebrated Games series, it builds on the rhythm-based action and competitive spirit that made its predecessors so popular. You compete across a selection of demanding winter events including ski jump, bobsled, speed skating, biathlon, figure skating, and freestyle aerials. Each discipline has its own control style and timing challenges, rewarding practice, precision, and nerve under pressure. Players can represent one of 18 countries and take part in individual events or full competitions, chasing high scores and medals. Presentation plays a big role, with an opening ceremony featuring flags and national anthems that adds atmosphere and a real sense of occasion.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Winter Games C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hUSaXcNHXuc" data-video-id="hUSaXcNHXuc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Winter Games video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hUSaXcNHXuc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Winter Games C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hUSaXcNHXuc" data-video-id="hUSaXcNHXuc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hUSaXcNHXuc" target="_blank" rel="noopener">Open on YouTube</a>

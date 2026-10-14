@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Lode Runner (1983) – Commodore 64 Puzzle Platforming Masterpiece Released in 1983 by Broderbund for the Commodore 64 and created by Doug Smith, Lode Runner is a landmark puzzle-platformer that redefined the genre. You control a lone runner tasked with collecting all the gold in each level while avoiding relentless enemy guards. The core mechanic that sets Lode Runner apart is the ability to dig temporary holes in the floor. These holes can trap enemies, open new routes, or create vital escape paths, turning every level into a strategic puzzle rather than a test of reflexes alone. Success depends on planning, timing, and understanding enemy behaviour. The Commodore 64 version includes an impressive 150 levels, each introducing new challenges and layouts. Adding to its longevity is a built-in level editor, allowing you to design, save, and share their own creations, greatly expanding replay value and creativity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Lode Runner C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/AuDrD8sbDtM" data-video-id="AuDrD8sbDtM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Lode Runner video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/AuDrD8sbDtM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Lode Runner C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/AuDrD8sbDtM" data-video-id="AuDrD8sbDtM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=AuDrD8sbDtM" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fire King (1989) – Commodore 64 Gauntlet-Style Fantasy Action RPG Released in 1989, Fire King is a Commodore 64 action RPG developed by Australian studio Micro Forté and published by Strategic Studies Group (SSG). Following their earlier game Demon Stalkers, it takes the familiar top-down action of Gauntlet and expands it into a much larger fantasy adventure filled with towns, forests, dungeons, puzzles and plenty of monsters. With the Fire King dead and the four elemental mages scattered, the land surrounding Stormhaven Bay has fallen into danger. Choose from six adventurers, each with different strengths, armour and magical abilities, then set out to explore the countryside, uncover clues and confront the creatures threatening the kingdom. Combat revolves around your trusty crossbow, but there&#39;s considerably more to Fire King than blasting monsters. Magical scrolls, bombs, enchanted bells, special boots and hidden passages all play a part, while shops let you buy and sell useful equipment.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fire King C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9Wlh2bEIRWM" data-video-id="9Wlh2bEIRWM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fire King video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9Wlh2bEIRWM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fire King C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9Wlh2bEIRWM" data-video-id="9Wlh2bEIRWM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9Wlh2bEIRWM" target="_blank" rel="noopener">Open on YouTube</a>

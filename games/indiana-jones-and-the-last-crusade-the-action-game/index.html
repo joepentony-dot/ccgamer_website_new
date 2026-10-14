@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Indiana Jones and the Last Crusade: The Action Game (1989) – Commodore 64 Movie Platform Adventure Released in 1989 by U. S. Gold and developed by Tiertex, Indiana Jones and the Last Crusade: The Action Game brings the blockbuster film to the Commodore 64 as a fast-moving platform adventure. You take control of Indy as he races across iconic locations in a quest to recover the Holy Grail and save his father. The game is split into five stages inspired directly by the movie, including the caves of Utah, the circus train, Venetian catacombs, Castle Grunwald, a zeppelin showdown, and the final Grail challenge. Each level mixes combat, timing-based platforming, and light puzzle elements. Indy’s whip is central to gameplay, used both as a weapon and a traversal tool for swinging across gaps. Hand-to-hand combat and environmental hazards keep pressure high, while exploration is needed to progress safely through each section.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Indiana Jones And The Last Crusade: The Action Game C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/RB_niOGheF8" data-video-id="RB_niOGheF8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Indiana Jones And The Last Crusade: The Action Game video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/RB_niOGheF8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Indiana Jones And The Last Crusade: The Action Game C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/RB_niOGheF8" data-video-id="RB_niOGheF8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=RB_niOGheF8" target="_blank" rel="noopener">Open on YouTube</a>

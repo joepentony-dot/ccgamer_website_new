@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Everyone’s a Wally (1985) – Commodore 64 Arcade Adventure Town Life Classic Released in 1985 for the Commodore 64, Everyone’s a Wally is an arcade adventure developed by Chris Hinsley and published by Mikro-Gen. Acting as a follow-up to Pyjamarama, the game expands the world of Wally Week, a builder trying to get through a hectic day alongside his family and friends. The action takes place across a lively town made up of more than 30 locations, including streets, shops, offices, and public buildings. You can switch between five characters — Wally, his wife Wilma, and friends Tom, Dick, and Harry — each with their own jobs to complete. Progress depends on managing time, energy levels, and movement efficiently across the map. Each completed task earns a letter, and collecting them all reveals the password needed to open the bank safe and collect everyone’s wages.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Everyone&#39;s A Wally C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/WB7474YJs3k" data-video-id="WB7474YJs3k"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Everyone&#39;s A Wally video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/WB7474YJs3k/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Everyone&#39;s A Wally C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/WB7474YJs3k" data-video-id="WB7474YJs3k"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=WB7474YJs3k" target="_blank" rel="noopener">Open on YouTube</a>

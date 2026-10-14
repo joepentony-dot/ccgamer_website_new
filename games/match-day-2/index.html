@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Match Day II (1987) – Commodore 64 Classic 8-Bit Football Simulation Released in 1987 by Ocean Software, Match Day II is a landmark football simulation for the Commodore 64 that built upon and refined the foundations laid by the original Match Day. Developed by Jon Ritman, with graphics by Bernie Drummond and music by Guy Stevens, the game introduced new systems that significantly raised the bar for 8-bit sports titles. The game offers league and cup competitions for up to eight teams, alongside quick exhibition matches. Played with seven players per side, Match Day II allows direct control of the goalkeeper, adding an extra tactical layer rarely seen at the time. The action is fast, fluid, and highly responsive, rewarding anticipation and positioning rather than simple button-bashing. A defining innovation is the Diamond Deflection System, which calculates realistic ball rebounds based on angle and impact, creating unpredictable and natural-feeling play.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Match Day II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XpZnZ3LtZao" data-video-id="XpZnZ3LtZao"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Match Day II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/XpZnZ3LtZao/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Match Day II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/XpZnZ3LtZao" data-video-id="XpZnZ3LtZao"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=XpZnZ3LtZao" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Super Cycle (1986) – Commodore 64 Arcade Motorcycle Racing Speed Classic Released in 1986 by Epyx for the Commodore 64, Super Cycle is a high-speed motorcycle racing game inspired by Sega’s arcade hit Hang-On. It delivers an intense sense of speed and urgency as you race against the clock across a variety of challenging courses. The game is presented from a behind-the-bike perspective, allowing you to lean into corners, weave through traffic, and react quickly to changing track conditions. This viewpoint enhances immersion and makes every race feel fast, fluid, and demanding. You can select from multiple skill levels, each adjusting the available time limits and bonus rewards. As the game progresses, tracks become increasingly complex, introducing hazards such as oil slicks and rival riders that require sharp reflexes and precise control. Super Cycle stands out for its responsive handling, smooth scrolling, and effective use of simple yet expressive graphics to convey speed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Super Cycle C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/S26tyXppNgw" data-video-id="S26tyXppNgw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Super Cycle video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/S26tyXppNgw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Super Cycle C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/S26tyXppNgw" data-video-id="S26tyXppNgw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=S26tyXppNgw" target="_blank" rel="noopener">Open on YouTube</a>

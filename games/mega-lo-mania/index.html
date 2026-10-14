@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Mega Lo Mania (1991) – Commodore Amiga God-Game Real-Time Strategy Classic Released in 1991 by Sensible Software for the Commodore Amiga, Mega Lo Mania is a distinctive real-time strategy game that fuses god-game concepts with tactical warfare. Players take control of one of four rival deities—Scarlet, Oberon, Caesar, or Madcap—each leading their civilisation through ten technological epochs, from 9500 BC into the far future. Gameplay revolves around managing people, resources, and progression while competing gods fight for dominance across a series of islands. Each map is divided into sectors, forcing careful decisions about where to gather minerals, develop weapons, and position armies. Timing is critical, as advancing through epochs unlocks stronger units and new capabilities that can quickly shift the balance of power. Combat plays out in real time, with players deploying forces to attack enemy territory or defend their own sectors.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mega Lo Mania Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9hT9FNM3LYI" data-video-id="9hT9FNM3LYI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mega Lo Mania video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9hT9FNM3LYI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mega Lo Mania Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9hT9FNM3LYI" data-video-id="9hT9FNM3LYI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9hT9FNM3LYI" target="_blank" rel="noopener">Open on YouTube</a>

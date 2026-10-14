@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Miami Vice (1986) – Commodore 64 Action Crime Adventure Based on the TV Series Released in 1986 by Ocean Software for the Commodore 64 and developed by Canvas Software, Miami Vice is an action-adventure title inspired by the hugely popular 1980s television series. You take on the roles of detectives Sonny Crockett and Ricardo Tubbs as they attempt to dismantle a major drug operation led by the mysterious criminal known as “Mr. J.” Gameplay is split into two distinct sections. The first involves top-down driving sequences, where you navigate a city map to reach crime scenes and suspect hideouts. These segments are notoriously challenging, with awkward steering, tight time limits, and frequent crashes making navigation a major test of patience and precision. Once a destination is reached, the game shifts into side-scrolling action stages.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Miami Vice C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QCV_aBACY2c" data-video-id="QCV_aBACY2c"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Miami Vice video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QCV_aBACY2c/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Miami Vice C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QCV_aBACY2c" data-video-id="QCV_aBACY2c"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QCV_aBACY2c" target="_blank" rel="noopener">Open on YouTube</a>

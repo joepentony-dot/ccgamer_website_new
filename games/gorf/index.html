@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ GORF (1983) – Commodore 64 Multi-Stage Fixed Shooter Arcade Classic Released in 1983 for the Commodore 64, GORF is a home conversion of the 1981 arcade hit originally developed by Dave Nutting Associates and produced by Midway, with its name standing for Galactic Orbiting Robot Force. You pilot a starship in a series of fixed-screen shooting missions, combining fast reflexes with tactical positioning in the lower portion of the screen. The game features four distinct mission styles inspired by classics such as Space Invaders, Galaxian, and Phoenix, creating a varied and constantly evolving arcade experience. A unique gameplay mechanic allows the quark laser to cancel existing shots when fired again, adding an extra layer of strategy to defensive play. Stages range from classic alien formations to hyperspace warp sequences and intense boss encounters, keeping each round fresh and challenging.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gorf C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/etQAugbU4aI" data-video-id="etQAugbU4aI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gorf video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/etQAugbU4aI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gorf C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/etQAugbU4aI" data-video-id="etQAugbU4aI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=etQAugbU4aI" target="_blank" rel="noopener">Open on YouTube</a>

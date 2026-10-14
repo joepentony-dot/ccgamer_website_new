@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spy vs. Spy II: The Island Caper (1985) – Commodore 64 Tactical Action Strategy Sequel Released in 1985 by First Star Software for the Commodore 64, Spy vs. Spy II: The Island Caper expands on the original’s devious formula by moving the action to a dangerous tropical island. You play as either the Black Spy or the White Spy, locked in a race to outwit your rival and escape before disaster strikes. This time, the island scrolls horizontally, opening up the world and introducing new hazards such as quicksand, sharks, and deadly terrain. Your goal is to locate three missile parts hidden across the island, assemble them, and escape via submarine before a volcano erupts. Strategy plays a bigger role thanks to the ability to craft traps using materials found in the environment. Careful planning, timing, and misdirection are just as important as speed, especially when laying traps for your opponent.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spy Vs Spy II: The Island Caper C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1Lgh57Zaug4" data-video-id="1Lgh57Zaug4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spy Vs Spy II: The Island Caper video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1Lgh57Zaug4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spy Vs Spy II: The Island Caper C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1Lgh57Zaug4" data-video-id="1Lgh57Zaug4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1Lgh57Zaug4" target="_blank" rel="noopener">Open on YouTube</a>

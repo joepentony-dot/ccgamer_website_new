@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Last Ninja (1987) – Commodore 64 Isometric Action-Adventure Classic Released in 1987 by System 3 for the Commodore 64, The Last Ninja is a landmark action-adventure that pushed the machine to its limits. You play as Armakuni, the sole survivor of a destroyed ninja clan, on a quest for revenge against the evil shogun Kunitoki and the recovery of a sacred scroll. The adventure unfolds across six large isometric levels, ranging from serene gardens to dangerous wastelands, underground dungeons, and Kunitoki’s heavily guarded palace. Movement is deliberate and precise, with narrow paths, traps, and environmental hazards demanding careful control and spatial awareness. Combat is unusually deep for its time, allowing you to strike enemies at different body areas using a combination of direction and timing. A wide selection of ninja weapons—including the ninjato, nunchaku, staff, shuriken, and smoke bombs—adds tactical variety, while puzzles and hidden items encourage exploration and observation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Last Ninja C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/npAyIErZWJc" data-video-id="npAyIErZWJc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Last Ninja video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/npAyIErZWJc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Last Ninja C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/npAyIErZWJc" data-video-id="npAyIErZWJc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=npAyIErZWJc" target="_blank" rel="noopener">Open on YouTube</a>

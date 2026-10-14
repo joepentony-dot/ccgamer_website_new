@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Curse of the Azure Bonds (1989) – Commodore 64 AD&amp;D Role-Playing Classic Released in 1989 by Strategic Simulations Inc. for the Commodore 64, Curse of the Azure Bonds is a classic role-playing game and the acclaimed follow-up to Pool of Radiance in the legendary Gold Box AD&amp;D series. Players build and command a party of adventurers as they journey through the Forgotten Realms, uncovering the mystery of the magical “azure bonds” marked on their arms. The game blends exploration, questing, and tactical turn-based combat. Gameplay alternates between first-person dungeon crawling and overhead battlefield encounters, delivering the deep strategic feel that defined the Gold Box engine. Careful party management, spell selection, and positioning are essential for survival. The game expands on its predecessor with richer quests, more character classes, and improved balance, including options such as paladins and rangers.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Curse of the Azure Bonds C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Yp9LAgnCU28" data-video-id="Yp9LAgnCU28"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Curse of the Azure Bonds video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Yp9LAgnCU28/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Curse of the Azure Bonds C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Yp9LAgnCU28" data-video-id="Yp9LAgnCU28"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Yp9LAgnCU28" target="_blank" rel="noopener">Open on YouTube</a>

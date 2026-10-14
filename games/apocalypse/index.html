@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Apocalypse (1994) – Commodore Amiga Helicopter Shoot ’Em Up Jungle Warfare Released in 1994 by Miracle Games for the Commodore Amiga, Apocalypse is a helicopter-based shoot ’em up inspired by classics like Choplifter. You take control of a combat chopper flying deep into hostile jungle territory, tasked with rescuing prisoners of war while dismantling enemy defences. Gameplay unfolds across fast-moving, multi-scrolling missions featuring parallax jungle backdrops and constant pressure from tanks, enemy helicopters, watchtowers, and heavy artillery. Success depends on precise control, careful positioning, and knowing when to press the attack or pull back to stay alive. Each mission challenges you to balance rescue objectives with aggressive combat, all while navigating tight terrain and deadly hazards that punish even small mistakes. Instant-death threats demand sharp reflexes and disciplined flying rather than reckless firepower. Short but intense, Apocalypse delivers a focused burst of Amiga-era action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Apocalypse Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/VGQ2Hwuls2Y" data-video-id="VGQ2Hwuls2Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Apocalypse video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/VGQ2Hwuls2Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Apocalypse Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/VGQ2Hwuls2Y" data-video-id="VGQ2Hwuls2Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=VGQ2Hwuls2Y" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Indiana Jones in the Lost Kingdom (1984) – Commodore 64 Puzzle Adventure with a Twist Released in 1984 by Mindscape and developed by Michael J. Hanson, Indiana Jones in the Lost Kingdom is a puzzle-driven adventure for the Commodore 64 that stands apart from other Indy games by telling a completely original story. Rather than following a film plot, you guide Indiana Jones through a mysterious lost kingdom in a race against rival archaeologist Ivar Reiss to recover a powerful artifact. The game is deliberately cryptic, offering almost no instructions and expecting you to work things out through experimentation and observation. Each of the six levels introduces new ideas and challenges, forcing you to think logically, test assumptions, and adapt your approach as the rules subtly change. Unlike many puzzle games of the era, progress depends less on reflexes and more on insight.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Indiana Jones In The Lost Kingdom C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/P8_G0sl2yis" data-video-id="P8_G0sl2yis"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Indiana Jones In The Lost Kingdom video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/P8_G0sl2yis/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Indiana Jones In The Lost Kingdom C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/P8_G0sl2yis" data-video-id="P8_G0sl2yis"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=P8_G0sl2yis" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Booty (1984) – Commodore 64 Pirate Platform Adventure Classic Released in 1984 by Firebird and developed by Kevin A. Moughtin, Booty is a classic platform adventure that casts you as Jim the Cabin Boy, sneaking around a pirate ship to steal treasure from his ruthless masters. Set entirely aboard the ship, the game challenges you to outwit pirates and hazards across a network of interconnected rooms. Gameplay takes place on fixed-screen platform layouts linked by ladders and doors. Each of the 20 rooms is packed with treasure to collect, alongside roaming pirates, parrots, and dangerous booby-trapped items that must be avoided at all costs. Contact with enemies is unforgiving, costing one of Jim’s limited lives. Once all treasure in a room has been collected, the pressure ramps up with a strict 45-second countdown to locate a final key and escape to the next area.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Booty C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xgBiHkdAfZI" data-video-id="xgBiHkdAfZI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Booty video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xgBiHkdAfZI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Booty C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xgBiHkdAfZI" data-video-id="xgBiHkdAfZI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xgBiHkdAfZI" target="_blank" rel="noopener">Open on YouTube</a>

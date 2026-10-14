@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Transformers (1985) – Commodore 64 Platform Shooter with Iconic Autobots Released in 1985 by Ocean Software and developed by Denton Designs, The Transformers brings the hugely popular toy line and animated series to the Commodore 64 in an ambitious action-platform adventure. You control a team of five Autobots—Optimus Prime, Hound, Jazz, Mirage, and Bumblebee—tasked with stopping the Decepticons by recovering the scattered parts of an energon cube. Gameplay unfolds across a sprawling cityscape filled with platforms, ladders, and hostile enemies. Each Autobot has distinct strengths in power, shields, and weapons, encouraging strategic switching via Defensa-Pods placed throughout the map. Choosing the right character at the right time is key, whether it’s Optimus Prime’s brute strength or Bumblebee’s ability to access tighter spaces. Combat is relentless, with Decepticons such as Megatron, Starscream, and Soundwave constantly respawning to apply pressure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Transformers C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wnEkRaXDjp8" data-video-id="wnEkRaXDjp8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Transformers video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wnEkRaXDjp8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Transformers C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wnEkRaXDjp8" data-video-id="wnEkRaXDjp8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wnEkRaXDjp8" target="_blank" rel="noopener">Open on YouTube</a>

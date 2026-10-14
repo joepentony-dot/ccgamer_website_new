@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ International Basketball (1984) – Commodore 64 Fast-Paced Arcade Basketball Released in 1984 by Andrew B. Spencer and published by Commodore for the Commodore 64, International Basketball is an early attempt to bring the speed and excitement of basketball to home computers. Focusing on arcade-style action rather than deep simulation, it delivers quick matches that are easy to pick up and play. Games are played in a 3-on-3 format using a side-scrolling view, with support for both single-player and two-player modes. You can select different difficulty levels and choose between NBA, NCAA, or international rule sets, adding welcome variety to each match. Passing, shooting, and stealing all rely on sharp timing and positioning, keeping the action lively and competitive. While later basketball games would expand on realism and depth, International Basketball remains a nostalgic and important early sports title on the C64, remembered for capturing the spirit of fast, arcade-style basketball.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="International Basketball C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GfX__b1Is4k" data-video-id="GfX__b1Is4k"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play International Basketball video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GfX__b1Is4k/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="International Basketball C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GfX__b1Is4k" data-video-id="GfX__b1Is4k"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GfX__b1Is4k" target="_blank" rel="noopener">Open on YouTube</a>

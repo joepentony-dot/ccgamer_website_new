@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nemesis the Warlock (1987) – Commodore 64 Action Platform Comic Book Classic Released in 1987 by Martech for the Commodore 64, Nemesis the Warlock is an action platform game based on the iconic 2000 AD comic series created by Pat Mills and Kevin O’Neill. Developed by Creative Reality, the game brings the dark sci-fi world of Nemesis to life in fast-paced 8-bit form. You take control of Nemesis, a powerful alien warrior armed with both a gun and a sword, battling through 30 single-screen levels packed with enemies and hazards. Progress depends on defeating a required number of Terminators on each stage, encouraging aggressive and tactical play. One of the game’s most distinctive mechanics is the ability to pile up defeated enemies and use their bodies as makeshift platforms. This unusual feature adds a strategic layer to level navigation and sets Nemesis apart from traditional platformers of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nemesis The Warlock C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/mj0JzR0OeVQ" data-video-id="mj0JzR0OeVQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nemesis The Warlock video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/mj0JzR0OeVQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nemesis The Warlock C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/mj0JzR0OeVQ" data-video-id="mj0JzR0OeVQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=mj0JzR0OeVQ" target="_blank" rel="noopener">Open on YouTube</a>

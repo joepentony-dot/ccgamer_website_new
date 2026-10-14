@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Wasteland is a 1988 Commodore 64 post-apocalyptic role-playing adventure developed by Interplay Productions and published by Electronic Arts. Set in 2087 after nuclear war, it follows the Desert Rangers as they investigate disturbances across the American Southwest. Explore Highpool, the Agricultural Centre, Quartz, Needles and Las Vegas in a largely open-ended world where decisions and discoveries can permanently affect locations. Create a squad or lead Hell Razor, Angela Deth, Thrasher and Snake Vargas; develop weapon, medical, lock-picking, perception and technical skills, recruit companions and command turn-based battles using the keyboard. The original two-disk, four-side release also used a printed paragraph book to expand its story beyond the computer&#39;s memory. Celebrated for its scale and player freedom, Wasteland helped inspire the later Fallout series. Its early encounters can be unforgiving, but its intricate systems and enormous world reward patient exploration.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Wasteland C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7Cn_7PWy3_w" data-video-id="7Cn_7PWy3_w"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Wasteland video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7Cn_7PWy3_w/hqdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Wasteland C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7Cn_7PWy3_w" data-video-id="7Cn_7PWy3_w"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7Cn_7PWy3_w" target="_blank" rel="noopener">Open on YouTube</a>

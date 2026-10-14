@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Stifflip &amp; Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip &amp; Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire rather seriously. You control four different characters — Viscount Sebastian Stifflip, Professor Braindeath, Colonel R. G. Bargie and Miss Palmyra Primbottom — as they attempt to stop the dastardly Count Chameleon. Count Chameleon&#39;s latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber. Naturally, his grand plan involves using it against cricket balls, potentially destroying the game and apparently bringing the British Empire down with it. You couldn&#39;t accuse Stifflip &amp; Co of lacking ambition. Rather than controlling just one hero, you can switch between all four members of the group, with different characters and abilities needed to solve the game&#39;s puzzles.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Stifflip &amp; Co. C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/zqqIctCq73o" data-video-id="zqqIctCq73o"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Stifflip &amp; Co. video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/zqqIctCq73o/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Stifflip &amp; Co. C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/zqqIctCq73o" data-video-id="zqqIctCq73o"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=zqqIctCq73o" target="_blank" rel="noopener">Open on YouTube</a>

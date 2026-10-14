@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ California Games (1987) – Commodore 64 Multi-Event Sports Sunshine Classic Released in 1987 by Epyx, California Games takes the multi-event formula of Summer Games and Winter Games and reworks it with a laid-back, beach-side vibe. You’re dropped into a colourful celebration of Californian sports culture, where style, timing, and flow matter just as much as raw skill. The game features six distinct events, each with its own controls and rhythm. Half-pipe skateboarding focuses on tricks and balance, footbag is all about keeping the hacky sack airborne, surfing challenges you to read the waves, roller skating demands quick reactions on the boardwalk, BMX mixes racing with jumps, and flying disc tests accuracy and timing. Visually, California Games bursts with colour and personality, capturing the atmosphere of each sport with expressive sprites and smooth animation. The soundtrack adds to the mood, with instantly recognisable tunes like Louie Louie and Wipe Out giving the game a strong identity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="California Games C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/EiqucxYbh_Q" data-video-id="EiqucxYbh_Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play California Games video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/EiqucxYbh_Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="California Games C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/EiqucxYbh_Q" data-video-id="EiqucxYbh_Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=EiqucxYbh_Q" target="_blank" rel="noopener">Open on YouTube</a>

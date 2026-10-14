@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Turrican II: The Final Fight (1991) – Commodore 64 Action Platforming Masterpiece Released in 1991 by Rainbow Arts and developed by Factor 5, Turrican II: The Final Fight is the explosive sequel to one of the Commodore 64’s most celebrated action games. Building on the foundations of the original, it delivers faster gameplay, larger levels, and a far more refined sense of scale and control. You once again step into the role of Turrican, battling through hostile alien worlds in a mission to defeat the menacing Maschinenmensch. The game blends run-and-gun action with platforming and exploration, encouraging you to search for hidden paths, power-ups, and secret areas scattered throughout its sprawling environments. Combat is expanded with a wide range of weapons and abilities, including the iconic multi-directional firing and the powerful wheel form, allowing Turrican to roll through tight spaces and enemies at speed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Turrican II: The Final Fight C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ir4WiCfflKY" data-video-id="Ir4WiCfflKY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Turrican II: The Final Fight video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Ir4WiCfflKY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Turrican II: The Final Fight C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Ir4WiCfflKY" data-video-id="Ir4WiCfflKY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Ir4WiCfflKY" target="_blank" rel="noopener">Open on YouTube</a>

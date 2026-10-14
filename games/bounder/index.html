@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bounder (1986) – Commodore 64 Action Puzzle Isometric Platform Challenge Released in 1986 by Gremlin Graphics for the Commodore 64, Bounder is an inventive action-puzzle game that puts you in control of a constantly bouncing tennis ball navigating a series of suspended platforms high above dangerous voids. The game spans 174 screens across 10 increasingly demanding levels, each built from hexagonal tiles filled with hazards, enemies, and obstacles. You must carefully time each bounce and landing while guiding the ball towards the exit on every screen. Precision and forward planning are essential for survival. Scattered throughout the stages are special tiles that introduce strategic variety, including arrows that propel the ball forward, teleporters that remove sections of the level, and mystery tiles that can either reward or punish you. Completing each stage unlocks a bonus screen, offering extra points and risk-based scoring opportunities.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bounder C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pNczSYUJ4l0" data-video-id="pNczSYUJ4l0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bounder video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pNczSYUJ4l0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bounder C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pNczSYUJ4l0" data-video-id="pNczSYUJ4l0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pNczSYUJ4l0" target="_blank" rel="noopener">Open on YouTube</a>

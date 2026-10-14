@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Thunderbirds (1985) – Commodore 64 Puzzle Adventure Based on the TV Classic Released in 1985 for the Commodore 64, Thunderbirds is a puzzle-adventure game developed by Teque Software and published by Firebird Software. Based on Gerry Anderson’s iconic 1960s TV series, the game places you in control of International Rescue’s most famous vehicles as they tackle a series of logic-based rescue scenarios. Gameplay centres on controlling Thunderbird 1 and Thunderbird 2 within maze-like environments. Progress depends on manipulating coloured blocks to clear routes and solve puzzles, with each vehicle limited to moving specific block types. This creates a deliberate, strategic pace where careful planning is essential to avoid dead ends and complete each screen. The presentation uses a clear top-down perspective, making puzzle layouts easy to read and understand. While the visuals are functional rather than flashy, they suit the methodical gameplay well.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Thunderbirds C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DpUN4oUiDII" data-video-id="DpUN4oUiDII"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Thunderbirds video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DpUN4oUiDII/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Thunderbirds C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DpUN4oUiDII" data-video-id="DpUN4oUiDII"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DpUN4oUiDII" target="_blank" rel="noopener">Open on YouTube</a>

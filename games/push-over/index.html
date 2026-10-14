@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Push-Over (1992) – Commodore Amiga Puzzle Platform Domino Challenge Classic Released in 1992 by Red Rat Software and published by Ocean Software for the Commodore Amiga, Push-Over is a clever puzzle-platform game that puts players in control of G. I. Ant on a mission to recover lost packets of Quavers crisps from a sprawling ant hill. The core gameplay revolves around arranging domino-like slabs to trigger a precise chain reaction. Each level requires careful planning, as every slab must fall in the correct order, with the final domino opening the exit to the next stage. One wrong move can halt progress completely. Across 100 levels set in nine themed worlds, including industrial complexes, Aztec temples, space stations, and medieval castles, the game introduces slabs with special properties such as delays, split paths, and vertical ascents.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Push-Over Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDdtURr1WxU" data-video-id="bDdtURr1WxU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Push-Over video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/bDdtURr1WxU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Push-Over Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/bDdtURr1WxU" data-video-id="bDdtURr1WxU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=bDdtURr1WxU" target="_blank" rel="noopener">Open on YouTube</a>

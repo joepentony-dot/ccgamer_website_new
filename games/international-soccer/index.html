@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ International Soccer (1983) – Commodore 64 Classic Side-On Football Action Released in 1983 by Commodore International for the Commodore 64, International Soccer is a pioneering football game developed by Andrew Spencer. Known in some regions as Cup Final or Voetbal 64, it was one of the first soccer titles to present the action from a realistic side-on perspective, helping to shape the future of sports games on home computers. Matches feature two teams of six players and can be played solo against the computer or head-to-head with a second player. Games are split into two 200-second halves, with no fouls or offside rules, keeping the focus firmly on fast, uninterrupted play. You can choose from six kit colours and even switch to a grayscale mode designed for black-and-white televisions. The gameplay is smooth and responsive, with flowing scrolling and intuitive controls that made it instantly accessible.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="International Soccer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NZvCjld2LGo" data-video-id="NZvCjld2LGo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play International Soccer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NZvCjld2LGo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="International Soccer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NZvCjld2LGo" data-video-id="NZvCjld2LGo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NZvCjld2LGo" target="_blank" rel="noopener">Open on YouTube</a>

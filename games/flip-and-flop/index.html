@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1984 for the Commodore 64 by State Soft, following its original Atari debut in 1983 from First Star Software, Flip &amp; Flop is an isometric action-platformer created by Jim Nangano that blends arcade reflexes with strategic puzzle design. You alternate control between Flip the kangaroo and Mitch the ape, each tackling separate stages built around climbing ladders, navigating 3D-style platforms, and flipping marked tiles. The main objective is to activate every highlighted tile by jumping onto them, sometimes requiring precise double-jumps on higher levels while avoiding a relentless pursuer. Depending on the character, players are chased by either a zookeeper or a creeping net, forcing constant movement and quick decision-making. Sticky tiles act as temporary traps, briefly halting enemies and creating vital breathing space to plan routes and recover control. Every five stages, a short circus-themed interlude provides a playful break before the difficulty increases.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Flip And Flop C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wuZcVW4DTLs" data-video-id="wuZcVW4DTLs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Flip And Flop video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wuZcVW4DTLs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Flip And Flop C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wuZcVW4DTLs" data-video-id="wuZcVW4DTLs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wuZcVW4DTLs" target="_blank" rel="noopener">Open on YouTube</a>

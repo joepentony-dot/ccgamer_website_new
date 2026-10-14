@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Finders Keepers (1985) – Commodore 64 Fantasy Platform Puzzle Adventure Released in 1985 by Mastertronic for the Commodore 64, Finders Keepers marks the debut of David Jones’ Magic Knight series. Set in a playful fantasy world, the game blends platforming, puzzle-solving, and trading mechanics into an experience that was strikingly original for its time. You control the Magic Knight, sent by the King of Isbisima into the Castle of Spriteland to find a suitable birthday present for Princess Germintrude. To earn a seat at the Polygon Table, the knight must explore dangerous rooms, collect treasure, and outwit the castle’s strange inhabitants while avoiding traps and hostile creatures. Gameplay combines flip-screen rooms with scrolling maze sections, split between the Castle Gardens and the Castle Dungeons. Items collected throughout the castle can be traded, combined, or sold, adding a light economic layer that rewards curiosity and experimentation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Finders Keepers C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LVtZ_24DIRU" data-video-id="LVtZ_24DIRU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Finders Keepers video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LVtZ_24DIRU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Finders Keepers C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LVtZ_24DIRU" data-video-id="LVtZ_24DIRU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LVtZ_24DIRU" target="_blank" rel="noopener">Open on YouTube</a>

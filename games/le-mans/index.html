@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ LeMans (1982) – Commodore 64 Top-Down Arcade Racing Pioneer Released in 1982 by HAL Laboratory and published by Commodore, LeMans is one of the earliest racing games available for the Commodore 64 and a showcase of forward-thinking arcade design. Presented from a bird’s-eye view, the game challenges you to overtake traffic at speed while managing risk and precision under constant pressure. The goal is simple but demanding: pass as many cars as possible within a 60-second time limit. Overtaking ten cars cleanly earns a 1,000-point bonus, while reaching 20,000 points extends the race by another minute. Crashes force a pit stop on the left side of the track, resetting your overtake count and costing valuable seconds. LeMans keeps things fresh with changing conditions, including icy roads that affect handling, night stages lit only by headlights, and the notorious LeMans Esses that test steering control.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Le Mans C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ithtzOOdTg8" data-video-id="ithtzOOdTg8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Le Mans video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ithtzOOdTg8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Le Mans C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ithtzOOdTg8" data-video-id="ithtzOOdTg8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ithtzOOdTg8" target="_blank" rel="noopener">Open on YouTube</a>

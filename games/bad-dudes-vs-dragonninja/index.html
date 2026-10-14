@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bad Dudes vs. DragonNinja – Commodore 64 Arcade Beat ’Em Up Originally a Data East arcade game, Bad Dudes vs. DragonNinja made its way to the Commodore 64 as Dragon Ninja, with the European release published by Imagine. The wonderfully daft premise is pure 1980s arcade gaming: President Ronnie has been kidnapped by the Dragon Ninja clan, and only one very bad dude stands between him and a prolonged spell in ninja captivity. The action runs across seven timed stages, taking you through city streets, across the top of a moving truck, into the sewers, through a forest, aboard a freight train, through a cave and finally into the Dragon Ninja’s headquarters. Each stage ends with a boss, including a guest appearance from Data East’s very own fire-breathing Karnov. Combat gives you punches, kicks and jumping attacks, while knives and nunchaku can be picked up along the way.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bad Dudes Vs Dragonninja C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/HhvNn7S2RkU" data-video-id="HhvNn7S2RkU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bad Dudes Vs Dragonninja video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/HhvNn7S2RkU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bad Dudes Vs Dragonninja C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/HhvNn7S2RkU" data-video-id="HhvNn7S2RkU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=HhvNn7S2RkU" target="_blank" rel="noopener">Open on YouTube</a>

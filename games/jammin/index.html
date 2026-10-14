@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Jammin’ (1983) – Commodore 64 Music-Themed Action Puzzle Chart Climber Released in 1983 by Taskset Ltd. , Jammin’ is a distinctive action-puzzle game for the Commodore 64 that fuses maze navigation with a strong musical theme. You take control of Rankin Rodney, working their way through 20 levels inspired by the Top 20 music charts. Each stage challenges you to collect four musical instruments and deliver them to their correct locations. Movement is restricted to paths of the same colour, forcing careful route planning, while moving platforms are used to switch between colour zones. Roaming musical notes and other hazards add pressure, demanding precision and timing to complete each level safely. One of Jammin’s standout features is its evolving soundtrack, which changes dynamically as instruments are collected, reinforcing the game’s musical identity and adding a satisfying sense of progression.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jammin&#39; C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/bNomtGOf35M" data-video-id="bNomtGOf35M"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jammin&#39; video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/bNomtGOf35M/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jammin&#39; C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/bNomtGOf35M" data-video-id="bNomtGOf35M"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=bNomtGOf35M" target="_blank" rel="noopener">Open on YouTube</a>

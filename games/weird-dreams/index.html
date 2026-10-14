@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Weird Dreams (1989) – Commodore Amiga Cinematic Surreal Horror Platformer Released in 1989 by Rainbird Software, Weird Dreams is a cinematic platformer that drags you deep into a nightmarish subconscious. You play as Steve, a young man undergoing brain surgery who becomes trapped inside a sequence of hostile dreams shaped by the sinister presence of Zelloripus, a corrupting force linked to his colleague Emily. Each dream world is visually striking and deeply unsettling, ranging from twisted fairgrounds to vast deserts filled with impossible creatures. Progression relies on careful movement, observation, and precise timing, with every screen presenting hazards that punish impatience and reward methodical play. The game’s imagery takes clear inspiration from surrealist art, creating scenes that feel deliberately uncomfortable and unpredictable. This atmosphere is reinforced by David Whittaker’s haunting Amiga soundtrack, which gives the game a constant sense of tension and unease.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Weird Dreams Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Y_WNCGmQZ3M" data-video-id="Y_WNCGmQZ3M"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Weird Dreams video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Y_WNCGmQZ3M/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Weird Dreams Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Y_WNCGmQZ3M" data-video-id="Y_WNCGmQZ3M"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Y_WNCGmQZ3M" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bangkok Knights (1987) – Commodore 64 Muay Thai Fighting Classic Released in 1987 by System 3 and programmed by Mark Cale and Tim Best, Bangkok Knights is a distinctive one-on-one fighting game that brought the intensity of Muay Thai boxing to the Commodore 64. Rather than a generic brawler, it grounds its action in a specific martial art and cultural setting. You begin their journey in rural Thailand and fight their way toward the legendary Lumpini Stadium in Bangkok, facing eight opponents along the way. Each fighter has their own style and behaviour, forcing you to adapt rather than rely on a single tactic throughout the game. Combat offers a broad move set, including punches, kicks, knees, and elbow strikes, executed through precise directional inputs. The arenas use a 2.5D perspective with movement in all eight directions, and their larger-than-screen layouts add space, positioning, and footwork into the mix.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bangkok Knights C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/r0sSJbEpaM0" data-video-id="r0sSJbEpaM0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bangkok Knights video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/r0sSJbEpaM0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bangkok Knights C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/r0sSJbEpaM0" data-video-id="r0sSJbEpaM0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=r0sSJbEpaM0" target="_blank" rel="noopener">Open on YouTube</a>

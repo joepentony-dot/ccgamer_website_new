@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rick Dangerous (1989) – Commodore Amiga Brutal Trap-Filled Platform Adventure Released in 1989 by Core Design for the Commodore Amiga, Rick Dangerous is a notoriously unforgiving platform adventure inspired by the spirit of Indiana Jones. You step into the boots of Rick, a British agent whose jungle expedition quickly turns into a deadly obstacle course packed with traps, enemies, and cruel surprises. Gameplay focuses on careful movement, memory, and restraint. Hidden spikes, collapsing floors, darts, and instant-death hazards are everywhere, forcing you to learn each level through trial and error. Rick’s limited ammo and dynamite mean every shot counts, and rushing forward without caution is almost always punished. Each location introduces new dangers and layouts, from the Amazon jungle to ancient Egyptian ruins, with level design that rewards patience and observation. Success comes from anticipating traps, mastering timing, and accepting that death is part of the learning process.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rick Dangerous Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/zsESKovDEkQ" data-video-id="zsESKovDEkQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rick Dangerous video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/zsESKovDEkQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rick Dangerous Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/zsESKovDEkQ" data-video-id="zsESKovDEkQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=zsESKovDEkQ" target="_blank" rel="noopener">Open on YouTube</a>

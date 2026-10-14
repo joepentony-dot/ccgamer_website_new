@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Auf Wiedersehen Monty (1987) – Commodore 64 Platform Adventure with European Flair Released in 1987 by Gremlin Graphics, Auf Wiedersehen Monty is the fourth entry in the Monty Mole series and one of the most ambitious platform adventures on the Commodore 64. Designed by Peter Harrap and Shaun Hollingworth, the game follows Monty Mole as he travels across Europe with a bold goal: earning enough money to buy his own Greek island, Montos. The game uses a flick-screen platform design spread across 80 interconnected screens laid out to resemble a map of Europe. You explore countries such as France, Germany, Italy, and Spain, collecting Eurocheques and key items while avoiding traps, enemies, and environmental hazards. Navigation becomes a strategic challenge as you learn routes and screen connections across the continent. Each region introduces themed gameplay twists, including bullfighting hazards in Spain and alcohol effects in Germany that temporarily disrupt Monty’s controls.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Auf Wiedersehen Monty C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7-kc8HmFgxU" data-video-id="7-kc8HmFgxU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Auf Wiedersehen Monty video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7-kc8HmFgxU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Auf Wiedersehen Monty C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7-kc8HmFgxU" data-video-id="7-kc8HmFgxU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7-kc8HmFgxU" target="_blank" rel="noopener">Open on YouTube</a>

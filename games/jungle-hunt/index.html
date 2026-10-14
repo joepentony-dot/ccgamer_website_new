@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Jungle Hunt (1983) – Commodore 64 Arcade Action Platformer Classic Released in 1983 by Taito Corporation and published by Atarisoft for the Commodore 64, Jungle Hunt is a faithful home conversion of the arcade hit originally known as Jungle King. Due to copyright issues, the game was rebranded, but its fast-paced jungle action remained intact. You take on the role of a daring explorer racing to rescue a captured woman from hostile cannibals. The adventure is split across four varied stages, each testing different skills. Vine swinging demands precise timing, the crocodile-infested river requires sharp reactions and careful knife use, rock dodging pushes climbing reflexes, and the final leap over cannibals brings the rescue mission to a tense conclusion. The game supports single-player and two-player alternating modes, with difficulty steadily increasing as stages repeat.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jungle Hunt C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NoNfyOIQEgE" data-video-id="NoNfyOIQEgE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jungle Hunt video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NoNfyOIQEgE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jungle Hunt C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NoNfyOIQEgE" data-video-id="NoNfyOIQEgE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NoNfyOIQEgE" target="_blank" rel="noopener">Open on YouTube</a>

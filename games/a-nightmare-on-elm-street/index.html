@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ A Nightmare on Elm Street (1989) – Commodore 64 Horror Action-Adventure with RPG Elements Released in 1989 and developed by Westwood Associates, A Nightmare on Elm Street brings the iconic horror film series to the Commodore 64 in an unusual top-down action-adventure format. Loosely inspired by the Dream Warriors era of the films, the game blends exploration, combat, and light RPG mechanics into a tense and atmospheric experience. You choose from six characters, each equipped with a unique dream power that influences how the game unfolds. The main objective is to explore Elm Street, locate Freddy Krueger’s house, and navigate its maze-like interior while rescuing trapped friends and surviving a range of nightmarish enemies. Progress relies on careful exploration, item use, and learning how each character’s abilities affect combat and puzzle-solving. The gameplay runs in real time, with Freddy able to appear suddenly and attack without warning, keeping tension high throughout.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="A Nightmare On Elm Street C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dlmPNOw5TPk" data-video-id="dlmPNOw5TPk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play A Nightmare On Elm Street video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/dlmPNOw5TPk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="A Nightmare On Elm Street C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/dlmPNOw5TPk" data-video-id="dlmPNOw5TPk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=dlmPNOw5TPk" target="_blank" rel="noopener">Open on YouTube</a>

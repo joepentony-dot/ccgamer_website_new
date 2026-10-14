@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Space Hulk (1993) – Commodore Amiga Warhammer 40K Tactical Sci-Fi Strategy Classic Released in 1993 by Electronic Arts for the Commodore Amiga, Space Hulk is a tense real-time tactical game set in the dark, brutal universe of Warhammer 40,000. Based on Games Workshop’s 1989 board game, it places players in command of elite Space Marine squads sent into derelict spacecraft infested with deadly Genestealers. Gameplay blends first-person action with strategic squad management. Players control up to five Space Marines simultaneously, each viewed through their own 3D window, while coordinating movement, positioning, and firepower through narrow, claustrophobic corridors. Missions range from extermination and escort duties to data retrieval and object recovery. A key feature is the innovative “freeze-time” system, which allows players to pause the action briefly to issue commands. This mechanic adds vital tactical depth, letting players react to sudden ambushes and carefully plan defensive formations under pressure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Space Hulk Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/o4NtJHc83z4" data-video-id="o4NtJHc83z4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Space Hulk video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/o4NtJHc83z4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Space Hulk Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/o4NtJHc83z4" data-video-id="o4NtJHc83z4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=o4NtJHc83z4" target="_blank" rel="noopener">Open on YouTube</a>

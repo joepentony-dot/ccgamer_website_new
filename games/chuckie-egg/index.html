@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Chuckie Egg (1984) – Commodore 64 Classic Platform Egg-Collecting Action Released in 1984 by A&amp;F Software for the Commodore 64, Chuckie Egg is a fast-paced platform game based on Nigel Alderton’s hugely popular 1983 ZX Spectrum original. The C64 conversion was handled by Sean Townsend and Martin Webb, with music composed by Townsend to suit the SID chip. You play as Hen-House Harry, leaping across single-screen levels packed with platforms, ladders, lifts, and precision jumps. Your goal is simple but relentless: collect every egg on the screen while avoiding patrolling hens and, in later stages, a menacing giant duck that turns each level into a frantic race for survival. A constant countdown timer keeps the pressure high, but grabbing piles of grain will briefly pause it, giving you just enough breathing room to plan your next move.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Chuckie Egg C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6FDAMQiOf1U" data-video-id="6FDAMQiOf1U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Chuckie Egg video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6FDAMQiOf1U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Chuckie Egg C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6FDAMQiOf1U" data-video-id="6FDAMQiOf1U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6FDAMQiOf1U" target="_blank" rel="noopener">Open on YouTube</a>

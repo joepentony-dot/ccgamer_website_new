@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Action Biker (1985) – Commodore 64 Isometric Open-World Racing Adventure Released in 1985 by Mastertronic, Action Biker is a distinctive isometric motorcycle game for the Commodore 64 that puts you in control of Clumsy Colin, the mascot from KP Skips. Rather than traditional racing, the game focuses on free-roaming exploration across a sprawling town as you prepare for a climactic drag race. Gameplay revolves around navigating the city to locate vital bike upgrades, including a turbocharger, improved gearbox, and larger fuel tank. These items are essential for overcoming obstacles such as lakes, fairgrounds, construction sites, and other environmental challenges scattered throughout the map. Fuel management and careful riding are key, as collisions can quickly halt progress. The open-ended structure encourages exploration and planning, with optional routes and surprises along the way, including a memorable rollercoaster section that adds variety to the experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Action Biker C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/zeFM_QrjiiA" data-video-id="zeFM_QrjiiA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Action Biker video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/zeFM_QrjiiA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Action Biker C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/zeFM_QrjiiA" data-video-id="zeFM_QrjiiA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=zeFM_QrjiiA" target="_blank" rel="noopener">Open on YouTube</a>

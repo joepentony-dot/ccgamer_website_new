@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Flunky (1987) – Commodore 64 Quirky Royal Palace Adventure Released in 1987 by Piranha Software for the Commodore 64, Flunky is a satirical adventure game developed by Don Priestley that puts you in the role of a long-suffering butler serving the British Royal Family. Blending British humour with light action and puzzle-solving, the game offers a deliberately eccentric take on palace life. Gameplay revolves around navigating Buckingham Palace while carrying out tasks assigned by various royal family members. Jobs range from simple errands to more demanding challenges that require quick reactions, careful timing, and learning the palace layout to move efficiently between rooms. The game mixes exploration with arcade-style action, often catching you off guard with sudden demands or hazards. Success depends on memorising routes, prioritising tasks, and coping with the unpredictable nature of royal service.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Flunky C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9QPQpet_V_g" data-video-id="9QPQpet_V_g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Flunky video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9QPQpet_V_g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Flunky C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9QPQpet_V_g" data-video-id="9QPQpet_V_g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9QPQpet_V_g" target="_blank" rel="noopener">Open on YouTube</a>

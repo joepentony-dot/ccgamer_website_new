@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Arkanoid (1987) – Commodore 64 Arcade Block-Breaking Action Classic Released in 1987 by Taito and ported to the Commodore 64 by Imagine Software, Arkanoid is one of the most iconic block-breaking games of the 1980s. You control the paddle-shaped spaceship Vaus, bouncing an energy ball to smash through colourful brick formations and clear each stage without letting the ball fall. Gameplay is built around precision, timing, and fast reactions, with increasingly complex layouts and enemy hazards appearing as the game progresses. The introduction of power-ups such as multi-ball, laser paddles, extended bats, and speed modifiers adds strategic depth and keeps every stage feeling fresh and unpredictable. Progression depends on mastering ball control, anticipating rebounds, and making smart use of collected upgrades. Later levels demand near-perfect positioning and concentration, rewarding skilled players with high scores and extended survival.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Arkanoid C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/d8Hr1pyb6cw" data-video-id="d8Hr1pyb6cw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Arkanoid video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/d8Hr1pyb6cw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Arkanoid C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/d8Hr1pyb6cw" data-video-id="d8Hr1pyb6cw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=d8Hr1pyb6cw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Legacy of the Ancients (1987) – Commodore 64 RPG Classic Released by Electronic Arts in 1987 and developed by Quest Software, Legacy of the Ancients is a wonderfully unusual C64 role-playing game created by John and Chuck Dougherty. You don&#39;t begin as a warrior, wizard or chosen hero either. You&#39;re a shepherd whose quiet life disappears after discovering the mysterious Wizard&#39;s Compendium and an Access Disk leading to the Tarmalon Galactic Museum. The Galactic Museum gives Legacy of the Ancients much of its character. Explored from a first-person viewpoint, its exhibits are unlocked using jewel-encrusted coins found throughout the adventure, revealing clues, equipment and other rewards as you gradually explore more of Tarmalon. Outside you&#39;ll find twelve towns, mountains, swamps, rivers and wilderness to explore, while character abilities can be improved through training and mini-games rather than simply grinding enemies for experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Legacy Of The Ancients C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pa47GVPA1jU" data-video-id="pa47GVPA1jU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Legacy Of The Ancients video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pa47GVPA1jU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Legacy Of The Ancients C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pa47GVPA1jU" data-video-id="pa47GVPA1jU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pa47GVPA1jU" target="_blank" rel="noopener">Open on YouTube</a>

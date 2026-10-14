@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Go For The Gold (1986) – Commodore 64 Multi-Event Sports Game Released by Americana in 1986, Go For The Gold is a multi-event Commodore 64 sports game featuring sprinting, hurdles, long jump, archery, diving and weightlifting. You can practice individual events or compete across the full programme, with up to six participants battling for the best scores. Some events demand the traditional left-and-right joystick treatment, while archery, diving and weightlifting rely more heavily on timing and technique. The game originally appeared in America as HESGames in 1984. That version was only available on disk in the UK and cost £27.95, leaving it competing with considerably cheaper sports games such as Daley Thompson’s Decathlon and Summer Games. Two years later, Americana brought it back under the new title Go For The Gold. The revised version was released on cassette for just £2.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Go For The Gold C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rqqqYRSgSBI" data-video-id="rqqqYRSgSBI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Go For The Gold video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rqqqYRSgSBI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Go For The Gold C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rqqqYRSgSBI" data-video-id="rqqqYRSgSBI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rqqqYRSgSBI" target="_blank" rel="noopener">Open on YouTube</a>

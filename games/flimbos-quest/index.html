@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Flimbo’s Quest (1991) – Commodore 64 Fantasy Platform Adventure Released in 1991 by System 3, Flimbo’s Quest is a colourful platform adventure that arrived late in the Commodore 64’s life and showed just how far the machine could be pushed. You guide Flimbo on a mission to save his village from an evil sorcerer, exploring imaginative worlds packed with hazards, secrets, and magical items. The gameplay blends traditional platforming with light puzzle elements, requiring careful timing, exploration, and smart use of abilities. Flimbo must navigate traps, avoid enemies, and collect treasures while using magic spells that allow him to transform and bypass obstacles in inventive ways. Level design encourages experimentation rather than rushing headlong forward. Visually, the game stands out with richly detailed backgrounds, smooth animation, and vibrant colour use that gives each area its own identity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Flimbo&#39;s Quest C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-Bquu1lUXfM" data-video-id="-Bquu1lUXfM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Flimbo&#39;s Quest video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-Bquu1lUXfM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Flimbo&#39;s Quest C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-Bquu1lUXfM" data-video-id="-Bquu1lUXfM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-Bquu1lUXfM" target="_blank" rel="noopener">Open on YouTube</a>

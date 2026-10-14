@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Mad Doctor (1985) – Commodore 64 Horror Sandbox Adventure Released in 1985 by Creative Sparks and developed by James Allen, Mad Doctor is a darkly inventive action-adventure for the Commodore 64 that blends horror themes with open-ended gameplay. You step into the role of Professor Franz Johann Blockenspiel, an unhinged scientist determined to create life by assembling and reanimating a creature from stolen body parts. Set in the eerie village of Struddleberg, the game unfolds across six interconnected areas including a castle, graveyard, forest, village districts, and Lightning Hill. Exploration is key, as you search for tools, ingredients, and body parts while navigating hostile villagers who become increasingly suspicious of your activities. The game runs from a top-down, fixed-screen perspective and introduces survival elements such as hunger, thirst, and health management. A day-and-night cycle adds further tension, forcing you to carefully plan movements and actions to avoid capture or attack.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mad Doctor C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Nu7ZjjAeVU4" data-video-id="Nu7ZjjAeVU4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mad Doctor video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Nu7ZjjAeVU4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mad Doctor C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Nu7ZjjAeVU4" data-video-id="Nu7ZjjAeVU4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Nu7ZjjAeVU4" target="_blank" rel="noopener">Open on YouTube</a>

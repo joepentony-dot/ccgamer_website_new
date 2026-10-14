@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Castles of Dr. Creep (1984) – Commodore 64 Puzzle-Platform Castle Escape Released in 1984 by Brøderbund and created by Edward R. Hobbs, The Castles of Dr. Creep is a distinctive puzzle-platform game that challenges you to escape a series of devious medieval castles. Each of the thirteen castles is packed with traps, enemies, and mechanical contraptions designed to test logic and timing rather than reflexes alone. Gameplay focuses on experimentation and problem-solving. You manipulate conveyor belts, force fields, switches, teleports, and other devices to open paths and avoid deadly hazards. Progress often requires understanding how multiple systems interact, encouraging careful observation and planning. Enemies such as mummies and Frankenstein-style monsters roam the castles, adding pressure to every move. The game also supports two-player cooperative play, allowing you to work together to solve puzzles and coordinate actions across different parts of a castle.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Castles Of Dr. Creep C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6YmY5EVvXNM" data-video-id="6YmY5EVvXNM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Castles Of Dr. Creep video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6YmY5EVvXNM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Castles Of Dr. Creep C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6YmY5EVvXNM" data-video-id="6YmY5EVvXNM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6YmY5EVvXNM" target="_blank" rel="noopener">Open on YouTube</a>

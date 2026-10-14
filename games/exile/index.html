@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Exile (1991) – Commodore 64 Sci-Fi Action-Adventure with Advanced Physics Released in 1991 by Audiogenic for the Commodore 64, Exile is a groundbreaking sci-fi action-adventure developed by Peter Irvin and Jeremy Smith. Originally created for the BBC Micro and Acorn Electron, the C64 version preserves the game’s most ambitious ideas, delivering a remarkably deep experience for an 8-bit system. You play as Mike Finn, a lone pilot sent to the hostile planet Phoebus to rescue a lost research team and stop the rogue scientist Triax. The game blends platforming, exploration, shooting, and puzzle-solving within a vast, interconnected world that can be tackled in multiple ways. What truly sets Exile apart is its advanced physics and simulation systems. Gravity, inertia, heat, pressure, and enemy behaviour all interact dynamically, meaning the environment constantly responds to your actions.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Exile C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/JoPe-T25tc4" data-video-id="JoPe-T25tc4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Exile video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/JoPe-T25tc4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Exile C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/JoPe-T25tc4" data-video-id="JoPe-T25tc4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=JoPe-T25tc4" target="_blank" rel="noopener">Open on YouTube</a>

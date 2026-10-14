@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Midnight Resistance (1990) – Commodore 64 Run-and-Gun Action Classic Released in 1990 by Ocean Software and developed by Special FX, Midnight Resistance is a hard-hitting side-scrolling run-and-gun game set in a brutal dystopian future. You play as a lone resistance fighter battling through enemy territory to rescue your kidnapped family from the ruthless King Crimson. The action is fast, relentless, and plainly inspired by arcade classics like Contra. You fight through waves of soldiers, tanks, and airborne enemies, grabbing red keys dropped by foes along the way. These keys are vital, letting you buy powerful weapons and upgrades between stages, including flamethrowers, homing missiles, and multi-directional guns with limited ammo. Levels are tightly designed and scroll smoothly, keeping the pressure high as enemy patterns and hazards escalate. While the Commodore 64 version can’t quite match the detail of more powerful systems, it delivers impressive animation, strong pacing, and a solid sense of scale throughout.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Midnight Resistance C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pJ0KUh-IS_k" data-video-id="pJ0KUh-IS_k"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Midnight Resistance video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pJ0KUh-IS_k/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Midnight Resistance C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pJ0KUh-IS_k" data-video-id="pJ0KUh-IS_k"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pJ0KUh-IS_k" target="_blank" rel="noopener">Open on YouTube</a>

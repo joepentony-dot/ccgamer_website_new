@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gyropod (1984) – Commodore 64 Sci-Fi Shoot ’Em Up with Planetary Exploration Released in 1984 by Taskset Ltd. , Gyropod is a distinctive multi-stage shoot ’em up for the Commodore 64 that blends space combat with planetary exploration. You take control of the Galaxy Ranger, a heavily armed spacecraft sent to eradicate hostile alien worlds in a distant star system. The action begins in space, where you rotate around the rim of the Galaxy Ranger, using a movable cannon to fend off incoming waves of alien attackers. Precision aiming and positioning are essential as enemy patterns intensify and pressure builds. Once space defences are cleared, the game shifts into a Lunar Lander-style sequence, requiring careful control to detach and land the supply pod safely on the planet’s surface. The final phase sees you guiding a lone spaceman across the terrain, collecting valuable resources while avoiding aggressive alien lifeforms.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gyropod C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/nHlS-rE2XPw" data-video-id="nHlS-rE2XPw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gyropod video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/nHlS-rE2XPw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gyropod C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/nHlS-rE2XPw" data-video-id="nHlS-rE2XPw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=nHlS-rE2XPw" target="_blank" rel="noopener">Open on YouTube</a>

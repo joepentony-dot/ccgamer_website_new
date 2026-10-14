@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ CABAL (1989) – Commodore 64 Third-Person Arcade Shooter Classic Originally developed by TAD Corporation and released to arcades in 1988, CABAL arrived on the Commodore 64 in 1989 via Special FX and Ocean Software. This home conversion brings the explosive third-person shooting action to 8-bit hardware while preserving the core intensity of the arcade original. You control a lone commando assaulting heavily fortified enemy bases, using a distinctive crosshair aiming system that separates movement from shooting. While dodging incoming fire, you must accurately target gun emplacements, buildings, and vehicles, creating a constant push-and-pull between survival and precision. The Commodore 64 version captures the feel of the arcade experience with solid level design and satisfying destruction, even if the action runs at a slightly reduced pace and with simplified visuals due to hardware constraints. These compromises do little to diminish the thrill of clearing screens under heavy fire.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cabal C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_Z69KYysEOY" data-video-id="_Z69KYysEOY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cabal video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_Z69KYysEOY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cabal C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_Z69KYysEOY" data-video-id="_Z69KYysEOY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_Z69KYysEOY" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Murder on the Mississippi (1986) – Commodore 64 Detective Adventure Mystery Murder on the Mississippi is a classic detective adventure for the Commodore 64 that places you aboard the luxury paddle steamer Delta Princess. While enjoying a holiday cruise, renowned detective Sir Charles Foxworth and his loyal servant Regis stumble upon a grim discovery: the body of Raleigh Cartwright III. With the ship due to arrive in New Orleans in just three days, time is running out to catch the killer before they escape. Gameplay blends exploration with investigation, using joystick-controlled movement and a context-sensitive command menu. You walk the decks, inspect cabins, examine evidence, and interact with passengers and crew, all of whom may be suspects. Early progress depends on locating the body, after which characters become far more forthcoming with information. The heart of the game lies in careful note-taking and deduction.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Murder On The Mississippi C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ncPy6Z03oVk" data-video-id="ncPy6Z03oVk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Murder On The Mississippi video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ncPy6Z03oVk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Murder On The Mississippi C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ncPy6Z03oVk" data-video-id="ncPy6Z03oVk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ncPy6Z03oVk" target="_blank" rel="noopener">Open on YouTube</a>

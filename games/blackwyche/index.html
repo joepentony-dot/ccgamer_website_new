@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blackwyche (1985) – Commodore 64 Isometric Ghost Ship Adventure Released in 1985 by Ultimate Play the Game and developed by Dave and Bob Thomas, Blackwyche is the third chapter in the Sir Arthur Pendragon series. This time, the adventure shifts to the haunted decks of the ghost ship Blackwyche, where Sir Arthur must free the trapped soul of Captain Richard Cavendish. Exploration unfolds in an isometric 3D view across five interconnected decks, each filled with hostile skeletons, environmental puzzles, and hidden routes. Progress depends on careful navigation, combat timing, and gradually uncovering the ship’s secrets. Sir Arthur can arm himself with knives, daggers, and a powerful magic sword, while managing a constantly draining energy supply. Survival hinges on knowing when to fight, when to retreat, and when to ring the ship’s mysterious bell to restore strength.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blackwyche C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pN6dSiEkFJY" data-video-id="pN6dSiEkFJY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blackwyche video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pN6dSiEkFJY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blackwyche C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pN6dSiEkFJY" data-video-id="pN6dSiEkFJY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pN6dSiEkFJY" target="_blank" rel="noopener">Open on YouTube</a>

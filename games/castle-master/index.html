@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Castle Master (1990) – Commodore 64 3D Freescape Puzzle Adventure Released in 1990 by Incentive Software and published by Domark, Castle Master is a first-person 3D adventure built using the Freescape engine for the Commodore 64. Set inside a mysterious and dangerous castle, the game focuses on exploration, atmosphere, and puzzle-solving rather than fast-paced action. You can choose to play as either a prince or a princess, both tasked with rescuing their sibling from the evil Magister. Progress requires carefully navigating interconnected rooms, interpreting cryptic clues, and manipulating objects to unlock new areas, all while surviving encounters with hostile spirits. Combat is limited and deliberate, with a simple slingshot used to defend against supernatural threats. The emphasis remains firmly on observation and problem-solving, encouraging you to study the environment and think logically about each challenge rather than relying on reflexes.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Castle Master C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6xv8hyNXWsQ" data-video-id="6xv8hyNXWsQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Castle Master video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6xv8hyNXWsQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Castle Master C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6xv8hyNXWsQ" data-video-id="6xv8hyNXWsQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6xv8hyNXWsQ" target="_blank" rel="noopener">Open on YouTube</a>

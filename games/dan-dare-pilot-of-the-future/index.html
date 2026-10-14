@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dan Dare: Pilot of the Future (1986) – Commodore 64 Sci-Fi Action Adventure Released in 1986 by Gang of Five and published by Virgin Games for the Commodore 64, Dan Dare: Pilot of the Future brings the legendary British comic book hero to home computers in a cinematic sci-fi adventure. Captain Dan Dare must stop his arch-enemy, the Mekon, from destroying Earth by diverting a deadly asteroid on a collision course with the planet. The game unfolds across a series of multi-screen environments, combining platforming, exploration, and light puzzle-solving. You guide Dan through alien bases and hostile locations, battling enemies in hand-to-hand combat while navigating hazards and searching for the correct route forward. Progress relies on observation and timing as much as reflexes. A standout feature is the comic-inspired presentation, which helps capture the tone and identity of the original Eagle comic strip.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dan Dare: Pilot Of The Future C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/3Sc3WB40iK4" data-video-id="3Sc3WB40iK4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dan Dare: Pilot Of The Future video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/3Sc3WB40iK4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dan Dare: Pilot Of The Future C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/3Sc3WB40iK4" data-video-id="3Sc3WB40iK4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=3Sc3WB40iK4" target="_blank" rel="noopener">Open on YouTube</a>

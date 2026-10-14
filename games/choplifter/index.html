@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Choplifter! (1982) – Commodore 64 Side-Scrolling Rescue Action Classic Originally developed by Dan Gorlin and published by Brøderbund in 1982, Choplifter! is a landmark side-scrolling action game that combines fast reflexes with tactical decision-making. You take control of a combat helicopter on a dangerous rescue mission deep inside enemy territory. Gameplay unfolds across a horizontally scrolling battlefield where the objective is to rescue hostages from four enemy buildings and safely transport them back to base. The helicopter can carry up to sixteen hostages at a time, requiring multiple risky trips to evacuate all sixty-four prisoners while managing fuel and ammunition. Enemy resistance escalates quickly, with tanks, jet fighters, and ground troops attacking from all directions. You must carefully land to pick up survivors, avoid accidental friendly fire, and decide when to fight and when to retreat, as fuel shortages can be just as deadly as enemy weapons.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Choplifter C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rYqY8c9V-Ak" data-video-id="rYqY8c9V-Ak"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Choplifter video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rYqY8c9V-Ak/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Choplifter C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rYqY8c9V-Ak" data-video-id="rYqY8c9V-Ak"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rYqY8c9V-Ak" target="_blank" rel="noopener">Open on YouTube</a>

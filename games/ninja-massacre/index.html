@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ninja Massacre (1989) – Commodore 64 Top-Down Action Maze Mayhem Developed by TAG Computer Games and published by Codemasters in 1989, Ninja Massacre is a fast-paced top-down action game for the Commodore 64, plainly inspired by the arcade hit Gauntlet. You take control of a ninja battling through a series of dangerous, maze-like levels packed with enemies, traps, and hidden rewards. Gameplay focuses on quick reflexes and smart positioning. Armed with throwing stars, you must clear rooms of enemies while navigating tight corridors and avoiding hazards. Each level is completed by locating the staircase to the next area, with passwords provided to allow progress to be resumed later. The game supports two-player co-operative play, adding a strategic edge as you work together to survive tougher stages. Destructible scenery, secret passages, and power-ups such as smart bombs and reflective shots introduce tactical choices and keep the action varied across its 50 levels.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ninja Massacre C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/F5Yl-HcTkZM" data-video-id="F5Yl-HcTkZM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ninja Massacre video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/F5Yl-HcTkZM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ninja Massacre C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/F5Yl-HcTkZM" data-video-id="F5Yl-HcTkZM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=F5Yl-HcTkZM" target="_blank" rel="noopener">Open on YouTube</a>

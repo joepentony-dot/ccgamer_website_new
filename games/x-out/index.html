@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ X-Out (1989) – Commodore 64 Underwater Shoot ’Em Up with Strategic Loadouts Released in 1989 by Rainbow Arts and developed by Arc Developments, X-Out is a horizontally scrolling shoot ’em up that swaps deep space for the depths of the ocean. You pilot advanced submarines through alien-infested underwater environments, facing relentless enemy waves and screen-filling bosses. What truly sets X-Out apart is its shop system. Between missions, you spend earned credits on submarines, weapons, and upgrades, carefully balancing firepower, shields, and support craft. Success depends as much on smart preparation as it does on sharp reflexes once the action begins. The game pushes the Commodore 64 hard, delivering detailed underwater visuals, smooth scrolling, and dense enemy patterns. Chris Hülsbeck’s driving soundtrack adds urgency and atmosphere, perfectly matching the intensity of the on-screen mayhem. Famously tough and unapologetically demanding, X-Out rewards mastery and planning over brute force.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="X-Out C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ANDFibxD8n0" data-video-id="ANDFibxD8n0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play X-Out video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ANDFibxD8n0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="X-Out C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ANDFibxD8n0" data-video-id="ANDFibxD8n0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ANDFibxD8n0" target="_blank" rel="noopener">Open on YouTube</a>

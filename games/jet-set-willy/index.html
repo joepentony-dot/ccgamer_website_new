@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Jet Set Willy (1984) – Commodore 64 Non-Linear Platforming Icon Released in 1984 by Software Projects and designed by Matthew Smith, Jet Set Willy is a defining non-linear platform game that pushed 8-bit ambition to its limits. On the Commodore 64, you guide Willy through a vast mansion of 60 interconnected rooms, collecting glowing objects while surviving a maze of hazards and roaming guardians. Controls are deceptively simple—left, right, jump—but the challenge lies in precision. You’re free to explore in almost any order, climbing ropes, tackling awkward staircases, timing jumps perfectly, and learning how each room behaves. Progress demands memory, patience, and an understanding of how the mansion fits together. The C64 version carries over many of the quirks that made the game legendary. Respawning behaviour can be unforgiving, some layouts border on the cruel, and the infamous Attic Bug originally made the game impossible to complete until later fixes appeared.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jet Set Willy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_4amISEt0mM" data-video-id="_4amISEt0mM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jet Set Willy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_4amISEt0mM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jet Set Willy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_4amISEt0mM" data-video-id="_4amISEt0mM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_4amISEt0mM" target="_blank" rel="noopener">Open on YouTube</a>

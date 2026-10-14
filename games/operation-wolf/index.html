@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Operation Wolf (1988) – Commodore 64 Arcade Rail Shooter Action Released in 1988, Operation Wolf is Taito’s explosive arcade hit brought to the Commodore 64 by Ocean Software. Casting you as a lone Special Forces operative, the game drops you straight into high-risk rescue missions deep behind enemy lines, capturing the intensity and urgency of the original coin-op experience. Gameplay unfolds from a first-person perspective with horizontally scrolling stages set across jungles, villages, and fortified enemy bases. Enemies attack from all directions, including soldiers, helicopters, tanks, and boats, keeping the pressure constant as the screen fills with targets and incoming fire. Strategy plays a key role alongside fast reactions. Ammunition and grenades are limited, hostages must be protected, and power-ups such as health packs and extra ammo are revealed by shooting specific objects in the environment.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Operation Wolf C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7pbj-mxQwEg" data-video-id="7pbj-mxQwEg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Operation Wolf video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7pbj-mxQwEg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Operation Wolf C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7pbj-mxQwEg" data-video-id="7pbj-mxQwEg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7pbj-mxQwEg" target="_blank" rel="noopener">Open on YouTube</a>

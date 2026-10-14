@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Maria’s Christmas Box (1988) – Commodore 64 Adult Strip Poker Curiosity Released in 1988 by Anco Software for the Commodore 64, Maria’s Christmas Box is an adult-themed strip poker game that arrived during the festive season, tapping into the popularity of celebrity-inspired titles of the era. The game features British model Maria Whittaker, well known to Commodore fans for her appearance in Barbarian: The Ultimate Warrior. Gameplay centres on a one-on-one strip poker match, with Maria initially dressed in a Santa Claus outfit to fit the Christmas theme. You wager credits, bluff, and trade clothing items in familiar fashion, closely following the mechanics established in Anco’s earlier Strip Poker II+. Two difficulty levels are available, with the harder mode offering a more aggressive and challenging AI opponent. Presentation is basic, using static pixel artwork, limited animation, and a very simple interface built around the standard C64 system font.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Maria&#39;s Christmas Box C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/kacZjx4xmKA" data-video-id="kacZjx4xmKA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Maria&#39;s Christmas Box video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/kacZjx4xmKA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Maria&#39;s Christmas Box C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/kacZjx4xmKA" data-video-id="kacZjx4xmKA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=kacZjx4xmKA" target="_blank" rel="noopener">Open on YouTube</a>

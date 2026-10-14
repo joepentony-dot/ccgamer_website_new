@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rescue on Fractalus! (1985) – Commodore 64 3D Space Combat &amp; Rescue Simulator Released in 1985 by Lucasfilm Games, Rescue on Fractalus! is a groundbreaking 3D space combat and rescue simulator that pushed the Commodore 64 to its limits. Set on the hostile alien world of Fractalus, you pilot a Valkyrie fighter tasked with locating and rescuing downed pilots scattered across a dangerous mountain landscape. The game blends first-person flight action with careful navigation and tense decision-making. You must skim across jagged terrain, manage fuel and shields, evade enemy fire, and land safely to collect stranded pilots. Adding to the suspense, not every rescue is what it seems, with some pilots revealing themselves as hostile aliens once aboard. One of the game’s most celebrated achievements is its use of fractal-generated landscapes, creating rolling mountain ranges that felt genuinely three-dimensional at a time when such visuals were almost unheard of on home computers.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rescue On Fractalus! C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/b7Hn36epBxE" data-video-id="b7Hn36epBxE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rescue On Fractalus! video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/b7Hn36epBxE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rescue On Fractalus! C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/b7Hn36epBxE" data-video-id="b7Hn36epBxE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=b7Hn36epBxE" target="_blank" rel="noopener">Open on YouTube</a>

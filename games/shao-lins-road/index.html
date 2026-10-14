@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Shao-Lin’s Road (1986) – Commodore 64 Martial Arts Platform Beat ’Em Up Classic Released in 1986 by Konami and ported to the Commodore 64 by The Edge, Shao-Lin’s Road is a martial arts platform beat ’em up inspired by the arcade hit Yie Ar Kung-Fu. You take control of Lee, a skilled warrior trapped inside a hostile temple after the murder of his master. The game is structured across five multi-tiered stages filled with enemy fighters, traps, and challenging boss encounters. Movement combines side-scrolling action with vertical platforming, requiring precise jumps and well-timed attacks. Combat focuses on jumping kicks, rapid strikes, and positioning to control crowds. Defeating certain enemies releases special power-ups, including the meteor hammer, fireballs, and protective energy orbs. These temporary abilities add variety and strategy, encouraging you to adapt their playstyle as they progress through each level.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Shao-Lin&#39;s Road C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/p7vwZKhBObk" data-video-id="p7vwZKhBObk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Shao-Lin&#39;s Road video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/p7vwZKhBObk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Shao-Lin&#39;s Road C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/p7vwZKhBObk" data-video-id="p7vwZKhBObk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=p7vwZKhBObk" target="_blank" rel="noopener">Open on YouTube</a>

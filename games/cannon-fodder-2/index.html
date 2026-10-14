@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cannon Fodder 2 (1994) – Commodore Amiga Action-Strategy Time-Travelling Warfare Released in November 1994 by Sensible Software and published by Virgin Interactive for the Commodore Amiga, Cannon Fodder 2 builds on the explosive foundations of the original with a bold time-travel twist. This sequel sends your tiny four-soldier squad across wildly different eras, from deserts and medieval battlefields to alien worlds, each with its own tactical challenges. Gameplay retains the tight overhead run-and-gun mechanics that made the series famous. Players command troops armed with machine guns, grenades, rockets, and vehicles such as jeeps, tanks, and helicopters. Success depends on positioning, timing, and knowing when to sacrifice firepower for survival as enemy numbers and hazards escalate. Level design was handled by journalist-turned-designer Stuart Campbell, introducing more complex, puzzle-like layouts packed with hidden routes and pop-culture references.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cannon Fodder 2 Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZQ0DE2imsT8" data-video-id="ZQ0DE2imsT8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cannon Fodder 2 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ZQ0DE2imsT8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cannon Fodder 2 Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ZQ0DE2imsT8" data-video-id="ZQ0DE2imsT8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ZQ0DE2imsT8" target="_blank" rel="noopener">Open on YouTube</a>

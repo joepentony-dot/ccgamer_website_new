@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ B. C. Bill (1984) – Commodore 64 Prehistoric Action Survival Arcade Classic Released in 1984 by Creative Technology Group and published by Imagine Software for the Commodore 64, B. C. Bill is a quirky prehistoric action game that blends arcade gameplay with light survival management. You take on the role of Bill, a caveman determined to build and protect his growing family in a dangerous stone-age world. Gameplay revolves around hunting animals for food, stunning cavewomen to bring back to your cave, and defending your home from roaming dinosaurs. Armed with only a club, Bill must carefully balance exploration, combat, and resource gathering to keep his family alive. A distinctive feature is the changing seasonal cycle, which affects food supplies and family survival. Poor planning can lead to starvation, while successful hunts and rescues help expand your tribe.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="B.C. Bill C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PlbS2Q4IgTg" data-video-id="PlbS2Q4IgTg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play B.C. Bill video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PlbS2Q4IgTg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="B.C. Bill C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PlbS2Q4IgTg" data-video-id="PlbS2Q4IgTg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PlbS2Q4IgTg" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Train: Escape to Normandy (1987) – Commodore 64 WWII Action Simulation Released in 1987 for the Commodore 64, The Train: Escape to Normandy is an action-simulation title developed by Artech Digital Entertainment and published by Accolade. Inspired by the 1964 film The Train, the game places you in the role of French Resistance fighter Pierre LeFeu during a daring World War II mission to hijack a Nazi-controlled steam train carrying priceless artworks. Gameplay unfolds across multiple interconnected phases. The opening sequence involves a tense shootout as Pierre covers his ally Le Duc while critical track switches are thrown. Once the train is moving, you must manage the steam locomotive itself, balancing speed, pressure, and water levels while navigating hostile territory. Combat adds another layer of pressure, with German fighter planes and gunboats attacking at key moments.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Train: Escape To Normandy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_GIULKywK78" data-video-id="_GIULKywK78"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Train: Escape To Normandy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_GIULKywK78/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Train: Escape To Normandy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_GIULKywK78" data-video-id="_GIULKywK78"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_GIULKywK78" target="_blank" rel="noopener">Open on YouTube</a>

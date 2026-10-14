@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Combat School (1987) – Commodore 64 Arcade Military Training Challenge Released in 1987 for the Commodore 64, Combat School is Ocean Software’s home computer adaptation of Konami’s popular arcade title. Programmed by David Collier and Allan Shortt, with graphics by Simon Butler and Sean Ridings and music by Martin Galway, the game delivers a demanding test of skill and endurance wrapped in a military training theme. You take on the role of a new recruit pushed through a series of gruelling training exercises designed to weed out the weak. These include the obstacle course, firing ranges, the Iron Man race, arm wrestling contests, and hand-to-hand combat against the drill instructor, before putting everything together in a hostage rescue mission. Each event tests different abilities, from precise timing to raw stamina. The gameplay is infamous for its intense joystick-waggling mechanics, requiring fast reactions and physical endurance from you.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Combat School C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/TFDd2bPl3Rw" data-video-id="TFDd2bPl3Rw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Combat School video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/TFDd2bPl3Rw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Combat School C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/TFDd2bPl3Rw" data-video-id="TFDd2bPl3Rw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=TFDd2bPl3Rw" target="_blank" rel="noopener">Open on YouTube</a>

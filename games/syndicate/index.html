@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Syndicate (1993) – Commodore Amiga Cyberpunk Real-Time Tactical Strategy Released in 1993 by Bullfrog Productions, Syndicate is a landmark cyberpunk strategy game set in a bleak future where megacorporations control the world through violence, surveillance, and technology. You command a squad of cybernetically enhanced agents, carrying out assassinations, sabotage, and corporate warfare across a global map of sprawling cityscapes. The game unfolds in real time from an isometric top-down view, blending tactical planning with fast, often brutal action. Missions demand careful positioning, weapon choice, and agent upgrades, while urban environments are filled with civilians, enemy operatives, and destructible surroundings that can quickly turn mayhem into opportunity. One of Syndicate’s defining features is the Persuadatron, a mind-control device that allows you to convert civilians and enemies into loyal followers. Used well, it can completely shift the balance of a mission, turning hostile cities into walking armies under your control.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Syndicate Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pPMn4xx4eTk" data-video-id="pPMn4xx4eTk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Syndicate video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pPMn4xx4eTk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Syndicate Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pPMn4xx4eTk" data-video-id="pPMn4xx4eTk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pPMn4xx4eTk" target="_blank" rel="noopener">Open on YouTube</a>

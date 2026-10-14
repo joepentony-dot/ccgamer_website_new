@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Shinobi (1989) – Commodore 64 Ninja Arcade Beat-’Em-Up Released in 1989 by Virgin Games and developed by The Sales Curve, Shinobi brings Sega’s legendary arcade ninja action to the Commodore 64. You take control of Joe Musashi, a master ninja on a mission to dismantle the Zeed crime syndicate and rescue captured hostages across a series of dangerous locations. Gameplay blends fast side-scrolling combat with precision timing. You fight waves of enemies using shurikens, close-range attacks, and powerful ninja magic, while keeping a close eye on hostage appearances. Rescuing them not only boosts your score but also rewards you with vital power-ups, adding tension and urgency to every encounter. Each stage introduces new enemy patterns and hazards, demanding sharp reactions and careful positioning. While the controls can feel unforgiving at times, success comes from learning enemy behaviour and committing to confident, decisive moves.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Shinobi C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LJ2fo348JZQ" data-video-id="LJ2fo348JZQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Shinobi video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LJ2fo348JZQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Shinobi C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LJ2fo348JZQ" data-video-id="LJ2fo348JZQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LJ2fo348JZQ" target="_blank" rel="noopener">Open on YouTube</a>

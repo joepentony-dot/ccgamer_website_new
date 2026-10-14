@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Time Tunnel (1985) – Commodore 64 Puzzle Adventure Across History Released in 1985 by Applied Systems Engineering and published by U. S. Gold for the Commodore 64, Time Tunnel is an atmospheric puzzle-adventure that casts you as a gnome on a quest to become King of the Gnomes. To succeed, you must recover seven fragments of a magical scroll, each hidden in a different time period. The adventure begins in the gnome’s mansion, where activating a time machine opens portals to wildly different eras, including the Stone Age, Ancient Persia, Mythological Greece, Colonial Salem, the California Gold Rush, an intergalactic spaceship, and a distant black hole in the year 9999. Each setting presents its own logic, hazards, and item-based puzzles that must be solved to progress. A defining feature is the “virtual room” inventory system, accessed by holding the fire button, allowing items to be stored and reused across timelines.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Time Tunnel C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ifsWFog1s40" data-video-id="ifsWFog1s40"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Time Tunnel video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ifsWFog1s40/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Time Tunnel C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ifsWFog1s40" data-video-id="ifsWFog1s40"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ifsWFog1s40" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rock Star Ate My Hamster (1989) – Commodore 64 Music Management Satire Released in 1989 by Codemasters for the Commodore 64, Rock Star Ate My Hamster is a tongue-in-cheek music management simulation inspired by a notorious tabloid headline. Blending sharp humour with strategy, it puts a satirical spin on the excesses and absurdities of the pop music industry. You step into the role of Cecil Pitt, an ambitious music manager guided by his assistant Clive, with the goal of earning four gold discs within a single year. Gameplay is menu-driven, focusing on decisions such as rehearsals, gigs, publicity stunts, recording sessions, and handling scandals as they arise. The band members are exaggerated parodies of real-world pop stars, each with their own strengths, weaknesses, and weekly costs. Success is tracked through a dynamic Top 10 chart system, forcing you to balance creativity, money, reputation, and internal band politics to stay competitive.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rock Star Ate My Hamster C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LQ6FH2DtMAs" data-video-id="LQ6FH2DtMAs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rock Star Ate My Hamster video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LQ6FH2DtMAs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rock Star Ate My Hamster C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LQ6FH2DtMAs" data-video-id="LQ6FH2DtMAs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LQ6FH2DtMAs" target="_blank" rel="noopener">Open on YouTube</a>

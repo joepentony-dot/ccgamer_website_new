@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Hitchhiker’s Guide to the Galaxy (1984) – Commodore 64 Sci-Fi Text Adventure Classic Released in 1984 by Infocom and designed by Douglas Adams alongside Steve Meretzky, The Hitchhiker’s Guide to the Galaxy arrived on the Commodore 64 as one of the most ambitious interactive fiction titles of the 8-bit era. Based directly on Adams’ bestselling novel, the C64 version faithfully recreated the absurd humour and unpredictable sci-fi storytelling that made the book a cult phenomenon. On the Commodore 64, gameplay is entirely text-driven, powered by Infocom’s advanced Z-machine engine. Players must type precise commands to explore environments, solve layered puzzles, and survive increasingly bizarre situations — from escaping a bulldozer to navigating interstellar travel. The parser is famously demanding, often requiring exact phrasing and lateral thinking, making experimentation essential. The C64 release also shipped with Infocom’s signature “feelies” in the box, physical props that enhanced immersion and reinforced its narrative depth.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Hitchhikers Guide To The Galaxy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qY0cR8RFXi4" data-video-id="qY0cR8RFXi4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Hitchhikers Guide To The Galaxy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qY0cR8RFXi4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Hitchhikers Guide To The Galaxy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qY0cR8RFXi4" data-video-id="qY0cR8RFXi4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qY0cR8RFXi4" target="_blank" rel="noopener">Open on YouTube</a>

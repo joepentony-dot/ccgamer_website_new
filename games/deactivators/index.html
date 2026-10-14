@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Deactivators (1986) – Commodore 64 Action Puzzle | Retro Classic Released in 1986 by Tigress Marketing and published by Ariolasoft under their Reaktör label, Deactivators is a highly original action-puzzle game built around bomb disposal and spatial problem-solving. In the game, you control a squad of robotic “deactivators” sent into five dangerous research complexes to locate and neutralise bombs planted by terrorists. Gameplay revolves around navigating interconnected rooms, picking up and throwing bombs, activating force-field switches, and using teleporters linked to hidden circuit boards. Each room features shifting gravity orientations, where walls can become floors and ceilings can become walls, forcing players to constantly rethink movement and timing. Security droids patrol many areas, adding a tactical layer as you evade or manipulate them. Visually, the Commodore 64 version uses a restrained colour palette, but impresses with clean layouts and clever spatial design.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Deactivators C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/oPXFtXLTsW8" data-video-id="oPXFtXLTsW8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Deactivators video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/oPXFtXLTsW8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Deactivators C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/oPXFtXLTsW8" data-video-id="oPXFtXLTsW8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=oPXFtXLTsW8" target="_blank" rel="noopener">Open on YouTube</a>

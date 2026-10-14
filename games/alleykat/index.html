@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Alleykat (1986) – Commodore 64 Futuristic Racing Shoot-’Em-Up Released in 1986 by Hewson Consultants and developed by Andrew Braybrook, Alleykat is a technically ambitious hybrid that blends vertical scrolling shooter action with high-speed futuristic racing. Set within a competitive racing league, you pilot a multi-mode speeder across hostile tracks packed with obstacles and enemy threats. Gameplay revolves around completing laps while managing speed, firepower, and energy reserves. The speeder can switch between different flight modes, each affecting handling and weapon strength, forcing you to adapt on the fly. Tracks are filled with destructible scenery and aggressive enemies, including the infamous Katerkiller, a relentless caterpillar-like menace that demands quick reactions and precise control. A variety of race types keep the structure varied, ranging from time-based challenges to endurance events with shifting priorities. Energy management is critical, as collisions and sustained damage can quickly end a run if resources aren’t carefully balanced.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Alleykat C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/BcDC1weWG4I" data-video-id="BcDC1weWG4I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Alleykat video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/BcDC1weWG4I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Alleykat C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/BcDC1weWG4I" data-video-id="BcDC1weWG4I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=BcDC1weWG4I" target="_blank" rel="noopener">Open on YouTube</a>

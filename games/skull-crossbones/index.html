@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Skull &amp; Crossbones (1991), developed by Walking Circles and published by Domark / Tengen, is a pirate-themed side-scrolling beat ’em up for the Commodore 64. You choose between One Eye or Red Dog, two swashbuckling heroes on a mission to recover stolen treasure and rescue a kidnapped princess from an evil wizard. The adventure takes you through ships, castles, caves, and other exotic locations, battling waves of enemies and powerful bosses along the way. Between stages, collected loot can be traded to upgrade weapons such as cutlasses, knives, and flintlock pistols, adding a light role-playing element to progression. The C64 conversion removes some arcade features, including true simultaneous co-op, replacing it with alternating turns. Controls are often criticised for feeling sluggish, with certain actions requiring awkward inputs. One standout feature is the soundtrack by Matt Furniss, which delivers a memorable high-seas theme — though players must choose between music and sound effects.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Skull &amp; Crossbones C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/MMw23EodHmI" data-video-id="MMw23EodHmI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Skull &amp; Crossbones video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/MMw23EodHmI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Skull &amp; Crossbones C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/MMw23EodHmI" data-video-id="MMw23EodHmI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=MMw23EodHmI" target="_blank" rel="noopener">Open on YouTube</a>

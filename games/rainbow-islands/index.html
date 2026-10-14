@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rainbow Islands (1990) – Commodore Amiga Vertical Platform Arcade Classic Released in 1990, Rainbow Islands is the colourful sequel to Bubble Bobble, developed by Taito and expertly ported to the Commodore Amiga by Graftgold, with publishing duties handled by Ocean Software. Bub and Bob return in human form, setting out to free the Rainbow Islands from an evil wizard in a joyful but demanding platforming quest. Gameplay shifts to vertically scrolling stages where progress is all about momentum and positioning. You create rainbows that double as weapons and platforms, trapping enemies beneath them or using them to climb higher. Mastery comes from chaining jumps, controlling enemy movement, and collecting power-ups that enhance speed, range, and scoring potential. The adventure spans seven main islands, each ending with a boss encounter, while skilled players can unlock secret islands by collecting all seven rainbow-coloured diamonds.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rainbow Islands Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/VT0ahmX9HyI" data-video-id="VT0ahmX9HyI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rainbow Islands video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/VT0ahmX9HyI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rainbow Islands Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/VT0ahmX9HyI" data-video-id="VT0ahmX9HyI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=VT0ahmX9HyI" target="_blank" rel="noopener">Open on YouTube</a>

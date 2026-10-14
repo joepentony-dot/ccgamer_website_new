@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Wings of Fury (1990) – Commodore Amiga WWII Arcade Flight Combat Originally developed by Steve Waldo and released by Brøderbund in 1987, Wings of Fury arrived on the Commodore Amiga in 1990 via Unlimited Software Inc. , bringing its World War II Pacific air combat to a new level of audiovisual polish. Players take on the role of a US Navy pilot flying the F6F Hellcat, launching from the USS Wasp to strike Japanese targets across a chain of hostile islands. Gameplay blends fast-paced arcade shooting with light simulation elements. Missions involve strafing ground installations, bombing bunkers, and torpedoing enemy ships, while carefully managing fuel, ammunition, and aircraft damage. Successful pilots must return safely to the carrier to refuel, rearm, and make repairs before heading back into combat. The Amiga version stands out for its smooth animation, detailed visuals by John Boechler, and an atmospheric soundtrack composed by Kris Hatlelid, all of which enhance the sense of scale and tension during each sortie.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Wings Of Fury Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/TTyNi8PgJQ4" data-video-id="TTyNi8PgJQ4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Wings Of Fury video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/TTyNi8PgJQ4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Wings Of Fury Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/TTyNi8PgJQ4" data-video-id="TTyNi8PgJQ4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=TTyNi8PgJQ4" target="_blank" rel="noopener">Open on YouTube</a>

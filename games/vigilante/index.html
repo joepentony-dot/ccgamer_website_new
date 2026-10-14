@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Vigilante (1988) – Commodore 64 Street Brawler with Arcade Roots Released in 1988 by Irem, Vigilante brings raw, street-level action to the Commodore 64 as a direct follow-up in spirit to Kung-Fu Master. You play a lone martial artist battling through the mean streets of New York with one goal in mind: rescue Maria from the Rogues gang. The action is immediate and uncompromising. You push through five stages packed with thugs attacking from both sides, mixing punches and kicks while managing spacing and timing to avoid being swarmed. Nunchaku add extra bite when you can grab them, and the infamous grab mechanic forces quick reactions to escape enemy holds. On the C64, Vigilante focuses on delivering the feel of the arcade rather than spectacle. The presentation is stripped back, but the core mechanics remain intact, keeping the emphasis firmly on reflexes, positioning, and endurance.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Vigilante C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/emQAfIIBiqk" data-video-id="emQAfIIBiqk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Vigilante video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/emQAfIIBiqk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Vigilante C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/emQAfIIBiqk" data-video-id="emQAfIIBiqk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=emQAfIIBiqk" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ How to Be a Complete Bastard (1987) – Commodore 64 Satirical Party Adventure Released in 1987 by Virgin Games and developed by Sentient Software, How to Be a Complete Bastard is one of the most unconventional adventure games on the Commodore 64. Based on Adrian Edmondson’s book, it drops you into a house party with a single goal: cause as much mayhem as possible and drive every guest away. Played from an isometric perspective, the game revolves around exploring rooms, interacting with objects, and performing increasingly antisocial actions to rack up “bastard points.” You’ll need to juggle meters such as the Weeometer, Drunkometer, and Fartometer, balancing maximum disruption with personal survival. Rather than traditional puzzles, progress comes from experimentation and timing, learning how different actions affect guests and the party atmosphere. Its humour leans heavily into satire, mocking social etiquette and pushing boundaries far beyond typical 8-bit adventures.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="How To Be A Complete Bastard C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/MwxEyR4ltOw" data-video-id="MwxEyR4ltOw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play How To Be A Complete Bastard video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/MwxEyR4ltOw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="How To Be A Complete Bastard C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/MwxEyR4ltOw" data-video-id="MwxEyR4ltOw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=MwxEyR4ltOw" target="_blank" rel="noopener">Open on YouTube</a>

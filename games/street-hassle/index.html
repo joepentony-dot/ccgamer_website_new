@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Street Hassle (1987) – Commodore 64 Side-Scrolling Beat ’Em Up Oddity Released in 1987, developed by Beam Software and published by Melbourne House, Street Hassle is a side-scrolling beat ’em up that takes the usual street-fighting formula and makes it considerably stranger. Your job is simple enough: walk through the city and deal with anybody foolish enough to get in your way. The opposition, however, is anything but ordinary. Alongside the expected street thugs you’ll encounter gorillas, towering basketball players, dogs, motorcyclists and elderly ladies armed with handbags. Combat gives you a surprisingly varied selection of attacks, with punches, kicks and some decidedly unconventional moves available as you work your way through each stage. There’s also a two-player option, with players taking turns to tackle the streets. Street Hassle was developed by Australian studio Beam Software and was also released under the names Bop ’N Rumble and Bad Street Brawler in other territories.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Street Hassle C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/F55Y_917VhE" data-video-id="F55Y_917VhE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Street Hassle video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/F55Y_917VhE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Street Hassle C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/F55Y_917VhE" data-video-id="F55Y_917VhE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=F55Y_917VhE" target="_blank" rel="noopener">Open on YouTube</a>

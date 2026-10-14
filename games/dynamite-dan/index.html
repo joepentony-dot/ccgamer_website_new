@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dynamite Dan (1985) – Commodore 64 Espionage Platform Adventure Released in 1985 by Mirrorsoft and developed by Rod Bowkett, Dynamite Dan is a platform action-adventure that blends secret-agent intrigue with precise exploration. You step into the shoes of Dan, tasked with infiltrating the lair of the sinister Dr. Blitzen to recover stolen plans for a world-threatening laser weapon. The game unfolds across a large mansion made up of 48 interconnected rooms, demanding careful navigation and route planning. Progress hinges on collecting eight sticks of dynamite to open the central safe, while teleporters, trampolines, lifts, and switches add layers to movement and puzzle-solving. Energy management and enemy avoidance keep the pressure high throughout. Level design is a standout, encouraging methodical exploration and rewarding memory and mastery. Contemporary reviews highlighted the structure of the building and the pull of its gameplay loop, noting its strong visuals and addictive pacing, even if the audio was more restrained on the C64.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dynamite Dan C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/SK1xpk5Ju38" data-video-id="SK1xpk5Ju38"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dynamite Dan video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/SK1xpk5Ju38/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dynamite Dan C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/SK1xpk5Ju38" data-video-id="SK1xpk5Ju38"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=SK1xpk5Ju38" target="_blank" rel="noopener">Open on YouTube</a>

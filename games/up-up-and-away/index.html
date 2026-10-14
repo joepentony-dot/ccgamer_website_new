@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Up Up and Away (1985) – Commodore 64 Hot Air Balloon Action Survival Released in 1985 by Starcade Software and developed by Gwyll Jones, Up Up and Away is a distinctive side-scrolling action game for the Commodore 64 that puts you in control of a hot air balloon drifting across a hazardous landscape. Its unusual theme and mechanics set it apart from more conventional arcade titles of the era. Gameplay revolves around careful balloon control as the screen scrolls relentlessly forward. You must dodge clouds, trees, kites, birds, and even people hurling rocks from below, all while managing a limited fuel supply that drains whenever the balloon ascends. To stay aloft, you can drop sandbags to reduce weight—these also double as weapons, used to hit targets marked with a “P” for bonus points. Strategic planning is key, as landing at checkpoints allows you to refuel and restock sandbags before pressing on.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Up Up And Away C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1Mg-A3N5LBM" data-video-id="1Mg-A3N5LBM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Up Up And Away video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1Mg-A3N5LBM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Up Up And Away C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1Mg-A3N5LBM" data-video-id="1Mg-A3N5LBM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1Mg-A3N5LBM" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Floor 13 (1992) – Commodore Amiga Political Strategy Espionage Classic Released in 1992 by Virgin Interactive Entertainment and developed by PSI Software Designers, Floor 13 is a dark political strategy game for the Commodore Amiga that places players at the heart of a shadowy British government agency. Operating from the infamous secret 13th floor, you assume the role of Director General, tasked with keeping the government in power by any means necessary. Gameplay is driven through a menu-based interface styled with a film noir presentation, blending espionage, bureaucracy, and moral compromise. Players issue orders to departments such as surveillance, propaganda, blackmail, and assassination in order to suppress scandals, manipulate public opinion, and neutralise threats to government stability. Every decision carries consequences, often with unpredictable outcomes. Public approval is reviewed every 21 days, and failure to maintain sufficient popularity can result in dismissal, imprisonment, or assassination.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Floor 13 Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/N202Hy1dvQI" data-video-id="N202Hy1dvQI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Floor 13 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/N202Hy1dvQI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Floor 13 Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/N202Hy1dvQI" data-video-id="N202Hy1dvQI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=N202Hy1dvQI" target="_blank" rel="noopener">Open on YouTube</a>

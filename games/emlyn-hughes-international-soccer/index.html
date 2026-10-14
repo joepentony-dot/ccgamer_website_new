@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Emlyn Hughes International Soccer (1988) – Commodore 64 Deep Football Simulation Classic Released in 1988 by Audiogenic, Emlyn Hughes International Soccer is widely regarded as one of the finest football games on the Commodore 64. Named after England and Liverpool legend Emlyn Hughes, the game set itself apart by blending fast-paced on-pitch action with detailed management and tactical depth. Matches are presented from a side-on perspective, giving you precise control over passing, shooting, and movement. The control system allows for five-directional passes and shots, diving headers, lobs, slide tackles, and carefully weighted through balls, rewarding skill and positioning over button-mashing. Beyond the action, EHIS introduces an ambitious management layer. You can tweak formations, adjust your abilities, and take teams through full league and cup campaigns, adding long-term strategy rarely seen in football games of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Emlyn Hughes International Soccer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ik9j134uqmM" data-video-id="Ik9j134uqmM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Emlyn Hughes International Soccer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Ik9j134uqmM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Emlyn Hughes International Soccer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Ik9j134uqmM" data-video-id="Ik9j134uqmM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Ik9j134uqmM" target="_blank" rel="noopener">Open on YouTube</a>

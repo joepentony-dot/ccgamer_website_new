@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Donkey Kong (1983 / 1986) – Commodore 64 Arcade Platforming Legend Donkey Kong is one of the most iconic arcade games of all time, and on the Commodore 64 it arrived in two very different forms. The first port, released in 1983 by Atarisoft, aimed to replicate the arcade original as closely as possible, delivering familiar layouts, bold colours, and a faithful sense of challenge that many players still regard as the most authentic C64 version. In 1986, Ocean Software released their own take on Donkey Kong, featuring more detailed graphics and enhanced sound. While visually more polished, this version takes a few liberties with the arcade feel, making it a fascinating comparison for long-time fans of the game. You control Jumpman as he climbs girders, ladders, and elevators to rescue Lady from the clutches of Donkey Kong.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Donkey Kong C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/n11taRLnacg" data-video-id="n11taRLnacg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Donkey Kong video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/n11taRLnacg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Donkey Kong C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/n11taRLnacg" data-video-id="n11taRLnacg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=n11taRLnacg" target="_blank" rel="noopener">Open on YouTube</a>

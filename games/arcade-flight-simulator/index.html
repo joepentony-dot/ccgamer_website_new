@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Arcade Flight Simulator (1989) – Commodore 64 Arcade Aerial Combat Shooter Released in 1989, Arcade Flight Simulator is a top-down, horizontally scrolling shoot ’em up for the Commodore 64 developed by Amazing Games and published by Codemasters. Despite its misleading title, the game focuses firmly on fast-paced arcade action rather than realistic flight simulation. The game is split across three distinct eras of aerial warfare. You dogfight in fragile biplanes during World War I, take on classic prop-driven combat in World War II over the Pacific, and finish with futuristic jet battles set in a fictional World War III scenario. Each stage brings different enemies, aircraft, and visual styles. Gameplay centres on shooting down enemy planes, destroying ground targets, and managing fuel by landing safely to refuel mid-mission. The constantly scrolling landscapes keep the action moving, while a two-player mode allows head-to-head aerial battles, adding a competitive edge.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Arcade Flight Simulator C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/2y6Hd9WCOyg" data-video-id="2y6Hd9WCOyg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Arcade Flight Simulator video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/2y6Hd9WCOyg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Arcade Flight Simulator C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/2y6Hd9WCOyg" data-video-id="2y6Hd9WCOyg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=2y6Hd9WCOyg" target="_blank" rel="noopener">Open on YouTube</a>

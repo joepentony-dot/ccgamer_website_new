@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Xybots (1989) – Commodore Amiga 3D Maze Shooter with Arcade Roots Originally released in arcades in 1987 by Atari Games and later ported to the Commodore Amiga in 1989 by Teque Software and published by Domark, Xybots blends sci-fi action with tactical maze navigation. Players take on the role of Major Rock Hardy or Captain Ace Gunn, elite operatives fighting through hostile complexes overrun by robotic enemies determined to wipe out humanity. Gameplay centres on navigating 3D maze environments while managing positioning, aiming, and movement with care. The split-screen presentation shows the player’s perspective alongside a tactical overview, encouraging awareness of enemy placement and level layout. Energy capsules can be collected to survive longer runs, while upgrades and hidden areas reward careful exploration rather than reckless rushing. The Amiga version captures the tense atmosphere of the arcade original, combining deliberate pacing with bursts of intense combat.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Xybots Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/deMCb03FkYM" data-video-id="deMCb03FkYM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Xybots video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/deMCb03FkYM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Xybots Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/deMCb03FkYM" data-video-id="deMCb03FkYM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=deMCb03FkYM" target="_blank" rel="noopener">Open on YouTube</a>

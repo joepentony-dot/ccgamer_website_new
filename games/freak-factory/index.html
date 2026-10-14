@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Freak Factory (1986) – Commodore 64 Sci-Fi Action Platformer Released in 1986 by Firebird Software and developed by Simon W. Sorsbie, Freak Factory casts you as Agent One of the Galactic Police Force on a mission to shut down a deranged scientist and his monster-producing laboratory. It’s a strange, experimental title that blends action, platforming, and endurance testing. The game is split into two distinct sections. First, you navigate a multi-level factory, carefully avoiding electrified barriers, spikes, and roaming gargoyles that steadily drain your energy. Progress demands patience and precise movement as you work your way deeper into the complex. Once inside the laboratory, the focus shifts to direct confrontation. Here, you face the professor’s assistants in close-quarters encounters that rely on rapid joystick movement to overpower them, turning survival into a test of stamina as much as skill.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Freak Factory C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ID0t_M8Xc68" data-video-id="ID0t_M8Xc68"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Freak Factory video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ID0t_M8Xc68/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Freak Factory C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ID0t_M8Xc68" data-video-id="ID0t_M8Xc68"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ID0t_M8Xc68" target="_blank" rel="noopener">Open on YouTube</a>

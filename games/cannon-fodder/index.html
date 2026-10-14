@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cannon Fodder (1993) – Commodore Amiga Squad-Based Action with a Dark Edge Released in 1993 by Sensible Software, Cannon Fodder is a top-down, squad-based action game that blends fast-paced shooting with tactical decision-making. You command a small unit of soldiers across jungles, deserts, and frozen landscapes, guiding them through missions that demand careful movement, positioning, and awareness of the terrain. While the controls are immediate and accessible, survival depends on strategy. You need to manage limited ammunition, avoid mines and traps, and keep your squad alive as casualties permanently remove soldiers from your roster. Each loss is marked, reinforcing the game’s underlying message beneath the playful presentation. The bright visuals and catchy theme tune, famously declaring “War Has Never Been So Much Fun,” contrast sharply with the reality of what’s happening on screen. This satirical tone gives Cannon Fodder its identity, using humour to highlight the human cost of conflict rather than glorifying it.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cannon Fodder Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6Dne1NUo_ac" data-video-id="6Dne1NUo_ac"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cannon Fodder video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6Dne1NUo_ac/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cannon Fodder Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6Dne1NUo_ac" data-video-id="6Dne1NUo_ac"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6Dne1NUo_ac" target="_blank" rel="noopener">Open on YouTube</a>

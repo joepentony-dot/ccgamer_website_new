@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Indiana Jones and the Fate of Atlantis (1992) – Commodore 64 Action-Adventure Epic Released in 1992 by LucasArts for the Commodore 64, Indiana Jones and the Fate of Atlantis is an ambitious action-adventure that sends Indy on a globe-trotting race against the Nazis to uncover the secrets of the legendary lost city. Packed with exploration, puzzle-solving, and tense encounters, it delivers a cinematic adventure true to the spirit of the films. You guide Indiana Jones through exotic locations, using his whip, fists, and wits to overcome enemies and environmental challenges. The game allows different approaches to progression, encouraging you to choose how they tackle obstacles and solve puzzles, with decisions shaping the flow of the adventure. While the Commodore 64 version is more constrained than its counterparts on more powerful systems, it retains the core gameplay ideas and memorable moments that define Fate of Atlantis.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Indiana Jones And The Fate Of Atlantis C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/glIDEk73wm8" data-video-id="glIDEk73wm8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Indiana Jones And The Fate Of Atlantis video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/glIDEk73wm8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Indiana Jones And The Fate Of Atlantis C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/glIDEk73wm8" data-video-id="glIDEk73wm8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=glIDEk73wm8" target="_blank" rel="noopener">Open on YouTube</a>

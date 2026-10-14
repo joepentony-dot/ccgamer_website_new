@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Henry’s House (1984) – Commodore 64 Single-Screen Platform Adventure Classic Released in 1984 by English Software and developed by Chris Murray for the Commodore 64, Henry’s House is a charming single-screen platform game that transforms everyday household spaces into imaginative obstacle courses. You take control of Little Henry as he explores the rooms of his home, collecting items and avoiding quirky domestic hazards. Gameplay revolves around clearing each room by gathering all scattered objects, which causes a key to appear. Once collected, the key unlocks the exit and allows progression to the next area. With no time limit in place, you are encouraged to move carefully, study enemy patterns, and plan safe routes through each level. Across eight distinct rooms, Henry must dodge moving toothbrushes, toasters, coffee machines, and other animated appliances that threaten to knock him off course.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Henry&#39;s House C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6AXyZPb9_Xk" data-video-id="6AXyZPb9_Xk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Henry&#39;s House video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6AXyZPb9_Xk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Henry&#39;s House C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6AXyZPb9_Xk" data-video-id="6AXyZPb9_Xk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6AXyZPb9_Xk" target="_blank" rel="noopener">Open on YouTube</a>

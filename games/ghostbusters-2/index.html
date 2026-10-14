@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ghostbusters II (1989) – Commodore 64 Licensed Action with Multi-Stage Gameplay Released in 1989 and developed by Foursfield, Ghostbusters II is a top-down action game for the Commodore 64, published by Activision and based on the hit movie sequel. Rather than a single gameplay style, the game is structured around several distinct stages that recreate key moments from the film. The action begins in the sewers beneath New York, where you guide a Ghostbuster down vertical shafts to collect slime samples while avoiding or neutralising ghosts. This is followed by a top-down driving section through the streets of Manhattan, piloting the Ecto-1 to trap roaming spirits while dodging traffic and obstacles. The final stage shifts perspective again, delivering a side-scrolling shooter set inside the museum as you confront the game’s main threat. Each section demands a different skill set, keeping the experience varied while staying faithful to the film’s locations and tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ghostbusters II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-sh1Ym3NwDQ" data-video-id="-sh1Ym3NwDQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ghostbusters II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-sh1Ym3NwDQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ghostbusters II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-sh1Ym3NwDQ" data-video-id="-sh1Ym3NwDQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-sh1Ym3NwDQ" target="_blank" rel="noopener">Open on YouTube</a>

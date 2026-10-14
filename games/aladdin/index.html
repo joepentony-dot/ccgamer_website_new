@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Aladdin (1994) – Commodore Amiga Disney Platform Adventure Released for the Commodore Amiga in 1994 by Virgin Interactive, Aladdin is a colourful platform game based on Disney’s hugely successful animated film. Developed from the same design as the Mega Drive version, the Amiga port brought the adventure of Agrabah to home computer players with detailed sprites, lively animation, and fast arcade-style gameplay. Players take control of Aladdin as he runs, jumps, and fights his way through stages inspired by the movie. From the busy rooftops of Agrabah to the treacherous Cave of Wonders and the Sultan’s palace, each level mixes precise platforming with combat using Aladdin’s scimitar or thrown apples to defeat enemies. The game also includes collectible gems, bonus tokens, and special mini-games featuring Genie and Abu. These extra challenges provide opportunities to earn additional lives and rewards, encouraging players to explore levels carefully rather than simply rushing to the exit.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Aladdin Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qug68Ypv2Pg" data-video-id="qug68Ypv2Pg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Aladdin video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qug68Ypv2Pg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Aladdin Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qug68Ypv2Pg" data-video-id="qug68Ypv2Pg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qug68Ypv2Pg" target="_blank" rel="noopener">Open on YouTube</a>

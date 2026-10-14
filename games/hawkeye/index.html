@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hawkeye (1988) – Commodore 64 Side-Scrolling Platform Shooter Classic Released in 1988 by Thalamus and developed by Boys Without Brains, Hawkeye is a visually striking side-scrolling platform shooter set in a bleak post-apocalyptic future. You take control of a cybernetic warrior battling through a ruined world, fighting to reclaim the planet from alien forces across a series of tightly designed levels. Gameplay blends fast arcade shooting with methodical exploration. Each stage requires you to hunt down hidden puzzle pieces while managing enemy patterns, hazards, and precise platforming. Multiple weapon types keep combat varied, and progression depends on fully mastering each environment rather than simply rushing forward. The game’s presentation is a major part of its identity. Parallax scrolling adds depth to the landscapes, while detailed sprites and smooth movement give the action a polished, high-end feel that became synonymous with Thalamus releases.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hawkeye C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/8jx8AGhfgfk" data-video-id="8jx8AGhfgfk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hawkeye video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/8jx8AGhfgfk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hawkeye C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/8jx8AGhfgfk" data-video-id="8jx8AGhfgfk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=8jx8AGhfgfk" target="_blank" rel="noopener">Open on YouTube</a>

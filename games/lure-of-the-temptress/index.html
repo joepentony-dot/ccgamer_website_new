@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Lure of the Temptress (1992) – Amiga Adventure | Retro Classic Lure of the Temptress (1992) is a classic point-and-click adventure game developed by Revolution Software and published by Virgin Interactive. Set in the medieval kingdom of Turnvale, you play as Diermot, a young peasant who must overthrow the evil sorceress known as the Temptress. Using the innovative Virtual Theatre engine, the game features a dynamic world where NPCs follow their own routines. The unique “Tell” command allows players to issue detailed instructions, adding depth to puzzle-solving and interaction. Its atmospheric graphics, ambient sound design, and engaging narrative set it apart from many contemporaries. While Diermot himself may lack depth, the rich world-building and clever mechanics have earned the game a loyal following. Lure of the Temptress remains an important title in the adventure genre, showcasing early advances in interactive storytelling and game design.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Lure Of The Temptress Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/0Z04IYSj8Ek" data-video-id="0Z04IYSj8Ek"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Lure Of The Temptress video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/0Z04IYSj8Ek/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Lure Of The Temptress Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/0Z04IYSj8Ek" data-video-id="0Z04IYSj8Ek"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=0Z04IYSj8Ek" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ninja Rabbits (1991) – Commodore 64 Beat ’Em Up by MicroValue Ninja Rabbits is a strange little 1991 C64 beat ’em up from Flair Software and MicroValue: a game where a martial-arts rabbit heads through the countryside, city streets and sewers, battering a parade of mutant animals, thugs and fellow ninjas. On paper, it sounds like exactly the sort of daft early-’90s budget game the Commodore 64 was made for. In practice, it is a curious mix. The C64 version has big, colourful sprites, detailed backdrops and far more visual ambition than you might expect from a £3 MicroValue release. It really does look the part. Then you pick up the joystick. Combat is limited, movement is sluggish, and the game’s handful of screens soon begin to test your patience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ninja Rabbits C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/UU8anIRgXkk" data-video-id="UU8anIRgXkk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ninja Rabbits video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/UU8anIRgXkk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ninja Rabbits C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/UU8anIRgXkk" data-video-id="UU8anIRgXkk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=UU8anIRgXkk" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Alter Ego (1986) – Commodore 64 Life Simulation Role-Playing Adventure Classic Released in 1986 by Activision and designed by Peter J. Favaro for the Commodore 64, Alter Ego is a pioneering life simulation RPG that broke away from traditional game design. Instead of focusing on combat or high scores, it invites players to shape the life of an imaginary character and experience the long-term consequences of their decisions. The game begins with a detailed personality test that determines core attributes such as confidence, intelligence, and physical health. From there, players guide their alter ego through seven stages of life, from infancy to old age, facing moral, social, and practical choices that influence relationships, careers, and personal development. Progression is entirely choice-driven, with each decision subtly altering future opportunities and risks. Some paths lead to success and fulfilment, while others can result in failure, regret, or even premature death, giving the game remarkable emotional depth and replay value.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Alter Ego C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/vmJeqi84EC0" data-video-id="vmJeqi84EC0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Alter Ego video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/vmJeqi84EC0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Alter Ego C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/vmJeqi84EC0" data-video-id="vmJeqi84EC0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=vmJeqi84EC0" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Stairways (1985) – Commodore 64 Action Shooter | Retro Review Stairways (1985), developed and published by Thor Computer Software, is a quirky and highly distinctive action-shooter for the Commodore 64, set almost entirely inside a chaotic pub. You play as a bar patron on a mission to collect seven fragments of the legendary amulet of the great budgie WONGA — all while trying to avoid being thrown out by the doorman. Gameplay takes place in a side-view scrolling environment where you must balance three key attributes: energy, hunger, and drunkenness. Hallucinations drain your energy, spilled drinks anger staff, and sobering up makes defending yourself more difficult. To survive, you can return to the bar to get more intoxicated, grab food from a burger kiosk, and carefully manage your condition while shooting “thought bubble” enemies.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Stairways C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Vr4KQ_tOC5Q" data-video-id="Vr4KQ_tOC5Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Stairways video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Vr4KQ_tOC5Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Stairways C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Vr4KQ_tOC5Q" data-video-id="Vr4KQ_tOC5Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Vr4KQ_tOC5Q" target="_blank" rel="noopener">Open on YouTube</a>

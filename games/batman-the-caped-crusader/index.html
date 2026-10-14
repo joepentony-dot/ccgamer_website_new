@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Batman: The Caped Crusader (1988) – Commodore 64 Comic-Book Action Adventure Released in 1988 for the Commodore 64, Batman: The Caped Crusader is an inventive action-adventure developed by Special FX Software and published by Ocean Software. Rather than following a conventional layout, the game presents its world like a living comic book, with each new area revealed as a fresh panel complete with captions and dramatic transitions. The game is split into two self-contained episodes. “A Bird in the Hand” pits Batman against the Penguin, while “A Fete Worse Than Death” focuses on the Joker. Both episodes mix side-scrolling combat with exploration and environmental interaction, requiring you to think as much as you fight. Batman’s moveset includes punches, kicks, and his iconic Batarang, but progress often depends on using the surroundings to your advantage.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Batman: The Caped Crusader C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/H1hDGTYybRA" data-video-id="H1hDGTYybRA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Batman: The Caped Crusader video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/H1hDGTYybRA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Batman: The Caped Crusader C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/H1hDGTYybRA" data-video-id="H1hDGTYybRA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=H1hDGTYybRA" target="_blank" rel="noopener">Open on YouTube</a>

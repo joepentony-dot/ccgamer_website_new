@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Frightmare (1988) – Commodore 64 Surreal Nightmare Platform Horror Released in 1988 for the Commodore 64, Frightmare is a surreal platform game developed by Floppy and published by Cascade Games. Set within a disturbing dreamscape, the game tasks you with surviving a series of nightmarish encounters until the alarm clock finally rings at 8:12 AM. Gameplay unfolds across a collection of interconnected rooms, each filled with strange creatures, traps, and hazards. Progress is measured not by reaching an ending, but by endurance, with every room visited advancing the alarm clock by six minutes. You must rely on sharp reflexes, careful movement, and quick decision-making to stay alive for as long as possible. Enemies range from ghosts to ghoulies, reinforcing the game’s uneasy tone. The lack of traditional goals or rewards heightens the sense of dread, making survival itself the only objective.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Frightmare C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/MCSy-e2O3yw" data-video-id="MCSy-e2O3yw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Frightmare video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/MCSy-e2O3yw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Frightmare C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/MCSy-e2O3yw" data-video-id="MCSy-e2O3yw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=MCSy-e2O3yw" target="_blank" rel="noopener">Open on YouTube</a>

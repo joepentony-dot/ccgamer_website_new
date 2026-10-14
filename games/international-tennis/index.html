@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ International Tennis (1992) – Commodore 64 Arcade Sports Tennis Classic Released in 1992 by Zeppelin Games for the Commodore 64, International Tennis is a late-era sports title that delivers a polished, arcade-leaning take on tennis. Programmed by Jason Benham, it arrived during the C64’s twilight years and stood out for its smooth presentation and accessible, competitive gameplay. You can take part in singles or doubles matches against the computer or a human opponent, with responsive controls allowing for serves, volleys, lobs, and powerful smashes. The pacing encourages longer rallies, while the ball physics feel tight and predictable, rewarding smart positioning and shot placement over button-mashing. Visually, International Tennis makes confident use of the C64’s colour palette and sprite handling, featuring clean court layouts and fluid player animations. The audio is understated but effective, with catchy title music and subtle sound effects that keep the focus firmly on the action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="International Tennis C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/70HrkDhjvPI" data-video-id="70HrkDhjvPI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play International Tennis video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/70HrkDhjvPI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="International Tennis C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/70HrkDhjvPI" data-video-id="70HrkDhjvPI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=70HrkDhjvPI" target="_blank" rel="noopener">Open on YouTube</a>

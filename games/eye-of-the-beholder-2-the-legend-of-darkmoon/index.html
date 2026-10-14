@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Eye of the Beholder II: The Legend of Darkmoon (1991) – Commodore Amiga Dungeon-Crawling RPG Sequel Released in 1991, Eye of the Beholder II: The Legend of Darkmoon is a first-person dungeon-crawling role-playing game developed by Westwood Associates and published by Strategic Simulations, Inc. for the Commodore Amiga and other platforms. Set in the Dungeons &amp; Dragons universe, the game continues the story of the original Eye of the Beholder, sending players deep into the mysterious Temple of Darkmoon. Players assemble a party of adventurers, either creating new characters or importing heroes from the previous game. Exploration unfolds in real time from a first-person perspective, with tactical combat, secret doors, traps, and a strong emphasis on puzzle-solving. Compared to its predecessor, the sequel refines dungeon layouts and introduces more intricate puzzles that reward careful observation and planning.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Eye Of The Beholder II: The Legend Of Darkmoon Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XOqDm3_II_s" data-video-id="XOqDm3_II_s"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Eye Of The Beholder II: The Legend Of Darkmoon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/XOqDm3_II_s/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Eye Of The Beholder II: The Legend Of Darkmoon Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/XOqDm3_II_s" data-video-id="XOqDm3_II_s"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=XOqDm3_II_s" target="_blank" rel="noopener">Open on YouTube</a>

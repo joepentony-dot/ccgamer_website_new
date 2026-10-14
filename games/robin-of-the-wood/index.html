@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Robin of the Wood (1985) – Commodore 64 Action Adventure Maze Classic Released in 1985 by Odin Computer Graphics for the Commodore 64, Robin of the Wood is an atmospheric action-adventure maze game programmed by Marc Dawson, featuring graphics by Stuart Fotheringham and music by Fred Gray. You step into the role of Robin Hood, exploring the depths of Sherwood Forest in search of the legendary Silver Arrow, which has been seized by the Sheriff of Nottingham. Progress begins by collecting gold to purchase essential equipment, including swords and bows, from the mysterious forest Ent before venturing deeper into hostile territory. The game unfolds across a vast 16×20 screen maze populated by Norman soldiers, wild boars, witches, a wise Hermit, and surprise encounters with high-ranking medieval figures. Navigation relies on careful exploration, memory, and timing, with screen-by-screen progression rewarding patient and methodical play.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Robin Of The Wood C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ktq2q1-SJKc" data-video-id="Ktq2q1-SJKc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Robin Of The Wood video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Ktq2q1-SJKc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Robin Of The Wood C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Ktq2q1-SJKc" data-video-id="Ktq2q1-SJKc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Ktq2q1-SJKc" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Crystal Castles (1984) – Commodore 64 Isometric Arcade Gem-Hunting Classic Released in 1984, Crystal Castles is an arcade-style collect-’em-up developed by Atari and brought to the Commodore 64 by US Gold. You take control of Bentley Bear, navigating a series of colourful, multi-level castles viewed from an isometric perspective that was still relatively uncommon at the time. Each level challenges you to collect every gem scattered across maze-like platforms while avoiding enemies that patrol the castles. Berthilda the Witch and her minions create constant pressure, forcing careful movement and route planning. Occasionally, a magic hat appears, granting temporary invincibility and a brief chance to clear sections without fear. As the castles progress, layouts become more complex and enemy patterns more demanding, pushing reflexes and spatial awareness. The isometric viewpoint adds depth but also increases difficulty, especially when judging movement and avoiding hazards on narrow paths.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Crystal Castles C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KgmBkzj4d5s" data-video-id="KgmBkzj4d5s"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Crystal Castles video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KgmBkzj4d5s/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Crystal Castles C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KgmBkzj4d5s" data-video-id="KgmBkzj4d5s"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KgmBkzj4d5s" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Kingpin: Arcade Sports Bowling (1995) – Commodore Amiga Sports Sim Released in 1995 by Team17 for the Commodore Amiga, Kingpin: Arcade Sports Series Bowling is a dedicated ten-pin bowling simulation designed for both solo players and multiplayer groups. You can control up to six bowlers, customise player names and shirt colours, and compete in full matches against friends or AI opponents. The gameplay focuses on timing, spin, and angle, delivering a surprisingly authentic bowling experience. Visually, the game features smooth ball and pin animations, with realistic reactions as strikes and spares unfold. The sound effects recreate the atmosphere of a real bowling alley, although the full CD-audio soundtrack is exclusive to the Amiga CD32 version. While modest in scope compared to larger sports titles, Kingpin stands out in the Amiga library for filling a rare niche.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Kingpin Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/HXwvQcQfBPo" data-video-id="HXwvQcQfBPo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Kingpin video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/HXwvQcQfBPo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Kingpin Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/HXwvQcQfBPo" data-video-id="HXwvQcQfBPo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=HXwvQcQfBPo" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Total Recall (1990) – Commodore 64 Sci-Fi Action Platformer Released in 1990 by Ocean Software for the Commodore 64, Total Recall is an action-heavy platform game based on the hit science-fiction film starring Arnold Schwarzenegger. You play as Doug Quaid, a man caught in a web of shifting memories, corporate conspiracies, and deadly secrets that stretch all the way to Mars. The game blends multiple styles as you move through its stages, combining platforming, shooting, and light puzzle elements across varied locations. From hostile city streets to high-security interiors, progression depends on sharp reactions, careful movement, and dealing with enemies quickly before they overwhelm you. Despite the limitations of the hardware, the C64 version delivers a tense, atmospheric experience. Large character sprites, smooth scrolling, and moody screen design help capture the darker tone of the film, while Jonathan Dunn’s soundtrack adds a constant sense of urgency and futuristic grit.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Total Recall C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/smX4R0Mvg8Y" data-video-id="smX4R0Mvg8Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Total Recall video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/smX4R0Mvg8Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Total Recall C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/smX4R0Mvg8Y" data-video-id="smX4R0Mvg8Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=smX4R0Mvg8Y" target="_blank" rel="noopener">Open on YouTube</a>

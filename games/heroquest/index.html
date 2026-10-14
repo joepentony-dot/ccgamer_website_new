@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ HeroQuest (1991) – Commodore 64 Turn-Based Fantasy Dungeon Crawler Released in 1991 by Gremlin Graphics for the Commodore 64, HeroQuest is a faithful digital adaptation of the hugely popular Games Workshop board game. Developed by 221B Software Development, it brings classic fantasy dungeon crawling and tabletop strategy to the 8-bit home computer. You command a party of four iconic heroes — the Barbarian, Dwarf, Elf, and Wizard — as they venture into grid-based dungeons to defeat monsters, uncover treasure, and ultimately thwart the evil sorcerer Morcar. Gameplay closely mirrors the board game, blending turn-based movement, combat, exploration, and character progression across a series of structured quests. Despite the C64’s limitations, HeroQuest delivers atmospheric visuals with detailed sprites and dungeon layouts that successfully capture the look and feel of the tabletop experience. The music and sound effects reinforce the fantasy setting, adding tension and drama as each room is revealed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Heroquest C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/UcHYz9jW1z4" data-video-id="UcHYz9jW1z4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Heroquest video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/UcHYz9jW1z4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Heroquest C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/UcHYz9jW1z4" data-video-id="UcHYz9jW1z4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=UcHYz9jW1z4" target="_blank" rel="noopener">Open on YouTube</a>

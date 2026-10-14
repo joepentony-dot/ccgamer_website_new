@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Infernal Runner (1985) – Commodore 64 Horror Platform Survival Classic Released in 1985 by Loriciels, Infernal Runner is a darkly satirical platform game for the Commodore 64 developed by Michel Koell and Yves Korta. Set inside a nightmarish labyrinth, the game drops you into a surreal world of deadly traps, grotesque surprises, and pitch-black humour, where survival is never guaranteed. Gameplay is deliberately non-linear, allowing you to move freely between interconnected rooms packed with hazards. The objective is to locate keys and open chests in order to escape, all while managing a constantly draining hunger meter that forces you to hunt for food scattered throughout the maze. Every screen introduces new ways to die, often suddenly and brutally. Infernal Runner became infamous for its exaggerated death animations and macabre tone, which were strikingly graphic for the mid-1980s.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Infernal Runner C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ApTejUcpFyI" data-video-id="ApTejUcpFyI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Infernal Runner video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ApTejUcpFyI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Infernal Runner C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ApTejUcpFyI" data-video-id="ApTejUcpFyI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ApTejUcpFyI" target="_blank" rel="noopener">Open on YouTube</a>

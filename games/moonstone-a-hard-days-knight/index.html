@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Moonstone: A Hard Days Knight (1991) – Commodore Amiga Dark Fantasy Action RPG Released in 1991 by Mindscape for the Commodore Amiga, Moonstone: A Hard Days Knight is a distinctive hybrid of action, strategy, and role-playing designed by Rob Anderson. Set in a grim fantasy version of Britain, the game casts you as a knight chosen by druids to recover the mystical Moonstone and return it safely to Stonehenge. Gameplay alternates between turn-based movement on a world map and brutal real-time combat encounters. Knights travel across the land visiting villages, forests, and monster-guarded dolmens, collecting treasures and keys while racing rival knights who are also pursuing the Moonstone. When enemies are encountered, the game shifts into one-on-one combat reminiscent of Barbarian: The Ultimate Warrior. Timing, positioning, and aggression are key, with battles often ending in graphic and decisive fashion.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Moonstone: A Hard Days Knight Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/aNeyqq3tBHo" data-video-id="aNeyqq3tBHo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Moonstone: A Hard Days Knight video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/aNeyqq3tBHo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Moonstone: A Hard Days Knight Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/aNeyqq3tBHo" data-video-id="aNeyqq3tBHo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=aNeyqq3tBHo" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sheep in Space (1984) – Commodore 64 Horizontal Sci-Fi Shoot-’Em-Up Released in 1984 by Llamasoft and developed by Jeff Minter, Sheep in Space is a horizontally scrolling shoot-’em-up that puts a surreal twist on classic arcade action. You control a genetically engineered combat sheep defending a planetary colony from waves of invading droids. Inspired by Defender, the game spans 48 levels, each requiring the destruction of 16 enemies before progressing. Alongside a standard blaster and shield, the sheep can perform a “DJump,” instantly warping to the nearest hostile for rapid attacks and emergency escapes. A distinctive survival mechanic adds pressure, as the sheep must regularly land on grassy areas to feed when hunger levels drop. Managing energy is critical, as becoming famished weakens you, while overeating leads to an explosive end. This balance between combat and survival creates a rhythm that keeps you constantly engaged.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Sheep In Space C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DfccDPiD1Hg" data-video-id="DfccDPiD1Hg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Sheep In Space video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DfccDPiD1Hg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Sheep In Space C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DfccDPiD1Hg" data-video-id="DfccDPiD1Hg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DfccDPiD1Hg" target="_blank" rel="noopener">Open on YouTube</a>

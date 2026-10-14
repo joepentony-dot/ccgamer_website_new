@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>The Immortal is a 1990 Amiga isometric action-adventure developed by Sandcastle and published by Electronic Arts. You control an ageing wizard searching for his missing mentor, Mordamir, through eight levels of a dangerous dungeon. Each floor combines exploration, deadly traps, hostile creatures and puzzles that demand close attention to the environment. Collected objects can be used to overcome obstacles, while friendly characters may offer information or trade items. Combat involves reading an opponent&#39;s impending attack and choosing when to strike or evade. Some hazards require unusual solutions, including riding a magical carpet past flames or travelling underground on a barrel. Mistakes can be fatal, and learning the layout and timing of encounters is central to progressing deeper into the labyrinth.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Immortal Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/VFhshKqyD9U" data-video-id="VFhshKqyD9U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Immortal video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/VFhshKqyD9U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Immortal Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/VFhshKqyD9U" data-video-id="VFhshKqyD9U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=VFhshKqyD9U" target="_blank" rel="noopener">Open on YouTube</a>

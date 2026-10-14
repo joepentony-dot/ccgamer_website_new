@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Breakdance (1984) – Commodore 64 Rhythm Game Inspired by the 80s Dance Craze Released in 1984, Breakdance is a rhythm-based game developed by Beck-Tech and published by Epyx for the Commodore 64, drawing inspiration from the early 1980s breakdancing explosion and films such as Flashdance and Beat Street. Rather than traditional arcade action, the game focuses on timing, memory, and performance, placing dance culture front and centre. The gameplay is split across several distinct modes. Hot Feet is a memory-based dance contest where you must repeat increasingly complex move sequences, while Battle the Rocket Crew pits you against rival dancers in competitive copycat showdowns. Perfection’s Dance Puzzle adds a timed challenge element, requiring you to assemble and perform routines in the correct order. A standout feature is Choreograph Mode, which allows you to create custom dance routines using a set of 14 moves, then perform and replay them.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Breakdance C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Yx7ZDm6xGW8" data-video-id="Yx7ZDm6xGW8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Breakdance video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Yx7ZDm6xGW8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Breakdance C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Yx7ZDm6xGW8" data-video-id="Yx7ZDm6xGW8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Yx7ZDm6xGW8" target="_blank" rel="noopener">Open on YouTube</a>

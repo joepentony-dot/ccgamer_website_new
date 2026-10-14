@@ -20,6 +20,7 @@ on:
       - "templates/**"
       - "service-worker.js"
       - "tests/lighthouse-performance-protocol.test.mjs"
+      - "tests/game-video-facade-performance.test.mjs"
       - "tests/image-performance-budget.test.mjs"
       - ".github/workflows/ccg-lighthouse-protocol.yml"
       - ".github/workflows/games-publishing.yml"
@@ -72,6 +73,7 @@ jobs:
       - name: Run permanent performance protocol regressions
         run: |
           node --test tests/lighthouse-performance-protocol.test.mjs
+          node --test tests/game-video-facade-performance.test.mjs
           node --test tests/image-performance-budget.test.mjs
           node --test tests/content-publisher.test.mjs
           node scripts/validate-game-performance-contract.mjs --shared-only

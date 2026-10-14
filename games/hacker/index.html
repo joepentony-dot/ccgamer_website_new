@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hacker (1985) – Commodore 64 Cyber Espionage Strategy Adventure Classic Released in 1985 by Activision and developed by Steve Cartwright for the Commodore 64, Hacker is a distinctive graphic adventure that places players in the role of a digital spy infiltrating secret computer systems. Opening with the now-iconic “Logon Please” prompt, the game immediately sets a tense, puzzle-driven tone that defines the entire experience. Gameplay blends text-based interaction with strategic exploration as players guide a small robot through a complex underground tunnel network. The objective is to locate and assemble fragments of a classified document hidden across multiple global locations, all while managing limited money, time, and access privileges. Progression depends on careful planning, memory, and precision. Surveillance systems, security checkpoints, and restricted routes force players to think several steps ahead, especially since the absence of a save feature means that mistakes can result in starting over from the beginning.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hacker C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wt4bwF3iNNA" data-video-id="wt4bwF3iNNA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hacker video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wt4bwF3iNNA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hacker C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wt4bwF3iNNA" data-video-id="wt4bwF3iNNA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wt4bwF3iNNA" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Mutant Monty (1984) – Commodore 64 Fixed-Screen Arcade Collect-’Em-Up Released in 1984 for the Commodore 64, Mutant Monty is a fixed-screen arcade game developed by John Prince and published by Artic Computing. You take control of Monty, an ambitious adventurer determined to become rich and heroic by collecting gold nuggets scattered across a series of increasingly demanding levels. The game is built around 40 single-screen rooms, each packed with enemies, hazards, and tight time limits. To progress, Monty must collect every gold nugget on the screen and reach the exit door before time runs out. Contact with enemies or failure to escape in time costs one of Monty’s limited lives. Movement is a key part of the challenge. Monty continues moving in the chosen joystick direction until he hits an obstacle, with longer joystick holds increasing his speed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mutant Monty C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xiOaDglQ9dM" data-video-id="xiOaDglQ9dM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mutant Monty video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xiOaDglQ9dM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mutant Monty C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xiOaDglQ9dM" data-video-id="xiOaDglQ9dM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xiOaDglQ9dM" target="_blank" rel="noopener">Open on YouTube</a>

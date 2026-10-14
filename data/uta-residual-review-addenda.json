@@ -17,6 +17,21 @@
       "reasonSubtype": "no-verified-compatible-uta-directory",
       "confidence": "medium",
       "reason": "The current UTA audit found no title candidate for the 1989 Strategic Studies Group C64 release. No tape-archive link may be assigned unless a compatible source is verified. This records absence from the scanned archive, not proof that no cassette release ever existed."
+    },
+    {
+      "gameSlug": "wasteland",
+      "title": "Wasteland",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "reviewedAt": "2026-10-14",
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "no-verified-compatible-uta-directory",
+      "confidence": "medium",
+      "reason": "The current Ultimate Tape Archive audit finds no compatible Wasteland C64 title directory for the 1988 Electronic Arts/Interplay release. The site may not assign an unverified tape download link. This records the archive-search result, not a claim that no cassette conversion or edition exists."
     }
   ]
 }

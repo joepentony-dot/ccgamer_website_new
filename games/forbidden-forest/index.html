@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Forbidden Forest (1983) – Commodore 64 Survival Horror Action Classic Released in 1983 by Cosmi and developed by Paul Norman, Forbidden Forest is one of the earliest and most influential horror-themed action games on the Commodore 64. You take on the role of a lone archer venturing into a dark, hostile forest where every step forward brings new danger. Gameplay revolves around careful positioning, precise timing, and strict arrow management as you face off against giant spiders, bees, mutated frogs, dragons, and other nightmarish creatures. Each enemy has distinct movement patterns, forcing you to react quickly while conserving ammunition and avoiding lethal contact. What truly sets Forbidden Forest apart is its atmosphere. Parallax scrolling gives depth to the forest, a dynamic day-to-night cycle steadily ramps up the tension, and context-sensitive music shifts as threats appear on screen.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Forbidden Forest C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wflinqetl14" data-video-id="wflinqetl14"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Forbidden Forest video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wflinqetl14/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Forbidden Forest C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wflinqetl14" data-video-id="wflinqetl14"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wflinqetl14" target="_blank" rel="noopener">Open on YouTube</a>

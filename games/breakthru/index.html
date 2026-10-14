@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ BreakThru (1987) – Commodore 64 Arcade Action Shoot ’Em Up Originally developed by Data East and released in arcades in 1986, BreakThru arrived on the Commodore 64 in 1987 via U. S. Gold, bringing fast-paced military action to home computers. You take control of a heavily armed combat vehicle on a high-risk mission to recover a stolen fighter jet from enemy forces. The game unfolds across five distinct side-scrolling stages, including mountains, plains, bridges, cities, and an airfield, each packed with enemy troops, vehicles, mines, and environmental hazards. Gameplay revolves around precise movement, timed jumps, and constant firing, requiring you to react quickly to threats coming from all directions. Strategic depth is added through weapon upgrades, most notably the powerful three-way shot that dramatically boosts offensive capability. Mastering jump timing and positioning is essential, especially as enemy density and speed increase with each level.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Breakthru C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/4dzoRYEnXf0" data-video-id="4dzoRYEnXf0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Breakthru video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/4dzoRYEnXf0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Breakthru C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/4dzoRYEnXf0" data-video-id="4dzoRYEnXf0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=4dzoRYEnXf0" target="_blank" rel="noopener">Open on YouTube</a>

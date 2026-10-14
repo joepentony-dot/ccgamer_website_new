@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fright Night (1988) – Commodore Amiga Arcade Horror Action Released in 1988 by MicroDeal for the Commodore Amiga, Fright Night is an arcade-style action game inspired by the 1985 horror-comedy film of the same name. You take on the role of vampire Jerry Dandridge, stalking the rooms of his mansion in search of victims while racing against the coming sunrise. Gameplay focuses on room-to-room exploration, draining victims to maintain health while avoiding supernatural hazards such as crucifixes, snakes, and grasping zombie hands. Careful timing and movement are essential, as you must always ensure they can return to their coffin before daylight to recover and continue the night’s hunt. The Amiga version features bold, colourful visuals and an atmospheric soundtrack by David Whittaker, helping to create a moody but playful horror tone. While the core loop can feel repetitive over time and lacks a defined ending, the game’s unusual perspective and theme give it a distinctive personality.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fright Night Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/CUUIdezIfMo" data-video-id="CUUIdezIfMo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fright Night video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/CUUIdezIfMo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fright Night Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/CUUIdezIfMo" data-video-id="CUUIdezIfMo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=CUUIdezIfMo" target="_blank" rel="noopener">Open on YouTube</a>

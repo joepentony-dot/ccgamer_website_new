@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Road Runner (1987) – Commodore 64 Arcade Action Cartoon Chase Released in 1987 by U. S. Gold for the Commodore 64, Road Runner brings Warner Bros. ’ iconic cartoon rivalry to life in fast-paced arcade form. Players take control of the lightning-fast Road Runner, constantly outpacing the ever-unlucky Wile E. Coyote across a series of hazard-filled routes. Gameplay focuses on speed, timing, and anticipation as you sprint along roads while dodging trucks, landmines, falling rocks, and other obstacles. Collecting birdseed helps maintain top speed, while cleverly luring Wile E. Coyote into danger earns bonus points and adds a playful risk–reward element. The C64 version features smooth scrolling, bold colours, and animations that closely reflect the cartoon’s slapstick style. Catchy music and clear visual feedback keep the action readable even at high speed, making it immediately accessible.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Road Runner C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/erXd6gvNJf4" data-video-id="erXd6gvNJf4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Road Runner video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/erXd6gvNJf4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Road Runner C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/erXd6gvNJf4" data-video-id="erXd6gvNJf4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=erXd6gvNJf4" target="_blank" rel="noopener">Open on YouTube</a>

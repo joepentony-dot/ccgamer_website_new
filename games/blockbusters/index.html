@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blockbusters (1984) – Commodore 64 TV Quiz Game Classic Released in 1984 by Macsen Software, Blockbusters is a video game adaptation of the hugely popular British television quiz show. Later re-released in 1988 by TV Games, it brings the familiar hexagon board and general knowledge challenges to the Commodore 64, capturing the competitive spirit of the original programme. Gameplay closely follows the TV format, with you selecting letters from a hexagonal grid, each hiding a trivia question. Correct answers allow you to claim hexagons, with the goal of forming a continuous path across the board before the opponent does. The game supports solo play against the computer as well as a two-player mode for head-to-head quiz battles. Presentation on the C64 is simple and functional, keeping the focus firmly on the questions rather than flashy visuals.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blockbusters C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/b8BH_kkbsq8" data-video-id="b8BH_kkbsq8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blockbusters video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/b8BH_kkbsq8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blockbusters C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/b8BH_kkbsq8" data-video-id="b8BH_kkbsq8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=b8BH_kkbsq8" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Black Knight (1984) – Commodore 64 Challenging Arcade Platform Adventure Released in 1984 by Interdisc for the Commodore 64, Black Knight is a tough-as-nails arcade-style platformer that embodies the unforgiving spirit of early home computer gaming. You take control of the armoured Black Knight, battling through dangerous medieval environments packed with enemies and deadly traps. Gameplay focuses on precise movement, careful timing, and fast reactions. Each screen presents new hazards, from hostile creatures to narrow platforms and sudden drops, forcing you to learn patterns and master positioning in order to survive. Progress depends heavily on skill and persistence. The game’s level design encourages strategic play, rewarding patience and memorisation. Mistakes are costly, and success comes from learning enemy behaviour, judging jumps accurately, and choosing when to advance or retreat. Visually, Black Knight makes strong use of the C64’s capabilities, featuring detailed character sprites and smoothly animated medieval settings.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Black Knight C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FFeE5DHB3JA" data-video-id="FFeE5DHB3JA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Black Knight video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FFeE5DHB3JA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Black Knight C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FFeE5DHB3JA" data-video-id="FFeE5DHB3JA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FFeE5DHB3JA" target="_blank" rel="noopener">Open on YouTube</a>

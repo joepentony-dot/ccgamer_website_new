@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zamzara (1988) – Commodore 64 Sci-Fi Platform Shooter Escape Challenge Released in 1988, Zamzara is a side-scrolling platform shooter developed by Jukka Tapanimäki and published by Hewson under their Rack-It budget label. Set inside a futuristic laboratory complex, you control a strange alien lifeform attempting to escape before a time bomb detonates, all under a relentless 15-minute countdown. The game blends precise platforming with tactical combat across 29 interconnected levels filled with hostile creatures, traps, and environmental hazards. Movement is a key part of survival, with the alien able to float by repeatedly tapping the jump button, allowing careful navigation through tight and dangerous spaces. Combat is built around a distinctive weapon system. You select from lasers, missiles, and other tools, each with limited ammunition. Weapons must be charged before firing, forcing you to balance timing, positioning, and resource management during intense encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zamzara C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/TZIkHOUGBzE" data-video-id="TZIkHOUGBzE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zamzara video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/TZIkHOUGBzE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zamzara C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/TZIkHOUGBzE" data-video-id="TZIkHOUGBzE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=TZIkHOUGBzE" target="_blank" rel="noopener">Open on YouTube</a>

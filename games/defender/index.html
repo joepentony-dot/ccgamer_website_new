@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Defender (1983) – Commodore 64 Arcade Shoot ’Em Up Classic Originally developed by Williams Electronics and released on the Commodore 64 by Atarisoft in 1983, Defender brings the relentless arcade action of the 1981 classic into the home. Known for its speed, difficulty, and layered mechanics, it set a new benchmark for shoot ’em ups in the early 1980s. You pilot a high-speed spacecraft across a horizontally scrolling alien landscape, tasked with protecting stranded astronauts from waves of invading enemies. A key feature is the on-screen radar scanner, which tracks alien positions and human abductions, forcing you to constantly balance situational awareness with fast reactions. Combat is intense and demanding, with smart bombs available to clear the screen in emergencies and hyperspace jumps offering a risky escape option. Mastery comes from learning enemy behaviour, rescuing humans before they mutate, and maintaining control while navigating the terrain at speed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Defender C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/TAGfoJlk0pQ" data-video-id="TAGfoJlk0pQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Defender video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/TAGfoJlk0pQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Defender C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/TAGfoJlk0pQ" data-video-id="TAGfoJlk0pQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=TAGfoJlk0pQ" target="_blank" rel="noopener">Open on YouTube</a>

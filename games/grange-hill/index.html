@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Grange Hill: The Computer Game (1987) – Commodore 64 Licensed School Adventure Released in 1987 by Argus Press Software, Grange Hill: The Computer Game brings the much-loved British TV series to the Commodore 64 in the form of a school-based adventure. You play as Luke “Gonch” Gardner, on a mission to recover his confiscated Walkman from the staffroom before midnight, with best mate Hollo tagging along for support. The game blends graphic and text adventure elements, with a side-scrolling view of streets and school corridors paired with a text window for descriptions, inventory, and actions. Progress depends on exploration, item use, and avoiding trouble as you sneak through familiar locations after hours. Rather than fast action, the focus is on puzzle-solving and atmosphere, capturing the everyday mischief and tension of school life. The C64 version is enhanced by a soundtrack from David Whittaker, helping ground the game in its late-80s home computer style.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Grange Hill C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1MMLDzjAWH8" data-video-id="1MMLDzjAWH8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Grange Hill video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1MMLDzjAWH8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Grange Hill C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1MMLDzjAWH8" data-video-id="1MMLDzjAWH8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1MMLDzjAWH8" target="_blank" rel="noopener">Open on YouTube</a>

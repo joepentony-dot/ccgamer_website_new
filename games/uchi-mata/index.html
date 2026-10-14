@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Uchi Mata (1986) – Commodore 64 Judo Fighting Simulation Classic Released in 1986 by Martech Games for the Commodore 64, Uchi Mata is a distinctive judo-based fighting game promoted by British Olympic judoka Brian Jacks, who also acted as technical advisor. Rather than arcade brawling, the game aims to replicate the discipline and technique of competitive judo. Matches take place in a tournament setting where success depends on positioning, timing, and executing precise joystick combinations to perform throws and holds. The control system rewards planning and technique over fast reactions, making each bout feel tactical and deliberate rather than frantic. Uchi Mata features more than 400 frames of animation, resulting in fluid and convincing character movement. You can attempt both legal and illegal judo techniques, with the powerful Uchi Mata throw capable of ending a match instantly.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Uchi Mata C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/kuARscDbdOA" data-video-id="kuARscDbdOA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Uchi Mata video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/kuARscDbdOA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Uchi Mata C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/kuARscDbdOA" data-video-id="kuARscDbdOA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=kuARscDbdOA" target="_blank" rel="noopener">Open on YouTube</a>

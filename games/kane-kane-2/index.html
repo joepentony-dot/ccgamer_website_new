@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Kane &amp; Kane II (1986–1988) – Commodore 64 Wild West Action Duology Released by Mastertronic in 1986 and 1988, Kane and Kane II are Western-themed arcade action games developed by John Darnell for the Commodore 64. Both titles place you in the boots of lawman Marshall McGraw as he rides into danger to restore order across the frontier. The original Kane mixes fast-paced shooting with horseback riding stages, throwing a variety of arcade-style challenges your way. Gunfights test reflexes and positioning, while the riding sections demand precision and timing, earning a reputation for being tough but memorable. Kane II follows the same structure, offering more shootouts and riding sequences with familiar mechanics. While it sticks closely to the formula of the first game, it expands on the action and delivers another dose of Wild West arcade gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Kane &amp; Kane 2 C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ppePHqdVdeE" data-video-id="ppePHqdVdeE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Kane &amp; Kane 2 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ppePHqdVdeE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Kane &amp; Kane 2 C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ppePHqdVdeE" data-video-id="ppePHqdVdeE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ppePHqdVdeE" target="_blank" rel="noopener">Open on YouTube</a>

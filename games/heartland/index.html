@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Heartland (1986) – Commodore 64 Fantasy Platform Adventure Released in 1986, Heartland is a distinctive fantasy platform adventure for the Commodore 64 developed by Odin Computer Graphics. You take control of a hapless wizard on a race against time to restore a magical book by recovering six missing white pages and destroying six corrupted black pages scattered across a dangerous, storybook world. The adventure unfolds across six themed areas made up of interconnected screens. You must dodge enemies such as rival wizards and gooches while exploring carefully, as the wizard begins completely unarmed. Weapons and items like hats, knives, and fireballs can be discovered and managed via an on-screen inventory system, adding light strategy to the platforming. Heartland’s structure encourages exploration and planning rather than simple left-to-right progression. Each level has its own challenges and layout, requiring you to learn routes, manage resources, and balance speed against survival as the clock steadily ticks down.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Heartland C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dgZK8oIZ7y8" data-video-id="dgZK8oIZ7y8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Heartland video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/dgZK8oIZ7y8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Heartland C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/dgZK8oIZ7y8" data-video-id="dgZK8oIZ7y8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=dgZK8oIZ7y8" target="_blank" rel="noopener">Open on YouTube</a>

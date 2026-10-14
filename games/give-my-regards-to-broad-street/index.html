@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Give My Regards to Broad Street (1985) – Commodore 64 Music-Themed Puzzle Adventure Released in 1985 by Argus Press Software under the Mind Games label, Give My Regards to Broad Street is a distinctive puzzle-adventure inspired by the film of the same name starring Paul McCartney. Rather than traditional action, the game focuses on planning, navigation, and time management, wrapped in a strong musical theme. You step into the role of McCartney, navigating a top-down map of London in a race against time to reconstruct a missing track from his latest album. By driving across the city, following clues, and predicting where band members will be, you must collect individual music segments before the midnight deadline. When a band member is found, the game shifts perspective to a side-scrolling sequence where the missing section of the track is retrieved.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Give My Regards To Broad Street C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/x6A3LlCMp4w" data-video-id="x6A3LlCMp4w"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Give My Regards To Broad Street video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/x6A3LlCMp4w/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Give My Regards To Broad Street C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/x6A3LlCMp4w" data-video-id="x6A3LlCMp4w"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=x6A3LlCMp4w" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Thrusta (1984) – Commodore 64 Gravity-Based Space Shooter Challenge Released in 1984 by Software Projects, Thrusta is a demanding gravity-based space shooter inspired by arcade classics like Gravitar. You pilot a small spacecraft through tightly designed caverns, with smooth 360-degree scrolling that evokes the feel of vector-based games such as Asteroids. The objective is deceptively simple: collect a bomb and deliver it to the target zone. In practice, every movement is affected by gravity, forcing you to carefully manage thrust, momentum, and fuel while avoiding walls, hazards, and tight passages. Precision control is essential, and even small mistakes can quickly end a run. Thrusta builds constant tension through its physics-driven gameplay, rewarding patience, skill, and mastery rather than quick reflex shooting. Each level increases the challenge, pushing you to refine your control and plan every manoeuvre.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Thrusta C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FHkuijXqRu0" data-video-id="FHkuijXqRu0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Thrusta video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FHkuijXqRu0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Thrusta C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FHkuijXqRu0" data-video-id="FHkuijXqRu0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FHkuijXqRu0" target="_blank" rel="noopener">Open on YouTube</a>

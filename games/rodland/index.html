@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rodland (1991) – Commodore Amiga Single-Screen Platform Adventure Classic Released in 1991 by Random Access and published by Storm for the Commodore Amiga, Rodland is a charming single-screen platformer based on Jaleco’s popular arcade hit. The Amiga version expands on the original with extra levels, enhanced visuals, and a highly enjoyable two-player cooperative mode. Players take control of the fairy sisters Tam and Rit, who wield magical rods on a quest to rescue their mother from the towering stronghold of Maboots. Each stage challenges players to defeat enemies, collect flowers, and clear the screen in order to progress, blending action with light puzzle elements. Gameplay draws clear inspiration from classics like Bubble Bobble, focusing on precise movement, clever enemy manipulation, and tactical use of special abilities. Mastering timing and coordination becomes especially important in later stages, particularly when playing cooperatively.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rodland Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/bXbP3ywqUTk" data-video-id="bXbP3ywqUTk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rodland video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/bXbP3ywqUTk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rodland Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/bXbP3ywqUTk" data-video-id="bXbP3ywqUTk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=bXbP3ywqUTk" target="_blank" rel="noopener">Open on YouTube</a>

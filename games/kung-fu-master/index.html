@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Kung-Fu Master (1985) – Commodore 64 Arcade Beat-’Em-Up Trailblazer Originally developed by Irem and released in arcades in 1984, Kung-Fu Master arrived on the Commodore 64 in 1985 via a conversion by Berkeley Softworks, with Chris Hawley handling the port. Published by U. S. Gold in Europe, it brought one of arcade gaming’s most influential action titles to home computers. You step into the role of Thomas, a martial arts expert fighting his way through the five floors of the Devil’s Temple to rescue his kidnapped girlfriend, Sylvia. Each level throws relentless waves of enemies into the action, from knife throwers and grippers to powerful end-of-floor bosses that test timing and positioning. The gameplay is fast, direct, and demanding, relying on punches, kicks, jumps, and crouches to survive the constant pressure. Despite the Commodore 64’s technical limits, the conversion delivers colourful visuals and a tense background soundtrack that maintain the urgency of the arcade experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Kung-Fu Master C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/EF5VJX1F2f0" data-video-id="EF5VJX1F2f0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Kung-Fu Master video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/EF5VJX1F2f0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Kung-Fu Master C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/EF5VJX1F2f0" data-video-id="EF5VJX1F2f0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=EF5VJX1F2f0" target="_blank" rel="noopener">Open on YouTube</a>

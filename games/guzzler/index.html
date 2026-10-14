@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Guzzler (1984) – Commodore 64 Maze Action Arcade Puzzle Classic Released in 1984 by Interceptor Software for the Commodore 64, Guzzler is a charming top-down maze action game that puts a clever twist on the classic arcade formula. You control a hungry mouse navigating colourful labyrinths to collect keys and unlock food cells scattered throughout each level. The core gameplay revolves around a unique “weight” mechanic. Every time the mouse eats, it grows fatter, making it impossible to squeeze through narrow passages until it gradually deflates over time. This creates a constant strategic balancing act between eating for points and staying slim enough to move freely through the maze. Progression depends on careful route planning, timing, and risk management. Patrolling enemies add pressure to every decision, while Bonus Barry appears carrying letters that spell “GUZZLER”, rewarding exploration and skilful play with valuable extra points.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Guzzler C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PVOQ9ijLrJw" data-video-id="PVOQ9ijLrJw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Guzzler video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PVOQ9ijLrJw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Guzzler C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PVOQ9ijLrJw" data-video-id="PVOQ9ijLrJw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PVOQ9ijLrJw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>The Activision Decathlon is the 1984 Commodore 64 conversion of Activision&#39;s athletics game, based on David Crane&#39;s original design. Up to four players can contest all ten events in sequence or practise them individually: the 100 metres, long jump, shot put, high jump, 400 metres, 110-metre hurdles, discus, pole vault, javelin and 1500 metres. Running events demand fast, steady joystick movement, while jumps and throws add a precisely timed fire-button press to set the angle or release point. Each performance earns points according to its time, height or distance, and the highest combined score wins the decathlon. The C64 edition retains the multiplayer rivalry and demanding physical controls that made the game famous, while adding colourful presentation, animated athletes and crowd effects suited to Commodore hardware.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Activision Decathlon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/zKdXbca2b8o" data-video-id="zKdXbca2b8o"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Activision Decathlon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/zKdXbca2b8o/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Activision Decathlon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/zKdXbca2b8o" data-video-id="zKdXbca2b8o"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=zKdXbca2b8o" target="_blank" rel="noopener">Open on YouTube</a>

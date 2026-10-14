@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spelunker (1984) – Commodore 64 Brutal Cave Exploration Platformer Released in 1984 by Timothy G. Martin and published by Brøderbund Software, with the Commodore 64 version distributed in Europe by Ariolasoft, Spelunker is infamous for its unforgiving difficulty and remarkably fragile hero. Few games on the C64 punish carelessness quite like this one. The goal is to descend deep into a sprawling multi-level cave system while collecting keys, treasure, bombs, and flares, all under constant pressure from a limited air supply. Hazards are everywhere, from deadly traps and roaming ghosts to sheer drops where even the smallest fall results in instant death. Every movement demands patience, precision, and absolute caution. Progression relies on mastering elevators, ropes, ladders, and careful item use as you work through six increasingly dangerous stages. The Commodore 64 version delivers smooth scrolling, colourful cave environments, atmospheric sound effects, and an eerie soundtrack that reinforces the sense of isolation and danger.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spelunker C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/T808mdSPQt8" data-video-id="T808mdSPQt8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spelunker video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/T808mdSPQt8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spelunker C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/T808mdSPQt8" data-video-id="T808mdSPQt8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=T808mdSPQt8" target="_blank" rel="noopener">Open on YouTube</a>

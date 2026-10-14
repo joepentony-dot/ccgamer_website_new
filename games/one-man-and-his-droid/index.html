@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ One Man and His Droid (1985) – Commodore 64 Puzzle-Action Herding Classic Released in 1985 by Mastertronic and developed by Clive Brooker, One Man and His Droid is a clever puzzle-action game that puts a futuristic spin on herding. Set on the alien world of Andromadous, you control a droid tasked with rounding up strange sheep-like creatures known as Ramboids and guiding them safely into teleporters. Each of the game’s 20 levels is split into two distinct phases. First, you navigate maze-like caverns filled with roaming Ramboids and environmental hazards. Then the real challenge begins, herding them into teleporters in the correct order against a strict time limit. The ability to dig and tunnel through the terrain adds a strategic layer, letting you reshape levels to manage the Ramboids’ unpredictable movement. The Commodore 64 version is especially memorable thanks to its colourful presentation and smooth animation, but it’s Rob Hubbard’s outstanding SID soundtrack that truly elevates the experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="One Man And His Droid C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/zawyt2-E0LA" data-video-id="zawyt2-E0LA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play One Man And His Droid video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/zawyt2-E0LA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="One Man And His Droid C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/zawyt2-E0LA" data-video-id="zawyt2-E0LA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=zawyt2-E0LA" target="_blank" rel="noopener">Open on YouTube</a>

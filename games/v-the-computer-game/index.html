@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ V: The Computer Game (1986) – Commodore 64 Sci-Fi Stealth Action Adventure Released in 1986 by Ocean Software and developed by Kaos, V: The Computer Game brings the tension of the popular sci-fi television series to the Commodore 64. You take on the role of resistance fighter Donovan, infiltrating the alien mothership to sabotage its systems and strike a blow against the Visitors. Gameplay blends side-scrolling action with stealth and puzzle-solving. You must carefully navigate the ship’s corridors, avoiding or disabling robotic guards while conserving limited ammunition and health. Progress depends on placing bombs at key locations and outsmarting the ship’s defences rather than relying on brute force. A central mechanic is the Communiputer, a handheld device used to interact with terminals, decode alien systems, and manipulate security features. This adds a thoughtful, methodical layer to the action, drawing comparisons with games like Impossible Mission in both structure and pacing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="V: The Computer Game C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/K04iA99U6m0" data-video-id="K04iA99U6m0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play V: The Computer Game video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/K04iA99U6m0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="V: The Computer Game C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/K04iA99U6m0" data-video-id="K04iA99U6m0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=K04iA99U6m0" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1987 by Electric Dreams Software for the Commodore 64, Big Trouble in Little China is a side-scrolling beat ’em up developed by Software Studios and based on John Carpenter’s cult action-fantasy film. You switch between three heroes — Jack Burton, Wang Chi, and Egg Shen — as they battle through Chinatown’s criminal underworld to rescue two kidnapped girls. Each character brings unique abilities, from Jack’s firearm to Wang’s fragile swords and Shen’s growing magic attacks. Combat takes place against waves of enemies attacking from both directions, requiring careful positioning and weapon management. Picking the right character and knowing when to use special abilities is key to surviving the later stages. Visually, the game features large character sprites and atmospheric urban backdrops that push the limits of 1987 C64 hardware. The presentation is supported by sparse but effective sound effects, including digitised punches and minimal musical stabs.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Big Trouble In Little China C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/H7a23lWJdQE" data-video-id="H7a23lWJdQE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Big Trouble In Little China video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/H7a23lWJdQE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Big Trouble In Little China C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/H7a23lWJdQE" data-video-id="H7a23lWJdQE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=H7a23lWJdQE" target="_blank" rel="noopener">Open on YouTube</a>

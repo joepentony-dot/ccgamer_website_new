@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Crossfire (1983) – Commodore 64 Multi-Directional Arcade Shooter Released in 1983 by Sierra On-Line for the Commodore 64, Crossfire is a fast-paced arcade shooter originally developed by Jay Sullivan and Charles Benton. First appearing on the Apple II in 1981, the game made a strong transition to the C64 with its sharp, reflex-driven gameplay intact. You pilot a ship through a grid-based maze, facing relentless waves of alien enemies attacking from all directions. Movement and firing are possible in four directions, forcing you to think quickly at intersections while staying one step ahead of incoming threats. A key twist comes from limited ammunition, meaning survival depends as much on positioning and timing as it does on fast reactions. Charging blindly into danger is rarely rewarded, making Crossfire a tense and strategic experience despite its simple presentation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Crossfire C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/yn3yKX8ah1Q" data-video-id="yn3yKX8ah1Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Crossfire video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/yn3yKX8ah1Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Crossfire C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/yn3yKX8ah1Q" data-video-id="yn3yKX8ah1Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=yn3yKX8ah1Q" target="_blank" rel="noopener">Open on YouTube</a>

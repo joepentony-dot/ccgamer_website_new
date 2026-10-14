@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spy Hunter (1984) – Commodore 64 Arcade Vehicular Combat Spy Classic Released in 1984 for the Commodore 64, Spy Hunter is a high-speed vehicular combat game originally developed by Bally Midway and inspired by the style and swagger of classic spy thrillers. You take control of the G-6155 Interceptor, a heavily armed spy car tasked with eliminating enemy agents while keeping innocent civilian traffic intact. Gameplay blends fast driving with precision shooting as the road scrolls relentlessly forward. You’ll deploy machine guns, oil slicks, smoke screens, and missiles, upgrading your loadout mid-run via the iconic weapons van. Success depends on sharp reactions, careful positioning, and knowing when to attack or evade. The Commodore 64 version captures the tension and pace of the arcade original, supported by the instantly recognisable Peter Gunn theme that kicks in as the action heats up.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spy Hunter C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/2i4F9Ag0-R8" data-video-id="2i4F9Ag0-R8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spy Hunter video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/2i4F9Ag0-R8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spy Hunter C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/2i4F9Ag0-R8" data-video-id="2i4F9Ag0-R8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=2i4F9Ag0-R8" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Clive Barker’s Nightbreed: The Action Game (1990) – Commodore 64 Horror Action Adventure Released in 1990 by Ocean Software and developed by Impact Software, Nightbreed: The Action Game brings Clive Barker’s dark cinematic world to the Commodore 64. Set in the shadowy realm of Midian, the game leans heavily into atmosphere, mystery, and unsettling horror themes. You play as Boone, a hunted man seeking refuge among the Nightbreed, navigating five distinct stages filled with hostile enemies, traps, and exploration challenges. Progress revolves around collecting keys, battling the sinister Mask, and rescuing Lori, while uncovering the secrets of the Necropolis. Reaching Baphomet grants Boone the power to transform into Cabal, shifting the balance of play and adding narrative weight to your journey. Gameplay blends side-scrolling platforming with combat and light exploration. Boone can punch, jump, crouch, and make use of weapons such as pistols and grenades, while careful positioning and timing are vital to survive the game’s tougher encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nightbreed: The Action Game C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/BwKVfUxS3iQ" data-video-id="BwKVfUxS3iQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nightbreed: The Action Game video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/BwKVfUxS3iQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nightbreed: The Action Game C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/BwKVfUxS3iQ" data-video-id="BwKVfUxS3iQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=BwKVfUxS3iQ" target="_blank" rel="noopener">Open on YouTube</a>

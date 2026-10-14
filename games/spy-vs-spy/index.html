@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spy vs. Spy (1984) – Commodore 64 Two-Player Split-Screen Strategy Classic Released in 1984 by First Star Software for the Commodore 64, Spy vs. Spy brings the anarchic rivalry of the MAD Magazine comic strip to life. You face off as the Black or White Spy in a frantic race to outwit your opponent, gather secret items, and escape the embassy before time runs out. Gameplay is built around exploration, memory, and deception. You search rooms for essential items like passports, money, secret plans, and the all-important airport key, while laying traps to sabotage your rival’s progress. Every mistake costs precious seconds, especially when a deadly trap sends your spy floating off as an angel. The split-screen design keeps both players constantly visible, turning every match into a tense battle of nerves and timing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spy Vs Spy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/orU4W2D1IJ0" data-video-id="orU4W2D1IJ0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spy Vs Spy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/orU4W2D1IJ0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spy Vs Spy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/orU4W2D1IJ0" data-video-id="orU4W2D1IJ0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=orU4W2D1IJ0" target="_blank" rel="noopener">Open on YouTube</a>
