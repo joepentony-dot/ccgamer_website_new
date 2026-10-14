@@ -74,3 +74,4 @@ export class OceanCartridge extends CartridgeDevice {
     this.mode = this.startMode;
     this._select();
   }
+}
