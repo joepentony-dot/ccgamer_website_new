@@ -3,6 +3,7 @@
 
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import {
   parsePackedCatalog, filterCatalog, suggestCatalogGames, loadPackedGameBytes,
   PACK_CATALOG_URL, PACK_ROOT, GAME_PAGE_SIZE, preferSelectedCartridges,
@@ -116,5 +117,19 @@ assert.deepEqual(preferSelectedCartridges([
   { id: "gorf-variant", title: "Gorf", format: "crt", preferOverOtherFormats: true },
   { id: "gorf-prg", title: "Gorf", format: "prg" },
 ]).map(row => row.id), ["gorf"], "Only one explicitly chosen CRT may win a title");
+
+// The already-hosted and previously approved Pirates! cartridge is now the
+// public default where the archive also contains a PRG edition.
+const hosted = JSON.parse(readFileSync(
+  new URL("../emulator/c64/library.json", import.meta.url), "utf8")).entries;
+const piratesCRT = hosted.find(item => item.id === "pirates");
+assert.equal(piratesCRT?.format, "crt");
+assert.equal(piratesCRT?.approved, true);
+assert.equal(piratesCRT?.preferOverOtherFormats, true);
+assert.deepEqual(preferSelectedCartridges([
+  { id: "pirates-archive", title: "Pirates!", format: "prg" },
+  piratesCRT,
+  { id: "another-game", title: "Pirates! Gold", format: "prg" },
+]).map(item => item.id), ["pirates", "another-game"]);
 
 console.log("CCG C64 game catalogue, bounded typeahead, search ranking, pack caching and SHA-256 checks passed.");
