@@ -390,6 +390,32 @@ test('new initial-led sentences do not join preceding mode labels', () => {
   }
 });
 
+test('five independently sourced C64 game summaries retain complete unique SEO snippets', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalog = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const source = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  for (const [slug, expected] of [
+    ['barbarian-2-the-dungeon-of-drax', "Barbarian II: The Dungeon of Drax (1988) is a C64 action-adventure from Palace Software in which you fight monsters across three regions."],
+    ['cybernoid', "Cybernoid: The Fighting Machine (1988) is a C64 flip-screen shooter from Hewson in which you recover stolen cargo from space pirates."],
+    ['the-new-zealand-story', "The New Zealand Story (1989) is Ocean's C64 platformer starring Tiki the kiwi, who must rescue his kidnapped friends."],
+    ['asterix-and-the-magic-cauldron', "Asterix and the Magic Cauldron (1986) is a C64 adventure from Melbourne House where Asterix searches for seven pieces of Getafix's cauldron."],
+    ['donald-ducks-playground', "Donald Duck's Playground (1984) is a C64 educational game from Sierra On-Line where Donald earns wages to build a playground for his nephews."]
+  ]) {
+    const game = catalog.find((item) => item.slug === slug);
+    assert.ok(game, slug + ' missing from current catalogue');
+    assert.equal(game.system, 'C64', slug);
+    const editorial = source.games[slug];
+    assert.ok(editorial && editorial.sources.length > 1, slug + ' must preserve original video and independent sources');
+    const record = { ...game, description: editorial.description };
+    assert.equal(snippet.buildSnippet(record, game.title), expected, slug);
+    assert.equal(routes.buildRuntimeDescription(record, game.title), expected, slug);
+    assert.equal(buildGameSeoPreview(record, snippet).description, expected, slug);
+    assert.ok(expected.length <= 155, slug);
+  }
+});
+
 test('all 665 current enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
   const { readFileSync } = require('node:fs');
   const { join } = require('node:path');
