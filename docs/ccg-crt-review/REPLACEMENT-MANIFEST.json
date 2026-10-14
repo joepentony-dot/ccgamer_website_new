@@ -1,5 +1,5 @@
 {
-  "note": "PUBLIC GITHUB REVIEW BRANCH. CCG owner attested authorisation to redistribute all 152 CRTs on 2026-10-14. Independent copyright verification and per-game gameplay acceptance have not been completed. Existing PRG/disk packs remain untouched.",
+  "note": "PUBLICATION STATE ON MERGE: 152 owner-authorised CRT entries in emulator/c64/library.json, preferred over old duplicate formats; original PRG/disk media retained for rollback. The owner's public-redistribution attestation is recorded. Automated byte, SHA-256, cartridge-device and first-CPU-frame checks passed; full individual gameplay completion/testing has NOT been performed. GitHub deployment follows merging the review PR.",
   "source_archive_sha256": "d45add0b9525a672ae6a033cc4bfccf992f2b7d44fe5543101cd46dc4dac4dcb",
   "candidate_count": 152,
   "games": [
@@ -15,7 +15,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -30,7 +30,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -45,7 +45,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -60,7 +60,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -75,7 +75,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -90,7 +90,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -105,7 +105,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -120,7 +120,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -135,7 +135,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -150,7 +150,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -165,7 +165,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -180,7 +180,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -195,7 +195,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -210,7 +210,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -225,7 +225,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -240,7 +240,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -255,7 +255,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -270,7 +270,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -285,7 +285,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -300,7 +300,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -315,7 +315,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -330,7 +330,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -345,7 +345,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -360,7 +360,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -375,7 +375,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -390,7 +390,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -405,7 +405,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -420,7 +420,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -435,7 +435,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -450,7 +450,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -465,7 +465,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -480,7 +480,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -495,7 +495,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -510,7 +510,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -525,7 +525,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -540,7 +540,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -555,7 +555,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -570,7 +570,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -585,7 +585,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -600,7 +600,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -615,7 +615,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -630,7 +630,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -645,7 +645,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -660,7 +660,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -675,7 +675,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -690,7 +690,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -705,7 +705,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -720,7 +720,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -735,7 +735,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -750,7 +750,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -765,7 +765,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -780,7 +780,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -795,7 +795,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -810,7 +810,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -825,7 +825,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -840,7 +840,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -855,7 +855,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -870,7 +870,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -885,7 +885,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -900,7 +900,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -915,7 +915,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -930,7 +930,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -945,7 +945,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -960,7 +960,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -975,7 +975,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -990,7 +990,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1005,7 +1005,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1020,7 +1020,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1035,7 +1035,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1050,7 +1050,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1065,7 +1065,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1080,7 +1080,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1095,7 +1095,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1110,7 +1110,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1125,7 +1125,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1140,7 +1140,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1155,7 +1155,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1170,7 +1170,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1185,7 +1185,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1200,7 +1200,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1215,7 +1215,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1230,7 +1230,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1245,7 +1245,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1260,7 +1260,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1275,7 +1275,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1290,7 +1290,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1305,7 +1305,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1320,7 +1320,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1335,7 +1335,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1350,7 +1350,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1365,7 +1365,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1380,7 +1380,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1395,7 +1395,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1410,7 +1410,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1425,7 +1425,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1440,7 +1440,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1455,7 +1455,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1470,7 +1470,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1485,7 +1485,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1500,7 +1500,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1515,7 +1515,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1530,7 +1530,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1545,7 +1545,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1560,7 +1560,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1575,7 +1575,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1590,7 +1590,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1605,7 +1605,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1620,7 +1620,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1635,7 +1635,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1650,7 +1650,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1665,7 +1665,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1680,7 +1680,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1695,7 +1695,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1710,7 +1710,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1725,7 +1725,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1740,7 +1740,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1755,7 +1755,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1770,7 +1770,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1785,7 +1785,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1800,7 +1800,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1815,7 +1815,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1830,7 +1830,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1845,7 +1845,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1860,7 +1860,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1875,7 +1875,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1890,7 +1890,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1905,7 +1905,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1920,7 +1920,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1935,7 +1935,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1950,7 +1950,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1965,7 +1965,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1980,7 +1980,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -1995,7 +1995,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2010,7 +2010,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2025,7 +2025,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2040,7 +2040,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2055,7 +2055,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2070,7 +2070,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2085,7 +2085,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2100,7 +2100,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2115,7 +2115,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2130,7 +2130,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2145,7 +2145,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2160,7 +2160,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2175,7 +2175,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2190,7 +2190,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2205,7 +2205,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2220,7 +2220,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2235,7 +2235,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2250,7 +2250,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2265,7 +2265,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     },
     {
@@ -2280,7 +2280,7 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false,
+      "active": true,
       "owner_authorised": true
     }
   ],
@@ -2289,5 +2289,11 @@
     "date": "2026-10-14",
     "scope": "152 owner-supplied CRT files; owner typed AUTHORISED into uploader",
     "independently_audited": false
+  },
+  "activation": {
+    "upon_merge": true,
+    "mechanism": "owner-authorised preferred direct CRT entries",
+    "originals_preserved": true,
+    "manual_gameplay_certified": false
   }
 }
