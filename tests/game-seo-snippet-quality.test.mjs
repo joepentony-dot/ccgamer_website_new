@@ -698,3 +698,47 @@ test('one-time Batman correction preserves all other catalogue bytes in both PWA
   }
 });
 
+test('follow-ups reject review narration and missing antecedents before scoring', () => {
+  const intro = 'A long historical introduction describing publication and reception with several extended clauses deliberately exceeds the search snippet allocation and provides no safe game-title subject clause to extract for this example.';
+  const fact = 'You collect keys and explore rooms while avoiding traps.';
+  for (const rejected of [
+    "In this review I'm revisiting the game I grew up playing.",
+    'In this video we compare the original with another computer version.',
+    'These sequences are woven directly into the puzzles and add variety.',
+    'Those challenges demand timing and patience throughout the adventure.',
+    'However, the computer conversion is less fluid than the arcade original.',
+    'They require careful planning and precise control to reach the exit.'
+  ]) {
+    const game = { title: 'Example', slug: 'example', system: 'C64', year: 1989,
+      description: intro + ' ' + rejected + ' ' + fact };
+    const expected = 'Example: ' + fact;
+    assert.equal(snippet.buildSnippet(game, game.title), expected, rejected);
+    assert.equal(routes.buildRuntimeDescription(game, game.title), expected);
+    assert.equal(buildGameSeoPreview(game, snippet).description, expected);
+    const withoutFact = { ...game, description: intro + ' ' + rejected };
+    assert.equal(snippet.buildSnippet(withoutFact, game.title),
+      snippet.buildSnippet({ ...game, description: '' }, game.title), rejected);
+  }
+});
+
+test('reported review/context snippets retain source facts and canonical/admin parity', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const enrichments = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8')).games;
+  for (const [slug, expected] of [
+    ['road-rash', 'Finish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way.'],
+    ['herberts-dummy-run', 'A standout feature is the inclusion of clever mini-games that parody classic arcade hits such as Breakout, Space Invaders, and Duck Shoot.'],
+    ['final-fight', 'Gameplay follows traditional side-scrolling brawler mechanics, featuring punches, kicks, throws, jumping attacks, and waves of on-screen enemies.']
+  ]) {
+    const game = catalogue.find(item => item.slug === slug);
+    const record = { ...game, description: enrichments[slug].description };
+    assert.ok(record.description.includes(expected), slug + ' must use exact authored facts');
+    assert.equal(snippet.buildSnippet(record, game.title), expected, slug);
+    assert.equal(routes.buildRuntimeDescription(record, game.title), expected, slug);
+    assert.equal(buildGameSeoPreview(record, snippet).description, expected, slug);
+    assert.ok(expected.length <= 155 && /[.!?]$/.test(expected), slug);
+  }
+});
+

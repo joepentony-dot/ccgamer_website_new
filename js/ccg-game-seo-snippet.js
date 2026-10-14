@@ -155,6 +155,8 @@
     if (firstEnd < 0) return "";
     let tail = text.slice(firstEnd).trimStart();
     const candidates = [];
+    const independentReplacements = [];
+    let rejectedIncompleteSnippet = false;
 
     // Limit processing to nearby authored sentences, not unrelated material.
     for (let index = 1; index <= 10 && tail; index += 1) {
@@ -178,10 +180,26 @@
       const incoherentAction = /\byou\b[^.!?]*\b(?:fight\s+their\s+way|time\s+their\s+(?:movements|landings)|outgun\s+their\s+enemy)\b/i.test(sentence);
       if (incoherentAction) continue;
 
-      const candidate = sentence.toLowerCase().includes(title.toLowerCase())
+      // A title prefix cannot supply an omitted antecedent or turn the
+      // author's review narration into a description of the game.
+      const reviewNarration = /\b(?:in this (?:review|video)|I['’](?:m|ve|d)|we['’](?:re|ve|d)|(?:I|we) (?:am|are|was|were|revisit|review|compare|grew)|(?:my|our) (?:review|video|childhood))\b/i.test(sentence);
+      const missingContext = /^(?:However|Nevertheless|Therefore|Consequently|These|Those|Such|They|This (?:means|also|makes|allows)|It (?:also|then))\b/i.test(sentence);
+      if (reviewNarration || missingContext) {
+        const prefixed = sentence.toLowerCase().includes(title.toLowerCase())
+          ? sentence : title + ": " + sentence;
+        if (prefixed.length <= maxLength) rejectedIncompleteSnippet = true;
+        continue;
+      }
+
+      const titledCandidate = sentence.toLowerCase().includes(title.toLowerCase())
         ? sentence
         : title + ": " + sentence;
-      if (candidate.length > maxLength || !/[.!?]$/.test(candidate)) continue;
+      // Replacing a rejected contextual snippet can use an independent fact
+      // without a title prefix, as the opening-sentence path already does.
+      // Keep the established title requirement for all other follow-ups.
+      const titleFits = titledCandidate.length <= maxLength;
+      const candidate = titleFits ? titledCandidate : sentence;
+      if (!/[.!?]$/.test(candidate)) continue;
 
       const usefulSubject = /^(?:You|Players|Gameplay|Progress|Combat|Battles|Levels|The player|The game|The gameplay|Your|Each|Controls|Objectives|The objective|A standout|Its|The action|Using|Moving|There|The main)\b/i.test(sentence);
       const weakOpening = /^(?:The|This|It|A|An|Each|In|On|For|Between|As|While|When|After)\b/i.test(sentence);
@@ -200,9 +218,10 @@
       const actionable = /\b(?:you (?:must|can)|players (?:must|can)|collect(?:s|ed|ing)?|rescue(?:s|d|ing)?|manipulat(?:e|es|ed|ing)|repair(?:s|ed|ing)?|unlock(?:s|ed|ing)?)\b/i.test(sentence);
       const score = (usefulSubject ? 10 : 0) - (weakOpening ? 2 : 0) - index / 10
         - (shortVagueLead ? 10 : 0) - (nonPlayOpinion ? 7 : 0) - (thematicOnly ? 8 : 0) + (concreteMotion ? 4 : 0) + (actionable ? 2 : 0);
-      candidates.push({ text: candidate, score });
+      (titleFits ? candidates : independentReplacements).push({ text: candidate, score });
     }
 
+    if (rejectedIncompleteSnippet) candidates.push(...independentReplacements);
     candidates.sort((a, b) => b.score - a.score);
     return candidates.length ? candidates[0].text : "";
   }
