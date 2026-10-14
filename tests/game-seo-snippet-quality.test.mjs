@@ -422,12 +422,12 @@ test('C64 names and spaced acronyms survive initials without swallowing actual s
       'The Commodore 64 game requires players to choose difficulty type B.'
     ],
     [
-      'The arcade conversion is known as Chase H.Q. Another notable game followed.',
-      'The arcade conversion is known as Chase H.Q.'
+      'The Commodore 64 arcade conversion is known as Chase H.Q. Another notable game followed.',
+      'The Commodore 64 arcade conversion is known as Chase H.Q.'
     ],
     [
-      'The Commodore 64 game was launched in the U.S. Players in Europe found another edition.',
-      'The Commodore 64 game was launched in the U.S.'
+      'The Commodore 64 game was originally launched in the U.S. Players in Europe found another edition.',
+      'The Commodore 64 game was originally launched in the U.S.'
     ]
   ];
   for (const [source, expected] of examples) {
