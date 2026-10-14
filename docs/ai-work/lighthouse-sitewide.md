@@ -1,5 +1,30 @@
 # Site-wide Lighthouse programme
 
+## Video facade reconciliation onto public cache v128 — 14 October 2026
+
+- Existing draft PR **#2719** remains the sole performance integration vehicle. Current main at reconciliation: `aea758ccdc3c789ac6de6410c34aa5b0ee57a99f` with cache `2026-10-14-public-code-v128`, including merged game SEO #2717 and all recent C64 emulator changes. Since old PR base `762342ee887205e912828eef17b3852605e5505e`, the only overlapping path is `service-worker.js`; all other 12 intended performance files remain source-exclusive to this PR.
+- The reconciled candidate is built from the exact current main tree and 13 intended PR source files, with the shared service-worker cache advanced monotonically to `2026-10-14-public-code-v129`. No public release logic, protected intro, game JSON, emulator or unrelated generated page is reverted.
+- The earlier 30/30 green CI, resolved review threads and review feedback apply to the PRIOR PR head and do not qualify this new merge head. Repeat all triggered exact-head CI and Codex review. The draft remains unmerged until the poster-to-player interaction and offsite action are visually verified at representative desktop/mobile widths, wheel/keyboard/pointer interaction remains usable, and measured Lighthouse comparison has no unacceptable regression. Owner merge approval is still required.
+
+## Deferred video facade — current-main reconciliation, 13 October 2026
+
+- Current performance candidate: **draft PR #2719**. The original exact head `7a678b35df4c93b0d0712d7f9fda8496f03686ce` passed **21/21 GitHub Actions workflows** (including dedicated Lighthouse protocol, first paint, native physical-wheel Chromium, Site Safety, SEO and publishing); independent Codex review on that exact head completed with **no major findings**.
+- Subsequently, `main` advanced to `762342ee887205e912828eef17b3852605e5505e` and public cache namespace **v125**. A new bounded 13-file source-equivalent candidate was reconstructed on that `main` (the only overlap since old base was `service-worker.js`); it preserves all previously reviewed video/player/SEO/CSS/test changes, and only updates the public cache version to **v126**, without overwriting the new emulator, SEO and website files.
+- The previously reported P1 legacy iframe generator closer issue and hidden-iframe CSS-specificity issue remain guarded by focused regression tests. New-head automated qualification and fresh independent review must be checked; the original green verdict does **not** automatically extend to the rebased commit.
+- GitHub reports a Cloudflare **branch preview** for the previous exact head; network/browser access to live preview from this review environment was unavailable. Desktop/mobile visible playback, offsite video action and non-YouTube override manual acceptance remain **unverified**. The source-level protocol is **not** a real before/after Lighthouse speed measurement. No performance uplift is claimed, and no source or generated output has yet been merged/deployed from this performance PR.
+- Release gating: do not merge without current-head green CI, independent code review, browser-visible playback acceptance, comparison to then-current main and owner approval. On a qualified mainline merge, ensure authoritative publishing/SEO generators upgrade existing static canonical game pages; then run measured desktop/mobile representative and site-wide Lighthouse audits.
+
+
+## Performance pass 2 — refreshed on current main, 6 October 2026
+
+- Pass 1 merged through PR #2512.
+- The original Pass 2 branch/PR #2517 became stale after substantial mainline Dungeon and website activity and is not the merge vehicle.
+- Fresh branch `codex/sitewide-performance-pass-2-video-facade-v2` is rebuilt from the current main. It preserves the current Omega single-game presentation while replacing the initial YouTube iframe payload with a poster/play facade. The YouTube player is created only after an explicit click.
+- Canonical video generation now writes `data-video-src` instead of an eager iframe `src`, retains video structured data/sitemap ownership, and upgrades older iframe-only canonical markup idempotently.
+- External non-YouTube video overrides retain their explicit iframe source and suppress the YouTube facade.
+- The native mouse-wheel qualification deliberately clicks the facade before checking the existing post-play iframe wheel shield, so deferred loading does not weaken the scrolling contract.
+- This pass targets the multi-megabyte initial YouTube transfer identified in the supplied Lighthouse reports; it does not remove the video section, direct YouTube link, artwork, typography or Omega effects.
+
 ## Site-wide remediation + permanent protocol — 5 October 2026
 
 - User supplied 12 Lighthouse JSON reports covering Home, Games, Collections, Summer Games, Retro Events and Music in desktop/mobile modes. The evidence shows the site is not at its performance ceiling: repeated large CLS, mobile LCP delays, heavy third-party/video work, image-delivery waste and short static cache lifetimes remain.
