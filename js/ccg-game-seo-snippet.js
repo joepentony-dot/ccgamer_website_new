@@ -174,12 +174,16 @@
       // Penalise only those short generalisations; retain substantial
       // mechanics descriptions even when they start with "Gameplay".
       const shortVagueLead = sentence.length < 108 &&
-        (/^(?:Its\b.*\b(?:theme|mechanics|appeal)|Progress (?:requires|depends on|relies on)|Gameplay (?:focuses on|alternates between|blends))\b/i.test(sentence) ||
+        (/^(?:Its\b.*\b(?:theme|mechanics|appeal)|Progress (?:requires|depends on|relies on)|Gameplay (?:focuses on|is split between|alternates between|blends))\b/i.test(sentence) ||
          /\b(?:sets? it apart|couldn.t accuse|thoughtful strategy)\b/i.test(sentence));
       const nonPlayOpinion = /^(?:Its|The)\b.*\b(?:soundtrack|music|audio|visuals|presentation)\b/i.test(sentence);
+      // A player action is stronger than a brief genre summary, but broad
+      // mood/atmosphere statements must not displace mechanical details.
+      const thematicOnly = /\b(?:atmosphere, mystery|horror themes|leans? heavily into atmosphere|shadowy realm)\b/i.test(sentence);
+      const concreteMotion = /\b(?:hops?|levitates?|rescues?|fires?|bounces?|shoots?|jumps?)\b/i.test(sentence);
       const actionable = /\b(?:you (?:must|can)|players (?:must|can)|collect(?:s|ed|ing)?|rescue(?:s|d|ing)?|manipulat(?:e|es|ed|ing)|repair(?:s|ed|ing)?|unlock(?:s|ed|ing)?)\b/i.test(sentence);
       const score = (usefulSubject ? 10 : 0) - (weakOpening ? 2 : 0) - index / 10
-        - (shortVagueLead ? 9 : 0) - (nonPlayOpinion ? 7 : 0) + (actionable ? 2 : 0);
+        - (shortVagueLead ? 10 : 0) - (nonPlayOpinion ? 7 : 0) - (thematicOnly ? 8 : 0) + (concreteMotion ? 4 : 0) + (actionable ? 2 : 0);
       candidates.push({ text: candidate, score });
     }
 
