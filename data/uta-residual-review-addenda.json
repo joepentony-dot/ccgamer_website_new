@@ -17,6 +17,21 @@
       "reasonSubtype": "no-verified-compatible-uta-directory",
       "confidence": "medium",
       "reason": "The current UTA audit found no title candidate for the 1989 Strategic Studies Group C64 release. No tape-archive link may be assigned unless a compatible source is verified. This records absence from the scanned archive, not proof that no cassette release ever existed."
+    },
+    {
+      "gameSlug": "wasteland",
+      "title": "Wasteland",
+      "year": 1988,
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "reReleasers": [],
+      "reviewedAt": "2026-10-14",
+      "originalAuditStatus": "no-title-candidate",
+      "classification": "genuinely-no-uta-release",
+      "reasonSubtype": "disk-only-catalogue-release",
+      "confidence": "medium",
+      "reason": "The 1988 Electronic Arts Commodore 64 Wasteland release is documented on 5.25-inch retail floppy disks (Lemon64 and BetaArchive). The current UTA 2,900-release scan found no title candidate. No UTA cassette directory can be linked without additional evidence; this is not proof that no tape version ever existed."
     }
   ]
 }
