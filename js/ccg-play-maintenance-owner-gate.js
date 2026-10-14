@@ -306,7 +306,7 @@
       '<p class="ccg-round2-note">Stay tuned to the Cheeky Commodore Gamer channel and website for development news and the next playable release.</p>',
       '<div class="ccg-actions">',
       '<a id="ccg-member-beta-exit" href="' + MAINTENANCE_DESTINATION + '">BACK TO CCG GAMES</a>',
-      '<a id="ccg-member-beta-follow" href="https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join" target="_blank" rel="noopener noreferrer">FOLLOW DEVELOPMENT</a>',
+      '<a id="ccg-member-beta-follow" href="https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw" target="_blank" rel="noopener noreferrer">FOLLOW DEVELOPMENT</a>',
       '</div>',
       '</div>'
     ].join("");
