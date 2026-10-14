@@ -18,6 +18,8 @@ on:
       - "scripts/validate-legacy-seo-redirects.js"
       - "tests/search-console-seo-remediation.test.mjs"
       - "tools/seo/generate-sitemap.js"
+      - "tools/seo/git-content-lastmod.js"
+      - "tests/sitemap-content-lastmod.test.mjs"
       - ".github/workflows/search-console-seo-remediation.yml"
   workflow_dispatch:
 
@@ -63,10 +65,11 @@ jobs:
           node --check scripts/validate-legacy-seo-redirects.js
           node --check scripts/generate-sitemaps.js
           node --check tools/seo/generate-sitemap.js
+          node --check tools/seo/git-content-lastmod.js
           node --check scripts/rebuild-games.js
 
       - name: Run focused remediation regressions
-        run: node --test tests/search-console-seo-remediation.test.mjs
+        run: node --test tests/search-console-seo-remediation.test.mjs tests/sitemap-content-lastmod.test.mjs
 
       - name: Generate remediated SEO output
         run: |
