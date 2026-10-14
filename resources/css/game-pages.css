@@ -2366,3 +2366,43 @@
 .ccg-page--single-game .ccg-footer--game .ccg-footer__col {
     gap: 4px;
 }
+
+
+/* Small screens: show game artwork before the detail-heavy credits,
+   and present each credit as a label/value pair rather than two rows. */
+@media (max-width: 560px) {
+    .ccg-page--single-game .game-hero--has-box3d .game-hero__inner {
+        grid-template-columns: minmax(0, 1fr) minmax(96px, 112px);
+        grid-template-areas: "media box" "content content";
+        align-items: start;
+        gap: 8px;
+    }
+    .ccg-page--single-game .game-hero--has-box3d .game-hero__media {
+        width: 100%;
+        max-width: 238px;
+        justify-self: start;
+    }
+    .ccg-page--single-game .game-hero--has-box3d .game-hero__box3d {
+        width: 100%;
+        max-width: 112px;
+        justify-self: end;
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        grid-template-columns: minmax(86px, 105px) minmax(0, 1fr);
+        align-items: start;
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dt,
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+        min-width: 0;
+        padding: 5px 4px;
+        line-height: 1.35;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+        font-size: 0.7rem;
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+        font-size: 0.8rem;
+        overflow-wrap: anywhere;
+    }
+}
