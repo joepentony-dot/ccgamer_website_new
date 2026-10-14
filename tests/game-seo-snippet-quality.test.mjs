@@ -681,11 +681,13 @@ test('one-time Batman correction preserves all other catalogue bytes in both PWA
     const finish = source.indexOf('\n}\n', begin);
     assert.ok(begin > 0 && finish > begin, path + ' missing one-time gate');
     const body = source.slice(begin, finish + 2);
-    const check = (baseline, candidate, relativePath = 'games/games.json') =>
-      new Function('readGitFile', 'read',
+    const check = (baseline, candidate, relativePath = 'games/games.json', mainHead = false, parent = baseline) =>
+      new Function('readGitFile', 'read', 'childProcess', 'root',
         body + '\nreturn isApprovedBatman1989CatalogueCorrection;')(
-          (ref, file) => ref === 'origin/main' && file === 'games/games.json' ? baseline : null,
-          () => candidate
+          (ref, file) => file !== 'games/games.json' ? null : ref === 'origin/main' ? baseline : ref === 'HEAD^' ? parent : null,
+          () => candidate,
+          { execFileSync: (_command, args) => args[1] === 'HEAD' || mainHead ? 'main-sha\n' : 'branch-sha\n' },
+          root
         )(relativePath);
 
     assert.equal(check(original, current), true, path + ' rejects exact approved migration');
@@ -693,6 +695,14 @@ test('one-time Batman correction preserves all other catalogue bytes in both PWA
     assert.equal(check(original, current.replace('"year": 1989', '"year": 1990')),
       false, path + ' ignores other year changes');
     assert.equal(check(current, current), false, path + ' remains open after main is corrected');
+    assert.equal(check(current, current, 'games/games.json', true, original), true,
+      path + ' rejects the first exact merged-main transition');
+    assert.equal(check(current, current, 'games/games.json', true, current), false,
+      path + ' must close after the corrected main transition');
+    assert.equal(check(current, current, 'games/games.json', false, original), false,
+      path + ' must not reuse an old parent on another branch');
+    assert.equal(check(current, current + '\n', 'games/games.json', true, original), false,
+      path + ' must reject other bytes even on merged main');
     assert.equal(check(original, original), false, path + ' should not match unchanged source');
     assert.equal(check(original, current, 'index.html'), false, path + ' must protect intro');
   }

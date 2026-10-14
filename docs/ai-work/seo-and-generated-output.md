@@ -1,5 +1,12 @@
 # SEO and generated output
 
+## First merged-main protected-catalogue transition — 14 October 2026, 14:56 BST (unmerged)
+
+- Independent release audit found a post-merge qualification gap in the existing narrow exception: when `HEAD` equals `origin/main`, `changedFiles()` falls back to `HEAD^...HEAD`, but the Batman helper reads already-corrected `origin/main`. Thus an audit on the first merged-main transition would reject the same owner-approved two-field correction that passed in the PR.
+- Both PWA helpers now use `HEAD^` for this transition only when the candidate catalogue already equals `origin/main` byte-for-byte AND `git rev-parse HEAD` equals `git rev-parse origin/main`. The exact 1986 source description/year and exact 1989 replacement comparison remain intact. No other protected guard changes. Subsequent corrected-main parents, other branches, incidental bytes and other protected paths cannot use this exception.
+- Existing 35 snippet tests pass, including added first-merged-main acceptance, later-main closure, other-branch rejection and merged-main extra-byte rejection. Both local PWA audits, correct cache command `node scripts/check-public-code-cache-version.mjs --base origin/main`, performance contract and publishing-integrity audit also passed after re-materialising unchanged Git blobs as LF. Earlier local publishing-integrity errors were CRLF literal matching; no `_headers` edit. A trailing documentation blank-line issue was repaired and `git diff --check` passed.
+- This additional safeguard repair supersedes qualification/review running for `62f7c8598fffb1f633d61309517b6c0cccba1020`. Require the new exact head's full matrix, validation-only Phase 6B rebuild, publishing integrity and independent review before qualified merge; verify both PWA audits again on merged main. Continue on #2747 only.
+
 ## PR #2747 latest-head release-blocker repair — 14 October 2026, 14:45 BST (unmerged)
 
 - Refreshed PR head `2e390d15fa0bd34d29d74218fbe474950ae74c02`, main/base `ee4e7dc90b015c2555c916b1def88e63c9d302d0`: 39 ahead, zero behind, nine intended changed files. All 17 prior-head Actions workflows and Workers preview passed, but independent Codex review on that exact head raised P2 thread `PRRT_kwDOQcoeX86sU_1T`: Road Rash review narration, Herbert's Dummy Run missing antecedent, Final Fight contextual opening. Green CI alone did not qualify release.

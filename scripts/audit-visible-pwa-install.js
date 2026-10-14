@@ -171,7 +171,19 @@ requireText(workflow, "node --check js/ccg-pwa-visible-install.js", "Controller 
 // Batman: The Movie. Every other byte of games/games.json stays protected.
 function isApprovedBatman1989CatalogueCorrection(relativePath) {
   if (relativePath !== "games/games.json") return false;
-  const baseline = readGitFile("origin/main", relativePath);
+  let baseline = readGitFile("origin/main", relativePath);
+  // On the first merged main commit, changedFiles() audits HEAD^...HEAD.
+  // Use that transition's parent only when HEAD is exactly origin/main.
+  // Later main commits already have 1989 in their parent and cannot match.
+  if (baseline !== null && baseline === read(relativePath)) {
+    try {
+      const revision = (ref) => childProcess.execFileSync("git", ["rev-parse", ref],
+        { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+      if (revision("HEAD") === revision("origin/main")) {
+        baseline = readGitFile("HEAD^", relativePath);
+      }
+    } catch (error) { return false; }
+  }
   if (baseline === null) return false;
 
   const anchor = '"slug": "batman-the-movie"';
