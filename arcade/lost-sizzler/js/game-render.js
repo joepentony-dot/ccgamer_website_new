@@ -1577,7 +1577,11 @@ function drawDedicatedHazards(){
       const spin=active?(now/54+cell.group*.7):warning?(Math.sin(now/105+cell.group)*.42):0;
       ctx.save();ctx.translate(cx,cy);ctx.rotate(spin);
       if(blade?.complete&&blade.naturalWidth){
-        const size=active?C.tile*.9:warning?C.tile*.8:C.tile*.72;
+        // Idle blade hardware must recede rather than cover whole rooms with pale glyphs.
+        const size=active?C.tile*.78:warning?C.tile*.68:C.tile*.54;
+        ctx.fillStyle="#141a23";ctx.fillRect(-C.tile*.30,-C.tile*.30,C.tile*.60,C.tile*.60);
+        ctx.strokeStyle=active?P.red:warning?P.gold:"#555e6c";ctx.lineWidth=2;
+        ctx.strokeRect(-C.tile*.28,-C.tile*.28,C.tile*.56,C.tile*.56);
         ctx.shadowColor=active?P.red:warning?P.gold:"rgba(145,154,166,.35)";ctx.shadowBlur=active?14:warning?9:4;
         ctx.drawImage(blade,-size/2,-size/2,size,size)
       }else{

@@ -186,4 +186,9 @@ assert.ok(deathCache.inventory.some(item=>item.kind==="wearable"&&item.deathEqui
 assert.ok(deathCache.inventory.some(item=>item.kind==="wearable"&&item.deathEquippedSlot==="feet"),"death cache must contain equipped Feet gear");
 assert.equal(deathCache.armour,9,"death cache must retain the armour protection snapshot");
 
+assert.match(source,/A complete helmet covers the skull/,"Head equipment must render a full helmet silhouette");
+assert.match(source,/if\(hands\)[\s\S]*pixel\(x,y,5,9/,"Gloves must cover both hands");
+assert.match(source,/if\(feet\)[\s\S]*pixel\(x,9,8,10/,"Boots must cover both feet");
+assert.match(source,/title.textContent="CCG EXPLORER"/,"Avoid clipped long character title");
+assert.match(css,/r80-has-head/,"Preview must hide competing older head overlay");
 console.log("Dungeon R80 genuine wearable equipment contract passed.");
