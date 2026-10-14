@@ -560,7 +560,10 @@ test('mechanic-specific descriptions for Gribbly Joe Blade and Stifflip', () => 
   for (const [slug, matcher] of examples) {
     const game = games.find((row) => row.slug === slug);
     assert.ok(game, slug);
-    assert.equal(/amiga/i.test(game.system || game.platform || ''), false, slug);
+    // The Lost Patrol is the Amiga entry; the three authored C64 gameplay
+    // checks and Nightbreed action port remain tied to their C64 catalogue.
+    const isAmiga = /amiga/i.test(game.system || game.platform || '');
+    assert.equal(isAmiga, slug === 'the-lost-patrol', slug);
     const record = { ...game, description: enriched[slug]?.description || game.description };
     const description = snippet.buildSnippet(record, game.title);
     assert.match(description, matcher, slug);
