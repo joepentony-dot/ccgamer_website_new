@@ -4666,6 +4666,21 @@
         }
       ]
     },
+    "olli-and-lissa": {
+      "title": "Olli & Lissa",
+      "releases": [
+        {
+          "archiveId": "2333",
+          "publisher": "Firebird Silver",
+          "year": 1987,
+          "yearLabel": "1987",
+          "loader": null,
+          "sourceRole": "publisher",
+          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Olli_and_Lissa_(1987_Firebird_Silver)_%5b2333%5d/",
+          "titleMatch": "exact"
+        }
+      ]
+    },
     "ollie-s-follies": {
       "title": "Ollie's Follies",
       "releases": [
@@ -6880,21 +6895,6 @@
           "loader": null,
           "sourceRole": "publisher",
           "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Great_Giana_Sisters,_The_(1987_Go!)_%5b5569%5d/",
-          "titleMatch": "exact"
-        }
-      ]
-    },
-    "the-happiest-days-of-your-life": {
-      "title": "The Happiest Days Of Your Life",
-      "releases": [
-        {
-          "archiveId": "2266",
-          "publisher": "Firebird Silver",
-          "year": 1986,
-          "yearLabel": "1986",
-          "loader": null,
-          "sourceRole": "publisher",
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Happiest_Days_of_Your_Life,_The_(1986_Firebird_Silver)_%5b2266%5d/",
           "titleMatch": "exact"
         }
       ]

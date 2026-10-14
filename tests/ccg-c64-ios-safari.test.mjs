@@ -59,7 +59,7 @@ test("Non-isolated iPhone starts without worker registration or reload", async (
   const iPhone = setup();
   await iPhone.start();
   assert.equal(iPhone.calls.imports.length, 1);
-  assert.match(iPhone.calls.imports[0], /20261012_ios_game_select_v3/);
+  assert.match(iPhone.calls.imports[0], /\/js\/ccg-c64\/app\.js\?ccg_rev=[a-z0-9_]+/);
   assert.equal(iPhone.calls.registrations, 0);
   assert.equal(iPhone.calls.reloads, 0);
 });

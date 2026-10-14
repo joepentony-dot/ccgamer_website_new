@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "iSBLT9C9xh4",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Olli & Lissa – Revisiting My Childhood C64 Frustration!",
+      "description": "Olli & Lissa: The Ghost of Shilmoore Castle is a single-player Commodore 64 platform game published by Firebird in 1987. Paul Johnson converted the game for the C64, Ben Daglish composed th…",
+      "url": "/games/olli-and-lissa/",
+      "thumbnail": "https://i.ytimg.com/vi/iSBLT9C9xh4/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Firebird"
+    },
+    {
       "id": "9Wlh2bEIRWM",
       "kind": "game",
       "filter": "c64",
@@ -7956,11 +7969,11 @@
       "filter": "c64",
       "badge": "C64 Game",
       "title": "Batman: The Movie – Did Ocean Deliver the Best Batman Game on the C64?",
-      "description": "Batman: The Movie is a Commodore 64 action-adventure game released by Ocean in 1986. Inspired by the iconic film character rather than a specific movie plot, the game mixes side-scrolling a…",
+      "description": "Batman: The Movie is Ocean Software's 1989 Commodore 64 adaptation of Tim Burton's Batman film. Its five stages mix platform action, Batmobile driving, puzzles and Batwing sequences.",
       "url": "/games/batman-the-movie/",
       "thumbnail": "https://i.ytimg.com/vi/N4jr2sWLwuw/mqdefault.jpg",
       "platform": "Commodore 64",
-      "year": 1986,
+      "year": 1989,
       "publisher": "Ocean"
     },
     {
@@ -9157,19 +9170,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "ght7u1k_tqw",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "The Happiest Days Of Your Life",
-      "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64. You control a schoolboy named G. McFat, wrongly accused of stealing…",
-      "url": "/games/the-happiest-days-of-your-life/",
-      "thumbnail": "https://i.ytimg.com/vi/ght7u1k_tqw/mqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1986,
-      "publisher": "Firebird"
     }
   ]
 }

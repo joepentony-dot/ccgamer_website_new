@@ -49,7 +49,8 @@ const measure = [
  'return { vw:document.documentElement.clientWidth, sw:document.documentElement.scrollWidth,',
  'touch:matchMedia("(pointer: coarse)").matches, stage:box(".ccg-c64-screen-stage"),',
  'bezel:box(".ccg-c64-screen-bezel"), console:box(".ccg-c64-console"),',
- 'deck:box(".ccg-c64-control-stack"), joy:show(".ccg-c64-touch-controls"),',
+ 'deck:box(".ccg-c64-control-stack"), vault:box(".ccg-c64-panel--vault"),', 
+ 'advanced:box(".ccg-c64-advanced"), joy:show(".ccg-c64-touch-controls"),',
  'keys:show(".ccg-c64-touch-fkeys"), libraryInConsole:e(".ccg-c64-panel--library").parentElement===e(".ccg-c64-console"),',
  'romTransfer:e("[data-rom-import]")!==null,',
  'font:parseFloat(getComputedStyle(e("#ccg-c64-library-search")).fontSize)};'
@@ -94,7 +95,7 @@ try {
   await sleep(1900);
 
   for(const [width,height,touch] of [[320,680,true],[360,780,true],[390,844,true],
-    [844,390,true],[1440,900,false]]){
+    [844,390,true],[1440,900,false],[1620,900,false]]){
     await emulate(session,width,height,touch);
     const r=await evaluate(session,measure);
     assert(r.vw>0 && r.sw-r.vw<5,
@@ -113,10 +114,67 @@ try {
       assert(!r.libraryInConsole, "Desktop library must remain in its original control deck");
       assert(!r.joy&&!r.keys&&!r.libraryInConsole,"Desktop layout unexpectedly gained mobile buttons");
       assert(r.deck.left>=r.console.right-2,"Desktop Omega columns changed");
+      // The former CSS grid-column:auto bug squeezed Game Vault to ~1/6
+      // of this deck and stretched the page into a huge blank column.
+      assert(r.vault.width >= r.deck.width - 6,
+        "Save / Resume collapsed into a narrow desktop grid column at " +
+        width + "x" + height + " (vault=" + r.vault.width + " deck=" + r.deck.width + ")");
+      assert(Math.abs(r.vault.left - r.deck.left) <= 5,
+        "Save / Resume must align with the left edge of the desktop control deck");
+      assert(r.vault.height < 420,
+        "Save / Resume text is vertically stretched at " + width + "x" + height);
+      assert(r.advanced.top >= r.vault.bottom - 4,
+        "Advanced media tools must follow the Save / Resume panel rather than overlap it");
     }
     console.log("PASS C64 viewport "+width+"x"+height+(touch?" touch":" desktop"));
   }
 
+
+  // Exercise the immersive layout rather than only the library. Geometry
+  // is measured in real Chromium at small portrait and landscape viewports.
+  for (const [width, height] of [[320, 680], [390, 844], [844, 390]]) {
+    await emulate(session, width, height, true);
+    const v = await evaluate(session, [
+      'var e=s=>document.querySelector(s);',
+      'var shell=e(".ccg-c64-console");shell.classList.add("is-mobile-playing");',
+      'document.body.classList.add("is-mobile-playing");',
+      'e("[data-mobile-playbar]").hidden=false;',
+      'e("[data-mobile-game-actions]").hidden=false;',
+      'e(".ccg-c64-touch-jump").hidden=false;',
+      'var rect=s=>{var r=e(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};};',
+      'var control=rect("[data-mobile-game-actions]"), bar=rect("[data-mobile-playbar]"),',
+      'screen=rect(".ccg-c64-screen-stage"), touch=rect(".ccg-c64-touch-controls"),',
+      'opts=rect(".ccg-c64-touch-options"), body=rect(".ccg-c64-console");',
+      'return {bar,control,screen,touch,opts,body,sw:document.documentElement.scrollWidth,',
+      'vw:document.documentElement.clientWidth,',
+      'pause:rect("[data-mobile-pause]"), save:rect("[data-mobile-save-state]"),',
+      'load:rect("[data-mobile-load-state]"), jump:rect(".ccg-c64-touch-jump"),',
+      'fire:rect(".ccg-c64-touch-fire"),crt:rect("[data-mobile-crt-mode]"),',
+      'jumpToggle:document.querySelector("[data-jump-toggle]")!==null};',
+    ].join("\n"));
+    assert(v.sw-v.vw<5, "Immersive C64 horizontal overflow at "+width+"x"+height);
+    assert(v.control.width > width * .80 && v.control.height >= 30,
+      "Mobile pause/save/load row is missing at "+width+"x"+height);
+    assert(v.pause.width >= 70 && v.save.width >= 70 && v.load.width >= 70,
+      "Mobile save controls are too narrow at "+width+"x"+height);
+    assert(v.jump.width >= 60 && v.fire.width >= 60,
+      "FIRE and JUMP must both remain touch-sized");
+    assert(v.crt.width >= 55 && !v.jumpToggle, "CRT must replace JUMP toggle");
+    assert(v.control.top >= v.bar.bottom-3 && v.screen.top >= v.control.bottom-3,
+      "Controls must appear above the game screen");
+    assert(v.touch.top >= v.screen.bottom-3 && v.opts.top >= v.touch.bottom-3,
+      "Touch controls and bottom selector must appear after game screen");
+    assert(v.opts.bottom <= height+4 && v.screen.height >= 35,
+      "Immersive game screen or bottom buttons fall outside mobile viewport");
+    console.log("PASS C64 immersive mobile controls "+width+"x"+height);
+    await evaluate(session, [
+      'document.querySelector(".ccg-c64-console").classList.remove("is-mobile-playing");',
+      'document.body.classList.remove("is-mobile-playing");',
+      'document.querySelector("[data-mobile-playbar]").hidden=true;',
+      'document.querySelector("[data-mobile-game-actions]").hidden=true;',
+      'return true;'
+    ].join("\n"));
+  }
   await emulate(session,390,844,true);
   const drop=await evaluate(session,[
     'var l=document.querySelector(".ccg-c64-panel--library");l.hidden=false;',

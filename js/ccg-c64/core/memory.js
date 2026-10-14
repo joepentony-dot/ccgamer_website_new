@@ -408,7 +408,7 @@ export class Memory {
     const arr = this._readPageArr[page];
     if (arr !== null) return arr[addr - this._readPageOffset[page]];
     if (addr >= 0x8000 && addr <= 0x9fff && this.cartridge?.romLoReadHook) {
-      return this.cartridge.readRomLo(addr);
+      return this.cartridge.peekRomLo?.(addr) ?? this.cartridge.readRomLo(addr);
     }
     // I/O / open-bus pages: don't poke devices — report the bus latch.
     return this.externalDataBus8;
@@ -424,7 +424,7 @@ export class Memory {
     const arr = this._readPageArr[page];
     if (arr !== null) return arr[addr - this._readPageOffset[page]];
     if (addr >= 0x8000 && addr <= 0x9fff && this.cartridge?.romLoReadHook) {
-      return this.cartridge.readRomLo(addr);
+      return this.cartridge.peekRomLo?.(addr) ?? this.cartridge.readRomLo(addr);
     }
     if (addr >= 0xD000 && addr <= 0xDFFF) return this._peekIO(addr);
     return this.ram[addr];

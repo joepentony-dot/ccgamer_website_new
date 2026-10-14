@@ -47,7 +47,7 @@ class FakeButton {
 }
 const buttons = names.map(name => new FakeButton(name));
 const start = app.indexOf("// On phones, make short taps long enough");
-const end = app.indexOf("void refreshVaultStatus();", start);
+const end = app.indexOf("void refreshVaultGameList();", start);
 assert(start >= 0 && end > start, "Touch function-key handlers must be installed");
 let now = 1000;
 let nextTimer = 0;

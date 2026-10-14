@@ -37,16 +37,16 @@
     },
     {
       "year": 1986,
-      "count": 83,
-      "c64Count": 83,
+      "count": 81,
+      "c64Count": 81,
       "amigaCount": 0,
       "indexable": true,
       "url": "/games/years/1986/"
     },
     {
       "year": 1987,
-      "count": 89,
-      "c64Count": 87,
+      "count": 90,
+      "c64Count": 88,
       "amigaCount": 2,
       "indexable": true,
       "url": "/games/years/1987/"
@@ -61,8 +61,8 @@
     },
     {
       "year": 1989,
-      "count": 51,
-      "c64Count": 42,
+      "count": 52,
+      "c64Count": 43,
       "amigaCount": 9,
       "indexable": true,
       "url": "/games/years/1989/"

@@ -14,9 +14,9 @@
     "exactPages": 286,
     "issueFallbacks": 0,
     "directCoveragePercent": 100,
-    "reviewRecords": 834,
-    "additionalReviewRecords": 548,
-    "gameReviewGames": 347,
+    "reviewRecords": 835,
+    "additionalReviewRecords": 549,
+    "gameReviewGames": 348,
     "awardRecordsLinkedToGames": 100,
     "unmatchedCachedReviewPages": 27
   },
@@ -3916,6 +3916,18 @@
       "gameTitle": "Indiana Jones And The Fate Of Atlantis",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/indiana-jones-and-the-last-crusade"
+    },
+    "1987|march|c64|Olli & Lissa": {
+      "issue": 23,
+      "page": 25,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=23&page=25",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "olli-and-lissa",
+      "gameTitle": "Olli & Lissa",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/olli-and-lissa"
     },
     "1988|january|c64|Track & Field": {
       "issue": 33,
