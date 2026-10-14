@@ -7,6 +7,7 @@ on:
       - resources/css/game-pages.css
       - js/load-single-game.js
       - tests/single-game-dense-layout-oct2026.test.mjs
+      - tests/single-game-shared-catalogue.test.mjs
       - .github/workflows/single-game-lighthouse-measured.yml
   workflow_dispatch:
 
@@ -28,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check js/load-single-game.js
-          node --test tests/single-game-dense-layout-oct2026.test.mjs
+          node --test tests/single-game-dense-layout-oct2026.test.mjs tests/single-game-shared-catalogue.test.mjs
           test -s games/wasteland/index.html
           test -s games/20-tons/index.html
           # Regenerate canonical pages from the PR candidate before measuring.
