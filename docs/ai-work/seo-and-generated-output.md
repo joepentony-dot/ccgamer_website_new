@@ -1,5 +1,11 @@
 # SEO and generated output
 
+## Generator ownership for six pre-existing factual fixes — 14 October 2026 (draft)
+
+- The P1 diagnosis also applies to six existing edited enrichment records previously carried in #2747: Red Heat, RoboCop, The Chaos Engine, Bismark, Bounder and Double Dragon II: The Revenge. Those existing 90–165-word records are now explicitly curated **in the authoritative generator**, with identical current generated descriptions and the same existing YouTube source links, so a rebuild cannot reinstate the original reversed Red Heat protagonist, lost UK/US RoboCop release distinction, wrong Chaos Engine title or grammatical errors.
+- The source normaliser now preserves the literal `Chaos Engine` game title while retaining its historical ordinary-prose word substitution. Added regression and extended source/generated/preview parity tests to all **nine** curated corrections.
+- No generated game route HTML manually edited. Current exact-head full CI, independent review and authoritative regeneration are needed before any main merge. This does not complete the unrelated 24 generic fallback research cases.
+
 ## PR #2747 P1 generator-source repair — 14 October 2026 (unmerged)
 
 - Codex found P1 on reviewed head `082d1cb45b97d8ac5bf614a7fa368f5c27c7b79c`: prior short generated-file platform corrections were not persisted in the AUTHORITATIVE generator, so publishing would overwrite them, and descriptions violated the 90–165-word length contract. The former generated-only patch was NOT release-ready.
