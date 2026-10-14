@@ -879,7 +879,37 @@ function updateNamedEncounters(){
   for(const e of visible)if(!e.dossierSeen){e.dossierSeen=true;run.stats.namedEncounters=(run.stats.namedEncounters||0)+1;PGR.recordNamedEncounter(e.follower.name,false);showToast(`NAMED ENEMY — ${e.follower.name.toUpperCase()}`,"Encounter added to your dossier. Named enemies carry a Restore Potion and scale with your level.","gold",6800)}
   S.setNamedEnemy?.(chosen?.follower?.name||"");if(!host.stalker?.near)S.setRoomMood(chosen?"named":roomMoodFor(W.roomAt(world,p1.x,p1.y)))
 }
+// Save/restore or an interrupted final-defender callback can leave a Sigil
+// chamber sealed after every actual Sigil defender is already dead. Recover
+// ONLY that impossible state; living defenders and incomplete objectives keep
+// all their normal doors and encounter rules.
+function reconcileClearedSigilLockdown(){
+  if(!host?.sigilLockdown||host.sigilResolved||host.sigilRoomId==null||!host.objective?.complete)return false;
+  if(SYS.sigilDefendersAlive(host).length>0)return false;
+  host.sigilResolved=true;
+  host.sigilLockdown=false;
+  const hasSigil=Boolean(host.exitSigilCollected)||(host.items||[]).some(item=>item?.active&&item.kind==="exitSigil");
+  if(!hasSigil){
+    const room=world.rooms?.[host.sigilRoomId];
+    const fallback=room?{x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)}:null;
+    const drop=host.sigilDropPos||fallback;
+    if(drop){
+      host.items=host.items||[];
+      host.items.push({id:`exit-sigil-recovered-${Number(run?.floor||1)}-${host.sigilRoomId}`,x:drop.x,y:drop.y,kind:"exitSigil",active:true,title:"EXIT SIGIL"});
+    }
+  }
+  host.exitSigilDropped=true;
+  for(const door of host.doors||[])if(door.sigilGate){
+    door.locked=false;
+    beginDoorOpening(door,950);
+  }
+  host.revision=(Number(host.revision)||0)+1;
+  try{S.sfx("dooropen")}catch(_){}
+  showToast("SIGIL CHAMBER RECOVERED","All Sigil defenders are gone. The stalled chamber doors have reopened; the Exit Sigil is available.","gold",9000);
+  return true
+}
 function updateFloorObjective(){
+  reconcileClearedSigilLockdown();
   const pct=Math.round(PGR.roomCompletion(explored.get(p1.id)||new Set(),world)*100);SYS.updateObjective(host,run,pct);
   if(host.objective.complete&&!host._objectiveAnnounced){
     host._objectiveAnnounced=true;S.sfx("open");
