@@ -1,5 +1,14 @@
 # SEO and generated output
 
+## PR #2747: prevent new generic and wrong-platform regressions — 14 October 2026 (draft)
+
+- Committed **`759045f`** on the EXISTING draft PR #2747 to extend `tests/game-seo-snippet-quality.test.mjs`: exact-source-fallback checks now reject any *new* generic-description slug outside the 24 documented, unresolved catalogue entries, while allowing that backlog to shrink. This does not resolve or approve the existing 24.
+- Added an independent all-666 source-check rule that rejects **new** wrong-platform descriptions in the first 300 characters of C64/Amiga editorial source. Three *pre-existing* mismatches are explicitly recorded as unapproved remediation exceptions: `the-immortal` (Amiga page with C64 editorial), `santas-xmas-caper` (Amiga 1992 vs C64 1990 shooter), `shadow-of-the-beast` (C64 page with Amiga 1989 editorial). No raw catalogue or enriched source data was edited; those three need fact-checked source-owner correction and authoritative generated-output publishing.
+- Re-ran the actual candidate shared generator read-only against **666** catalogue/enrichment pairs after this test commit. Confirmed **24** exact generic fallbacks (all covered by the existing backlog, zero new), **three** detected source platform conflicts (zero unknown), **zero** descriptions ending at an orphan capital initial, **zero** doubled final full stops, and **zero** over 155 characters. These are read-only calculations, not full Node/GitHub Actions qualification or editorial content acceptance.
+- Separately audited **10 previously unexamined nonindexed game pages** with GSC Wizard: Mad Doctor, The Faces of Haarne, Alleykat, Dan Dare III, Tusker, Kamikaze, Xybots, Pneumatic Hammers, Up Up and Away, Fort Apocalypse. All ten **live HTTP 200 / indexable / self-canonical**, with no critical/high technical findings; Xybots currently has 51-character description, Pneumatic Hammers 70, Up Up and Away 79. Three game sources can produce longer candidate sentences but Up Up and Away's chosen sentence remains vague; require individual editing, not crude length thresholds.
+- **Hard release gates unchanged**: PR #2747 still contains protected `games/games.json` Batman 1989 correction; prior-head PWA/Visible PWA scripts deliberately fail any direct edit. Do not weaken those guards. At start of this run the previous `89b6dbf` head had **zero connector-returned exact-head GitHub Actions runs**, no independent reviews, and production main ahead by two commits including newer cache namespace. No merge, generated content release, Google index request or production deployment occurred.
+
+
 ## PR #2747 guarded punctuation continuation — 14 October 2026
 
 - Owner approved necessary factual/SEO changes, but approval is **not** a replacement for independent source review, complete current-head CI, protected catalogue safety rules or separately authorised generated-output release.
