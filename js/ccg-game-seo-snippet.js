@@ -120,6 +120,51 @@
     return candidate;
   }
 
+  /**
+   * Recover a self-contained, sourced gameplay detail when the long editorial
+   * introduction cannot fit a complete snippet. Never manufacture a mechanic,
+   * change a release year or slice an unfinished sentence. A title prefix
+   * gives a later sentence context without rewriting its factual wording.
+   */
+  function editorialFollowupSentence(value, title, maxLength) {
+    const text = normalize(value);
+    const firstEnd = firstSentenceEnd(text);
+    if (firstEnd < 0) return "";
+    let tail = text.slice(firstEnd).trimStart();
+    const candidates = [];
+
+    // Limit processing to nearby authored sentences, not unrelated material.
+    for (let index = 1; index <= 10 && tail; index += 1) {
+      const end = firstSentenceEnd(tail);
+      if (end < 0) break;
+      const sentence = tail.slice(0, end).trim();
+      tail = tail.slice(end).trimStart();
+
+      // Source copy may discuss older arcade originals, other computer
+      // versions or contradictory regional years: do not promote those facts
+      // automatically into this game's C64/Amiga search description.
+      if (!/^[A-Z]/.test(sentence) ||
+          sentence.length < 44 || sentence.length > maxLength ||
+          /\b(?:18|19|20)\d{2}\b/.test(sentence) ||
+          /\b(?:ZX Spectrum|Atari ST|Amstrad CPC|NES|PlayStation)\b/i.test(sentence) ||
+          /https?:\/\/|www\./i.test(sentence) ||
+          /…|\.\.\./.test(sentence)) continue;
+
+      const candidate = sentence.toLowerCase().includes(title.toLowerCase())
+        ? sentence
+        : title + ": " + sentence;
+      if (candidate.length > maxLength || !/[.!?]$/.test(candidate)) continue;
+
+      const usefulSubject = /^(?:You|Players|Gameplay|Progress|Combat|Battles|Levels|The player|The game|The gameplay|Your|Each|Controls|Objectives|The objective|A standout|Its|The action|Using|Moving|There|The main)\b/i.test(sentence);
+      const weakOpening = /^(?:The|This|It|A|An|Each|In|On|For|Between|As|While|When|After)\b/i.test(sentence);
+      const score = (usefulSubject ? 10 : 0) - (weakOpening ? 2 : 0) - index / 10;
+      candidates.push({ text: candidate, score });
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+    return candidates.length ? candidates[0].text : "";
+  }
+
   function sourceFallback(game, title, maxLength) {
     const year = /^\d{4}$/.test(String(game && game.year || "").trim())
       ? String(game.year).trim()
@@ -154,6 +199,11 @@
 
     const concise = conciseSubjectSentence(editorial, title, limit);
     if (concise) return concise;
+
+    // Prefer a complete, specific statement from the author's existing
+    // description to the generic title/year/publisher-only fallback.
+    const followup = editorialFollowupSentence(editorial, title, limit);
+    if (followup) return followup;
 
     return sourceFallback(game, title, limit);
   }
