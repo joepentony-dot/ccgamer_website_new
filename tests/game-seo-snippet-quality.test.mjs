@@ -390,14 +390,15 @@ test('new initial-led sentences do not join preceding mode labels', () => {
   }
 });
 
-test('all 666 enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
+test('all 665 current enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
   const { readFileSync } = require('node:fs');
   const { join } = require('node:path');
   const root = join(import.meta.dirname, '..');
   const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
   const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
   const enrichments = payload.games || payload;
-  assert.equal(games.length, 666, 'Unexpected catalogue change; review before regenerating metadata');
+  assert.equal(games.length, 665, 'Unexpected catalogue change; review before regenerating metadata');
+  assert.ok(!games.some((game) => game.slug === 'the-happiest-days-of-your-life'), 'Retired video-less game returned to the catalogue');
 
   let generic = 0;
   let complete = 0;
@@ -537,7 +538,8 @@ test('all existing enriched game snippets avoid accidental standalone initials a
   const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
   const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
   const enriched = payload.games || payload;
-  assert.equal(games.length, 666);
+  assert.equal(games.length, 665);
+  assert.ok(!games.some((game) => game.slug === 'the-happiest-days-of-your-life'));
   for (const game of games) {
     const record = { ...game, description: enriched[game.slug]?.description || game.description };
     const actual = snippet.buildSnippet(record, game.title);
