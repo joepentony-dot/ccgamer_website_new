@@ -77,6 +77,18 @@
         // nouns after a two-letter acronym (e.g. "U.S. Players...").
         const publisher = /(?:^|\s)U\.\s*S\.$/.test(before) && /^Gold\b/.test(next);
         const author = /(?:^|\s)J\.\s*R\.\s*R\.$/.test(before) && /^Tolkien\b/.test(next);
+        // Keep initials within sourced names and spaced game acronyms together.
+        // Terminal difficulty labels and finished acronym titles remain endings.
+        const terminalLabel = /\b(?:mode|difficulty|level|setting|grade|option|type)\s+[A-Z]\.$/i.test(before);
+        const terminalAcronym =
+          /(?:H\.E\.R\.O\.|Chase\s+H\.Q\.|\bU\.S\.)$/.test(before) ||
+          (/\bH\.\s*E\.\s*R\.\s*O\.$/.test(before) && !/^\(/.test(next));
+        const anotherInitial = /^[A-Z]\.(?:\s|$)/.test(next);
+        const namedContinuation = /^[A-Z][a-z][\p{L}'’\-]*/u.test(next);
+        const possessiveOrRoman = /^['’]s\b|^[IVX]{1,3}(?:\b|:)|^\(/.test(next);
+        const knownUS = /(?:^|\s)U\.\s*S\.$/.test(before) && /^(?:Army|Gold)\b/.test(next);
+        if (initials && !terminalLabel && !terminalAcronym &&
+            (anotherInitial || namedContinuation || possessiveOrRoman || knownUS)) continue;
         if (initials && (moreInitials || publisher || author ||
           (initials >= 2 && /^[a-z]/.test(next)))) continue;
       }
@@ -171,7 +183,7 @@
       : "";
     const platform = platformLabel(game);
     const article = platform === "Amiga" ? "an" : "a";
-    const publisher = firstPublisher(game);
+    const publisher = firstPublisher(game).replace(/\.+$/, "");
     const label = normalize(title) || "This game";
     const intro = label + (year ? " (" + year + ")" : "");
     const candidates = [
