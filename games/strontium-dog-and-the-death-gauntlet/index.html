@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Strontium Dog and the Death Gauntlet (1984) – Commodore 64 Side-Scrolling Sci-Fi Shooter Released in 1984 by Quicksilva and developed by Stephen R. Kellett for the Commodore 64, Strontium Dog and the Death Gauntlet brings the world of 2000AD to home computers. Based on the popular comic series, the game stars mutant bounty hunter Johnny Alpha as he battles across a hostile alien landscape in search of his companions, Wulf and Gronk. Gameplay is presented as a horizontally scrolling shooter, with you guiding Johnny through dangerous terrain packed with enemies and lethal plant life. Armed with a blaster, electro-flares, and time-bombs, success depends on careful positioning and knowing when to engage or evade. A strength meter adds an extra layer of tension, draining when Johnny takes damage or increases speed. The game includes multiple difficulty levels and a radar display to track progress toward the rendezvous point, encouraging repeated attempts and mastery of its mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Strontium Dog And The Death Gauntlet C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NwlCJBzqCi8" data-video-id="NwlCJBzqCi8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Strontium Dog And The Death Gauntlet video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NwlCJBzqCi8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Strontium Dog And The Death Gauntlet C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NwlCJBzqCi8" data-video-id="NwlCJBzqCi8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NwlCJBzqCi8" target="_blank" rel="noopener">Open on YouTube</a>

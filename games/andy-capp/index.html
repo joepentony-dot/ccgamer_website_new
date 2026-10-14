@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Andy Capp (1987) – Commodore 64 Life-Sim Arcade Adventure Released in 1987 by Mirrorsoft and developed by Blitter Animations, Andy Capp brings the iconic British comic strip to the Commodore 64 in a surprisingly ambitious life-simulation adventure. You step into the shoes of Andy himself, attempting to survive a rather eventful week of everyday life without running out of money—or patience. Gameplay unfolds across fixed-screen locations as time rapidly ticks through the days of the week. You must juggle Andy’s priorities, including securing unemployment benefits, managing cash, visiting the pub, dodging the police, and dealing with his long-suffering wife, Flo. Choices and timing are crucial, as certain locations and characters are only available at specific times. The presentation leans heavily into the comic’s roots, with monochrome visuals that closely resemble the original artwork. The soundtrack famously features a rendition of Dvořák’s New World Symphony, an unusual but memorable choice that gives the game a distinctive identity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Andy Capp C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/skfsX-re-qc" data-video-id="skfsX-re-qc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Andy Capp video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/skfsX-re-qc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Andy Capp C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/skfsX-re-qc" data-video-id="skfsX-re-qc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=skfsX-re-qc" target="_blank" rel="noopener">Open on YouTube</a>

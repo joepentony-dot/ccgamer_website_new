@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Top Gun (1987) – Commodore 64 Licensed Jet Combat Simulator Released in 1987 by Ocean Software, Top Gun is a licensed flight combat game for the Commodore 64 based on the hit 1986 film. You step into the role of Maverick, piloting the iconic F-14 Tomcat through a series of high-pressure aerial combat missions inspired by the movie’s jet-fuelled action. Gameplay is split between fast-paced dogfighting and demanding aircraft carrier landing sequences. During combat missions, you engage enemy fighters using missiles, cannons, and defensive flares while carefully managing speed, altitude, and positioning. Success depends on timing and accuracy rather than brute force. The landing sequences add an extra layer of tension, requiring precise control to line up correctly and touch down safely on the carrier deck. These sections are deliberately challenging and serve as a test of skill between combat encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Top Gun C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PminwUQIl0w" data-video-id="PminwUQIl0w"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Top Gun video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PminwUQIl0w/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Top Gun C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PminwUQIl0w" data-video-id="PminwUQIl0w"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PminwUQIl0w" target="_blank" rel="noopener">Open on YouTube</a>

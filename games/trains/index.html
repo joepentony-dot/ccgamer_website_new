@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Trains (1983) – Commodore 64 Management Simulation | Retro Review Trains (1983), developed by Interactive Picture Systems and published by Spinnaker Software, is a top-down management simulation where you run a steam locomotive hauling goods across shifting industrial landscapes. You transport resources such as oil and coal to factories and depots while balancing supply and demand, refuelling your engine, avoiding crashes, and managing payroll costs. Progress depends on uncovering hidden track segments, planning efficient routes, and keeping your operation profitable as each new level increases in complexity. For its time, the game delivers clear graphics, engaging sound effects with whistles and engine chugs, and surprisingly deep economic mechanics. While more modest than later transport simulators, Trains remains a smart and rewarding early example of strategy-based management on the Commodore 64.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Trains C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qxPej8Nd4uo" data-video-id="qxPej8Nd4uo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Trains video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qxPej8Nd4uo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Trains C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qxPej8Nd4uo" data-video-id="qxPej8Nd4uo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qxPej8Nd4uo" target="_blank" rel="noopener">Open on YouTube</a>

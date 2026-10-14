@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Badlands (1990) – Commodore 64 Post-Apocalyptic Combat Racing Arcade Classic Released in 1990 by Teque Software and published by Domark under the Tengen label for the Commodore 64, Badlands is an overhead racing game that blends high-speed competition with vehicular combat. Inspired by Atari’s Super Sprint series, it adds a distinctive post-apocalyptic twist to the arcade racing formula. Gameplay features three armed vehicles battling for position over four-lap races across eight hazardous tracks. Viewed from a top-down perspective, each race demands sharp steering, careful braking, and constant awareness of rivals and environmental dangers. During races, you can collect wrenches that are exchanged between events for upgrades such as improved speed, acceleration, and enhanced weapon systems. These progression mechanics add a strategic layer, rewarding consistent performance and smart investment. Tracks are packed with hazards including mines, retractable barriers, and tight corners, forcing you to balance aggression with precision.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Badlands C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/45lKfRGzfWk" data-video-id="45lKfRGzfWk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Badlands video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/45lKfRGzfWk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Badlands C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/45lKfRGzfWk" data-video-id="45lKfRGzfWk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=45lKfRGzfWk" target="_blank" rel="noopener">Open on YouTube</a>

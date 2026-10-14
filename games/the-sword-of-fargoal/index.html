@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sword of Fargoal (1983) – Commodore 64 Dungeon-Crawling Roguelike Classic Released in 1983 by Epyx and designed by Jeff McCord, Sword of Fargoal is one of the most influential dungeon-crawling RPGs on the Commodore 64. You descend into a deadly, ever-changing dungeon on a quest to recover the legendary Sword of Fargoal, stolen by the evil wizard Umla. Each playthrough features randomly generated dungeon layouts, ensuring no two adventures are ever the same. You explore between 15 and 20 levels, facing over 30 different monster types including ogres, trolls, wyverns, and fearsome shadow dragons. A key feature is the fog-of-war system, which hides unexplored areas and creates constant tension as new threats emerge from the darkness. Progression is driven by experience, levelling, and careful resource management, with temples on each level offering healing, protection, or experience in exchange for gold.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Sword Of Fargoal C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-HboijbzCDc" data-video-id="-HboijbzCDc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Sword Of Fargoal video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-HboijbzCDc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Sword Of Fargoal C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-HboijbzCDc" data-video-id="-HboijbzCDc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-HboijbzCDc" target="_blank" rel="noopener">Open on YouTube</a>

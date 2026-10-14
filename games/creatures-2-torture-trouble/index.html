@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Creatures 2: Torture Trouble (1992) – Commodore 64 Puzzle Platformer | Retro Review Creatures 2: Torture Trouble (1992), developed by Apex Computer Productions and published by Thalamus, is one of the most technically impressive late-era releases on the Commodore 64. You play as Clyde Radcliffe, whose children have been kidnapped by demons and hidden across three dangerous islands. To rescue them, you must survive a series of intricate “torture screens,” trampoline bonus stages, boss encounters, and hazardous island-hopping sections. Rather than focusing on traditional platforming, Creatures 2 emphasises puzzle-solving and experimentation. Each torture chamber is filled with elaborate mechanisms that must be activated in the correct order to progress. The game is famous for its detailed cartoon-style graphics, featuring advanced multicolour sprites and smooth animation that pushed the C64 hardware to its limits. Steve Rowlands’ energetic soundtrack and sound effects further enhance the experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Creatures 2: Torture Trouble C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/VRi1USxOWqY" data-video-id="VRi1USxOWqY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Creatures 2: Torture Trouble video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/VRi1USxOWqY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Creatures 2: Torture Trouble C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/VRi1USxOWqY" data-video-id="VRi1USxOWqY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=VRi1USxOWqY" target="_blank" rel="noopener">Open on YouTube</a>

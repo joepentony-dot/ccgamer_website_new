@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Frak! (1985) – Commodore 64 Side-Scrolling Platform Action Released in 1985 by StateSoft and created by Nick Pelling, Frak! is an unconventional platform game for the Commodore 64 that stands apart thanks to its unusual mechanics and offbeat presentation. You take control of Trogg, a caveman armed not with clubs or spears, but a yo-yo, on a mission to retrieve three keys from each increasingly hazardous level. Gameplay focuses on careful movement across ladders and platforms arranged in deliberately awkward layouts. Trogg’s yo-yo acts as both a weapon and a tool, used to dispatch enemies and interact with the environment, demanding precision and timing rather than speed alone. Each level is packed with strange hazards, including static enemies such as Scrubbly, Poglet, and Hooter, alongside moving threats like balloons and flying daggers. Touching any obstacle results in instant death, and a strict time limit keeps pressure high.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Frak! C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/F5sHWg_V0dI" data-video-id="F5sHWg_V0dI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Frak! video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/F5sHWg_V0dI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Frak! C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/F5sHWg_V0dI" data-video-id="F5sHWg_V0dI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=F5sHWg_V0dI" target="_blank" rel="noopener">Open on YouTube</a>

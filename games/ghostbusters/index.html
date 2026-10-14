@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ghostbusters (1984) – Commodore 64 Strategy Action Movie Tie-In Classic Released in 1984 for the Commodore 64, Ghostbusters was developed by David Crane and published by Activision, redefining what a movie tie-in game could be. Rather than following a simple arcade formula, it blends action, strategy, and light simulation into a surprisingly deep and memorable experience. You take charge of a Ghostbusters team, managing money, hiring staff, buying equipment, and responding to supernatural outbreaks across New York City. Choosing when to upgrade gear or invest in better vehicles directly affects success, especially as ghost activity escalates toward the endgame. The city map and Ecto-1 driving sequences introduce a strategic layer, forcing careful planning as you balance risk, cost, and time before the final confrontation at the Temple of Zuul. Iconic digitised speech, including famous catchphrases from the film, adds atmosphere and was a technical standout on the C64.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ghostbusters C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/YEgJKW3KzV0" data-video-id="YEgJKW3KzV0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ghostbusters video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/YEgJKW3KzV0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ghostbusters C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/YEgJKW3KzV0" data-video-id="YEgJKW3KzV0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=YEgJKW3KzV0" target="_blank" rel="noopener">Open on YouTube</a>

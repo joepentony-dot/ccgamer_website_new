@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1985 by Bubble Bus Software and developed by Stephen Crow, Starquake is an ambitious action-adventure platform game for the Commodore 64. You control BLOB (Bio-Logically Operated Being), a robotic explorer sent to stabilise a rogue planet whose unstable core threatens to trigger a devastating starquake. The game is built around exploration across a vast world of 512 interconnected screens, each presenting unique layouts, hazards, and hostile alien life. BLOB can walk, shoot, and deploy temporary platforms, allowing you to traverse complex terrain while carefully managing positioning and movement. Progress depends on exploration and problem-solving rather than simple reflexes. You collect and carry items needed to repair the planet’s core, making inventory management and route planning essential to survival. The environment itself feels alive, filled with remnants of a long-lost civilisation and dangerous native creatures.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Starquake C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xIWAAtNXJ8s" data-video-id="xIWAAtNXJ8s"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Starquake video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xIWAAtNXJ8s/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Starquake C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xIWAAtNXJ8s" data-video-id="xIWAAtNXJ8s"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xIWAAtNXJ8s" target="_blank" rel="noopener">Open on YouTube</a>

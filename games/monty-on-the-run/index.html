@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Monty on the Run (1985) – Commodore 64 Classic Platform Escape with Iconic SID Music Released in 1985 by Gremlin Graphics, Monty on the Run is the third game in the Monty Mole series and one of the most celebrated platformers on the Commodore 64. The game follows Monty as he escapes from Scudmore Prison and attempts a perilous journey to France, dodging capture while navigating a hostile world packed with hazards. Gameplay is built around fast-paced, multi-screen platforming that demands sharp reflexes and careful planning. You must learn enemy patterns, master precise jumps, and make smart use of collected items to progress through the game’s varied environments. A defining feature is the opening item selection screen, where you choose five items from a larger list—some of which are essential to complete later sections—adding strategy and replay value while also acting as subtle copy protection.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Monty On The Run C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pX3XZI3OwpM" data-video-id="pX3XZI3OwpM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Monty On The Run video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pX3XZI3OwpM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Monty On The Run C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pX3XZI3OwpM" data-video-id="pX3XZI3OwpM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pX3XZI3OwpM" target="_blank" rel="noopener">Open on YouTube</a>

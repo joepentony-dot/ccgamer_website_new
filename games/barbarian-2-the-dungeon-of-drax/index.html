@@ -404,11 +404,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Barbarian II: The Dungeon of Drax (1988) is a C64 action-adventure from Palace Software in which you fight monsters across three regions. You can choose to play as the barbarian or Princess Mariana, each fighting their way through three hostile environments: a volcanic wasteland, a twisting cave network, and the infamous Dungeon of Drax itself. Progress is built around flip-screen exploration, with a sword-shaped compass guiding you toward your objective while still leaving plenty of room to get lost. Combat remains the core focus, featuring brutal encounters with multiple enemy types and the return of the series’ signature decapitations when strikes are perfectly timed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Barbarian II: The Dungeon Of Drax C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FqYwaYMLOXk" data-video-id="FqYwaYMLOXk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Barbarian II: The Dungeon Of Drax video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FqYwaYMLOXk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Barbarian II: The Dungeon Of Drax C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FqYwaYMLOXk" data-video-id="FqYwaYMLOXk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FqYwaYMLOXk" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Yogi Bear (1987) – Commodore 64 Arcade Adventure In Jellystone Park Released in 1987 by Piranha Software, Yogi Bear brings the famous Hanna-Barbera cartoon character to the Commodore 64 in a large-scale arcade adventure set across Jellystone Park. When Boo-Boo is captured by a hunter, it’s up to you to guide Yogi through the park and save his best friend before time runs out. Gameplay spans an impressive 198 interconnected screens filled with hazards, wildlife, rivers, and puzzles. You explore freely, collecting toffee apples that reveal clues to a hidden code needed to unlock Boo-Boo’s cage. Yogi can even disguise himself as a bush to sneak past enemies, adding a playful stealth element to the adventure. A calendar-based time limit adds pressure, forcing you to plan routes carefully and avoid wasted moves. The Commodore 64 version delivers smooth scrolling, expressive character sprites, and a presentation that captures the lighthearted spirit of the cartoon.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Yogi Bear C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xgo0X4dF8eo" data-video-id="xgo0X4dF8eo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Yogi Bear video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xgo0X4dF8eo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Yogi Bear C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xgo0X4dF8eo" data-video-id="xgo0X4dF8eo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xgo0X4dF8eo" target="_blank" rel="noopener">Open on YouTube</a>

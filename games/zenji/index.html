@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zenji (1984) – Commodore 64 Rotating Maze Puzzle Action Classic Released in 1984 by Matthew Hubbard and published by Activision for the Commodore 64, Zenji is a distinctive puzzle-action game that blends fast reactions with spatial problem-solving. You control a floating, Mandarin-style head navigating a maze of rotating pathways suspended in a surreal void. The objective is to rotate maze segments to maintain a continuous connection with a glowing central power source, gradually turning the entire maze green before time runs out. As levels progress, the layouts become increasingly complex, demanding careful planning alongside quick decision-making. Hazards such as roaming flames that fire deadly sparks add real-time pressure, forcing you to balance maze rotation with evasive movement. Staying connected to the source while avoiding danger is key, giving Zenji its unique rhythm and tension.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zenji C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/nVokMWF0BuI" data-video-id="nVokMWF0BuI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zenji video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/nVokMWF0BuI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zenji C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/nVokMWF0BuI" data-video-id="nVokMWF0BuI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=nVokMWF0BuI" target="_blank" rel="noopener">Open on YouTube</a>

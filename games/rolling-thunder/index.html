@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rolling Thunder (1987) – Commodore 64 Run-and-Gun Arcade Action Released in 1987 for the Commodore 64, Rolling Thunder is a side-scrolling run-and-gun action game originally developed by Namco and brought to home computers by Tiertex under U. S. Gold. You take on the role of Agent Albatross of the World Intelligence Network, fighting to rescue his partner, Leila Blitz, from the terrorist organisation Geldra. Gameplay unfolds across multi-level stages where movement, positioning, and timing are just as important as shooting. You battle Maskers and other enemies while using doors, platforms, and vertical layers for cover, creating a more tactical feel than simple left-to-right shooters. The Commodore 64 version aims to replicate the structure and pacing of the arcade original, though compromises were inevitable due to hardware limits. While the action remains recognisable, the visuals and audio are more restrained, and the difficulty is unforgiving, with tough enemy patterns and limited margin for error.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rolling Thunder C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/5ywxomcaRdY" data-video-id="5ywxomcaRdY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rolling Thunder video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/5ywxomcaRdY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rolling Thunder C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/5ywxomcaRdY" data-video-id="5ywxomcaRdY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=5ywxomcaRdY" target="_blank" rel="noopener">Open on YouTube</a>

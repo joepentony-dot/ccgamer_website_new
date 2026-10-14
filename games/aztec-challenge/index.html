@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Aztec Challenge (1983) – Commodore 64 Brutal Action Obstacle Classic Released in 1983 by Cosmi and developed by Paul Norman, Aztec Challenge throws you into a relentless series of seven deadly trials inspired by ancient temple myths. Each challenge demands sharp reflexes, precise timing, and sheer endurance as you fight to survive rather than explore. The opening trial, The Gauntlet, sets the tone immediately as you sprint toward a distant temple while dodging and leaping over spears hurled by Aztec warriors. From there, the game constantly shifts perspective and mechanics, forcing you to adapt as you climb collapsing stairs, avoid falling stones, navigate trap-filled corridors, swim through piranha-infested waters, and cross a crumbling bridge with missing planks. Every stage feels deliberately unforgiving, turning simple actions into high-pressure tests of nerve. There’s no margin for error, and success comes only through memorisation, rhythm, and persistence.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Aztec Challenge C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Y5nu9OIKRyY" data-video-id="Y5nu9OIKRyY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Aztec Challenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Y5nu9OIKRyY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Aztec Challenge C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Y5nu9OIKRyY" data-video-id="Y5nu9OIKRyY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Y5nu9OIKRyY" target="_blank" rel="noopener">Open on YouTube</a>

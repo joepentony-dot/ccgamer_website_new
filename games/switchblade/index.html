@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Switchblade (1991) – Commodore 64 Platform Action Adventure Classic Released in 1991 by Gremlin Graphics for the Commodore 64, Switchblade is an ambitious action-platform adventure that casts you as Hiro, the last surviving Bladeknight warrior. Your mission is to explore the dangerous Undercity, recover the 16 scattered fragments of the legendary Fireblade, and defeat the evil entity Havok. Gameplay focuses on deep exploration across interconnected, multi-screen labyrinths filled with ladders, platforms, traps, and hostile creatures. Players must carefully navigate each area, uncover hidden routes, and collect weapon upgrades and bonus items to survive increasingly dangerous encounters. Progression relies on memory, observation, and precise movement, as new abilities and equipment gradually open up previously unreachable areas. The game blends arcade-style combat with exploration elements, creating a rewarding sense of discovery as the world slowly unfolds.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Switchblade C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/VG8bWNn5km8" data-video-id="VG8bWNn5km8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Switchblade video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/VG8bWNn5km8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Switchblade C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/VG8bWNn5km8" data-video-id="VG8bWNn5km8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=VG8bWNn5km8" target="_blank" rel="noopener">Open on YouTube</a>

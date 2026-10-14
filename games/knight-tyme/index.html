@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Knight Tyme (1986) – Commodore 64 Graphic Adventure Sci-Fi Fantasy Released in 1986 by David Jones and published by Mastertronic under the Added Dimension label, Knight Tyme is a graphic adventure for the Commodore 64 and the third entry in the Magic Knight series. Picking up after the rescue of the wizard Gimbal, Magic Knight is unexpectedly transported to the 25th century aboard the starship USS Pisces, far from his medieval roots. The adventure blends fantasy and science fiction as you explore futuristic locations, interact with crew members and aliens, and work toward assembling the Golden Sundial to return home. Progress depends on careful exploration, logical puzzle-solving, and understanding how the game’s world fits together. Knight Tyme uses the Windimation system, a menu-driven interface that allows you to select actions and objects rather than type commands.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Knight Tyme C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LR-XEuUKTl4" data-video-id="LR-XEuUKTl4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Knight Tyme video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LR-XEuUKTl4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Knight Tyme C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LR-XEuUKTl4" data-video-id="LR-XEuUKTl4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LR-XEuUKTl4" target="_blank" rel="noopener">Open on YouTube</a>

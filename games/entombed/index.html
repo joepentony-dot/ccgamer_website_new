@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Entombed (1985) – Commodore 64 Isometric Tomb Escape Adventure Released in 1985 by Ultimate Play the Game and developed by Dave and Rob Thomas, Entombed is the second entry in the Sir Arthur Pendragon series. This time, Sir Arthur finds himself trapped deep beneath the Sphinx in an ancient Egyptian tomb, racing against time as his oxygen supply steadily runs out. The game is presented in an isometric 3D view, with a sprawling maze of corridors and chambers packed with traps, puzzles, and hostile creatures such as mummies and scorpions. Progress depends on careful exploration, spatial awareness, and managing limited resources while navigating the tomb’s many dangers. Combat is more direct than in its predecessor, with Sir Arthur wielding a whip that adds urgency and rhythm to encounters. The focus shifts away from complex spell systems toward exploration-driven problem solving, making the experience more approachable while retaining a strong sense of tension.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Entombed C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/p8oj9r9KMMw" data-video-id="p8oj9r9KMMw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Entombed video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/p8oj9r9KMMw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Entombed C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/p8oj9r9KMMw" data-video-id="p8oj9r9KMMw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=p8oj9r9KMMw" target="_blank" rel="noopener">Open on YouTube</a>

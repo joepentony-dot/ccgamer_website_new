@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rock’n Wrestle (1985) – Commodore 64 3D Wrestling Sports Classic Released in 1985 by Melbourne House and developed by Beam Software, Rock’n Wrestle is one of the earliest attempts to bring professional wrestling to home computers using a 3D-style presentation. You step into the boots of Gorgeous Greg, the tenth-ranked challenger battling his way toward the World Championship Belt. Matches take place in a single-screen arena where timing and positioning are key. You face a roster of exaggerated wrestling personalities, each with their own strengths, weaknesses, and move sets. The objective is simple but tense: pin your opponent within the time limit, with the final championship bout removing the clock entirely. Combat revolves around classic wrestling manoeuvres such as body slams, flying tackles, elbow drops, and throws. Controls are accessible via joystick or keyboard, with customisable options that make the game easy to pick up while still demanding precision to master.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rock&#39;n Wrestle C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QLfDqcG0fIM" data-video-id="QLfDqcG0fIM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rock&#39;n Wrestle video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QLfDqcG0fIM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rock&#39;n Wrestle C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QLfDqcG0fIM" data-video-id="QLfDqcG0fIM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QLfDqcG0fIM" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Miner 2049er (1983) – Commodore 64 Classic Platform Arcade Challenge Released in 1983 for the Commodore 64, Miner 2049er is a landmark platform game developed by Bill Hogue and published by Big Five Software. You take on the role of Bounty Bob, a member of the Royal Canadian Mounted Police, sent deep into an abandoned uranium mine to capture the criminal Yukon Yohan. Gameplay is built around precision movement and route planning. Each level is cleared by walking over every section of the mine’s platforms while avoiding radioactive enemies and environmental hazards. Timing is critical, as each stage is governed by a strict time limit that pushes you to balance speed with accuracy. Strategic depth comes from collectible items such as drills and candles, which temporarily turn enemies harmless and allow Bob to defeat them on contact.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Miner 2049er C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/uetlGDPyyf8" data-video-id="uetlGDPyyf8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Miner 2049er video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/uetlGDPyyf8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Miner 2049er C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/uetlGDPyyf8" data-video-id="uetlGDPyyf8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=uetlGDPyyf8" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cops ’n’ Robbers (1985) – Commodore 64 Top-Down Maze Action Heist Released in 1985 by Atlantis Software and developed by Mike Davis, Cops ’n’ Robbers is a top-down maze action game for the Commodore 64 that casts you as diamond thief Fingers Lonegan. Set across multi-screen maze locations including the Acme Diamond Company and an old mine, the objective is to steal jewels and escape while staying one step ahead of the law. Gameplay focuses on navigating interconnected mazes, collecting diamonds, and returning them safely to the getaway vehicle. Enemies range from police officers and helicopters to more unexpected threats, and you must manage a limited supply of bullets, making every confrontation a tactical decision rather than pure run-and-gun action. The game introduces additional layers through exploration and light puzzle elements. Darkened areas require the use of a torch to see plainly, while keys, TNT, and building interiors add variety and challenge as you progress through the environments.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cops &#39;N&#39; Robbers C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/8y-vcx6k9VQ" data-video-id="8y-vcx6k9VQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cops &#39;N&#39; Robbers video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/8y-vcx6k9VQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cops &#39;N&#39; Robbers C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/8y-vcx6k9VQ" data-video-id="8y-vcx6k9VQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=8y-vcx6k9VQ" target="_blank" rel="noopener">Open on YouTube</a>

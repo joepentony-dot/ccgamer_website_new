@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ B. C. ’s Quest for Tires (1984) – Commodore 64 Stone Age Platforming Classic Released in 1984 by Sydney Development and published by Sierra On-Line, B. C. ’s Quest for Tires brings Johnny Hart’s famous comic strip to life on the Commodore 64. You take control of Thor, the Stone Age inventor of the unicycle, as he sets off to rescue his girlfriend Cute Chick from a hungry dinosaur. Gameplay is presented as a side-scrolling platformer, with Thor riding across prehistoric landscapes including meadows, forests, and caves. You must time jumps and ducking carefully to avoid rocks, logs, branches, and other hazards, while tackling memorable challenges such as crossing rivers on turtles and steering clear of bubbling lava pits. The game’s humour and simplicity are key to its appeal. Its presentation mirrors the comic strip’s playful tone, delivering a lighthearted experience that focuses on rhythm, timing, and obstacle navigation rather than complex mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="B.C.&#39;S Quest For Tires C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/5xSrBvtaWDc" data-video-id="5xSrBvtaWDc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play B.C.&#39;S Quest For Tires video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/5xSrBvtaWDc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="B.C.&#39;S Quest For Tires C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/5xSrBvtaWDc" data-video-id="5xSrBvtaWDc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=5xSrBvtaWDc" target="_blank" rel="noopener">Open on YouTube</a>

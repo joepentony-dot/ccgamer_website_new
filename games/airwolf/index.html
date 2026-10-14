@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Airwolf (1985) – Commodore 64 Licensed Helicopter Action Shooter Released in 1985 by Elite Systems for the Commodore 64, Airwolf is a licensed action-shooter based on the popular television series, placing you in control of Stringfellow Hawke’s advanced military helicopter. The mission centres on rescuing five trapped scientists from a vast underground complex, requiring careful navigation through narrow caverns filled with hazards and enemy defences. Gameplay focuses on precise flying, with players managing momentum, gravity, missiles, shields, and fuel while blasting through walls and activating switches to open new routes. Progress demands accurate positioning and timing, as falling debris, tight corridors, and hostile fire punish even minor mistakes. Visually, the game delivers colourful 8-bit sprites and smooth side-scrolling environments that maintain a strong sense of speed and tension. The experience is enhanced by a looping rendition of the iconic Airwolf television theme by Sylvester Levay, adapted effectively for the SID chip.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Airwolf C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/y-pdkSTk_uo" data-video-id="y-pdkSTk_uo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Airwolf video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/y-pdkSTk_uo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Airwolf C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/y-pdkSTk_uo" data-video-id="y-pdkSTk_uo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=y-pdkSTk_uo" target="_blank" rel="noopener">Open on YouTube</a>

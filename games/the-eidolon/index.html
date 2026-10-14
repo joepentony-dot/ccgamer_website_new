@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Eidolon (1985) – Commodore 64 First-Person Fantasy Adventure Shooter Classic Released in 1985 by Lucasfilm Games for the Commodore 64, The Eidolon is a pioneering first-person adventure that blends exploration, combat, and surreal science fantasy. Set in a mysterious, steampunk-inspired world, players discover a strange 19th-century machine and are transported into a vast network of otherworldly caves guarded by powerful creatures. Gameplay focuses on navigating fractal-generated labyrinths, collecting coloured energy orbs, and battling hostile enemies. Each orb provides unique abilities, such as freezing time, transforming foes, or boosting attack power, encouraging players to experiment and adapt their strategy to survive. Progression depends on careful resource management and tactical combat, as players must gather the right combination of orbs to defeat the fearsome dragon guardians that block advancement. With no save feature, every decision carries weight, making concentration and planning essential.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Eidolon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rKy95VWGmug" data-video-id="rKy95VWGmug"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Eidolon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rKy95VWGmug/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Eidolon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rKy95VWGmug" data-video-id="rKy95VWGmug"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rKy95VWGmug" target="_blank" rel="noopener">Open on YouTube</a>

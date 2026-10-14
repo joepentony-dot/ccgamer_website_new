@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Premiere (1992) – Commodore Amiga Platformer by Core Design Premiere is a colourful 1992 Commodore Amiga platformer built around six movie-themed worlds, unusual foreground and background gameplay, enormous stages and some very different end-of-level sequences. Developed by The 8th Day and published by Core Design, it received strong reviews at the time but seems to have slipped considerably further under the radar than many of the Amiga’s better-known platform games. You play a young film editor whose movie has been stolen from the cutting room the night before its premiere. The missing film reels have been scattered across six different movie sets, leaving you with the fairly minor problem of getting them all back before anyone notices. Each level represents a different style of film, taking you through black-and-white comedy, science fiction, horror, cartoons, westerns and fantasy.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Premiere Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Xoqib5u0nkA" data-video-id="Xoqib5u0nkA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Premiere video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Xoqib5u0nkA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Premiere Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Xoqib5u0nkA" data-video-id="Xoqib5u0nkA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Xoqib5u0nkA" target="_blank" rel="noopener">Open on YouTube</a>

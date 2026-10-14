@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Strider (1989) – Commodore 64 Arcade Action Platformer Originally developed by Capcom and released to home computers in 1989 by U. S. Gold, Strider brings futuristic arcade action to the Commodore 64. You step into the role of Strider Hiryu, a high-tech ninja sent to dismantle a ruthless regime in a dystopian sci-fi world. Gameplay centres on fast-paced side-scrolling action, combining sword combat with acrobatic movement. Wall climbing, precision jumps, and quick reactions are essential as enemies attack from all directions and hazards fill the screen. The emphasis is firmly on momentum and timing rather than exploration. The Commodore 64 version, programmed by Paul Cole, delivers its own take on the arcade original, adapting the experience to the system’s limitations while retaining the core mechanics. Visuals by Andrew Ingram and James Clark push the hardware with detailed sprites and varied environments, while Mark Tait’s music adds tension and atmosphere throughout the mission.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Strider C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ETPb6ywc7K4" data-video-id="ETPb6ywc7K4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Strider video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ETPb6ywc7K4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Strider C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ETPb6ywc7K4" data-video-id="ETPb6ywc7K4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ETPb6ywc7K4" target="_blank" rel="noopener">Open on YouTube</a>

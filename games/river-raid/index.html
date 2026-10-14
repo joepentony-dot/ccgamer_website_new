@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ River Raid (1984) – Commodore 64 Vertical Shooter with High-Speed Fuel Management Released on the Commodore 64 in 1984, River Raid is a vertically scrolling shooter developed by Micro Projects Engineering and published by Activision. Originally designed by Carol Shaw for the Atari 2600, this C64 version brings the same intense aerial combat and precision gameplay to Commodore’s 8-bit hardware. You pilot the B-1 StratoWing Assault Jet along the perilous “River of No Return,” blasting enemy helicopters, jets, tankers, bridges, and fuel depots while navigating ever-narrowing river passages. Movement is restricted to horizontal control and speed adjustment, demanding sharp reflexes and careful positioning at all times. A defining feature is fuel management. Supplies constantly drain as you fly, forcing you to skim over fuel depots to stay airborne. This simple mechanic adds strategic tension to the action, rewarding risk-taking and route planning alongside shooting accuracy.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="River Raid C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/noRI_vFzzqo" data-video-id="noRI_vFzzqo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play River Raid video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/noRI_vFzzqo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="River Raid C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/noRI_vFzzqo" data-video-id="noRI_vFzzqo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=noRI_vFzzqo" target="_blank" rel="noopener">Open on YouTube</a>

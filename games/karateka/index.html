@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Karateka (1985) – Commodore 64 Martial Arts Action Pioneer Released in 1985 by Broderbund and developed by Jordan Mechner, Karateka is a landmark martial arts action game that pushed the Commodore 64 far beyond expectations. It was Mechner’s first published title and laid the groundwork for ideas he would later refine in Prince of Persia. You control a lone martial artist on a side-scrolling quest to rescue Princess Mariko from the warlord Akuma. Combat unfolds in a deliberate, almost cinematic rhythm, requiring you to switch stances and time punches and kicks at different heights to defeat guards and avoid instant defeat. What truly set Karateka apart was its animation. Using rotoscoping techniques, Mechner captured realistic human movement, giving the game a fluidity and sense of weight rarely seen on home computers at the time.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Karateka C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ApKZft4vodo" data-video-id="ApKZft4vodo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Karateka video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ApKZft4vodo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Karateka C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ApKZft4vodo" data-video-id="ApKZft4vodo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ApKZft4vodo" target="_blank" rel="noopener">Open on YouTube</a>

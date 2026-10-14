@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Yie Ar Kung-Fu (1985) – Commodore 64 One-on-One Martial Arts Fighting Pioneer Released in 1985 for the Commodore 64 by Konami and published by Imagine Software, Yie Ar Kung-Fu is one of the earliest games to define the one-on-one fighting genre. You play as Oolong, a determined martial artist on a quest to become Grand Master by defeating a lineup of opponents, each with their own weapons, tactics, and personalities. The action takes place on a fixed-screen arena, focusing entirely on timing, positioning, and learning enemy patterns. Every opponent fights differently, forcing you to adapt your approach rather than rely on a single strategy. While the mechanics are simple, the challenge ramps up quickly, rewarding precision and patience. On the C64, the game delivers colourful sprites and distinct arena backdrops that help each fight feel unique.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Yie Ar Kung-Fu C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6uQ-AUfTLhE" data-video-id="6uQ-AUfTLhE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Yie Ar Kung-Fu video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6uQ-AUfTLhE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Yie Ar Kung-Fu C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6uQ-AUfTLhE" data-video-id="6uQ-AUfTLhE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6uQ-AUfTLhE" target="_blank" rel="noopener">Open on YouTube</a>

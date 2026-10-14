@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Donald Duck&#39;s Playground (1984) is a C64 educational game from Sierra On-Line where Donald earns wages to build a playground for his nephews. The gameplay is split into a collection of mini-games set across different workplaces, including a greengrocer’s shop, a toy store, a railroad switchboard, and an airport cargo terminal. Each location introduces its own mechanics, from sorting vegetables and stocking shelves to directing trains and matching cargo codes under time pressure. Money earned from each job is carefully managed and spent on playground equipment such as swings and slides, which are then placed piece by piece to complete the final goal.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Donald Duck&#39;s Playground C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FLfMBp1nTe8" data-video-id="FLfMBp1nTe8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Donald Duck&#39;s Playground video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FLfMBp1nTe8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Donald Duck&#39;s Playground C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FLfMBp1nTe8" data-video-id="FLfMBp1nTe8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FLfMBp1nTe8" target="_blank" rel="noopener">Open on YouTube</a>

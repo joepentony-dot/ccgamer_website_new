@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Uridium (1986) – Commodore 64 High-Speed Sci-Fi Shoot ’Em Up Classic Released in 1986 by Hewson Consultants and developed by Andrew Braybrook of Graftgold, Uridium is a blisteringly fast horizontal shooter that redefined what the Commodore 64 could do. You pilot the agile Manta fighter across fifteen vast super-dreadnought carriers, each named after metallic elements, in a relentless fight for survival. Each carrier demands precision flying as you skim across its surface, destroying defences, dodging drones, and avoiding lethal barriers. Once the core is breached, you must land successfully to trigger the self-destruct sequence before making a clean escape, turning every stage into a nerve-wracking test of control and timing. Uridium is famous for its technical brilliance, using clever manipulation of character graphics to simulate pseudo-parallax scrolling. The result is a sense of speed, depth, and smooth motion that was astonishing on C64 hardware at the time.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Uridium C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/T0GsTIt4xAE" data-video-id="T0GsTIt4xAE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Uridium video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/T0GsTIt4xAE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Uridium C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/T0GsTIt4xAE" data-video-id="T0GsTIt4xAE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=T0GsTIt4xAE" target="_blank" rel="noopener">Open on YouTube</a>

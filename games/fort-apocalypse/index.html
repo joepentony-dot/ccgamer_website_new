@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fort Apocalypse (1982) – Commodore 64 Multi-Directional Scrolling Shooter Classic Released in 1982 by Synapse Software, Fort Apocalypse is a demanding multi-directional scrolling shooter for the Commodore 64. Developed by Steve Hales and ported by Joe Vierra, the game drops you into a vast underground fortress with a single goal: rescue prisoners and dismantle enemy installations while surviving relentless opposition. You pilot a highly manoeuvrable rocket copter through sprawling caverns, contending with tight passages, gun turrets, and hostile forces attacking from all directions. Movement and combat require precision, as weapon controls change depending on the helicopter’s orientation, forcing you to think carefully about positioning and timing. A standout feature is the Navatron system, which provides a radar-style preview of upcoming threats beyond the visible screen. This adds a strategic layer rarely seen at the time, allowing you to plan routes and prepare for ambushes before entering dangerous areas.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fort Apocalypse C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jDpWg9U0zAw" data-video-id="jDpWg9U0zAw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fort Apocalypse video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jDpWg9U0zAw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fort Apocalypse C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jDpWg9U0zAw" data-video-id="jDpWg9U0zAw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jDpWg9U0zAw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ghettoblaster (1985) – Commodore 64 Rhythm Action Street Adventure Released in 1985 by Virgin Games, Ghettoblaster is one of the Commodore 64’s most unusual and inventive titles, blending street exploration with rhythm-based gameplay. Developed by Tony Gibson and Mark Harrison, it casts you as Rockin’ Rodney, a courier tasked with spreading the latest dance music across a stylised urban landscape. Instead of combat, progress comes from timing and groove. You roam the streets collecting cassette demos and use your boombox to get the right people dancing, triggering events and opening up new areas. Success depends on understanding rhythm, positioning yourself correctly, and knowing when to drop the beat. The city itself is packed with musical personality, from street names inspired by famous songs to a soundtrack featuring twelve original funky tunes that drive the entire experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ghetto Blaster C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/JLFBLjlR4eM" data-video-id="JLFBLjlR4eM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ghetto Blaster video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/JLFBLjlR4eM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ghetto Blaster C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/JLFBLjlR4eM" data-video-id="JLFBLjlR4eM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=JLFBLjlR4eM" target="_blank" rel="noopener">Open on YouTube</a>

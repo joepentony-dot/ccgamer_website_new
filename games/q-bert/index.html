@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Q*Bert (1983) – Commodore 64 Isometric Arcade Puzzle Classic Originally developed by Gottlieb and ported to the Commodore 64 by Parker Brothers in 1983, Q*Bert is a landmark arcade game that blends fast reactions with puzzle-like precision. You guide the instantly recognisable orange hero across a pyramid of cubes, aiming to change every tile to the correct colour. The challenge comes from timing and spatial awareness. Each hop alters the cube beneath you, but enemies, flying discs, and awkward jump angles constantly threaten to knock you off course. As stages progress, new hazards are introduced, turning simple movement into a tense test of nerve and planning. The isometric perspective gives the game its distinctive pseudo-3D look, making depth and direction part of the challenge. On the Commodore 64, the conversion stays faithful to the arcade original, with bright colours, smooth animation, and the same addictive difficulty curve.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Q*Bert C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1WiH-1SgkFQ" data-video-id="1WiH-1SgkFQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Q*Bert video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1WiH-1SgkFQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Q*Bert C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1WiH-1SgkFQ" data-video-id="1WiH-1SgkFQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1WiH-1SgkFQ" target="_blank" rel="noopener">Open on YouTube</a>

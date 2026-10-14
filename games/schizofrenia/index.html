@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Schizofrenia (1985) – Commodore 64 Puzzle Platformer with a Devious Doppelgänger Released in 1985 by Quicksilva for the Commodore 64 and developed by Terry P. Watts, Schizofrenia is a single-screen puzzle platformer built around a clever and unusual concept. You take control of Alphonse T. Nurd, a lab assistant who accidentally creates a duplicate of himself after activating a malfunctioning machine. The objective is to reunite with this mischievous double by navigating five increasingly complex laboratory stages. Gameplay centres on puzzle-platform mechanics, requiring careful use of switches, elevators, and timing-based movement to progress through each room. What sets Schizofrenia apart is the behaviour of the duplicate, which actively interferes with you plans. This constant disruption forces strategic thinking and precise execution, as even small mistakes can undo progress. The tight controls and escalating difficulty demand patience and concentration.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Schizofrenia C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/mrxlQfg_q-4" data-video-id="mrxlQfg_q-4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Schizofrenia video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/mrxlQfg_q-4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Schizofrenia C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/mrxlQfg_q-4" data-video-id="mrxlQfg_q-4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=mrxlQfg_q-4" target="_blank" rel="noopener">Open on YouTube</a>

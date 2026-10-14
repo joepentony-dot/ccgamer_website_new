@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Beyond the Forbidden Forest (1985) – Commodore 64 Survival Horror Shoot ’Em Up Classic Released in 1985 by Paul Norman and published by Cosmi for the Commodore 64, Beyond the Forbidden Forest is an atmospheric sequel to the cult classic Forbidden Forest. Expanding on the original’s formula, the game introduces a pseudo-3D movement system known as “OmniDimension 4D,” allowing players to move their archer both horizontally and into the depth of the screen. Gameplay centres on surviving relentless waves of monstrous creatures using unlimited standard arrows. Every defeated enemy drops a valuable golden arrow, which must be collected in order to progress. These special arrows become essential later in the game, particularly during the dangerous cave sequences. Progression shifts in the second phase as players enter the caverns beneath the forest, where precision and resource management become critical.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Beyond The Forbidden Forest C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9jk7s3coKBo" data-video-id="9jk7s3coKBo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Beyond The Forbidden Forest video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9jk7s3coKBo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Beyond The Forbidden Forest C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9jk7s3coKBo" data-video-id="9jk7s3coKBo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9jk7s3coKBo" target="_blank" rel="noopener">Open on YouTube</a>

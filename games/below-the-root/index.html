@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Below the Root (1984) – Commodore 64 Peaceful Fantasy Adventure Classic Released in 1984 by Windham Classics and developed by Dale Disharoon, Below the Root is a distinctive adventure game based on Zilpha Keatley Snyder’s Green-Sky Trilogy. Set in the tranquil, tree-dwelling world of Green-Sky, the game offers a thoughtful alternative to the combat-heavy adventures common at the time. You choose from five different characters, each with their own strengths and abilities, and set out to investigate mysterious visions that threaten the harmony of their society. Exploration takes place across a large, interconnected world of platforms, villages, and natural environments, encouraging curiosity and careful observation. Rather than relying on violence, Below the Root introduces unique mechanics such as pens (telepathy), kiniporting (telekinesis), and grunspreking (plant manipulation). Progress depends on communication, puzzle-solving, and understanding the world and its inhabitants, making every interaction meaningful.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Below The Root C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/2dQyPjIooCw" data-video-id="2dQyPjIooCw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Below The Root video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/2dQyPjIooCw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Below The Root C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/2dQyPjIooCw" data-video-id="2dQyPjIooCw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=2dQyPjIooCw" target="_blank" rel="noopener">Open on YouTube</a>

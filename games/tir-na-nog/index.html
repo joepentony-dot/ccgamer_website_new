@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1985 by Gargoyle Games for the Commodore 64, Tir Na Nòg is a critically acclaimed arcade-adventure action-puzzle game inspired by Irish mythology, starring the legendary hero Cúchulainn. You are transported to the mystical Land of Youth, where Cúchulainn must recover four fragments of the Seal of Calum to restore balance while evading the mysterious and dangerous sídhe enemies. The game world is vast and interconnected, featuring plains, forests, caverns, and hidden pathways that reward careful exploration and observation. Movement is built around a unique rotating-view system, requiring players to change the camera direction before travelling left or right, adding strategic depth to navigation. Progress depends on solving cryptic environmental puzzles and interpreting poetic clues, making inventory management and experimentation central to success. Instead of traditional deaths, defeat sends Cúchulainn to another location and strips him of carried items, encouraging thoughtful risk-taking and frequent use of the built-in save system.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Tir Na Nog C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/q8o9Nj5puQY" data-video-id="q8o9Nj5puQY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Tir Na Nog video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/q8o9Nj5puQY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Tir Na Nog C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/q8o9Nj5puQY" data-video-id="q8o9Nj5puQY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=q8o9Nj5puQY" target="_blank" rel="noopener">Open on YouTube</a>

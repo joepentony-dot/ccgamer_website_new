@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Floyd of the Jungle (1984) – Commodore 64 Competitive Jungle Platform Action Released in 1984 by MicroProse for the Commodore 64, Floyd of the Jungle is a fast-paced action-platformer designed by Sid Meier, making it a fascinating early example of his work outside strategy and simulation. Set in a colourful jungle environment, the game mixes arcade action with competitive scoring. You control Floyd as he leaps through the jungle, avoiding hazards such as alligators, elephants, and hostile pygmies. The goal is to rescue Janice, but competition is fierce, as rivals George and another Floyd are also racing to impress her. Points are earned by collecting birds and knocking out pygmies, with victory going to the first player to reach the target score. The game supports simultaneous two-player action on the C64, turning each session into a frantic race for points rather than a simple rescue mission.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Floyd Of The Jungle C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lQoCd5rWwbo" data-video-id="lQoCd5rWwbo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Floyd Of The Jungle video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lQoCd5rWwbo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Floyd Of The Jungle C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lQoCd5rWwbo" data-video-id="lQoCd5rWwbo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lQoCd5rWwbo" target="_blank" rel="noopener">Open on YouTube</a>

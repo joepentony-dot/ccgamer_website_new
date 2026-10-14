@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Mr. Robot and His Robot Factory (1983), developed by Ron Rosen and published by Datamost, is a classic platform game that was later ported to the Commodore 64. You guide a humanoid robot through 22 built-in factory screens, collecting white power pills while navigating ladders, conveyor belts, escalators, traps, and roaming fireball enemies. Each stage begins with a limited energy meter that constantly drains, creating urgency and forcing players to plan their movements carefully. Touching hazards or falling too far costs a life, while collecting a pulsing white ring grants temporary invulnerability and allows enemies to be destroyed. One of the game’s standout features is its built-in level editor, known as the “Robot Factory,” which lets youdesign, save, and load up to 26 custom levels — greatly extending replay value. Visually, the game features crisp sprites and clear platform layouts typical of early 1980s home computer titles, while the sound design supports the fast-paced gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mr Robot And His Robot Factory C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iaLWpYqf8Hk" data-video-id="iaLWpYqf8Hk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mr Robot And His Robot Factory video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iaLWpYqf8Hk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mr Robot And His Robot Factory C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iaLWpYqf8Hk" data-video-id="iaLWpYqf8Hk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iaLWpYqf8Hk" target="_blank" rel="noopener">Open on YouTube</a>

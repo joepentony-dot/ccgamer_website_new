@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ After Burner (1988) – Commodore 64 Arcade Air Combat Shoot ’Em Up Released in 1988 by Activision, After Burner brings Sega’s high-speed arcade jet combat to the Commodore 64. You take control of an F-14 Tomcat, diving straight into intense dogfights viewed from a behind-the-plane perspective that aims to recreate the thrill of supersonic flight. Gameplay focuses on fast reactions and positioning as you blast enemy aircraft with machine guns and homing missiles while weaving through incoming fire. Stages escalate quickly, throwing waves of enemies at you to test your reflexes and endurance as you chase high scores. On the C64, the game captures the core feel of the arcade experience, though hardware limits mean simpler visuals and no in-game music. Even so, the sense of speed and constant pressure remains intact, making it a solid example of ambitious arcade conversion design.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="After Burner C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/BswNRzr3qnI" data-video-id="BswNRzr3qnI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play After Burner video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/BswNRzr3qnI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="After Burner C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/BswNRzr3qnI" data-video-id="BswNRzr3qnI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=BswNRzr3qnI" target="_blank" rel="noopener">Open on YouTube</a>

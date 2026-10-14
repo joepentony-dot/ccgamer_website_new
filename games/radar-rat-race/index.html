@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Radar Rat Race (1982) – Commodore 64 Maze Chase with Radar Strategy Originally developed by HAL Laboratory and published by Commodore, Radar Rat Race first appeared on the VIC-20 in 1981 before being ported to the Commodore 64 in 1982. This maze-chase title is a licensed reworking of Namco’s Rally-X, reimagined with a playful rodent theme and home-computer flair. You control a mouse navigating maze-like arenas, collecting pieces of cheese while evading relentless rats and avoiding stationary cats that block escape routes. A built-in radar screen reveals the full maze layout, allowing you to plan routes and anticipate danger rather than relying purely on reflexes. A key tactical feature is the limited-use star screen, which temporarily confuses pursuing rats and offers a brief window to escape or grab remaining cheese. As stages progress, the action intensifies with more enemies and increasingly complex layouts, pushing both strategic thinking and execution.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Radar Rat Race C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7TAZQ_4y6qU" data-video-id="7TAZQ_4y6qU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Radar Rat Race video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7TAZQ_4y6qU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Radar Rat Race C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7TAZQ_4y6qU" data-video-id="7TAZQ_4y6qU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7TAZQ_4y6qU" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rampage (1987) – Commodore 64 Arcade Monster City Smash-Up Released in 1987 for the Commodore 64, Rampage is the home computer adaptation of Bally Midway’s hugely popular arcade destruction game. Developed by Monarch Development and published by Activision, it delivers chaotic monster mayhem straight to the 8-bit era. You take control of one of three unfortunate humans transformed into towering monsters: George the giant ape, Lizzie the colossal reptile, or Ralph the werewolf-like brute. The goal is gloriously simple—smash buildings, eat civilians, and survive relentless attacks from military forces as cities crumble beneath you. Each city brings escalating pressure as enemies become tougher and damage mounts, forcing you to balance destruction with survival. The C64 version supports up to three players, making it perfect for shared mayhem, whether you’re working together or racing to cause the most destruction.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rampage C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6clC36Rc5XA" data-video-id="6clC36Rc5XA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rampage video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6clC36Rc5XA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rampage C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6clC36Rc5XA" data-video-id="6clC36Rc5XA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6clC36Rc5XA" target="_blank" rel="noopener">Open on YouTube</a>

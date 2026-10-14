@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Neverending Story (1985) – Commodore 64 Graphic Text Adventure Fantasy Classic Released in 1985 by Ocean Software and published by Datasoft for the Commodore 64, The Neverending Story is a graphics-text adventure based on the beloved fantasy film, placing players in the role of Atreyu on a quest to save Fantasia. The journey involves exploring story-rich locations, solving puzzles, and confronting the growing threat of The Nothing while restoring hope and belief to the realm. Each scene is supported by small illustrated panels showing your surroundings, inventory, and companions such as Falkor and Artax, blending visual storytelling with interactive fiction. Gameplay relies on a streamlined text parser with a limited vocabulary, encouraging players to think carefully about commands and interactions. This minimalist approach allows more memory to be devoted to narrative depth and atmospheric presentation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Neverending Story C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hl73ekoTjSk" data-video-id="hl73ekoTjSk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Neverending Story video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hl73ekoTjSk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Neverending Story C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hl73ekoTjSk" data-video-id="hl73ekoTjSk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hl73ekoTjSk" target="_blank" rel="noopener">Open on YouTube</a>

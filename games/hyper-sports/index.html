@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hyper Sports (1985) – Commodore 64 Olympic Sports Arcade Classic Released in 1985 by Konami for the Commodore 64, Hyper Sports is the sequel to the hugely popular Track &amp; Field and delivers a fast-paced collection of Olympic-themed events straight from the arcade. You compete across a series of demanding challenges, pushing for qualifying scores just to stay in the competition. The game features a varied lineup of events including swimming, skeet shooting, vaulting, archery, triple jump, and weightlifting, each with its own timing-based mechanics. Success depends on precision, rhythm, and endurance, with difficulty ramping up sharply as you progress through the tournament. On the C64, Hyper Sports stands out as a strong arcade conversion, offering smooth movement, responsive controls, and clear event visuals that keep the action readable even under pressure. Every event tests a different skill, keeping the experience tense and competitive throughout.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hyper Sports C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/EgKAl8cn4ck" data-video-id="EgKAl8cn4ck"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hyper Sports video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/EgKAl8cn4ck/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hyper Sports C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/EgKAl8cn4ck" data-video-id="EgKAl8cn4ck"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=EgKAl8cn4ck" target="_blank" rel="noopener">Open on YouTube</a>

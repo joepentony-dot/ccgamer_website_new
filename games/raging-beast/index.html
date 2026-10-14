@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Raging Beast (1985) – Commodore 64 Arcade Bullfighting with a Comic Twist Released in 1985 by Firebird Software for the Commodore 64, Raging Beast—originally titled Olé! is a lighthearted arcade-style game that puts a playful spin on the traditional bullfighting spectacle. Developed by François Lionet, with graphics by Frédéric Pinlet and music by Jim Cuomo, the game focuses on timing, nerve, and quick reactions rather than violence. You step into the arena as a torero, using a red cloak to lure and dodge a charging bull within a fixed-perspective playfield. Points are awarded for well-timed evasions, but progress depends on waiting for a ring to be thrown into the arena and successfully placing it onto the bull’s horns. A mistimed dodge sends the torero flying, and failing to recover quickly can end the round in spectacular fashion.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Raging Beast C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/o08EGnDdFsA" data-video-id="o08EGnDdFsA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Raging Beast video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/o08EGnDdFsA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Raging Beast C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/o08EGnDdFsA" data-video-id="o08EGnDdFsA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=o08EGnDdFsA" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>The New Zealand Story (1989) is Ocean&#39;s C64 platformer starring Tiki the kiwi, who must rescue his kidnapped friends. It looks cute. It sounds cheerful. And then it starts trying to kill you. In this video I&#39;m taking another look at Ocean&#39;s Commodore 64 conversion — the graphics, Jonathan Dunn&#39;s memorable music, the increasingly vicious difficulty and, most importantly, whether the C64 version still holds up today. The original arcade game arrived in 1988, with Ocean bringing the conversion to the Commodore 64 the following year. Despite the obvious limitations of an 8-bit machine compared with Taito&#39;s coin-op hardware, the C64 version retains the colourful scrolling levels, weapons, airborne enemies and increasingly demanding platforming that made the original so distinctive.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The New Zealand Story C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_0bKM3s0SMs" data-video-id="_0bKM3s0SMs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The New Zealand Story video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_0bKM3s0SMs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The New Zealand Story C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_0bKM3s0SMs" data-video-id="_0bKM3s0SMs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_0bKM3s0SMs" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Another World (1991) – Commodore Amiga Cinematic Platform Adventure Classic Released in November 1991 by Delphine Software for the Commodore Amiga, Another World is a groundbreaking cinematic platform adventure created by Éric Chahi. The game follows physicist Lester Knight Chaykin, who is thrown into a hostile alien world after a failed experiment, with its story told entirely through visuals and atmosphere rather than text or dialogue. Gameplay blends precise platforming, environmental puzzles, and tense combat as players guide Lester through dangerous landscapes filled with alien creatures and deadly traps. Survival depends on observation, timing, and learning from mistakes, creating a challenging but deeply immersive experience. A key gameplay feature is Lester’s energy gun, which can fire standard shots, generate protective shields, and unleash powerful charged blasts. Mastering these abilities is essential for overcoming enemies and solving environmental obstacles throughout the journey.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Another World Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lvsIHyI_Ir4" data-video-id="lvsIHyI_Ir4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Another World video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lvsIHyI_Ir4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Another World Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lvsIHyI_Ir4" data-video-id="lvsIHyI_Ir4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lvsIHyI_Ir4" target="_blank" rel="noopener">Open on YouTube</a>

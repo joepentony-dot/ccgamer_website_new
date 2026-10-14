@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Benefactor (1994) – Commodore Amiga Puzzle Platform Rescue Adventure Classic Released in 1994 by Digital Illusions CE (DICE) and published by Psygnosis for the Commodore Amiga and Amiga CD32, Benefactor is a distinctive puzzle-platformer that blends thoughtful problem-solving with precise character control. You take on the role of Ben E. Factor, a former soldier turned hero, tasked with rescuing the kidnapped Merry Men across six moons of the planet Minniat. The game spans 60 carefully designed levels that combine traditional platforming with strategic planning. You must avoid enemies, activate switches, manipulate the environment, and escort vulnerable characters to safety, creating gameplay reminiscent of Lemmings but with direct, hands-on control. Each Merry Man has unique behaviours and abilities that influence how puzzles are solved. Some require protection and guidance, while others must be “reformed” using special colouring machines before they can be rescued.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Benefactor Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/nKj-D8ueRYU" data-video-id="nKj-D8ueRYU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Benefactor video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/nKj-D8ueRYU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Benefactor Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/nKj-D8ueRYU" data-video-id="nKj-D8ueRYU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=nKj-D8ueRYU" target="_blank" rel="noopener">Open on YouTube</a>

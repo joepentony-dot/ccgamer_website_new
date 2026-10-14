@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Kickman (1982) – Commodore 64 Arcade Skill Action Classic Released in 1982, Kickman is an arcade action game developed by Midway and published by Commodore that puts a playful spin on the classic catch-and-balance formula. You control a unicycle-riding clown tasked with catching falling balloons on his head, carefully stacking them higher and higher without letting the pile topple over. As the game progresses, the pace increases and the challenge ramps up. Balloons fall faster, the stack becomes harder to control, and quick reactions are essential. A clever kick mechanic allows you to punt falling balloons back into the air for a second chance, adding both strategy and tension to the action. Adding to the mayhem are surprise elements such as Pac-Man-style characters and ghost-like enemies that appear during play, alongside bonus rounds that offer extra points and lives.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Kickman C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1Rz0NRxxKhk" data-video-id="1Rz0NRxxKhk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Kickman video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1Rz0NRxxKhk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Kickman C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1Rz0NRxxKhk" data-video-id="1Rz0NRxxKhk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1Rz0NRxxKhk" target="_blank" rel="noopener">Open on YouTube</a>

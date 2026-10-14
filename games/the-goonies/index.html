@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Goonies (1985) – Commodore 64 Puzzle-Platform Movie Adventure Released in 1985 by Datasoft for the Commodore 64, The Goonies delivers a distinctive take on the hit movie, focusing on puzzle-solving and exploration rather than pure action. Instead of controlling a single character, you switch between two of the Goonies, using their combined abilities to progress through trap-filled environments inspired by the film. Each stage is built around problem-solving, requiring careful movement, timing, and cooperation between characters to bypass hazards, navigate maze-like layouts, and recreate memorable moments such as the infamous bone organ sequence. Progress comes from thinking ahead rather than rushing forward. The game’s colourful visuals capture the adventurous tone of the movie, while the SID soundtrack includes an 8-bit rendition of The Goonies ‘R’ Good Enough, adding instant nostalgia. While challenging, the experience is rewarding for players who enjoy methodical puzzle-platform gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Goonies C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GJcAP5E7XHU" data-video-id="GJcAP5E7XHU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Goonies video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GJcAP5E7XHU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Goonies C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GJcAP5E7XHU" data-video-id="GJcAP5E7XHU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GJcAP5E7XHU" target="_blank" rel="noopener">Open on YouTube</a>

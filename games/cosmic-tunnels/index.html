@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cosmic Tunnels (1984) – Commodore 64 Multi-Stage Space Action Adventure Released in 1984 by Tim Ferris and published by Datamost for the Commodore 64, Cosmic Tunnels is a distinctive space-themed action game that blends several gameplay styles into one ambitious sci-fi adventure. You take on the role of a pilot tasked with travelling from the planet Sirref and recovering vital energy resources from hostile asteroids. The journey begins with a launch sequence where you dodge falling meteors before entering one of four cosmic tunnels. This leads into a fast-paced 3D tunnel section, requiring quick reflexes to avoid or destroy incoming mines within strict time limits. After exiting the tunnel, you must carefully land on an asteroid platform while battling enemy defences. The final stage switches perspective again, placing you in control of an astronaut who must collect energy bars while avoiding hostile creatures and making use of speed boosts and jetcopters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cosmic Tunnels C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cgeRXsoOw_0" data-video-id="cgeRXsoOw_0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cosmic Tunnels video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cgeRXsoOw_0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cosmic Tunnels C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cgeRXsoOw_0" data-video-id="cgeRXsoOw_0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cgeRXsoOw_0" target="_blank" rel="noopener">Open on YouTube</a>

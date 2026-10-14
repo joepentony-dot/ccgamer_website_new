@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fighting Warrior (1985) – Commodore 64 Martial Arts Beat ’Em Up in Ancient Egypt Released in 1985 by Melbourne House and developed by Studio B Ltd. , Fighting Warrior drops you into a myth-soaked vision of ancient Egypt where a lone hero sets out to rescue Princess Thaya from a Pharaoh’s temple stronghold. Combat is strictly one-on-one, with enemies drawn from Egyptian-inspired fantasy, including winged beasts, dog-headed warriors, and strange half-human creatures. You control high, middle, and low strikes, along with jumping, ducking, and stepping back, making timing and spacing central to survival. Scattered throughout the levels are magical containers that can either help or hinder your progress, adding an unpredictable edge to each encounter. The game places emphasis on reactions and rhythm rather than crowd control, giving fights a deliberate, almost duel-like feel.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fighting Warrior C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9GhHqc-IuW8" data-video-id="9GhHqc-IuW8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fighting Warrior video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9GhHqc-IuW8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fighting Warrior C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9GhHqc-IuW8" data-video-id="9GhHqc-IuW8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9GhHqc-IuW8" target="_blank" rel="noopener">Open on YouTube</a>

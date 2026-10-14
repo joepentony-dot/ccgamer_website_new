@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Laser Squad (1988) – Commodore 64 Turn-Based Tactical Strategy Classic Released in 1988 by Target Games and designed by Julian Gollop, Laser Squad is a landmark turn-based tactical strategy game that helped define the genre on home computers. Often described as the spiritual forerunner to X-COM, it introduced ideas and systems that would influence tactical design for decades. You command a small squad of elite soldiers across a range of mission scenarios, including hostage rescues, search-and-destroy operations, and item recovery. Viewed from an isometric perspective, each mission demands careful positioning, awareness of enemy movement, and smart use of cover. Every unit operates using a limited pool of action points per turn, forcing you to plan movement, attacks, and reactions with precision. A wide selection of weapons and equipment—each with distinct strengths and limitations—allows for varied tactical approaches, while line-of-sight rules and fog of war keep tension high.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Laser Squad C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/r_XFZy_v3Uw" data-video-id="r_XFZy_v3Uw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Laser Squad video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/r_XFZy_v3Uw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Laser Squad C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/r_XFZy_v3Uw" data-video-id="r_XFZy_v3Uw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=r_XFZy_v3Uw" target="_blank" rel="noopener">Open on YouTube</a>

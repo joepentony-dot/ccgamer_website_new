@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Jumpman (1983) – Commodore 64 Precision Platform Arcade Classic Released in 1983 by Epyx for the Commodore 64, Jumpman is a pioneering platform game developed by Randy Glover that helped define precision-based action on home computers. You take on the role of Jumpman, a bomb disposal expert racing to save Jupiter Headquarters after it has been sabotaged by terrorists. The objective is clear but demanding: navigate each level and defuse every bomb while avoiding a variety of hazards. Gameplay focuses on carefully timed jumps, climbing ladders, and swinging from ropes as the screen scrolls vertically to reveal multiple floors. Enemies such as smart darts react to Jumpman’s position, adding constant pressure and forcing you to plan every move. Risk and reward are central to the experience. You can adjust Jumpman’s running speed, choosing between safer, slower movement or faster runs that increase danger but improve scoring potential.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jumpman C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/76zOBh4uCS4" data-video-id="76zOBh4uCS4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jumpman video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/76zOBh4uCS4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jumpman C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/76zOBh4uCS4" data-video-id="76zOBh4uCS4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=76zOBh4uCS4" target="_blank" rel="noopener">Open on YouTube</a>

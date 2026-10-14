@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zork Trilogy (1983) – Commodore 64 Text Adventure Fantasy Classic Originally released individually in 1983 by Infocom, the Zork series brought sophisticated interactive fiction to home computers, inviting you into the vast and dangerous Great Underground Empire through pure text and imagination. Zork I, Zork II, and Zork III each build on the same rich fantasy world, gradually expanding its scope, puzzles, and narrative ambition. Gameplay revolves around exploration, logic, and language. You type commands to move, examine objects, solve devious puzzles, and survive encounters with trolls, thieves, and wizards, all guided by Infocom’s famously advanced text parser. Success depends on careful observation, memory, and lateral thinking rather than reflexes. On the Commodore 64, the trilogy retains the full depth and complexity of the original releases, translating Infocom’s storytelling and puzzle design faithfully to the platform.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zork Trilogy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wzHq-WTlw3I" data-video-id="wzHq-WTlw3I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zork Trilogy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wzHq-WTlw3I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zork Trilogy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wzHq-WTlw3I" data-video-id="wzHq-WTlw3I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wzHq-WTlw3I" target="_blank" rel="noopener">Open on YouTube</a>

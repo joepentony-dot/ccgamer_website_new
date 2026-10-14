@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ghosts ’N Goblins (1986) – Commodore 64 Hardcore Action Platformer Classic Ghosts ’N Goblins on the Commodore 64 delivers Capcom’s brutal arcade platformer in full side-scrolling form, challenging you across six punishing levels packed with relentless enemies and hazards. Each stage must be cleared within a strict time limit, or a life is lost, keeping the pressure high from start to finish. You play as Arthur, a brave knight on a desperate mission to rescue his beloved Princess from the Demon King Astaroth. Along the way, you face waves of undead horrors including ghosts, zombies, bats, ogres, and goblins, all while navigating ladders, moving platforms, and deadly fire and water traps. Combat and movement demand absolute precision. Weapon upgrades help, but even the best gear offers little mercy, and losing your armour leaves Arthur painfully vulnerable.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ghosts &#39;N Goblins C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XUgrbMKPGJ8" data-video-id="XUgrbMKPGJ8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ghosts &#39;N Goblins video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/XUgrbMKPGJ8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ghosts &#39;N Goblins C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/XUgrbMKPGJ8" data-video-id="XUgrbMKPGJ8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=XUgrbMKPGJ8" target="_blank" rel="noopener">Open on YouTube</a>

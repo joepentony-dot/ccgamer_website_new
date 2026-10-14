@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Desert Strike: Return to the Gulf (1993) – Commodore Amiga Isometric Action Helicopter Classic Released in 1993 by Electronic Arts for the Commodore Amiga, Desert Strike: Return to the Gulf is an isometric action-shooter designed by Mike Posehn and John Manley that places you in command of an Apache attack helicopter during a fictional Middle Eastern conflict. Blending fast-paced arcade combat with strategic mission design, the game features large scrolling maps, detailed mission briefings, hostage rescues, and multiple objectives that must be completed in sequence. You must carefully manage fuel, ammunition, and armour while navigating hostile territory, balancing aggression with planning to survive each operation. The distinctive isometric viewpoint delivers a strong pseudo-3D effect, allowing smooth movement across varied terrain and enhancing spatial awareness during combat. On the Amiga, the game retains the depth and challenge of the original Sega Mega Drive version, standing out as one of the strongest home computer conversions of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Desert Strike Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/gfpKHcJvoRQ" data-video-id="gfpKHcJvoRQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Desert Strike video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/gfpKHcJvoRQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Desert Strike Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/gfpKHcJvoRQ" data-video-id="gfpKHcJvoRQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=gfpKHcJvoRQ" target="_blank" rel="noopener">Open on YouTube</a>

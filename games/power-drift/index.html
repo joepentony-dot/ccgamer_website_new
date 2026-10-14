@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Power Drift (1990) – Commodore 64 3D Arcade Racing Spectacle Originally developed by Sega AM2 for arcades in 1988, Power Drift roared onto the Commodore 64 in 1990 thanks to an ambitious conversion by Chris Butler, published by Activision. Against the odds, it delivers a bold, high-speed take on 3D arcade racing on 8-bit hardware. You choose from a colourful roster of drivers and tackle five circuits, each made up of five increasingly demanding tracks. Races unfold across wild, roller-coaster-style courses packed with jumps, tight corners, and dramatic elevation changes, where mastering drifting and momentum is key to staying in the top three and qualifying for the next stage. The C64 version is a technical showcase, using clever programming tricks to create a convincing sense of depth and speed. While backgrounds are simplified and corners can appear suddenly, the fast, responsive handling keeps the action flowing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Power Drift C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LnOMbkxrpT4" data-video-id="LnOMbkxrpT4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Power Drift video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LnOMbkxrpT4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Power Drift C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LnOMbkxrpT4" data-video-id="LnOMbkxrpT4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LnOMbkxrpT4" target="_blank" rel="noopener">Open on YouTube</a>

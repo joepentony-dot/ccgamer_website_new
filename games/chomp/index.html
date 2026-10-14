@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ CHOMP! (1989) – Commodore 64 Whimsical Side-Scrolling Escape Adventure Released in 1989 by Cosmi for the Commodore 64, CHOMP! is a quirky side-scrolling action game developed by Robert T. Bonifacio that casts you as a determined goldfish desperate to escape captivity. What begins in a humble fishbowl soon becomes an unusual journey toward freedom. Gameplay revolves around movement, survival, and growth. By eating brine shrimp and other food, your fish grows in size and strength, allowing it to leap into larger tanks and eventually out of the house entirely. Fail to eat enough, and your fish shrinks, becoming weaker and closer to death. Hazards are constant and varied, including aggressive piranhas, swooping fishnets, and even cats’ paws reaching in from above. You must keep the fish moving at all times to avoid suffocation, adding an extra layer of pressure to every moment.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Chomp! C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XfY0zEOE9uE" data-video-id="XfY0zEOE9uE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Chomp! video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/XfY0zEOE9uE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Chomp! C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/XfY0zEOE9uE" data-video-id="XfY0zEOE9uE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=XfY0zEOE9uE" target="_blank" rel="noopener">Open on YouTube</a>

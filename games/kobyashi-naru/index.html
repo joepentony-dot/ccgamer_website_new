@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Kobyashi Naru (1987) – Commodore 64 Sci-Fi Puzzle Adventure Trial Released in 1987 by Mastertronic for the Commodore 64, Kobyashi Naru is a science-fiction themed adventure that takes its inspiration from the famous no-win test of Star Trek lore. Designed by Clive Wilson and Les Hogarth, the game challenges you to prove their worth by surviving a sequence of cerebral trials rather than relying on action or reflexes. Gameplay is divided into three distinct sections—Knowledge, Wisdom, and Understanding—each presenting puzzles that test logic, observation, and reasoning. Instead of a traditional text parser, the game uses an icon-based interface, allowing you to interact with objects and environments in a more visual and accessible way for the time. The challenge is deliberately unforgiving. Incorrect decisions can lead to sudden failure, and progress often demands experimentation and lateral thinking.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Kobyashi Naru C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/2B3qyYUjRPo" data-video-id="2B3qyYUjRPo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Kobyashi Naru video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/2B3qyYUjRPo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Kobyashi Naru C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/2B3qyYUjRPo" data-video-id="2B3qyYUjRPo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=2B3qyYUjRPo" target="_blank" rel="noopener">Open on YouTube</a>

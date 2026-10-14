@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Escape from Colditz (1991) – Commodore Amiga Stealth Strategy WWII Escape Released in 1991 for the Commodore Amiga, Escape from Colditz is a tense stealth-adventure inspired by the famous WWII POW camp and the classic board game that shared its name. You’re tasked with planning and executing a daring escape from Colditz Castle, a fortress designed to hold prisoners considered impossible to contain. You control a team of four Allied officers, each starting in different parts of the castle and bringing unique abilities to the escape effort. Exploration, cooperation, and careful timing are essential as you search for items like disguises, tools, and keys while avoiding guards and routine patrols. Presented in an isometric view, the game focuses on planning rather than action, rewarding patience and observation over quick reflexes. Mistakes can be costly, with limited opportunities to recover if plans unravel at the wrong moment.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Escape From Colditz Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/UXqZyKmeIlA" data-video-id="UXqZyKmeIlA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Escape From Colditz video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/UXqZyKmeIlA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Escape From Colditz Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/UXqZyKmeIlA" data-video-id="UXqZyKmeIlA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=UXqZyKmeIlA" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fernandez Must Die (1988) – Commodore 64 Top-Down Shooter | Retro Classic Fernandez Must Die (1988), developed by Antony Crowther (Ratt) and published by Image Works, is a top-down vertical scrolling shooter for the Commodore 64. You play as a lone commando sent to overthrow the ruthless dictator Fernandez, who has seized control of the Republic of El Diablo. Your mission spans eight enemy bases, where you infiltrate buildings through underground tunnels, rescue prisoners, seize gold bars, and fight through waves of soldiers, vehicles, and landmines. Unlike many shooters of the era, the game mixes on-foot combat with vehicle sections, allowing you to take control of jeeps, motorcycles, and tanks. A standout feature is its cooperative vehicle mode, where two players can work together — one driving while the other fires. The C64 version features unlimited bullets, limited grenades, and large interconnected maps that encourage strategic progression between bases.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fernandez Must Die C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9ZblOdZ2n7A" data-video-id="9ZblOdZ2n7A"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fernandez Must Die video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9ZblOdZ2n7A/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fernandez Must Die C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9ZblOdZ2n7A" data-video-id="9ZblOdZ2n7A"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9ZblOdZ2n7A" target="_blank" rel="noopener">Open on YouTube</a>

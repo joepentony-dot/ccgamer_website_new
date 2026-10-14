@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Official Father Christmas (1989) – Commodore 64 Festive Arcade Christmas Classic Released in 1989 by Alternative Software for the Commodore 64, The Official Father Christmas is a cheerful seasonal arcade game designed to capture the fun and magic of Christmas. Aimed at younger players and families, it delivers light-hearted gameplay wrapped in festive charm. Players take control of Father Christmas as he delivers presents across a snow-covered town. The game is split into short arcade-style sequences, including loading gifts, running across rooftops, and dropping presents down chimneys while avoiding hazards such as icy ledges and troublesome animals. Each section is simple to understand and quick to play, making it ideal for pick-up-and-play sessions. On the C64, the game features colourful winter-themed graphics and bright, friendly sprites that give it a strong festive identity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Official Father Christmas C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/YpDPAaLJlfc" data-video-id="YpDPAaLJlfc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Official Father Christmas video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/YpDPAaLJlfc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Official Father Christmas C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/YpDPAaLJlfc" data-video-id="YpDPAaLJlfc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=YpDPAaLJlfc" target="_blank" rel="noopener">Open on YouTube</a>

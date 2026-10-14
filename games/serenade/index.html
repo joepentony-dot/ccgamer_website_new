@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Serenade (1986) – Commodore 64 Experimental Music Curiosity Released in 1986 by VIFI International for the Commodore 64, Serenade is a highly unusual and experimental title developed by French studio Jawx. You take on the role of a lovesick troubadour, depicted as a silhouetted figure, attempting to win the affection of a lady by performing music with a selection of instruments. The game is presented entirely in French, adding to its distinctive atmosphere and reinforcing its European art-game sensibility. Rather than following traditional arcade or adventure conventions, Serenade focuses on mood and presentation. Gameplay revolves around choosing musical pieces and attempting to perform them using four available instruments. However, interaction is deliberately minimal, and progress can feel ambiguous or even confusing. Many players find it difficult to produce clear musical results, leading some to interpret the game as more of an interactive demo or artistic experiment than a conventional game.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Serenade C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PzsPbVUieOY" data-video-id="PzsPbVUieOY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Serenade video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PzsPbVUieOY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Serenade C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PzsPbVUieOY" data-video-id="PzsPbVUieOY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PzsPbVUieOY" target="_blank" rel="noopener">Open on YouTube</a>

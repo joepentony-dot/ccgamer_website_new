@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Halls of the Things (1984) – Commodore 64 Rogue-Style Dungeon Adventure Released in 1984 by Crystal Computing and developed by Design Design, Halls of the Things is a tense action-adventure that drops you into a mysterious seven-floor tower packed with danger. Programmed by Neil Mottershead, Simon Brattel, and Martin S. Horsley, the game quickly built a reputation for depth, atmosphere, and replay value. You explore each floor from a top-down perspective, navigating intricate mazes in search of seven magical rings hidden throughout the tower. Once collected, you must locate a magical key deep within the dungeon to unlock the drawbridge and escape alive. What truly sets the game apart is its randomly generated maze layout, ensuring every run feels different. You’re armed with a mix of sword combat, arrows, fireballs, and lightning spells, all while facing “Things” — enemies that roam the halls and can disguise themselves as harmless objects to catch you off guard.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Halls Of The Things C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jFiHhuxxxIA" data-video-id="jFiHhuxxxIA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Halls Of The Things video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jFiHhuxxxIA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Halls Of The Things C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jFiHhuxxxIA" data-video-id="jFiHhuxxxIA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jFiHhuxxxIA" target="_blank" rel="noopener">Open on YouTube</a>

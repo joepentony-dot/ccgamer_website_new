@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cave of the Word Wizard (1983) – Commodore 64 Educational Platform Adventure Classic Released in 1983 by Timeworks Inc. for the Commodore 64 and developed by Patrick Quinn, Cave of the Word Wizard is an inventive educational action game that blends platforming with spelling challenges. Designed as an early example of “edutainment,” it combines learning and gameplay using pioneering speech synthesis technology. You choose between two characters, Mark or Becky, and explore a multi-level cave in search of four hidden crystals. The underground environment is filled with hazards such as pits, falling rocks, snakes, and scorpions, requiring careful movement and accurate jumping to survive. Each mistake costs one of the limited bandages. At regular intervals, the mysterious Word Wizard appears to test you spelling skills. Using the keyboard, you must correctly type displayed words to earn rewards.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cave Of The Word Wizard C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jrDLn5KqDro" data-video-id="jrDLn5KqDro"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cave Of The Word Wizard video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jrDLn5KqDro/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cave Of The Word Wizard C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jrDLn5KqDro" data-video-id="jrDLn5KqDro"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jrDLn5KqDro" target="_blank" rel="noopener">Open on YouTube</a>

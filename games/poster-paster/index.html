@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Poster Paster (1984) – Commodore 64 Arcade-Style Platform Puzzle Released in 1984 by Taskset for the Commodore 64, Poster Paster is a quirky arcade-style platform game designed by Andy Walker, with music composed by Paul Hodgson. You play as Bill Stickers, a hard-working billboard poster racing against time to plaster advertisements across a series of increasingly hazardous cityscapes. Each fixed-screen level challenges you to position ladders and apply poster sections in the correct order, all while dodging a cast of mischievous troublemakers including Gnurds, Wazzocks, and Brain Drains. Careful planning is essential, as poor ladder placement or mistimed movement can quickly bring your shift to a sticky end. A unique twist comes in the form of the Paste Consistency Gauge, which forces you to manage how thick or thin your paste is before applying posters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Poster Paster C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/O1IWxJw59Z0" data-video-id="O1IWxJw59Z0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Poster Paster video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/O1IWxJw59Z0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Poster Paster C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/O1IWxJw59Z0" data-video-id="O1IWxJw59Z0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=O1IWxJw59Z0" target="_blank" rel="noopener">Open on YouTube</a>

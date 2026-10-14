@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Agony (1992) – Commodore Amiga Atmospheric Horizontal Shoot ’Em Up Released in 1992, Agony is a horizontally scrolling shooter for the Commodore Amiga developed by Art &amp; Magic and published by Psygnosis. Players take control of Alestes, a magician’s apprentice transformed into an owl, journeying through a dark, surreal fantasy world filled with twisted creatures and nightmarish landscapes. Unlike many shooters of the era, Agony places less emphasis on relentless speed and more on exploration, positioning, and deliberate combat. Levels are densely detailed and encourage careful movement, with enemies and hazards woven into the environment rather than simply streamed in waves. Boss encounters are visually striking and contribute heavily to the game’s oppressive atmosphere. One of Agony’s defining features is its audiovisual presentation. The richly illustrated backgrounds, fluid animations, and distinctive art style showcase the Amiga’s strengths, while the atmospheric soundtrack enhances the sense of unease and immersion throughout the journey.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Agony Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/0tSOWulHDsM" data-video-id="0tSOWulHDsM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Agony video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/0tSOWulHDsM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Agony Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/0tSOWulHDsM" data-video-id="0tSOWulHDsM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=0tSOWulHDsM" target="_blank" rel="noopener">Open on YouTube</a>

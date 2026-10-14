@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ NARC (1990) – Commodore 64 Run-and-Gun Arcade Action Released in 1990, NARC is a hard-hitting run-and-gun action game developed by Williams Electronics and brought to the Commodore 64 by Ocean Software. You take on the roles of elite narcotics officers Max Force and Hit Man, tasked with dismantling the criminal empire of the notorious Mr. Big. Gameplay focuses on fast-paced side-scrolling action, blasting through city streets packed with gang members, dealers, and heavily armed enemies. You are encouraged not only to eliminate criminals but also to arrest them where possible, adding a risk-versus-reward scoring element to the relentless shooting. The Commodore 64 conversion captures the structure and intensity of the arcade original, featuring smooth movement, responsive controls, and large character sprites. While visually toned down compared to the coin-op, the game still delivers a strong sense of impact, backed by a soundtrack composed by Paul Tonge that drives the action forward.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Narc C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/tuBV2GhWdB0" data-video-id="tuBV2GhWdB0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Narc video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/tuBV2GhWdB0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Narc C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/tuBV2GhWdB0" data-video-id="tuBV2GhWdB0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=tuBV2GhWdB0" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1992 by MicroProse for the Commodore Amiga, Civilization is the legendary turn-based strategy simulation designed by Sid Meier and Bruce Shelley, following its original PC debut in 1991. You guide a chosen civilisation from the Stone Age to the modern era, shaping history through city building, exploration, diplomacy, warfare, and technological progress. Each turn involves managing production, trade routes, population growth, scientific research, and government systems while responding to threats from rival nations and roaming barbarians. Victory can be achieved in multiple ways, most famously by constructing and launching a spaceship to Alpha Centauri, rewarding long-term planning and efficient empire management. Strategic depth is enhanced through the construction of iconic Wonders such as the Pyramids, Hoover Dam, and Colossus, each offering powerful bonuses across different eras. The Amiga version includes distinctive audio features, with adapted Civilization themes and tracker-based music suited to the platform’s sound hardware.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Civilization Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cg8lIyYbaJ4" data-video-id="cg8lIyYbaJ4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Civilization video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cg8lIyYbaJ4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Civilization Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cg8lIyYbaJ4" data-video-id="cg8lIyYbaJ4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cg8lIyYbaJ4" target="_blank" rel="noopener">Open on YouTube</a>

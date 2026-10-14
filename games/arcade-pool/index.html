@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Arcade Pool (1994) – Commodore Amiga Cue Sports Arcade Simulation Classic Released in 1994 by Team17 for the Commodore Amiga, Arcade Pool is a polished top-down cue sports game that blends accessible arcade-style play with surprisingly deep and realistic simulation mechanics. It quickly became a favourite among Amiga owners looking for both competitive and casual multiplayer fun. The game includes several popular pool variants, such as UK 8-ball, US 9-ball, and Killer, with options to compete against computer opponents or up to eight players in hot-seat multiplayer. Its intuitive aiming system and responsive controls make it easy to learn, while still rewarding precision and tactical thinking. Arcade Pool stands out for its convincing ball physics, clean visual presentation, and smooth animation. Subtle touches such as custom player names, humorous in-game messages, and Team17’s trademark personality give the game added charm and replay value.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Arcade Pool Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/l2VMct3Jjis" data-video-id="l2VMct3Jjis"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Arcade Pool video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/l2VMct3Jjis/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Arcade Pool Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/l2VMct3Jjis" data-video-id="l2VMct3Jjis"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=l2VMct3Jjis" target="_blank" rel="noopener">Open on YouTube</a>

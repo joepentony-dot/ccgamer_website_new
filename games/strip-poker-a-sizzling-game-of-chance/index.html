@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Strip Poker: A Sizzling Game of Chance (1984) – Commodore 64 Card Strategy Curiosity Released in 1984 by Artworx Software Company for the Commodore 64, Strip Poker: A Sizzling Game of Chance is a card-based strategy title that blends traditional poker mechanics with novelty-driven presentation. Viewed from a first-person perspective, the game places you at the table against computer-controlled opponents in a straightforward game of five-card draw. Gameplay follows standard poker rules, with you wagering virtual money and relying on hand strength, bluffing, and betting decisions to gain the upper hand. Successful rounds trigger visual progression tied to each opponent, giving the game a clear win–reward structure that goes beyond simple score-chasing. Multiple characters are featured, each with their own reactions and pacing. Technically modest but conceptually distinctive, the game reflects an era when home computers experimented with niche and adult-oriented themes alongside more conventional genres.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Strip Poker: A Sizzling Game Of Chance C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wogqPbP59-k" data-video-id="wogqPbP59-k"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Strip Poker: A Sizzling Game Of Chance video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wogqPbP59-k/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Strip Poker: A Sizzling Game Of Chance C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wogqPbP59-k" data-video-id="wogqPbP59-k"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wogqPbP59-k" target="_blank" rel="noopener">Open on YouTube</a>

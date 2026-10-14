@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ween: The Prophecy (1992) – Commodore Amiga Fantasy Point-and-Click Adventure Released in 1992 for the Commodore Amiga, Ween: The Prophecy is a darkly whimsical fantasy adventure developed by Coktel Vision. You play as Ween, a young wizard racing against a strict three-day deadline to gather three magical grains of sand and stop the evil Kraal before the Great Eclipse consumes the world. Gameplay centres on classic inventory-driven puzzle solving, branching quest paths, and trial-and-error logic that constantly toys with your expectations. Progression often depends on experimentation and lateral thinking, with solutions that feel deliberately strange but consistent within the game’s own rules. Visually, the game stands out with a faux-sepia overworld contrasted by richly coloured interior scenes, giving it a distinctive storybook quality. The Amiga version features a reduced colour palette and simplified digitised animations, yet still manages to preserve the eerie, slightly unsettling atmosphere that defines the experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ween: The Prophecy Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iCPop1a8X5I" data-video-id="iCPop1a8X5I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ween: The Prophecy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iCPop1a8X5I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ween: The Prophecy Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iCPop1a8X5I" data-video-id="iCPop1a8X5I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iCPop1a8X5I" target="_blank" rel="noopener">Open on YouTube</a>

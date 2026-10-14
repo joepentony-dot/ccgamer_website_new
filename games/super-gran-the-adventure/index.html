@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Super Gran: The Adventure (1985) – Commodore 64 Graphic Text Adventure TV Tie-In Released in 1985 by Tynesoft and developed by Brian Howarth, Super Gran: The Adventure brings the popular British children’s TV series to the Commodore 64 as a graphic text adventure. Set in the town of Chisleton, you step into the role of the super-powered grandmother as she sets out to stop her long-time foe, Scunner Campbell. The story revolves around a series of thefts from the local museum and Town Hall. You must explore Chisleton, recover stolen items, and piece together clues by moving between locations, examining objects, and interacting with characters using text commands. Gameplay combines static illustrated scenes with descriptive text, presenting each location visually while allowing traditional adventure-style input. Puzzle solving and logical exploration drive progress, staying true to the structure of classic 1980s graphic adventures.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Super Gran: The Adventure C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/b44DHPl97LI" data-video-id="b44DHPl97LI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Super Gran: The Adventure video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/b44DHPl97LI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Super Gran: The Adventure C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/b44DHPl97LI" data-video-id="b44DHPl97LI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=b44DHPl97LI" target="_blank" rel="noopener">Open on YouTube</a>

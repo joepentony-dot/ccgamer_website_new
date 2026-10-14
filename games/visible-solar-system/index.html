@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Visible Solar System (1982) – Commodore 64 Educational Astronomy Planetarium Program Released in 1982 by Commodore for the Commodore 64, Visible Solar System is an early educational software title designed to function as a digital planetarium. It allows users to explore the layout of the solar system and observe planets and their moons from different perspectives. The program presents a visual model of the solar system, featuring basic animation such as planetary rotation and orbital movement. Users can zoom in on major bodies including Earth, Mars, Jupiter, and Saturn, gaining a closer look at their appearance and relative positions in space. Rather than focusing on traditional gameplay, Visible Solar System emphasises visual exploration and curiosity-driven learning. It does not include quizzes, missions, or detailed scientific explanations, instead encouraging users to observe and interact with the simulation at their own pace.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Visible Solar System C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Eve-KzEerD0" data-video-id="Eve-KzEerD0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Visible Solar System video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Eve-KzEerD0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Visible Solar System C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Eve-KzEerD0" data-video-id="Eve-KzEerD0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Eve-KzEerD0" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dan Dare III: The Escape (1990) – Commodore 64 Sci-Fi Platform Shooter Released in 1990 by Probe Software and published by Virgin Mastertronic, Dan Dare III: The Escape is a sci-fi platform shoot-’em-up based on the classic British comic book hero. In the final chapter of the Dan Dare trilogy, you take control of the legendary space adventurer after he is captured by the evil Treens and imprisoned aboard their orbiting experimental station. His only goal is to escape. Gameplay revolves around exploring five large, maze-like levels, collecting fuel canisters, navigating teleporters, and battling alien enemies using a plasma rifle and jet pack. Progress requires careful navigation and smart resource management. The game blends fast-paced platforming with side-view shooting and multi-directional scrolling. The Commodore 64 version stands out for its responsive joystick controls and atmospheric soundtrack by Maniacs of Noise.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dan Dare III - The Escape C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PwOWmbSXTMA" data-video-id="PwOWmbSXTMA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dan Dare III - The Escape video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PwOWmbSXTMA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dan Dare III - The Escape C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PwOWmbSXTMA" data-video-id="PwOWmbSXTMA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PwOWmbSXTMA" target="_blank" rel="noopener">Open on YouTube</a>

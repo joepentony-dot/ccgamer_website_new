@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Toy Bizarre (1984) – Commodore 64 Platform Arcade Factory Challenge Released in 1984 by Activision for the Commodore 64, Toy Bizarre is a platform-based arcade game set inside a chaotic toy factory brought to life after hours. Designed by Mark Turmell, the game casts you as a lone night watchman tasked with stopping malfunctioning toys before the factory descends into complete disorder. Gameplay centres on navigating multi-level platforms while managing factory systems in real time. You must shut off valves to stop new toys being released, use pistons to deactivate roaming toys, and carefully time jumps to stun enemies temporarily. Each screen demands planning and awareness, as poorly managed valves can quickly overwhelm the factory floor. A unique time-based structure divides the game into hourly shifts, with difficulty steadily increasing as the night progresses.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Toy Bizarre C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/EtAWlL343Lo" data-video-id="EtAWlL343Lo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Toy Bizarre video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/EtAWlL343Lo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Toy Bizarre C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/EtAWlL343Lo" data-video-id="EtAWlL343Lo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=EtAWlL343Lo" target="_blank" rel="noopener">Open on YouTube</a>

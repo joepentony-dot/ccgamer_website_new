@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Knight Games (1986) – Commodore 64 Medieval Combat &amp; Skill Events Released for the Commodore 64, Knight Games is a medieval-themed multi-event title that combines precision shooting challenges with intense one-on-one combat. Rather than a single adventure, the game is made up of eight distinct events, each testing different skills and reflexes. Two of the events focus on ranged accuracy. Crossbow tasks you with moving a crosshair to hit rotating targets, while Archery raises the difficulty with targets moving horizontally, demanding careful timing and anticipation. These events reward precision and patience over brute force. The remaining six events are all close-combat duels fought head-to-head. Sword fighting, quarterstaff battles on a log, and weapon-based contests using ball and chain, axe, and pike all follow a similar structure. You must land repeated, well-timed hits while blocking incoming attacks, with victory achieved through consistency and timing rather than button-mashing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Knight Games C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/5bPQEDDGoRs" data-video-id="5bPQEDDGoRs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Knight Games video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/5bPQEDDGoRs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Knight Games C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/5bPQEDDGoRs" data-video-id="5bPQEDDGoRs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=5bPQEDDGoRs" target="_blank" rel="noopener">Open on YouTube</a>

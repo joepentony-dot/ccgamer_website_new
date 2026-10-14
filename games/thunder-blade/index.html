@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Thunder Blade (1987) – Commodore 64 &amp; Amiga Arcade Helicopter Shoot-’Em-Up Originally released by Sega in 1987, Thunder Blade is a high-energy shoot-’em-up that puts you in control of a heavily armed attack helicopter blasting through enemy territory. Famous in the arcades for its pseudo-3D visuals and dramatic motion cabinets, the game later made its way to home computers with mixed but fascinating results. On the Commodore 64, published by U. S. Gold in 1988, Thunder Blade takes a top-down approach combined with behind-the-helicopter stages. You pilot the Gunship Gladiator through vertically scrolling combat zones, taking out tanks, gun turrets, and enemy helicopters. Clever programming techniques attempt to recreate depth and scale, delivering fast action even if movement and detail can feel rough at times. The Amiga version, also released in 1988 by U.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Thunder Blade C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/YcVVvijV2nE" data-video-id="YcVVvijV2nE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Thunder Blade video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/YcVVvijV2nE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Thunder Blade C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/YcVVvijV2nE" data-video-id="YcVVvijV2nE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=YcVVvijV2nE" target="_blank" rel="noopener">Open on YouTube</a>

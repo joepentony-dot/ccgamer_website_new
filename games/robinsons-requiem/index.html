@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Robinson’s Requiem (1994) – Commodore Amiga Survival RPG Simulation Released in 1994 by Silmarils for the Commodore Amiga, Robinson’s Requiem is a deeply ambitious survival RPG that drops players onto a hostile alien planet with little more than their wits. Controlling two stranded astronauts, the goal is simple in theory but brutal in practice: survive. Gameplay revolves around a complex survival simulation rarely seen at the time. Players must manage hunger, thirst, fatigue, injuries, infections, and even detailed medical treatment, alongside exploration, crafting, and combat. Every decision carries weight, and mistakes can spiral into life-threatening consequences. The isometric presentation reinforces the sense of isolation, with bleak alien landscapes and threatening wildlife creating constant tension. Sound design and ambient effects further heighten the atmosphere, making exploration feel dangerous and unpredictable rather than heroic. Notorious for its steep learning curve, Robinson’s Requiem rewards patience and persistence.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Robinson&#39;s Requiem Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cR_g-k3hD4c" data-video-id="cR_g-k3hD4c"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Robinson&#39;s Requiem video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cR_g-k3hD4c/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Robinson&#39;s Requiem Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cR_g-k3hD4c" data-video-id="cR_g-k3hD4c"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cR_g-k3hD4c" target="_blank" rel="noopener">Open on YouTube</a>

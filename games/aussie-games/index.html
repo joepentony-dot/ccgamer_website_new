@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Aussie Games (1989) – Commodore 64 Sports Mini-Game Collection Australian Classic Released in 1989 by Beam Software for the Commodore 64, Aussie Games is a lighthearted sports compilation inspired by the success of Epyx’s California Games. It brings a distinctly Australian flavour to the multi-event formula, blending competitive gameplay with humour and cultural references. You compete across a variety of quirky events set in iconic Australian locations, including boomerang throwing, bellywack diving, Aussie Rules football punting, dry boat racing, and beer can skeet shooting. Each mini-game offers different control schemes and timing challenges, keeping the experience varied and engaging. The presentation is enhanced by traditional Australian tunes such as “Waltzing Matilda” and “Botany Bay,” which help create a strong sense of atmosphere. Combined with colourful graphics and playful animations, the game delivers a fun and approachable arcade-style experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Aussie Games C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lQEZhLmJWOQ" data-video-id="lQEZhLmJWOQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Aussie Games video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lQEZhLmJWOQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Aussie Games C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lQEZhLmJWOQ" data-video-id="lQEZhLmJWOQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lQEZhLmJWOQ" target="_blank" rel="noopener">Open on YouTube</a>

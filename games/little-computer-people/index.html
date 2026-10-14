@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Little Computer People (1985) – Commodore 64 Virtual Life Simulation Pioneer Released in October 1985 for the Commodore 64, Little Computer People is a groundbreaking life simulation game developed by David Crane and published by Activision. Long before virtual pets became mainstream, this title offered a novel idea: sharing your computer with a living digital companion. After loading, you are presented with a three-storey house and, after a short wait, a Little Computer Person moves in and begins living an independent daily routine. The character cooks meals, watches television, reads, and relaxes, all without direct control. Interaction is subtle, with you influencing behaviour through gifts, card games, and observation rather than commands. A defining feature is that each copy of the game generates a unique character with its own name and personality traits. The LCP responds to care and neglect, encouraging a sense of responsibility and long-term engagement rather than traditional goals or scoring systems.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Little Computer People C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rn5FHPe2dHw" data-video-id="rn5FHPe2dHw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Little Computer People video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rn5FHPe2dHw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Little Computer People C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rn5FHPe2dHw" data-video-id="rn5FHPe2dHw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rn5FHPe2dHw" target="_blank" rel="noopener">Open on YouTube</a>

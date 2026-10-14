@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Wizard (1984) – Commodore 64 Single-Screen Spellcasting Platformer Released in 1984 by Progressive Peripherals and Software for the Commodore 64, Wizard is a single-screen action platformer developed by Sean A. Moore and Steve Luedders-Dieckbrader. You take control of Wilfrid the Wizard, navigating compact levels packed with enemies, hazards, and carefully placed obstacles. Progress revolves around collecting keys that unlock magical abilities, turning spells into the core mechanic rather than simple power-ups. Fireballs, teleportation, and other spells must be used thoughtfully to defeat enemies and reach the exit, blending arcade action with light puzzle-solving. Each screen features its own layout and challenges, encouraging experimentation and planning rather than brute force. The game offers six difficulty levels and nine speed settings, letting you fine-tune the experience to their skill level and preferred pace. A standout feature is the built-in level editor, allowing you to design and share custom stages.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Wizard C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/z8ec3LZBNjk" data-video-id="z8ec3LZBNjk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Wizard video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/z8ec3LZBNjk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Wizard C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/z8ec3LZBNjk" data-video-id="z8ec3LZBNjk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=z8ec3LZBNjk" target="_blank" rel="noopener">Open on YouTube</a>

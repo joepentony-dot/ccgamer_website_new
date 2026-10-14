@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Teenage Mutant Hero Turtles (1990) – Commodore 64 Action Platform Adventure Released in 1990 for the Commodore 64, Teenage Mutant Hero Turtles was developed by Unlimited Software Inc. and published by Ultra Software, bringing the hugely popular animated series to 8-bit home computers. You take control of Leonardo, Donatello, Michelangelo, and Raphael as they battle through New York City to rescue April O’Neil and Splinter from the clutches of Shredder. The game blends overhead exploration with side-scrolling platform action, allowing you to switch between turtles and make use of their individual weapons and strengths. Streets, sewers, and interior locations are packed with enemies, hazards, and environmental challenges that demand careful character choice and smart resource management. Memorable sections include the notoriously tough underwater stages, vehicle sequences, and boss encounters against familiar villains from the series.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Teenage Mutant Hero Turtles C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FNp6ezs6oA4" data-video-id="FNp6ezs6oA4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Teenage Mutant Hero Turtles video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FNp6ezs6oA4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Teenage Mutant Hero Turtles C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FNp6ezs6oA4" data-video-id="FNp6ezs6oA4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FNp6ezs6oA4" target="_blank" rel="noopener">Open on YouTube</a>

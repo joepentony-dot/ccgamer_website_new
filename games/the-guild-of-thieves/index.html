@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Guild of Thieves (1987) – Commodore Amiga Interactive Fiction Fantasy Classic Released in 1987 by Magnetic Scrolls for the Commodore Amiga, The Guild of Thieves is a landmark interactive fiction adventure set in the richly imagined medieval world of Kerovnia. You play as an aspiring thief seeking admission to the notorious Guild, tasked with proving your skill by stealing priceless treasures from heavily guarded locations. Gameplay is driven by a powerful text parser that allows detailed and flexible interaction with the environment. Players must carefully explore towns, castles, and vaults, using observation, logic, and precise timing to overcome devious puzzles and security systems. Every command matters, and experimentation is often the key to progress. The Amiga version enhances the experience with around 30 high-quality illustrations that bring key moments and locations to life, adding atmosphere without breaking the flow of the text-driven gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Guild Of Thieves Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QT3Jw3_QQTg" data-video-id="QT3Jw3_QQTg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Guild Of Thieves video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QT3Jw3_QQTg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Guild Of Thieves Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QT3Jw3_QQTg" data-video-id="QT3Jw3_QQTg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QT3Jw3_QQTg" target="_blank" rel="noopener">Open on YouTube</a>

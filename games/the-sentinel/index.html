@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Sentinel (1986) – Commodore 64 3D Puzzle Strategy Landmark Released in 1986 by Firebird Software and developed by Geoff Crammond, The Sentinel is a groundbreaking puzzle strategy game that pushed the Commodore 64 into entirely new territory. It was one of the first home computer games to use solid-filled 3D graphics, delivering a surreal and unsettling experience unlike anything else at the time. You control a synthoid exploring abstract, chessboard-like landscapes rendered in a striking pseudo-3D perspective. The objective is to climb the terrain by absorbing energy from trees, rocks, and other objects, creating new synthoids and strategically relocating across the landscape until the Sentinel itself can be absorbed. Tension comes from the Sentinel’s constant surveillance. If it spots the you, it begins draining energy, forcing careful planning, positioning, and timing. Energy management is central to survival, with every move carrying risk and long-term consequences.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Sentinel C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dDpqixaUnvY" data-video-id="dDpqixaUnvY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Sentinel video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/dDpqixaUnvY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Sentinel C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/dDpqixaUnvY" data-video-id="dDpqixaUnvY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=dDpqixaUnvY" target="_blank" rel="noopener">Open on YouTube</a>

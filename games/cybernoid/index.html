@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Cybernoid: The Fighting Machine (1988) is a C64 flip-screen shooter from Hewson in which you recover stolen cargo from space pirates. Divided into three flip-screen levels rather than smooth scrolling, the game demands tactical navigation and weapons selection as you confront gun turrets, homing missiles and hostile pirate vessels. Power-ups and built-in ship weapons — including shields, impact mines, bounce bombs and homing seekers — must be used thoughtfully to survive each screen and collect treasure before time runs out. The Commodore 64 version is especially revered for its colourful graphics that pushed the 8-bit system’s palette, and its atmospheric SID soundtrack composed by Jeroen Tel, giving it a distinctive audio-visual identity among classic C64 shooters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cybernoid C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hyq5mt67hU4" data-video-id="hyq5mt67hU4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cybernoid video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hyq5mt67hU4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cybernoid C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hyq5mt67hU4" data-video-id="hyq5mt67hU4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hyq5mt67hU4" target="_blank" rel="noopener">Open on YouTube</a>

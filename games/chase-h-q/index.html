@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Chase H. Q. (1989) – Commodore 64 Arcade Police Pursuit Driving Game Released in 1989 by Ocean Software, Chase H. Q. brings Taito’s famous arcade police chases to the Commodore 64. You step into the role of a highway patrol officer, racing against the clock to hunt down criminals before they escape. Gameplay centres on high-speed pursuits across side-scrolling roads, weaving through traffic and using a limited turbo boost to close the gap on fleeing suspects. Each stage is time-limited, pushing you to balance speed, control, and risk as the pressure mounts. On the C64, the ambition of the arcade conversion is clear, but technical limits take their toll. Performance issues, sluggish controls, and choppy animation impact the flow of the chases, while the audio lacks the punch and excitement of the original coin-op.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Chase H.Q. C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/E-1CfGW7zpc" data-video-id="E-1CfGW7zpc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Chase H.Q. video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/E-1CfGW7zpc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Chase H.Q. C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/E-1CfGW7zpc" data-video-id="E-1CfGW7zpc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=E-1CfGW7zpc" target="_blank" rel="noopener">Open on YouTube</a>

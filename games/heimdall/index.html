@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Heimdall (1991) – Commodore Amiga Norse Mythology Action RPG Released in 1991 by The 8th Day and published by Core Design, Heimdall is an ambitious action role-playing game steeped in Norse mythology. Designed for the Commodore Amiga, it blends exploration, combat, and puzzle-solving into a richly imagined mythological journey. Players step into the role of Heimdall, charged with recovering powerful artefacts stolen by Loki to prevent the coming of Ragnarok. The adventure unfolds across three vast realms—Midgard, Utgard, and Asgard—each made up of multiple islands filled with quests, enemies, and environmental challenges. Progress requires careful navigation, smart combat decisions, and puzzle-solving across interconnected locations. A standout feature is the character creation sequence, where a series of mini-games determine Heimdall’s starting attributes and influence which companions can later join your quest. This adds strategic depth from the very beginning and makes each playthrough feel slightly different.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Heimdall Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/CEovTlh_JaI" data-video-id="CEovTlh_JaI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Heimdall video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/CEovTlh_JaI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Heimdall Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/CEovTlh_JaI" data-video-id="CEovTlh_JaI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=CEovTlh_JaI" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Masters of the Universe: The Movie (1987) – Commodore 64 Licensed Action Adventure Released in 1987 by Gremlin Graphics, Masters of the Universe: The Movie brings the live-action film to the Commodore 64 in an ambitious multi-genre action adventure. You step into the role of He-Man on a mission to recover the eight chords of the Cosmic Key and stop Skeletor from conquering Eternia. Gameplay shifts between several styles, including top-down exploration, side-scrolling beat ’em up combat, and first-person shooting sections. This variety reflects the film’s set pieces and keeps the pace moving as you travel between locations and objectives. A standout feature is the ability to switch between characters, with He-Man joined by Teela and Gwildor, each offering different strengths and abilities. This adds a tactical layer to combat and exploration, encouraging you to choose the right character for each situation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="He-Man and the Masters of the Universe: The Movie C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jGM6kZ4fPV4" data-video-id="jGM6kZ4fPV4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play He-Man and the Masters of the Universe: The Movie video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jGM6kZ4fPV4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="He-Man and the Masters of the Universe: The Movie C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jGM6kZ4fPV4" data-video-id="jGM6kZ4fPV4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jGM6kZ4fPV4" target="_blank" rel="noopener">Open on YouTube</a>

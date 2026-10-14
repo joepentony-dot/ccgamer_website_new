@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ SimCity (1989) – Commodore 64 Simulation | Retro Classic SimCity (1989), developed by Maxis and designed by Will Wright, is the groundbreaking city-building simulation that helped define the genre on home computers. The Commodore 64 version condenses the full SimCity experience into just 64 KB of memory — a remarkable technical achievement for the time. You build and manage your city zone by zone, laying residential, commercial, and industrial areas, constructing roads and waterways, setting taxes, balancing budgets, and responding to disasters such as earthquakes. To fit within tight memory limits, features like police stations, fire departments, stadiums, railways, and advanced statistics were removed. However, core systems such as pollution tracking, growth charts, water systems, and tax controls remained intact — with some elements appearing on C64 before the PC version. Despite its minimalist, mostly monochrome visuals, performance is smooth and responsive, turning technical limitations into part of the game’s charm.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Simcity C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZtSDw6HOKPE" data-video-id="ZtSDw6HOKPE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Simcity video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ZtSDw6HOKPE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Simcity C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ZtSDw6HOKPE" data-video-id="ZtSDw6HOKPE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ZtSDw6HOKPE" target="_blank" rel="noopener">Open on YouTube</a>

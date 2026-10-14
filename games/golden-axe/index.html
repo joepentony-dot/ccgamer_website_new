@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Golden Axe (1990) – Commodore 64 Fantasy Beat ’Em Up Arcade Classic Released in 1990, Golden Axe brings Sega’s iconic fantasy brawler to the Commodore 64, tasking you with saving the land of Yuria from the evil Death Adder. You choose between Ax Battler, Tyris Flare, or Gilius Thunderhead, each offering different strengths and devastating magic attacks as you fight to reclaim the legendary Golden Axe. The core beat ’em up action remains intact, with side-scrolling combat, melee attacks, screen-clearing magic spells, and the ability to ride dragons for extra firepower. While the C64 version is single-player only and simplifies some elements from the arcade, the moment-to-moment combat still delivers that familiar Golden Axe rhythm. Hardware limitations mean fewer enemies on screen and reduced variety, but the fantasy atmosphere survives thanks to solid visuals and a strong soundtrack by Jeroen Tel.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Golden Axe C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/E7BaTQjT2bo" data-video-id="E7BaTQjT2bo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Golden Axe video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/E7BaTQjT2bo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Golden Axe C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/E7BaTQjT2bo" data-video-id="E7BaTQjT2bo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=E7BaTQjT2bo" target="_blank" rel="noopener">Open on YouTube</a>

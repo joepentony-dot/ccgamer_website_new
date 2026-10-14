@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rebel (1987) – Commodore 64 Top-Down Action Shooter with Puzzle Strategy Released in 1987 by Virgin Games and developed by Gang of Five, Rebel is a distinctive top-down, multi-directional scrolling shooter for the Commodore 64 with a strong tactical edge. You play as THX2240, a worker who has stolen a Crowd Control Vehicle and turned against the oppressive Agri-dustrial Combine. Across thirteen large levels, progression depends on more than pure reflexes. You must rotate and align solar reflectors to redirect powerful laser beams, blasting enemies, clearing barriers, and reshaping the environment itself. Destructible scenery allows you to carve new routes or temporarily escape relentless pursuit, adding a strategic layer rarely seen in shooters of the era. The challenge level is high, with demanding controls and tightly designed stages that punish mistakes and reward planning.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rebel C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wvekJd9zhJ0" data-video-id="wvekJd9zhJ0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rebel video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wvekJd9zhJ0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rebel C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wvekJd9zhJ0" data-video-id="wvekJd9zhJ0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wvekJd9zhJ0" target="_blank" rel="noopener">Open on YouTube</a>

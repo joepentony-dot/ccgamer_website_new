@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Accolade’s Comics (1987) – Commodore 64 Interactive Comic Book Adventure Released in 1987 for the Commodore 64, Accolade’s Comics is an experimental adventure-action title developed by Distinctive Software and published by Accolade. Designed by Don Mattrick and Jeff Sember, the game stars wisecracking secret agent Steve Keene in a globe-trotting spy caper told through an interactive comic book format. The experience alternates between story and action. In the comic panel sections, players make decisions that influence the direction of the narrative, echoing the structure of Choose Your Own Adventure books and giving the story a branching feel. Between story beats, the game switches to arcade-style sequences that test reflexes and timing. These include swimming through hazardous waters, climbing obstacles, and surviving combat encounters, adding tension and variety to the unfolding plot. Visually, Accolade’s Comics stands out for its animated comic panels and bold presentation, which helped it feel fresh and different from traditional adventures of the time.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Accolade&#39;s Comics C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/54LR-3p9sV0" data-video-id="54LR-3p9sV0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Accolade&#39;s Comics video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/54LR-3p9sV0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Accolade&#39;s Comics C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/54LR-3p9sV0" data-video-id="54LR-3p9sV0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=54LR-3p9sV0" target="_blank" rel="noopener">Open on YouTube</a>

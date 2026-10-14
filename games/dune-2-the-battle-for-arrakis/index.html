@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dune II: The Battle for Arrakis (1993) – Commodore Amiga Real-Time Strategy Pioneer Released in 1993 by Virgin Games and developed by Westwood Studios, Dune II: The Battle for Arrakis is the game that defined what real-time strategy would become. Set on the harsh desert world of Arrakis, you’re drawn into a war where control of spice means control of everything. You choose to command House Atreides, Harkonnen, or Ordos, each offering distinct units, strengths, and tactical approaches. Your task is to harvest spice, construct and defend a base, manage production, and overwhelm rival forces through careful planning and battlefield awareness. The Amiga version delivers a clear, intuitive interface that makes complex systems accessible, while still offering deep strategic choices. From balancing economy and defence to launching coordinated attacks, every decision matters as the war for Arrakis escalates.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dune II: The Battle For Arrakis Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/yO1l2ZX--Z4" data-video-id="yO1l2ZX--Z4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dune II: The Battle For Arrakis video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/yO1l2ZX--Z4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dune II: The Battle For Arrakis Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/yO1l2ZX--Z4" data-video-id="yO1l2ZX--Z4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=yO1l2ZX--Z4" target="_blank" rel="noopener">Open on YouTube</a>

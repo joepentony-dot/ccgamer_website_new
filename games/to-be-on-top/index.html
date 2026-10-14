@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1987 by Rainbow Arts for the Commodore 64, To Be on Top is an unusual music-themed action game that challenges players to create a chart-topping hit single. You roam a busy street, dodging pedestrians, traffic, and roller skaters while visiting locations such as their home, disco, recording studio, and TV station in search of musical inspiration. Throughout the adventure, mini-games appear on television screens, allowing players to collect bass lines, melodies, accompaniments, and sequences. These elements are then combined using a synthesiser, along with one of sixteen drum patterns, to produce a finished demo track. Success in the charts unlocks a live television performance, where audience applause determines whether your song reaches number one. This adds a unique performance element rarely seen in 8-bit games. Visually, the game features colourful characters and lively urban environments that reflect its playful tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="To Be On Top C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KnRPe_xYAnY" data-video-id="KnRPe_xYAnY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play To Be On Top video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KnRPe_xYAnY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="To Be On Top C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KnRPe_xYAnY" data-video-id="KnRPe_xYAnY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KnRPe_xYAnY" target="_blank" rel="noopener">Open on YouTube</a>

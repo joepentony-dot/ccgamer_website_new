@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ First Samurai (1992) – Commodore 64 Hack-and-Slash Action Epic Released in 1992 by Vivid Image for the Commodore 64, First Samurai is a fast-paced hack-and-slash action game that blends intense combat with platforming and exploration. You step into the role of a lone samurai warrior, travelling through ancient Japan and surreal mystical realms to stop an evil sorcerer threatening the balance of the world. Gameplay centres on precise sword combat, enemy patterns, and careful positioning, with the katana as your primary weapon. Stages are filled with hazards, vertical platforming sections, and environmental challenges that require both quick reactions and thoughtful movement to survive. As the adventure unfolds, the game introduces varied enemies, large animated bosses, and interconnected areas that reward exploration. Progress depends on mastering combat timing, learning level layouts, and using upgrades and items effectively to push deeper into hostile territory.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="First Samurai C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6YYc50r0U30" data-video-id="6YYc50r0U30"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play First Samurai video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6YYc50r0U30/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="First Samurai C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6YYc50r0U30" data-video-id="6YYc50r0U30"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6YYc50r0U30" target="_blank" rel="noopener">Open on YouTube</a>

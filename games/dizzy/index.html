@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dizzy (1988) – Commodore 64 Puzzle-Platform Adventure Classic Released in 1988 by Codemasters for the Commodore 64, Dizzy is the debut adventure of the iconic egg-shaped hero created by The Oliver Twins. Following its success on the ZX Spectrum, the C64 version was carefully adapted to Commodore hardware, introducing Dizzy to a new audience while preserving the spirit that made the original so popular. You guide Dizzy across a colourful fantasy world on a quest to defeat the evil wizard Zaks. The gameplay blends platforming with inventory-based puzzles, requiring exploration, logical thinking, and precise jumping. Progress often depends on using the right item in the right place, rewarding careful observation and experimentation. The Commodore 64 version features clean sprite work and a memorable SID soundtrack by David Whittaker, adding atmosphere and personality to the adventure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dizzy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/RJPMRVK_Ppc" data-video-id="RJPMRVK_Ppc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dizzy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/RJPMRVK_Ppc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dizzy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/RJPMRVK_Ppc" data-video-id="RJPMRVK_Ppc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=RJPMRVK_Ppc" target="_blank" rel="noopener">Open on YouTube</a>

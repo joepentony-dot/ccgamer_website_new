@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hero of the Golden Talisman (1985) – Commodore 64 Action Adventure | Retro Classic Hero of the Golden Talisman (1985) is an action-adventure game developed by Mr Chip Software and published by Mastertronic for the Commodore 64. You explore a vast labyrinth of 64 interconnected rooms across five levels, searching for five fragments of a magical talisman needed to lift a deadly curse from your town. Each area is filled with hazards and enemies, from jumping pits and climbing ropes to battling fire-breathing dragons and bouncing eyeballs. Progress depends on collecting useful items such as keys, lanterns, ropes, and strength-enhancing flags. While its graphics and sound are modest, the game stands out for its responsive controls and clever level design. A built-in mini-map and inventory system add strategic depth and encourage careful exploration. Its balanced difficulty and rewarding progression make it especially appealing to players who enjoy mapping and methodical gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hero Of The Golden Talisman C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/mAW7AF-KOGo" data-video-id="mAW7AF-KOGo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hero Of The Golden Talisman video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/mAW7AF-KOGo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hero Of The Golden Talisman C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/mAW7AF-KOGo" data-video-id="mAW7AF-KOGo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=mAW7AF-KOGo" target="_blank" rel="noopener">Open on YouTube</a>

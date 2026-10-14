@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Jack the Nipper (1986) – Commodore 64 Naughty Platforming Classic Released in 1986 by Gremlin Graphics, Jack the Nipper puts you in control of a mischievous toddler determined to cause as much mayhem as possible. Instead of saving the day, your goal is to be as naughty as you can without getting caught. The game unfolds across 50 flip-screen locations including kindergartens, police stations, museums, and back streets. Each screen becomes a playground for mischief as you jump on objects, move items around, and set up pranks to push your naughtyometer ever higher. Avoiding adults is critical, as getting caught results in a spanking that fills Jack’s nappy rash meter. Monsters and ghosts add extra danger, forcing you to balance reckless behaviour with careful movement and timing. On the Commodore 64, Jack the Nipper stands out for its colourful presentation and memorable soundtrack by Ben Daglish.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jack The Nipper C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rb7Wk0tpxAQ" data-video-id="rb7Wk0tpxAQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jack The Nipper video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rb7Wk0tpxAQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jack The Nipper C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rb7Wk0tpxAQ" data-video-id="rb7Wk0tpxAQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rb7Wk0tpxAQ" target="_blank" rel="noopener">Open on YouTube</a>

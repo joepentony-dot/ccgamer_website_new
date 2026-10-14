@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dune (1992) – Commodore Amiga Adventure-Strategy Epic on Arrakis Released in 1992 by Virgin Interactive and developed by Cryo Interactive, Dune is a bold adventure-strategy hybrid set in Frank Herbert’s iconic sci-fi universe. You step into the role of Paul Atreides, navigating the harsh desert world of Arrakis as rival houses battle for control of the all-important spice. Gameplay blends first-person exploration with strategic management. You travel across the planet, meet key characters, forge alliances with the Fremen, and oversee spice production while making decisions that shape the balance of power. Recruiting warriors, deploying ornithopters, and managing resources are all essential to pushing back the Harkonnen threat. As the story unfolds, Paul’s growing psychic abilities add narrative depth and influence how events play out. Progress isn’t just about military strength, but understanding Arrakis, its people, and the consequences of your choices.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dune Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Xd1y8n-Gjwc" data-video-id="Xd1y8n-Gjwc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dune video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Xd1y8n-Gjwc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dune Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Xd1y8n-Gjwc" data-video-id="Xd1y8n-Gjwc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Xd1y8n-Gjwc" target="_blank" rel="noopener">Open on YouTube</a>

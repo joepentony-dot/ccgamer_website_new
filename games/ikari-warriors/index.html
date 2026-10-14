@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ikari Warriors (1986) – Commodore 64 Vertical Run-and-Gun Arcade Classic Originally released in arcades in 1986 by SNK, Ikari Warriors became one of the defining run-and-gun shooters of the era, and its Commodore 64 history is notable for having two very different home conversions. The first C64 version arrived in 1986 via Data East and Quicksilver Software, offering a single-player experience split into four phases. This early take delivers straightforward vertical shooting with basic visuals and limited enemy variety, capturing the core idea of the arcade but in a stripped-back form. A later and far more ambitious 1988 release by Elite Systems refined the formula significantly. This version supports both solo play and two-player simultaneous action, with improved graphics, stronger sound, and more varied enemy behaviour. You fight your way through jungles, rivers, and fortified positions, using power-ups, tanks, and helicopters to survive the onslaught.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ikari Warriors C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/mWyXf7yKoLs" data-video-id="mWyXf7yKoLs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ikari Warriors video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/mWyXf7yKoLs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ikari Warriors C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/mWyXf7yKoLs" data-video-id="mWyXf7yKoLs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=mWyXf7yKoLs" target="_blank" rel="noopener">Open on YouTube</a>

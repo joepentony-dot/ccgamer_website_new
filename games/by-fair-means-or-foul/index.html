@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ By Fair Means or Foul (1988) – Commodore 64 Boxing with Dirty Tactics Released in 1988 by Superior Software and developed by Jason Benham, By Fair Means or Foul is a boxing game that stands apart by encouraging you to fight smart—or fight dirty. Alongside standard punches like jabs and uppercuts, you can sneak in illegal moves such as headbutts and low blows when the referee isn’t paying attention. A key feature is the referee awareness system, shown via an on-screen indicator that lets you know when fouls can be committed without being caught. This adds a layer of strategy rarely seen in sports games of the era, forcing you to balance risk and reward inside the ring. Single-player mode tasks you with defeating six increasingly tough opponents on the road to becoming World Champion, while two-player mode offers competitive bouts against a friend.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="By Fair Means Or Foul C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/uF2SYHTte18" data-video-id="uF2SYHTte18"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play By Fair Means Or Foul video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/uF2SYHTte18/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="By Fair Means Or Foul C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/uF2SYHTte18" data-video-id="uF2SYHTte18"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=uF2SYHTte18" target="_blank" rel="noopener">Open on YouTube</a>

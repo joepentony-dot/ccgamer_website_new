@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Smiths Are Dead (2023) – Commodore 64 Illustrated Text Adventure Music History Released in 2023 by Commodore Plus for the Commodore 64, The Smiths Are Dead is an illustrated text adventure that blends interactive fiction with British music history. This unofficial release places you in the role of Steven Patrick Morrissey during the uncertain period following The Smiths’ breakup in 1987, with the goal of recovering the lost sheet music for his debut solo single, Suedehead. Gameplay uses a classic text parser interface, with commands such as GO, EXAMINE, and TALK driving exploration and conversation. You visit key locations and interact with real figures from Morrissey’s early solo career, piecing together clues through dialogue, observation, and careful decision-making. The experience is enhanced by high-resolution illustrations and an atmospheric SID soundtrack, including a rendition of Oscillate Wildly, which reinforces the tone and period setting.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Smiths Are Dead C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/yMxkMrfa83Y" data-video-id="yMxkMrfa83Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Smiths Are Dead video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/yMxkMrfa83Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Smiths Are Dead C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/yMxkMrfa83Y" data-video-id="yMxkMrfa83Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=yMxkMrfa83Y" target="_blank" rel="noopener">Open on YouTube</a>

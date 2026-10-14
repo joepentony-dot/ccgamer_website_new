@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cadaver (1990) – Commodore Amiga Isometric Puzzle Adventure Classic Released in 1990 by The Bitmap Brothers and published by Image Works for the Commodore Amiga, Cadaver is an isometric action-adventure that places you in the boots of Karadoc, a dwarf thief exploring the deadly halls of Castle Wulf in search of treasure. The game focuses on exploration and puzzle-solving rather than direct combat. Each of the five large levels is packed with traps, locked doors, pressure plates, monsters, and environmental hazards that require careful observation and planning to overcome. Progress depends on understanding the castle’s layout and using items intelligently rather than relying on brute force. Gameplay revolves around object manipulation and logical thinking. Players push barrels, collect keys, trigger mechanisms, and cast spells to navigate rooms safely. With no traditional fighting system, timing, positioning, and clever use of the environment are essential for survival.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cadaver Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1hWwTYZryxw" data-video-id="1hWwTYZryxw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cadaver video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1hWwTYZryxw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cadaver Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1hWwTYZryxw" data-video-id="1hWwTYZryxw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1hWwTYZryxw" target="_blank" rel="noopener">Open on YouTube</a>

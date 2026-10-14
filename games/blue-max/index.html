@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blue Max (1983) – Commodore 64 WWI Isometric Flight Shooter Released in 1983 by Synapse Software and developed by Bob Polin, Blue Max is a diagonally scrolling shooter that drops you into the cockpit of a Sopwith Camel during the First World War. Rather than pure arcade blasting, the game blends action with light simulation elements, demanding careful flying and tactical decision-making. Viewed from an isometric perspective, you can move in multiple directions and adjust altitude, giving the battlefield a convincing sense of depth. Missions involve strafing enemy aircraft, bombing ground targets, and navigating anti-air defences while pushing deeper into hostile territory. Fuel and ammunition are limited, forcing you to locate friendly airstrips to land, refuel, and repair damage. These landings add tension and risk, turning survival into more than just shooting skill. The SID soundtrack, featuring a rendition of “Rule, Britannia!”</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blue Max C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/s05rJYxeb5Y" data-video-id="s05rJYxeb5Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blue Max video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/s05rJYxeb5Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blue Max C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/s05rJYxeb5Y" data-video-id="s05rJYxeb5Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=s05rJYxeb5Y" target="_blank" rel="noopener">Open on YouTube</a>

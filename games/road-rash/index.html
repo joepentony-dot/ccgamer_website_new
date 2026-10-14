@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Road Rash (1992) – Commodore Amiga Review &amp; Mega Drive Comparison Road Rash brought Electronic Arts&#39; brilliantly violent motorcycle racing to the Commodore Amiga in 1992 — but how does the Amiga version compare with the classic Sega Mega Drive original? Road Rash mixes motorcycle racing with traffic, police, bike upgrades and the small matter of punching and kicking rival riders at completely irresponsible speeds. Finish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way. Unfortunately, everybody else gets faster too, meaning those expensive upgrades mostly allow you to have the same problems at considerably higher speeds. In this review I&#39;m revisiting the Commodore Amiga version of Road Rash and comparing it directly with the Sega Mega Drive version I grew up playing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Road Rash Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/JUXvi0beNxA" data-video-id="JUXvi0beNxA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Road Rash video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/JUXvi0beNxA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Road Rash Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/JUXvi0beNxA" data-video-id="JUXvi0beNxA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=JUXvi0beNxA" target="_blank" rel="noopener">Open on YouTube</a>

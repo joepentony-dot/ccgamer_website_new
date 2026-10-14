@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ International Karate + (1987) – Commodore 64 Three-Player Martial Arts Classic Released in 1987 by System 3, International Karate + is one of the most celebrated fighting games on the Commodore 64. Designed by Archer Maclean, with a legendary soundtrack by Rob Hubbard, IK+ refined and expanded the original International Karate formula into a faster, deeper, and far more distinctive experience. The game’s standout feature is its unique three-player combat system, where fighters battle simultaneously on a single screen. Matches are scored through well-timed punches, kicks, sweeps, and acrobatic flips, rewarding precision and positioning rather than button mashing. Controls are tight and responsive, making every exchange feel deliberate and skill-based. Between bouts, IK+ introduces bonus rounds such as deflecting bouncing balls, adding variety and extra challenge. Smooth animation, humorous background details, and expressive character movement give the game a lively personality that still holds up decades later.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="IK+ C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/HUo0RBPzkA4" data-video-id="HUo0RBPzkA4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play IK+ video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/HUo0RBPzkA4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="IK+ C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/HUo0RBPzkA4" data-video-id="HUo0RBPzkA4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=HUo0RBPzkA4" target="_blank" rel="noopener">Open on YouTube</a>

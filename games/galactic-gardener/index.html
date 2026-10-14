@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Galactic Gardener (1984) – Commodore 64 Surreal Arcade Action Cave Rescue Released in 1984 by Software Projects and designed by David Caballero, Galactic Gardener is a distinctive arcade action game for the Commodore 64 that blends fast reflex gameplay with offbeat sci-fi style. You take on the role of a galactic gardener piloting a flying chair through dangerous underground caverns to recover ten stolen power-flowers. Gameplay centres on careful navigation through side-scrolling caves packed with hazards such as forcefields, moving gates, and aggressive snapdragons. Before collecting each power-flower, you must first locate an empty pot—touching a flower without one costs a life. Fuel management adds another layer of tension, forcing you to plan routes efficiently. Strategic use of teleporters allows recovery from mistakes, letting you return to safe locations after crashes or misjudged manoeuvres.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Galactic Gardener C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/D7eUdOckfaA" data-video-id="D7eUdOckfaA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Galactic Gardener video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/D7eUdOckfaA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Galactic Gardener C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/D7eUdOckfaA" data-video-id="D7eUdOckfaA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=D7eUdOckfaA" target="_blank" rel="noopener">Open on YouTube</a>

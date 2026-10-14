@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Moon Shuttle (1983) – Commodore 64 Shoot ’Em Up | Retro Arcade Classic Released in 1983 by Datasoft and developed by John Butrovich, Moon Shuttle is a fast-paced shoot-’em-up that blends arcade reflexes with strategic navigation. In the game, you pilot a sleek Moon Shuttle spacecraft through layered asteroid fields and hostile alien formations, blasting narrow pathways while avoiding deadly collisions. Gameplay alternates between navigating dense asteroid belts and fighting bizarre alien enemies, including beetles, “brains”, phasmidæ, and seaweed-like creatures. Moon Shuttle’s design is deceptively simple but highly tactical. Players must fire upwards to clear tight corridors, manage positioning carefully, and react quickly to shifting hazards. Visually, the game features clean, minimalist graphics with functional sprites. There is no background music, relying instead on sound effects to heighten the arcade-style intensity. Despite its simplicity, Moon Shuttle stands out among early C64 shooters for its multi-layered challenge and rewarding difficulty curve.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Moon Shuttle C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Vr3K-VqK5Pg" data-video-id="Vr3K-VqK5Pg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Moon Shuttle video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Vr3K-VqK5Pg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Moon Shuttle C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Vr3K-VqK5Pg" data-video-id="Vr3K-VqK5Pg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Vr3K-VqK5Pg" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Roller Coaster Rumbler (1989) – Commodore 64 Rail Shooter Arcade Oddity Released in 1989 by Tynesoft and developed by Subway Software for the Commodore 64, Roller Coaster Rumbler is a distinctive rail shooter that puts you on a high-speed roller coaster armed with a mounted machine gun. Unlike the Amiga and Atari ST versions, the C64 release takes a unique approach with a split-screen presentation. Gameplay combines a first-person shooting view with an isometric perspective showing the roller coaster’s twisting track. As the ride climbs, dips, and swerves, you must blast waves of flying targets, all while compensating for the constant motion of the coaster itself. The challenge lies in accuracy and timing, with you required to hit a set number of targets within a limited time window. The shifting viewpoint and relentless movement add an extra layer of difficulty, keeping the action tense despite the simple core mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Roller Coaster Rumbler C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/p_fyK_KEpi4" data-video-id="p_fyK_KEpi4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Roller Coaster Rumbler video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/p_fyK_KEpi4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Roller Coaster Rumbler C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/p_fyK_KEpi4" data-video-id="p_fyK_KEpi4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=p_fyK_KEpi4" target="_blank" rel="noopener">Open on YouTube</a>

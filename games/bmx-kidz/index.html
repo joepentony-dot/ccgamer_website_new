@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ BMX Kidz (1987) – Commodore 64 Arcade BMX Racing Classic Released in 1987 by Gigglywurx and published by Firebird Software for the Commodore 64, BMX Kidz is a fast-paced side-scrolling racing game inspired by the BMX craze of the 1980s. You race against five computer-controlled opponents across a series of challenging tracks, performing wheelies, jumps, and stunts in order to maintain speed and gain an advantage. A key gameplay element is energy and bike management. Crashes and failed tricks drain stamina and damage the bike, while collecting soda cans restores energy and replacement spokes keep performance at its peak. The game uses a distinctive 2.5D perspective that creates a strong sense of depth and motion, helping it stand out among other racing titles of the era. Progression depends on mastering the game’s slippery physics, timing jumps accurately, and choosing when to risk stunts for extra speed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="BMX Kidz C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hj7uVwd5kP4" data-video-id="hj7uVwd5kP4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play BMX Kidz video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hj7uVwd5kP4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="BMX Kidz C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hj7uVwd5kP4" data-video-id="hj7uVwd5kP4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hj7uVwd5kP4" target="_blank" rel="noopener">Open on YouTube</a>

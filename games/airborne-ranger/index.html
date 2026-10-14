@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Airborne Ranger (1987) – Commodore 64 Tactical Action Simulation Released in 1987 for the Commodore 64, Airborne Ranger is a distinctive action-simulation title developed by MicroProse that places you in the role of an elite U. S. Army Airborne Ranger operating deep behind enemy lines. The game blends fast-paced action with careful planning, setting it apart from more straightforward shooters of the era. Each mission begins with a detailed briefing and loadout phase, where you choose weapons, explosives, and medical supplies to be delivered via supply pods. This is followed by a parachute insertion sequence, requiring careful decisions about drop locations before landing in hostile territory. On the ground, gameplay shifts to tense tactical action as you navigate varied environments, avoid patrols, engage enemies, and complete objectives such as rescues, sabotage, or high-value captures.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Airborne Ranger C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/HBGHNeQZrYY" data-video-id="HBGHNeQZrYY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Airborne Ranger video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/HBGHNeQZrYY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Airborne Ranger C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/HBGHNeQZrYY" data-video-id="HBGHNeQZrYY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=HBGHNeQZrYY" target="_blank" rel="noopener">Open on YouTube</a>

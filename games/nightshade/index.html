@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nightshade (1986) – Commodore 64 Isometric Action-Adventure with Filmation II Released in 1986 by Ultimate Play the Game and published by Firebird, Nightshade is an isometric action-adventure for the Commodore 64, ported by Shahid Ahmad. Built using the advanced Filmation II engine, the game introduced smooth scrolling 3D environments, marking a major step forward from earlier static-screen isometric designs. You take on the role of a lone knight tasked with freeing a plague-ravaged village from the grip of four demonic overlords. Exploration is key as you navigate a maze-like medieval town, battling monsters, avoiding traps, and carefully managing health while progressing deeper into enemy territory. The gameplay blends combat and strategy, allowing you to throw objects at enemies and make use of a distinctive colour-based health system. The isometric viewpoint and layered environments demand precise movement and spatial awareness, giving the game a tense and methodical pace.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nightshade C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/WPLPKhCQkbk" data-video-id="WPLPKhCQkbk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nightshade video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/WPLPKhCQkbk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nightshade C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/WPLPKhCQkbk" data-video-id="WPLPKhCQkbk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=WPLPKhCQkbk" target="_blank" rel="noopener">Open on YouTube</a>

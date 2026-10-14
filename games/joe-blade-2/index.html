@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Joe Blade II (1988) – Commodore 64 Urban Action Adventure Sequel Released in 1988 by Colin Swinbourne and published by Players Software for the Commodore 64, Joe Blade II shifts the series away from military infiltration and drops its vigilante hero into the crime-ridden streets of the city. This time, Joe must rescue kidnapped civilians while taking on gangs and urban hazards across a series of side-scrolling levels. Gameplay focuses on timing and movement rather than weapon-based combat. Joe defeats enemies by jumping on their heads, giving the game a distinctive twist compared to traditional beat-’em-ups. Progression hinges on rescuing trapped citizens, each of which triggers one of four fast-paced sub-games that test reflexes, memory, and problem-solving under strict time limits. The city environments are bright and expressive, with large character sprites and a cartoon-like presentation that suits the game’s lighter tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Joe Blade II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/AZNa7tBWpU0" data-video-id="AZNa7tBWpU0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Joe Blade II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/AZNa7tBWpU0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Joe Blade II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/AZNa7tBWpU0" data-video-id="AZNa7tBWpU0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=AZNa7tBWpU0" target="_blank" rel="noopener">Open on YouTube</a>

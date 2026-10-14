@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Archon: The Light and the Dark (1983) – Commodore 64 Strategy Board Game with Real-Time Combat Released in 1983 by Free Fall Associates and published by Electronic Arts, Archon: The Light and the Dark is a pioneering hybrid that blends turn-based strategy with fast-paced real-time combat. Designed by Jon Freeman and Paul Reiche III, with programming by Anne Westfall, the game challenges you to command either the forces of Light or Dark in a battle for control of a magical board. The board resembles a chess layout, but instead of static captures, opposing pieces trigger one-on-one real-time battles when they meet. Each creature has unique movement patterns, strengths, and special abilities, making positioning and timing just as important as combat skill. Control is achieved by occupying five power points or eliminating the opposing army entirely.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Archon: The Light And The Dark C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xTIc4AKoMuI" data-video-id="xTIc4AKoMuI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Archon: The Light And The Dark video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xTIc4AKoMuI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Archon: The Light And The Dark C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xTIc4AKoMuI" data-video-id="xTIc4AKoMuI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xTIc4AKoMuI" target="_blank" rel="noopener">Open on YouTube</a>

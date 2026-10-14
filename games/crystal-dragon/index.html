@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Crystal Dragon (1994) – Commodore Amiga First-Person Dungeon RPG Adventure Released in 1994 by Magnetic Fields for the Commodore Amiga, Crystal Dragon is a classic first-person dungeon crawler inspired by genre-defining titles such as Dungeon Master. Designed for RPG fans who enjoy deep exploration and strategic combat, the game places players in a dangerous fantasy world filled with traps, monsters, and mystery. Players control two adventurers on a quest to recover a powerful artefact from an evil wizard. Exploration takes place across maze-like dungeon levels, where progress depends on solving puzzles, locating hidden passages, and surviving real-time battles against hostile creatures. Combat unfolds in real time, requiring quick reactions and careful positioning. Players must manage weapons, spells, and defensive tactics while monitoring health and stamina. The detailed inventory system allows equipment, food, and key items to be organised and used strategically throughout the journey.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Crystal Dragon Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/fWQxrvhg8dY" data-video-id="fWQxrvhg8dY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Crystal Dragon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/fWQxrvhg8dY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Crystal Dragon Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/fWQxrvhg8dY" data-video-id="fWQxrvhg8dY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=fWQxrvhg8dY" target="_blank" rel="noopener">Open on YouTube</a>

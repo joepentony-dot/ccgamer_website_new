@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Eddie Kidd Jump Challenge (1984) – Commodore 64 Motorcycle Stunt Skill Test Released in 1984 by Martech Games Ltd. for the Commodore 64, Eddie Kidd Jump Challenge is a licensed stunt game based on the exploits of British daredevil Eddie Kidd. You take control of Eddie as he attempts a series of increasingly dangerous jumps, beginning on BMX bikes before progressing to powerful motorbikes. Gameplay is built entirely around timing and precision. Each challenge requires careful control of speed, positioning, and take-off angle in order to clear obstacles such as oil barrels and rows of cars. As the game advances, the jumps become longer and more demanding, leaving little margin for error. Rather than relying on gauges or on-screen indicators, you must judge speed instinctively, using visual cues and engine sound to time each run-up perfectly.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Eddie Kidd Jump Challenge C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9BUxxUNE2xg" data-video-id="9BUxxUNE2xg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Eddie Kidd Jump Challenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9BUxxUNE2xg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Eddie Kidd Jump Challenge C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9BUxxUNE2xg" data-video-id="9BUxxUNE2xg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9BUxxUNE2xg" target="_blank" rel="noopener">Open on YouTube</a>

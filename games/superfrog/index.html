@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1993 by Team17 for the Commodore Amiga, Superfrog is a colourful side-scrolling platformer that became one of the defining titles of the platform’s golden era. You control a young prince transformed into a frog by an evil witch, setting out on a quest to rescue his kidnapped princess. The adventure spans six themed worlds, each packed with enemies, hazards, and hidden secrets. Gameplay focuses on precise jumping, projectile attacks, and item collection, including wings for gliding and Lucozade for restoring health. A unique slot machine system allows you to gamble collected credits for bonuses, passwords, and extra lives. One of the game’s standout features is the hidden “Project-F” bonus level, a side-scrolling shoot-’em-up tribute to Team17’s Project-X, adding variety and surprise to the adventure. Visually, Superfrog is renowned for its vibrant colour palette, fluid animation, and smooth scrolling.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Superfrog Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/OgNzXv_hjc4" data-video-id="OgNzXv_hjc4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Superfrog video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/OgNzXv_hjc4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Superfrog Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/OgNzXv_hjc4" data-video-id="OgNzXv_hjc4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=OgNzXv_hjc4" target="_blank" rel="noopener">Open on YouTube</a>

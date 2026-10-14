@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Future Wars (1989) – Commodore Amiga Cinematic Point-and-Click Adventure Classic Released in 1989 by Delphine Software International for the Commodore Amiga, Future Wars is an ambitious point-and-click adventure that marked the studio’s first step into cinematic storytelling. Created by Paul Cuisset and Éric Chahi, who would later go on to develop Another World, the game runs on Delphine’s proprietary Cinematique engine and laid the groundwork for their distinctive narrative style. Players take on the role of an unlikely hero—a humble window cleaner—who stumbles upon a time machine and is thrown into a battle against the alien Crughons. His journey spans multiple eras, including medieval Europe, the distant 44th century, and the Cretaceous period, each offering unique environments, puzzles, and narrative twists. Gameplay is driven by a streamlined interface designed to keep the screen uncluttered.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Future Wars Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Pa8d9OA95uQ" data-video-id="Pa8d9OA95uQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Future Wars video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Pa8d9OA95uQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Future Wars Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Pa8d9OA95uQ" data-video-id="Pa8d9OA95uQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Pa8d9OA95uQ" target="_blank" rel="noopener">Open on YouTube</a>

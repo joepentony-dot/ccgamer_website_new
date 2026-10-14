@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ They Stole a Million (1986) – Commodore 64 Strategy Heist Mastermind Classic Released in 1986 by 39 Steps and published by Ariolasoft for the Commodore 64, They Stole a Million puts you in control of “The Boss”, a criminal mastermind planning and executing complex, high-risk heists against well-guarded targets. The game is split into two distinct phases: planning and execution. During planning, you choose a target, purchase blueprints, gather intelligence, and recruit a specialist team, each member offering unique skills such as lock-picking, alarm disabling, or getaway driving. Every decision matters, as team fees, profit cuts, and timing must be carefully balanced to avoid disaster. Once the plan is set, the execution phase unfolds in real time from a top-down perspective. You watch your crew carry out their roles while monitoring the operation, stepping in directly if things start to go wrong.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="They Stole A Million C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/As89tKOFp8Y" data-video-id="As89tKOFp8Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play They Stole A Million video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/As89tKOFp8Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="They Stole A Million C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/As89tKOFp8Y" data-video-id="As89tKOFp8Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=As89tKOFp8Y" target="_blank" rel="noopener">Open on YouTube</a>

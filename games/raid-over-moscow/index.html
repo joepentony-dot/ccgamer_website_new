@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Raid Over Moscow (1984) – Commodore 64 Cold War Action Flight Simulator Released in 1984 by Access Software, Raid Over Moscow is a tense Cold War–themed action game for the Commodore 64 that puts you in the cockpit of an American fighter pilot facing a global crisis. With diplomacy off the table, you’re tasked with stopping a Soviet nuclear strike and carrying the fight deep into enemy territory. The game unfolds across multiple distinct stages, each demanding different skills. You begin by intercepting incoming missiles, then move on to attacking heavily defended missile silos from the air. The final sequence raises the stakes even further, sending you into the Kremlin to destroy a nuclear reactor and prevent worldwide catastrophe. What makes Raid Over Moscow stand out is its constant shift in gameplay. Each phase feels different, keeping tension high and forcing you to adapt quickly.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Raid Over Moscow C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/aSM50a5K90A" data-video-id="aSM50a5K90A"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Raid Over Moscow video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/aSM50a5K90A/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Raid Over Moscow C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/aSM50a5K90A" data-video-id="aSM50a5K90A"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=aSM50a5K90A" target="_blank" rel="noopener">Open on YouTube</a>

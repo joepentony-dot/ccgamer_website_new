@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Tau Ceti (1986) – Commodore 64 Sci-Fi Action-Adventure with Groundbreaking 3D Released in 1986 and developed by Pete Cooke, Tau Ceti is a landmark science-fiction action-adventure published by CRL Group for the Commodore 64. Set on the distant planet Tau Ceti III, the game places you in control of a lone Gal-Corp pilot tasked with shutting down a rogue planetary defence system before it triggers a catastrophic meltdown. Gameplay centres on piloting a skimmer through vast hostile cities, battling robotic defenders while exploring complex urban environments. Progress depends on locating and assembling reactor cooling rods, managing limited fuel and ammunition, and making smart use of tools such as infrared vision, scanners, and flares to survive the planet’s dangers. What truly set Tau Ceti apart was its technical ambition. The game features solid 3D environments with shadow effects and a dynamic day-night cycle, creating a strong sense of scale and atmosphere that was astonishing on 8-bit hardware.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Tau Ceti C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FtZXERnnU6s" data-video-id="FtZXERnnU6s"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Tau Ceti video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FtZXERnnU6s/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Tau Ceti C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FtZXERnnU6s" data-video-id="FtZXERnnU6s"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FtZXERnnU6s" target="_blank" rel="noopener">Open on YouTube</a>

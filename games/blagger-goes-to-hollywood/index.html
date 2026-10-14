@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blagger Goes To Hollywood (1985) – Commodore 64 Movie Mash-Up Arcade Classic Blagger Goes To Hollywood is a 1985 action-arcade game developed and published by Alligata Software for the Commodore 64. A follow-up to the original Blagger trilogy, this quirky title sends the infamous burglar on a chaotic adventure through a Hollywood studio packed with famous movie characters and recognisable theme tunes. In this C64 classic, you guide Blagger through an isometric, side-view world, collecting and using the correct props to defeat characters inspired by Batman, Superman, Jaws, Tarzan, The Incredible Hulk, and more. Each opponent requires a specific item to be launched at the right moment, blending fast arcade action with puzzle-solving and pattern recognition — a fairly unusual concept for mid-80s Commodore 64 games. The game is especially remembered for its catchy chiptune adaptations of film and TV themes, cleverly recreated within the limits of the SID chip, and for its playful pop-culture mash-ups.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blagger Goes To Hollywood C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/S27IM7DGgC4" data-video-id="S27IM7DGgC4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blagger Goes To Hollywood video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/S27IM7DGgC4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blagger Goes To Hollywood C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/S27IM7DGgC4" data-video-id="S27IM7DGgC4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=S27IM7DGgC4" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Flashback (1992) – Commodore Amiga Cinematic Sci-Fi Platform Adventure Classic Released in 1992 by Delphine Software International for the Commodore Amiga, Flashback is a landmark cinematic platformer designed by Paul Cuisset. Blending rotoscoped animation, science-fiction storytelling, and methodical puzzle-platforming, it pushed narrative and technical boundaries on home computers. Set in a distant future, players take control of Conrad B. Hart, an agent who awakens on Titan with no memory of his past. As he journeys through futuristic cities, dense jungles, and alien environments, Conrad must survive hostile forces while uncovering a hidden conspiracy involving shape-shifting invaders. Gameplay combines precise movement, environmental puzzles, and tactical combat. Players must carefully time jumps, manage limited ammunition, and use tools like shields and weapons to overcome enemies. Progress often depends on observation, patience, and mastering the game’s deliberate pacing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Flashback: The Quest For Identity Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/F5QHpwnSSko" data-video-id="F5QHpwnSSko"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Flashback: The Quest For Identity video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/F5QHpwnSSko/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Flashback: The Quest For Identity Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/F5QHpwnSSko" data-video-id="F5QHpwnSSko"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=F5QHpwnSSko" target="_blank" rel="noopener">Open on YouTube</a>

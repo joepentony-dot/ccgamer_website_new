@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Back to Reality (1986) – Commodore 64 Maze Action Adventure Survival Released in 1986 by Mastertronic for the Commodore 64, Back to Reality is a tense action-adventure that drops you into a hostile alien maze with little guidance and even less time. You play as an astronaut trapped deep within an unfamiliar environment, where survival depends on memory, precision, and calm decision-making under pressure. Gameplay centres on navigating a complex maze, learning safe routes, and avoiding hazards while racing against the clock. With no hand-holding and a deliberately stripped-back presentation, progress comes from careful observation and mastering the layout through repetition. The minimalist design heightens the sense of isolation and urgency, turning each run into a test of focus and spatial awareness. Difficulty is unforgiving, but success feels earned as you slowly build knowledge of the maze and push closer to escape.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Back To Reality C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lpPxZLGGthE" data-video-id="lpPxZLGGthE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Back To Reality video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lpPxZLGGthE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Back To Reality C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lpPxZLGGthE" data-video-id="lpPxZLGGthE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lpPxZLGGthE" target="_blank" rel="noopener">Open on YouTube</a>

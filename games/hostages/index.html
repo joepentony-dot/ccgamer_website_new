@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hostages (1988) – Commodore Amiga Tactical Counter-Terrorism Strategy Released in 1988 by Infogrames, Hostages is a tense tactical shooter inspired by the real-life Iranian Embassy siege. You take command of an elite six-man GIGN unit, tasked with rescuing hostages from a heavily guarded embassy using planning, precision, and restraint rather than brute force. The operation unfolds across three carefully linked phases. First, you position snipers across the street to silently remove threats without endangering civilians. Next comes helicopter insertion, where assault team members rappel through embassy windows under strict timing. Finally, the mission shifts to a first-person interior assault, clearing rooms, neutralising terrorists, and securing hostages one by one. Hostages blends strategy, stealth, and action in a way that was ambitious for its time. Every mistake carries consequences, and success depends on patience, observation, and controlled execution rather than fast reflexes alone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hostages Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/erV9J4WcTww" data-video-id="erV9J4WcTww"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hostages video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/erV9J4WcTww/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hostages Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/erV9J4WcTww" data-video-id="erV9J4WcTww"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=erV9J4WcTww" target="_blank" rel="noopener">Open on YouTube</a>

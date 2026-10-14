@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Chaos Engine (1993) – Commodore Amiga Steampunk Run-and-Gun Classic Released in 1993 by The Bitmap Brothers, The Chaos Engine is a top-down run-and-gun action game set in a twisted steampunk version of Victorian Britain. A sentient machine has warped time and space, turning the population into hostile creatures, and a team of hired mercenaries is sent in to shut it down. You choose two characters from a roster of six, each with distinct weapons and abilities, and fight your way through four worlds made up of dense, enemy-filled levels. Progress requires careful movement, managing choke points, activating nodes, and uncovering hidden routes while enemies flood the screen from every direction. Gold collected during missions can be spent on upgrades, adding a strategic layer to the relentless action. Played solo or cooperatively, the game rewards coordination, positioning, and smart character choices as difficulty steadily ramps up.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Chaos Engine Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/vyTeLuzjRmQ" data-video-id="vyTeLuzjRmQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Chaos Engine video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/vyTeLuzjRmQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Chaos Engine Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/vyTeLuzjRmQ" data-video-id="vyTeLuzjRmQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=vyTeLuzjRmQ" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Law of the West (1985) – Commodore 64 Narrative Western Showdown Released in 1985 by Accolade and designed by Alan Miller, Law of the West is one of the earliest video games to place storytelling and your choices at the centre of the experience. Rather than relying on constant action, it delivers tension through conversation, decision-making, and the threat of sudden violence. Set in the frontier town of Gold Gulch, you play the role of the local sheriff, dealing with a rotating cast of townsfolk throughout a single in-game day. Each encounter unfolds through branching dialogue choices, where your words can calm a situation, provoke hostility, or trigger a deadly gunfight. Every response matters, and no two playthroughs feel quite the same. Gameplay blends slow, deliberate interaction with fast-draw shootouts that demand sharp reflexes.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Law Of The West C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/B9Q6ctj9jr4" data-video-id="B9Q6ctj9jr4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Law Of The West video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/B9Q6ctj9jr4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Law Of The West C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/B9Q6ctj9jr4" data-video-id="B9Q6ctj9jr4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=B9Q6ctj9jr4" target="_blank" rel="noopener">Open on YouTube</a>

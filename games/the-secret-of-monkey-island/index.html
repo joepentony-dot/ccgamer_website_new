@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Secret of Monkey Island (1990) – Commodore Amiga Point-and-Click Pirate Adventure Released in 1990 by Lucasfilm Games, The Secret of Monkey Island is a landmark point-and-click adventure set in a playful, offbeat Caribbean during the golden age of piracy. You follow the misadventures of Guybrush Threepwood, an eager but hopelessly inexperienced wannabe pirate determined to prove himself on Melee Island. Gameplay revolves around exploration, puzzle-solving, and sharp dialogue choices, with challenges built around logic, experimentation, and comedy rather than punishment. The game’s design encourages curiosity, rewarding players who talk to everyone, try everything, and embrace its absurd sense of humour. Powered by the SCUMM engine, the Amiga version delivers expressive visuals and a rich MIDI soundtrack that perfectly supports the game’s tone. Memorable characters, clever writing, and inventive puzzles combine to create an experience that feels effortlessly timeless.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Secret Of Monkey Island Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/tSafH6osy50" data-video-id="tSafH6osy50"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Secret Of Monkey Island video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/tSafH6osy50/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Secret Of Monkey Island Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/tSafH6osy50" data-video-id="tSafH6osy50"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=tSafH6osy50" target="_blank" rel="noopener">Open on YouTube</a>

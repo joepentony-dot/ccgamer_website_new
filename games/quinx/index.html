@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Quinx (1984) – Commodore 64 Surreal Single-Screen Arcade Oddity Released in 1984 by Supersoft for the Commodore 64, Quinx is a bizarre and memorable arcade game built around a dreamlike premise. You take on the role of Arthur Crown, a student at the London School of Economics, trapped in a nightmare where ink worms threaten to consume the very paper he stands on. Gameplay takes place on a single screen viewed from above, with worms emerging from the edges and leaving trails of ink as they move. The goal is simple but demanding: squash the worms before they hatch. If a worm survives too long, it destroys part of the paper, steadily shrinking the playable area and pushing the game toward failure. The challenge comes from speed and positioning, as multiple worms can appear at once and hesitation quickly leads to irreversible damage.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Quinx C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qgA5R-JZrKo" data-video-id="qgA5R-JZrKo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Quinx video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qgA5R-JZrKo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Quinx C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qgA5R-JZrKo" data-video-id="qgA5R-JZrKo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qgA5R-JZrKo" target="_blank" rel="noopener">Open on YouTube</a>

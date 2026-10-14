@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Psycho Santa (1993) – Commodore Amiga Festive Shoot-’Em-Up mayhem Released in 1993 by Bullfrog Productions as a coverdisk title for The One Amiga magazine, Psycho Santa is a playful horizontal-scrolling shoot-’em-up with a distinctly festive twist. Players take control of a heavily armed Santa Claus battling waves of mischievous elves and other Christmas-themed enemies in a mission to save the holiday season. The gameplay sticks to classic side-scrolling shooter conventions, focusing on fast reactions, enemy patterns, and screen control. Levels are compact and action-packed, making the game easy to jump into while still delivering satisfying arcade-style challenge. Psycho Santa stands out thanks to its colourful presentation and tongue-in-cheek tone. The experience is boosted by a lively ProTracker soundtrack by Kevin Earl, which adds energy and personality to the festive mayhem. Although short in length, Psycho Santa became a memorable Amiga oddity, fondly remembered for its humour, polish, and seasonal novelty.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Psycho Santa Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XNqkPfF3NUk" data-video-id="XNqkPfF3NUk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Psycho Santa video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/XNqkPfF3NUk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Psycho Santa Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/XNqkPfF3NUk" data-video-id="XNqkPfF3NUk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=XNqkPfF3NUk" target="_blank" rel="noopener">Open on YouTube</a>

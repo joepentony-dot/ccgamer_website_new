@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Speed King (1986) – Commodore 64 Motorcycle Racing Classic Originally released on the Commodore 64 by Digital Integration in 1985 and reissued by Mastertronic in 1986, Speed King is a fast third-person motorcycle racing game created by Mervyn J. Estcourt. Starting at the back of a 20-rider field, you have to fight your way through the pack across ten famous racing circuits while managing six manual gears and trying to keep the bike on the track. Speed King offers three skill levels and a choice of two, four or six laps, with circuits including Silverstone, Brands Hatch, Monza and Daytona. You can even preview a circuit at high speed or practise it without the other riders before committing yourself to the race. The bike can theoretically reach 250 mph, but getting anywhere near that speed without making a mess of the next corner takes some practice.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Speed King C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PS2noS9kzoQ" data-video-id="PS2noS9kzoQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Speed King video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PS2noS9kzoQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Speed King C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PS2noS9kzoQ" data-video-id="PS2noS9kzoQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PS2noS9kzoQ" target="_blank" rel="noopener">Open on YouTube</a>

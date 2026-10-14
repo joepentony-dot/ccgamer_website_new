@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dragonstone (1994) – Commodore Amiga fantasy action adventure from Core Design Dragonstone on the Amiga is a colourful overhead action adventure that began life as a follow-up to Darkmere before developing into something quite different. Core Design moved away from Darkmere’s gloomy isometric approach towards a brighter Zelda-style perspective, mixing sword combat, exploration, conversations, item puzzles and light RPG elements into a fantasy quest spread across seven worlds. In this Dragonstone Amiga review and gameplay video, I revisit the forests, villages and stranger corners of the game while looking at that enormous dragon-shaped interface, the TALK, USE and EXAMINE system, and the unusual Psychic Charge combat. Hammering the fire button gives you weaker attacks; hold it down and you can build towards stronger sword strikes or launch a Psychic Bolt. That becomes fairly important once the wildlife starts fighting back.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dragonstone Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/nNikuNhBcic" data-video-id="nNikuNhBcic"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dragonstone video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/nNikuNhBcic/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dragonstone Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/nNikuNhBcic" data-video-id="nNikuNhBcic"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=nNikuNhBcic" target="_blank" rel="noopener">Open on YouTube</a>

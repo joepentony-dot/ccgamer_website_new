@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Tooth Invaders (1982) – Commodore 64 Educational Action Arcade Released in 1982 by Commodore International for the Commodore 64, Tooth Invaders is an educational action game created in collaboration with the American Dental Association and Camelot Marketing Group. Developed as part of National Dental Month, the game set out to teach good dental hygiene through fast-paced, arcade-style gameplay. You take control of Plaqueman, tasked with cleaning a mouth containing eight teeth by removing plaque and stopping the notorious plaque germ D. K. Using a toothbrush, toothpaste, and dental floss, you must carefully navigate between teeth, clean surfaces thoroughly, and avoid direct contact with D. K. , which costs a life. Each tooth must be fully cleaned to prevent decay, and once completed it becomes immune to further plaque. Successfully cleaning a tooth also creates a brief opportunity to defeat D.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Tooth Invaders C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/3g9vxI_xd6o" data-video-id="3g9vxI_xd6o"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Tooth Invaders video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/3g9vxI_xd6o/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Tooth Invaders C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/3g9vxI_xd6o" data-video-id="3g9vxI_xd6o"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=3g9vxI_xd6o" target="_blank" rel="noopener">Open on YouTube</a>

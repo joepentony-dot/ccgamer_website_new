@@ -404,11 +404,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dan Dare II: Mekon’s Revenge (1988) – Commodore 64 Sci-Fi Action Adventure Released in 1988, Dan Dare II: Mekon’s Revenge is a side-scrolling action-adventure for the Commodore 64 developed by Gang of Five and published by Virgin Games. As the second entry in the Dan Dare series, it shifts away from traditional platforming and embraces a more action-driven design inspired by the classic Eagle comic universe. You can take control of either Dan Dare or his nemesis, the Mekon, exploring the interior of a vast Treen spaceship using a flying motorcycle. Objectives differ depending on the chosen character, with Dan attempting to destroy SuperTreen incubation capsules while the Mekon works to activate and launch them. Combat, exploration, and navigation are tightly interwoven throughout the ship’s maze-like corridors. The game unfolds across four distinct areas, each packed with hazards such as force fields, gravity traps, and moving platforms.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dan Dare II: Mekon&#39;s Revenge C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Dc42gIcN8uU" data-video-id="Dc42gIcN8uU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dan Dare II: Mekon&#39;s Revenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Dc42gIcN8uU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dan Dare II: Mekon&#39;s Revenge C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Dc42gIcN8uU" data-video-id="Dc42gIcN8uU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Dc42gIcN8uU" target="_blank" rel="noopener">Open on YouTube</a>

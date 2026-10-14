@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sid Meier’s Pirates! (1987) – Commodore 64 Open-World Pirate Adventure Released in 1987 by MicroProse and designed by Sid Meier, Sid Meier’s Pirates! is one of the most ambitious and influential games ever released on the Commodore 64. Set across the Caribbean during the golden age of piracy, it drops you into a living world shaped by exploration, politics, and personal ambition. You take command of a pirate ship and choose how to carve out your legend, whether that means serving European powers, turning rogue against everyone, or switching allegiances as fortunes change. Naval battles, trading, treasure hunting, and information gathering all feed into a constantly shifting political landscape that makes every playthrough feel different. Beyond sailing and combat, Pirates! layers in memorable side activities including sword duels, dancing at governors’ balls to gain favour, rescuing lost family members, and uncovering buried treasure maps.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Sid Meier&#39;s Pirates! C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/s6erJrCw-dY" data-video-id="s6erJrCw-dY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Sid Meier&#39;s Pirates! video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/s6erJrCw-dY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Sid Meier&#39;s Pirates! C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/s6erJrCw-dY" data-video-id="s6erJrCw-dY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=s6erJrCw-dY" target="_blank" rel="noopener">Open on YouTube</a>

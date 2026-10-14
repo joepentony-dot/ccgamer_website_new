@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Army Moves (1987) – Commodore 64 Scrolling Military Action Shooter Released in 1987 for the Commodore 64, Army Moves is a tough scrolling action shooter developed by Dinamic Software and published by Imagine Software. As the first entry in the famous Moves trilogy, it tasks you with a dangerous military mission to recover stolen secret documents from heavily guarded enemy territory. The game is split into two distinct gameplay phases across seven levels. The opening stages place you in control of a jeep and later a helicopter, navigating hostile landscapes packed with enemy vehicles, gun emplacements, and relentless fire. These sections demand sharp reflexes, precise positioning, and constant awareness as threats attack from all directions. The final stages switch perspective to on-foot action, transforming the game into a tense platform shooter. You must infiltrate enemy bases, dodge grenades, avoid traps, and carefully time jumps while pushing deeper into fortified areas.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Army Moves C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NuLjSVc9ms8" data-video-id="NuLjSVc9ms8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Army Moves video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NuLjSVc9ms8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Army Moves C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NuLjSVc9ms8" data-video-id="NuLjSVc9ms8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NuLjSVc9ms8" target="_blank" rel="noopener">Open on YouTube</a>

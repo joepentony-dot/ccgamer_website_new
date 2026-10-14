@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Samurai Warrior: The Battles of Usagi Yojimbo (1988) – Commodore 64 Action Adventure with Moral Choice Released in 1988 for the Commodore 64, Samurai Warrior: The Battles of Usagi Yojimbo is an action-adventure developed by Beam Software and published by Firebird, based on Stan Sakai’s acclaimed comic series. You step into the sandals of Miyamoto Usagi, a wandering rabbit samurai navigating a dangerous world shaped as much by ethics as by steel. Gameplay unfolds in a side-scrolling format, blending sword combat with exploration and interaction. Usagi faces bandits, ninjas, and deceptive enemies who may appear as harmless villagers or monks, requiring constant vigilance and careful judgment during encounters. A defining feature is the game’s karma system. Honorable actions raise Usagi’s standing, while attacking innocents or acting dishonorably reduces it. Let karma fall too low and Usagi is forced into seppuku, bringing the journey to an abrupt end.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Samurai Warrior: The Battles Of Usagi Yojimbo C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/IlOC2IjzVh0" data-video-id="IlOC2IjzVh0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Samurai Warrior: The Battles Of Usagi Yojimbo video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/IlOC2IjzVh0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Samurai Warrior: The Battles Of Usagi Yojimbo C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/IlOC2IjzVh0" data-video-id="IlOC2IjzVh0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=IlOC2IjzVh0" target="_blank" rel="noopener">Open on YouTube</a>

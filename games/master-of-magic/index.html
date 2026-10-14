@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Master of Magic (1985) – Commodore 64 Fantasy Dungeon Action RPG Released in December 1985 by Richard Darling and published by Mastertronic under its M. A. D. label, Master of Magic is a fast-paced dungeon adventure that drops you into a dangerous high-fantasy world of spells, monsters, and maze-like peril. Transported by the mysterious Thelric, your unnamed hero must recover the legendary Amulet of Immortality before being trapped forever. Gameplay blends action-oriented role-playing with constant exploration. You navigate interconnected mazes while battling creatures such as skeletons, bats, and spiders, carefully managing health and magical energy as danger escalates. Progress depends on learning layouts, reacting quickly in combat, and making smart decisions under pressure. The screen layout is clean and functional, combining a live map, text messages, command options, and clear visual representations of enemies and items.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Master Of Magic C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qULomG2bYWo" data-video-id="qULomG2bYWo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Master Of Magic video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qULomG2bYWo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Master Of Magic C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qULomG2bYWo" data-video-id="qULomG2bYWo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qULomG2bYWo" target="_blank" rel="noopener">Open on YouTube</a>

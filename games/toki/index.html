@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Toki (1991) – Commodore 64 Arcade Platformer Monkey Mayhem Released in 1991 for the Commodore 64, Toki is an arcade-style platformer developed by Taito and converted by Ocean Software. You take control of Toki, a man transformed into a monkey by an evil sorcerer, as he battles through hostile worlds to rescue his girlfriend and reclaim his human form. The game focuses on fast, demanding platform action, with Toki firing powerful fireballs, dodging enemies, and navigating dangerous terrain filled with traps and vertical hazards. Despite the hardware limitations, the C64 version delivers a strong sense of momentum and challenge that reflects the spirit of the arcade original. Levels are packed with varied enemy types and large boss encounters that test timing and positioning. Controls are responsive, encouraging aggressive play while still punishing mistakes, keeping the action intense throughout.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Toki C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_2PKs2sHVTE" data-video-id="_2PKs2sHVTE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Toki video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_2PKs2sHVTE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Toki C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_2PKs2sHVTE" data-video-id="_2PKs2sHVTE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_2PKs2sHVTE" target="_blank" rel="noopener">Open on YouTube</a>

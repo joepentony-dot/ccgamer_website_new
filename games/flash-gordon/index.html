@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Flash Gordon (1986) – Commodore 64 Licensed Action Variety Classic Released in 1986 by Icon Design and published by Mastertronic under the Added Dimension label, Flash Gordon delivers three very different gameplay styles in a single budget release. Based on the classic comic strip hero, the game throws you into a sequence of action-packed challenges inspired by Flash’s pulpy sci-fi adventures. The opening stage drops you into a hostile jungle maze where survival depends on navigation, timing, and avoiding deadly creatures while searching for Prince Barin’s cave. This is followed by a one-on-one beat ’em up showdown against Barin himself, demanding precise punches and kicks to progress. The final section switches perspective entirely, placing you on a high-speed rocket cycle in a first-person pursuit of Ming the Merciless. Obstacles, enemy fire, and reflex-driven action bring the game to a dramatic close.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Flash Gordon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GtJ0eKlhZFw" data-video-id="GtJ0eKlhZFw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Flash Gordon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GtJ0eKlhZFw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Flash Gordon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GtJ0eKlhZFw" data-video-id="GtJ0eKlhZFw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GtJ0eKlhZFw" target="_blank" rel="noopener">Open on YouTube</a>

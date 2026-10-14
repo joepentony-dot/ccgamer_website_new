@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Santa&#39;s Xmas Caper is a 1992 Amiga scrolling platform game published by Zeppelin Games, in which Santa must recover lost presents. After his sleigh overturns, the gifts are scattered around Lapland and every present in an area must be collected before he can advance. Santa runs and jumps through snowy stages while avoiding enemies and hazardous objects. He can fire snowballs to freeze opponents temporarily, creating a chance to get past them, while certain pickups help or hinder his progress. Jelly can increase his jumping ability, but contact with dangerous items or enemies can cost a life. A counter shows how many gifts remain in the current area, alongside the score and lives display. The emphasis is on collecting presents and negotiating platforms rather than flying a sleigh in a shooter.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Santa&#39;s Xmas Caper Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9AWjsbjOn3Q" data-video-id="9AWjsbjOn3Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Santa&#39;s Xmas Caper video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9AWjsbjOn3Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Santa&#39;s Xmas Caper Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9AWjsbjOn3Q" data-video-id="9AWjsbjOn3Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9AWjsbjOn3Q" target="_blank" rel="noopener">Open on YouTube</a>

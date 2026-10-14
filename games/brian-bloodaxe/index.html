@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Brian Bloodaxe (1985) – Commodore 64 Viking Action Adventure Released in 1985 by The Edge for the Commodore 64, Brian Bloodaxe is a Viking-themed action adventure developed by Charles Bystram, blending exploration, puzzles, and humour-inspired gameplay. You take control of Brian, a helmet-wearing Viking hero, as he explores a large multi-screen world filled with castles, forests, and underground passages. Progress depends on collecting and using items, overcoming hazards, and navigating interconnected areas. Unlike traditional linear platformers, the game focuses on exploration and memory-based navigation. You are encouraged to learn the map layout, revisit locations, and plan routes carefully. Visually, the Commodore 64 version features colourful character sprites, smoothly scrolling screens, and atmospheric SID music that enhances the medieval setting. Its humorous presentation and unusual fake loading screen help set it apart from similar titles.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Brian Bloodaxe C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pxU5N277UHw" data-video-id="pxU5N277UHw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Brian Bloodaxe video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pxU5N277UHw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Brian Bloodaxe C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pxU5N277UHw" data-video-id="pxU5N277UHw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pxU5N277UHw" target="_blank" rel="noopener">Open on YouTube</a>

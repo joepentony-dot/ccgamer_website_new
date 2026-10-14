@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ A Question of Sport (1988) – Commodore 64 Sports Quiz Show Classic Released in 1988 by Elite Systems for the Commodore 64, A Question of Sport brings the long-running BBC television quiz show to home computers. You assemble teams of sporting experts and compete across a full studio-style quiz format, testing knowledge rather than reflexes. The game follows the structure of the TV show closely, featuring rounds such as Picture Board, Mystery Personality, Home or Away, What Happened Next? , Quickfire, and a final Picture Board. Each team is made up of three personalities, chosen from a wider pool, with each member specialising in a different sport. Picking the right balance becomes part of the strategy. Gameplay uses a point-and-click interface to select answers and interact with the quiz rounds. While the Commodore 64 version lacks some of the digitised presentation found on later 16-bit systems, it keeps the core mechanics intact and supports both single-player and competitive two-player matches.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="A Question Of Sport C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7u3SudOJymE" data-video-id="7u3SudOJymE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play A Question Of Sport video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7u3SudOJymE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="A Question Of Sport C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7u3SudOJymE" data-video-id="7u3SudOJymE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7u3SudOJymE" target="_blank" rel="noopener">Open on YouTube</a>

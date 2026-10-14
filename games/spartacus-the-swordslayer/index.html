@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spartacus: The Swordslayer (1988) – Commodore 64 Gladiator Fighting Action Released in 1988 by Players Software and developed by Ian Potts, Spartacus: The Swordslayer is a side-view fighting game that drops you into the brutal arenas of ancient Rome. You take on the role of Spartacus, battling your way through a series of deadly one-on-one encounters in pursuit of freedom. Combat focuses on sword-and-shield fighting, with careful timing needed to attack, block, and reposition against increasingly tough opponents. The game stands out for its large character sprites and varied enemy types, ranging from rival gladiators to Roman soldiers determined to bring your rebellion to an end. To break up the arena duels, Spartacus throws in unusual set pieces such as dodging volleys of arrows and surviving an encounter with a swooping eagle. These moments add variety, even if the controls and collision detection can feel unforgiving at times.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spartacus: The Swordslayer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jXkOaDR9Zrw" data-video-id="jXkOaDR9Zrw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spartacus: The Swordslayer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jXkOaDR9Zrw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spartacus: The Swordslayer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jXkOaDR9Zrw" data-video-id="jXkOaDR9Zrw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jXkOaDR9Zrw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Last Ninja 2: Back with a Vengeance (1988) – Commodore 64 Isometric Action-Adventure Classic Released in 1988 by System 3 for the Commodore 64, Last Ninja 2: Back with a Vengeance boldly shifts the series from feudal Japan to the streets of modern-day New York City. Armakuni is torn from his own time and dropped into an urban battleground where his ancient enemy Kunitoki has rebuilt his power in a new era. The game expands on the original’s isometric design, letting you move freely in eight directions while navigating locations such as Central Park, city streets, sewers, and hidden laboratories. Progress depends on careful exploration, precise movement, and understanding how each area connects to the next. Combat plays a major role, with Armakuni using shuriken, nunchaku, staffs, and other tools to overcome enemies. Some foes require specific weapons, encouraging tactical thinking rather than brute force.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Last Ninja 2: Back With A Vengeance C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KfTlU0ikYc8" data-video-id="KfTlU0ikYc8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Last Ninja 2: Back With A Vengeance video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KfTlU0ikYc8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Last Ninja 2: Back With A Vengeance C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KfTlU0ikYc8" data-video-id="KfTlU0ikYc8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KfTlU0ikYc8" target="_blank" rel="noopener">Open on YouTube</a>

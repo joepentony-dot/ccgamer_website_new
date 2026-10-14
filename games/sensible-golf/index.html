@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sensible Golf (1995) – Amiga Sports | Retro Review Sensible Golf (1995) is a 2D arcade-style golf game developed by Sensible Software and published by Virgin Interactive for the Commodore Amiga. Featuring the familiar “pin-like” characters seen in Sensible Soccer and Cannon Fodder, the game delivers a fast-paced, no-frills take on golf that focuses on fun over realism. Gameplay is built around a simple three-click system — aim, set power and curve, then strike — with automatic club suggestions and slope indicators to help guide each shot. Rather than simulating wind and terrain height, the game concentrates on hazards such as water and sand across 25 imaginative courses, totalling 72 holes. This makes it ideal for quick rounds, full seasons, or tournament play with large groups. Despite its charm, Sensible Golf received mixed reviews at release, including a 66% score from Amiga Power, and proved to be one of Sensible Software’s weaker commercial performers.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Sensible Golf Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/vSIQeUjGwvs" data-video-id="vSIQeUjGwvs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Sensible Golf video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/vSIQeUjGwvs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Sensible Golf Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/vSIQeUjGwvs" data-video-id="vSIQeUjGwvs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=vSIQeUjGwvs" target="_blank" rel="noopener">Open on YouTube</a>

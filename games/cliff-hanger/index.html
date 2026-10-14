@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cliff Hanger (1984) – Commodore 64 Cartoon Trap-Based Action Puzzle Released in 1984 by New Generation Software, Cliff Hanger is a comedic action-adventure for the Commodore 64 inspired by classic cartoon slapstick, particularly the antics of Wile E. Coyote and the Road Runner. You take control of the cowboy hero Cliff Hanger as he attempts to outwit the villainous El Bandito across a series of carefully staged encounters. Each level is presented like a film set, with success depending on precise timing and positioning rather than reflex-heavy action. You must move Cliff into the correct spot and trigger traps such as anvils, boulders, cannons, and other contraptions at exactly the right moment to stop El Bandito in his tracks. The gameplay relies heavily on experimentation and learning through failure, as mistimed actions often lead to humorous consequences.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cliff Hanger C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wiYWkSJ5E48" data-video-id="wiYWkSJ5E48"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cliff Hanger video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wiYWkSJ5E48/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cliff Hanger C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wiYWkSJ5E48" data-video-id="wiYWkSJ5E48"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wiYWkSJ5E48" target="_blank" rel="noopener">Open on YouTube</a>

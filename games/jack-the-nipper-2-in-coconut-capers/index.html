@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Jack the Nipper II: In Coconut Capers (1987) – Commodore 64 Platform Puzzle Jungle Adventure Released in 1987 by Gremlin Graphics for the Commodore 64, Jack the Nipper II: In Coconut Capers continues the misadventures of gaming’s most troublesome toddler. This time, Jack parachutes into the African jungle, determined to cause mayhem while staying out of reach of his relentlessly chasing father. The game spans a huge 192 screens packed with obstacles, enemies, and environmental puzzles. Jack can climb ropes, swing from vines, and hurl coconuts to distract or defeat enemies, with progress relying on exploration, timing, and problem-solving rather than simple reflexes. A key feature is the Naughty-O-Meter, which tracks how much mischief Jack causes. Creative pranks and clever interactions increase your score, encouraging experimentation and rewarding those who embrace Jack’s mischievous nature.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Jack The Nipper II: In Coconut Capers C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jo5q4cbp_xA" data-video-id="jo5q4cbp_xA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Jack The Nipper II: In Coconut Capers video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jo5q4cbp_xA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Jack The Nipper II: In Coconut Capers C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jo5q4cbp_xA" data-video-id="jo5q4cbp_xA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jo5q4cbp_xA" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Countdown to Meltdown (1984) – Commodore 64 3D Sci-Fi Action Adventure Classic Released in 1984 by Creative Sparks and published by Mastertronic for the Commodore 64, Countdown to Meltdown is an ambitious first-person action-adventure set inside the futuristic Brands Point nuclear facility. Players command a team of androids racing against time to prevent a catastrophic reactor meltdown. The game is presented from a 3D first-person perspective, placing players inside a vast maze of corridors, lifts, and control rooms. With over 2,000 interconnected locations, exploration, memory, and careful navigation are essential to survival and progress. Gameplay focuses on strategic planning and resource management. Players must repair broken elevators, disable security systems, and overcome automated defences while switching between multiple androids, each with unique strengths and limitations. Every decision impacts the race against the clock. Limited energy supplies, hostile environments, and malfunctioning machinery add constant pressure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Countdown To Meltdown C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NoMSnQ4cu2I" data-video-id="NoMSnQ4cu2I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Countdown To Meltdown video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NoMSnQ4cu2I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Countdown To Meltdown C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NoMSnQ4cu2I" data-video-id="NoMSnQ4cu2I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NoMSnQ4cu2I" target="_blank" rel="noopener">Open on YouTube</a>

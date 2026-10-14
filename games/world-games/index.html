@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ World Games (1986) – Commodore 64 Global Sports Arcade Showcase Released in 1986 by Epyx, World Games is part of the legendary Games series and shifts the focus from Olympic stadiums to traditional sports from around the globe. Each event is themed around a different country, giving the competition a distinctive international flavour. You compete across eight varied disciplines, including weightlifting, cliff diving, slalom skiing, log rolling, bull riding, caber toss, barrel jumping, and sumo wrestling. Every event demands its own mix of timing, rhythm, and control, keeping the gameplay fresh and unpredictable. Presentation plays a big role, with travelogue-style introductions and national anthems setting the scene before each contest. The game supports up to eight players, making it a brilliant multiplayer experience and a staple for competitive play sessions. Praised for its variety, polish, and replay value, World Games stands as one of Epyx’s strongest releases on the Commodore 64.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="World Games C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/d9Q-TzNAVvo" data-video-id="d9Q-TzNAVvo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play World Games video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/d9Q-TzNAVvo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="World Games C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/d9Q-TzNAVvo" data-video-id="d9Q-TzNAVvo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=d9Q-TzNAVvo" target="_blank" rel="noopener">Open on YouTube</a>

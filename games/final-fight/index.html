@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Final Fight (1991), developed by Capcom and ported to the Amiga by Creative Materials under U. S. Gold, is the home-computer adaptation of the classic 1989 arcade beat ’em up. You can choose from two of the three main heroes — Mike Haggar, Cody, and Guy — as they battle through Metro City to defeat the Mad Gear gang and rescue Haggar’s daughter, Jessica. Gameplay follows traditional side-scrolling brawler mechanics, featuring punches, kicks, throws, jumping attacks, and waves of on-screen enemies. However, the Amiga conversion is notably less fluid than the arcade original. Animation frames are reduced, certain sections are missing, and performance issues such as slowdown affect the pacing. Some iconic stages and elements are simplified or removed, including parts of the Industrial Area and the elevator sequence. Graphically, the game attempts to preserve the arcade’s pixel-art style, but lacks polish and smoothness.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Final Fight Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/r2v9K15Clr4" data-video-id="r2v9K15Clr4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Final Fight video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/r2v9K15Clr4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Final Fight Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/r2v9K15Clr4" data-video-id="r2v9K15Clr4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=r2v9K15Clr4" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Alcatraz (1992) – Commodore Amiga Stealth Action Shooter Classic Released in 1992 by Infogrames for the Commodore Amiga, Alcatraz is a fast-paced action-shooter developed by 221B Software Developments that blends side-scrolling combat with first-person stealth gameplay. You take on the role of a U. S. Navy SEAL sent to storm Alcatraz prison, destroy hidden weapons caches, and capture the criminal mastermind controlling the operation. The game is divided into multiple levels that alternate between outdoor run-and-gun sections and indoor infiltration missions. Outdoor stages feature heavy firepower such as flamethrowers, machine guns, and grenades, while indoor sections focus on radar-guided navigation and precision shooting. This dual-perspective design creates constant variety, requiring you to adapt your tactics between fast reflex-based combat and careful stealth-based movement. Alcatraz supports both single-player and two-player split-screen cooperative play, allowing friends to tackle missions together and coordinate their strategies.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Alcatraz Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ipx38rLkoTw" data-video-id="ipx38rLkoTw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Alcatraz video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ipx38rLkoTw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Alcatraz Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ipx38rLkoTw" data-video-id="ipx38rLkoTw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ipx38rLkoTw" target="_blank" rel="noopener">Open on YouTube</a>

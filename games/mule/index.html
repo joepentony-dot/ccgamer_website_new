@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ M. U. L. E. (1983) – Commodore 64 Multiplayer Strategy Economic Classic Released in 1983 by Ozark Softscape and published by Electronic Arts, M. U. L. E. is a landmark multiplayer strategy game designed by Danielle Bunten (credited as Dan Bunten). Set on the fictional planet Irata, you all become rival colonists competing to build a thriving economy through careful planning, negotiation, and cooperation. Gameplay is split between two contrasting phases. In the real-time auction, you bid aggressively for plots of land, while the turn-based phase focuses on managing resources using M. U. L. E. s to produce food, energy, smithore, and crystite. Balancing production with market demand is essential, especially as unexpected events such as pirate raids and meteor showers disrupt even the best-laid plans. Supporting up to four players, M. U. L.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="M.U.L.E. C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/eKrtrWzuEXQ" data-video-id="eKrtrWzuEXQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play M.U.L.E. video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/eKrtrWzuEXQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="M.U.L.E. C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/eKrtrWzuEXQ" data-video-id="eKrtrWzuEXQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=eKrtrWzuEXQ" target="_blank" rel="noopener">Open on YouTube</a>

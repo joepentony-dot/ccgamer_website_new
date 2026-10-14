@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bruce Lee (1984) – Commodore 64 Martial Arts Platform Action Classic Released in 1984 by Datasoft, Bruce Lee is a highly regarded action-platformer for the Commodore 64 that blends precise platforming with beat ’em up combat. Designed by Ron J. Fortier, with graphics by Kelly Day and music by John A. Fitzpatrick, the game draws inspiration from martial arts cinema while delivering tight, skill-based gameplay. You guide Bruce Lee through a series of 20 single-screen rooms, collecting lanterns to unlock new areas on the path to confronting an evil wizard. Each room is carefully designed, combining vertical movement, environmental hazards, and enemy encounters that demand timing and control rather than brute force. Bruce is constantly pursued by two iconic foes: the agile Ninja and the powerful Green Yamo, a sumo wrestler. Combat revolves around punches and flying kicks, while you must also contend with electrified walls, collapsing floors, and explosive traps that punish careless movement.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bruce Lee C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/eLOZSWaAtAI" data-video-id="eLOZSWaAtAI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bruce Lee video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/eLOZSWaAtAI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bruce Lee C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/eLOZSWaAtAI" data-video-id="eLOZSWaAtAI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=eLOZSWaAtAI" target="_blank" rel="noopener">Open on YouTube</a>

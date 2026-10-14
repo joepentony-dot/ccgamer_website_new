@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Rocky Horror Show (1985) – Commodore 64 Licensed Musical Adventure Released in 1985 by CRL Group, The Rocky Horror Show is a side-scrolling adventure game for the Commodore 64 based on Richard O’Brien’s cult musical. You are dropped into the bizarre world of Dr. Frank-N-Furter’s castle, where nothing is quite as it seems and danger lurks around every corner. You can choose to play as either Brad or Janet, with the goal of rescuing your partner after they’ve been turned to stone by the Medusa machine. Progress requires careful exploration of the castle, collecting the scattered parts of the de-Medusa machine and reassembling it in the theatre room to reverse the petrification. Gameplay focuses on puzzle-solving and navigation, with keys, force fields, and hostile characters standing in your way. Familiar faces from the musical—including Riff-Raff, Magenta, Columbia, Eddie, and Frank-N-Furter himself—add constant pressure as you move through the castle.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Rocky Horror Show C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/H5SSC2GAobk" data-video-id="H5SSC2GAobk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Rocky Horror Show video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/H5SSC2GAobk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Rocky Horror Show C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/H5SSC2GAobk" data-video-id="H5SSC2GAobk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=H5SSC2GAobk" target="_blank" rel="noopener">Open on YouTube</a>

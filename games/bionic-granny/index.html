@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bionic Granny (1984) – Commodore 64 Arcade Action Quirky Cult Classic Released in 1984 by David and Richard Darling and published by Mastertronic for the Commodore 64, Bionic Granny is one of the most unconventional arcade-style titles of the early home computer era. You take control of an elderly woman with bionic enhancements, tasked with chasing down schoolchildren after class and tapping them with her walking stick. The game is presented from a top-down perspective, with the screen divided into three lanes where children walk steadily across the playfield. You move left and right along the bottom of the screen, positioning Granny to intercept each child at the right moment. Timing and positioning are essential, as you must also avoid lollipops thrown by the crossing guard, which can cost lives and interrupt progress. The simple control scheme keeps the focus on reflexes and rhythm rather than complex mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bionic Granny C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/TRqiMDH-dhk" data-video-id="TRqiMDH-dhk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bionic Granny video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/TRqiMDH-dhk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bionic Granny C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/TRqiMDH-dhk" data-video-id="TRqiMDH-dhk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=TRqiMDH-dhk" target="_blank" rel="noopener">Open on YouTube</a>

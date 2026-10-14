@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blood ’n Guts (1986) – Commodore 64 Barbarian Sports Party Madness Released in 1986 by Greve Graphics and published by American Action for the Commodore 64, Blood ’n Guts is a multi-event sports game set in a ridiculous barbarian fantasy world where brute strength, timing, and sheer nonsense rule the day. You choose from four grizzled competitors—Knorr, Hawk, Nop, and Dog—and compete across ten wildly varied events that parody traditional athletics. These include tug-of-war, tower jumping, rock rolling, beer drinking, axe throwing, pole fighting, arm wrestling, tightrope walking, and other tongue-in-cheek challenges that mix skill with slapstick humour. Each event relies on precise joystick movement and timing, keeping the action fast and competitive while constantly switching gameplay styles. The constant variety helps maintain momentum and makes the game particularly well suited to multiplayer sessions and score-chasing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blood &#39;N Guts C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KC5WC4_ARHI" data-video-id="KC5WC4_ARHI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blood &#39;N Guts video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KC5WC4_ARHI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blood &#39;N Guts C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KC5WC4_ARHI" data-video-id="KC5WC4_ARHI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KC5WC4_ARHI" target="_blank" rel="noopener">Open on YouTube</a>

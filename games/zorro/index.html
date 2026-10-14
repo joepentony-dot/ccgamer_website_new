@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zorro (1985) – Commodore 64 Swashbuckling Cinematic Adventure Released in 1985 by U. S. Gold and developed by Datasoft, Zorro brings the legendary masked hero to the Commodore 64 in a stylish action-adventure inspired by classic swashbuckling cinema. Created by James Garon, the game reflects Datasoft’s distinctive approach to licensed titles, placing atmosphere and presentation front and centre. Set in an evocative vision of Old California, you guide Zorro through pueblo towns, underground caverns, dusty streets, and candle-lit catacombs. Progress is driven by exploration and environmental awareness rather than constant combat, with each location feeling like a carefully framed scene from a graphic novel. The game’s visual design is one of its strongest features, with large, expressive sprites and period-inspired architecture giving the world a strong sense of identity. This is reinforced by the soundtrack, including a memorable rendition of Cielito Lindo, which adds a distinctly Latin flavour to the experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zorro C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/BihVmKwU79U" data-video-id="BihVmKwU79U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zorro video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/BihVmKwU79U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zorro C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/BihVmKwU79U" data-video-id="BihVmKwU79U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=BihVmKwU79U" target="_blank" rel="noopener">Open on YouTube</a>

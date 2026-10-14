@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Milk Race (1987) – Commodore 64 Arcade Cycling Simulation Across Britain Released in 1987, Milk Race is a cycling simulation for the Commodore 64 developed by Icon Design and published by Mastertronic. Designed by Phil Berry and Stuart Ruecroft, with music by David Whittaker, the game is based on the famous British Milk Race, now known as the Tour of Britain. Despite its budget price, it delivers a surprisingly deep and energetic sports experience. You take control of a cyclist competing in a gruelling 1,000-mile race across England. Gameplay focuses on maintaining speed, managing stamina, avoiding hazards such as potholes and rival riders, and collecting milk bottles to restore energy. Each stage demands concentration as the pace rarely lets up. A key mechanic is gear management, with 12 gears available to adapt to terrain and race conditions.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Milk Race C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/bfDXvfVfqTc" data-video-id="bfDXvfVfqTc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Milk Race video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/bfDXvfVfqTc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Milk Race C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/bfDXvfVfqTc" data-video-id="bfDXvfVfqTc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=bfDXvfVfqTc" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Celtic Legends (1991) – Commodore Amiga Turn-Based Fantasy Strategy Classic Released in 1991 by Ubi Soft for the Commodore Amiga, Celtic Legends is a richly detailed turn-based strategy game set in the mystical world of Celtica. You take on the role of the sorcerer-general Eskel, waging a magical war against his rival Sogrom across a chain of 23 unique islands, each offering distinct terrain and tactical challenges. Gameplay is built around hexagonal battlefields where careful positioning, resource management, and spellcasting are essential for success. You summon mythical creatures, deploy armies, and unleash powerful magic in order to weaken enemy forces and secure control of each island. Progression relies on long-term planning and adaptive tactics, as every decision affects future encounters. Choosing when to attack, defend, or invest in magical abilities can determine the outcome of extended campaigns, rewarding thoughtful and patient play.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Celtic Legends Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/gXAWlG6wdeg" data-video-id="gXAWlG6wdeg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Celtic Legends video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/gXAWlG6wdeg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Celtic Legends Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/gXAWlG6wdeg" data-video-id="gXAWlG6wdeg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=gXAWlG6wdeg" target="_blank" rel="noopener">Open on YouTube</a>

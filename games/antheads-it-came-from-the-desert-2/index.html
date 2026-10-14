@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Antheads: It Came from the Desert II (1990) – Commodore Amiga Cinematic Sci-Fi Adventure Released in 1990 by Cinemaware, Antheads: It Came from the Desert II is a direct sequel to the cult classic It Came from the Desert, pushing the story five years into a darker, more unsettling future. The once-quiet town of Lizard Breath is again under threat—this time from townsfolk mutating into terrifying ant-headed creatures. Players step into the role of Brick Nash, now a war veteran turned truck driver, drawn back into the mystery as the town unravels. The game retains Cinemaware’s signature blend of real-time exploration, dialogue-driven encounters, and action sequences, all unfolding under a strict 15-day countdown that keeps the pressure firmly on. While it reuses much of the original game’s structure and assets, Antheads introduces new story beats, locations, and a heavier emphasis on investigation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Antheads: It Came From The Desert II Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QPgBi5vrU4o" data-video-id="QPgBi5vrU4o"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Antheads: It Came From The Desert II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QPgBi5vrU4o/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Antheads: It Came From The Desert II Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QPgBi5vrU4o" data-video-id="QPgBi5vrU4o"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QPgBi5vrU4o" target="_blank" rel="noopener">Open on YouTube</a>

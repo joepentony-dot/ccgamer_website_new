@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Thanatos (1987) – Commodore 64 Fantasy Action Dragon Epic Released in 1987 by Durell Software for the Commodore 64, Thanatos casts players as Thanatos the Destroyer, a colossal green dragon unleashed across a corrupted fantasy land. Your mission is to rescue the sorceress Eros, carry her safely across hostile terrain, and protect her as she performs the spell needed to cleanse the world of evil. Gameplay blends side-scrolling action with unusual mechanics that set it apart from typical shooters. Thanatos can breathe fire to incinerate enemies, grab and drop objects to crush foes or remove obstacles, and must carefully balance two vital resources: Flame and Heart. Flame powers attacks and can be replenished by consuming witches, while Heart represents the dragon’s life force and drains through damage or reckless high-speed flight. The game’s presentation is enhanced by parallax-scrolling landscapes and detailed dragon animation, giving the world a strong sense of scale and weight.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Thanatos C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xCBpyb1yYEo" data-video-id="xCBpyb1yYEo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Thanatos video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xCBpyb1yYEo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Thanatos C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xCBpyb1yYEo" data-video-id="xCBpyb1yYEo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xCBpyb1yYEo" target="_blank" rel="noopener">Open on YouTube</a>

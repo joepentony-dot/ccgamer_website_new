@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ System 15000 (1984) – Commodore 64 Hacking Simulation Adventure Classic Released in 1984 by Craig Communications and developed by A. V. S. for the Commodore 64, System 15000 is one of the earliest video games to realistically simulate computer hacking. Designed by Lee Kristofferson, the game places you in the role of a digital investigator tasked with recovering $1.5 million stolen from Comdata by the criminal organisation Realco. Armed with only a phone number and access code, players must dial into remote systems using a simulated modem interface, decipher passwords, analyse data, and bypass security protocols. Gameplay unfolds as a text-based adventure, carefully recreating the experience of early online computing. Dial tones, slow screen rendering, and realistic command prompts mirror the behaviour of 300-baud modems. Progress depends on logical thinking, careful note-taking, and understanding system structures rather than fast reflexes, making it a uniquely cerebral experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="System 15000 C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qzDS9tqMfqg" data-video-id="qzDS9tqMfqg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play System 15000 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qzDS9tqMfqg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="System 15000 C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qzDS9tqMfqg" data-video-id="qzDS9tqMfqg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qzDS9tqMfqg" target="_blank" rel="noopener">Open on YouTube</a>

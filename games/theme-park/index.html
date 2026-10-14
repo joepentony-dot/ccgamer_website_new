@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Theme Park (1994) – Commodore Amiga Theme Park Management Simulation Classic Released in 1994 by Bullfrog Productions and published by Electronic Arts, Theme Park is a landmark construction and management simulation for the Commodore Amiga. As the first title in Bullfrog’s Designer Series, it challenged players to balance creativity, strategy, and business sense in order to build a successful amusement park. Players begin by choosing a country to build in, each presenting different economic conditions and gameplay challenges. From there, the task is to design rides, set entrance fees, manage food and souvenir prices, hire staff, and keep visitors happy—all while staying profitable. Three gameplay modes, Sandbox, Sim, and Full, allow players to tailor the level of complexity to their preferred play style. The depth of the simulation is where Theme Park truly shines.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Theme Park Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/WA4_67KIowQ" data-video-id="WA4_67KIowQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Theme Park video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/WA4_67KIowQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Theme Park Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/WA4_67KIowQ" data-video-id="WA4_67KIowQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=WA4_67KIowQ" target="_blank" rel="noopener">Open on YouTube</a>

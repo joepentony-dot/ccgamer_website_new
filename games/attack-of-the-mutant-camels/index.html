@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Attack of the Mutant Camels (1983) – Commodore 64 Surreal Arcade Shooter Released in 1983 by Jeff Minter’s Llamasoft, Attack of the Mutant Camels is a horizontally scrolling shooter that perfectly sums up Minter’s distinctive style. You pilot a small jet fighter defending Earth from waves of giant mutant camels, grotesquely transformed by hostile aliens and marching relentlessly toward your base. The action is fast and unforgiving. Each camel takes multiple hits to bring down and fires back with streams of deadly projectiles, forcing you to balance aggression with precise movement. Clear a wave and you’re thrown into a hyperspace sequence, dodging high-speed missiles before the next assault begins. What sets the game apart is its unmistakable presentation. Psychedelic visuals, intense pacing, and an absurd premise combine to create an experience that feels chaotic, funny, and surprisingly tense all at once.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Attack Of The Mutant Camels C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jzC3mCzsZcA" data-video-id="jzC3mCzsZcA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Attack Of The Mutant Camels video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jzC3mCzsZcA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Attack Of The Mutant Camels C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jzC3mCzsZcA" data-video-id="jzC3mCzsZcA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jzC3mCzsZcA" target="_blank" rel="noopener">Open on YouTube</a>
