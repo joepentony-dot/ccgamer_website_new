@@ -488,13 +488,9 @@ test('editorial source platform checks reject new C64-versus-Amiga misattributio
   const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
   const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
   const enriched = payload.games || payload;
-  // These pre-existing source defects MUST be corrected before output
-  // regeneration. Listing them here does not mark their copy as approved.
-  const knownEditorialDefects = new Set([
-    'the-immortal',
-    'santas-xmas-caper',
-    'shadow-of-the-beast'
-  ]);
+  // The three former source-platform conflicts were repaired in the
+  // authoritative enrichment source. No exception remains acceptable.
+  const knownEditorialDefects = new Set();
   const unexpected = [];
   for (const game of games) {
     const description = String(enriched[game.slug]?.description || game.description || '')
@@ -508,6 +504,43 @@ test('editorial source platform checks reject new C64-versus-Amiga misattributio
     }
   }
   assert.deepEqual(unexpected, [], 'New source descriptions must not misidentify the game platform');
+});
+
+test('rejects a wrong-platform editorial source before mining later sentences', () => {
+  const game = {
+    title: 'Example Quest', slug: 'example-quest', system: 'C64',
+    year: 1990, publisher: 'Example',
+    description: 'The Amiga edition introduced a lengthy sequence of challenges to players with several interactive puzzles and battle systems that are too detailed for one search description. You collect weapons and explore 350 large screens.'
+  };
+  assert.equal(snippet.buildSnippet(game, game.title),
+    'Example Quest (1990) is a Commodore 64 game published by Example.');
+});
+
+test('six reviewed catalogue-specific copy repairs retain canonical/admin parity', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = payload.games || payload;
+  const reviewed = new Map([
+    ['bounder', /time each bounce and landing/],
+    ['double-dragon-2-the-revenge', /fight your way through gangs/],
+    ['bismark', /outgun the enemy/],
+    ['the-immortal', /1990 Amiga action-adventure/],
+    ['santas-xmas-caper', /1992 Amiga shooter/],
+    ['shadow-of-the-beast', /1990 Commodore 64 side-scrolling platformer/]
+  ]);
+  for (const [slug, expected] of reviewed) {
+    const game = games.find(item => item.slug === slug);
+    assert.ok(game, slug);
+    const record = { ...game, description: enriched[slug]?.description || game.description };
+    const result = snippet.buildSnippet(record, game.title);
+    assert.match(result, expected, slug);
+    assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(result, buildGameSeoPreview(record, snippet).description, slug);
+    assert.ok(result.length <= 155 && /[.!?]$/.test(result), slug);
+  }
 });
 
 test('prefers documented gameplay objectives over shorter editorial filler', () => {
