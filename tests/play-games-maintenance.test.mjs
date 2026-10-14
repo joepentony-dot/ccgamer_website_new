@@ -62,10 +62,11 @@ assert.match(ownerGate, /data-ccg-protected-runtime/);
 assert.match(ownerGate, /runtimeAccessGranted = true/);
 assert.match(ownerGate, /showMemberGate\(/);
 assert.match(ownerGate, /mark\("member-playtester"\)/);
-assert.match(ownerGate, /round2-member-required/);
+assert.match(ownerGate, /development-unavailable/, "public Dungeon holding screen should announce development, not member recruitment");
 assert.match(ownerGate, /mark\("owner-preview"\)/);
 assert.doesNotMatch(ownerGate, /ccg_validate_dungeon_carnage_tester_code/, "Round 2 must not use the retired tester-code path");
-assert.match(ownerGate, /Current Members Only/, "Round 2 denial must explain the closed current-member cohort");
+assert.match(ownerGate, /C64 Dungeon Carnage Is In Development/, "public denied access should announce ongoing game development");
+assert.doesNotMatch(ownerGate, /Current Members Only|SIGN IN AS AN ASSIGNED MEMBER/, "public holding screen must not display obsolete member-only prompts");
 assert.doesNotMatch(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/, "Dungeon access denial must use the member gate rather than the retired redirect");
 
 const hub = read("games/ccg-games/index.html");
