@@ -352,6 +352,34 @@ test('all 666 enriched game records prefer sourced game-specific snippets over g
       complete++;
     }
   }
+  const permittedSourceFallbacks = new Set([
+    'asterix-and-the-magic-cauldron',
+    'barbarian-2-the-dungeon-of-drax',
+    'blagger-goes-to-hollywood',
+    'cybernoid',
+    'davy-king-of-the-wild-frontier',
+    'desert-strike',
+    'donald-ducks-playground',
+    'eye-of-the-beholder-2-the-legend-of-darkmoon',
+    'force-seven',
+    'he-man-and-the-masters-of-the-universe-the-ilearth-stone',
+    'he-man-and-the-masters-of-the-universe-the-movie',
+    'hunchback-at-the-olympics',
+    'indiana-jones-and-the-fate-of-atlantis',
+    'danny-sullivans-indy-heat',
+    'insects-in-space',
+    'antheads-it-came-from-the-desert-2',
+    'monkey-island-2-lechucks-revenge',
+    'montezumas-revenge',
+    'mountie-micks-death-ride',
+    'mr-robot-and-his-robot-factory',
+    'the-new-zealand-story',
+    'nightbreed-the-interactive-movie',
+    'teenage-mutant-hero-turtles-the-coin-op',
+    'tir-na-nog'
+  ]);
+  assert.deepEqual(pending.filter((slug) => !permittedSourceFallbacks.has(slug)), [],
+    'A game not in the previously audited source backlog fell back to generic metadata');
   // Rich editorial text is present, but some source sentences still require
   // manual fact-checked editing; never invent detail to force this to zero.
   assert.ok(complete >= 642, 'Specific source snippets regressed: ' + pending.join(', '));
@@ -451,5 +479,34 @@ test('all existing enriched game snippets avoid accidental standalone initials a
     assert.doesNotMatch(actual, /\.\.$/, game.slug + ' has doubled punctuation');
     assert.equal(actual, routes.buildRuntimeDescription(record, game.title), game.slug);
   }
+});
+
+test('editorial source platform checks reject new C64-versus-Amiga misattribution', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = payload.games || payload;
+  // These pre-existing source defects MUST be corrected before output
+  // regeneration. Listing them here does not mark their copy as approved.
+  const knownEditorialDefects = new Set([
+    'the-immortal',
+    'santas-xmas-caper',
+    'shadow-of-the-beast'
+  ]);
+  const unexpected = [];
+  for (const game of games) {
+    const description = String(enriched[game.slug]?.description || game.description || '')
+      .replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+    const saysC64 = /\b(?:Commodore 64|C64)\b/i.test(description);
+    const saysAmiga = /\bAmiga\b/i.test(description);
+    const isAmiga = /amiga/i.test(String(game.system || game.platform || ''));
+    const conflict = isAmiga ? saysC64 && !saysAmiga : saysAmiga && !saysC64;
+    if (conflict && !knownEditorialDefects.has(game.slug)) {
+      unexpected.push({ slug: game.slug, system: game.system, opening: description });
+    }
+  }
+  assert.deepEqual(unexpected, [], 'New source descriptions must not misidentify the game platform');
 });
 
