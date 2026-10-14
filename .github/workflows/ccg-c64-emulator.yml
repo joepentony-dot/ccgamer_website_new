@@ -107,6 +107,9 @@ jobs:
       - name: Verify Ocean Type 1 CRT hardware mapping and restoration
         run: node tests/ccg-c64-ocean-type1.test.mjs
 
+      - name: Verify original Fun Play, Super Games, C64GS, Dinamic and Zaxxon hardware
+        run: node tests/ccg-c64-legacy-cartridges.test.mjs
+
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
 
