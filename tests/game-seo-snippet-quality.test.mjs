@@ -540,3 +540,29 @@ test('prefers documented gameplay objectives over shorter editorial filler', () 
   }
 });
 
+test('mechanic-specific descriptions for Gribbly Joe Blade and Stifflip', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const data = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = data.games || data;
+  // All three details were checked against source documentation for the C64.
+  const examples = [
+    ['gribblys-day-out', /hops and levitates.*psychic bubble shots/],
+    ['joe-blade-2', /rescue kidnapped civilians.*gangs/],
+    ['stifflip-and-co', /Rubbertronic Ray.*properties of rubber/]
+  ];
+  for (const [slug, matcher] of examples) {
+    const game = games.find((row) => row.slug === slug);
+    assert.ok(game, slug);
+    assert.equal(/amiga/i.test(game.system || game.platform || ''), false, slug);
+    const record = { ...game, description: enriched[slug]?.description || game.description };
+    const description = snippet.buildSnippet(record, game.title);
+    assert.match(description, matcher, slug);
+    assert.equal(description, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(buildGameSeoPreview(record, snippet).description, description, slug);
+    assert.ok(description.length <= 155, slug);
+  }
+});
+
