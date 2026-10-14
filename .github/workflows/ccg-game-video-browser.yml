@@ -1,0 +1,51 @@
+name: CCG Game Video Browser Acceptance
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'games/game.html'
+      - 'js/load-single-game.js'
+      - 'resources/css/games.css'
+      - 'resources/css/game-pages.css'
+      - 'scripts/generate-video-seo.js'
+      - 'tests/browser/game-video-facade-live.py'
+      - '.github/workflows/ccg-game-video-browser.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'games/game.html'
+      - 'js/load-single-game.js'
+      - 'resources/css/games.css'
+      - 'resources/css/game-pages.css'
+      - 'scripts/generate-video-seo.js'
+      - '.github/workflows/ccg-game-video-browser.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ccg-game-video-browser-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  video-facade-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout site candidate
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test library
+        run: python -m pip install 'playwright==1.55.0'
+      - name: Check system browser and syntax
+        run: |
+          google-chrome --version
+          python -m py_compile tests/browser/game-video-facade-live.py
+      - name: Check real Chromium poster and deferred iframe interactions
+        run: python tests/browser/game-video-facade-live.py
