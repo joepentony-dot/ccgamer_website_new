@@ -1,0 +1,12 @@
+﻿{
+    "owner_authorisation":  "Owner typed AUTHORISED for PUBLIC CRT media staging",
+    "gameplay_verified":  false,
+    "catalogue_activated":  false,
+    "original_media_deleted":  false,
+    "examined_crts":  2547,
+    "uploaded_crts":  1530,
+    "unmatched":  963,
+    "already_hosted":  34,
+    "ambiguous":  19,
+    "note":  "Review-stage media only. Do not activate publicly without gameplay acceptance."
+}
