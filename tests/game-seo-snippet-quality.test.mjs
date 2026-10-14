@@ -510,3 +510,33 @@ test('editorial source platform checks reject new C64-versus-Amiga misattributio
   assert.deepEqual(unexpected, [], 'New source descriptions must not misidentify the game platform');
 });
 
+test('prefers documented gameplay objectives over shorter editorial filler', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const data = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enrichments = data.games || data;
+  const examples = new Map([
+    ['olli-and-lissa', /Olli must therefore collect eight ingredients/],
+    ['up-n-down', /collect ten coloured flags/],
+    ['doriath', /16×16 screen map/],
+    ['the-castles-of-dr-creep', /conveyor belts, force fields, switches/],
+    ['dino-eggs', /build and maintain fire to keep Mama Dino at bay/],
+    ['cadaver', /push barrels, collect keys, trigger mechanisms/],
+    ['up-up-and-away', /careful balloon control as the screen scrolls/],
+    ['dan-dare-iii-the-escape', /side-view shooting and multi-directional scrolling/]
+  ]);
+  for (const [slug, expected] of examples) {
+    const game = catalogue.find((item) => item.slug === slug);
+    assert.ok(game, slug);
+    const editorial = enrichments[slug]?.description || game.description;
+    const record = { ...game, description: editorial };
+    const result = snippet.buildSnippet(record, game.title);
+    assert.match(result, expected, slug);
+    assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
+    assert.equal(result, buildGameSeoPreview(record, snippet).description, slug);
+    assert.ok(result.length <= 155 && /[.!?]$/.test(result), slug);
+  }
+});
+
