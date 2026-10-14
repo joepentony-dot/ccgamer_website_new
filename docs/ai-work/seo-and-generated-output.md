@@ -1,5 +1,12 @@
 # SEO and generated output
 
+## Verified-name initial continuation — 14 October 2026, 16:08 BST (unmerged)
+
+- **Verified source `d7c47cc81957b962e71839609cdfbaa75912bbe6`**, superseding source `af20d82ee18bb21d9349d656c560ad4bbf2b7e62` / reviewed tip `5c0d5eb5f0f5b3a1d232ab98f90ed865b45a14f0`. Review P2 `PRRT_kwDOQcoeX86sYLP4` showed structural noun enumeration cannot safely infer names after `control of Site/Base/Bridge/Building`.
+- Removed broad personal-name/context inference and structural-noun enumeration. Letter continuation now requires completion of an explicit, verified name present in the actual editorial corpus or an established source acronym. Initial-only names also require an immediate name introduction, so `control of Site P. Rawling ...` remains two sentences even though P. Rawling is a known author. Unknown initials cannot consume a capitalised next sentence; future source-name additions require explicit verification/regression rather than guesses.
+- Retained all observed person names and US/company/game acronyms, including A.V.S., B.C.'s Quest for Tires, Chase H.Q. and Smash TV. Expanded source/canonical/admin boundary regression includes Site/Base/Bridge/Building and an unlisted structural noun under several prefixes/next-sentence forms. Combined targeted suite **72/72 passed**, diff check passed, actual 666 scan remains **five** changed snippets / **24** known fallbacks against `2e390d15`. No protected-file/runtime/visual change in this follow-up.
+- The following commit documents that exact source; record final-tip SHA through GitHub. Fresh final-tip full qualification, Workers, independent review and authoritative publishing validation are required before expected-head merge, then publisher/Pages/navigation/PWA verification. Other SEO branches remain deferred until #2747 completes.
+
 ## US organisations and labelled name-context repair — 14 October 2026, 15:52 BST (unmerged)
 
 - **Verified source `af20d82ee18bb21d9349d656c560ad4bbf2b7e62`**, superseding reviewed documentation tip `253ad8f2445dc100a76f7a266a4ad07a6891a88d` / source `4c43c7a6bb312665c2086f3c263c7ce9f90feabc`. Review raised P2s `PRRT_kwDOQcoeX86sX39r` (compact U.S. Army/Navy cut as terminal acronym) and `PRRT_kwDOQcoeX86sX390` (control-of Checkpoint/Route enters personal-name context).
