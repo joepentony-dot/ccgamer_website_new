@@ -18,6 +18,45 @@ const TARGET_WORDS = 135;
 const MAX_WORDS = 165;
 
 const overrides = {
+  "asterix-and-the-magic-cauldron": {
+    description: "Asterix and the Magic Cauldron (1986) is a C64 adventure from Melbourne House where Asterix searches for seven pieces of Getafix's cauldron. You guide Asterix around Gaul, with Obelix joining him when he has enough food. Progress depends on careful exploration, collecting keys to unlock new areas, and engaging in one-on-one combat with Roman soldiers and wild boars. The journey crosses the Gaulish village, forests and Roman camps, each requiring navigation around enemies and obstacles. Resource management plays a central role, with food needed to maintain strength and a single vial of magic potion providing temporary invincibility when used wisely.",
+    sources: [
+      "https://www.youtube.com/watch?v=0UpyNEswzgM",
+      "https://www.acmi.net.au/works/100089--asterix-and-the-magic-cauldron-computer-game-for-commodore-64128/"
+    ]
+  },
+  "barbarian-2-the-dungeon-of-drax": {
+    description: "Barbarian II: The Dungeon of Drax (1988) is a C64 action-adventure from Palace Software in which you fight monsters across three regions. You can choose to play as the barbarian or Princess Mariana, each fighting their way through three hostile environments: a volcanic wasteland, a twisting cave network, and the infamous Dungeon of Drax itself. Progress is built around flip-screen exploration, with a sword-shaped compass guiding you toward your objective while still leaving plenty of room to get lost. Combat remains the core focus, featuring brutal encounters with multiple enemy types and the return of the series’ signature decapitations when strikes are perfectly timed.",
+    sources: [
+      "https://www.youtube.com/watch?v=FqYwaYMLOXk",
+      "https://www.lemon64.com/game/barbarian-2",
+      "https://www.computinghistory.org.uk/det/56089/Barbarian%20II%20-%20The%20Dungeon%20of%20Drax/"
+    ]
+  },
+  "cybernoid": {
+    description: "Cybernoid: The Fighting Machine (1988) is a C64 flip-screen shooter from Hewson in which you recover stolen cargo from space pirates. Divided into three flip-screen levels rather than smooth scrolling, the game demands tactical navigation and weapons selection as you confront gun turrets, homing missiles and hostile pirate vessels. Power-ups and built-in ship weapons — including shields, impact mines, bounce bombs and homing seekers — must be used thoughtfully to survive each screen and collect treasure before time runs out. The Commodore 64 version is especially revered for its colourful graphics that pushed the 8-bit system’s palette, and its atmospheric SID soundtrack composed by Jeroen Tel, giving it a distinctive audio-visual identity among classic C64 shooters.",
+    sources: [
+      "https://www.youtube.com/watch?v=hyq5mt67hU4",
+      "https://www.lemon64.com/game/cybernoid",
+      "https://www.lemon64.com/review/cybernoid/804"
+    ]
+  },
+  "donald-ducks-playground": {
+    description: "Donald Duck's Playground (1984) is a C64 educational game from Sierra On-Line where Donald earns wages to build a playground for his nephews. The gameplay is split into a collection of mini-games set across different workplaces, including a greengrocer’s shop, a toy store, a railroad switchboard, and an airport cargo terminal. Each location introduces its own mechanics, from sorting vegetables and stocking shelves to directing trains and matching cargo codes under time pressure. Money earned from each job is carefully managed and spent on playground equipment such as swings and slides, which are then placed piece by piece to complete the final goal.",
+    sources: [
+      "https://www.youtube.com/watch?v=FLfMBp1nTe8",
+      "https://gamefaqs.gamespot.com/c64/568792-donald-ducks-playground/data",
+      "https://sierrachest.com/index.php?a=games&fld=walkthrough&id=262"
+    ]
+  },
+  "the-new-zealand-story": {
+    description: "The New Zealand Story (1989) is Ocean's C64 platformer starring Tiki the kiwi, who must rescue his kidnapped friends. It looks cute. It sounds cheerful. And then it starts trying to kill you. In this video I'm taking another look at Ocean's Commodore 64 conversion — the graphics, Jonathan Dunn's memorable music, the increasingly vicious difficulty and, most importantly, whether the C64 version still holds up today. The original arcade game arrived in 1988, with Ocean bringing the conversion to the Commodore 64 the following year. Despite the obvious limitations of an 8-bit machine compared with Taito's coin-op hardware, the C64 version retains the colourful scrolling levels, weapons, airborne enemies and increasingly demanding platforming that made the original so distinctive.",
+    sources: [
+      "https://www.youtube.com/watch?v=_0bKM3s0SMs",
+      "https://www.lemon64.com/game/newzealand-story",
+      "https://gamefaqs.gamespot.com/c64/577367-the-new-zealand-story"
+    ]
+  },
   "stifflip-and-co": {
     "description": "️ Stifflip & Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip & Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire rather seriously. You control four different characters — Viscount Sebastian Stifflip, Professor Braindeath, Colonel R. G. Bargie and Miss Palmyra Primbottom — as they attempt to stop the dastardly Count Chameleon. Count Chameleon's latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber. Naturally, his grand plan involves using it against cricket balls, potentially destroying the game and apparently bringing the British Empire down with it. You couldn't accuse Stifflip & Co of lacking ambition. Rather than controlling just one hero, you can switch between all four members of the group, with different characters and abilities needed to solve the game's puzzles.",
     "sources": [
