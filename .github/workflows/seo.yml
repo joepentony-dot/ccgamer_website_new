@@ -144,8 +144,12 @@ jobs:
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
-          if git diff --quiet "origin/${{ github.base_ref }}"...HEAD -- games/games.json; then
-            echo "[seo] Game catalogue unchanged; no preview regeneration needed."
+          # A magazine-only PR can follow a new-game source merge while the
+          # publisher has not yet materialised its game page. Also preview when
+          # *any* current catalogue page is missing, even if games.json did not change.
+          if git diff --quiet "origin/${{ github.base_ref }}"...HEAD -- games/games.json \
+            && node -e "const fs=require('node:fs');const path=require('node:path');const games=require('./games/games.json');process.exit(games.some(g=>!fs.existsSync(path.join('games',String(g.slug),'index.html')))?1:0)"; then
+            echo "[seo] Game source unchanged and all canonical game pages exist."
           else
             echo "[seo] Building full canonical game pages for PR-only SEO checks."
             node scripts/rebuild-games.js
