@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Android 2 (1983) – Commodore 64 Sci-Fi Maze Shooter Arcade Hybrid Released in 1983 for the Commodore 64, Android 2 (also known as Android Two) is a top-down sci-fi maze shooter developed by Costa Panayi and published by Vortex Software. You control a lone android dropped into a hostile, futuristic maze with one objective: eliminate five deadly Millitoids before time runs out. Gameplay blends fast maze navigation with careful combat. The wrap-around arena design keeps enemies constantly in play, while hazards like landmines, indestructible robots, and hostile aliens force you to think several moves ahead. Ammunition is limited, so success depends on positioning, timing, and knowing when to engage or evade. What truly sets Android 2 apart is its technical ambition. The scrolling, pseudo-3D maze was highly unusual for early 1980s home computers, giving the game a strong arcade feel and a real sense of depth and motion.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Android 2 C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Lqh5-b_ri10" data-video-id="Lqh5-b_ri10"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Android 2 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Lqh5-b_ri10/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Android 2 C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Lqh5-b_ri10" data-video-id="Lqh5-b_ri10"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Lqh5-b_ri10" target="_blank" rel="noopener">Open on YouTube</a>

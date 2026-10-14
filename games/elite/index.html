@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Elite (1985) – Commodore 64 Space Trading &amp; Combat Simulation Pioneer Released in 1985 by Firebird Software for the Commodore 64, Elite is a landmark space trading and combat simulation developed by David Braben and Ian Bell. It introduced us all to a vast, open-ended universe of 2,040 star systems, each defined by its own economy, political alignment, and opportunities for profit or danger. Starting as a novice pilot with a basic ship, we are free to carve their own path toward the coveted Elite combat rating. Lawful trading, smuggling, piracy, bounty hunting, or a careful mix of all four are viable approaches, with our own choice shaping every journey. The procedurally generated galaxy ensures a sense of scale and freedom that was unprecedented at the time. Elite’s technical achievements on the Commodore 64 were extraordinary.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Elite C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/kVHVYViVveo" data-video-id="kVHVYViVveo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Elite video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/kVHVYViVveo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Elite C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/kVHVYViVveo" data-video-id="kVHVYViVveo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=kVHVYViVveo" target="_blank" rel="noopener">Open on YouTube</a>

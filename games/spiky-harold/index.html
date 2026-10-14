@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spiky Harold (1986) – Commodore 64 Platform Adventure Beneath the Hedgerow Released in 1986 by Firebird Software and developed by Andrew Rogers, Spiky Harold is a distinctive single-screen platform adventure for the Commodore 64. You take control of Harold the hedgehog, who must gather enough food to survive hibernation while navigating an underground maze of interconnected screens. The game spans 57 linked areas beneath a hedgerow, each filled with hazards, collectables, and routes that demand careful planning. Food keeps Harold going, coins earn extra lives, and enemies such as wasps, rodents, and drifting sulfur clouds constantly threaten progress. A unique twist comes from the wine glasses scattered throughout the maze. If Harold drinks one, he becomes drunk, making movement unpredictable and turning simple platforming into a risky balancing act. This mechanic adds humour while increasing the challenge at exactly the wrong moment.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spiky Harold C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/yUbH27-1UTY" data-video-id="yUbH27-1UTY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spiky Harold video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/yUbH27-1UTY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spiky Harold C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/yUbH27-1UTY" data-video-id="yUbH27-1UTY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=yUbH27-1UTY" target="_blank" rel="noopener">Open on YouTube</a>

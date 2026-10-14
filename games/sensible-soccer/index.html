@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sensible Soccer (1992) – Commodore Amiga Fast-Paced Football Classic Released in 1992 by Sensible Software, Sensible Soccer redefined football games on the Commodore Amiga with its instantly recognisable top-down view and lightning-fast gameplay. You control compact teams of tiny players in matches that prioritise speed, precision, and pure fun over complicated simulation. On the pitch, the game is all about sharp passing, quick shots, and fluid movement. Controls are intuitive yet deep, letting you pull off one-touch football, curling shots, and last-ditch tackles with ease. Matches flow at a blistering pace, making every goal feel earned and every mistake costly. The success of the original led to refined updates like Sensible Soccer 92/93 and ultimately Sensible World of Soccer, which expanded the formula with transfers, management depth, and a staggering number of teams and players.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Sensible Soccer Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/2u8SIjYC9a4" data-video-id="2u8SIjYC9a4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Sensible Soccer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/2u8SIjYC9a4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Sensible Soccer Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/2u8SIjYC9a4" data-video-id="2u8SIjYC9a4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=2u8SIjYC9a4" target="_blank" rel="noopener">Open on YouTube</a>

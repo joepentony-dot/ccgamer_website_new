@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Card Sharks (1988) – Commodore 64 Card &amp; Casino Collection | Retro Classic Card Sharks (1988), developed and published by Accolade and designed by Mike Lorenzen, is a multi-game card simulation for the Commodore 64 featuring several popular casino classics. You can choose between poker (including five-card draw, seven-card stud, and Texas Hold ’Em), hearts, and blackjack, competing against up to three computer-controlled opponents. Opponents are drawn from a cast of quirky characters, including political figures and comic personalities, each adding humour and personality to the matches. Success depends on skill, bluffing, and risk management in poker, careful trick-avoidance in hearts, and disciplined play against the dealer in blackjack. The game features well-drawn character graphics and expressive animations, giving opponents visual reactions to wins and losses, while simple sound effects keep the focus on gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Card Sharks C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qBClj59dPJk" data-video-id="qBClj59dPJk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Card Sharks video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qBClj59dPJk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Card Sharks C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qBClj59dPJk" data-video-id="qBClj59dPJk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qBClj59dPJk" target="_blank" rel="noopener">Open on YouTube</a>

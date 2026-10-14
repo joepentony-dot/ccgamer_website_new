@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ultima I: The First Age of Darkness (1986) – Commodore 64 Open-World RPG Classic Released in 1986 by Origin Systems for the Commodore 64, Ultima I: The First Age of Darkness is a landmark role-playing game that laid the foundations for the legendary Ultima series. Set in the fantasy world of Sosaria, you are tasked with defeating the evil wizard Mondain by travelling through time to destroy his Gem of Immortality and end his reign of darkness. Gameplay is divided into several interconnected systems, including an overhead world map for exploration, first-person dungeon crawling, and even space combat sequences. This ambitious structure gave players an unprecedented sense of freedom. Character creation allows you to distribute points across key attributes such as Strength, Agility, and Intelligence, while choosing from races including Human, Elf, Dwarf, and Bobbit.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ultima I: The First Age Of Darkness C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/121Uv0d7LQw" data-video-id="121Uv0d7LQw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ultima I: The First Age Of Darkness video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/121Uv0d7LQw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ultima I: The First Age Of Darkness C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/121Uv0d7LQw" data-video-id="121Uv0d7LQw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=121Uv0d7LQw" target="_blank" rel="noopener">Open on YouTube</a>

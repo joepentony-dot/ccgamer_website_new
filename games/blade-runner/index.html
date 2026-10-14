@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blade Runner (1985) – Commodore 64 Cyberpunk Bounty Hunter Shooter Released in 1985 for the Commodore 64, Blade Runner was developed by Ian Foster and Andy Stodart and published by CRL Group. This early cyberpunk shooter casts you as a bounty hunter tracking down dangerous “Replidroids” across a dystopian future city inspired by Ridley Scott’s iconic film. The game opens with an ambitious two-minute rendition of Vangelis’s Blade Runner soundtrack, immediately setting a brooding sci-fi mood that was striking on the C64. From there, gameplay alternates between top-down city navigation in a hover-skimmer and side-scrolling street chases where targets must be eliminated while avoiding traffic and pedestrians. As the game progresses, the pace increases and the Replidroids become faster and more elusive, demanding sharper reactions and better route planning. The mix of overworld scanning and street-level action aims to recreate the feel of a futuristic manhunt rather than straightforward arcade shooting.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blade Runner C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/zRKEwg9g_hM" data-video-id="zRKEwg9g_hM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blade Runner video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/zRKEwg9g_hM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blade Runner C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/zRKEwg9g_hM" data-video-id="zRKEwg9g_hM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=zRKEwg9g_hM" target="_blank" rel="noopener">Open on YouTube</a>

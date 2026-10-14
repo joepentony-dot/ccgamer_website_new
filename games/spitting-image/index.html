@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spitting Image: The Computer Game (1988) – Commodore 64 Political Satire Beat ’Em Up Released in 1988 by Domark and developed by Walking Circles, Spitting Image: The Computer Game brings the anarchic British TV satire to the Commodore 64 in the form of a one-on-one fighting game. Inspired by the show’s infamous puppets, it throws global politics into the arena with exaggerated caricatures and unapologetic humour. You can choose from six world leaders, each battling opponents across stages themed around their home countries. Matches play out over three rounds, with basic punches, kicks, and the ability to summon a helper mid-fight, adding a tactical twist to the otherwise straightforward combat. The focus is firmly on satire rather than technical depth. Controls and mechanics are simple, but the exaggerated sprites and familiar faces do the main work, leaning into parody and shock value rather than precision fighting.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spitting Image C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/IEvHclOui10" data-video-id="IEvHclOui10"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spitting Image video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/IEvHclOui10/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spitting Image C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/IEvHclOui10" data-video-id="IEvHclOui10"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=IEvHclOui10" target="_blank" rel="noopener">Open on YouTube</a>

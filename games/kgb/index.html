@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ KGB (1992) – Commodore Amiga Point-and-Click Political Thriller Released in 1992 by Cryo Interactive and published by Virgin Games, KGB is a dark and demanding point-and-click adventure for the Commodore Amiga, set against the backdrop of the collapsing Soviet Union in the summer of 1991. Players take on the role of Captain Maksim Rukov, a newly assigned KGB officer drawn into a murder investigation that quickly spirals into a far-reaching political conspiracy. The game is built around realism and consequence. Actions unfold in real time, with events continuing whether the player is ready or not. A single poor decision can lead to immediate failure or trigger consequences that surface hours later, forcing players to think carefully, manage time, and pay close attention to dialogue, documents, and subtle clues. Using the same engine as Cryo’s Dune, KGB features detailed hand-drawn locations and an interface designed to support complex investigation and interaction.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="KGB Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ozW3zS8Mu-o" data-video-id="ozW3zS8Mu-o"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play KGB video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ozW3zS8Mu-o/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="KGB Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ozW3zS8Mu-o" data-video-id="ozW3zS8Mu-o"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ozW3zS8Mu-o" target="_blank" rel="noopener">Open on YouTube</a>

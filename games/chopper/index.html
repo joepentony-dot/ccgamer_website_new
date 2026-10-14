@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Chopper (1985) – Commodore 64 Side-Scrolling Helicopter Shoot ’Em Up Classic Released in 1985 by Severn Software for the Commodore 64, Chopper is a fast-paced military shoot ’em up that puts you in control of a combat helicopter on a mission to destroy enemy bases and installations across hostile territory. The game features vertically scrolling environments where you must carefully pilot their helicopter through varied landscapes filled with obstacles, ground targets, and airborne threats. Gameplay places equal emphasis on reflexes and strategy. You must eliminate enemy defences while conserving ammunition and avoiding damage, making every encounter a balance between aggression and survival. As levels progress, enemy patterns and hazards become increasingly demanding. Visually, Chopper makes strong use of detailed sprites and smooth scrolling to create a convincing sense of speed and altitude. Its presentation highlights the technical strengths of the Commodore 64 and keeps the action clear even during intense sequences.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Chopper C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/5En42bDkQnQ" data-video-id="5En42bDkQnQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Chopper video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/5En42bDkQnQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Chopper C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/5En42bDkQnQ" data-video-id="5En42bDkQnQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=5En42bDkQnQ" target="_blank" rel="noopener">Open on YouTube</a>

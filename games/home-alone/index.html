@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Home Alone (1991) – Commodore Amiga Action Strategy Christmas Classic Released in 1991 by Manley &amp; Associates and published by Capstone Software, Home Alone brings the hit holiday film to the Commodore Amiga with a distinctive mix of strategy and action. Players step into the shoes of Kevin McCallister as he defends his house from the infamous Wet Bandits, Harry and Marv. The game is split into two clear phases. During the preparation stage, players are given a limited amount of time to explore the house and set traps using everyday household items such as marbles, paint cans, and a BB gun. Planning and placement are key, as every room can be turned into a defensive advantage. Once the burglars arrive, the game shifts into the action phase. Kevin must move through the house, baiting the intruders into carefully placed traps while avoiding capture.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Home Alone Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/R5PSqum95hU" data-video-id="R5PSqum95hU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Home Alone video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/R5PSqum95hU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Home Alone Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/R5PSqum95hU" data-video-id="R5PSqum95hU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=R5PSqum95hU" target="_blank" rel="noopener">Open on YouTube</a>

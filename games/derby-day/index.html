@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Derby Day (1984) – Commodore 64 Horse Racing Betting Simulation Classic Released in 1984 by Pete G. Curtis and published by CRL Group PLC for the Commodore 64, Derby Day is an early horse racing betting simulation that recreates the excitement of a day at the races in a simple, accessible format. You are presented with a race card featuring seven fictional horses and must decide how to place their wagers. Gameplay centres on managing a virtual bankroll and choosing between different betting options, including win, each-way, and forecast bets. Once selections are made, an animated race sequence plays out, determining the results and updating your balance based on their predictions. Rather than focusing on complex statistics or deep simulation systems, Derby Day emphasises quick decision-making and the suspense of uncertain outcomes. Success depends on reading form, judging odds, and knowing when to take risks or play it safe.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Derby Day C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DLVXo-JQoE4" data-video-id="DLVXo-JQoE4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Derby Day video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DLVXo-JQoE4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Derby Day C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DLVXo-JQoE4" data-video-id="DLVXo-JQoE4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DLVXo-JQoE4" target="_blank" rel="noopener">Open on YouTube</a>

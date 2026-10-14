@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Pitstop II (1984) – Commodore 64 Split-Screen Racing Strategy Classic Released in 1984 by Epyx for the Commodore 64, Pitstop II is a landmark racing game that redefined multiplayer competition on home computers. Designed by Dennis Caswell and Stephen Landrum, it famously introduced split-screen racing, allowing two players to compete head-to-head simultaneously—an innovation that set it apart from its contemporaries. You race across six international circuits, including Brands Hatch, Hockenheim, Sebring, and Watkins Glen, choosing from multiple difficulty levels and race lengths. On track, success depends on precision driving, careful braking, and learning each circuit’s flow as speeds and pressure increase. What truly elevates Pitstop II is its strategic depth. Fuel consumption and tyre wear must be monitored closely, with pit stops playing a crucial role. Rather than being automated, you take direct control of the pit crew, manually changing tyres and refuelling as quickly as possible, turning every stop into a tense, skill-based mini-game.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Pitstop II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/nirjhB18mZo" data-video-id="nirjhB18mZo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Pitstop II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/nirjhB18mZo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Pitstop II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/nirjhB18mZo" data-video-id="nirjhB18mZo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=nirjhB18mZo" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ R-Type (1988) – Commodore 64 Shoot ’Em Up | Arcade Classic on 8-Bit R-Type is the 1988 Commodore 64 port of Irem’s legendary arcade “force-ship” shooter, published by Electric Dreams / Rainbow Arts and coded by Manfred Trenz. In the game, you pilot the iconic R-9 “Arrowhead” spacecraft through eight intense horizontally-scrolling stages, battling the alien Bydo Empire, navigating hazardous terrain, and facing massive biomechanical bosses. Your arsenal includes rapid-fire shots, a powerful chargeable wave cannon, and the game’s signature feature — the indestructible “Force” orb. Attach it, detach it, or deploy it freely to act as both shield and weapon platform. The C64 conversion delivers fast gameplay and smooth scrolling, outperforming many other 8-bit shooters of its era. Atmospheric visuals, detailed sci-fi environments, and an outstanding soundtrack by Chris Hülsbeck and Ramiro Vaca add to the experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="R-Type C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/h1wRyD86xxY" data-video-id="h1wRyD86xxY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play R-Type video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/h1wRyD86xxY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="R-Type C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/h1wRyD86xxY" data-video-id="h1wRyD86xxY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=h1wRyD86xxY" target="_blank" rel="noopener">Open on YouTube</a>

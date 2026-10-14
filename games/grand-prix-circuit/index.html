@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Grand Prix Circuit (1988) – Commodore 64 Formula One Racing | Retro Classic Grand Prix Circuit (1988), developed by Distinctive Software and published by Accolade, is one of the most advanced Formula One racing simulations ever released on the Commodore 64. You can choose between three licensed F1 cars — the McLaren MP4/4, Williams FW12, and Ferrari 187/88C — each offering a different balance of speed, grip, and handling. The game features practice, qualifying, single races, and a full championship mode across real-world circuits including Monaco, Hockenheim, Suzuka, Canada, and Monza. A detailed damage system adds realism, with collisions and off-track driving affecting handling and potentially forcing retirement if damage becomes too severe. Visually, the C64 version delivers sharp sprite-based graphics with impressive roadside detail and smooth scrolling, while Kris Hatlelid’s energetic soundtrack enhances the racing atmosphere.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Grand Prix Circuit C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Fz8180R31MY" data-video-id="Fz8180R31MY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Grand Prix Circuit video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Fz8180R31MY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Grand Prix Circuit C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Fz8180R31MY" data-video-id="Fz8180R31MY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Fz8180R31MY" target="_blank" rel="noopener">Open on YouTube</a>

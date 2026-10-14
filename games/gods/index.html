@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gods (1991) – Commodore Amiga Precision Platforming with Mythic Depth Released in 1991 by The Bitmap Brothers and published by Renegade Software, Gods is a demanding action-platform adventure that casts you as Hercules on a quest for immortality. Progress unfolds across four expansive realms packed with enemies, traps, secrets, and carefully layered puzzles. Every move matters. Precise jumping, measured combat, and deliberate pacing are essential, especially with limited inventory space forcing tough choices about keys, weapons, and upgrades. Weapons range from throwing knives to fireballs and bouncing axes, each suited to different situations and enemy patterns, rewarding experimentation and planning. Levels are built to be learned and mastered, with clever layouts that encourage observation and route optimisation. Certain enemies react to your behaviour, adding tension and pushing you to adapt rather than brute-force your way through.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gods Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/t_eJvreqNcc" data-video-id="t_eJvreqNcc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gods video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/t_eJvreqNcc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gods Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/t_eJvreqNcc" data-video-id="t_eJvreqNcc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=t_eJvreqNcc" target="_blank" rel="noopener">Open on YouTube</a>

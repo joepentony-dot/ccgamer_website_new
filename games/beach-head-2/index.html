@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Beach-Head II: The Dictator Strikes Back (1985) – Commodore 64 Multi-Stage Action Shooter Released in 1985 by U. S. Gold and developed by Access Software, Beach-Head II expands on the original with bigger ideas, tighter action, and one of the most memorable audio features of the 8-bit era. This time, the conflict escalates as you take the fight directly to the Dictator across a series of varied combat scenarios. The game is split into four distinct stages that constantly change the pace. You begin by advancing soldiers under fire, using cover to destroy the Dictator’s gun. This is followed by a rescue mission where precision shooting is required to save prisoners from deadly traps. Next comes a helicopter escape, dodging enemy fire while evacuating survivors, before everything culminates in a tense knife-throwing duel across a chasm.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Beach-Head II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/vKdA1An_PqM" data-video-id="vKdA1An_PqM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Beach-Head II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/vKdA1An_PqM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Beach-Head II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/vKdA1An_PqM" data-video-id="vKdA1An_PqM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=vKdA1An_PqM" target="_blank" rel="noopener">Open on YouTube</a>

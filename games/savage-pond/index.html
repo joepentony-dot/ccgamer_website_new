@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Savage Pond (1984) – Commodore 64 Survival Arcade in a Living Ecosystem Released in 1984 by Argus Press Software and developed by Gwyll Jones, Savage Pond is an unusual arcade action game for the Commodore 64 that places you inside a hostile but fascinating pond ecosystem. Rather than shooting waves of enemies, the focus here is survival, growth, and adaptation. You begin life as a vulnerable tadpole, navigating a side-view, flip-screen pond while avoiding predators such as dragonflies, water spiders, and other natural dangers. Progress depends on careful movement and feeding, as consuming food allows the tadpole to grow and eventually transform into a frog. Once evolved, the challenge shifts toward survival at the top of the food chain, with the longer-term goal of establishing a thriving frog colony. The game’s mechanics reflect a simplified but thoughtful take on biology and natural progression, blending educational ideas with arcade-style tension.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Savage Pond C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/s46Fb36kAi0" data-video-id="s46Fb36kAi0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Savage Pond video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/s46Fb36kAi0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Savage Pond C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/s46Fb36kAi0" data-video-id="s46Fb36kAi0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=s46Fb36kAi0" target="_blank" rel="noopener">Open on YouTube</a>

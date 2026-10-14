@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Great Escape (1986) – Commodore 64 Isometric POW Adventure Released in 1986 by Ocean Software and developed by Denton Designs, The Great Escape is an isometric action-adventure for the Commodore 64 inspired by the classic 1963 war film. You take on the role of a prisoner of war held in a heavily guarded German camp during World War II, with one goal in mind: escape without raising suspicion. The game centres around a strict daily routine. Roll calls, exercise periods, and mealtimes must all be attended, and ignoring camp rules quickly draws the attention of guards. Within these constraints, you must carefully plan your breakout, balancing obedience with secret preparation. Multiple escape routes are available, including digging tunnels, forging documents, bribing guards, or navigating underground drains. Each method requires patience, exploration, and clever use of limited resources, creating a constant sense of tension and risk.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Great Escape C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GFgp2ToRer8" data-video-id="GFgp2ToRer8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Great Escape video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GFgp2ToRer8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Great Escape C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GFgp2ToRer8" data-video-id="GFgp2ToRer8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GFgp2ToRer8" target="_blank" rel="noopener">Open on YouTube</a>

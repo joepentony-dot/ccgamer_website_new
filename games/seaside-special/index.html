@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Seaside Special (1984) – Commodore 64 Satirical Action Adventure Classic Released in 1984 by Taskset and published by Argus Press Software for the Commodore 64, Seaside Special is a politically charged action-adventure that blends arcade gameplay with sharp British satire. You take on the role of Radium Rodney, battling alien invaders known as the Polytikians who have secretly taken control of the UK government. Gameplay is split across two main locations. On the beach, Rodney must collect radioactive seaweed while avoiding hazards such as jellyfish, crabs, sandpits, rising tides, and increasing radiation levels. Once enough seaweed is gathered, the action shifts to 10 Downing Street, where you hurl it through the windows to drive out the Polytikians while dodging enemy fire. The challenge steadily escalates as environmental dangers intensify and enemies become more aggressive.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Seaside Special C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Q5yUrHgS0Zc" data-video-id="Q5yUrHgS0Zc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Seaside Special video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Q5yUrHgS0Zc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Seaside Special C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Q5yUrHgS0Zc" data-video-id="Q5yUrHgS0Zc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Q5yUrHgS0Zc" target="_blank" rel="noopener">Open on YouTube</a>

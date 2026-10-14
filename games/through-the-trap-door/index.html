@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Through the Trap Door (1987) – Commodore 64 Puzzle Adventure Cartoon Classic Released in 1987 by Piranha Software and developed by Don Priestley, Through the Trap Door is a charming puzzle-adventure based on the much-loved British stop-motion TV series. Acting as a sequel to The Trap Door, the game sends you deep into the castle’s underbelly on a rescue mission to save Boni the talking skull. You control Berk, the friendly blue creature, alongside his unpredictable spider companion Drutt. Exploration is key as you move between rooms, collect and use items, and work out how to deal with the bizarre creatures that regularly emerge from the trap door. Progress depends on observation, experimentation, and timing rather than quick reflexes alone. Faithful to the TV show, the game leans heavily into humour and personality. Its bold, cartoon-style graphics and playful animations capture the look and feel of the series, while the puzzles strike a balance between light-hearted fun and genuine challenge.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Through The Trap Door C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/WCnLv9ry9Ds" data-video-id="WCnLv9ry9Ds"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Through The Trap Door video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/WCnLv9ry9Ds/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Through The Trap Door C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/WCnLv9ry9Ds" data-video-id="WCnLv9ry9Ds"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=WCnLv9ry9Ds" target="_blank" rel="noopener">Open on YouTube</a>

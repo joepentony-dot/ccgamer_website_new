@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Back to the Future (1986) – Commodore 64 Movie Tie-In Action Adventure Released in 1986 by Electric Dreams Software, Back to the Future brings the hit movie to home computers, casting players as Marty McFly in a race against time to secure his own future. Set across familiar locations from the film, the game challenges players to make sure George and Lorraine meet and fall in love before time runs out. Gameplay is split into several distinct sequences inspired by key movie moments. These include navigating town areas, a hoverboard-style chase, the Enchantment Under the Sea dance, and the dramatic clock tower finale. Each section must be completed within strict time limits, adding pressure to every decision and movement. Presentation leans heavily into the film licence, featuring digitised speech samples and a soundtrack that incorporates the instantly recognisable “The Power of Love” theme.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Back To The Future C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/gO4y1RYOFY0" data-video-id="gO4y1RYOFY0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Back To The Future video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/gO4y1RYOFY0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Back To The Future C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/gO4y1RYOFY0" data-video-id="gO4y1RYOFY0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=gO4y1RYOFY0" target="_blank" rel="noopener">Open on YouTube</a>

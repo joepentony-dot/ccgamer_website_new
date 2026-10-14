@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Pole Position (1984) – Commodore 64 Arcade Formula One Racing Classic Originally developed by Namco and released in arcades in 1982, Pole Position arrived on the Commodore 64 in 1984 as a home conversion of one of the most influential racing games ever made. You take control of a Formula One car and attempt to qualify for pole position by completing a fast, clean lap of the iconic Fuji Racetrack. Gameplay is split into two phases, beginning with a solo time trial where precision and memorisation are essential. Successfully qualifying unlocks the main race, where you must compete against rival cars while managing speed, positioning, and a strict time limit. Collisions with other vehicles or trackside objects quickly end a promising run. The Commodore 64 version recreates the arcade’s behind-the-car perspective with smooth forward scrolling and recognisable track landmarks.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Pole Position C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xGn-mD2l0tY" data-video-id="xGn-mD2l0tY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Pole Position video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xGn-mD2l0tY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Pole Position C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xGn-mD2l0tY" data-video-id="xGn-mD2l0tY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xGn-mD2l0tY" target="_blank" rel="noopener">Open on YouTube</a>

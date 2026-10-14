@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rocket Ball (1985) – Commodore 64 Futuristic Sports Combat Classic Released in 1985 for the Commodore 64, Rocket Ball is a futuristic sports-action game developed by IJK Software and coded by John S. Sinclair. Set in the then-future year of 2010, the game imagines a world where international disputes are settled through a violent, high-energy arena sport. The action blends elements of roller derby and American football. Teams of five skaters battle it out in a circular arena, aiming to score by launching a heavy metal ball into a cone-shaped goal while physically overpowering their opponents. Elbows, knees, and fists are all fair game as mayhem unfolds at high speed. You must skate quickly, collect the ball, and time their shots carefully while defending against relentless attacks. Four teams are available — Houston, Tokyo, Moscow, and Madrid — each with different strengths, adding variety and tactical choice to matches that last a tense ten minutes.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rocket Ball C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Id0qaMQ9HxA" data-video-id="Id0qaMQ9HxA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rocket Ball video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Id0qaMQ9HxA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rocket Ball C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Id0qaMQ9HxA" data-video-id="Id0qaMQ9HxA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Id0qaMQ9HxA" target="_blank" rel="noopener">Open on YouTube</a>

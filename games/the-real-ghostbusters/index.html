@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Real Ghostbusters (1989) – Commodore 64 Top-Down Ghost-Busting Action Released in 1989 by Activision, The Real Ghostbusters brings the animated series to the Commodore 64 with fast-paced, top-down, multi-scrolling action. You take control of one of the four Ghostbusters—Peter, Ray, Egon, or Winston—tasked with clearing New York City of spectral trouble. Gameplay revolves around navigating maze-like locations, stunning ghosts with the Proton Pack, and collecting items to progress. Each area introduces new hazards, tighter layouts, and tougher enemies, pushing you to balance movement, positioning, and quick reactions. The inclusion of a two-player cooperative mode adds an extra layer of mayhem and teamwork. Visually, the game captures the look and feel of the cartoon with colourful sprites and detailed environments, while David Whittaker’s music delivers a memorable take on the iconic Ghostbusters theme. Though the controls can feel demanding at times, the challenge keeps the pressure high.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Real Ghostbusters C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qBfF_eZwOo8" data-video-id="qBfF_eZwOo8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Real Ghostbusters video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qBfF_eZwOo8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Real Ghostbusters C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qBfF_eZwOo8" data-video-id="qBfF_eZwOo8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qBfF_eZwOo8" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rocket Ranger (1988) – Commodore 64 Cinematic Action-Strategy Classic Released for the Commodore 64 by Cinemaware, Rocket Ranger drops you into an alternate-history 1940s where the Nazis have established a secret base on the Moon. Using a mysterious substance called Lunarium, they plan to reduce global intelligence levels and secure world domination. Humanity’s last hope comes from the future, as advanced jetpack technology, powerful weapons, and code-breaking tools are sent back in time for you to change the course of history. The game follows Cinemaware’s trademark cinematic structure, blending dramatic animated sequences with a mix of action and strategy. You must manage limited resources, deploy spies across Europe to uncover enemy rocket factories, and decide how much Lunarium to expend at each stage while avoiding capture. Strategic choices directly affect your chances of success.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rocket Ranger C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_WsFBiB8U34" data-video-id="_WsFBiB8U34"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rocket Ranger video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_WsFBiB8U34/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rocket Ranger C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_WsFBiB8U34" data-video-id="_WsFBiB8U34"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_WsFBiB8U34" target="_blank" rel="noopener">Open on YouTube</a>

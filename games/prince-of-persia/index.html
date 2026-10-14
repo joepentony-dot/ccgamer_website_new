@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Prince of Persia (1990) – Commodore Amiga Cinematic Platforming Masterpiece Released in 1990 for the Commodore Amiga, Prince of Persia is a cinematic platformer created by Jordan Mechner and published by Brøderbund. Based on the original 1989 Apple II release, it set new standards with its rotoscoped animation, grounded movement, and dramatic presentation. You guide a nameless Prince through deadly palace dungeons in a race against time, battling guards, avoiding traps, and solving environmental puzzles to rescue the Princess from the evil Vizier Jaffar. Every jump, sword fight, and switch pull demands precision, with a strict 60-minute countdown adding constant pressure. The Amiga version elevates the experience with smoother visuals, richer sound, and responsive controls, making combat and platforming feel deliberate and weighty. Traps like spike pits, collapsing floors, and timed gates force you to learn the environment and respect the game’s careful pacing.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Prince Of Persia Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/gvog2UkmIp8" data-video-id="gvog2UkmIp8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Prince Of Persia video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/gvog2UkmIp8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Prince Of Persia Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/gvog2UkmIp8" data-video-id="gvog2UkmIp8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=gvog2UkmIp8" target="_blank" rel="noopener">Open on YouTube</a>

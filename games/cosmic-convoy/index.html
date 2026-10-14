@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cosmic Convoy (1983) – Commodore 64 Escort Shooter | Retro Review Cosmic Convoy (1983), developed by Andy Walker and published by Taskset, is a horizontal shoot-’em-up for the Commodore 64 with a unique escort-based gameplay twist. In the game, you pilot a squadron of three fighter ships tasked with protecting a convoy of relief freighters as they travel through the solar system “System Coman.” Unlike many traditional shooters, Cosmic Convoy focuses on defence rather than pure attack. You must intercept incoming alien waves before they crash into the vulnerable convoy ships. Movement is fully four-directional, with the screen scrolling only as your fighters move. A long-range radar display beneath the main play area shows convoy routes and approaching enemies, adding a strategic layer to the action. You are given two squadrons in total, and the game ends if either all freighters are destroyed or your fighters are wiped out.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cosmic Convoy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/MjVEFcdKWgI" data-video-id="MjVEFcdKWgI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cosmic Convoy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/MjVEFcdKWgI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cosmic Convoy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/MjVEFcdKWgI" data-video-id="MjVEFcdKWgI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=MjVEFcdKWgI" target="_blank" rel="noopener">Open on YouTube</a>

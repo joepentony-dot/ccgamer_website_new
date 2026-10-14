@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bounces (1986) – Commodore 64 Futuristic Sports Combat Classic Released in 1986 by Denton Designs and published by Beyond Software for the Commodore 64, Bounces is a distinctive hybrid of competitive sport and arcade-style combat set in a futuristic arena. You compete in one-on-one matches where the goal is to score points by throwing a bouncing ball into the opponent’s goal or by knocking them out using well-timed attacks. Victory depends on both accuracy and aggression. A unique feature is the elastic tether that connects each player to their side of the screen. This limits movement, adds tactical depth, and forces careful positioning throughout each match. Games are played over two fast-paced 90-second halves, creating intense, high-pressure encounters where momentum can shift quickly. Mastering the elastic physics is key to gaining an advantage. Visually, the game features clean character sprites and colourful arenas that suit its futuristic theme.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bounces C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/82DuJ50BLn4" data-video-id="82DuJ50BLn4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bounces video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/82DuJ50BLn4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bounces C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/82DuJ50BLn4" data-video-id="82DuJ50BLn4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=82DuJ50BLn4" target="_blank" rel="noopener">Open on YouTube</a>

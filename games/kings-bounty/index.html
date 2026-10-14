@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ King’s Bounty (1990) – Commodore 64 Turn-Based Strategy Fantasy Classic Released in 1990 by New World Computing, King’s Bounty is a landmark turn-based strategy game designed by Jon Van Caneghem and widely recognised as the foundation for the later Heroes of Might and Magic series. On the Commodore 64, it delivers a deep fantasy adventure built around exploration, planning, and tactical combat. You take on the role of a hero tasked by King Maximus with recovering the stolen Sceptre of Order from the dragon Arech Dragonbreath. The quest spans four large continents, each filled with castles, towns, enemies, and secrets. Choosing between the Knight, Paladin, Barbarian, or Sorceress shapes how battles unfold and how armies are built. Gameplay combines open-world exploration with turn-based battles, as you recruit creatures, manage gold, and decide when to fight or avoid danger.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="King&#39;s Bounty C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Mz8VLiptnc" data-video-id="8Mz8VLiptnc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play King&#39;s Bounty video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/8Mz8VLiptnc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="King&#39;s Bounty C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/8Mz8VLiptnc" data-video-id="8Mz8VLiptnc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=8Mz8VLiptnc" target="_blank" rel="noopener">Open on YouTube</a>

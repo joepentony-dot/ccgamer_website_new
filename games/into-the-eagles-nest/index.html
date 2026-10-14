@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Into the Eagle’s Nest (1987) – Commodore 64 WWII Top-Down Action Adventure Released in 1987 by Pandora for the Commodore 64, Into the Eagle’s Nest is a World War II–themed action-adventure that blends shooting, exploration, and tactical decision-making. You step into the boots of an Allied soldier sent behind enemy lines to infiltrate the heavily guarded Eagle’s Nest fortress. The mission objectives are clear but demanding: rescue three captured comrades, recover stolen art treasures, and plant explosives to destroy the stronghold from within. Gameplay is viewed from a top-down perspective, with interconnected levels filled with enemy patrols, locked doors, hidden items, and limited resources. Progression relies on careful planning rather than constant firepower. Ammunition, keys, and explosives must be managed wisely, while reckless movement can quickly lead to failure. The emphasis on stealth and route planning gives the game a tense, methodical pace that rewards patience and awareness.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Into The Eagle&#39;s Nest C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7zH-gTff6k0" data-video-id="7zH-gTff6k0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Into The Eagle&#39;s Nest video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7zH-gTff6k0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Into The Eagle&#39;s Nest C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7zH-gTff6k0" data-video-id="7zH-gTff6k0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7zH-gTff6k0" target="_blank" rel="noopener">Open on YouTube</a>

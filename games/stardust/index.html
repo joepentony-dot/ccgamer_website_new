@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Stardust (1993) – Commodore Amiga Asteroids-Style Shoot ’Em Up Masterpiece Released in 1993 by Bloodhouse for the Commodore Amiga, Stardust is a spectacular reimagining of the classic arcade hit Asteroids, created by a Finnish development team determined to push the system to its limits. Players pilot a sleek spacecraft through dangerous asteroid fields and enemy-filled zones, blasting rocks and hostile ships across smooth multi-directional scrolling levels. The game introduces advanced power-ups, boss encounters, and high-speed tunnel sequences, adding depth and variety far beyond traditional arcade shooters. Progress depends on mastering tight controls, managing weapon upgrades, and reacting quickly to dense enemy patterns and environmental hazards. Visually, Stardust is renowned for its real-time ray-traced graphics, impressive particle effects, and smooth scaling animations that showcased the Amiga’s technical power. Its pounding techno soundtrack and atmospheric audio design further enhance the sense of speed and intensity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Stardust Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Pd-vYzM9MLc" data-video-id="Pd-vYzM9MLc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Stardust video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Pd-vYzM9MLc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Stardust Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Pd-vYzM9MLc" data-video-id="Pd-vYzM9MLc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Pd-vYzM9MLc" target="_blank" rel="noopener">Open on YouTube</a>

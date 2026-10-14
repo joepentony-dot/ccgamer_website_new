@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Space Taxi (1984) – Commodore 64 Arcade Precision Flying Classic Released in 1984 by Muse Software and developed by John F. Kutcher, Space Taxi is a distinctive action-platform game for the Commodore 64 that blends precise flying with light arcade strategy. You take control of a futuristic flying taxi, tasked with safely transporting passengers between floating platforms across a series of increasingly demanding levels. The core challenge lies in mastering the taxi’s thrusters and landing gear. Smooth take-offs and gentle landings are rewarded with tips, while crashes, fuel waste, and rough handling can quickly end a run. Each of the game’s 24 stages introduces new hazards, including moving platforms, tight caverns, environmental traps, and altered gravity conditions. Space Taxi is especially remembered for its groundbreaking use of digitised speech on the C64. Calls like “Hey taxi!”</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Space Taxi C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/JTahw206dyE" data-video-id="JTahw206dyE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Space Taxi video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/JTahw206dyE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Space Taxi C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/JTahw206dyE" data-video-id="JTahw206dyE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=JTahw206dyE" target="_blank" rel="noopener">Open on YouTube</a>

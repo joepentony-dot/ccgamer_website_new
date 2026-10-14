@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ivan ‘Ironman’ Stewart’s Super Off Road (1990) – Commodore 64 Top-Down Off-Road Racing Classic Released in 1990 by Graftgold and published by Virgin Mastertronic, Ivan ‘Ironman’ Stewart’s Super Off Road brings the hugely popular arcade racer to the Commodore 64 with fast, top-down off-road action. You race chunky trucks around tight dirt circuits, battling rivals while sliding through corners and launching over jumps. The heart of the game is its cash-based upgrade system. Winning races earns money that you can spend on improving speed, handling, and nitro boosts, adding a layer of strategy between events. Choosing where to invest can make the difference between staying competitive or being left in the dust. Tracks are packed with sharp bends, hazards, and elevation changes, keeping races tense and chaotic. Support for up to three players makes it especially memorable, turning every race into a loud, competitive scramble for position.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ivan &#39;Ironman&#39; Stewart&#39;s Super Off Road C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1_4jorsBdCM" data-video-id="1_4jorsBdCM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ivan &#39;Ironman&#39; Stewart&#39;s Super Off Road video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1_4jorsBdCM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ivan &#39;Ironman&#39; Stewart&#39;s Super Off Road C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1_4jorsBdCM" data-video-id="1_4jorsBdCM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1_4jorsBdCM" target="_blank" rel="noopener">Open on YouTube</a>

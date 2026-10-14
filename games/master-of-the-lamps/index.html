@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Master of the Lamps (1985) – Commodore 64 Rhythm &amp; Action Fantasy Quest Released in 1985 for the Commodore 64, Master of the Lamps is a highly original title developed by Peter Kaminski and Russell Lieblich and published by Activision. Blending action, rhythm, and puzzle-solving, the game offers a calm yet demanding experience that stood apart from the more aggressive arcade releases of the era. You take on the role of an Eastern prince on a mystical journey to restore three shattered magical lamps and reclaim his palace. Gameplay alternates between two very different challenges. The first involves piloting a magic carpet through winding tunnels, passing precisely through diamond-shaped gates where even a single mistake sends you back to the start. The second core mechanic introduces rhythm and memory-based gameplay. You face musical duels with genies, repeating increasingly complex sequences of tones.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Master Of The Lamps C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/r7MkMrIo_iI" data-video-id="r7MkMrIo_iI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Master Of The Lamps video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/r7MkMrIo_iI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Master Of The Lamps C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/r7MkMrIo_iI" data-video-id="r7MkMrIo_iI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=r7MkMrIo_iI" target="_blank" rel="noopener">Open on YouTube</a>

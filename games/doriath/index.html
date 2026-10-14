@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Doriath (1985), released by Rabbit Software, is an ambitious action-adventure game for the Commodore 64 designed by Dom Ashworth, with programming by Ian Gray and Lee Braine. You take on the role of Elidaan the Loremaster, a wizard tasked with recovering the legendary Coronet of Arien — an artifact said to grant immortality. The game world is built around a vast 16×16 screen map, encouraging careful exploration, note-taking, and classic hand-drawn mapping. Progress depends on finding the eight fragments of the Riddlescroll of Wurslea, solving environmental puzzles, mastering spells, and defeating powerful enemies including dragons. Doriath places heavy emphasis on non-linear progression, allowing you to tackle challenges in different orders while gradually unlocking new abilities. Its detailed visuals by Richard Murray and atmospheric music by Chris Cox help create a rich fantasy setting rarely seen in budget C64 releases.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Doriath C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/wkGIlMg4ogI" data-video-id="wkGIlMg4ogI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Doriath video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/wkGIlMg4ogI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Doriath C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/wkGIlMg4ogI" data-video-id="wkGIlMg4ogI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=wkGIlMg4ogI" target="_blank" rel="noopener">Open on YouTube</a>

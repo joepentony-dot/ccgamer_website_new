@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Neuromancer (1988) – Commodore 64 Cyberpunk Hacking Adventure RPG Classic Released in 1988 by Interplay Productions and published by Electronic Arts for the Commodore 64, Neuromancer is an ambitious adventure game inspired by William Gibson’s groundbreaking cyberpunk novel. Blending hacking simulation, role-playing, and narrative exploration, it delivers one of the most immersive sci-fi experiences of the 8-bit era. Set in 2058 in Chiba City, Japan, you take on the role of a struggling hacker trying to regain access to the Matrix after being cut off from cyberspace. The journey unfolds across neon-lit streets, shady bars, corporate offices, and virtual networks filled with danger and opportunity. Gameplay is divided between real-world exploration and cyberspace infiltration. In the physical world, you gather information, earn money, buy equipment, and install skill chips that enhance abilities. In cyberspace, they battle hostile ICE programs, evade security systems, and confront powerful artificial intelligences guarding valuable data.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Neuromancer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QdAZLAn8kPs" data-video-id="QdAZLAn8kPs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Neuromancer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QdAZLAn8kPs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Neuromancer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QdAZLAn8kPs" data-video-id="QdAZLAn8kPs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QdAZLAn8kPs" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Indiana Jones and the Temple of Doom (1987) – Commodore 64 Action Adventure Arcade Conversion Released in 1987 by US Gold and developed by Paragon Programming, Indiana Jones and the Temple of Doom brings the Atari arcade hit to the Commodore 64, itself based on the 1984 film. You step into Indy’s boots to relive key moments from the movie, from perilous temples to high-risk escapes. Gameplay blends platforming, combat, and light puzzle elements as you use Indy’s whip to defeat enemies, avoid traps, and interact with the environment. The game is split into three distinct stages: the Mine Cart Escape, the Temple of Doom, and the Bridge of Death, each offering its own mechanics and challenges. On the Commodore 64, the focus is on atmosphere and fidelity to the source material, supported by Martin Galway’s soundtrack.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Indiana Jones And The Temple Of Doom C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/H7w8xhceo3g" data-video-id="H7w8xhceo3g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Indiana Jones And The Temple Of Doom video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/H7w8xhceo3g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Indiana Jones And The Temple Of Doom C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/H7w8xhceo3g" data-video-id="H7w8xhceo3g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=H7w8xhceo3g" target="_blank" rel="noopener">Open on YouTube</a>

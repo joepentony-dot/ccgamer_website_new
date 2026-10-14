@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Barbarian: The Ultimate Warrior (1987) – Commodore 64 Brutal Sword Fighting Classic Released in 1987 by Palace Software, Barbarian: The Ultimate Warrior brought raw, one-on-one sword combat to the Commodore 64 and left a lasting mark on the fighting game genre. Inspired by sword-and-sorcery cinema, it throws you into savage duels where timing, spacing, and nerve matter as much as button presses. Combat revolves around a tight set of slashes, thrusts, and defensive moves, with victory coming either by draining your opponent’s energy or landing the infamous decapitation strike. That single move became legendary, instantly setting Barbarian apart from anything else on the system. Battles take place across a variety of arenas, each subtly influencing how aggressively you can fight. The single-player mode pushes you through increasingly dangerous opponents, while the two-player mode delivers tense, skill-based showdowns that made Barbarian a party favourite.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Barbarian: The Ultimate Warrior C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6q2nvglyVyE" data-video-id="6q2nvglyVyE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Barbarian: The Ultimate Warrior video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6q2nvglyVyE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Barbarian: The Ultimate Warrior C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6q2nvglyVyE" data-video-id="6q2nvglyVyE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6q2nvglyVyE" target="_blank" rel="noopener">Open on YouTube</a>

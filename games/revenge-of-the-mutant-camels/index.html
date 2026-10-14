@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Revenge of the Mutant Camels (1984) – Commodore 64 Psychedelic Shoot ’Em Up mayhem Released in 1984 by Llamasoft and developed by Jeff Minter, Revenge of the Mutant Camels is a horizontally scrolling shoot ’em up that cranks the absurdity to full blast. A direct sequel to Attack of the Mutant Camels, the game puts you in control of a heavily armed camel battling through 42 waves of surreal and unpredictable enemies. Gameplay is fast, frantic, and deliberately offbeat. You fire basic blue shots while weaving through enemies that range from falling umbrellas and vending machines to flying toilets, all rendered in Minter’s unmistakable psychedelic style. Power-ups boost firepower, but danger also comes in the form of tokens that can poison you or reverse controls, keeping every moment unpredictable. A standout feature is the optional two-player mode, where a second player controls a bipedal goat riding atop the camel, doubling firepower and adding a unique cooperative twist rarely seen in shooters of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Revenge Of The Mutant Camels C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/F4HhsPtCl8c" data-video-id="F4HhsPtCl8c"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Revenge Of The Mutant Camels video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/F4HhsPtCl8c/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Revenge Of The Mutant Camels C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/F4HhsPtCl8c" data-video-id="F4HhsPtCl8c"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=F4HhsPtCl8c" target="_blank" rel="noopener">Open on YouTube</a>

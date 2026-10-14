@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ MicroProse Soccer (1988) – Commodore 64 Arcade Football That Changed the Game Released in 1988, MicroProse Soccer is an arcade-style football game developed by Sensible Software and published by MicroProse for the Commodore 64. Often seen as the foundation of the legendary Sensible Soccer series, it redefined how football games felt on 8-bit systems with speed, flow, and immediate control. The game offers both full 11-a-side outdoor matches and fast-paced 6-a-side indoor soccer, alongside single matches, tournaments, and full World Cup campaigns. You can save progress and customise teams using the Name Bank, adding long-term appeal rarely seen in football games of the era. Controls are simple yet expressive, allowing crisp passing, chipped balls, powerful shots, and the famous “banana kick” for curling efforts on goal. The top-down scrolling pitch is enhanced by weather effects, you fatigue, and dynamic replays that mimic video rewinding, adding style and atmosphere to every match.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Microprose Soccer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rEytO60r8Bs" data-video-id="rEytO60r8Bs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Microprose Soccer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rEytO60r8Bs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Microprose Soccer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rEytO60r8Bs" data-video-id="rEytO60r8Bs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rEytO60r8Bs" target="_blank" rel="noopener">Open on YouTube</a>

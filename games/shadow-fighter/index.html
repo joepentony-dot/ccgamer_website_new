@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Shadow Fighter (1994) – Commodore Amiga Beat ’Em Up | Retro Classic Shadow Fighter (1994), developed by the Italian NAPS Team and published by Gremlin Interactive, is one of the most technically impressive 2D beat ’em ups on the Commodore Amiga. Designed for standard OCS/ECS hardware, the game delivers smooth animation, vibrant sprites, and impressive multi-layer parallax scrolling that pushes the platform to its limits. With 17 playable fighters, each featuring unique moves and backgrounds, the game uses a simple one-button control system that allows you to perform over 25 attacks per character through intuitive joystick motions. A dedicated training mode introduces “Pupazz,” a practice opponent designed to help you master advanced techniques and special moves. Graphically, Shadow Fighter stands out with its rich colour palette and dynamic arenas, while Patrick Phelan’s energetic soundtrack enhances the intensity of each battle.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Shadow Fighter Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pdVpqBt6j4A" data-video-id="pdVpqBt6j4A"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Shadow Fighter video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pdVpqBt6j4A/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Shadow Fighter Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pdVpqBt6j4A" data-video-id="pdVpqBt6j4A"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pdVpqBt6j4A" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Dolphin’s Rune (1985) – Commodore 64 Artistic Action Exploration Classic Released in 1985 by Mindscape for the Commodore 64 and developed by John O’Neill under the Admacadiam label, The Dolphin’s Rune: A Poetic Odyssey is a highly unconventional action-puzzle game that prioritises atmosphere and reflection over traditional arcade thrills. Designed as an interactive art experience, it stands apart from most titles of its era. You take control of a dolphin swimming through a vast ocean environment, where survival depends on awareness and restraint rather than speed. Avoiding sharks, surfacing for air, and steering clear of dangerous fishing nets form the core challenges, encouraging slow, thoughtful exploration from the dolphin’s perspective. Progression is shaped by observation, rhythm, and environmental understanding. Instead of score-chasing or time pressure, the game rewards patience and immersion, inviting you to absorb its unusual tone and subtle mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Dolphin&#39;s Rune C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/y58m3nrHqvg" data-video-id="y58m3nrHqvg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Dolphin&#39;s Rune video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/y58m3nrHqvg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Dolphin&#39;s Rune C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/y58m3nrHqvg" data-video-id="y58m3nrHqvg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=y58m3nrHqvg" target="_blank" rel="noopener">Open on YouTube</a>

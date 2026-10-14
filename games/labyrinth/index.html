@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Labyrinth: The Computer Game (1986) – Commodore 64 Graphic Adventure Fantasy Quest Released in 1986 by Lucasfilm Games and published by Activision for the Commodore 64, Labyrinth: The Computer Game is a graphic adventure inspired by Jim Henson’s fantasy film. You are dropped into a sprawling maze filled with traps, riddles, and strange characters, racing against time to confront Jareth and escape. The adventure unfolds under a strict 13-hour real-time limit, adding tension and urgency to every decision. Gameplay begins with a text-based sequence before shifting into a graphical exploration format, featuring side-scrolling corridors, interactive environments, and a radar bar that maps each area. A standout feature is the innovative “word wheel” interface, which replaces traditional text parsers with rotating menus of verbs and nouns. This system streamlines command input, reduces frustration, and makes experimentation more accessible for people new to adventure games.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Labyrinth C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DrUHEwI2U6U" data-video-id="DrUHEwI2U6U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Labyrinth video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DrUHEwI2U6U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Labyrinth C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DrUHEwI2U6U" data-video-id="DrUHEwI2U6U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DrUHEwI2U6U" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nippon Safes Inc. (1993) – Commodore Amiga Point-and-Click Adventure Classic Released in 1993 by Italian studio Dynabyte for the Commodore Amiga, Nippon Safes Inc. is a distinctive point-and-click adventure that blends European humour with a satirical take on Japanese pop culture. Set in the fictional city of Tyoko, the game follows three eccentric protagonists: Doug Nuts, a socially awkward safecracker; Dino Fagioli, a dim-witted former boxer; and Donna Fatale, a glamorous club dancer. Each character pursues their own storyline while becoming entangled in a larger criminal plot. The game runs on the Parallaction engine, allowing players to switch between characters and tackle puzzles from multiple perspectives. Progression is largely non-linear, with each storyline offering unique locations, challenges, and interactions. Gameplay uses an intuitive icon-based interface, encouraging exploration, item experimentation, and logical problem-solving. The interconnected narrative structure gives the adventure a dynamic, replayable feel.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nippon Safes Inc. Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9j4dwgt3U3M" data-video-id="9j4dwgt3U3M"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nippon Safes Inc. video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9j4dwgt3U3M/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nippon Safes Inc. Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9j4dwgt3U3M" data-video-id="9j4dwgt3U3M"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9j4dwgt3U3M" target="_blank" rel="noopener">Open on YouTube</a>

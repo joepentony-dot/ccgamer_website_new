@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Pitfall! (1984) – Commodore 64 Jungle Platform Adventure Classic Released in 1984 by Activision and designed by David Crane for the Commodore 64, Pitfall! is one of the most influential platform adventures of the early home computer era. You take control of Pitfall Harry, a fearless treasure hunter racing through a dangerous jungle to collect 32 hidden treasures within a strict 20-minute time limit. Gameplay unfolds across 256 horizontally connected screens packed with hazards including bottomless pits, quicksand, rolling logs, fire, rattlesnakes, scorpions, and snapping crocodiles. Using precise jumping, ladder climbing, and vine swinging, you must carefully time every movement to survive and keep momentum. Progression is driven by exploration, memory, and risk management. Treasures such as bags of money, gold and silver bars, and diamond rings boost your score, while mistakes cost valuable points and time.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Pitfall! C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/OE4xormwgsI" data-video-id="OE4xormwgsI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Pitfall! video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/OE4xormwgsI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Pitfall! C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/OE4xormwgsI" data-video-id="OE4xormwgsI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=OE4xormwgsI" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Turbo Out Run (1989) – Commodore 64 Arcade Racing with Turbo Boost Released in 1989, Turbo Out Run is a high-speed arcade racer developed by Sega AM2 and expertly converted to the Commodore 64 by Probe Software. Acting as a sequel to Out Run, the game sends you on a coast-to-coast race from New York City to Los Angeles, battling a rival Porsche 959 while dodging traffic and police along the way. Gameplay builds on the original formula with the introduction of a turbo boost system, allowing brief bursts of extreme speed at critical moments. Across 16 stages, you can upgrade their Ferrari F40 every fourth level, choosing improvements such as engine power, turbo performance, and tyre grip to stay competitive as the difficulty ramps up. The Commodore 64 version is widely praised for its sense of speed and smooth scrolling, delivering an impressive arcade-style experience on 8-bit hardware.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Turbo Out Run C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/nEkPszDpVAQ" data-video-id="nEkPszDpVAQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Turbo Out Run video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/nEkPszDpVAQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Turbo Out Run C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/nEkPszDpVAQ" data-video-id="nEkPszDpVAQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=nEkPszDpVAQ" target="_blank" rel="noopener">Open on YouTube</a>

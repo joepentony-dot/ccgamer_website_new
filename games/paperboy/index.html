@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Paperboy (1986) – Commodore 64 Arcade Cycling Action Classic Released in 1986 by Atari Games and ported to the Commodore 64 by Elite Systems, Paperboy turns a simple daily job into frantic arcade mayhem. You take control of a newspaper delivery kid pedalling through suburban streets, trying to complete your route while everything around you seems determined to knock you off your bike. Gameplay revolves around accurate newspaper throwing and quick reactions. You must deliver papers to subscribers, avoid smashing windows at non-subscribers’ houses, and steer clear of traffic, pedestrians, dogs, lawnmowers, and other unpredictable hazards. Balancing speed, accuracy, and survival is the key to making it through each day. The C64 version captures the spirit of the arcade original, translating its distinctive diagonal viewpoint and fast-paced action to home hardware. While visuals and animation are pared back, the colourful presentation and recognisable layouts keep the experience instantly familiar.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Paperboy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/xxqb6JkNOE8" data-video-id="xxqb6JkNOE8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Paperboy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/xxqb6JkNOE8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Paperboy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/xxqb6JkNOE8" data-video-id="xxqb6JkNOE8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=xxqb6JkNOE8" target="_blank" rel="noopener">Open on YouTube</a>

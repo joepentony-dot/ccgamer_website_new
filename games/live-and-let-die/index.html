@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Live and Let Die (1988) – Commodore 64 High-Speed Action Boat Combat Classic Released in 1988 by Elite Systems and published by Domark for the Commodore 64, Live and Let Die is a fast-paced action game loosely inspired by the 1973 James Bond film. Originally developed as an original title called Aquablast, the game was later rebranded after Domark recognised its similarity to the movie’s famous speedboat chase sequence. You take control of a heavily armed high-speed boat and race through a variety of global locations, including the Florida Everglades, Arctic waters, and desert regions of the Sahara. The main objective is to battle enemy forces, avoid environmental hazards, and ultimately destroy Dr. Kananga’s heroin refinery. Gameplay blends high-speed racing with arcade-style shooting, drawing comparisons to titles such as RoadBlasters and Overlander. You must balance aggressive combat with careful fuel management, precise steering, and quick reactions to survive increasingly intense stages.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Live And Let Die C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/0PJAIVH5R4U" data-video-id="0PJAIVH5R4U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Live And Let Die video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/0PJAIVH5R4U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Live And Let Die C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/0PJAIVH5R4U" data-video-id="0PJAIVH5R4U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=0PJAIVH5R4U" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Orc Attack (1984) – Commodore 64 Arcade Action | Retro Classic Orc Attack (1984) is a frantic fixed-screen action game for the Commodore 64, developed by Chris James with graphics by Dean M. Lock, and published by Creative Sparks under the Thorn EMI label. Set during a fantasy siege, you control a lone defender standing atop a castle wall, moving across icy battlements to drop rocks on invading orcs or drawing a sword when enemies breach the ramparts. As each wave escalates, new threats appear, including ladder-less ninja orcs, evil sorcerers summoning spirits, and demon trolls casting lightning. Later stages introduce boiling oil, allowing you to incinerate large groups and clear the round. The game’s difficulty steadily increases, demanding careful positioning, precise timing, and smart use of limited resources to survive the onslaught. Despite its simple presentation, Orc Attack delivers tense, addictive gameplay and remains a memorable challenge from the golden age of C64 arcade action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Orc Attack C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Dh2y5tSK4x4" data-video-id="Dh2y5tSK4x4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Orc Attack video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Dh2y5tSK4x4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Orc Attack C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Dh2y5tSK4x4" data-video-id="Dh2y5tSK4x4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Dh2y5tSK4x4" target="_blank" rel="noopener">Open on YouTube</a>

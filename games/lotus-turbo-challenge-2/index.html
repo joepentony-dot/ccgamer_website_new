@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Lotus Turbo Challenge 2 (1991) – Commodore Amiga Arcade Racing Time Trial Classic Released in 1991 and developed by Magnetic Fields, Lotus Turbo Challenge 2 is the high-octane sequel that redefined the series on the Commodore Amiga. Moving away from traditional circuit racing, the game embraces checkpoint-based, arcade-style action inspired by classics like OutRun. You race against the clock across a wide range of global locations, alternating between two Lotus cars: the Elan SE on odd-numbered stages and the Esprit SE on even-numbered ones. Each course demands speed, precision, and split-second reactions as traffic, sharp bends, and environmental hazards stand between you and the next checkpoint. The Amiga version is especially celebrated for its fluid scrolling, varied scenery, and dynamic weather effects that keep races visually fresh and challenging. Barry Leitch’s iconic soundtrack, particularly the instantly recognisable intro theme, adds an extra layer of energy and remains one of the most memorable pieces of Amiga game music.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Lotus Turbo Challenge 2 Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DNIUmGPyAik" data-video-id="DNIUmGPyAik"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Lotus Turbo Challenge 2 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DNIUmGPyAik/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Lotus Turbo Challenge 2 Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DNIUmGPyAik" data-video-id="DNIUmGPyAik"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DNIUmGPyAik" target="_blank" rel="noopener">Open on YouTube</a>

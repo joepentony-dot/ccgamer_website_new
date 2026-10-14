@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gryzor (1988) – Commodore 64 Run-and-Gun Arcade Action Classic Released in 1988 by Ocean Software for the Commodore 64, Gryzor is the European home conversion of Konami’s arcade smash Contra. Developed under official licence, it brings explosive run-and-gun action and cooperative gameplay to the 8-bit platform. You take control of elite soldiers Lance and Bill as they battle through hostile environments to stop an alien invasion. The gameplay delivers relentless side-scrolling action, precise platforming, and intense enemy waves, capped off with imposing boss encounters that test reflexes and timing. Power-ups are central to survival, with rapid-fire weapons, spread shots, and lasers dramatically changing how each section is tackled. The C64 version captures the arcade spirit with fast scrolling, bold sprite work, and atmospheric music by Jason C. Brooke, even if some visual compromises and flicker were unavoidable on the hardware.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gryzor C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/WWjYOuZKWlE" data-video-id="WWjYOuZKWlE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gryzor video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/WWjYOuZKWlE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gryzor C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/WWjYOuZKWlE" data-video-id="WWjYOuZKWlE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=WWjYOuZKWlE" target="_blank" rel="noopener">Open on YouTube</a>

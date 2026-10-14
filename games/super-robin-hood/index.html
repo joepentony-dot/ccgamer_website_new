@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Super Robin Hood (1987) – Commodore 64 Platform | Retro Classic Super Robin Hood (1987) is a medieval-themed platform game for the Commodore 64, published by Codemasters and designed by the Oliver Twins, with programming by Delvin J. Sorrell and graphics by James Wilson. Featuring an energetic soundtrack by David Whittaker, the game casts you as Robin Hood on a quest to rescue Maid Marian from Nottingham Castle. You progress through scrolling levels, dodging guards, firing arrows, collecting hearts to restore health, and gathering keys that activate lifts and open new areas. The game is praised for its responsive controls, engaging platform mechanics, and memorable 8-bit soundtrack. As the first Codemasters title by the Oliver Twins, it marked the beginning of a legendary developer–publisher partnership. Super Robin Hood holds an important place in Commodore 64 history and remains a much-loved example of classic British platform design.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Super Robin Hood C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/oQhQdlsAQR4" data-video-id="oQhQdlsAQR4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Super Robin Hood video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/oQhQdlsAQR4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Super Robin Hood C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/oQhQdlsAQR4" data-video-id="oQhQdlsAQR4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=oQhQdlsAQR4" target="_blank" rel="noopener">Open on YouTube</a>

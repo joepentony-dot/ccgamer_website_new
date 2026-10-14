@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Doctor Who and the Mines of Terror (1986) – Commodore 64 Platform Adventure With Puzzle Exploration Released in 1986 by Micro Power, Doctor Who and the Mines of Terror places you in control of the Sixth Doctor as he investigates the dangerous mining complex on the second moon of Rijar. The Master’s plan to exploit the rare mineral Heatonite threatens time itself, and it’s up to you to stop it. Gameplay focuses on exploration, puzzle-solving, and careful movement through a large interconnected map. You guide the Doctor through elevators, tunnels, and industrial chambers, avoiding hazards and enemies while using items to progress. Splinx, the Doctor’s robotic cat companion, adds both flavour and utility to the adventure. The design draws inspiration from Castle Quest on the BBC Micro, emphasising memory and navigation over fast reflexes.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Doctor Who And The Mines Of Terror C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/YkKeKORCu4g" data-video-id="YkKeKORCu4g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Doctor Who And The Mines Of Terror video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/YkKeKORCu4g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Doctor Who And The Mines Of Terror C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/YkKeKORCu4g" data-video-id="YkKeKORCu4g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=YkKeKORCu4g" target="_blank" rel="noopener">Open on YouTube</a>

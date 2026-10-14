@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Face Off! (1987) – Commodore 64 Arcade Ice Hockey with Cinematic Shot-Cam Released in 1987 by MindSpan Technologies and published by Gamestar for the Commodore 64, Face Off! delivers a fast-paced and distinctive take on ice hockey. It blends accessible arcade action with features that helped it stand apart from other sports games of the era. You can jump into single-player or head-to-head multiplayer matches, controlling one skater at a time while switching seamlessly during play. Customisation options allow you to tweak match length, team sizes of one, three, or five players, and various rule settings, giving the game flexibility rarely seen on the C64. One of Face Off! ’s most memorable features is the cinematic “Shot-Cam,” which cuts to a dramatic close-up during slapshots to heighten the sense of impact. Penalties can also trigger brief on-ice fights, adding an extra layer of tension and personality to matches.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Face Off! C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-NczOUEiL-I" data-video-id="-NczOUEiL-I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Face Off! video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-NczOUEiL-I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Face Off! C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-NczOUEiL-I" data-video-id="-NczOUEiL-I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-NczOUEiL-I" target="_blank" rel="noopener">Open on YouTube</a>

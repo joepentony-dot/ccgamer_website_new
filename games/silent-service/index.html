@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Silent Service (1985) – Commodore 64 WWII Submarine Simulation Classic Released in 1985 by Sid Meier and published by MicroProse for the Commodore 64, Silent Service is a landmark submarine simulation set in the Pacific Theater of World War II. You take command of a U. S. Navy Gato-class submarine, embarking on tense war patrols against Japanese shipping with survival depending on patience, planning, and precision. Gameplay is split between strategic navigation and high-stakes combat. During patrols, you plot courses, manage fuel and systems, and decide when to engage or evade. Combat brings torpedo targeting, sonar interpretation, periscope tracking, and evasive manoeuvres as enemy escorts hunt you down. Weather conditions, day-night cycles, and detection mechanics all play a critical role in each encounter. The simulation places strong emphasis on realism, featuring authentic instrumentation, damage modelling, and multiple difficulty levels that cater to both newcomers and experienced players.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Silent Service C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lQ9HMKlGsZE" data-video-id="lQ9HMKlGsZE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Silent Service video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lQ9HMKlGsZE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Silent Service C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lQ9HMKlGsZE" data-video-id="lQ9HMKlGsZE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lQ9HMKlGsZE" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Muncher (1988) – Commodore 64 Side-Scrolling Monster Mayhem Released in 1988 by Beam Software and published by Gremlin Graphics for the Commodore 64, The Muncher is a destructive side-scrolling action game inspired by arcade smash hit Rampage. You take control of Muncher, a giant Godzilla-style creature rising from the sea to reclaim his stolen eggs from invading explorers. Gameplay centres on pure mayhem as you rampage through cities, military installations, and industrial areas, tearing down buildings and battling waves of enemies. Muncher can climb structures, punch and kick opponents, and unleash powerful fireballs to clear the screen. Collectibles play an important role in survival. Eggs and radioactive barrels restore health or allow you to continue after losing a life, encouraging aggressive play and constant forward momentum. The action is simple and immediate, focusing on destruction rather than complex mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Muncher C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/32LzquxJ7o4" data-video-id="32LzquxJ7o4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Muncher video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/32LzquxJ7o4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Muncher C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/32LzquxJ7o4" data-video-id="32LzquxJ7o4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=32LzquxJ7o4" target="_blank" rel="noopener">Open on YouTube</a>

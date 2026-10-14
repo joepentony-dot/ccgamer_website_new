@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Skate Rock (1986) – Commodore 64 Skateboarding Action With Rock Attitude Released in 1986 by Bubble Bus Software and developed by Zig Zag Creations, Skate Rock blends arcade skateboarding with a loud, energetic rock aesthetic. Also known as Awesome Earl in SkateRock, the game drops you into busy urban courses where speed, precision, and nerve are everything. You skate through ten increasingly demanding levels, racing against the clock to collect flags while dodging pedestrians, traffic, and roadworks. Tight control and route planning are essential, as one mistake can quickly derail a run. Progression is driven by mastery, with the ultimate goal of earning your place among the elite Slime Rat Skaters. Each course has its own visual identity, filled with animated hazards that bring the city streets to life. The experience is powered by Ben Daglish’s driving soundtrack, which reinforces the game’s pace and attitude throughout.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Skate Rock C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ke8JNvW7NCI" data-video-id="ke8JNvW7NCI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Skate Rock video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ke8JNvW7NCI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Skate Rock C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ke8JNvW7NCI" data-video-id="ke8JNvW7NCI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ke8JNvW7NCI" target="_blank" rel="noopener">Open on YouTube</a>

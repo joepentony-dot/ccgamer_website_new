@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1986 by Piranha Software for the Commodore 64, The Trap Door is a wonderfully odd puzzle-adventure based on the British animated TV series. You play as Berk, a nervous blue servant tasked with preparing increasingly bizarre meals for the unseen and very impatient “Thing Upstairs.” Gameplay revolves around exploration and problem-solving inside a gloomy castle. You move between rooms, collect strange items, and deal with creatures that emerge from the trap door, all while working out how each task fits together. Boni the talking skull offers helpful hints, but Drutt the pet has a habit of eating things you actually need, adding mayhem to every objective. Time pressure keeps the tension high, as each task must be completed before the Thing Upstairs loses patience. The flip-screen, pseudo-3D presentation lets Berk move into the depth of rooms, while expressive animations and dark humour capture the atmosphere of the TV show perfectly.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Trap Door C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/V65XiDDDRGY" data-video-id="V65XiDDDRGY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Trap Door video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/V65XiDDDRGY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Trap Door C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/V65XiDDDRGY" data-video-id="V65XiDDDRGY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=V65XiDDDRGY" target="_blank" rel="noopener">Open on YouTube</a>

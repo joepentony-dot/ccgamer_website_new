@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Lazy Jones (1984) – Commodore 64 Arcade Mini-Game Hotel Classic Released in 1984 by Terminal Software, Lazy Jones is a brilliantly inventive Commodore 64 title that wraps a collection of arcade-style mini-games inside a single cohesive world. You play as Lazy Jones, a hotel janitor wandering corridors and rooms that each hide a different arcade challenge waiting to be played. The hotel acts as the hub, with doors leading to 14 distinct mini-games inspired by classic shooters, platformers, and puzzle games. Progression comes from mastering these short, fast-paced challenges, each with its own rules, hazards, and scoring systems, all stitched together by exploration rather than menus. What truly elevates Lazy Jones is its presentation. Designed and programmed by David Whittaker, the game features an unforgettable soundtrack that includes clever SID reinterpretations of popular early-80s tunes, giving every room its own identity and mood.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Lazy Jones C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/18aR-gTJwGE" data-video-id="18aR-gTJwGE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Lazy Jones video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/18aR-gTJwGE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Lazy Jones C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/18aR-gTJwGE" data-video-id="18aR-gTJwGE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=18aR-gTJwGE" target="_blank" rel="noopener">Open on YouTube</a>

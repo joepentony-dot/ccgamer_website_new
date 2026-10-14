@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Elidon (1985) – Commodore 64 Fantasy Exploration Adventure Released in 1985 by Orpheus, Elidon is an atmospheric fantasy adventure for the Commodore 64 that sends you fluttering through an enormous enchanted world of forests, flowers, strange creatures and hidden pathways. You control a fairy tasked with preparing for the return of the Fairy Queen. Her crown, Finvarra, needs seven magical flowers before the celebrations can begin – but first you must explore Elidon and track down seven bottles of magic water needed to make them bloom. And there is plenty of exploring to do. Elidon contains over 300 flick-screen locations, creating a surprisingly large maze for a C64 game from 1985. Your fairy can walk or fly between screens, squeezing through narrow passages and avoiding enemies and obstacles that gradually drain her energy. Various objects can be collected along the way, although you can only carry three at once.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Elidon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/rd5ItTu0y1g" data-video-id="rd5ItTu0y1g"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Elidon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/rd5ItTu0y1g/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Elidon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/rd5ItTu0y1g" data-video-id="rd5ItTu0y1g"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=rd5ItTu0y1g" target="_blank" rel="noopener">Open on YouTube</a>

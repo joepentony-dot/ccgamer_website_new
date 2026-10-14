@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Firelord (1986) – Commodore 64 Fantasy Action-Adventure with Moral Choices Released in 1986 by Hewson Consultants and developed by Stephen Crow, Firelord drops you into the cursed kingdom of Torot as Sir Galaheart, a lone knight tasked with reclaiming the sacred Firestone from the Evil Queen. To restore peace, you must recover four charms of eternal youth while surviving a land filled with danger, temptation, and consequence. The game blends exploration, combat, and puzzle-solving into a surprisingly deep experience. You begin unarmed, forced to explore cautiously until you obtain an enchanted crystal to fight off spectral enemies. As you roam forests, villages, and dungeons, you’ll trade, bargain, steal, or face trials that can end in execution if you fail. Firelord stands out for its layered systems. You must manage health, trading energy, and weapon energy while navigating a dynamic economy and morality system where your choices directly affect outcomes and progression.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Firelord C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qUATrXFe5Mo" data-video-id="qUATrXFe5Mo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Firelord video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qUATrXFe5Mo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Firelord C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qUATrXFe5Mo" data-video-id="qUATrXFe5Mo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qUATrXFe5Mo" target="_blank" rel="noopener">Open on YouTube</a>

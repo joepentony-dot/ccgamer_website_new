@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dropzone (1984) – Commodore 64 High-Speed Defender-Style Shoot ’Em Up Released in 1984 by U. S. Gold and developed by Archer Maclean under the Arena Graphics name, Dropzone is one of the Commodore 64’s most celebrated shoot ’em ups. Inspired by the arcade classic Defender, it drops you onto the hostile surface of Jupiter’s moon Io with a jetpack-equipped astronaut and a single objective: rescue stranded scientists while surviving relentless alien attacks. Gameplay is fast, precise, and unforgiving. You fly freely across horizontally scrolling landscapes, blasting enemies with your laser while juggling limited smart bombs and a temporary cloaking device. Every rescue adds pressure, as enemies grow more aggressive and the screen fills with threats from all directions. With 99 progressively tougher levels, Dropzone demands sharp reflexes, spatial awareness, and total control of momentum.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dropzone C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/0RtRUCc5SDo" data-video-id="0RtRUCc5SDo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dropzone video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/0RtRUCc5SDo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dropzone C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/0RtRUCc5SDo" data-video-id="0RtRUCc5SDo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=0RtRUCc5SDo" target="_blank" rel="noopener">Open on YouTube</a>

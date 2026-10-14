@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hunchback at the Olympics (1985) – Commodore 64 Comic Sports Action Classic Released in 1985 by Seatongrove and published by Ocean Software for the Commodore 64, Hunchback at the Olympics puts Quasimodo centre stage in a tongue-in-cheek take on Olympic competition. Competing to impress Esmeralda, you guide the famous hunchback through a series of athletic events with a clear focus on humour over realism. The game features a selection of Olympic disciplines including the 100m sprint, long jump, shot put, discus, javelin, hurdles, and high jump. Each event requires you to meet qualification standards using fast joystick movements or carefully timed inputs, emphasising reflexes and rhythm rather than detailed simulation. Presentation is simple and direct, with straightforward animations and arcade-style mechanics typical of mid-1980s sports titles. While the physics are intentionally loose and events can feel repetitive, the exaggerated performances and Esmeralda’s reactions add personality and light relief throughout the competition.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hunchback At The Olympics C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DZNHHLzlVr8" data-video-id="DZNHHLzlVr8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hunchback At The Olympics video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DZNHHLzlVr8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hunchback At The Olympics C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DZNHHLzlVr8" data-video-id="DZNHHLzlVr8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DZNHHLzlVr8" target="_blank" rel="noopener">Open on YouTube</a>

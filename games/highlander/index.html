@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Highlander (1986) – Commodore 64 Film Tie-In Fighting Game Released in 1986 by Ocean Software for the Commodore 64, Highlander is a one-on-one fighting game based on the cult classic fantasy film. Developed by Canvas, the game puts you in control of Connor MacLeod, the immortal swordsman, as he faces key opponents from the movie in a bid to claim “The Prize.” Combat is presented as a series of duels against Ramírez, Fasil, and the Kurgan. Each encounter focuses on sword-based fighting, with the goal of defeating every opponent in turn. While the premise promises cinematic clashes, the gameplay itself is very limited, offering a small move set and little tactical depth. Controls are awkward and unresponsive, making combat feel sluggish and unrefined. Movement and attacks lack precision, which often turns fights into drawn-out exchanges rather than tense duels.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Highlander C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/SLx3YOQVWE4" data-video-id="SLx3YOQVWE4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Highlander video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/SLx3YOQVWE4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Highlander C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/SLx3YOQVWE4" data-video-id="SLx3YOQVWE4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=SLx3YOQVWE4" target="_blank" rel="noopener">Open on YouTube</a>

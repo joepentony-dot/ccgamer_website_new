@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ghost Hunters (1987) – Commodore 64 Platform Shooter Haunted Mansion Released in 1987 by Codemasters, Ghost Hunters is a distinctive single-screen platform shooter developed by the Oliver Twins for the Commodore 64. Set inside the spooky Nightmare Mansion, the game blends precision platforming with crosshair-based shooting for a tense, arcade-style experience. You take control of Chuck Studbuckle on a mission to rescue his brother, Hunk, from a mansion overrun by ghosts and supernatural threats. Each room is packed with platforms, hazards, and roaming spirits, requiring careful movement and accurate shooting to survive. A key gameplay twist is the dual management of Macho Energy and the Terrorometer. While blasting ghosts keeps the mansion under control, allowing fear to rise too high can quickly end the mission, adding pressure to every encounter. The C64 version stands out for its colourful graphics, smooth animation, and responsive controls.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ghost Hunters C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/sGWw1Ucg15Q" data-video-id="sGWw1Ucg15Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ghost Hunters video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/sGWw1Ucg15Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ghost Hunters C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/sGWw1Ucg15Q" data-video-id="sGWw1Ucg15Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=sGWw1Ucg15Q" target="_blank" rel="noopener">Open on YouTube</a>

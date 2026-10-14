@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Populous (1989) – Commodore Amiga God Game Real-Time Strategy Classic Released in 1989 by Bullfrog Productions for the Commodore Amiga, Populous is widely regarded as the first true “god game,” placing players in the role of a deity guiding their followers toward domination. Instead of controlling individual units, players shape the world itself to influence the fate of their civilisation. Gameplay is presented in an isometric view, where players raise and lower terrain to create habitable land for their people. As populations grow, followers build settlements that increase their power, allowing them to expand, defend territory, and prepare for conflict with rival gods. Strategic depth comes from balancing population growth, land management, and divine intervention. Players can unleash powerful abilities such as earthquakes, floods, and volcanoes to disrupt enemies, destroy settlements, and shift the balance of power.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Populous Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1CfJbubw5vw" data-video-id="1CfJbubw5vw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Populous video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1CfJbubw5vw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Populous Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1CfJbubw5vw" data-video-id="1CfJbubw5vw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1CfJbubw5vw" target="_blank" rel="noopener">Open on YouTube</a>

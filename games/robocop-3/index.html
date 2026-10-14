@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ RoboCop 3 (1992) – Commodore Amiga 3D Action Adventure Cyberpunk Epic Released in 1992 by Ocean Software and developed by Digital Image Design, RoboCop 3 brings a bold 3D action experience to the Commodore Amiga, inspired by the film’s dystopian vision of Detroit. You step into RoboCop’s role as he fights to stop corporate plans to evict citizens and rebuild the city for profit. The game is split into five varied gameplay styles, including first-person shooting, driving missions, hand-to-hand combat, jetpack flying, and confrontations with a deadly robot ninja. This constant shift in perspective keeps the action fresh and reinforces the cinematic scope of the adventure. Two modes are available: Movie Adventure delivers a narrative-driven structure with branching missions, while Arcade Action lets you jump straight into individual scenarios. Between missions, in-game news reports help flesh out the story and give the game a strong sense of atmosphere.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Robocop 3 Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/kz0u3ZboQnU" data-video-id="kz0u3ZboQnU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Robocop 3 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/kz0u3ZboQnU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Robocop 3 Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/kz0u3ZboQnU" data-video-id="kz0u3ZboQnU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=kz0u3ZboQnU" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Water Polo (1987) – Commodore 64 Strategic Sports Simulation Released in 1987 by Gremlin Graphics for the Commodore 64, Water Polo delivers a detailed and thoughtful take on the aquatic team sport, standing apart from the more arcade-driven sports titles of its era. Rather than focusing on speed alone, the game places a strong emphasis on positioning, timing, and tactical play. Matches take place on a pseudo-3D pool viewed from above, with six players per team including a fully controllable goalkeeper. Control automatically switches to the player closest to the ball, plainly identified by a coloured cap, keeping the action flowing while encouraging quick decision-making. Gameplay rules closely mirror real water polo. Attacks must be made from one of five forward-facing directions to retain possession, while fouls, penalties, and temporary player ejections introduce a deeper strategic layer.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Water Polo C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7LBPWMq3W8Y" data-video-id="7LBPWMq3W8Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Water Polo video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7LBPWMq3W8Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Water Polo C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7LBPWMq3W8Y" data-video-id="7LBPWMq3W8Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7LBPWMq3W8Y" target="_blank" rel="noopener">Open on YouTube</a>

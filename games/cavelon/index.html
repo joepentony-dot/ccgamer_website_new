@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cavelon (1984) – Commodore 64 Medieval Action Adventure Released in 1984 by Jetsoft and published by Ocean Software for the Commodore 64, Cavelon is a medieval-themed action adventure that challenges you to rescue a princess imprisoned deep within the sinister Castle Cavelon. You take the role of a lone knight battling through dangerous dungeons in a race against time. Gameplay spans six horizontally scrolling, maze-like levels filled with enemy knights, archers, and deadly traps. Progression depends on locating and collecting all the scattered pieces of a magical door within each level, which then allows access to the next dungeon on the climb toward the castle’s summit. Combat requires careful positioning and timing, as different enemy types demand different approaches. Along the way, power-ups such as Excalibur grant temporary invincibility and help turn the tide during particularly intense encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cavelon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dGggW6SW5Ow" data-video-id="dGggW6SW5Ow"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cavelon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/dGggW6SW5Ow/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cavelon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/dGggW6SW5Ow" data-video-id="dGggW6SW5Ow"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=dGggW6SW5Ow" target="_blank" rel="noopener">Open on YouTube</a>

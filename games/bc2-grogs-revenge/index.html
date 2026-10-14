@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ B. C. II: Grog’s Revenge (1984) – Commodore 64 Prehistoric Action Adventure Released in 1984 for the Commodore 64, B. C. II: Grog’s Revenge is an action-adventure sequel developed by Sydney Development and published by Sierra On-Line. Continuing the comic-inspired world of B. C. ’s Quest for Tires, the game once again follows Thor, the stone-age caveman on his stone unicycle, as he sets off in search of the “Meaning of Life.” Gameplay alternates between two distinct styles. Mountain sections require careful balance and timing as Thor navigates narrow paths, avoids rocks and holes, and collects clams used as currency to pay tolls. Cave sections shift the pace, limiting visibility to a narrow beam of light and demanding precise movement to avoid hazards while gathering more clams. Adding constant tension is the ever-present threat of Grog.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="B.C. II: Grog&#39;s Revenge C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iXJM3Tz_-JQ" data-video-id="iXJM3Tz_-JQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play B.C. II: Grog&#39;s Revenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iXJM3Tz_-JQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="B.C. II: Grog&#39;s Revenge C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iXJM3Tz_-JQ" data-video-id="iXJM3Tz_-JQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iXJM3Tz_-JQ" target="_blank" rel="noopener">Open on YouTube</a>

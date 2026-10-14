@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Trashman (1984) – Commodore 64 Arcade Street-Cleaning Challenge Released in 1984 by New Generation Software and developed by Malcolm Evans, Trashman is an arcade-style action game that turns an everyday British job into a tense and memorable challenge. Set across suburban streets, you take on the role of a refuse collector racing against the clock to keep each road spotless. Each of the seven levels represents a street lined with houses, where bins must be collected and thrown into a constantly moving garbage truck. Efficiency is everything, as time is tight and mistakes are costly. Stepping onto the grass rapidly drains the bonus timer, while getting hit by passing cars results in an instant game over. Additional hazards such as dogs and cyclists add pressure, disrupting movement and forcing careful planning of each run.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Trashman C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/bRJ6cf_Q91c" data-video-id="bRJ6cf_Q91c"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Trashman video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/bRJ6cf_Q91c/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Trashman C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/bRJ6cf_Q91c" data-video-id="bRJ6cf_Q91c"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=bRJ6cf_Q91c" target="_blank" rel="noopener">Open on YouTube</a>

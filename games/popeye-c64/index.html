@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Popeye (1984) – Commodore 64 Arcade Platform Collect-’Em-Up Classic Released in 1984 for the Commodore 64, Popeye is a faithful home conversion of Nintendo’s hugely popular arcade hit, published by Parker Brothers. It brings the spinach-powered sailor to home computers with fast, single-screen platform action that closely mirrors the original coin-op experience. You control Popeye as he navigates a series of compact arenas, collecting musical notes, hearts, and other items thrown by Olive Oyl while dodging enemies like Bluto and the Sea Hag. The goal is simple but demanding: collect everything on screen before the timer runs out. Spinach plays a crucial role, temporarily turning the tables and allowing Popeye to defeat enemies rather than avoid them. This risk-and-reward loop keeps the action lively, forcing you to decide when to play it safe and when to go on the offensive.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Popeye C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1Br1Uqn9vqc" data-video-id="1Br1Uqn9vqc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Popeye video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1Br1Uqn9vqc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Popeye C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1Br1Uqn9vqc" data-video-id="1Br1Uqn9vqc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1Br1Uqn9vqc" target="_blank" rel="noopener">Open on YouTube</a>

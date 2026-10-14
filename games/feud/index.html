@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Feud (1987) – Commodore 64 Spellcasting Adventure | Retro Classic Released in 1987 by Binary Design and published under Mastertronic’s Bulldog Software label, Feud is a unique action-adventure built around magical rivalry and spellcraft. In the Commodore 64 version, you play as the sorcerer Learic, locked in a deadly feud with your evil brother Leanoric. To win, you must explore the map, gather herbs and ingredients, brew powerful spells, and hunt down your rival. Spells range from fireballs and lightning to invisibility and zombification, giving the game a strong tactical element. Success depends on learning spell recipes, managing resources, and predicting your opponent’s movements. The C64 edition differs notably from the Spectrum and Amstrad versions, featuring altered object placement and more unpredictable enemy tracking, which makes each encounter more tense and unpredictable. Visually, Feud features bold character sprites, a striking title screen by Ste Pickford, and an atmospheric soundtrack by David Whittaker that reinforces the game’s mystical tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Feud C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Qh2eQdSnUHk" data-video-id="Qh2eQdSnUHk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Feud video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Qh2eQdSnUHk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Feud C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Qh2eQdSnUHk" data-video-id="Qh2eQdSnUHk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Qh2eQdSnUHk" target="_blank" rel="noopener">Open on YouTube</a>

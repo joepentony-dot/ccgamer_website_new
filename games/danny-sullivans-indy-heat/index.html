@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Danny Sullivan’s Indy Heat (1992) – Commodore Amiga Top-Down Arcade Racing Classic Released in 1992, Danny Sullivan’s Indy Heat is a fast-paced top-down racing game developed by Sales Curve and based on Leland Corporation’s 1991 arcade hit starring IndyCar champion Danny Sullivan. The Amiga version delivers a high-energy racing experience that closely mirrors the speed, intensity, and presentation of the original arcade machine. Players race across nine international circuits, each packed with sharp corners, aggressive rivals, and demanding layouts, culminating in the dramatic Tradewest Speed Bowl finale. Every race is a balance of raw speed and strategy, with fuel levels, vehicle damage, and limited turbo boosts all playing a critical role in success. Pit stops are central to gameplay, allowing drivers to refuel, repair damage, and restock turbos at the cost of valuable race time.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Danny Sullivans Indy Heat Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1G1MCNNynVg" data-video-id="1G1MCNNynVg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Danny Sullivans Indy Heat video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1G1MCNNynVg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Danny Sullivans Indy Heat Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1G1MCNNynVg" data-video-id="1G1MCNNynVg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1G1MCNNynVg" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Buggy Boy (1987) – Commodore 64 Arcade Off-Road Racing Classic Released in 1987 by Elite Systems for the Commodore 64, Buggy Boy is a fast-paced arcade-style racing game originally developed by Tatsumi. Known as Speed Buggy in North America, the game was a major arcade hit, and its C64 conversion successfully captures the colour, speed, and spirit of the original coin-op experience. You race a dune buggy across five distinct courses—Offroad, North, East, South, and West—each split into multiple legs packed with obstacles, ramps, and tight corners. Scoring is just as important as speed, with points awarded for passing through gates, collecting flags, and pulling off risky stunts such as jumps and two-wheel driving. Fuel management and crash avoidance add an extra layer of pressure to every run. On the Commodore 64, Buggy Boy stands out for its vibrant presentation and impressively smooth scrolling.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Buggy Boy C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZiQMjg7nrCo" data-video-id="ZiQMjg7nrCo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Buggy Boy video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ZiQMjg7nrCo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Buggy Boy C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ZiQMjg7nrCo" data-video-id="ZiQMjg7nrCo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ZiQMjg7nrCo" target="_blank" rel="noopener">Open on YouTube</a>

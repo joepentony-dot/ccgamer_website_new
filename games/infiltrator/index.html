@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Infiltrator (1986) – Commodore 64 Flight &amp; Stealth Action Classic Released in 1986 by Chris Gray Enterprises and published by Mindscape and U. S. Gold, Infiltrator is a unique combat flight simulation and stealth action game for the Commodore 64. You step into the role of Johnny “Jimbo Baby” McGibbits, piloting the advanced Gizmo DHX-3 helicopter to infiltrate enemy territory and stop the plans of the mysterious Mad Leader. Each mission is divided into two phases: an aerial combat section and a ground-based infiltration segment. During flight missions, you navigate hostile airspace, identify friendly aircraft, and deploy missiles while using whisper mode for stealth. Ground missions focus on careful planning and disguise, requiring you to use fake documents, gas grenades, security cards, and explosives to bypass guards and complete objectives without raising alarms. This blend of flight simulation and espionage gameplay was highly innovative for its time, offering a level of depth and variety rarely seen on 8-bit systems.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Infiltrator C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Hl3XLuYFsMc" data-video-id="Hl3XLuYFsMc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Infiltrator video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Hl3XLuYFsMc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Infiltrator C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Hl3XLuYFsMc" data-video-id="Hl3XLuYFsMc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Hl3XLuYFsMc" target="_blank" rel="noopener">Open on YouTube</a>

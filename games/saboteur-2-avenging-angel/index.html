@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Saboteur II: Avenging Angel (1987) – Commodore 64 Stealth Action-Adventure Sequel Released in 1987 by Durell Software, Saboteur II: Avenging Angel is a side-scrolling action-adventure for the Commodore 64 and the sequel to the cult hit Saboteur!. Developed by Clive Townsend with music by Rob Hubbard, the game introduces Nina, sister of the original protagonist, on a mission driven by revenge and infiltration rather than brute force. The game unfolds across nine missions spanning more than 700 interconnected screens, forming a vast industrial compound filled with hazards and security systems. Progress depends on exploration and careful planning as you collect punched tape fragments to disable defences and work towards a daring motorcycle escape. Combat is deliberately de-emphasised in favour of stealth and evasion. Robotic guards, wild animals, electrified fences, and surveillance systems force you to observe enemy patterns, choose routes wisely, and solve environmental challenges rather than rely on direct confrontation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Saboteur II: Avenging Angel C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sk1gsZyI-xk" data-video-id="Sk1gsZyI-xk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Saboteur II: Avenging Angel video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Sk1gsZyI-xk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Saboteur II: Avenging Angel C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Sk1gsZyI-xk" data-video-id="Sk1gsZyI-xk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Sk1gsZyI-xk" target="_blank" rel="noopener">Open on YouTube</a>

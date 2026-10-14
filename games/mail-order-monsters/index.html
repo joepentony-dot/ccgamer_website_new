@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Mail Order Monsters (1985) – Commodore 64 Creature-Building Strategy Combat Classic Released in 1985 by Electronic Arts for the Commodore 64, Mail Order Monsters is an innovative action-strategy game designed by Paul Reiche III, Evan Robinson, and Nicky Robinson. The game places creativity at the centre of its design, allowing you to construct and customise their own combat creatures, known as morphs, before sending them into brutal arena battles. Gameplay revolves around three distinct modes that cater to different skill levels. Free Trial mode introduces pre-built morphs and basic combat mechanics, while Rental mode gives you a limited budget of psychons to assemble a creature for a single fight. Tournament mode offers the deepest experience, challenging you to build, upgrade, and evolve their morph across multiple battles while managing resources and long-term strategy. Combat takes place in a variety of arena formats, including Destruction, Capture the Flag, and The Horde, each demanding different tactics and loadouts.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mail Order Monsters C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/DeHu-fxcAsU" data-video-id="DeHu-fxcAsU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mail Order Monsters video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/DeHu-fxcAsU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mail Order Monsters C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/DeHu-fxcAsU" data-video-id="DeHu-fxcAsU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=DeHu-fxcAsU" target="_blank" rel="noopener">Open on YouTube</a>

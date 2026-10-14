@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Delta (1987) – Commodore 64 Horizontal Shoot-’Em-Up Space Classic Released in 1987 by Thalamus Ltd and developed by Stavros Fasoulas, Delta is a horizontally scrolling shoot-’em-up set deep within the Delta Sector of space. You take on the role of an elite Delta Patrol pilot, battling alien forces while rescuing stranded ships across a long and demanding campaign. The game spans 32 levels filled with tightly choreographed enemy waves and environmental hazards. Destroying specific formations releases power-ups that boost speed, firepower, and shields, but not all formations are beneficial, forcing you to learn patterns and make quick risk-versus-reward decisions on the fly. Delta is especially renowned for its soundtrack by Rob Hubbard. The iconic title theme draws inspiration from Philip Glass’s Koyaanisqatsi, while the in-game music echoes the pulsing rhythms of Pink Floyd’s On the Run, creating a moody, driving atmosphere that perfectly complements the action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Delta C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/4TsaJzP3sd4" data-video-id="4TsaJzP3sd4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Delta video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/4TsaJzP3sd4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Delta C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/4TsaJzP3sd4" data-video-id="4TsaJzP3sd4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=4TsaJzP3sd4" target="_blank" rel="noopener">Open on YouTube</a>

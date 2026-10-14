@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Max Headroom (1986) – Commodore 64 Cyberpunk Puzzle Adventure Released in 1986 by Quicksilva and developed by Binary Design, Max Headroom brings the dystopian world of the British TV movie and series to the Commodore 64. Set in a future ruled by ruthless media corporations, you take on the role of investigative journalist Edison Carter on a dangerous mission inside Network 23. Gameplay blends isometric exploration with cerebral puzzle-solving as you climb the corporation’s towering 211-floor headquarters to rescue Max Headroom, Edison’s digital alter ego. Progress requires hacking security systems, evading guards, and solving abstract challenges such as elevator control puzzles and memory-based light and sound sequences. The interface centres around icon-driven actions, allowing you to access surveillance cameras, manipulate building systems, and rest to recover energy. Tension builds steadily as resources are limited and mistakes can quickly derail progress through the tower.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Max Headroom C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hhcDHvZHb7A" data-video-id="hhcDHvZHb7A"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Max Headroom video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hhcDHvZHb7A/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Max Headroom C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hhcDHvZHb7A" data-video-id="hhcDHvZHb7A"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hhcDHvZHb7A" target="_blank" rel="noopener">Open on YouTube</a>

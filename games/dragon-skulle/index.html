@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dragon Skulle (1986) – Commodore 64 Isometric Fantasy Adventure Finale Released in January 1986 by Ultimate Play the Game and developed by Dave and Bob Thomas, Dragon Skulle is the fourth and final entry in the Sir Arthur Pendragon series. This closing chapter sends Sir Arthur to the ominous Skull Island on a mission to destroy the sinister Skull of Souls. The adventure unfolds in an isometric 3D view, using Ultimate’s Filmation engine to present a network of caverns and underground chambers filled with danger. Exploration and puzzle solving are central, with progress depending on careful navigation and understanding how the environment reacts to your actions. Combat and survival are tightly linked to item use. Tools such as a spade for digging and a veil that grants temporary invisibility play key roles, while environmental hazards like falling stalactites and flooding passages constantly drain energy and increase tension.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dragon Skulle C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/IfHv4IWrS2Q" data-video-id="IfHv4IWrS2Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dragon Skulle video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/IfHv4IWrS2Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dragon Skulle C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/IfHv4IWrS2Q" data-video-id="IfHv4IWrS2Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=IfHv4IWrS2Q" target="_blank" rel="noopener">Open on YouTube</a>

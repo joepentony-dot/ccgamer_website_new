@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Iridis Alpha (1986) – Commodore 64 Shoot ’Em Up | Retro Classic Iridis Alpha (1986), developed by Jeff Minter and released by Hewson, is one of the most distinctive and unconventional shoot ’em ups on the Commodore 64. You control Gilby, a robotic spacecraft capable of both aerial and ground-based movement, as they explore the alien world of Iridis Alpha. A defining feature is the dual-universe system, where players must switch between parallel screens to manage threats and maintain energy balance. Energy management is central to survival — having too much or too little power leads to destruction, forcing constant tactical adjustments. The game blends fast-paced shooting with strategic resource control, creating a demanding and highly original gameplay experience. Renowned for its difficulty, hypnotic visuals, and innovative mechanics, Iridis Alpha has earned cult status among fans of Jeff Minter’s experimental design philosophy.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Iridis Alpha C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/CvYBBPqJBe0" data-video-id="CvYBBPqJBe0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Iridis Alpha video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/CvYBBPqJBe0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Iridis Alpha C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/CvYBBPqJBe0" data-video-id="CvYBBPqJBe0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=CvYBBPqJBe0" target="_blank" rel="noopener">Open on YouTube</a>

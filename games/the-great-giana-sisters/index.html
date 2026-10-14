@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Great Giana Sisters (1987) – Commodore 64 Iconic Platform Adventure Released in 1987 by Rainbow Arts and developed by Time Warp, The Great Giana Sisters is one of the most famous and talked-about platform games on the Commodore 64. You guide Giana through a surreal dream world packed with hazards, enemies, and precision jumps, all in a quest to reach a giant diamond and wake from her dream. The gameplay is classic side-scrolling platform action spread across 33 increasingly demanding levels. Giana can jump on enemies, collect gems, and use power-ups that grant new abilities such as projectile attacks or temporarily disabling foes. Tight controls and fast-paced level design demand accuracy, timing, and memorisation to progress. On the C64, the game stood out for its smooth scrolling and colourful visuals, pushing the hardware impressively hard.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Great Giana Sisters C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/53G587np6co" data-video-id="53G587np6co"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Great Giana Sisters video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/53G587np6co/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Great Giana Sisters C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/53G587np6co" data-video-id="53G587np6co"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=53G587np6co" target="_blank" rel="noopener">Open on YouTube</a>

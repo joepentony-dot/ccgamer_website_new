@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hunter (1991) – Commodore Amiga Open-World 3D Action Pioneer Released in 1991, Hunter was developed by Paul Holmes and published by Activision, delivering a level of freedom rarely seen in games of its era. Designed for the Amiga and Atari ST, it places players in control of a lone soldier dropped into a vast archipelago under enemy control, with no fixed path to success. The game’s defining feature is its open-ended structure. Players can explore freely on foot or by swimming, and can commandeer a wide range of vehicles including cars, tanks, helicopters, boats, and even surfboards. Missions can be tackled in multiple ways, rewarding experimentation, planning, and improvisation rather than rigid solutions. Hunter’s world feels alive and reactive. Buildings can be entered, civilians and enemies move independently, and player actions can influence future encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hunter Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Fmxff4H7CVk" data-video-id="Fmxff4H7CVk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hunter video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Fmxff4H7CVk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hunter Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Fmxff4H7CVk" data-video-id="Fmxff4H7CVk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Fmxff4H7CVk" target="_blank" rel="noopener">Open on YouTube</a>

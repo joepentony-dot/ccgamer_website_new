@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Super Trolley (1988) – Commodore 64 Isometric Supermarket Simulation Released in 1988 by Mastertronic and developed by Icon Design Ltd. , Super Trolley is one of the most unusual simulation games to appear on the Commodore 64. Inspired by a wish granted on BBC’s Jim’ll Fix It, the original idea came from eight-year-old Andrew Collett, who imagined a game about the everyday realities of working in a supermarket. Viewed from an isometric perspective, you take on the role of a supermarket employee tasked with stocking shelves, labelling goods, collecting stray trolleys, and keeping the store running smoothly. Each working day is timed, and failure to complete your duties efficiently can result in being fired. The aim is to perform well enough to earn promotions across six in-game days, eventually working your way up to store manager.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Super Trolley C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9DViytCyeyE" data-video-id="9DViytCyeyE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Super Trolley video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9DViytCyeyE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Super Trolley C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9DViytCyeyE" data-video-id="9DViytCyeyE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9DViytCyeyE" target="_blank" rel="noopener">Open on YouTube</a>

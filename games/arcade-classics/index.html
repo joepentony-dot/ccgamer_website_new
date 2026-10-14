@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Arcade Classics (1987) – Commodore 64 Retro Arcade Compilation Classic Released in 1987 by Firebird Software for the Commodore 64, Arcade Classics is a nostalgic compilation that brings together four reimagined arcade favourites in one polished package. Developed by David Korn with music by Rob Hubbard, the collection celebrates the golden age of coin-op gaming while showcasing the C64’s home arcade potential. The compilation features updated versions of Asteroids, Snakes, Space Invaders, and Space Wars, each adapted to suit the strengths of the Commodore 64. Familiar mechanics are enhanced with smoother controls, improved visuals, and refined sound, delivering experiences that feel both authentic and refreshed. Asteroids challenges you to navigate dense asteroid fields while blasting debris and enemy craft with precise timing. Snakes offers a fast-paced twist on the classic growing-line formula, demanding sharp reflexes and careful movement.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Arcade Classics C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cjv960nDsw0" data-video-id="cjv960nDsw0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Arcade Classics video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cjv960nDsw0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Arcade Classics C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cjv960nDsw0" data-video-id="cjv960nDsw0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cjv960nDsw0" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Predator (1988) – Commodore 64 Jungle Action Shooter Based on the Film Released in 1988 by Activision and developed by Source the Software House, Predator brings the tension of the 1987 action film to the Commodore 64. You step into the boots of Major Dutch Schaefer, fighting your way through hostile Central American jungle terrain against armed soldiers and an unseen alien hunter. The game plays as a side-scrolling action shooter spread across five stages. You begin lightly equipped, but fallen teammates allow you to swap weapons along the way, including the iconic Minigun and grenade launcher. Choosing when to change firepower matters, as only one weapon can be carried at a time. A standout feature is the sudden shift into the Predator’s infrared viewpoint, where the hunter stalks you with its targeting system.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Predator C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iK-O4OxRTdE" data-video-id="iK-O4OxRTdE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Predator video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iK-O4OxRTdE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Predator C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iK-O4OxRTdE" data-video-id="iK-O4OxRTdE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iK-O4OxRTdE" target="_blank" rel="noopener">Open on YouTube</a>

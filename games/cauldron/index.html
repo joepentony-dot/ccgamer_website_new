@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cauldron (1985) – Commodore 64 Witchy Platform-Shooter with a Dark Edge Released in 1985 by Palace Software, Cauldron is a distinctive Commodore 64 title that blends platforming and shoot-’em-up action within a spooky, Halloween-inspired fantasy setting. You take on the role of a young witch determined to overthrow the Pumpkin King and claim the title of Witch Queen. The game is split into two contrasting gameplay styles. One section has you flying on a broomstick, collecting keys and magical ingredients while fending off enemies. The other shifts to underground platform-based caves, where precise jumping and careful movement are required to retrieve potion components needed to progress. Cauldron stands out for its strong atmosphere, with detailed sprites and smooth scrolling that bring its eerie world to life. The experience is reinforced by Keith Miller’s haunting soundtrack, which adds tension and mood throughout both gameplay sections.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cauldron C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/uyCf5lb8OOg" data-video-id="uyCf5lb8OOg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cauldron video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/uyCf5lb8OOg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cauldron C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/uyCf5lb8OOg" data-video-id="uyCf5lb8OOg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=uyCf5lb8OOg" target="_blank" rel="noopener">Open on YouTube</a>

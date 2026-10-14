@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Raid on Bungeling Bay (1984) – Commodore 64 Strategic Helicopter Shoot ’Em Up Released in 1984 by Brøderbund and designed by Will Wright, Raid on Bungeling Bay is a distinctive shoot ’em up that blends fast-paced action with strategic depth. You pilot a helicopter launched from an aircraft carrier, striking at the Bungeling Empire by bombing factories scattered across multiple islands on a small planetoid. Gameplay revolves around repeated attack runs against enemy infrastructure while defending the aircraft carrier, which serves as your home base. As missions progress, resistance intensifies with gun turrets, fighter jets, guided missiles, and even a battleship hunting you down. A hidden island provides a vital opportunity to rearm and refuel, rewarding exploration and careful planning. What truly sets the game apart is its underlying simulation-style design. Factories evolve over time, developing new defences and technologies if left unchecked, while supply boats visibly move between islands, reinforcing their interdependence.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Raid On Bungeling Bay C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KqQGFILxF6A" data-video-id="KqQGFILxF6A"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Raid On Bungeling Bay video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KqQGFILxF6A/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Raid On Bungeling Bay C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KqQGFILxF6A" data-video-id="KqQGFILxF6A"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KqQGFILxF6A" target="_blank" rel="noopener">Open on YouTube</a>

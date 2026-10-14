@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Samantha Fox Strip Poker (1986) – Commodore 64 Adult Poker Simulation Classic Released in 1986 by Software Communications and published by Martech Games for the Commodore 64, Samantha Fox Strip Poker is an early adult-themed poker simulation featuring British model Samantha Fox. You compete in 5-card or 7-card stud matches, with opponents adapting their play style as each game progresses and victories unlocking progressively revealing images. Despite its provocative premise, the game focuses heavily on genuine card strategy, requiring careful betting, bluffing, and risk management to succeed. The minimalist presentation keeps attention firmly on the gameplay loop, blending gambling mechanics with reward-based progression. A standout feature is the soundtrack by Rob Hubbard, credited as John York, including SID chip versions of “The Entertainer” and “The Stripper,” which became legendary among C64 music fans. These distinctive tunes helped elevate the experience and remain one of the game’s most memorable elements.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Samantha Fox Strip Poker C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Zko10cfXB_k" data-video-id="Zko10cfXB_k"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Samantha Fox Strip Poker video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Zko10cfXB_k/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Samantha Fox Strip Poker C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Zko10cfXB_k" data-video-id="Zko10cfXB_k"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Zko10cfXB_k" target="_blank" rel="noopener">Open on YouTube</a>

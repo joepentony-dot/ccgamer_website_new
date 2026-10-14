@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Star Wars (1988) – Commodore 64 Arcade-Inspired Rail Shooter Released in 1988 by Domark and developed by Vektor Grafix, Star Wars for the Commodore 64 brings the legendary Battle of Yavin to home computers. Inspired by Atari’s iconic arcade machine, this version reimagines the experience within the limits of the C64 while aiming to preserve the feel and structure of the original. The game is split into three distinct sequences. First, you engage in a space battle against swarms of TIE Fighters defending the Death Star. This is followed by a surface assault, flying low across the station while avoiding obstacles and targeting defensive emplacements. The final and most memorable section is the trench run, where precision flying and sharp reflexes are required to survive enemy fire and line up the decisive shot into the exhaust port.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Star Wars C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QztY4Nc369I" data-video-id="QztY4Nc369I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Star Wars video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QztY4Nc369I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Star Wars C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QztY4Nc369I" data-video-id="QztY4Nc369I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QztY4Nc369I" target="_blank" rel="noopener">Open on YouTube</a>

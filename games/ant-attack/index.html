@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ant Attack (1984) – Commodore 64 Isometric 3D Rescue Adventure Classic Released in 1984 for the Commodore 64 by Quicksilva, following its original 1983 Spectrum debut by Sandy White, Ant Attack is a pioneering isometric adventure that introduced true three-dimensional movement to home computer gaming. Set in the surreal walled city of Antescher, inspired by the artwork of M. C. Escher, players choose to control either a boy or a girl on a dangerous rescue mission. The objective is to navigate the maze-like city, avoid towering hostile ants, and locate your captured partner before time runs out. Movement allows players to travel forward, backward, sideways, and vertically, creating a genuine sense of height and depth rarely seen at the time. Ants can be temporarily stunned by jumping on them or by using limited grenades, though careless use can put both characters at risk.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ant Attack C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/CLTWgodkg-Q" data-video-id="CLTWgodkg-Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ant Attack video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/CLTWgodkg-Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ant Attack C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/CLTWgodkg-Q" data-video-id="CLTWgodkg-Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=CLTWgodkg-Q" target="_blank" rel="noopener">Open on YouTube</a>

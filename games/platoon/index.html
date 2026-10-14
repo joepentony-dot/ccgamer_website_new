@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Platoon (1987) – Commodore 64 Action-Adventure Vietnam War Movie Tie-In Released in 1987 by Ocean Software and published by Data East for the Commodore 64, Platoon is an ambitious action-adventure game based on Oliver Stone’s acclaimed Vietnam War film. Rather than focusing on a single gameplay style, the game attempts to capture the mayhem and intensity of combat through multiple distinct scenarios. The experience is split across four varied segments. Jungle Trek plays as a side-scrolling shooter through hostile terrain filled with traps and enemy patrols. Tunnel Exploration shifts to a tense first-person perspective as you navigate claustrophobic underground passages. Night Ambush uses a fixed-screen viewpoint with limited visibility, forcing careful positioning and awareness, while the Final Assault presents an isometric shooter climax inside an enemy bunker. A unique morale system underpins the gameplay, dropping if civilians are harmed or objectives are failed, which directly impacts progression.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Platoon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/jCeyn8T4_do" data-video-id="jCeyn8T4_do"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Platoon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/jCeyn8T4_do/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Platoon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/jCeyn8T4_do" data-video-id="jCeyn8T4_do"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=jCeyn8T4_do" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ BMX Simulator (1986) – Commodore 64 Top-Down BMX Racing Classic Released in 1986 by Codemasters and developed by Richard Darling, BMX Simulator brings fast, competitive BMX racing to the Commodore 64 from a distinctive top-down perspective. As part of Codemasters’ budget “Simulator” series, it delivers tight, demanding gameplay built around speed, precision, and time pressure. You race across seven increasingly challenging tracks packed with ramps, bumps, and tight corners, aiming to complete three laps before the timer runs out. Clean racing is essential, as crashes cost valuable seconds, while faster finishes earn higher scores. The inclusion of a two-player mode adds a strong competitive edge, making head-to-head races a real test of skill. The presentation captures the energy of BMX racing with bright, readable visuals and smooth track layouts. David Whittaker’s soundtrack complements the action perfectly, adding drive and momentum to every race without getting in the way of gameplay.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="BMX Simulator C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/r6gkSG2ZRx4" data-video-id="r6gkSG2ZRx4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play BMX Simulator video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/r6gkSG2ZRx4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="BMX Simulator C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/r6gkSG2ZRx4" data-video-id="r6gkSG2ZRx4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=r6gkSG2ZRx4" target="_blank" rel="noopener">Open on YouTube</a>

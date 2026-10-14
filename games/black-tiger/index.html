@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Black Tiger (1990) – Commodore Amiga Arcade Hack-and-Slash Adventure Originally released in arcades by Capcom in 1987 and later ported to the Amiga in 1990 by U. S. Gold, Black Tiger delivers a fast-paced blend of action, exploration, and light RPG mechanics. Players step into the role of a barbarian warrior battling through a hostile fantasy world filled with monsters, traps, and hidden secrets. Armed with a morning star and throwing daggers, the hero must fight through eight sprawling stages packed with enemies and powerful end-of-level bosses. Along the way, players collect the in-game currency Zenny, which can be spent on upgrades such as stronger weapons, armour, keys, and vital items purchased from mysterious wise men found throughout the levels. The Amiga version features both horizontal and vertical scrolling, secret dungeons, and hidden treasure chests that reward careful exploration.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Black Tiger Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Mu9MdFPyJqc" data-video-id="Mu9MdFPyJqc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Black Tiger video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Mu9MdFPyJqc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Black Tiger Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Mu9MdFPyJqc" data-video-id="Mu9MdFPyJqc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Mu9MdFPyJqc" target="_blank" rel="noopener">Open on YouTube</a>

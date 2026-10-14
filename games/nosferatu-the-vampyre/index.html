@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nosferatu the Vampyre (1986) – Commodore 64 Isometric Gothic Horror Adventure Released in 1986 by Design Design and published by Piranha Software for the Commodore 64, Nosferatu the Vampyre is an atmospheric action-adventure inspired by Werner Herzog’s 1979 film. Set in a bleak, gothic world, the game blends exploration, tension, and narrative-driven objectives across multiple characters. The adventure unfolds over three distinct stages. First, you control Jonathan Harker as he explores Count Dracula’s castle, searching for vital documents while evading supernatural dangers. The second stage shifts to the town of Wismar, where Van Helsing and Jonathan battle the spreading vampire threat using tools such as garlic and stakes. In the final act, you take control of Lucy, the only character capable of confronting Dracula directly, attempting to lure him into a deadly trap. Presented in an isometric perspective, the game delivers a striking visual style that reinforces its eerie tone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nosferatu The Vampyre C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/s8oabdNDEJs" data-video-id="s8oabdNDEJs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nosferatu The Vampyre video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/s8oabdNDEJs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nosferatu The Vampyre C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/s8oabdNDEJs" data-video-id="s8oabdNDEJs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=s8oabdNDEJs" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ International Karate Plus (1988) – Commodore Amiga Three-Way Fighting Action Classic Released in 1988 by System 3 and developed by Archer MacLean for the Commodore Amiga, International Karate Plus—commonly known as IK+—is a refined and expanded sequel to the original International Karate. This fast-paced top-down fighting game introduced the unique concept of three fighters battling simultaneously on a single screen, creating constant tension and chaotic fun. Gameplay focuses on precise joystick control, responsive combat, and smart positioning, as players must defend themselves from two opponents at once. A wide range of punches, kicks, and special moves encourages aggressive play, while careful timing and spacing are essential for survival in later rounds. Progression is driven by skill mastery and adaptability, as enemy fighters become faster and more unpredictable. Alongside its competitive mechanics, the Amiga version adds playful background animations and hidden gags, including roaming Pac-Man characters, periscopes, spiders, and cheeky visual tricks that give the game its distinctive personality.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="IK+ Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_LTR9gNp_5c" data-video-id="_LTR9gNp_5c"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play IK+ video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_LTR9gNp_5c/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="IK+ Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_LTR9gNp_5c" data-video-id="_LTR9gNp_5c"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_LTR9gNp_5c" target="_blank" rel="noopener">Open on YouTube</a>

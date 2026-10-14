@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Stunt Car Racer (1989) – Commodore 64 3D Arcade Racing Classic Released in 1989 by MicroStyle and developed by Geoff Crammond, Stunt Car Racer is a landmark 3D racing game that pushed the Commodore 64 far beyond expectations. Featuring elevated tracks suspended high above the ground, the game delivers white-knuckle races packed with jumps, narrow turns, and dramatic drop-offs. You take control of a powerful V8-powered car fitted with a roll cage and turbo boost, competing one-on-one against rival drivers in a league-based structure. Winning races earns points and promotion through divisions, while crashes, rollovers, and falling from the track result in punishing time penalties that can quickly turn victory into defeat. Success depends on precise steering, throttle control, and learning when to push for speed or back off to avoid disaster. The game’s physics-driven handling gives every bump and landing real weight, making each track feel tense and unpredictable.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Stunt Car Racer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/AwdUwEjqBYk" data-video-id="AwdUwEjqBYk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Stunt Car Racer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/AwdUwEjqBYk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Stunt Car Racer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/AwdUwEjqBYk" data-video-id="AwdUwEjqBYk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=AwdUwEjqBYk" target="_blank" rel="noopener">Open on YouTube</a>

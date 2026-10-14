@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Saint Dragon (1990) – Commodore 64 Side-Scrolling Shoot ’Em Up with a Cyborg Dragon Twist Released on the Commodore 64 in 1990 and ported by Random Access from NMK’s arcade original, Saint Dragon is a horizontally scrolling shoot ’em up that immediately stands out thanks to its biomechanical dragon protagonist. Set in a dark sci-fi future, you control Saint Dragon as it rebels against a ruthless cyborg empire. Action unfolds across five steadily escalating stages, each ending with a huge screen-filling guardian that tests positioning and firepower. Movement is deliberate and weighty, demanding careful control as enemy patterns close in from all angles. The weapon system takes clear inspiration from R-Type, with collectible power-ups that upgrade pulse shots, lasers, and the dragon’s distinctive segmented tail, which can be used defensively as a shield. A temporary hyper mode boosts firepower and grants brief invulnerability, adding a risk-reward layer to the combat.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Saint Dragon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/U3Iv0QLn7cU" data-video-id="U3Iv0QLn7cU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Saint Dragon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/U3Iv0QLn7cU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Saint Dragon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/U3Iv0QLn7cU" data-video-id="U3Iv0QLn7cU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=U3Iv0QLn7cU" target="_blank" rel="noopener">Open on YouTube</a>

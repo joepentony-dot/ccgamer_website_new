@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Apollo 18: Mission to the Moon (1987) – Commodore 64 Space Simulation Classic Released in 1987 by Accolade and developed by Artech, Apollo 18: Mission to the Moon is an ambitious space simulation for the Commodore 64 that imagines an alternate-history Apollo mission. You take full control of a lunar expedition, managing every phase from launch and orbital docking to moon landing, EVA missions, and the perilous return to Earth. Gameplay is divided into distinct, skill-based mission segments that demand precision and concentration. Tasks such as orbital rendezvous and lunar descent require careful monitoring of instruments, fuel levels, and timing, capturing the tension and complexity of real-world spaceflight. One of the game’s most striking features is its use of digitized speech for mission control, a rare and immersive touch on 8-bit hardware. Combined with realistic telemetry readouts and functional interfaces, the game delivers an experience that feels both educational and dramatic.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Apollo 18: Mission To The Moon C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/fBmXGENJmbk" data-video-id="fBmXGENJmbk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Apollo 18: Mission To The Moon video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/fBmXGENJmbk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Apollo 18: Mission To The Moon C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/fBmXGENJmbk" data-video-id="fBmXGENJmbk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=fBmXGENJmbk" target="_blank" rel="noopener">Open on YouTube</a>

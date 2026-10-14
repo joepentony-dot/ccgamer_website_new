@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Snowman (1984) – Commodore 64 Festive Platformer from a Classic Tale Released in 1984 by Quicksilva for the Commodore 64, The Snowman is a charming single-screen platform game inspired by Raymond Briggs’ beloved picture book and its iconic animated adaptation. Rather than focusing on action, the game delivers a gentle, thoughtful experience that reflects the warmth and magic of the original story. Gameplay centres on collecting items such as snow, clothing, toys, and ice to assemble the snowman piece by piece. You must carefully navigate layered platform layouts while avoiding hazards, particularly gas flames that can melt collected snow. Strategic use of items like ice lollies allows flames to be frozen, adding a subtle puzzle element to progression. The presentation plays a huge role in the game’s appeal.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Snowman C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Kzm6FmywXpw" data-video-id="Kzm6FmywXpw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Snowman video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Kzm6FmywXpw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Snowman C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Kzm6FmywXpw" data-video-id="Kzm6FmywXpw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Kzm6FmywXpw" target="_blank" rel="noopener">Open on YouTube</a>

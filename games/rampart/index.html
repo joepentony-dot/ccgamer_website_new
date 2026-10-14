@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rampart (1992) – Commodore 64 Castle Defence Strategy Arcade Hybrid Originally developed by Atari Games and released on the Commodore 64 by Domark in 1992, Rampart delivers a distinctive blend of real-time strategy, action, and puzzle gameplay. Rather than traditional armies or units, the focus here is on building, repairing, and defending medieval castles under constant threat. Gameplay is split into two intense phases. During the building phase, you use a limited supply of wall pieces to repair damage and expand their fortress layout, deciding how best to enclose space for cannons and protection. Once time runs out, the battle phase begins, with you firing cannons to repel waves of attacking enemies and rival castles. Success depends on fast thinking and smart planning. Poor wall placement leaves cannons exposed, while inefficient repairs can spell disaster when the next assault begins.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rampart C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/oMEoQAibnm8" data-video-id="oMEoQAibnm8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rampart video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/oMEoQAibnm8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rampart C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/oMEoQAibnm8" data-video-id="oMEoQAibnm8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=oMEoQAibnm8" target="_blank" rel="noopener">Open on YouTube</a>

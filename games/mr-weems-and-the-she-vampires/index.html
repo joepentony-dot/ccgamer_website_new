@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>The Astonishing Adventures of Mr. Weems and the She Vampires is a 1987 Commodore 64 action game published by Piranha. Viewed from above, it sends Mr. Weems through six maze-like levels filled with vampires, monsters, locked routes and hazards. His garlic gun provides the main defence, while keys open doors and garlic pills grant temporary protection. Each stage also hides part of the equipment needed for the final confrontation: a stake, mallet, mega-garlic, mirror and crucifix. Collecting those objects and surviving long enough to reach the Great She Vampire gives the arcade action a persistent objective. The design is often compared with Gauntlet, but its horror-comedy theme, limited resources and emphasis on assembling a vampire-hunting kit give the game its own identity.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mr Weems And The She Vampires C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/5tpXo_IEU_U" data-video-id="5tpXo_IEU_U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mr Weems And The She Vampires video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/5tpXo_IEU_U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mr Weems And The She Vampires C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/5tpXo_IEU_U" data-video-id="5tpXo_IEU_U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=5tpXo_IEU_U" target="_blank" rel="noopener">Open on YouTube</a>

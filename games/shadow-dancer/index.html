@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Shadow Dancer (1991) – Commodore 64 Ninja Arcade Action Released in 1991 by U. S. Gold and developed by Images Design, Shadow Dancer brings Sega’s arcade follow-up to Shinobi onto the Commodore 64. You play as a masked ninja warrior fighting through hostile urban environments, taking down terrorists and rescuing hostages under constant pressure. The gameplay focuses on fast side-scrolling combat, combining shuriken attacks with close-range strikes and the unique support of a loyal attack dog. Timing your moves and knowing when to deploy the dog becomes essential as enemy patterns tighten and levels grow more demanding. Despite the limitations of the 8-bit hardware, the C64 version delivers fluid animation and well-structured level design that keeps the action flowing. The darker colour palette suits the urban ninja theme, while Allister Brimble’s driving soundtrack adds energy and urgency to every encounter.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Shadow Dancer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LzsEuK5Mk40" data-video-id="LzsEuK5Mk40"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Shadow Dancer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LzsEuK5Mk40/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Shadow Dancer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LzsEuK5Mk40" data-video-id="LzsEuK5Mk40"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LzsEuK5Mk40" target="_blank" rel="noopener">Open on YouTube</a>

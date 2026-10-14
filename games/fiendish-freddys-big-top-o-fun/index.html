@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fiendish Freddy’s Big Top o’ Fun (1990) – Commodore 64 Arcade Circus Mini-Game Classic Released in 1990 by Gray Matter and published by Mindscape, Fiendish Freddy’s Big Top o’ Fun brings dark humour and arcade-style action to the Commodore 64. Originally a 16-bit title, the game was later converted to the C64 and became one of the showcase releases for the Commodore 64 Games System, highlighting what the platform could still achieve late in its life. You are tasked with saving a failing circus from demolition by successfully performing six dangerous circus acts. These include diving, juggling, trapeze, knife throwing, tightrope walking, and the human cannonball, each presented as a distinct mini-game with its own rules, timing, and skill demands. Adding mayhem to every performance is Fiendish Freddy himself, a malicious saboteur who interferes at the worst possible moments.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fiendish Freddy&#39;s Big Top O&#39; Fun C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/m-QMTG_sHpA" data-video-id="m-QMTG_sHpA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fiendish Freddy&#39;s Big Top O&#39; Fun video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/m-QMTG_sHpA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fiendish Freddy&#39;s Big Top O&#39; Fun C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/m-QMTG_sHpA" data-video-id="m-QMTG_sHpA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=m-QMTG_sHpA" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zone Trooper (1988) – Commodore 64 Sci-Fi Action Adventure Survival Released in 1988 by Gamebusters for the Commodore 64, Zone Trooper is a side-scrolling sci-fi action adventure set on a hostile alien world. After crash-landing on the planet’s surface, you take control of a lone astronaut tasked with recovering vital plasma capsules needed to repair their stranded spacecraft. Gameplay blends exploration, combat, and puzzle-solving as you move across the planet’s surface and descend into underground complexes. A distinctive gravity mechanic influences movement and jumping, adding an extra layer of challenge to platforming sections and forcing careful positioning during exploration. Survival plays a key role, with you needing to manage limited air supply and energy levels while navigating dangerous environments and hostile encounters. Progress depends on methodical exploration and smart resource use rather than pure reflexes alone.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zone Trooper C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/kcNRrYXwePc" data-video-id="kcNRrYXwePc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zone Trooper video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/kcNRrYXwePc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zone Trooper C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/kcNRrYXwePc" data-video-id="kcNRrYXwePc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=kcNRrYXwePc" target="_blank" rel="noopener">Open on YouTube</a>

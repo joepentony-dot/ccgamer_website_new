@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Tour de France (1985) – Commodore 64 Cycling Simulation Classic Released in 1985 by Activision and developed by Novotrade Software, Tour de France is one of the earliest officially licensed cycling games to appear on the Commodore 64. It places you in the saddle for a gruelling race against the clock, recreating the endurance and rhythm of professional stage racing rather than head-to-head competition. The game’s defining feature is its unusual control system. Speed is built by rapidly moving the joystick left and right, while steering is handled by holding the fire button and adjusting direction. Gear changes play an important role too, forcing you to manage effort carefully as terrain and pace shift throughout each stage. Rather than racing visible opponents, Tour de France focuses entirely on time trials. Success depends on efficiency, stamina management, and maintaining a smooth rhythm, with overall victory decided by cumulative stage times rather than single-race wins.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Tour De France C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/TWFbsc-phQg" data-video-id="TWFbsc-phQg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Tour De France video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/TWFbsc-phQg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Tour De France C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/TWFbsc-phQg" data-video-id="TWFbsc-phQg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=TWFbsc-phQg" target="_blank" rel="noopener">Open on YouTube</a>

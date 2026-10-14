@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Street Fighter (1988) – Commodore 64 One-on-One Fighting Origins Released in 1988 by Capcom and ported to the Commodore 64 by Tiertex, Street Fighter marks the very beginning of one of gaming’s most influential fighting franchises. You step into the role of Ryu, travelling across the world to face a series of martial artists in traditional one-on-one combat. The gameplay centres on close-range battles using punches, kicks, and signature special moves including the Hadouken and Shoryuken. Each location introduces a new opponent with distinct fighting styles, building towards a final confrontation with Sagat. Timing, spacing, and stamina management are key to surviving each bout. On the Commodore 64, the game presents a simplified take on the arcade original. Visuals and sound are scaled back, animations are limited, and control responsiveness can feel stiff, yet the core structure of the fights and the global tournament concept remain intact.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Street Fighter C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/XO6qptFcYrI" data-video-id="XO6qptFcYrI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Street Fighter video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/XO6qptFcYrI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Street Fighter C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/XO6qptFcYrI" data-video-id="XO6qptFcYrI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=XO6qptFcYrI" target="_blank" rel="noopener">Open on YouTube</a>

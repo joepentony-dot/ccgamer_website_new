@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Realm of Impossibility (1984) – Commodore 64 Isometric Horror Adventure Released in 1984 by BRAM Inc. and published by Electronic Arts, Realm of Impossibility is an isometric action-adventure for the Commodore 64 that plunges you into a surreal, illusion-filled nightmare. Originally released as Zombies on the Atari 8-bit, this enhanced version challenges you to recover seven mystical crowns and defeat the evil cleric Wistrik. Gameplay blends fast reflexes with tactical thinking as you explore 13 labyrinthine dungeons crawling with zombies, snakes, spiders, and other horrors. You can place crosses to temporarily block enemies and collect scrolls to unleash spells, adding layers of strategy to the constant pressure of survival. The standout feature is its disorienting isometric world, inspired by impossible architecture that twists perception and navigation. Each room demands careful planning and spatial awareness, turning movement itself into a puzzle as deadly as the monsters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Realm Of Impossibility C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ICvoH9tBYKw" data-video-id="ICvoH9tBYKw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Realm Of Impossibility video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ICvoH9tBYKw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Realm Of Impossibility C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ICvoH9tBYKw" data-video-id="ICvoH9tBYKw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ICvoH9tBYKw" target="_blank" rel="noopener">Open on YouTube</a>

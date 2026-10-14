@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Falcon Patrol (1983) – Commodore 64 VTOL Shoot ’Em Up Airfield Defence Released in 1983 by Virgin Games and developed by Steve Lee, Falcon Patrol is a fast-paced side-scrolling shoot ’em up for the Commodore 64 that puts you in control of a vertical take-off and landing aircraft. Set above a hostile desert landscape, the mission is simple but demanding: defend six vital airfields from relentless enemy bombers. Gameplay focuses on constant movement and situational awareness as you sweep left and right across the terrain, intercepting enemy jets before they can destroy the runways needed for refuelling and rearming. A radar display at the bottom of the screen tracks hostile aircraft and highlights which airfields remain operational, adding a tactical layer to the action. The two-way scrolling and escalating enemy waves steadily increase the pressure, rewarding sharp reflexes and efficient targeting.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Falcon Patrol C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/BPHga6ATkWo" data-video-id="BPHga6ATkWo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Falcon Patrol video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/BPHga6ATkWo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Falcon Patrol C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/BPHga6ATkWo" data-video-id="BPHga6ATkWo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=BPHga6ATkWo" target="_blank" rel="noopener">Open on YouTube</a>

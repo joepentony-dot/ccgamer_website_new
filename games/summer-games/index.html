@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Summer Games (1984) – Commodore 64 Olympic Multi-Event Classic Released in 1984 by Epyx, Summer Games is a landmark title that helped define the multi-event sports genre on the Commodore 64. Inspired by the unreleased Starpath game Sweat! , it became the first entry in Epyx’s celebrated Games series and set the template for everything that followed. You compete across a range of Olympic-style events including the 100m sprint, pole vault, platform diving, gymnastics, freestyle swimming, and skeet shooting. Each discipline has its own rhythm and control style, rewarding timing, coordination, and practice rather than button-mashing. The game supports up to eight players, each representing a chosen country, making it perfect for competitive multiplayer sessions. Events can be played individually, selected freely, or tackled as a full tournament with medals awarded for top performances.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Summer Games C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iG8480D1MtM" data-video-id="iG8480D1MtM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Summer Games video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iG8480D1MtM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Summer Games C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iG8480D1MtM" data-video-id="iG8480D1MtM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iG8480D1MtM" target="_blank" rel="noopener">Open on YouTube</a>

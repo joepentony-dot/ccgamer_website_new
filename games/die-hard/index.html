@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Die Hard (1990) – Commodore 64 Action Adventure Movie Tie-In Released in 1990 for the Commodore 64, Die Hard is an action-adventure game developed by Silent Software and published by Activision, adapting the blockbuster 1988 film. You take control of NYPD officer John McClane as he battles terrorists inside the towering Nakatomi Plaza to rescue hostages and stop Hans Gruber’s plan. The game spans multiple floors of the building, presented as interconnected rooms and corridors that must be explored methodically. You gather weapons, medical supplies, and key items while confronting armed enemies and navigating hazards scattered throughout the tower. Iconic moments from the film are woven directly into the gameplay, including crawling through ventilation shafts, defusing bombs, and escaping danger using improvised tactics. Progress depends on careful exploration, smart item use, and surviving increasingly dangerous encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Die Hard C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LxGGlPlcqaI" data-video-id="LxGGlPlcqaI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Die Hard video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LxGGlPlcqaI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Die Hard C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LxGGlPlcqaI" data-video-id="LxGGlPlcqaI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LxGGlPlcqaI" target="_blank" rel="noopener">Open on YouTube</a>

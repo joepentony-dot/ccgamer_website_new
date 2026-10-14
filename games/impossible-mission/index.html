@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Impossible Mission (1984) – Commodore 64 Platform Puzzle Espionage Classic Released in 1984 by Epyx and developed by Dennis Caswell, Impossible Mission is one of the most influential and technically impressive games on the Commodore 64. It famously pushed boundaries with digitised speech, instantly setting the tone with one of the most memorable villain introductions in 8-bit history. You play as Agent 4125, infiltrating the underground fortress of the deranged Professor Elvin Atombender. Your mission is to stop a nuclear launch by locating scattered fragments of a secret password hidden throughout a vast network of rooms beneath his complex. Gameplay blends precise platforming with methodical puzzle-solving. You explore interconnected rooms, evade lethal robots, and search furniture for vital clues, all while racing against a strict six-hour time limit. Every mistake costs precious minutes, turning patience and planning into essential survival skills.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Impossible Mission C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/BU-tvO-pNgw" data-video-id="BU-tvO-pNgw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Impossible Mission video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/BU-tvO-pNgw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Impossible Mission C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/BU-tvO-pNgw" data-video-id="BU-tvO-pNgw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=BU-tvO-pNgw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Blades of Steel (1990) – Commodore 64 Ice Hockey Sports Action Classic Released in 1990 by Konami for the Commodore 64, Blades of Steel delivers fast-paced, arcade-style ice hockey action that captures the intensity and excitement of the rink. Known for its responsive controls and distinctive features, it stands out as one of the most memorable sports titles on the C64. You can choose from eight teams representing major hockey cities such as New York, Chicago, Toronto, and Montreal, and compete in exhibition matches or tournament play. The side-scrolling presentation keeps the action flowing at high speed, rewarding quick reflexes, sharp passing, and tactical positioning. Progression relies on mastering puck control, defensive awareness, and well-timed shots on goal. Strategic line changes and smart player movement become increasingly important as matches grow more competitive, especially in two-player showdowns.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Blades Of Steel C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/0mVjJdtO1KA" data-video-id="0mVjJdtO1KA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Blades Of Steel video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/0mVjJdtO1KA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Blades Of Steel C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/0mVjJdtO1KA" data-video-id="0mVjJdtO1KA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=0mVjJdtO1KA" target="_blank" rel="noopener">Open on YouTube</a>

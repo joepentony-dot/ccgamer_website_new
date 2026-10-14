@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Adventures of Robin Hood (1991) – Commodore Amiga Action-Adventure Released in 1991 by Millennium Interactive for the Commodore Amiga, The Adventures of Robin Hood is an action-adventure title that brings the legendary outlaw to life through exploration, combat, and platform-based gameplay. Players take control of Robin as he navigates forests, castles, and medieval villages while battling the Sheriff of Nottingham’s guards using bows, arrows, swords, and careful positioning. The gameplay blends fast reflexes with thoughtful movement and light puzzle-solving. Levels are vertically layered and encourage exploration, rewarding players who master timing and enemy patterns. Combat and traversal are closely linked, making positioning just as important as raw skill. Visually, the game features detailed character sprites, atmospheric backgrounds, and a moody colour palette that reflects its medieval setting. Period-appropriate music and sound effects help reinforce the tone, while smooth scrolling keeps gameplay responsive.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Adventures Of Robin Hood Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KG1TAzyYc3U" data-video-id="KG1TAzyYc3U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Adventures Of Robin Hood video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KG1TAzyYc3U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Adventures Of Robin Hood Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KG1TAzyYc3U" data-video-id="KG1TAzyYc3U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KG1TAzyYc3U" target="_blank" rel="noopener">Open on YouTube</a>

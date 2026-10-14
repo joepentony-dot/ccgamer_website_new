@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Saboteur (1986) – Commodore 64 Stealth-Action Ninja Infiltration Released in 1986 by Durell Software, Saboteur is a landmark stealth-action game developed by Clive Townsend and brought to the Commodore 64 by Branko Spoljaric. You assume the role of a lone ninja infiltrating a heavily guarded warehouse complex to recover a disk containing the names of rebel leaders. Gameplay takes place across a large network of interconnected rooms, tunnels, and hidden areas. Success relies on careful movement, observation, and timing as you avoid or confront guards, dogs, and automated gun turrets. The ninja can crouch, climb, sprint, and attack using punches, drop-kicks, and weapons such as shurikens, with improvised tools discovered along the way adding tactical variety. An energy system governs every action, draining through combat, falls, and swimming. Resting in safe zones is essential to survive longer infiltrations, while selectable difficulty levels alter enemy density, security systems, and time pressure, allowing you to tailor the challenge.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Saboteur C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-_9EeLbBNOY" data-video-id="-_9EeLbBNOY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Saboteur video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-_9EeLbBNOY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Saboteur C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-_9EeLbBNOY" data-video-id="-_9EeLbBNOY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-_9EeLbBNOY" target="_blank" rel="noopener">Open on YouTube</a>

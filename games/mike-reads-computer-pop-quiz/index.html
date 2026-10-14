@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1988 by Elite Systems for the Commodore 64 and re-released by Encore in 1989, Mike Read’s Computer Pop Quiz brings the popular BBC Radio 1 quiz show to home computers, hosted by Mike Read and packed with music trivia from the 1950s through the 1980s. The game recreates a full TV-style quiz format, guiding you through multiple themed rounds that test knowledge of artists, songs, dates, and pop culture history. Round One challenges players to select questions from a jukebox, while later rounds introduce clue-based star guessing, category choices, and year-identification challenges. The fast-paced Quickfire Round adds pressure with timed questions and penalties for wrong answers, rewarding speed and accuracy under pressure. A final jukebox segment offers one last chance to boost your score, keeping tension high right to the end. You can compete solo or against a friend, choosing music categories and animated team-mates that add personality and charm to each match.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mike Read&#39;s Computer Pop Quiz C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/45PTUX2fv4Y" data-video-id="45PTUX2fv4Y"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mike Read&#39;s Computer Pop Quiz video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/45PTUX2fv4Y/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mike Read&#39;s Computer Pop Quiz C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/45PTUX2fv4Y" data-video-id="45PTUX2fv4Y"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=45PTUX2fv4Y" target="_blank" rel="noopener">Open on YouTube</a>

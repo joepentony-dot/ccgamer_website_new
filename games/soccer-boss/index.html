@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Soccer Boss (1987) – Commodore 64 Football Management Simulation Classic Released in 1987 by Alternative Software and developed by Peaksoft, Soccer Boss is a deep football management simulation from the early days of the genre. Originally titled The Boss and later rebranded as Champions! , it focuses entirely on the pressures and decisions of life off the pitch. You take control of a struggling club with the long-term goal of climbing through the divisions and reaching the top of European football. Squad building, tactical choices, and transfer negotiations are central, with finances playing a constant role as you balance wages, gate receipts, and unexpected off-field events. Matches unfold through text-based commentary rather than live action, shifting the emphasis firmly onto strategy and planning. Results, scorers, and league progression reflect the decisions you make behind the scenes, reinforcing the manager-first design.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Soccer Boss C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/RxB8rUA8gLc" data-video-id="RxB8rUA8gLc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Soccer Boss video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/RxB8rUA8gLc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Soccer Boss C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/RxB8rUA8gLc" data-video-id="RxB8rUA8gLc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=RxB8rUA8gLc" target="_blank" rel="noopener">Open on YouTube</a>

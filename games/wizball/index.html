@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Wizball (1987) – Commodore 64 Shoot ’Em Up With Colour-Restoring Magic Released in 1987 by Ocean Software and developed by Sensible Software, Wizball is a horizontal-scrolling shoot ’em up that completely rethinks the genre. Designed by Chris Yates and Jon Hare, with a standout soundtrack by Martin Galway, it combines fast action with inventive mechanics and a bold visual identity. You control Wiz, a wizard transformed into a bouncing green ball, travelling through a drained, monochrome world. Defeated enemies release colour droplets, and by collecting and mixing primary colours you gradually restore the landscape, unlocking new areas and abilities as colour returns to the screen. The Commodore 64 version is especially celebrated for its fluid animation and imaginative level design. A unique control system lets you manage both Wiz and his feline companion, Catellite, adding tactical depth alongside the constant action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Wizball C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ioJLJmz2rHU" data-video-id="ioJLJmz2rHU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Wizball video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ioJLJmz2rHU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Wizball C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ioJLJmz2rHU" data-video-id="ioJLJmz2rHU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ioJLJmz2rHU" target="_blank" rel="noopener">Open on YouTube</a>

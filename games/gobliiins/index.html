@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gobliiins (1991) – Commodore Amiga Puzzle Adventure with Three Goblins Released in 1991 by Coktel Vision, Gobliiins is a point-and-click puzzle adventure for the Commodore Amiga that blends surreal humour with inventive problem-solving. Players are tasked with curing King Angoulafre of madness after he falls victim to a voodoo curse, guided by a trio of mischievous goblins sent on a bizarre rescue mission. The game’s core mechanic revolves around controlling three characters at once, each with a distinct role. Oups handles object interaction, Ignatius casts unpredictable spells, and Asgard relies on brute strength to manipulate the environment. Solving each of the game’s 22 single-screen puzzles requires careful coordination, experimentation, and sometimes intentionally wrong choices to discover the right solution. Mistakes come at a cost, as the goblins share a single energy bar that drains when actions backfire.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gobliiins Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GLuICN54yDw" data-video-id="GLuICN54yDw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gobliiins video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GLuICN54yDw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gobliiins Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GLuICN54yDw" data-video-id="GLuICN54yDw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GLuICN54yDw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Scarabaeus (1985) – Commodore 64 First-Person 3D Tomb Adventure Released in 1985 by Hungarian studio Andromeda Software and published by Ariolasoft for the Commodore 64, Scarabaeus is a pioneering first-person 3D maze adventure set deep within a mysterious Egyptian tomb. Known as Invaders of the Lost Tomb in North America, the game blends exploration, puzzle-solving, and survival into a tense and atmospheric experience. The adventure unfolds across three distinct stages. You first navigate a sprawling maze to capture wandering ghosts, each revealing a hieroglyphic symbol. These symbols become essential clues in the second phase, where logic puzzles involving alcoves, medicinal vials, and zombie traps must be solved through careful deduction. In the final stage, knowledge gathered earlier is put to the test as you confront zombies and solve a central puzzle to access the inner sanctum and recover the sacred jewel.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Scarabaeus C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/FusuIst21E4" data-video-id="FusuIst21E4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Scarabaeus video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/FusuIst21E4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Scarabaeus C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/FusuIst21E4" data-video-id="FusuIst21E4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=FusuIst21E4" target="_blank" rel="noopener">Open on YouTube</a>

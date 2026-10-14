@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Heart of Africa (1985) – Commodore 64 Strategy Adventure Exploration Classic Released in 1985 by Ozark Softscape and published by Electronic Arts for the Commodore 64, Heart of Africa is a deep strategy adventure that builds on the foundations of The Seven Cities of Gold. Set in 1890, the game places players in the role of an ambitious explorer searching for the lost tomb of Pharaoh Ahnk Ahnk somewhere in the vast African continent. Beginning at a port near Cairo with limited supplies, players must carefully plan expeditions across deserts, mountains, rivers, and jungles. Success depends on managing resources, trading goods, and building relationships with indigenous tribes to gather vital clues, maps, and equipment needed to continue the journey. Progression is driven by exploration, diplomacy, and information gathering. Interactions can involve negotiation, gift-giving, trade, or intimidation, with each approach affecting future encounters.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Heart Of Africa C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KnLvdMqW-ow" data-video-id="KnLvdMqW-ow"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Heart Of Africa video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KnLvdMqW-ow/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Heart Of Africa C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KnLvdMqW-ow" data-video-id="KnLvdMqW-ow"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KnLvdMqW-ow" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bloodwych (1990) – Commodore 64 Dungeon-Crawling RPG Classic Released in 1990 by Image Works for the Commodore 64, Bloodwych is a dark fantasy dungeon-crawling RPG developed by Philip M. Taglione, with assistance from Anthony Taglione. Inspired by the atmospheric style of Dungeon Master, it delivers deep role-playing systems on 8-bit hardware. You control a party of four champions, choosing from Warrior, Mage, Adventurer, or Thief classes, each aligned to one of four magical colours that influence spellcasting, equipment, and combat abilities. The game features vast multi-level dungeons filled with monsters, traps, elemental crystals, and interactive NPCs accessed through simple dialogue menus. A major innovation is its simultaneous two-player split-screen mode, allowing cooperative dungeon exploration, spellcasting, and combat in real time on a single machine. Progress depends on careful party management, learning powerful spell combinations, gathering resources, and mastering tactical positioning during battles.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bloodwych C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/2NdUxG6eqgs" data-video-id="2NdUxG6eqgs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bloodwych video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/2NdUxG6eqgs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bloodwych C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/2NdUxG6eqgs" data-video-id="2NdUxG6eqgs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=2NdUxG6eqgs" target="_blank" rel="noopener">Open on YouTube</a>

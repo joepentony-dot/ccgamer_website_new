@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Sacred Armour of Antiriad (1986) – Commodore 64 Post-Apocalyptic Action Adventure Released in 1986 by Palace Software, The Sacred Armour of Antiriad is a landmark action-adventure on the Commodore 64, blending exploration, combat, and progression in a way that was ahead of its time. Set in a distant post-apocalyptic future, the game casts you as Tal, a lone warrior facing an alien threat that has devastated the world. Progression is driven by exploration across interconnected environments, with access to new areas tied directly to abilities gained along the way. Central to this is the legendary Antiriad battlesuit, which grants Tal the power to fly, survive radiation zones, and engage enemies more effectively. Recovering and upgrading the suit transforms both movement and combat, encouraging careful backtracking and discovery. Energy management plays a key role, as both Tal and the armour draw from limited reserves.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Sacred Armour Of Antiriad C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/MzZ-uzenHXI" data-video-id="MzZ-uzenHXI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Sacred Armour Of Antiriad video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/MzZ-uzenHXI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Sacred Armour Of Antiriad C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/MzZ-uzenHXI" data-video-id="MzZ-uzenHXI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=MzZ-uzenHXI" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Times of Lore (1988) – Commodore 64 Action RPG Fantasy Epic Released in 1988 by Origin Systems, Times of Lore is an ambitious action role-playing game for the Commodore 64 designed by Chris Roberts. Set in the troubled medieval kingdom of Albareth, the story begins with the mysterious disappearance of High King Valwyn, plunging the land into unrest as rival factions battle for control. You choose between three distinct heroes: a powerful barbarian, a heavily armoured knight, or a swift and agile valkyrie, each offering different strengths and playstyles. The game is presented from a top-down perspective and features real-time action as you explore a vast world made up of thousands of interconnected screens. Combat is immediate and accessible, focusing on melee encounters with enemies such as brigands and orcs, while progress also depends on exploration, puzzle-solving, and interaction with non-player characters via a menu-driven dialogue system.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Times Of Lore C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_syDxx6aJEA" data-video-id="_syDxx6aJEA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Times Of Lore video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_syDxx6aJEA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Times Of Lore C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_syDxx6aJEA" data-video-id="_syDxx6aJEA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_syDxx6aJEA" target="_blank" rel="noopener">Open on YouTube</a>

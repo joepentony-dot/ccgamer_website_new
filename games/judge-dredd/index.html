@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Judge Dredd (1986 / 1991) – Commodore 64 Licensed Action Platformer Judge Dredd made his Commodore 64 debut in 1986, with a later reimagined version released in 1991, both drawing on the iconic 2000 AD comic and its dystopian vision of Mega-City One. Each game offers a different interpretation of the lawman, reflecting changing design trends across the late 1980s and early 1990s. The 1986 release from Melbourne House, developed by Beam Software, mixes arcade action with light strategy. You patrol the city via a crime map before tackling flick-screen platform levels, choosing how to deal with perps using commands like Halt, Warn, or Kill. The Lawgiver’s multiple ammo types add tactical flexibility, reinforcing Dredd’s role as judge, jury, and executioner. In contrast, the 1991 version from Virgin Mastertronic and Random Access shifts to a scrolling platform format with structured missions spread across Mega-City One.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Judge Dredd C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qOO0QuGaRqc" data-video-id="qOO0QuGaRqc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Judge Dredd video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qOO0QuGaRqc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Judge Dredd C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qOO0QuGaRqc" data-video-id="qOO0QuGaRqc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qOO0QuGaRqc" target="_blank" rel="noopener">Open on YouTube</a>

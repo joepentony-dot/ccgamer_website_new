@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Cauldron II: The Pumpkin Strikes Back (1986) – Commodore 64 Bouncing Platform Adventure Released in 1986 by Palace Software, Cauldron II: The Pumpkin Strikes Back turns the tables on its predecessor by putting you in control of Bouncey the Pumpkin, out for revenge against the Witch Queen who destroyed the pumpkin kingdom. The action takes place inside a vast, side-scrolling castle made up of more than 120 interconnected rooms. Progress is driven by exploration as you hunt down six magical items, each unlocking new abilities needed to reach deeper areas and ultimately face the Witch Queen herself. Movement is the game’s defining twist. Bouncey is always bouncing, and you can only influence direction mid-bounce, turning every jump into a test of timing and precision. Combined with traps, enemies, and environmental hazards, this creates a demanding but highly distinctive platforming challenge.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Cauldron II: The Pumpkin Strikes Back C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6TFT4PzhemM" data-video-id="6TFT4PzhemM"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Cauldron II: The Pumpkin Strikes Back video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6TFT4PzhemM/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Cauldron II: The Pumpkin Strikes Back C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6TFT4PzhemM" data-video-id="6TFT4PzhemM"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6TFT4PzhemM" target="_blank" rel="noopener">Open on YouTube</a>

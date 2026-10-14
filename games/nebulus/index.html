@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nebulus (1987) – Commodore 64 Rotating Tower Platform-Puzzle Classic Released in 1987 by Hewson Consultants and developed by John M. Phillips, Nebulus is a standout platform-puzzle game that pushed the Commodore 64 in bold new directions. Also known as Tower Toppler in the U. S. , it introduced a striking visual concept that made it instantly recognisable. You control Pogo, a small green alien sent to the planet Nebulus to dismantle a series of towering structures. Each level tasks you with climbing a cylindrical tower while avoiding enemies, navigating platforms, and dealing with hazards that demand careful timing and positioning. The game’s defining feature is its rotating tower effect. As Pogo moves left or right, the tower appears to spin in 3D, creating a constantly shifting sense of perspective that adds both challenge and tension.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nebulus C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/CstLRx8K2uI" data-video-id="CstLRx8K2uI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nebulus video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/CstLRx8K2uI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nebulus C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/CstLRx8K2uI" data-video-id="CstLRx8K2uI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=CstLRx8K2uI" target="_blank" rel="noopener">Open on YouTube</a>

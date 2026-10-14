@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Las Vegas Casino (1989) – Commodore 64 Classic Casino Simulation Released in 1989 by Zeppelin Games for the Commodore 64, Las Vegas Casino is a single-player casino simulation designed by Kevin Franklin, with graphics by Michael Owens and music by Adam Gilmore. The game brings the atmosphere of a casino floor to the C64, offering faithful digital versions of four popular gambling games. You can choose between Blackjack, Baccarat, Roulette, and Craps, each presented with clear rules and accessible controls. Blackjack and Baccarat use a first-person viewpoint, placing you directly opposite the dealer, while Roulette and Craps are shown from a top-down perspective that makes betting and table interaction easy to follow. The gameplay focuses on straightforward, pick-up-and-play mechanics rather than complex systems. Joystick-driven menus and clean layouts keep things moving smoothly, making it easy to jump between games and chase a winning streak without lengthy setup or explanations.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Las Vegas Casino C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ar0mTsbwqJw" data-video-id="Ar0mTsbwqJw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Las Vegas Casino video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Ar0mTsbwqJw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Las Vegas Casino C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Ar0mTsbwqJw" data-video-id="Ar0mTsbwqJw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Ar0mTsbwqJw" target="_blank" rel="noopener">Open on YouTube</a>

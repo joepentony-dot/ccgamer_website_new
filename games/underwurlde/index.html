@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Underwurlde (1985) – Commodore 64 Non-Linear Platform Adventure Escape Released in 1985 by Ultimate Play the Game for the Commodore 64, Underwurlde is a side-scrolling platform adventure that expands the Sabreman universe in a bold new direction. Moving away from the overhead exploration of Sabre Wulf, the game places you deep beneath the surface in a vast, interconnected cave system viewed from the side. You control Sabreman as he descends through hostile chambers filled with creatures, traps, and deadly drops, with the ultimate goal of escaping the Underwurlde itself. Progress depends on exploration and discovery rather than linear level design, with multiple routes, hidden areas, and guarded exits that require specific items to overcome. Weapons such as the dagger, torch, and knife are essential tools, each used to defeat guardians blocking the way forward.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Underwurlde C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7ARNMOXp-Gw" data-video-id="7ARNMOXp-Gw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Underwurlde video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7ARNMOXp-Gw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Underwurlde C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7ARNMOXp-Gw" data-video-id="7ARNMOXp-Gw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7ARNMOXp-Gw" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Nexus (1986) – Commodore 64 Espionage Stealth Action Thriller Released in 1986 by Nexus Productions Ltd and developed by Paul Voysey and Tayo Olowu, Nexus is a distinctive action-adventure title that blends espionage, investigation, and arcade-style tension. Casting you as a journalist for The Clarion, the game sets up a serious narrative rarely seen on the Commodore 64 at the time. Your mission is to infiltrate a Colombian drug lord’s heavily guarded headquarters, rescue a kidnapped colleague, and uncover vital information hidden throughout the complex. Progress depends on answering 32 key questions, each unlocked by discovering clues scattered across the building, giving the game a strong investigative core. Gameplay combines stealth, exploration, and combat, drawing comparisons with Impossible Mission and Kung Fu Master. You move between multiple floors, interact with characters, avoid detection, and fight only when necessary.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Nexus C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1M3mUluejDI" data-video-id="1M3mUluejDI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Nexus video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1M3mUluejDI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Nexus C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1M3mUluejDI" data-video-id="1M3mUluejDI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1M3mUluejDI" target="_blank" rel="noopener">Open on YouTube</a>

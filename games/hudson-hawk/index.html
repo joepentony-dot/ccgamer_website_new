@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hudson Hawk (1991) – Commodore 64 Stealth Platform Movie Tie-In Classic Released in 1991 by Ocean Software for the Commodore 64, Hudson Hawk is a movie tie-in platform game based on the Bruce Willis action-comedy film. Developed during the height of licensed game adaptations, it combines stealth, precision platforming, and light puzzle-solving to reflect the film’s art thief storyline. You take control of Hudson Hawk as he infiltrates museums, mansions, and secret facilities, avoiding guards, security cameras, dogs, and deadly traps while collecting valuable treasures. Each level is presented as a single-screen challenge, demanding careful timing, sharp reactions, and smart route planning. The gameplay follows Ocean’s well-known platforming formula, delivering tight controls, responsive movement, and cleverly designed obstacle layouts. Success depends on learning enemy patterns, using hiding spots effectively, and mastering difficult jumps under pressure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hudson Hawk C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/c4w1Ad-Rx30" data-video-id="c4w1Ad-Rx30"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hudson Hawk video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/c4w1Ad-Rx30/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hudson Hawk C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/c4w1Ad-Rx30" data-video-id="c4w1Ad-Rx30"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=c4w1Ad-Rx30" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Herbert’s Dummy Run (1985) – Commodore 64 Arcade Adventure with Puzzle Parodies Released in 1985 for the Commodore 64, Herbert’s Dummy Run is a 2D arcade-adventure developed by David Perry and published by Mikro-Gen. The fourth entry in the Wally Week series shifts the spotlight away from Wally himself and places you in control of his adventurous infant son, Herbert. Set inside a vast multi-floor department store, the game tasks you with guiding Herbert through more than 25 interconnected rooms after becoming separated from his parents. Progress depends on exploration, careful timing, and logical problem-solving as you collect and use items to overcome obstacles before the store closes at 5:30 PM. A standout feature is the inclusion of clever mini-games that parody classic arcade hits such as Breakout, Space Invaders, and Duck Shoot. These sequences are woven directly into the puzzles, adding variety and a playful sense of humour to the overall experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Herbert&#39;s Dummy Run C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hStg17-ekG4" data-video-id="hStg17-ekG4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Herbert&#39;s Dummy Run video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hStg17-ekG4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Herbert&#39;s Dummy Run C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hStg17-ekG4" data-video-id="hStg17-ekG4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hStg17-ekG4" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Speedball 2: Brutal Deluxe (1990) – Commodore Amiga Futuristic Sports Combat Released in 1990 by The Bitmap Brothers, Speedball 2: Brutal Deluxe is one of the most iconic and fully realised sports games of the 16-bit era. Set in the brutal cyber-future of 2105, it transforms competitive sport into a fast, violent spectacle where precision, tactics, and aggression are equally important. You control a team of nine cybernetic athletes in a high-speed arena sport that blends handball-style scoring with the physical intensity of ice hockey. Matches are frantic and unforgiving, with players smashing into opponents, stealing the ball, and triggering devastating power-ups that can swing momentum in seconds. Success depends not just on reflexes, but on team management, upgrades, and knowing when to play dirty. The Amiga version is widely regarded as definitive, delivering smooth scrolling, sharp visuals, and an intense sense of speed.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Speedball 2: Brutal Deluxe Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GnfDC4CGI9Q" data-video-id="GnfDC4CGI9Q"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Speedball 2: Brutal Deluxe video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GnfDC4CGI9Q/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Speedball 2: Brutal Deluxe Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GnfDC4CGI9Q" data-video-id="GnfDC4CGI9Q"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GnfDC4CGI9Q" target="_blank" rel="noopener">Open on YouTube</a>

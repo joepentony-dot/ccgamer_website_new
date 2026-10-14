@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Project Firestart (1989) – Commodore 64 Sci-Fi Survival Horror Pioneer Released in 1989 by Electronic Arts and developed by Dynamix, Project Firestart is widely regarded as one of the earliest true survival horror games on the Commodore 64. Set aboard the orbital research station Prometheus above Titan in the year 2061, you play government agent Jon Hawking, sent to investigate a catastrophic loss of contact. Exploration unfolds through side-scrolling corridors with clever pseudo-3D depth, as you move between decks, access computer terminals, and uncover logs detailing a genetic experiment that has spiralled out of control. The station is no longer abandoned, and every encounter forces you to balance survival, limited resources, and time pressure. Tension is driven by deliberate pacing, atmospheric music, and cinematic scripted moments that build dread rather than relying on constant action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Project Firestart C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_HQKCEBff1w" data-video-id="_HQKCEBff1w"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Project Firestart video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_HQKCEBff1w/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Project Firestart C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_HQKCEBff1w" data-video-id="_HQKCEBff1w"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_HQKCEBff1w" target="_blank" rel="noopener">Open on YouTube</a>

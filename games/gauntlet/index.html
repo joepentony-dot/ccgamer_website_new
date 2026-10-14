@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gauntlet (1986) – Commodore 64 Co-Op Dungeon Crawling Arcade Legend Released in 1986 and brought to the Commodore 64 by U. S. Gold, Gauntlet delivers a faithful home version of Atari’s iconic arcade dungeon crawler. You choose from four classic heroes—Warrior, Valkyrie, Wizard, or Elf—and dive into a relentless maze of monsters, traps, and treasure. The action is fast and unforgiving, with health constantly draining as you battle through room after room in search of food, keys, and the all-important exit. Cooperation is at the heart of the experience, especially in two-player mode, where sharing resources and covering each other becomes essential as the difficulty ramps up. While the C64 hardware required some compromises, the game captures the spirit of the arcade original with chunky sprites, colourful dungeons, and nonstop pressure. The sense of urgency and constant enemy spawns keep every run tense and addictive.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gauntlet C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/HiteYOu4A-0" data-video-id="HiteYOu4A-0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gauntlet video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/HiteYOu4A-0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gauntlet C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/HiteYOu4A-0" data-video-id="HiteYOu4A-0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=HiteYOu4A-0" target="_blank" rel="noopener">Open on YouTube</a>

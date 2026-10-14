@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Super Cars II (1991) – Amiga Top-Down Racing with Vehicular Combat mayhem Released in 1991, Super Cars II was developed by Magnetic Fields and published by Gremlin Graphics, expanding on the formula of the original Super Cars with faster action, deeper strategy, and sharper presentation. Designed for the Amiga and other 16-bit platforms, it blends arcade racing with combat and progression systems that keep each championship unpredictable. Gameplay is built around a season-based championship where players race against colourful rivals with tongue-in-cheek names such as Ayrton Sendup and T Hairy Bootson. Tracks span a variety of environments, including snow, grass, and rocky terrain, each influencing grip and handling. Winning races earns cash, which can be spent in the garage on repairs, speed upgrades, and offensive weapons. Combat plays a major role, with missiles, mines, and other gadgets turning every race into a tactical battle.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Super Cars II Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/v-MVnsPvzAI" data-video-id="v-MVnsPvzAI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Super Cars II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/v-MVnsPvzAI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Super Cars II Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/v-MVnsPvzAI" data-video-id="v-MVnsPvzAI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=v-MVnsPvzAI" target="_blank" rel="noopener">Open on YouTube</a>

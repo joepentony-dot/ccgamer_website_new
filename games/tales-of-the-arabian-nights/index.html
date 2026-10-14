@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Tales of the Arabian Nights (1984) – Commodore 64 Fantasy Action Platform Adventure Classic Released in 1984 by Interceptor Software for the Commodore 64, Tales of the Arabian Nights is a richly themed action-platformer created by Ian Gray, produced by Richard Paul Jones, and featuring music by Chris Cox. You take on the role of Prince Imrahil, racing across eight exotic locations to rescue his sister Anitra from the evil Sultan Saladin. Levels range from Sinbad’s ship and palace gardens to underground caverns and fortified strongholds, delivering constant variety and escalating challenge. Gameplay alternates between single-screen platform stages and side-scrolling sequences, including raft journeys and flying carpet rides. In platform sections, players must collect golden jars spelling ARABIAN in the correct order, adding memory and precision to the action. During scrolling stages, enemies and hazards are tackled using magic lightning bolts, a feature unique to the Commodore 64 version.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Tales Of The Arabian Nights C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7xx9pwXnH3w" data-video-id="7xx9pwXnH3w"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Tales Of The Arabian Nights video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7xx9pwXnH3w/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Tales Of The Arabian Nights C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7xx9pwXnH3w" data-video-id="7xx9pwXnH3w"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7xx9pwXnH3w" target="_blank" rel="noopener">Open on YouTube</a>

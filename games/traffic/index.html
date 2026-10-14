@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Traffic (1984) – Commodore 64 Strategy Game by Andromeda Software Traffic is one of the stranger ideas to appear on the Commodore 64 in 1984. Developed by Hungarian studio Andromeda Software and published in the UK by Quicksilva, this is a game where London’s road network is handed over to you — and all you’ve got to keep everything moving are a collection of traffic lights and increasingly questionable judgement. Cars, buses and motorbikes pour into the road network from different directions while you switch junctions between red and green. Let the queues build too far beyond the edges of the screen and it’s game over. There are no weapons, monsters or heroic rescues here. You’re basically attempting to prevent London from grinding to a complete standstill. And it gets surprisingly frantic.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Traffic C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1oUrlC_BEos" data-video-id="1oUrlC_BEos"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Traffic video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1oUrlC_BEos/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Traffic C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1oUrlC_BEos" data-video-id="1oUrlC_BEos"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1oUrlC_BEos" target="_blank" rel="noopener">Open on YouTube</a>

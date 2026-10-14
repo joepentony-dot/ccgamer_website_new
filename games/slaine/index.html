@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sláine (1987) – Commodore 64 Comic-Inspired Fantasy Adventure Released in 1987 by Martech for the Commodore 64, Sláine is a distinctive adventure game developed by Creative Reality and based on the British comic series Sláine from 2000 AD. Drawing heavily from its graphic novel roots, the game blends interactive fiction, real-time action, and strong narrative elements into a uniquely challenging experience. At the heart of the game is the unusual REFLEX command system, where actions scroll across the screen and must be selected quickly, reflecting the hero’s split-second decision-making. This mechanic demands fast reactions and mental agility, setting Sláine apart from traditional menu-driven adventures of the era. You control Sláine, a barbarian warrior on a quest through a mythic fantasy world to rescue a captive princess. Gameplay mixes real-time combat, inventory use, and puzzle-solving, with the story delivered through descriptive text and stark monochrome illustrations that echo the tone of the original comic.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Slaine C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/a2Qy658fppE" data-video-id="a2Qy658fppE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Slaine video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/a2Qy658fppE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Slaine C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/a2Qy658fppE" data-video-id="a2Qy658fppE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=a2Qy658fppE" target="_blank" rel="noopener">Open on YouTube</a>

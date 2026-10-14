@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Project-X (1992) – Commodore Amiga Horizontal Shoot ’Em Up Classic Released in 1992 by Team17 for the Commodore Amiga, Project-X is a brutally challenging horizontally scrolling shoot ’em up set in a futuristic war against rogue military droids that have turned on humanity. It quickly earned a reputation as one of the toughest shooters of the 16-bit era. Players pilot a heavily armed spacecraft equipped with seven distinct weapon systems, including Guns, Buildup, Side Shots, Homing Missiles, Plasma, Magma, and Laserbeam. Choosing the right loadout and managing upgrades is essential, as enemy placement and bullet patterns leave little room for error. The game spans five lengthy levels, each ending with large, multi-phase boss encounters. Difficulty is relentless, with many players struggling to progress beyond the early stages. In response, Team17 released Project-X Special Edition in 1993, offering a reduced difficulty option while preserving the core experience.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Project-X Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/W40gx896n7A" data-video-id="W40gx896n7A"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Project-X video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/W40gx896n7A/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Project-X Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/W40gx896n7A" data-video-id="W40gx896n7A"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=W40gx896n7A" target="_blank" rel="noopener">Open on YouTube</a>

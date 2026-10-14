@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Head Over Heels (1987) – Commodore 64 Isometric Action Adventure Classic Released in 1987 by Ocean Software for the Commodore 64, Head Over Heels is a landmark isometric action-adventure created by Jon Ritman and Bernie Drummond. Building on the ideas introduced in Batman, it pushed the genre forward with a clever dual-character system and a vast, interconnected world to explore. You control two very different heroes. Head can leap higher and fire doughnuts to temporarily paralyse enemies, while Heels runs faster, climbs certain staircases, and carries objects. Progress depends on knowing when to switch between them, using their unique abilities to solve puzzles, avoid traps, and outsmart enemies across hundreds of rooms. The game’s surreal environments, precise isometric design, and thoughtful room layouts reward patience and planning. On the C64, the colourful visuals and atmospheric soundtrack by Guy Stevens help give each area its own identity, drawing you deeper into its strange, offbeat universe.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Head Over Heels C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NLbEhM1KyEk" data-video-id="NLbEhM1KyEk"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Head Over Heels video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NLbEhM1KyEk/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Head Over Heels C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NLbEhM1KyEk" data-video-id="NLbEhM1KyEk"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NLbEhM1KyEk" target="_blank" rel="noopener">Open on YouTube</a>

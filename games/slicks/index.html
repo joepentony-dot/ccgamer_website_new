@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Released in 1992 by Digital Design and published by Codemasters for the Commodore 64, Slicks is a fast-paced overhead Formula One racing game designed by Ashley Routledge and David Saunders, with music composed by Allister Brimble. It delivers an arcade-driven racing experience that pushes the C64 hard in its later years. You choose from six racing teams, each with different performance characteristics, and compete across circuits inspired by real-world Formula 1 tracks. The focus is on speed, precision, and maintaining control through tight corners while jostling for position against rival cars. While the handling is immediate and accessible, Slicks adds a strategic layer through fuel consumption and tyre wear. Knowing when to push hard and when to drive conservatively becomes key to finishing races successfully, especially over longer events. The game is widely praised for its smooth scrolling, responsive controls, and energetic presentation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Slicks C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/tamY6tp6lyU" data-video-id="tamY6tp6lyU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Slicks video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/tamY6tp6lyU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Slicks C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/tamY6tp6lyU" data-video-id="tamY6tp6lyU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=tamY6tp6lyU" target="_blank" rel="noopener">Open on YouTube</a>

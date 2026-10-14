@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zak McKracken and the Alien Mindbenders (1988) – Commodore 64 Sci-Fi Graphic Adventure Classic Released in 1988 by Lucasfilm Games for the Commodore 64, Zak McKracken and the Alien Mindbenders is a landmark graphic adventure and the second title to use the SCUMM engine after Maniac Mansion. It expanded the scope of adventure games with a globe-trotting narrative, deeper puzzle design, and a strong sense of humour. You take control of Zak McKracken, a tabloid journalist who stumbles upon a bizarre alien conspiracy aimed at dulling human intelligence using mind-control devices. The story spans multiple real-world and off-world locations, including San Francisco, Egypt, Peru, and Mars, with you switching between characters to solve puzzles using shared logic but separate inventories. On the Commodore 64, the game uses a colourful pixel-art style within a 16-colour palette, paired with minimal sound effects that keep focus on exploration and problem-solving.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zak Mckracken And The Alien Mindbenders C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/CSZzUl_CSSU" data-video-id="CSZzUl_CSSU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zak Mckracken And The Alien Mindbenders video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/CSZzUl_CSSU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zak Mckracken And The Alien Mindbenders C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/CSZzUl_CSSU" data-video-id="CSZzUl_CSSU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=CSZzUl_CSSU" target="_blank" rel="noopener">Open on YouTube</a>

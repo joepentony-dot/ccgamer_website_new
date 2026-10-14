@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Rats (1985) – Commodore 64 Horror Strategy Adventure Released in 1985 by Five Ways Software and published by Hodder &amp; Stoughton for the Commodore 64, The Rats is an unusual hybrid of strategy and interactive fiction based on James Herbert’s best-selling horror novel. You take on the role of Harris, head of the rat extermination commission, as London faces a devastating invasion of genetically mutated rats. Using a detailed city map, you must deploy emergency services, manage resources, and fund research into advanced extermination technologies. Strategic planning is balanced with crisis management, as rising panic levels and civilian casualties can quickly overwhelm your efforts. Careful coordination and long-term investment are essential for survival. At key moments, the game shifts into real-time, text-based scenarios where you experience the invasion from the perspective of trapped civilians.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Rats C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Xrsif8ZFGd8" data-video-id="Xrsif8ZFGd8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Rats video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Xrsif8ZFGd8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Rats C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Xrsif8ZFGd8" data-video-id="Xrsif8ZFGd8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Xrsif8ZFGd8" target="_blank" rel="noopener">Open on YouTube</a>

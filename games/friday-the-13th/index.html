@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Friday the 13th: The Computer Game (1986) – Commodore 64 Survival Horror at Camp Crystal Lake Released in 1986 by Domark for the Commodore 64, Friday the 13th: The Computer Game is a survival horror action-adventure inspired by the iconic slasher film series. Set at the ominous Camp Crystal Lake, you must hunt down and eliminate the masked killer, Jason Voorhees, before he wipes out the camp’s counselors. Gameplay places you in control of multiple counselors, each with different strengths, as you explore cabins, paths, and interiors while scavenging weapons such as machetes and chainsaws. Survival depends on careful exploration, quick reactions, and protecting other counselors from sudden attacks. A key twist is Jason’s ability to disguise himself as ordinary characters, forcing you to identify him through observation and risky confrontation. The game uses a pseudo-3D perspective to enhance tension and atmosphere, supported by a distinctive fear meter that rises as panic sets in.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Friday The 13th C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/KRInwdAuCig" data-video-id="KRInwdAuCig"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Friday The 13th video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/KRInwdAuCig/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Friday The 13th C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/KRInwdAuCig" data-video-id="KRInwdAuCig"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=KRInwdAuCig" target="_blank" rel="noopener">Open on YouTube</a>

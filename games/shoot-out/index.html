@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Shoot-Out (1988) – Commodore 64 Western Crosshair Shooting Arcade Classic Released in 1988 by Martech for the Commodore 64, Shoot-Out is a crosshair-based shooting game set in the dusty frontier town of Gulch Creek. You take on the role of Quick Hand Luke, a skilled gunslinger determined to restore order to the Wild West. The game unfolds across a series of increasingly demanding scenarios. It begins with precision-based target practice, where you must shoot appearing cans without missing a single shot. As the game progresses, moving enemies, obstacles, and time pressure are introduced, requiring fast reactions and steady aim. Gameplay focuses on accuracy, rhythm, and memorisation, with little margin for error. Each stage demands perfect timing, making Shoot-Out a test of concentration as much as reflexes. One mistake can often mean restarting the challenge.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Shoot-Out C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-DpEy0dmpDU" data-video-id="-DpEy0dmpDU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Shoot-Out video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-DpEy0dmpDU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Shoot-Out C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-DpEy0dmpDU" data-video-id="-DpEy0dmpDU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-DpEy0dmpDU" target="_blank" rel="noopener">Open on YouTube</a>

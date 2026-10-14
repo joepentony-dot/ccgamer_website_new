@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>Red Heat is a 1989 Commodore 64 beat-&#39;em-up by Special FX and Ocean Software, starring Soviet officer Ivan Danko in four film-inspired stages. The game aims to translate the film’s hard-edged tone to the Commodore 64, placing story and presentation firmly at the forefront. You control Soviet police officer Ivan Danko as he pursues drug lord Viktor Rostavili, moving through a series of stages inspired by key moments from the movie. Progression is linear, with each section focused on clearing enemies using punches, kicks, and occasional weapons. Visually, Red Heat was impressive for its time, featuring large character sprites and smooth animation that gave the game a cinematic feel. Jonathan Dunn’s soundtrack adds atmosphere and weight to the action, reinforcing the gritty setting even as it repeats during longer play sessions.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Red Heat C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/adtijYvhxCs" data-video-id="adtijYvhxCs"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Red Heat video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/adtijYvhxCs/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Red Heat C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/adtijYvhxCs" data-video-id="adtijYvhxCs"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=adtijYvhxCs" target="_blank" rel="noopener">Open on YouTube</a>

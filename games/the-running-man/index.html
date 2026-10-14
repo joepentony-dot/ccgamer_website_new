@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Running Man (1989) – Commodore 64 Action Movie Tie-In Survival Challenge Released in 1989 by Grandslam and developed by Emerald Software, The Running Man is a side-scrolling action game for the Commodore 64 inspired by the 1987 dystopian film starring Arnold Schwarzenegger. You play as Ben Richards, forced to survive a brutal televised game show where contestants are hunted for public entertainment. The gameplay focuses on moving through a series of scrolling levels, each ending in a showdown with one of the show’s stalkers. Combat is simple and direct, placing emphasis on positioning and survival rather than complex move sets. Between stages, a brief puzzle-based mini-game offers a chance to recover health before the next encounter. As a movie tie-in, the game leans heavily on its concept rather than technical ambition. Controls and repetition were widely criticised at the time, but the structure still reflects late-80s licensed design, with clear stages, boss battles, and a relentless push forward.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Running Man C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/UL1IsL0hXu8" data-video-id="UL1IsL0hXu8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Running Man video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/UL1IsL0hXu8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Running Man C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/UL1IsL0hXu8" data-video-id="UL1IsL0hXu8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=UL1IsL0hXu8" target="_blank" rel="noopener">Open on YouTube</a>

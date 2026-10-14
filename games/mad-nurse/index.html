@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Mad Nurse (1985) – Commodore 64 Platform Arcade Controversy Released in 1985 by Simon Pick and published by Firebird Software for the Commodore 64, Mad Nurse is a distinctive platform arcade game set inside a chaotic hospital maternity ward. You take on the role of a nurse tasked with rescuing wandering babies before they meet a variety of dangerous hazards. Each level presents a multi-storey hospital layout filled with elevators, platforms, and environmental threats such as electrical sockets, medicine bottles, and open shafts. The challenge escalates as more babies appear simultaneously, requiring quick reactions and careful route planning to return them safely to their cribs. A key gameplay mechanic is the nurse’s limited supply of stun gas, which temporarily freezes all babies in place and offers a brief moment to regain control. Using it too often, however, comes at a cost, reinforcing the game’s risk-versus-reward structure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Mad Nurse C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iGL1RA6zOjg" data-video-id="iGL1RA6zOjg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Mad Nurse video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iGL1RA6zOjg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Mad Nurse C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iGL1RA6zOjg" data-video-id="iGL1RA6zOjg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iGL1RA6zOjg" target="_blank" rel="noopener">Open on YouTube</a>

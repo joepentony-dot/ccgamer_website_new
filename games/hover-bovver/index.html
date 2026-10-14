@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hover Bovver (1983) – Commodore 64 Maze Action Cult Classic Released in 1983 by Llamasoft for the Commodore 64, Hover Bovver is an offbeat maze-action game designed by Jeff Minter that blends humour with fast-paced arcade gameplay. You take on the role of a mischievous homeowner who “borrows” his neighbour’s lawnmower to cut his own overgrown garden. The objective is to mow every patch of grass while avoiding flowerbeds and escaping angry pursuers. Gameplay revolves around navigating tight garden layouts while being chased by an enraged neighbour and gardener. Quick reactions and careful route planning are essential to avoid capture and complete each level. A unique feature is the dog, which can be commanded to distract enemies and create escape routes. However, misuse can cause the dog to turn hostile, adding an extra layer of risk and strategy.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hover Bovver C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qFjuhjK8FeU" data-video-id="qFjuhjK8FeU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hover Bovver video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/qFjuhjK8FeU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hover Bovver C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/qFjuhjK8FeU" data-video-id="qFjuhjK8FeU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=qFjuhjK8FeU" target="_blank" rel="noopener">Open on YouTube</a>

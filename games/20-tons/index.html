@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ 20 Tons (1985) – Commodore 64 Puzzle Action Maze Challenge Released in 1985 by Chris Newcombe and published by Argus Press Software for the Commodore 64, 20 Tons is a single-player puzzle-action game inspired by the maze-based mechanics popularised in the mid-1980s. You are tasked with navigating compact underground levels while collecting all the rings needed to progress. Gameplay revolves around careful movement and planning. Falling boulders can be pushed to clear paths, trigger chain reactions, or eliminate threats, but a single misstep can result in being crushed. Timing is crucial, as each level demands observation, patience, and an understanding of how the environment reacts to your actions. The C64 version features bright, colourful graphics and a lively soundtrack that keeps the pace engaging while you work through increasingly demanding layouts. Although often compared to Boulder Dash, 20 Tons has its own identity, with tighter spaces and a greater emphasis on controlled movement and risk management.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="20 Tons C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ph1ugM0zHvE" data-video-id="ph1ugM0zHvE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play 20 Tons video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ph1ugM0zHvE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="20 Tons C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ph1ugM0zHvE" data-video-id="ph1ugM0zHvE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ph1ugM0zHvE" target="_blank" rel="noopener">Open on YouTube</a>

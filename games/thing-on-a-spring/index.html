@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Thing on a Spring (1985) – Commodore 64 Platform Puzzle Toy Factory Classic Released in 1985 by Micro Projects and published by Gremlin Graphics, Thing on a Spring is a distinctive side-scrolling platformer that immediately stands out on the Commodore 64. You control Thing, a spring-based character sent into a chaotic toy factory to recover stolen puzzle pieces while surviving a maze of hazards. Movement is the heart of the game. Thing’s ability to bounce to extreme heights transforms every screen into a timing and positioning puzzle, forcing you to think carefully about momentum, landing points, and enemy patterns rather than relying on simple jumps. Each factory section introduces new dangers such as conveyor belts, collapsing platforms, and aggressive toy enemies. Alongside this, you must collect all nine puzzle pieces while keeping an eye on the oil meter, which drains through enemy contact and environmental traps, adding constant pressure to every decision.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Thing On A Spring C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/6dfAyKnP_Uo" data-video-id="6dfAyKnP_Uo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Thing On A Spring video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/6dfAyKnP_Uo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Thing On A Spring C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/6dfAyKnP_Uo" data-video-id="6dfAyKnP_Uo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=6dfAyKnP_Uo" target="_blank" rel="noopener">Open on YouTube</a>

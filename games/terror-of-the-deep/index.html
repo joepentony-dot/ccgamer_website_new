@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Terror of the Deep (1987) – Commodore 64 First-Person Submersible Survival Adventure Released in 1987 by Mirrorsoft for the Commodore 64, Terror of the Deep is an atmospheric first-person action-adventure set beneath the dark waters of Loch Ness in the late 19th century. You take on the role of a submersible pilot investigating mysterious meteorite impacts and the sudden emergence of hostile alien lifeforms deep below the surface. The game is played entirely from the cockpit of a Victorian-era submersible, with hands-on control over navigation, lighting, power systems, and weapons. Progress depends on careful exploration, managing limited oxygen and energy reserves, and reacting quickly to threats lurking in the depths. Combat involves tools such as harpoons and electric defences, all while maintaining control of the vessel under pressure. Terror of the Deep builds tension through its moody presentation, using sound and sparse visuals to reinforce isolation and danger.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Terror Of The Deep C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/1nFRTpvEVa4" data-video-id="1nFRTpvEVa4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Terror Of The Deep video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/1nFRTpvEVa4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Terror Of The Deep C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/1nFRTpvEVa4" data-video-id="1nFRTpvEVa4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=1nFRTpvEVa4" target="_blank" rel="noopener">Open on YouTube</a>

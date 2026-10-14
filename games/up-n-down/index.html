@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Up’n Down (1984) – Commodore 64 Arcade-Style Vertical Racing Action Released in 1984, Up’n Down is an arcade-style racing and action game developed by Sega and published on the Commodore 64 by U. S. Gold. You take control of a distinctive purple dune buggy racing along a vertically scrolling, pseudo-3D track packed with hills, jumps, intersections, and hazards. The goal is simple but demanding: collect ten coloured flags scattered across the course while avoiding crashes and enemy vehicles. Cars can be jumped over or landed on to destroy them for bonus points, while sharp reflexes and careful speed control are essential to survive the constantly changing terrain. What sets Up’n Down apart is its unusual blend of racing and arcade action. Lane switching at intersections, dramatic elevation changes, and aggressive enemy traffic keep the pace relentless, rewarding those of us who master timing, positioning, and momentum.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Up&#39;N Down C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Cn_8vkoZjZE" data-video-id="Cn_8vkoZjZE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Up&#39;N Down video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Cn_8vkoZjZE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Up&#39;N Down C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Cn_8vkoZjZE" data-video-id="Cn_8vkoZjZE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Cn_8vkoZjZE" target="_blank" rel="noopener">Open on YouTube</a>

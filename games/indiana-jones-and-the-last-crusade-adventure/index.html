@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Indiana Jones and the Last Crusade: The Graphic Adventure (1989) – Commodore Amiga Point-and-Click Adventure Classic Released in 1989 by Lucasfilm Games for the Commodore Amiga, Indiana Jones and the Last Crusade: The Graphic Adventure is a landmark point-and-click adventure built on the SCUMM engine. Designed by Ron Gilbert, Noah Falstein, and David Fox, the game expands on the events of the film, allowing players to guide Indy and his father through iconic locations including Venice, Brunwald Castle, and Berlin in a race to secure the Holy Grail. Gameplay centres on puzzle-solving, exploration, and narrative-driven progression, with multiple ways to approach and complete many challenges. The introduction of the “Indy Quotient” (IQ) scoring system rewards experimentation and creative thinking, encouraging players to discover alternative solutions and aim for the maximum 800-point score. Progression is shaped by player choice, observation, and careful interaction with the environment.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Indiana Jones And The Last Crusade (Adventure) Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/QOBMGElP14M" data-video-id="QOBMGElP14M"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Indiana Jones And The Last Crusade (Adventure) video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/QOBMGElP14M/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Indiana Jones And The Last Crusade (Adventure) Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/QOBMGElP14M" data-video-id="QOBMGElP14M"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=QOBMGElP14M" target="_blank" rel="noopener">Open on YouTube</a>

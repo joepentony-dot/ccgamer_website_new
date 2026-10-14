@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ 720° (1987) – Commodore 64 Isometric Skateboarding Arcade Sports Classic Released in 1987 for the Commodore 64 by Tiertex Design Studios and published by U. S. Gold, 720° is a faithful home conversion of Atari Games’ iconic arcade skateboarding hit. You skate through the vibrant Skate City hub, earning tickets by scoring points in order to unlock access to four challenge parks: Ramp, Downhill, Slalom, and Jump. Each park features timed stunt events that test balance, speed, and precision, with trick spins, slalom gates, and hazardous obstacles standing between you and high scores. Fail to complete events quickly enough and Skate City becomes even more dangerous, introducing hazards such as water traps and swarms of bees. Between events, players can visit in-game shops to spend prize money on upgraded boards, pads, and helmets that improve performance and survivability.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="720 Degrees C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/_m3v-nWDFPQ" data-video-id="_m3v-nWDFPQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play 720 Degrees video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/_m3v-nWDFPQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="720 Degrees C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/_m3v-nWDFPQ" data-video-id="_m3v-nWDFPQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=_m3v-nWDFPQ" target="_blank" rel="noopener">Open on YouTube</a>

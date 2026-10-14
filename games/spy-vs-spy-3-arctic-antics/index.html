@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spy vs Spy III: Arctic Antics (1986) – Commodore 64 Slapstick Espionage in the Arctic Released in 1986 for the Commodore 64, Spy vs Spy III: Arctic Antics is the third entry in First Star Software’s classic series inspired by MAD Magazine’s iconic comic strip. This time, the Black Spy and White Spy trade tropical islands for the freezing Arctic, where survival is as important as sabotage. The goal remains familiar: assemble a rocket by locating a Gyroscope, Fuel Canister, and Key Card before your rival does. The icy setting introduces new challenges, including managing body heat, navigating slippery terrain, and avoiding traps hidden beneath the snow. You must balance exploration with constant interference from the opposing spy. New tools and mechanics add extra depth and humour, such as snowball fights, snowshoes, ice picks, and the plunger detonator.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spy Vs Spy III: Arctic Antics C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/L8trvISvFYw" data-video-id="L8trvISvFYw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spy Vs Spy III: Arctic Antics video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/L8trvISvFYw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spy Vs Spy III: Arctic Antics C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/L8trvISvFYw" data-video-id="L8trvISvFYw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=L8trvISvFYw" target="_blank" rel="noopener">Open on YouTube</a>

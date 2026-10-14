@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hunchback (1983) – Commodore 64 Classic Castle Platformer Released in 1983 by Ocean Software for the Commodore 64, Hunchback is a fast-paced platform game inspired by Victor Hugo’s The Hunchback of Notre-Dame. You take control of Quasimodo as he scales the castle walls of Notre Dame, determined to rescue Esmeralda from captivity. Gameplay unfolds across 15 single-screen levels packed with hazards including pits, swinging ropes, fireballs, arrows, and patrolling knights. Precise timing is essential as Quasimodo jumps, swings, and dodges his way toward the bell at the end of each screen. Adding constant pressure, a pursuing knight steadily climbs the wall, forcing you to keep moving. Collecting bells rewards progress, with a super bonus awarded after every five bells. Completing all levels rescues Esmeralda, after which the game restarts at a faster speed, significantly increasing the difficulty and testing your reflexes even further.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hunchback C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cWm5zC3_TnQ" data-video-id="cWm5zC3_TnQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hunchback video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cWm5zC3_TnQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hunchback C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cWm5zC3_TnQ" data-video-id="cWm5zC3_TnQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cWm5zC3_TnQ" target="_blank" rel="noopener">Open on YouTube</a>

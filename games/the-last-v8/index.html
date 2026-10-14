@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Last V8 (1985) – Commodore 64 Racing | Retro Classic The Last V8 (1985) is a futuristic, post-apocalyptic racing game for the Commodore 64, developed by David Darling, with graphics by Jim Wilson and music by Rob Hubbard. Released under Mastertronic’s MAD label, you pilot a radiation-shielded V8 through a nuclear wasteland, balancing speed, fuel, and shield power in a race for survival. Gameplay features a split-screen display with action view and dashboard, precise steering, and a steep difficulty curve. The famous “V8, return to base immediately” intro sets the tone. Rob Hubbard’s soundtrack is a highlight, despite a small sync glitch later fixed in the HVSC archive. Visually, the game delivers striking post-apocalyptic imagery. Despite its flaws, The Last V8 remains a cult classic, remembered for its atmosphere, soundtrack, and brutal challenge.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Last V8 C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/gKdrM75TWwY" data-video-id="gKdrM75TWwY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Last V8 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/gKdrM75TWwY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Last V8 C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/gKdrM75TWwY" data-video-id="gKdrM75TWwY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=gKdrM75TWwY" target="_blank" rel="noopener">Open on YouTube</a>

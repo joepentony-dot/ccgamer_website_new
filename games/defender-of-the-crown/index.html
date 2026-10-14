@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Defender of the Crown (1987) – Commodore 64 Medieval Strategy Epic Released in 1987 by Cinemaware for the Commodore 64, Defender of the Crown casts you into 12th-century England following the death of King Richard. Taking the role of a Saxon lord, the objective is to reclaim the throne by driving back Norman invaders and uniting the country under one ruler. The game blends turn-based strategy with action-led sequences. You manage territories, raise armies, and choose how to advance your campaign through jousting tournaments, castle sieges, and sword fights. Strategic decisions on the map directly affect these encounters, creating a distinctive mix of planning and hands-on gameplay. On the Commodore 64, Defender of the Crown stood out for its cinematic presentation, featuring detailed illustrations and animated scenes rarely seen on the platform at the time.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Defender Of The Crown C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/PI0LLdDNzUQ" data-video-id="PI0LLdDNzUQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Defender Of The Crown video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/PI0LLdDNzUQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Defender Of The Crown C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/PI0LLdDNzUQ" data-video-id="PI0LLdDNzUQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=PI0LLdDNzUQ" target="_blank" rel="noopener">Open on YouTube</a>

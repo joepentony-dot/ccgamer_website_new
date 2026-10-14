@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ It Came from the Desert (1989) – Commodore Amiga Cinematic Horror Adventure Released in 1989 by Cinemaware for the Commodore Amiga, It Came from the Desert is a cinematic action-adventure inspired by 1950s B-movie monster films, most notably Them!. Players take on the role of Dr. Greg Bradley, a geologist investigating a mysterious meteor crash near the desert town of Lizard Breath, only to uncover a terrifying mutant ant invasion. Gameplay blends exploration, investigation, puzzle-solving, and tense action sequences within a strict real-time structure. Over the course of just 15 in-game days, players must gather clues, question townsfolk, explore underground tunnels, and fend off giant ants in order to prevent an impending catastrophe. A dynamic day-and-night cycle drives the narrative forward, with events unfolding whether the player is ready or not. The Amiga version stands out for its detailed artwork, atmospheric sound design, and cinematic presentation, alongside varied mini-games that reinforce the sense of urgency and storytelling.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="It Came From The Desert Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/65SggIs_PVA" data-video-id="65SggIs_PVA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play It Came From The Desert video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/65SggIs_PVA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="It Came From The Desert Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/65SggIs_PVA" data-video-id="65SggIs_PVA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=65SggIs_PVA" target="_blank" rel="noopener">Open on YouTube</a>

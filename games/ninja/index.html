@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ninja (1986) – Commodore 64 Side-Scrolling Beat ’Em Up Arcade Action Released in 1986 by Mastertronic for the Commodore 64, Ninja is a side-scrolling beat ’em up that delivers straightforward arcade-style combat. You take control of a lone ninja battling through enemy-filled stages, relying on timing, positioning, and simple but effective attacks to survive. Gameplay focuses on direct hand-to-hand combat, with enemies approaching from both sides as you punch, kick, and use basic weapons to clear each area. The structure is immediately accessible, making it easy to pick up and play while still offering a steady challenge as enemy placement and numbers increase. True to its budget roots, Ninja features a clean and functional presentation that keeps the emphasis firmly on action rather than spectacle. The sound and visuals support the gameplay without distraction, reinforcing the fast, no-nonsense feel typical of mid-80s C64 arcade titles.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ninja C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/RBvhfVGMsLQ" data-video-id="RBvhfVGMsLQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ninja video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/RBvhfVGMsLQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ninja C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/RBvhfVGMsLQ" data-video-id="RBvhfVGMsLQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=RBvhfVGMsLQ" target="_blank" rel="noopener">Open on YouTube</a>

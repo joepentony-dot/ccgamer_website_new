@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Fire Ant (1983) – Commodore 64 Arcade Puzzle Action Classic Released in 1983 by Victory Software and published by Mogul Communications for the Commodore 64, Fire Ant is an early arcade-style puzzle action game that blends strategy with fast reflexes. You take control of a determined ant exploring a series of underground chambers in a mission to rescue the captured queen from deadly scorpions. Gameplay centres on navigating maze-like rooms filled with traps, locked doors, and roaming enemies. You must collect keys, avoid hazards, and carefully plan their routes in order to progress safely through each chamber and reach the next stage. Progression relies on observation, timing, and problem-solving, as each new area introduces different layouts and obstacles. Quick reactions are essential, but success also depends on choosing the right path and managing risks effectively.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Fire Ant C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfRcdb28UV8" data-video-id="pfRcdb28UV8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Fire Ant video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pfRcdb28UV8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Fire Ant C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pfRcdb28UV8" data-video-id="pfRcdb28UV8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pfRcdb28UV8" target="_blank" rel="noopener">Open on YouTube</a>

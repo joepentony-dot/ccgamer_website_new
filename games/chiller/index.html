@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Chiller (1984) – Commodore 64 Horror Platformer with Arcade Bite Released in 1984 by Mastertronic and developed by David Darling and Richard Darling, Chiller is an early horror-themed platform game for the Commodore 64 that tasks you with rescuing your kidnapped girlfriend from a world inspired by 1980s horror tropes. The game spans five distinct locations — The Forest, The Cinema, The Ghetto, The Graveyard, and The Haunted House — each presented from a top-down perspective. Your goal is to collect magic crosses while avoiding zombies and other unsettling enemies, all while navigating collapsing platforms and hazardous toadstools that steadily drain your energy. Chiller blends fast arcade reactions with light exploration, demanding careful movement and route planning as enemy patterns tighten and room layouts become more punishing. The controls are simple, but the pressure steadily builds as mistakes quickly stack against you.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Chiller C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ji51PHVM1Zg" data-video-id="ji51PHVM1Zg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Chiller video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ji51PHVM1Zg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Chiller C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ji51PHVM1Zg" data-video-id="ji51PHVM1Zg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ji51PHVM1Zg" target="_blank" rel="noopener">Open on YouTube</a>

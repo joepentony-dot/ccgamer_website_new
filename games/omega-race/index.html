@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Omega Race (1982) – Commodore 64 Vector Arcade Shooter Classic Originally developed by Ron Haliburton and released by Midway in 1981, Omega Race arrived on the Commodore 64 in 1982 as a remarkably faithful home conversion of the arcade original. It delivers fast, precision-based shooting action built around clean vector-style visuals and tight arena combat. You pilot an Omegan Fighter within a rectangular arena, rotating and thrusting freely in any direction while battling hostile droid ships and avoiding deadly mines. Movement has a deliberate, momentum-driven feel similar to Asteroids, demanding careful control and spatial awareness at all times. The arena itself adds to the challenge, with invisible force-field walls that punish reckless movement and force you to master positioning and timing. Success depends on understanding enemy patterns, conserving momentum, and keeping full control of the ship under pressure.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Omega Race C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/HOD70TxY8r4" data-video-id="HOD70TxY8r4"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Omega Race video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/HOD70TxY8r4/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Omega Race C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/HOD70TxY8r4" data-video-id="HOD70TxY8r4"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=HOD70TxY8r4" target="_blank" rel="noopener">Open on YouTube</a>

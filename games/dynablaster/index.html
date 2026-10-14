@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Dynablaster (1992) – Commodore Amiga Explosive Multiplayer Maze Classic Released in early 1992 by Ubisoft and developed by Hudson Soft, Dynablaster is the Amiga’s take on the legendary Bomberman formula, delivering fast-paced maze action built around timing, positioning, and glorious mayhem. Known as Bomberman on other platforms, this version became a firm favourite for Amiga multiplayer sessions. Gameplay takes place in grid-based arenas where players drop bombs to clear blocks, uncover power-ups, and outmanoeuvre opponents. Power-ups increase bomb range, allow multiple bombs, and boost movement speed, turning each round into a tense battle of prediction and quick thinking. Dynablaster truly shines in multiplayer, supporting up to five players using a joystick adaptor, with four on joysticks and one on the keyboard. Matches are frantic, tactical, and endlessly replayable, making it a staple of living-room gaming during the Amiga’s peak years.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dynablaster Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/u0JcuSCcryA" data-video-id="u0JcuSCcryA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dynablaster video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/u0JcuSCcryA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dynablaster Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/u0JcuSCcryA" data-video-id="u0JcuSCcryA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=u0JcuSCcryA" target="_blank" rel="noopener">Open on YouTube</a>

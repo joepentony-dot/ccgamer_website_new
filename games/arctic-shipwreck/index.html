@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Arctic Shipwreck (1983) – Commodore 64 Survival Adventure in the Frozen North Released in 1983 by Commodore International for the Commodore 64, Arctic Shipwreck is an early adventure game built around survival, strategy, and isolation. You take on the role of a ship’s captain left stranded in the Arctic following a devastating shipwreck, with nothing but your wits to keep you alive. Gameplay focuses on careful decision-making and resource management. Every move matters as you navigate icy terrain, avoid environmental dangers, and search for supplies that may mean the difference between survival and failure. Progress depends on planning ahead, managing limited resources, and learning how to use the harsh environment to your advantage. The presentation is deliberately minimal, using simple graphics and sparse sound to reinforce the bleak, hostile setting. This stripped-back approach helps build tension and atmosphere, making each choice feel weighty and consequential.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Arctic Shipwreck C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Ce6zzYUX3IA" data-video-id="Ce6zzYUX3IA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Arctic Shipwreck video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Ce6zzYUX3IA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Arctic Shipwreck C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Ce6zzYUX3IA" data-video-id="Ce6zzYUX3IA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Ce6zzYUX3IA" target="_blank" rel="noopener">Open on YouTube</a>

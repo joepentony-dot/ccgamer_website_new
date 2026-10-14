@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Captive (1985) – Commodore 64 Top-Down Puzzle Adventure Escape Released in June 1985 by Mastertronic and developed by Nigel P. Johnstone, The Captive is a tense top-down action-adventure that blends exploration, puzzle-solving, and careful planning. From the creator of The Prisoner, it delivers an unsettling atmosphere and an unusual sense of vulnerability for a Commodore 64 title. The game is set on a mysterious island known as the Glen of Coloured Corpses. You begin in a small town and must explore the surrounding areas in search of a way to escape. Progress is gated by colour-coded keys used to unlock doors scattered across the island, forcing you to think carefully about route planning and item usage. Inventory management plays a central role, with only three items carriable at any time. Objects range from practical tools like guns and shovels to stranger items such as mushrooms, scrolls, and even a helicopter.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Captive C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Q1_BVJ2ktLc" data-video-id="Q1_BVJ2ktLc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Captive video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Q1_BVJ2ktLc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Captive C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Q1_BVJ2ktLc" data-video-id="Q1_BVJ2ktLc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Q1_BVJ2ktLc" target="_blank" rel="noopener">Open on YouTube</a>

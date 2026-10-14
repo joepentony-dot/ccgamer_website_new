@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Tapper (1984) – Commodore 64 Arcade Action Bar-room Classic Released in 1984 for the Commodore 64, Tapper is an arcade-style action game originally developed by Marvin Glass and Associates and brought to home systems with its fast, reflex-driven gameplay intact. You step behind the bar as a bartender under pressure, racing to keep an ever-growing crowd of thirsty customers satisfied. Gameplay is all about timing and multitasking. You must fill and slide drinks down the bar, catch empty glasses hurled back your way, and stop customers from reaching the end unserved. Every round demands sharper reactions as speed increases and multiple bars need attention at once. The game moves between themed locations including a Wild West saloon, beach bar, punk club, and futuristic space tavern, each adding visual flair and escalating difficulty. The Commodore 64 version captures the arcade’s energy with bright graphics and clear animations that keep the action easy to read even when things get frantic.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Tapper C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/hFJun2OAieA" data-video-id="hFJun2OAieA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Tapper video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/hFJun2OAieA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Tapper C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/hFJun2OAieA" data-video-id="hFJun2OAieA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=hFJun2OAieA" target="_blank" rel="noopener">Open on YouTube</a>

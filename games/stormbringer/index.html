@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Stormbringer (1987) – Commodore 64 Fantasy Arcade Adventure Finale Released in 1987 by Mastertronic under the M. A. D. (Mastertronic Added Dimension) label, Stormbringer is a fantasy adventure game for the Commodore 64 developed by David Jones. It serves as the fourth and final entry in the Magic Knight series, following Finders Keepers, Spellbound, and Knight Tyme, while shifting the formula toward a more action-focused arcade-adventure style. The story centres on Magic Knight facing his own evil alter ego, the Off-White Knight, also known as Stormbringer. A time travel accident has created this destructive duplicate, and the only way to restore balance is for Magic Knight to confront and ultimately merge with his darker self. This narrative twist gives the game a more personal and dramatic tone than earlier entries in the series. Gameplay takes place across 64 interconnected screens filled with hazards, puzzles, and environmental challenges.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Stormbringer C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/YJmnLrEebyQ" data-video-id="YJmnLrEebyQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Stormbringer video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/YJmnLrEebyQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Stormbringer C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/YJmnLrEebyQ" data-video-id="YJmnLrEebyQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=YJmnLrEebyQ" target="_blank" rel="noopener">Open on YouTube</a>

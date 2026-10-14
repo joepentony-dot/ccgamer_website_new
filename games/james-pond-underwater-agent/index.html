@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ James Pond: Underwater Agent (1990) – Commodore Amiga Platform Adventure Classic Released in 1990 by Vectordean and published by Millennium Interactive for the Commodore Amiga, James Pond: Underwater Agent introduces a humorous aquatic spy adventure inspired by the world of James Bond. Players take control of James Pond, a suave mudskipper secret agent, as he embarks on a series of eco-themed missions to protect the underwater world from pollution and danger. The game features twelve varied levels where objectives include rescuing trapped sea creatures, sealing toxic leaks, and escorting fish to safety, all while racing against the clock. Gameplay centres on trapping enemies inside bubbles and then popping them to turn foes into useful collectibles. Exploration is encouraged through branching tunnels, hidden rooms, and interconnected pipe systems. Visually, the Amiga version stands out for its bright cartoon-style graphics, detailed sprites, and parallax-scrolling backgrounds.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="James Pond: Underwater Agent Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZOz6QM-gyY8" data-video-id="ZOz6QM-gyY8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play James Pond: Underwater Agent video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/ZOz6QM-gyY8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="James Pond: Underwater Agent Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/ZOz6QM-gyY8" data-video-id="ZOz6QM-gyY8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=ZOz6QM-gyY8" target="_blank" rel="noopener">Open on YouTube</a>

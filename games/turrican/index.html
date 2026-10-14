@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Turrican (1990) – Commodore 64 Run-and-Gun Action Platform Landmark Released in 1990 by Rainbow Arts and developed by Manfred Trenz, Turrican is widely regarded as one of the most ambitious and technically impressive action games ever created for the Commodore 64. Designed as a run-and-gun platformer with a strong emphasis on exploration, it raised expectations for what the C64 could deliver late in its lifespan. You control a lone warrior encased in a powerful assault suit, battling through five expansive worlds across 13 interconnected levels. The game blends fast-paced side-scrolling combat with open-ended level design, rewarding exploration with hidden areas, secret bonuses, and powerful upgrades. A defining feature is the rotating laser weapon, which can be aimed freely through 360 degrees, adding tactical depth to both combat and traversal. From a technical standpoint, Turrican is a standout achievement on the Commodore 64.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Turrican C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/waYE06T4fts" data-video-id="waYE06T4fts"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Turrican video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/waYE06T4fts/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Turrican C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/waYE06T4fts" data-video-id="waYE06T4fts"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=waYE06T4fts" target="_blank" rel="noopener">Open on YouTube</a>

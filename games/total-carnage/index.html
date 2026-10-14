@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Total Carnage (1994) – Commodore Amiga Twin-Stick Arcade Mayhem Released in 1994 by International Computer Entertainment, Total Carnage brings all-out arcade mayhem to the Commodore Amiga as the spiritual successor to Smash TV. It delivers relentless top-down action with an unapologetically explosive tone. Set in the fictional war zone of Kookistan in 1999, you step into the boots of Captain Carnage or Major Mayhem, members of the Doomsday Squad sent to topple the deranged dictator General Akhboob. Each of the three stages throws swarms of enemies, environmental hazards, and screen-filling carnage at you, building toward a boss showdown. The twin-stick control scheme keeps movement and firing independent, making precision and positioning critical as the pace ramps up. Power-ups, screen-clearing bombs, and rescued prisoners add tactical choices to the constant pressure, while two-player co-op doubles the mayhem.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Total Carnage Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/s1tKLBBKGLQ" data-video-id="s1tKLBBKGLQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Total Carnage video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/s1tKLBBKGLQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Total Carnage Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/s1tKLBBKGLQ" data-video-id="s1tKLBBKGLQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=s1tKLBBKGLQ" target="_blank" rel="noopener">Open on YouTube</a>

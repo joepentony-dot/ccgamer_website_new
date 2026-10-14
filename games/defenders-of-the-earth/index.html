@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Defenders of the Earth (1990) – Commodore 64 Licensed Action Platformer Released in 1990, Defenders of the Earth is a side-scrolling action platformer for the Commodore 64, developed by Enigma Variations and published by Hi-Tec Software. Based on the animated television series, the game brings together legendary heroes Flash Gordon, Mandrake the Magician, Lothar, and the Phantom as they attempt to rescue their kidnapped children from the clutches of Ming the Merciless. You mainly take control of Flash Gordon, fighting through Ming’s fortress across enemy-filled screens packed with traps and demanding platforming sections. Progress isn’t just about combat, as you must regularly call upon the other Defenders to overcome obstacles and solve environmental challenges. Each hero has a specific ability that is essential for advancement. Mandrake can conjure bridges to cross gaps, Lothar can smash through solid barriers, and the Phantom can unlock sealed doors.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Defenders Of The Earth C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/fGZI3wWtWm8" data-video-id="fGZI3wWtWm8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Defenders Of The Earth video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/fGZI3wWtWm8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Defenders Of The Earth C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/fGZI3wWtWm8" data-video-id="fGZI3wWtWm8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=fGZI3wWtWm8" target="_blank" rel="noopener">Open on YouTube</a>

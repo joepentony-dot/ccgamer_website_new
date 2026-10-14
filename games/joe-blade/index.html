@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Joe Blade (1987) – Commodore 64 Action Platform Commando Classic Released in 1987 by Players Software under the Interceptor Micros label, Joe Blade is a side-scrolling action platform game for the Commodore 64 developed by Colin Swinbourne. You take on the role of Joe Blade, a lone commando sent deep into an enemy complex to rescue six kidnapped world leaders from the grip of the villainous Crax Bloodfinger. The game unfolds across a maze of flip-screen rooms packed with guards, traps, and explosives. Armed with a machine gun and working against a strict time limit, you must carefully explore the complex, disable bombs, and locate hostages while conserving limited ammunition. Progress depends on learning the layout, planning efficient routes, and avoiding costly mistakes. Each room presents its own hazards, encouraging methodical movement and memorisation rather than reckless action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Joe Blade C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/LaD3sNYdPCw" data-video-id="LaD3sNYdPCw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Joe Blade video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/LaD3sNYdPCw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Joe Blade C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/LaD3sNYdPCw" data-video-id="LaD3sNYdPCw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=LaD3sNYdPCw" target="_blank" rel="noopener">Open on YouTube</a>

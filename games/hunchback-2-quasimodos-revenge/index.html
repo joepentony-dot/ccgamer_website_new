@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Hunchback II: Quasimodo’s Revenge (1985) – Commodore 64 Arcade Platformer Hunchback II: Quasimodo’s Revenge is a 1985 arcade platform game for the Commodore 64, published by Ocean Software and developed by Choice Software. Building on the success of the original Hunchback, this sequel expands the formula into a series of varied, skill-based challenge stages rather than a single looping screen. It was designed specifically to showcase the strengths of the C64. You once again control Quasimodo as he navigates swinging ropes, collapsing platforms, arrow traps, and precision jumps across multiple distinct events. Each stage introduces new mechanics, demanding fast reactions, sharp timing, and strong memorisation. One of the game’s standout features is its atmospheric soundtrack by Martin Galway, whose SID composition elevates the experience and remains one of the most memorable pieces of C64 music of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Hunchback 2 C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dTe4AscaMOU" data-video-id="dTe4AscaMOU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Hunchback 2 video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/dTe4AscaMOU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Hunchback 2 C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/dTe4AscaMOU" data-video-id="dTe4AscaMOU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=dTe4AscaMOU" target="_blank" rel="noopener">Open on YouTube</a>

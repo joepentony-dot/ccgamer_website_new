@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Movie Monster Game (1986) – Commodore 64 Arcade Monster Destruction Released by Epyx as a follow-up to Crush, Crumble and Chomp! , The Movie Monster Game flips the formula by putting you directly in control of the monster. Choose from six giant creatures, including officially licensed icons like Godzilla, alongside classics such as Tarantula and a towering Robot, then unleash mayhem across cities including London, Paris, New York, Moscow, and San Francisco. Rather than relying on turn-based strategy commands, the game adopts a more immediate arcade-style control system. You can freely roam the city streets, smashing buildings, battling military forces, and completing one of five scenario-based objectives ranging from escape and rescue missions to total landmark destruction. Tiny humans fight back with tanks, jets, missiles, and other defences, forcing you to balance raw destruction with survival.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Movie Monster Game C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/3r2Xu8_dQXY" data-video-id="3r2Xu8_dQXY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Movie Monster Game video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/3r2Xu8_dQXY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Movie Monster Game C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/3r2Xu8_dQXY" data-video-id="3r2Xu8_dQXY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=3r2Xu8_dQXY" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bionic Commando (1988) – Commodore 64 Grappling Hook Action Platform Classic Released in 1988 for the Commodore 64, Bionic Commando is a side-scrolling action-platformer developed by Software Creations for the UK release and Pacific Dataworks International for the US version, published by U. S. Gold, GO! , and Capcom. Unlike most platform games of the era, the hero cannot jump. Instead, movement is based entirely around a powerful bionic arm that functions as a grappling hook for swinging, climbing, attacking enemies, and collecting items. The C64 version closely follows the arcade structure across five demanding levels, requiring careful planning and precise execution to survive hostile terrain. Players must shoot supply crates dropped by parachutes to upgrade weapons, then skillfully use the bionic arm to traverse gaps, scale platforms, and avoid deadly hazards. Gameplay focuses on timing, positioning, and momentum, rewarding players who master the unique swinging mechanics.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bionic Commando C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Xzgcz7n7Kxw" data-video-id="Xzgcz7n7Kxw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bionic Commando video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Xzgcz7n7Kxw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bionic Commando C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Xzgcz7n7Kxw" data-video-id="Xzgcz7n7Kxw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Xzgcz7n7Kxw" target="_blank" rel="noopener">Open on YouTube</a>

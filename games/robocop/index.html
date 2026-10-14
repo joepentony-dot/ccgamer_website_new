@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>RoboCop is Ocean Software&#39;s Commodore 64 action adaptation of the 1987 film, with a 1989 US release following its 1988 UK debut. Developed under license from Orion Pictures, the home computer versions were produced by Ocean in collaboration with Data East, aiming to bring the film’s gritty atmosphere to 8-bit hardware. You step into the metal boots of RoboCop, patrolling the crime-ridden streets of Detroit across seven scrolling levels. Gameplay blends beat ’em up combat with run-and-gun shooting, as RoboCop uses punches and his Auto-9 pistol to clear enemies. Bonus shooting galleries add variety, rewarding accuracy and timing between the main stages. On the Commodore 64, RoboCop delivers moody visuals and a strong sense of atmosphere that reflects the film’s tone. Jonathan Dunn’s powerful soundtrack is a standout feature, driving the action and becoming one of the most recognisable C64 game themes of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Robocop C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/pm3UGikm-2s" data-video-id="pm3UGikm-2s"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Robocop video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/pm3UGikm-2s/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Robocop C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/pm3UGikm-2s" data-video-id="pm3UGikm-2s"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=pm3UGikm-2s" target="_blank" rel="noopener">Open on YouTube</a>

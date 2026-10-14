@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ American 3D Pool (1991) – Commodore 64 3D Cue Sports Simulation Released in 1991 for the Commodore 64, American 3D Pool is an ambitious cue sports game developed by Zeppelin Games that attempted something rarely seen on 8-bit hardware: a first-person, pseudo-3D pool simulation. Instead of the usual overhead view, the game places you right at table level, emphasising depth, angles, and shot precision. Gameplay revolves around realistic aiming, power control, and judging perspective. The 3D-style camera changes how shots are lined up, forcing you to think carefully about spin, force, and positioning rather than relying on simple top-down geometry. This approach added a surprising amount of strategy and skill to each frame of play. Technically, American 3D Pool pushes the Commodore 64 hard, using clever shading and perspective tricks to create the illusion of depth on an 8-bit system.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="American 3D Pool C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dypYKGGeNYU" data-video-id="dypYKGGeNYU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play American 3D Pool video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/dypYKGGeNYU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="American 3D Pool C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/dypYKGGeNYU" data-video-id="dypYKGGeNYU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=dypYKGGeNYU" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ He-Man and the Masters of the Universe: The Ilearth Stone (1987) – Commodore 64 Platform Action Adventure Released in 1987 by U. S. Gold and developed by Adventure Soft, He-Man and the Masters of the Universe: The Ilearth Stone brings the world of Eternia to the Commodore 64 in a side-scrolling platform adventure. Also known as Masters of the Universe: The Arcade Game, it casts you as He-Man in a race to stop Skeletor and recover the powerful Ilearth Stone. The adventure takes you through Castle Grayskull and its surrounding regions as you gather the ingredients required for Orko’s spell. Gameplay mixes platforming and exploration, with lifts, traps, enemies, and branching routes encouraging steady progression rather than pure speed. He-Man wields his iconic Power Sword to defeat Skeletor’s forces and can collect power-ups that enhance his abilities along the way.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="He-Man and the Masters of the Universe: The Ilearth Stone C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cD8LrXRDFaE" data-video-id="cD8LrXRDFaE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play He-Man and the Masters of the Universe: The Ilearth Stone video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cD8LrXRDFaE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="He-Man and the Masters of the Universe: The Ilearth Stone C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cD8LrXRDFaE" data-video-id="cD8LrXRDFaE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cD8LrXRDFaE" target="_blank" rel="noopener">Open on YouTube</a>

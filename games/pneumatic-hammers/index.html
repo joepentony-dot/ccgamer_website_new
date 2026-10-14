@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Pneumatic Hammers (1987) – Commodore 64 Action Platform Puzzle Challenge Released in 1987 by Andromeda Software and published by Firebird Software for the Commodore 64, Pneumatic Hammers places you in the role of Red O’Blair, a mining engineer racing against time to prevent a disastrous collapse inside a malfunctioning mining facility. The game blends platform action with puzzle-solving and light resource management. You must navigate a complex, multi-level structure while avoiding falling debris, hazardous machinery, and environmental dangers. Progress depends on collecting gold nuggets needed to repair a critical switch that controls the rogue pneumatic hammers threatening the mine. A constant sense of pressure defines the gameplay. Time and resources must be managed carefully, as delays can worsen the situation and make navigation increasingly dangerous. Success relies on learning the layout, planning efficient routes, and reacting quickly to changing conditions.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Pneumatic Hammers C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GSJYlYROFZQ" data-video-id="GSJYlYROFZQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Pneumatic Hammers video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GSJYlYROFZQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Pneumatic Hammers C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GSJYlYROFZQ" data-video-id="GSJYlYROFZQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GSJYlYROFZQ" target="_blank" rel="noopener">Open on YouTube</a>

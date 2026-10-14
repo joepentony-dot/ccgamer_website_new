@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Track &amp; Field (1984) – Commodore 64 Olympic Sports Arcade Classic Released in 1984 by Konami, Track and Field brings the explosive energy of the 1983 arcade hit to the Commodore 64. You compete across a series of Olympic events, each demanding speed, timing, and nerves of steel to beat records and rivals alike. The game features six classic events: the 100m Dash, Long Jump, Javelin Throw, 110m Hurdles, Hammer Throw, and High Jump. Success comes from frantic button tapping to build momentum, followed by perfectly timed inputs to launch jumps and throws at just the right moment. The C64 version preserves the fast pace and competitive spirit of the arcade, with support for up to four players turning it into a tense party favourite. Clear visuals and responsive controls keep the focus firmly on skill and reflexes, making every fraction of a second count.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Track &amp; Field C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/3y7LB5AdP4I" data-video-id="3y7LB5AdP4I"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Track &amp; Field video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/3y7LB5AdP4I/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Track &amp; Field C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/3y7LB5AdP4I" data-video-id="3y7LB5AdP4I"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=3y7LB5AdP4I" target="_blank" rel="noopener">Open on YouTube</a>

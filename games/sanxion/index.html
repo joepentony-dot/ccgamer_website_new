@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Sanxion (1986) – Commodore 64 Innovative Split-Screen Shoot ’Em Up Released in 1986 for the Commodore 64, Sanxion was developed by Stavros Fasoulas and published by Thalamus as the company’s very first release. From the outset, it established Thalamus as a publisher willing to push technical and design boundaries, delivering a shoot-’em-up that felt fresh and ambitious. You pilot a futuristic aircraft through horizontally scrolling stages packed with enemies and hazards. Sanxion’s most distinctive feature is its split-screen presentation: the upper section shows an overhead tactical view, while the lower portion displays the traditional side-on action. This dual perspective allows us to anticipate threats ahead while reacting to immediate danger, adding an extra layer of strategy rarely seen in the genre. Another standout mechanic is the adjustable scrolling speed. Movement accelerates as the ship approaches the centre of the screen, forcing constant judgment calls between speed, control, and survival.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Sanxion C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/obHqQCQzB6o" data-video-id="obHqQCQzB6o"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Sanxion video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/obHqQCQzB6o/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Sanxion C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/obHqQCQzB6o" data-video-id="obHqQCQzB6o"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=obHqQCQzB6o" target="_blank" rel="noopener">Open on YouTube</a>

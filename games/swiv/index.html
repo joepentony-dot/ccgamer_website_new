@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ S. W. I. V. (1991) – Commodore 64 Vertical Shoot ’Em Up Alien Assault Released in 1991 for the Commodore 64, S. W. I. V. (Space War: Invasion Force) is a fast-paced vertical scrolling shooter originally developed by Atari Games and ported by The Sales Curve. You take control of an advanced combat jet tasked with repelling a large-scale alien invasion across hostile territory. The gameplay focuses on relentless forward momentum, heavy enemy waves, and precise positioning as you blast through scrolling levels packed with ground targets, airborne threats, and imposing boss encounters. Weapon upgrades and firepower management play a key role in surviving the escalating difficulty. S. W. I. V. stands out on the C64 for its large, detailed sprites and smooth vertical scrolling, pushing the hardware hard for the time. The action is backed by an energetic soundtrack that maintains intensity throughout, reinforcing the game’s arcade-style pacing and urgency.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="S.W.I.V. C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/Pgkd0jKPL6U" data-video-id="Pgkd0jKPL6U"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play S.W.I.V. video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/Pgkd0jKPL6U/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="S.W.I.V. C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/Pgkd0jKPL6U" data-video-id="Pgkd0jKPL6U"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=Pgkd0jKPL6U" target="_blank" rel="noopener">Open on YouTube</a>

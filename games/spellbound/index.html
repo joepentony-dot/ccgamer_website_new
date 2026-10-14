@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Spellbound (1986) – Commodore 64 Graphic Adventure in the Magic Knight Saga Released in 1986 by Mastertronic under the Added Dimension label, Spellbound is a graphic adventure developed by David Jones and the second entry in the Magic Knight series. Picking up after the rescue of the wizard Gimbal, the story transports Magic Knight to a strange and dangerous castle filled with puzzles, characters, and hidden dangers. Gameplay is driven by the Windimation system, a menu-based interface that allows you to interact with objects and characters in a structured but flexible way. Exploration and problem-solving take centre stage, with progress tied to logical thinking rather than fast reactions. As Magic Knight explores the castle, you must manage energy and health while uncovering clues, solving environmental puzzles, and dealing with the castle’s inhabitants. Each area introduces new challenges, encouraging careful observation and experimentation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Spellbound C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/yBlWhAdQrgc" data-video-id="yBlWhAdQrgc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Spellbound video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/yBlWhAdQrgc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Spellbound C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/yBlWhAdQrgc" data-video-id="yBlWhAdQrgc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=yBlWhAdQrgc" target="_blank" rel="noopener">Open on YouTube</a>

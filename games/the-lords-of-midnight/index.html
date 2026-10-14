@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ The Lords of Midnight (1985) – Commodore 64 Fantasy Strategy Classic Released in 1985 by Mindscape for the Commodore 64, The Lords of Midnight is a groundbreaking blend of strategy and role-playing developed by Mike Singleton and set in a vast, atmospheric fantasy world. You command heroes such as Luxor the Moonprince and his son Morkin in a quest to defeat the evil Witchking Doomdark, who has plunged the Land of Midnight into eternal winter. The game offers multiple paths to victory, including destroying the Ice Crown, conquering Doomdark’s fortress of Ushgarak with assembled armies, or completing both objectives in Epic mode. This freedom of approach was highly innovative for its time. A standout feature is the “landscaping” engine, which presents the world from a first-person perspective across more than 4,000 unique locations. This creates a strong sense of scale, immersion, and exploration rarely seen on 8-bit systems.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Lords Of Midnight C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/a7Ji5dmfvXU" data-video-id="a7Ji5dmfvXU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Lords Of Midnight video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/a7Ji5dmfvXU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Lords Of Midnight C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/a7Ji5dmfvXU" data-video-id="a7Ji5dmfvXU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=a7Ji5dmfvXU" target="_blank" rel="noopener">Open on YouTube</a>

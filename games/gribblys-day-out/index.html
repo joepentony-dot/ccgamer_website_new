@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gribbly’s Day Out (1985) – Commodore 64 Sci-Fi Action Platform Classic Released in 1985 by Hewson Consultants and developed by Andrew Braybrook, Gribbly’s Day Out is a highly original action-platform game for the Commodore 64. Set on the alien world of Blabgor, you take control of Gribbly Grobbly, a strange one-footed creature gifted with psychic powers and tasked with rescuing eight baby Gribblets scattered across a dangerous landscape. Gameplay blends platform action with shooting mechanics. Gribbly hops and levitates through multi-screen scrolling levels, using psychic bubble shots to fend off enemies and clear hazards. Each area is tightly designed, filled with precision jumps, environmental threats, and the ever-present energy web created to contain the mutated Blabgorian Seon. Progression demands accuracy and patience, as enemy placement and level layouts leave little room for error. The controls and difficulty reward mastery, making each successful rescue feel hard-earned and satisfying.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gribbly&#39;s Day Out C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/7sE1WBZ8F6k" data-video-id="7sE1WBZ8F6k"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gribbly&#39;s Day Out video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/7sE1WBZ8F6k/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gribbly&#39;s Day Out C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/7sE1WBZ8F6k" data-video-id="7sE1WBZ8F6k"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=7sE1WBZ8F6k" target="_blank" rel="noopener">Open on YouTube</a>

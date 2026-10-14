@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Davy: King of the Wild Frontier (1985) – Commodore 64 Frontier Platform Action Released in 1985 by Cascade Games Ltd. , Davy: King of the Wild Frontier is a side-scrolling action platformer inspired by the exploits of legendary frontiersman Davy Crockett. Set against the backdrop of the American wilderness, the game challenges you to survive hostile terrain while pushing steadily toward a daring rescue mission. You guide Davy through forests, rivers, and enemy camps, jumping pits, dodging traps, and taking on adversaries that block the route forward. Progress relies on sharp reflexes and careful timing, with hazards demanding precise movement and awareness as the difficulty ramps up. On the Commodore 64, the game delivers colourful backdrops and plainly defined environments, supported by a light-hearted soundtrack that adds personality to the action. A notable technical feature is its use of speech synthesis, a memorable touch that helped the game stand out among mid-1980s C64 releases.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Davy: King Of The Wild Frontier C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/cfzM-JDJ_NU" data-video-id="cfzM-JDJ_NU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Davy: King Of The Wild Frontier video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/cfzM-JDJ_NU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Davy: King Of The Wild Frontier C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/cfzM-JDJ_NU" data-video-id="cfzM-JDJ_NU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=cfzM-JDJ_NU" target="_blank" rel="noopener">Open on YouTube</a>

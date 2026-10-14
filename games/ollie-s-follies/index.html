@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Ollie’s Follies (1984) – Commodore 64 Platformer by Frank Cohen Ollie’s Follies is a 1984 Commodore 64 platform game created by Frank Cohen under the Fanda name and originally published on the C64 by Access Software. Your job sounds innocent enough: get Ollie through a factory run entirely by hostile robots. Unfortunately, between you and freedom are 24 increasingly awkward single-screen rooms designed to make even walking in a straight line feel ambitious. Each room brings another mixture of platforms, robots and machinery to negotiate, with moving ledges, fans, teleporters, springboards, laser walls, keys and energisers gradually joining the fun. The energisers temporarily allow Ollie to destroy the robots instead of being destroyed by them, but much of the challenge still comes down to timing your movement and judging exactly where the little bugger is going to stop.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Ollie&#39;s Follies C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/V9JD67SRm8w" data-video-id="V9JD67SRm8w"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Ollie&#39;s Follies video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/V9JD67SRm8w/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Ollie&#39;s Follies C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/V9JD67SRm8w" data-video-id="V9JD67SRm8w"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=V9JD67SRm8w" target="_blank" rel="noopener">Open on YouTube</a>

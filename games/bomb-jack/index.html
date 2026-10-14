@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bomb Jack (1986) – Commodore 64 Arcade Platformer | Retro Classic Bomb Jack (1986), developed by Elite and based on Tehkan’s 1984 arcade hit, is one of the most successful arcade conversions ever released on the Commodore 64. You control the agile hero Jack as he leaps between platforms collecting red bombs while avoiding birds, mummies, flying saucers, and other roaming enemies. The game’s precise jumping, mid-air “flutter” ability, and strategic bomb-collection order create fast-paced, skill-based gameplay. Building bonus meters rewards careful play, while special power-ups can temporarily turn enemies into collectible coins. Each set of stages features distinctive themed backdrops, including pyramids in Cairo, the Greek Acropolis, Neuschwanstein Castle, and city nightscapes, giving the game strong visual variety. Mark Cooksey’s energetic soundtrack, including a rendition of Jean-Michel Jarre’s Magnetic Fields Part II, adds to the game’s memorable presentation.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bomb Jack C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/9LIW5zUvIZ8" data-video-id="9LIW5zUvIZ8"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bomb Jack video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/9LIW5zUvIZ8/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bomb Jack C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/9LIW5zUvIZ8" data-video-id="9LIW5zUvIZ8"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=9LIW5zUvIZ8" target="_blank" rel="noopener">Open on YouTube</a>

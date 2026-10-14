@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Monkey Island 2: LeChuck’s Revenge (1992) – Commodore Amiga Point-and-Click Adventure Classic Released in 1992 by LucasArts for the Commodore Amiga, Monkey Island 2: LeChuck’s Revenge continues the legendary adventures of Guybrush Threepwood in one of the most celebrated sequels in gaming history. Picking up after the events of The Secret of Monkey Island, you set off on a globe-trotting quest to uncover the mythical treasure of Big Whoop, all while dealing with pirates, curses, and unfinished business with LeChuck. Built using the SCUMM engine, the game refines the point-and-click formula with deeper puzzles, sharper writing, and a much larger world to explore. You travel between multiple islands, combining inventory items, outwitting rivals, and engaging in some of the most memorable dialogue ever written for an adventure game. The Amiga version shines with richly detailed hand-painted visuals and smooth presentation, while the innovative iMUSE system dynamically adjusts the music to match on-screen action, creating a seamless and immersive atmosphere.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Monkey Island 2: Lechuck&#39;S Revenge Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/4_aLzcAPZN0" data-video-id="4_aLzcAPZN0"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Monkey Island 2: Lechuck&#39;S Revenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/4_aLzcAPZN0/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Monkey Island 2: Lechuck&#39;S Revenge Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/4_aLzcAPZN0" data-video-id="4_aLzcAPZN0"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=4_aLzcAPZN0" target="_blank" rel="noopener">Open on YouTube</a>

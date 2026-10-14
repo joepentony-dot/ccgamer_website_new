@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Arnie (1992) – Commodore 64 Top-Down Sci-Fi Shooter Challenge Released in 1992 by Zeppelin Games for the Commodore 64, Arnie is a fast-paced action shooter that arrived late in the system’s lifespan and leaned hard into pure arcade intensity. You control Arnie, a lone futuristic soldier fighting through hostile environments packed with relentless enemy forces. The gameplay is presented from a top-down perspective, demanding precise movement and constant firing as waves of enemies flood the screen. Progression relies on sharp reflexes, careful positioning, and learning enemy patterns, with very little margin for error as the difficulty ramps up quickly. Combat is the game’s sole focus, with each stage throwing increasingly aggressive opposition at you. Survival depends on mastering the controls, reacting instantly to threats, and pushing forward under sustained pressure rather than exploration or puzzle-solving.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Arnie C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/F0N2ndVOHmQ" data-video-id="F0N2ndVOHmQ"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Arnie video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/F0N2ndVOHmQ/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Arnie C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/F0N2ndVOHmQ" data-video-id="F0N2ndVOHmQ"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=F0N2ndVOHmQ" target="_blank" rel="noopener">Open on YouTube</a>

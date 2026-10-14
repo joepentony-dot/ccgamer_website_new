@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Bubble Bobble (1987) – Commodore 64 Arcade Platform Classic with Co-Op Magic Originally developed by Taito in 1986 and expertly brought to the Commodore 64 in 1987 by Software Creations and Firebird, Bubble Bobble stars Bub and Bob—two bubble-blowing dragons on a quest to rescue their girlfriends from the Cave of Monsters. The adventure unfolds across 100 single-screen stages, each packed with enemies, hazards, and clever routes to master. Core gameplay revolves around trapping foes in bubbles and popping them to clear each level. Those same bubbles can also be used as platforms, opening up vertical movement and encouraging creative solutions as stages become more demanding. Timing, positioning, and planning are key as enemy patterns grow trickier. The C64 port is widely praised for capturing the arcade’s charm and feel, delivering smooth controls, bright visuals, and the series’ unmistakable personality.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Bubble Bobble C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lyQIV4W24PY" data-video-id="lyQIV4W24PY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Bubble Bobble video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lyQIV4W24PY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Bubble Bobble C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lyQIV4W24PY" data-video-id="lyQIV4W24PY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lyQIV4W24PY" target="_blank" rel="noopener">Open on YouTube</a>

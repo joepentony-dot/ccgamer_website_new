@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Rastan (1987) – Commodore 64 Arcade Hack-and-Slash Barbarian Quest Released in 1987 for the Commodore 64, Rastan is a side-scrolling hack-and-slash action game developed by Taito and brought to home computers by Imagine Software. You step into the role of Rastan, a sword-wielding barbarian on a brutal quest through the land of Ceim, battling mythical creatures to save the kingdom. Gameplay blends fast-paced combat with precise platforming as you fight through forests, deserts, and castles, each stage ending in a demanding boss encounter. Along the way you can upgrade your arsenal with weapons like maces and axes, plus shields and body armour that subtly change how you survive each encounter. The Commodore 64 version features six distinct stages and leans heavily on timing and positioning, rewarding confident, aggressive play while punishing mistakes. While its difficulty and collision quirks divided opinion at the time, Rastan still delivers a raw, arcade-style challenge that captures the spirit of classic fantasy action.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Rastan C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/GaeWp13jqsY" data-video-id="GaeWp13jqsY"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Rastan video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/GaeWp13jqsY/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Rastan C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/GaeWp13jqsY" data-video-id="GaeWp13jqsY"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=GaeWp13jqsY" target="_blank" rel="noopener">Open on YouTube</a>

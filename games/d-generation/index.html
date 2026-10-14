@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ D/Generation (1991) – Commodore Amiga Isometric Cyberpunk Action Adventure Released in 1991 by Mindscape for the Commodore Amiga, D/Generation is a cyberpunk isometric action-adventure set inside a futuristic biolab tower in Singapore. You play as a lone courier caught in the middle of a catastrophic experiment, forced to navigate floors overrun by hostile bioweapon creatures while uncovering what went wrong. Gameplay blends fast, precise combat with methodical puzzle-solving. Armed with an unlimited-ammo laser that can ricochet off walls, alongside grenades, bombs, switches, and teleporters, you must carefully clear rooms, disable security systems, and manage space in tight environments. Every floor is a self-contained maze that rewards planning and sharp reactions. Beyond combat, rescuing trapped survivors and guiding them safely to exits adds another strategic layer, granting extra lives and encouraging exploration. The isometric perspective, smooth animations, and restrained audio design create a tense, focused atmosphere that keeps you constantly alert.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="D/Generation Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/80xYge9QAMo" data-video-id="80xYge9QAMo"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play D/Generation video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/80xYge9QAMo/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="D/Generation Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/80xYge9QAMo" data-video-id="80xYge9QAMo"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=80xYge9QAMo" target="_blank" rel="noopener">Open on YouTube</a>

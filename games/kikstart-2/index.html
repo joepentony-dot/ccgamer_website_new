@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Kikstart II (1987) – Commodore 64 Motorcycle Trials Racing Classic Released in 1987 by Mastertronic for the Commodore 64, Kikstart II is the sequel to the hugely popular motorcycle trials racer, developed by Mr. Chip Software. It builds directly on the original’s foundations while adding deeper mechanics and one of the most influential features of its era — a full track construction set. The game includes 24 challenging pre-designed courses packed with ramps, gates, fences, mud pits, and precision jumps that demand careful throttle control and balance. Players can race against the clock or go head-to-head in split-screen two-player mode, where mastering momentum and timing is key to victory. Kikstart II’s standout feature is its track editor, which allows players to design, save, and replay custom courses. This dramatically extends replay value and turns the game into a creative sandbox, encouraging experimentation and competitive custom challenges long after the built-in tracks are mastered.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Kikstart II C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/4umcPRNaTzE" data-video-id="4umcPRNaTzE"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Kikstart II video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/4umcPRNaTzE/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Kikstart II C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/4umcPRNaTzE" data-video-id="4umcPRNaTzE"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=4umcPRNaTzE" target="_blank" rel="noopener">Open on YouTube</a>

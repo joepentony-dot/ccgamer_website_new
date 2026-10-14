@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Alcazar: The Forgotten Fortress (1985) – Commodore 64 Action Adventure Classic Released in 1985 by Activision for the Commodore 64, Alcazar: The Forgotten Fortress is an ambitious action-adventure game designed and programmed by Tom Loughry. You set out on a quest to recover a stolen crown by navigating a dynamically generated world map filled with twenty-two castles, each containing unique layouts, hazards, and hidden treasures. Gameplay is presented from a top-down perspective, with every castle forming a maze of interconnected rooms. You must overcome traps, enemies, and environmental puzzles in order to progress. A variety of tools and items aid exploration and combat, including pistols, grappling hooks, magic carpets, and secret passages. Limited ammunition and careful resource management add a strong strategic element. The game features multiple difficulty levels and a built-in demonstration mode, both of which were advanced features for home computer games of the mid-1980s.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Alcazar: The Forgotten Fortress C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-h2xZTV5EAw" data-video-id="-h2xZTV5EAw"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Alcazar: The Forgotten Fortress video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/-h2xZTV5EAw/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Alcazar: The Forgotten Fortress C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/-h2xZTV5EAw" data-video-id="-h2xZTV5EAw"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=-h2xZTV5EAw" target="_blank" rel="noopener">Open on YouTube</a>

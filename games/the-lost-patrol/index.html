@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Lost Patrol (1990) – Commodore Amiga Survival Strategy in the Vietnam War Released for the Commodore Amiga, Lost Patrol places you in command of a stranded U. S. infantry squad after a helicopter crash in the Central Highlands of Vietnam. Cut off from support and deep in hostile territory, your mission is simple in theory but brutal in execution: lead the survivors safely to the nearest U. S. base while an unseen enemy hunts you at every step. Most of the game unfolds on a strategic map of Vietnam, where you guide your squad across dangerous terrain. Managing morale, health, food, water, ammunition, and rest is essential, as exhaustion and poor decisions can be just as deadly as enemy fire. Every move carries risk, forcing you to weigh speed against safety. When the patrol reaches key locations such as villages, rivers, or jungle clearings, the game shifts into illustrated scenario screens that present critical decisions.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="The Lost Patrol Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/RcrAuSiGHzU" data-video-id="RcrAuSiGHzU"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play The Lost Patrol video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/RcrAuSiGHzU/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="The Lost Patrol Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/RcrAuSiGHzU" data-video-id="RcrAuSiGHzU"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=RcrAuSiGHzU" target="_blank" rel="noopener">Open on YouTube</a>

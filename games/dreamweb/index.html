@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ DreamWeb (1994) – Commodore Amiga Cyberpunk Point-and-Click Adventure Released in 1994 by Creative Reality for the Commodore Amiga, DreamWeb is a dark cyberpunk adventure that pushes the genre into far more mature territory. You play as Ryan, a troubled bartender haunted by violent dreams of a parallel dimension known as the Dreamweb, where a mysterious monk reveals that Ryan is the “Deliverer” chosen to eliminate seven individuals threatening the balance between worlds. Gameplay is presented from a top-down perspective with static screens, using a contextual verb menu to examine environments, collect items, and interrogate NPCs. Progression is driven by investigation and dialogue, with the story unfolding in a largely linear fashion that emphasises atmosphere and narrative over traditional puzzle complexity. DreamWeb stands out for its uncompromising themes, including psychological trauma, violence, and adult subject matter rarely seen in adventure games of the era.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Dreamweb Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/IPRFEX72elc" data-video-id="IPRFEX72elc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Dreamweb video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/IPRFEX72elc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Dreamweb Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/IPRFEX72elc" data-video-id="IPRFEX72elc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=IPRFEX72elc" target="_blank" rel="noopener">Open on YouTube</a>

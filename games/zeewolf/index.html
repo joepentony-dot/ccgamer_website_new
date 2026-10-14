@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Zeewolf (1994) – Commodore Amiga 3D Helicopter Combat Released for the Commodore Amiga in 1994, Zeewolf is a 3D helicopter combat game created by Binary Asylum. Combining fast shoot-em-up action with tactical missions, hostage rescues and vehicle transportation, it became one of the Amiga’s most distinctive military action games. My first experience with Zeewolf came from the Amiga Format cover-disk demo. I couldn’t afford the full game at the time, and none of my mates had a dodgy copy I could put through X-Copy, so I played that demo to death. I knew every target, building and stretch of water, but revisiting the complete game revealed how little of Zeewolf I had actually seen. Across 32 missions, players pilot the heavily armed Zeewolf helicopter over islands, military bases and open water. Objectives include attacking enemy installations, rescuing prisoners, escorting aircraft and transporting friendly Buffalo tanks into battle.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Zeewolf Amiga video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/iFDaeYjZnsc" data-video-id="iFDaeYjZnsc"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Zeewolf video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/iFDaeYjZnsc/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Zeewolf Amiga video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/iFDaeYjZnsc" data-video-id="iFDaeYjZnsc"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=iFDaeYjZnsc" target="_blank" rel="noopener">Open on YouTube</a>

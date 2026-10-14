@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Gemstone Warrior (1985) – Commodore 64 Action Adventure | Retro Classic Gemstone Warrior (1985) is a 2D action-adventure game developed by Paradigm Creators and published by Strategic Simulations, Inc. , originally released on the Apple II before being ported to the Commodore 64. Set within a dangerous labyrinth beneath a volcanic fortress, you guide an armoured hero armed with a crossbow and limited magical attacks in search of five hidden gemstone fragments. Each run takes place across randomly generated dungeon rooms filled with skeletal warriors, demons, gas-trap plants, and deadly hazards. Supplies and magical items can be looted from chests, coffins, and fallen enemies. Useful tools include healing goblets, screen-clearing crystal balls, illusion spells, invisibility, and freezing magic, all of which must be used carefully. Mapping, saving, and strategic planning are essential for survival.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Gemstone Warrior C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/WhBkM28XRUg" data-video-id="WhBkM28XRUg"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Gemstone Warrior video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/WhBkM28XRUg/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Gemstone Warrior C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/WhBkM28XRUg" data-video-id="WhBkM28XRUg"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=WhBkM28XRUg" target="_blank" rel="noopener">Open on YouTube</a>

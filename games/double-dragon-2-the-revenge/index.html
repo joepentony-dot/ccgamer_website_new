@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Double Dragon II: The Revenge (1989) – Commodore 64 Arcade Beat ’Em Up Martial Arts Classic Released in 1989 by Technōs Japan and ported to the Commodore 64 by Binary Design, Double Dragon II: The Revenge continues the story of Billy and Jimmy Lee as they set out to avenge the death of Marian. Building on the success of the original, the sequel delivers faster combat, tougher enemies, and more varied stage design. The C64 version preserves the core arcade experience, featuring side-scrolling brawling action, cooperative two-player gameplay, and a wide range of martial arts techniques. You can punch, kick, jump, and use weapons to fight your way through gangs of enemies and imposing boss characters. Each stage introduces new environments and enemy types, gradually increasing the challenge. While occasional slowdown can occur during intense scenes, the smooth scrolling and colourful graphics help maintain the game’s fast-paced momentum.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Double Dragon II: The Revenge C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/lOkqLlPq3gA" data-video-id="lOkqLlPq3gA"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Double Dragon II: The Revenge video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/lOkqLlPq3gA/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Double Dragon II: The Revenge C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/lOkqLlPq3gA" data-video-id="lOkqLlPq3gA"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=lOkqLlPq3gA" target="_blank" rel="noopener">Open on YouTube</a>

@@ -408,11 +408,28 @@
             <p class="ccg-section__intro" data-ccg-video-description>️ Skate or Die! (1987) – Commodore 64 Skateboarding Sports Classic Released in 1987 by Electronic Arts, Skate or Die! is a landmark skateboarding game for the Commodore 64 and a defining slice of 1980s gaming culture. Notably, it was EA’s first internally developed title, helping establish the publisher’s early reputation for polished, personality-driven sports games. The game offers five distinct skateboarding events, each focusing on a different skill set. You can compete in Freestyle half-pipe trick sessions, test timing in the High Jump, race downhill at speed, battle opponents in Downhill Jam, or knock rivals off their boards in the chaotic Joust mode. This variety gives the game an arcade-style structure that keeps play sessions fast and competitive. One of Skate or Die! ’s standout features is its multiplayer support, allowing up to eight of you to compete by rotating turns, making it a popular choice for social gaming.</p>
 
             <div class="game-video">
-                <iframe id="game-video-embed"
-                        class="game-video__frame"
-                        title="Skate Or Die C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/NGQ8Wu6X3tI" data-video-id="NGQ8Wu6X3tI"></iframe>
+                <div class="game-video__stage">
+                    <button id="game-video-facade"
+                            class="game-video__facade"
+                            type="button"
+                            aria-label="Play Skate Or Die video">
+                        <img id="game-video-poster"
+                             class="game-video__poster"
+                             alt=""
+                             width="480"
+                             height="360"
+                             loading="lazy"
+                             decoding="async" src="https://i.ytimg.com/vi/NGQ8Wu6X3tI/maxresdefault.jpg">
+                        <span class="game-video__play" aria-hidden="true">▶</span>
+                        <span class="game-video__play-label">Play video</span>
+                    </button>
+
+                    <iframe id="game-video-embed"
+                            class="game-video__frame"
+                            title="Skate Or Die C64 video by Cheeky Commodore Gamer"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen loading="lazy" width="560" height="315" hidden data-video-src="https://www.youtube-nocookie.com/embed/NGQ8Wu6X3tI" data-video-id="NGQ8Wu6X3tI"></iframe>
+                </div>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="https://www.youtube.com/watch?v=NGQ8Wu6X3tI" target="_blank" rel="noopener">Open on YouTube</a>
