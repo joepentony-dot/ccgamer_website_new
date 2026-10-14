@@ -190,8 +190,13 @@ test('single-letter mode labels and H.E.R.O. titles retain real sentence boundar
 });
 
 test('standalone checkpoint and route letters retain their actual sentence boundary', () => {
-  for (const label of ['checkpoint X', 'route B', 'Checkpoint X', 'Route B']) {
-    const first = 'The Example game requires players to reach the marked ' + label + '.';
+  for (const label of ['checkpoint X', 'route B', 'Checkpoint X', 'Route B', 'Sector C', 'Waypoint Z']) {
+    for (const prefix of [
+      'The Example game requires players to reach the marked ',
+      'The Example game sends players to take control of ',
+      'The Example game assigns players the role of defending '
+    ]) {
+    const first = prefix + label + '.';
     for (const next of [
       'Players can explore another route.',
       'Players can explore another route containing many additional obstacles and hazards that deliberately extend beyond the allocated search snippet limit.',
@@ -205,6 +210,7 @@ test('standalone checkpoint and route letters retain their actual sentence bound
       assert.equal(routes.buildRuntimeDescription(game, game.title), first, label);
       assert.equal(buildGameSeoPreview(game, snippet).description, first, label);
     }
+    }
   }
   for (const first of [
     'The Example game was developed by Kevin A. Moughtin and features pirate ship rooms.',
@@ -213,6 +219,19 @@ test('standalone checkpoint and route letters retain their actual sentence bound
     'The Example game puts you in the role of Ben E. Factor as he solves puzzles.'
   ]) {
     assert.equal(snippet.firstCompleteSentence(first + ' Players can explore another route.', 155), first);
+  }
+});
+
+test('compact US organisation initials stay within the complete factual sentence', () => {
+  for (const organisation of ['Army', 'Navy', 'Gold']) {
+    for (const initials of ['U.S.', 'U. S.']) {
+      const first = 'The Example game places the decorated soldier in a strategic simulation with the ' + initials + ' ' + organisation + ' during the mission.';
+      const game = { title: 'Example', slug: 'example', system: 'C64', description: first + ' Players can explore another route.' };
+      assert.equal(snippet.firstCompleteSentence(game.description, 155), first);
+      assert.equal(snippet.buildSnippet(game, game.title), first);
+      assert.equal(routes.buildRuntimeDescription(game, game.title), first);
+      assert.equal(buildGameSeoPreview(game, snippet).description, first);
+    }
   }
 });
 

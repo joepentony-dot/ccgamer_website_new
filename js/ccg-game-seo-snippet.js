@@ -90,9 +90,10 @@
         const author = /(?:^|\s)J\.\s*R\.\s*R\.$/.test(before) && /^Tolkien\b/.test(next);
         // Keep initials within sourced names and spaced game acronyms together.
         // Terminal difficulty labels and finished acronym titles remain endings.
-        const terminalLabel = /\b(?:mode|difficulty|level|setting|grade|option|type)\s+[A-Z]\.$/i.test(before);
+        const terminalLabel = /\b(?:mode|difficulty|level|setting|grade|option|type|checkpoint|waypoint|route|path|sector|zone|section|room|stage|area|gate|door|exit|switch|button|terminal|pad|point|marker|location|objective|target|position|square|grid|tile|lane|track|column|row)\s+[A-Z]\.$/i.test(before);
         const terminalAcronym =
-          /(?:H\.E\.R\.O\.|Chase\s+H\.Q\.|\bU\.S\.)$/.test(before) ||
+          /(?:H\.E\.R\.O\.|Chase\s+H\.Q\.)$/.test(before) ||
+          (/\bU\.S\.$/.test(before) && !/^(?:Army|Navy|Gold)\b/.test(next)) ||
           (/\bH\.\s*E\.\s*R\.\s*O\.$/.test(before) && !/^\(/.test(next));
         const anotherInitial = /^[A-Z]\.(?:\s|$)/.test(next);
         const namedContinuation = /^[A-Z][a-z][\p{L}'’\-]*/u.test(next);
