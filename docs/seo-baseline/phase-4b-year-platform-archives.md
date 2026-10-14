@@ -21,10 +21,10 @@
 - `/games/years/1983/` — 43 games — `index,follow`
 - `/games/years/1984/` — 96 games — `index,follow`
 - `/games/years/1985/` — 97 games — `index,follow`
-- `/games/years/1986/` — 83 games — `index,follow`
+- `/games/years/1986/` — 82 games — `index,follow`
 - `/games/years/1987/` — 90 games — `index,follow`
 - `/games/years/1988/` — 50 games — `index,follow`
-- `/games/years/1989/` — 51 games — `index,follow`
+- `/games/years/1989/` — 52 games — `index,follow`
 - `/games/years/1990/` — 44 games — `index,follow`
 - `/games/years/1991/` — 37 games — `index,follow`
 - `/games/years/1992/` — 31 games — `index,follow`

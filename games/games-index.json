@@ -308,7 +308,7 @@
   {
     "slug": "batman-the-movie",
     "title": "Batman: The Movie",
-    "year": 1986,
+    "year": 1989,
     "thumbnail": "resources/images/thumbnails/all/batman_the_movie.jpg"
   },
   {
@@ -1540,12 +1540,6 @@
     "title": "Halls Of The Things",
     "year": 1984,
     "thumbnail": "resources/images/thumbnails/all/halls_of_the_things_new.png"
-  },
-  {
-    "slug": "the-happiest-days-of-your-life",
-    "title": "The Happiest Days Of Your Life",
-    "year": 1986,
-    "thumbnail": "resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg"
   },
   {
     "slug": "hawkeye",

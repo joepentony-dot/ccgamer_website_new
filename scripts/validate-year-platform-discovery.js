@@ -58,6 +58,11 @@ const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
     ["sitemap-pages.xml", new Set([
         `${SITE_ORIGIN}/amiga-demo-music/`,
         `${SITE_ORIGIN}/retro-events/`
+    ])],
+    // Approved retirement of a game with no surviving playable video.
+    // Continue to reject all other missing game sitemap URLs.
+    ["sitemap-games.xml", new Set([
+        `${SITE_ORIGIN}/games/the-happiest-days-of-your-life/`
     ])]
 ]);
 

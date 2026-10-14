@@ -8,6 +8,9 @@ on:
       - scripts/phase6b_games_editor_transaction.py
       - scripts/validate-games-source.js
       - scripts/rebuild-games.js
+      - js/ccg-game-seo-snippet.js
+      - scripts/build-game-description-enrichments.js
+      - tests/game-seo-snippet-quality.test.mjs
       - scripts/build-games.js
       - scripts/upgrade-category-pages.js
       - js/ccg-category-omega.js

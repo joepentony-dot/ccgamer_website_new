@@ -5,6 +5,7 @@ export const PACK_CATALOG_URL = PACK_ROOT + "catalog.json";
 export const ARCHIVE_PACK_ROOT = "/emulator/c64/media/prg-archive/";
 export const ARCHIVE_CATALOG_URL = ARCHIVE_PACK_ROOT + "catalog.json";
 export const ARCHIVE_READY_URL = ARCHIVE_PACK_ROOT + "ready.json";
+export const ADDITIONAL_CRT_CATALOG_URL = "/emulator/c64/media/cartridge-replacements/active.json";
 export const GAME_PAGE_SIZE = 36;
 
 const FORMATS = new Set(["prg", "d64", "d71", "d81", "g64", "crt", "tap", "t64"]);
@@ -52,6 +53,70 @@ export function parsePackedCatalog(data, { packRoot = PACK_ROOT } = {}) {
     });
   });
   return { packs, entries };
+}
+
+// Owner-attested extra cartridge library. Strictly limit this optional source to
+// same-origin, SHA-bound direct CRT media. A missing/corrupt manifest fails closed;
+// the existing packed game versions remain visible for rollback.
+export function parseAdditionalCrtCatalog(data) {
+  if (!data || data.version !== 1 || data.ownerRedistributionAttested !== true ||
+      data.originalFormatsPreserved !== true || !Array.isArray(data.games) ||
+      data.recordCount !== data.games.length || data.games.length > 2000) {
+    throw new Error("Invalid optional cartridge catalogue.");
+  }
+  const ids = new Set();
+  const titles = new Set();
+  const hardwareTypes = new Set([0, 19, 32]);
+  return data.games.map(row => {
+    if (!Array.isArray(row) || row.length !== 5) {
+      throw new Error("Invalid cartridge entry.");
+    }
+    const [title, filename, bytes, sha256, hardwareType] = row;
+    if (typeof title !== "string" || !title.trim() || title.length > 150 ||
+        typeof filename !== "string" || !/^[a-z0-9-]+\.crt$/.test(filename) ||
+        !Number.isSafeInteger(bytes) || bytes < 80 || bytes > 8 * 1024 * 1024 ||
+        typeof sha256 !== "string" || !HEX_64.test(sha256) ||
+        !hardwareTypes.has(hardwareType)) {
+      throw new Error("Invalid cartridge metadata.");
+    }
+    const id = "owner-crt-more-" + filename.slice(0, -4);
+    const nameKey = normaliseCatalogSearch(title);
+    if (!nameKey || ids.has(id) || titles.has(nameKey)) {
+      throw new Error("Duplicate cartridge title or media path.");
+    }
+    ids.add(id);
+    titles.add(nameKey);
+    return Object.freeze({
+      id, title, format: "crt", filename, bytes, sha256: sha256.toLowerCase(),
+      url: "/emulator/c64/media/cartridge-replacements/" + filename,
+      description: "CRT-first edition; original PRG/disk media retained for rollback.",
+      license: "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+      approved: true,
+      preferOverOtherFormats: true,
+    });
+  });
+}
+
+// Only explicitly promoted cartridge images replace other formats. A title alone
+// never grants an untested CRT priority: pack contents and the owner's original
+// media stay untouched until a reviewed, verified, owner-approved CRT is listed.
+// Matching is punctuation-insensitive but never substring-based ("Pitfall" must
+// not hide "Pitfall II", nor a compilation hide its individual games).
+export function preferSelectedCartridges(entries) {
+  if (!Array.isArray(entries)) return [];
+  const preferred = new Map();
+  for (const entry of entries) {
+    if (entry?.preferOverOtherFormats !== true ||
+        String(entry.format || "").toLowerCase() !== "crt" ||
+        typeof entry.title !== "string") continue;
+    const key = normaliseCatalogSearch(entry.title);
+    if (key && !preferred.has(key)) preferred.set(key, entry);
+  }
+  if (!preferred.size) return entries;
+  return entries.filter(entry => {
+    const key = typeof entry?.title === "string" ? normaliseCatalogSearch(entry.title) : "";
+    return !preferred.has(key) || preferred.get(key) === entry;
+  });
 }
 
 // Indexing punctuation as optional lets "Daley Thompsons" find "Daley Thompson's".
