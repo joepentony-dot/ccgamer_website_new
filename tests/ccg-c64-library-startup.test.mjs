@@ -96,8 +96,8 @@ assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 
 const failed = await execute(false);
-assert.equal(failed.context.onlineLibraryEntries.length, 222,
-  "Already hosted direct games must survive catalogue fetch errors");
+assert.equal(failed.context.onlineLibraryEntries.length, 221,
+  "Direct CRT-first games must survive pack errors while hiding the duplicate Myth disk listing");
 assert.match(failed.context.onlineLibraryStatus.textContent, /BLAST UNAVAILABLE/);
 assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
