@@ -183,7 +183,7 @@
       // A title prefix cannot supply an omitted antecedent or turn the
       // author's review narration into a description of the game.
       const reviewNarration = /\b(?:in this (?:review|video)|I['’](?:m|ve|d)|we['’](?:re|ve|d)|(?:I|we) (?:am|are|was|were|revisit|review|compare|grew)|(?:my|our) (?:review|video|childhood))\b/i.test(sentence);
-      const missingContext = /^(?:However|Nevertheless|Therefore|Consequently|These|Those|Such|They|This (?:means|also|makes|allows)|It (?:also|then))\b/i.test(sentence);
+      const missingContext = /^(?:However|Nevertheless|Therefore|Consequently|These|Those|Such|They|He|She|His|Her|Their|In (?:both|these|those|either)|This (?:means|also|makes|allows)|It (?:also|then))\b/i.test(sentence);
       if (reviewNarration || missingContext) {
         const prefixed = sentence.toLowerCase().includes(title.toLowerCase())
           ? sentence : title + ": " + sentence;

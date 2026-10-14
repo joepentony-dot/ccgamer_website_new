@@ -531,7 +531,9 @@ test('authoritative generator retains platform-correct curated game copy', () =>
     ['the-chaos-engine', 'AMIGA'],
     ['bismark', 'C64'],
     ['bounder', 'C64'],
-    ['double-dragon-2-the-revenge', 'C64']
+    ['double-dragon-2-the-revenge', 'C64'],
+    ['stifflip-and-co', 'C64'],
+    ['donkey-kong', 'C64']
   ]) {
     const game = catalogue.find(item => item.slug === slug);
     assert.ok(game, slug);
@@ -629,7 +631,7 @@ test('mechanic-specific descriptions for Gribbly Joe Blade and Stifflip', () => 
   const examples = [
     ['gribblys-day-out', /hops and levitates.*psychic bubble shots/],
     ['joe-blade-2', /rescue kidnapped civilians.*gangs/],
-    ['stifflip-and-co', /Rubbertronic Ray.*properties of rubber/],
+    ['stifflip-and-co', /Count Chameleon.*Rubbertronic Ray.*properties of rubber/],
     // Keep the two existing stronger summaries that a broad scoring penalty
     // mistakenly replaced in the research-only candidate.
     ['nightbreed-the-action-game', /side-scrolling platforming with combat and light exploration/],
@@ -717,7 +719,12 @@ test('follow-ups reject review narration and missing antecedents before scoring'
     'These sequences are woven directly into the puzzles and add variety.',
     'Those challenges demand timing and patience throughout the adventure.',
     'However, the computer conversion is less fluid than the arcade original.',
-    'They require careful planning and precise control to reach the exit.'
+    'They require careful planning and precise control to reach the exit.',
+    'His latest invention changes the way rubber behaves during the adventure.',
+    'Her latest invention changes the way rubber behaves during the adventure.',
+    'Their inventions change the way rubber behaves during the adventure.',
+    'In both releases, you climb platforms to rescue a captured friend.',
+    'In these versions, you climb platforms to rescue a captured friend.'
   ]) {
     const game = { title: 'Example', slug: 'example', system: 'C64', year: 1989,
       description: intro + ' ' + rejected + ' ' + fact };
@@ -738,13 +745,16 @@ test('reported review/context snippets retain source facts and canonical/admin p
   const catalogue = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
   const enrichments = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8')).games;
   for (const [slug, expected] of [
+    ['donkey-kong', 'You control Jumpman as he climbs girders, ladders, and elevators to rescue Lady from the clutches of Donkey Kong.'],
+    ['stifflip-and-co', "Stifflip & Co.: Count Chameleon's latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber."],
     ['road-rash', 'Finish fourth or better across each of the five races and you progress to tougher levels, earning cash for increasingly powerful bikes along the way.'],
     ['herberts-dummy-run', 'A standout feature is the inclusion of clever mini-games that parody classic arcade hits such as Breakout, Space Invaders, and Duck Shoot.'],
     ['final-fight', 'Gameplay follows traditional side-scrolling brawler mechanics, featuring punches, kicks, throws, jumping attacks, and waves of on-screen enemies.']
   ]) {
     const game = catalogue.find(item => item.slug === slug);
     const record = { ...game, description: enrichments[slug].description };
-    assert.ok(record.description.includes(expected), slug + ' must use exact authored facts');
+    const fact = expected.startsWith(game.title + ': ') ? expected.slice(game.title.length + 2) : expected;
+    assert.ok(record.description.includes(fact), slug + ' must use exact authored facts');
     assert.equal(snippet.buildSnippet(record, game.title), expected, slug);
     assert.equal(routes.buildRuntimeDescription(record, game.title), expected, slug);
     assert.equal(buildGameSeoPreview(record, snippet).description, expected, slug);

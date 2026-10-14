@@ -18,6 +18,18 @@ const TARGET_WORDS = 135;
 const MAX_WORDS = 165;
 
 const overrides = {
+  "stifflip-and-co": {
+    "description": "️ Stifflip & Co (1987) – Commodore 64 / C64 Released in 1987 by Palace Software, Stifflip & Co is a wonderfully British icon-driven graphic adventure for the Commodore 64, developed by Binary Vision and packed with cricket, stiff upper lips, ridiculous names and a plot that takes saving the Empire rather seriously. You control four different characters — Viscount Sebastian Stifflip, Professor Braindeath, Colonel R. G. Bargie and Miss Palmyra Primbottom — as they attempt to stop the dastardly Count Chameleon. Count Chameleon's latest invention is the Rubbertronic Ray, a device capable of altering the properties of rubber. Naturally, his grand plan involves using it against cricket balls, potentially destroying the game and apparently bringing the British Empire down with it. You couldn't accuse Stifflip & Co of lacking ambition. Rather than controlling just one hero, you can switch between all four members of the group, with different characters and abilities needed to solve the game's puzzles.",
+    "sources": [
+      "https://www.youtube.com/watch?v=zqqIctCq73o"
+    ]
+  },
+  "donkey-kong": {
+    "description": "️ Donkey Kong (1983 / 1986) – Commodore 64 Arcade Platforming Legend Donkey Kong is one of the most iconic arcade games of all time, and on the Commodore 64 it arrived in two very different forms. The first port, released in 1983 by Atarisoft, aimed to replicate the arcade original as closely as possible, delivering familiar layouts, bold colours, and a faithful sense of challenge that many players still regard as the most authentic C64 version. In 1986, Ocean Software released their own take on Donkey Kong, featuring more detailed graphics and enhanced sound. While visually more polished, this version takes a few liberties with the arcade feel, making it a fascinating comparison for long-time fans of the game. You control Jumpman as he climbs girders, ladders, and elevators to rescue Lady from the clutches of Donkey Kong.",
+    "sources": [
+      "https://www.youtube.com/watch?v=n11taRLnacg"
+    ]
+  },
   "red-heat": {
     description: "Red Heat is a 1989 Commodore 64 beat-'em-up by Special FX and Ocean Software, starring Soviet officer Ivan Danko in four film-inspired stages. The game aims to translate the film’s hard-edged tone to the Commodore 64, placing story and presentation firmly at the forefront. You control Soviet police officer Ivan Danko as he pursues drug lord Viktor Rostavili, moving through a series of stages inspired by key moments from the movie. Progression is linear, with each section focused on clearing enemies using punches, kicks, and occasional weapons. Visually, Red Heat was impressive for its time, featuring large character sprites and smooth animation that gave the game a cinematic feel. Jonathan Dunn’s soundtrack adds atmosphere and weight to the action, reinforcing the gritty setting even as it repeats during longer play sessions.",
     sources: [
