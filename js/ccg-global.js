@@ -42,6 +42,32 @@ if (IS_ADMIN_PATH) {
         return;
     }
 
+    // A single-game page needs the catalogue for several independent archive
+    // features. Share the raw JSON Promise so those features do not download
+    // and parse the same ~0.8MB file repeatedly in the first few seconds.
+    // Errors reset the Promise and retain each caller's existing fallback.
+    if (document.documentElement.getAttribute("data-ccg-page") === "single-game") {
+        let sharedGamesPromise = null;
+        window.ccgLoadSharedGames = function () {
+            if (!sharedGamesPromise) {
+                const root = typeof window.ccgGetSiteRoot === "function"
+                    ? window.ccgGetSiteRoot() : "/";
+                sharedGamesPromise = fetch(`${root}games/games.json`, { cache: "no-store" })
+                    .then((response) => {
+                        if (!response.ok) throw new Error(`CCG catalogue HTTP ${response.status}`);
+                        return response.json();
+                    })
+                    .then((games) => Array.isArray(games) ? games : [])
+                    .catch((error) => {
+                        sharedGamesPromise = null;
+                        throw error;
+                    });
+            }
+            return sharedGamesPromise;
+        };
+    }
+
+
     /* ======================================================
        ENV / MOBILE DETECTION
     ====================================================== */
