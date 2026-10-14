@@ -485,7 +485,8 @@ for (const entry of onlineLibrary.entries) {
   seenGameIds.add(entry.id);
   assert(entry.approved === true && typeof entry.license === "string" && entry.license.trim(),
     "Public games must have a recorded redistribution permission: " + entry.id);
-  assert(/^\/emulator\/c64\/media\/[A-Za-z0-9._-]+\.(?:prg|d64|d71|d81|g64|crt)$/i.test(entry.url) &&
+  assert((/^\/emulator\/c64\/media\/[A-Za-z0-9._-]+\.(?:prg|d64|d71|d81|g64|crt)$/i.test(entry.url) ||
+    /^\/emulator\/c64\/media\/cartridge-replacements\/[a-z0-9-]+\.crt$/.test(entry.url)) &&
     !entry.url.includes(".."),
     "Media URL must be a safe, locally hosted game file path: " + entry.id);
   const program = fs.readFileSync(path.join(root, entry.url.slice(1)));
@@ -500,7 +501,7 @@ for (const entry of onlineLibrary.entries) {
     assert.equal(program.subarray(0, 16).toString("ascii"), "C64 CARTRIDGE   ",
       "CRT game must have Commodore cartridge header: " + entry.id);
     const hwType = program.readUInt16BE(0x16);
-    assert([0, 1, 3, 19, 32].includes(hwType),
+    assert([0, 1, 3, 5, 7, 8, 15, 17, 18, 19, 32].includes(hwType),
       "CRT game must use an emulator-supported cartridge hardware type: " + entry.id);
   }
   if (entry.sourceBlob) {
