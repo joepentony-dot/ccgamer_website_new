@@ -189,6 +189,33 @@ test('single-letter mode labels and H.E.R.O. titles retain real sentence boundar
   }
 });
 
+test('standalone checkpoint and route letters retain their actual sentence boundary', () => {
+  for (const label of ['checkpoint X', 'route B', 'Checkpoint X', 'Route B']) {
+    const first = 'The Example game requires players to reach the marked ' + label + '.';
+    for (const next of [
+      'Players can explore another route.',
+      'Players can explore another route containing many additional obstacles and hazards that deliberately extend beyond the allocated search snippet limit.',
+      'B. Smith designed another route containing several extra hazards.',
+      '(Another route contains several extra hazards.)',
+      'IV is the label for another route containing several extra hazards.'
+    ]) {
+      assert.equal(snippet.firstCompleteSentence(first + ' ' + next, 155), first, label);
+      const game = { title: 'Example', slug: 'example', system: 'C64', description: first + ' ' + next };
+      assert.equal(snippet.buildSnippet(game, game.title), first, label);
+      assert.equal(routes.buildRuntimeDescription(game, game.title), first, label);
+      assert.equal(buildGameSeoPreview(game, snippet).description, first, label);
+    }
+  }
+  for (const first of [
+    'The Example game was developed by Kevin A. Moughtin and features pirate ship rooms.',
+    'The Example game follows Schoolboy G. McFat as he explores the school.',
+    'The Example game features the cartoon character Wile E. Coyote chasing a fast runner.',
+    'The Example game puts you in the role of Ben E. Factor as he solves puzzles.'
+  ]) {
+    assert.equal(snippet.firstCompleteSentence(first + ' Players can explore another route.', 155), first);
+  }
+});
+
 test('terminal U.S. and Chase H.Q. acronyms do not consume the next sentence', () => {
   const cases = [
     {

@@ -97,9 +97,15 @@
         const anotherInitial = /^[A-Z]\.(?:\s|$)/.test(next);
         const namedContinuation = /^[A-Z][a-z][\p{L}'’\-]*/u.test(next);
         const possessiveOrRoman = /^['’]s\b|^[IVX]{1,3}(?:\b|:)|^\(/.test(next);
-        const knownUS = /(?:^|\s)U\.\s*S\.$/.test(before) && /^(?:Army|Gold)\b/.test(next);
+        const knownUS = /(?:^|\s)U\.\s*S\.$/.test(before) && /^(?:Army|Navy|Gold)\b/.test(next);
+        const personalContext = /\b(?:[Bb]y|[Ss]choolboy|[Ss]choolgirl|[Dd]etective|[Cc]olonel|[Pp]rofessor|[Cc]aptain|[Nn]amed|[Cc]alled|role of|control of)\s+(?:[A-Z][\p{L}'’\-]*(?:,\s*|\s+)|and\s+){0,12}[A-Z](?:\.\s*[A-Z])*\.$/u.test(before);
+        const knownCharacter = /\bWile E\.$/.test(before) && /^Coyote\b/.test(next);
+        const runWithNext = (run ? run[1] : "") + next;
+        const knownInitialSequence = /^(?:U\.\s*S\.\s*(?:Army|Navy|Gold)\b|J\.\s*R\.\s*R\.\s*Tolkien\b|M\.\s*A\.\s*D\.|H\.\s*E\.\s*R\.\s*O\.|M\.\s*U\.\s*L\.\s*E\.|S\.\s*W\.\s*I\.\s*V\.|B\.\s*C\.\s*(?:Bill|II)\b)/.test(runWithNext);
         if (initials && !terminalLabel && !terminalAcronym &&
-            (anotherInitial || namedContinuation || possessiveOrRoman || knownUS)) continue;
+            ((anotherInitial && (personalContext || knownInitialSequence)) ||
+             (namedContinuation && (personalContext || knownCharacter || initials >= 2)) ||
+             (possessiveOrRoman && (personalContext || knownInitialSequence || initials >= 2)) || knownUS)) continue;
         if (initials && (moreInitials || publisher || author ||
           (initials >= 2 && /^[a-z]/.test(next)))) continue;
       }
