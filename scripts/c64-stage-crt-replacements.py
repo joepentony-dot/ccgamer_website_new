@@ -28,7 +28,7 @@ ARCHIVE = ROOT / "emulator/c64/media/prg-archive/catalog.json"
 MEDIA_DIR = ROOT / "emulator/c64/media/cartridge-replacements"
 # See js/ccg-c64/core/cartridges/registry.js. Header validity alone does not
 # establish that the cartridge is playable: actual gameplay testing is required.
-SUPPORTED_TYPES = {0, 1, 3, 19, 32}
+SUPPORTED_TYPES = {0, 1, 3, 5, 19, 32}
 
 
 def key(value: str) -> str:
@@ -41,9 +41,9 @@ def key(value: str) -> str:
 
 def crt_name(filename: str) -> str:
     stem = Path(filename).stem
-    # File-edition qualifiers are not game-title components; keep compilations
-    # separate because their base titles still must match an existing title.
-    return re.sub(r"\s*\([^()]*\)", "", stem).strip()
+    # Parenthesized qualifiers often distinguish MAX, alternate releases and
+    # publishers. Exact-title matching must never hide a different edition.
+    return stem.strip()
 
 
 def quality(filename: str) -> tuple[int, int, int, str]:
