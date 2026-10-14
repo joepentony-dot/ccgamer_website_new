@@ -2884,3 +2884,174 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   .ccg-c64-catalogue-results { grid-template-columns: 1fr; }
   .ccg-c64-catalogue-item { min-height: 58px; }
 }
+
+/* CCG mobile in-game actions (2026-10-14): isolated to coarse-pointer
+   immersive gameplay. Desktop layout and ordinary library remain unchanged. */
+.ccg-c64-mobile-game-actions[hidden],
+.ccg-c64-mobile-vault[hidden] { display: none !important; }
+.ccg-c64-mobile-game-actions,
+.ccg-c64-mobile-vault { display: none; }
+.ccg-c64-mobile-crt-mode { display: none !important; }
+
+@media (pointer: coarse) {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions {
+    display: grid;
+    order: 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: clamp(0.18rem, 1vw, 0.4rem);
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.35rem 0.15rem;
+    border: 1px solid #827ad3;
+    border-radius: 6px;
+    background: #232653;
+    color: #f8f5ff;
+    font: 800 clamp(0.56rem, 2.25vw, 0.75rem)/1.15 var(--ccg-font-mono, "Courier New", monospace);
+    text-align: center;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button[aria-pressed="true"] {
+    color: #fff1c8;
+    background: #514075;
+    border-color: #f3cb70;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button:disabled {
+    opacity: 0.5;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-stage,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-screen-stage { order: 2; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-controls { order: 3; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-options { order: 4; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-fire,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-jump {
+    border-radius: 7px;
+    min-width: 0;
+    flex: 0 1 auto;
+    width: clamp(69px, 19vw, 105px);
+    height: clamp(69px, 19vw, 105px);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-jump:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options {
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.82fr) minmax(0, 1.38fr);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-crt-mode {
+    display: inline-flex !important;
+    justify-content: center;
+    align-items: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    border-color: #afa0ec;
+    background: #262451;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-vault:not([hidden]) {
+    position: absolute;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: max(0.65rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.65rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+    background: rgba(2, 4, 16, 0.82);
+    touch-action: manipulation;
+  }
+  .ccg-c64-mobile-vault-card {
+    display: grid;
+    gap: 0.65rem;
+    width: min(100%, 430px);
+    max-height: min(85dvh, 540px);
+    min-width: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(0.75rem, 3vw, 1.1rem);
+    border: 1px solid #9389da;
+    border-radius: 9px;
+    background: #10142f;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.8);
+    color: #f6f5ff;
+  }
+  .ccg-c64-mobile-vault-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .ccg-c64-mobile-vault-header strong {
+    font: 800 0.82rem var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-mobile-vault-header button,
+  .ccg-c64-mobile-vault-slot {
+    border: 1px solid #8983cc;
+    border-radius: 5px;
+    background: #222854;
+    color: #f6f5ff;
+    font: 800 0.65rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .ccg-c64-mobile-vault-header button { min-height: 44px; padding: 0.4rem 0.7rem; }
+  .ccg-c64-mobile-vault-card p {
+    margin: 0;
+    color: #cbd0ed;
+    font: 600 0.67rem/1.5 var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-mobile-vault-slots { display: grid; gap: 0.4rem; min-width: 0; }
+  .ccg-c64-mobile-vault-slot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+    min-height: 56px;
+    padding: 0.65rem;
+    text-align: left;
+  }
+  .ccg-c64-mobile-vault-slot strong { font-size: 0.76rem; }
+  .ccg-c64-mobile-vault-slot span { color: #bfc6e9; font-size: 0.66rem; }
+  .ccg-c64-mobile-vault-slot:disabled { opacity: 0.42; }
+  .ccg-c64-mobile-vault-slot:not(:disabled):active { background: #49417e; }
+  .ccg-c64-mobile-vault-card .ccg-c64-mobile-vault-message {
+    min-height: 1.4rem;
+    color: #f2d997;
+  }
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 490px) {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button {
+    min-height: 32px;
+    padding: 0.14rem 0.1rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, 32px);
+    grid-template-rows: repeat(3, 32px);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad button {
+    min-width: 32px;
+    min-height: 32px;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-fire,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-jump {
+    width: 64px;
+    height: 64px;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls {
+    padding: 0.1rem;
+  }
+}
