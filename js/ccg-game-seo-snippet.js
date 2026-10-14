@@ -128,7 +128,7 @@
         // Terminal difficulty labels and finished acronym titles remain endings.
         const terminalLabel = /\b(?:mode|difficulty|level|setting|grade|option|type)\s+[A-Z]\.$/i.test(before);
         const terminalAcronym =
-          /(?:H\.E\.R\.O\.|Chase\s+H\.Q\.)$/.test(before) ||
+          (/(?:H\.E\.R\.O\.|Chase\s+H\.Q\.)$/.test(before) && !/^\(/.test(next)) ||
           (/\bU\.S\.$/.test(before) && !/^(?:Army|Navy|Gold)\b/.test(next)) ||
           (/\bH\.\s*E\.\s*R\.\s*O\.$/.test(before) && !/^\(/.test(next));
         const anotherInitial = /^[A-Z]\.(?:\s|$)/.test(next);
