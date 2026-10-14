@@ -213,6 +213,10 @@ jobs:
             esac
           done < <(git diff --name-only)
 
+      - name: Check retro VideoObject removal and whitespace stability
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
+        run: node --test tests/retro-video-script-whitespace.test.js
+
       - name: Check generated output whitespace
         if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: git diff --check
