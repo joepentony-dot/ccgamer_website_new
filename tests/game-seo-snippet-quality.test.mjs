@@ -344,8 +344,7 @@ test('all 666 enriched game records prefer sourced game-specific snippets over g
     assert.doesNotMatch(description, /…|\.\.\.$/, game.slug);
     assert.equal(routes.buildRuntimeDescription(record, game.title), description, game.slug);
 
-    const isBasic = / is an? (?:Commodore 64|Amiga) game(?: published by [^.]+)?\.$/.test(description) ||
-      / on (?:Commodore 64|Amiga)\.$/.test(description);
+    const isBasic = description === snippet.buildSnippet({ ...record, description: '' }, game.title);
     if (isBasic) {
       generic++;
       pending.push(game.slug);
@@ -355,8 +354,8 @@ test('all 666 enriched game records prefer sourced game-specific snippets over g
   }
   // Rich editorial text is present, but some source sentences still require
   // manual fact-checked editing; never invent detail to force this to zero.
-  assert.ok(complete >= 640, 'Specific source snippets regressed: ' + pending.join(', '));
-  assert.ok(generic <= 26, 'More basic snippets than reviewed threshold: ' + pending.join(', '));
+  assert.ok(complete >= 642, 'Specific source snippets regressed: ' + pending.join(', '));
+  assert.ok(generic <= 24, 'More basic snippets than reviewed threshold: ' + pending.join(', '));
 });
 
 test('recover complete later gameplay facts from an oversized enriched introduction', () => {
@@ -398,5 +397,59 @@ test('Batman: The Movie and RoboCop C64 catalogue years match owner-approved 198
   assert.match(batman.description, /1989 Commodore 64 adaptation of Tim Burton's Batman film/);
   assert.doesNotMatch(batman.description, /released by Ocean in 1986|rather than a specific movie plot/);
   assert.equal(robocop.year, 1989);
+});
+
+test('C64 names and spaced acronyms survive initials without swallowing actual sentence boundaries', () => {
+  const examples = [
+    [
+      'Released in 1984 by Firebird and developed by Kevin A. Moughtin, Booty features pirate ship rooms. More info.',
+      'Released in 1984 by Firebird and developed by Kevin A. Moughtin, Booty features pirate ship rooms.'
+    ],
+    [
+      'The soldier is an elite U. S. Army Ranger operating deep behind enemy lines. Other tasks follow.',
+      'The soldier is an elite U. S. Army Ranger operating deep behind enemy lines.'
+    ],
+    [
+      'The Commodore 64 game features M. A. D. label credits before describing dungeon combat. Other games follow.',
+      'The Commodore 64 game features M. A. D. label credits before describing dungeon combat.'
+    ],
+    [
+      'The long-running Commodore 64 game is called H. E. R. O. Another classic game follows.',
+      'The long-running Commodore 64 game is called H. E. R. O.'
+    ],
+    [
+      'The Commodore 64 game requires players to choose difficulty type B. Another difficulty can be selected.',
+      'The Commodore 64 game requires players to choose difficulty type B.'
+    ],
+    [
+      'The arcade conversion is known as Chase H.Q. Another notable game followed.',
+      'The arcade conversion is known as Chase H.Q.'
+    ],
+    [
+      'The Commodore 64 game was launched in the U.S. Players in Europe found another edition.',
+      'The Commodore 64 game was launched in the U.S.'
+    ]
+  ];
+  for (const [source, expected] of examples) {
+    assert.equal(snippet.firstCompleteSentence(source, 155), expected);
+  }
+});
+
+test('all existing enriched game snippets avoid accidental standalone initials and doubled stops', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enriched = payload.games || payload;
+  assert.equal(games.length, 666);
+  for (const game of games) {
+    const record = { ...game, description: enriched[game.slug]?.description || game.description };
+    const actual = snippet.buildSnippet(record, game.title);
+    assert.ok(actual.length <= 155, game.slug);
+    assert.doesNotMatch(actual, /(?:^|\s)[A-Z]\.$/, game.slug + ' has a broken initial');
+    assert.doesNotMatch(actual, /\.\.$/, game.slug + ' has doubled punctuation');
+    assert.equal(actual, routes.buildRuntimeDescription(record, game.title), game.slug);
+  }
 });
 
