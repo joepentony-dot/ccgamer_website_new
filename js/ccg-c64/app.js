@@ -276,12 +276,14 @@ function setMobilePlaying(active, label = "") {
   mobilePlayActive = enabled;
   // In the immersive mobile view FIRE and UP-to-jump must always be available,
   // regardless of an older per-game toggle preference.
-  configureJump(currentJumpGameId);
+  if (typeof configureJump === "function") configureJump(currentJumpGameId);
   mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
   document.body?.classList.toggle("is-mobile-playing", enabled);
   if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
   if (mobileGameActions) mobileGameActions.hidden = !enabled;
-  if (enabled) setControlState(vault.snapshot());
+  if (enabled && typeof setControlState === "function" && typeof vault !== "undefined") {
+    setControlState(vault.snapshot());
+  }
   if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
   syncMobileZoom();
   if (!enabled) setMobileKeyboardOpen(false);
