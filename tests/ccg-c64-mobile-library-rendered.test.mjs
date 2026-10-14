@@ -151,7 +151,7 @@ try {
       'load:rect("[data-mobile-load-state]"), jump:rect(".ccg-c64-touch-jump"),',
       'fire:rect(".ccg-c64-touch-fire"),crt:rect("[data-mobile-crt-mode]"),',
       'jumpToggle:document.querySelector("[data-jump-toggle]")!==null};',
-    ].join("\\n"));
+    ].join("\n"));
     assert(v.sw-v.vw<5, "Immersive C64 horizontal overflow at "+width+"x"+height);
     assert(v.control.width > width * .80 && v.control.height >= 30,
       "Mobile pause/save/load row is missing at "+width+"x"+height);
@@ -173,7 +173,7 @@ try {
       'document.querySelector("[data-mobile-playbar]").hidden=true;',
       'document.querySelector("[data-mobile-game-actions]").hidden=true;',
       'return true;'
-    ].join("\\n"));
+    ].join("\n"));
   }
   await emulate(session,390,844,true);
   const drop=await evaluate(session,[
