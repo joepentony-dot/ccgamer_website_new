@@ -1,5 +1,12 @@
 # SEO and generated output
 
+## US organisations and labelled name-context repair — 14 October 2026, 15:52 BST (unmerged)
+
+- **Verified source `af20d82ee18bb21d9349d656c560ad4bbf2b7e62`**, superseding reviewed documentation tip `253ad8f2445dc100a76f7a266a4ad07a6891a88d` / source `4c43c7a6bb312665c2086f3c263c7ce9f90feabc`. Review raised P2s `PRRT_kwDOQcoeX86sX39r` (compact U.S. Army/Navy cut as terminal acronym) and `PRRT_kwDOQcoeX86sX390` (control-of Checkpoint/Route enters personal-name context).
+- Compact U.S. is now terminal only when the following word is not supported Army/Navy/Gold. Structural letter labels, including checkpoint/route/waypoint/sector and other labelled map/control entities, override personal-name context. Direct first-sentence, generator, canonical and admin tests cover compact/spaced organisations and several label-prefix/next-sentence combinations while preserving real names and actual terminal U.S. behaviour.
+- Combined targeted Node suite on this source: **72/72 passed**; diff check passed; independent actual 666-output scan still changes exactly the same five reviewed snippets versus `2e390d15`, with the same 24 fallbacks. All earlier guarded/source-ownership fixes remain intact. Prior `253ad8f` Workers check passed as build `8d2ad45b-fdde-41ab-9fb8-6bde1868cf25`; its review was not clear, and no prior check qualifies the new tip.
+- Following documentation commit records this known source SHA; final-tip hash is supplied through GitHub PR description/review request. Fresh final-tip full matrix, Workers, independent review and authoritative publishing validation must pass before expected-head merge. No publication, manual gameplay acceptance or indexing improvement claimed; other SEO branches remain deferred.
+
 ## Standalone-letter boundary repair — 14 October 2026, 15:43 BST (unmerged)
 
 - **Verified source commit `4c43c7a6bb312665c2086f3c263c7ce9f90feabc`** supersedes source `1558ef564c5910cb32c11f5a336b975ad9cac812` / documentation tip `4cac924f027f71e99cd9a2c65f4440deeaa7ab0f`. Independent review of `4cac924f` found P2 `PRRT_kwDOQcoeX86sXiC8`: a labelled sentence ending `checkpoint X.` or `route B.` swallowed a capitalised next sentence as a surname. No protected-file finding.
