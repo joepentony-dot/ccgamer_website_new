@@ -169,7 +169,17 @@
 
       const usefulSubject = /^(?:You|Players|Gameplay|Progress|Combat|Battles|Levels|The player|The game|The gameplay|Your|Each|Controls|Objectives|The objective|A standout|Its|The action|Using|Moving|There|The main)\b/i.test(sentence);
       const weakOpening = /^(?:The|This|It|A|An|Each|In|On|For|Between|As|While|When|After)\b/i.test(sentence);
-      const score = (usefulSubject ? 10 : 0) - (weakOpening ? 2 : 0) - index / 10;
+      // A short sentence praising the game's style, or saying it demands
+      // "careful planning", can crowd out a later sourced gameplay detail.
+      // Penalise only those short generalisations; retain substantial
+      // mechanics descriptions even when they start with "Gameplay".
+      const shortVagueLead = sentence.length < 108 &&
+        (/^(?:Its\b.*\b(?:theme|mechanics|appeal)|Progress (?:requires|depends on|relies on)|Gameplay (?:focuses on|alternates between|blends))\b/i.test(sentence) ||
+         /\b(?:sets? it apart|couldn.t accuse|thoughtful strategy)\b/i.test(sentence));
+      const nonPlayOpinion = /^(?:Its|The)\b.*\b(?:soundtrack|music|audio|visuals|presentation)\b/i.test(sentence);
+      const actionable = /\b(?:you (?:must|can)|players (?:must|can)|collect(?:s|ed|ing)?|rescue(?:s|d|ing)?|manipulat(?:e|es|ed|ing)|repair(?:s|ed|ing)?|unlock(?:s|ed|ing)?)\b/i.test(sentence);
+      const score = (usefulSubject ? 10 : 0) - (weakOpening ? 2 : 0) - index / 10
+        - (shortVagueLead ? 9 : 0) - (nonPlayOpinion ? 7 : 0) + (actionable ? 2 : 0);
       candidates.push({ text: candidate, score });
     }
 
