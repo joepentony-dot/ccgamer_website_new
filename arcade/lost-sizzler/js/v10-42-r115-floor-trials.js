@@ -1,7 +1,7 @@
 /* C64 Dungeon Carnage V10.42 R115 — fifteen-floor authored trial director.
  *
  * Fills the quieter campaign depths with deterministic, floor-specific tasks
- * while reusing the canonical switch, arena, timed-room, enemy and inventory
+ * while reusing the canonical switch, timed-room, enemy and inventory
  * owners. No trial may replace the main floor objective or create a softlock.
  */
 (()=>{
@@ -20,7 +20,7 @@
     5:Object.freeze({id:"cartridge-trick",label:"CARTRIDGE TRICK",summary:"Cross the rotten bridge, recover the stolen stash and defeat the Cartridge Maw.",existing:true}),
     6:Object.freeze({id:"tape-relays",label:"TAPE RELAYS",summary:"Activate four archive tape relays scattered across the labyrinth.",target:4}),
     7:Object.freeze({id:"crypt-braziers",label:"CRYPT BRAZIERS",summary:"Carry a live torch through the crypt and ignite ten cold braziers.",target:10}),
-    8:Object.freeze({id:"arena-lockdown",label:"UNDERCROFT ARENA",summary:"Enter the arena and clear both lockdown waves.",target:1}),
+    8:Object.freeze({id:"undercroft-lockdown",label:"UNDERCROFT LOCKDOWN",summary:"Enter and survive the Undercroft timed chamber.",target:1}),
     9:Object.freeze({id:"timed-lockdown",label:"MODEM LOCKDOWN",summary:"Enter the timed chamber and survive its full countdown.",target:1}),
     10:Object.freeze({id:"sid-abomination",label:"SID ABOMINATION",summary:"Defeat the SID Abomination and survive its changing arena phases.",existing:true}),
     11:Object.freeze({id:"coolant-valves",label:"EMBER COOLANT",summary:"Shoot three coolant valves inside the late-floor hazard network.",target:3}),
@@ -100,13 +100,9 @@
     addSupplies(worldState,hostState,runState,"torch",4,"crypt-torch");
     trial.roomIds=[...new Set(trial.nodes.map(n=>n.roomId))];return trial
   }
-  function installArenaTrial(hostState,runState){
-    const arena=(hostState.arenas||[])[0];if(!arena)return null;
-    arena.r115Required=true;return makeTrial(runState,"arena-lockdown",1,{sourceId:arena.id,roomIds:[arena.roomId]})
-  }
-  function installTimedTrial(hostState,runState){
+  function installTimedTrial(hostState,runState,kind="timed-lockdown"){
     const timed=(hostState.timedRooms||[])[0];if(!timed)return null;
-    timed.r115Required=true;return makeTrial(runState,"timed-lockdown",1,{sourceId:timed.id,roomIds:[timed.roomId]})
+    timed.r115Required=true;return makeTrial(runState,kind,1,{sourceId:timed.id,roomIds:[timed.roomId]})
   }
   function installCoolantValves(worldState,hostState,runState){
     const trial=makeTrial(runState,"coolant-valves",3),hazardRooms=(hostState.hazardRooms||[]).map(h=>worldState.rooms?.[h.roomId]).filter(Boolean),fallback=safeRooms(worldState,hostState),rooms=[...hazardRooms,...fallback.filter(r=>!hazardRooms.some(h=>h.id===r.id))],used=new Set();
@@ -140,7 +136,7 @@
     switch(floorOf(runState)){
       case 6:trial=installTapeRelays(worldState,hostState,runState);break;
       case 7:trial=installCryptBraziers(worldState,hostState,runState);break;
-      case 8:trial=installArenaTrial(hostState,runState);break;
+      case 8:trial=installTimedTrial(hostState,runState,"undercroft-lockdown");break;
       case 9:trial=installTimedTrial(hostState,runState);break;
       case 11:trial=installCoolantValves(worldState,hostState,runState);break;
       case 13:trial=installHighScoreHunt(hostState,runState);break;
@@ -152,8 +148,7 @@
 
   function trialProgress(hostState){
     const t=hostState?.floorTrial;if(!t)return{progress:1,target:1,complete:true};
-    if(t.kind==="arena-lockdown"){const a=(hostState.arenas||[]).find(row=>row.id===t.sourceId);t.progress=a?.cleared?1:0}
-    else if(t.kind==="timed-lockdown"){const row=(hostState.timedRooms||[]).find(x=>x.id===t.sourceId);t.progress=row?.cleared?1:0}
+    if(t.kind==="undercroft-lockdown"||t.kind==="timed-lockdown"){const row=(hostState.timedRooms||[]).find(x=>x.id===t.sourceId);t.progress=row?.cleared?1:0}
     else if(t.kind==="high-score-hunt"){const ids=new Set(t.enemyIds||[]);t.progress=(hostState.enemies||[]).filter(e=>ids.has(e.id)&&e.alive===false).length}
     else if(t.kind==="crypt-braziers")t.progress=(t.nodes||[]).filter(n=>n.lit).length;
     t.progress=Math.max(0,Math.min(t.target,Number(t.progress)||0));t.complete=t.progress>=t.target;return{progress:t.progress,target:t.target,complete:t.complete}
@@ -163,7 +158,7 @@
     const p=trialProgress(hostState);
     if(t.kind==="tape-relays")return`Activate archive Tape Relays: ${p.progress}/${p.target}`;
     if(t.kind==="crypt-braziers")return`Ignite Crypt Braziers with an active torch: ${p.progress}/${p.target}`;
-    if(t.kind==="arena-lockdown")return p.complete?"Undercroft Arena cleared":"Enter and clear both Undercroft Arena waves";
+    if(t.kind==="undercroft-lockdown")return p.complete?"Undercroft Lockdown survived":"Enter the Undercroft timed chamber and survive the countdown";
     if(t.kind==="timed-lockdown")return p.complete?"Modem Lockdown survived":"Enter the timed chamber and survive the full countdown";
     if(t.kind==="coolant-valves")return`Shoot Ember Coolant Valves: ${p.progress}/${p.target}`;
     if(t.kind==="high-score-hunt")return`Defeat marked High-Score Wardens: ${p.progress}/${p.target}`;
@@ -264,9 +259,6 @@
   if(typeof movementTriggers==="function"){
     const baseMovementTriggers=movementTriggers;
     movementTriggers=function r115MovementTriggers(player,...args){const result=baseMovementTriggers(player,...args);const trial=host?.floorTrial;if(trial){introduceTrial(trial);noticeForRoom(player);lightBrazierAt(player);refreshTrial(host)}return result}
-  }
-  if(typeof updateArena==="function"){
-    const baseUpdateArena=updateArena;updateArena=function r115UpdateArena(...args){const result=baseUpdateArena(...args);refreshTrial(host);return result}
   }
   if(typeof updateTimed==="function"){
     const baseUpdateTimed=updateTimed;updateTimed=function r115UpdateTimed(...args){const result=baseUpdateTimed(...args);refreshTrial(host);return result}
