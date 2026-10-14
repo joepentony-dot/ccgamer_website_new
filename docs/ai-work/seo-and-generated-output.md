@@ -1,5 +1,14 @@
 # SEO and generated output
 
+## PR #2747 specific-gameplay snippet selection — 14 October 2026 (unmerged)
+
+- Following owner authorisation to continue SEO correction, committed `b2aa2eba2ff69de6ff2a670469a92f0be3669481` to the SAME draft PR's `js/ccg-game-seo-snippet.js`. When an oversized editorial introduction forces later-sentence extraction, this scorer mildly favours source-authored concrete actions/objectives over short vague commentary; it does **not** invent mechanics, rewrite dates, edit game records or hand-edit generated HTML. Intentionally retain established first-sentence and full-game safeguards.
+- Added targeted source-based generator, canonical-route and admin-preview assertions for eight representative games in `tests/game-seo-snippet-quality.test.mjs` (commit `3a4a8853fb65b2d8f15874e9973fe8b1a62343e2`): Olli & Lissa, Up'n Down, Doriath, The Castles of Dr. Creep, Dino Eggs, Cadaver, Up Up and Away, Dan Dare III. External platform/manual fact checks included Olli & Lissa's eight ingredients (Lemon64 original instructions https://www.lemon64.com/doc/olli-and-lissa/423), Up'n Down's ten flags (https://www.c64-wiki.de/wiki/Up%27n_Down), and Doriath's 16×16 screen map (https://www.c64-wiki.com/wiki/Doriath).
+- Read-only execution of actual current PR generator across all 666 game/enrichment records: **15 changed candidate descriptions** versus preceding PR head; generic fallback count still **24**, stray terminal initial count **0**, doubled terminal full stops **0**, and descriptions over 155 characters **0**. These are source-output checks, NOT proof of 15 complete editorial reviews, GitHub Actions passing, live HTML changes or increased Google indexing.
+- Preserve separately researched but blocked editorial backlog, the three known platform/copy errors and unresolved year provenance. No update to previously OpenAI-safety-refused enriched editorial source and no direct further `games/games.json` changes.
+- Main still advanced with unrelated emulator work and public-code cache v134; PR has draft cache v133. Prior exact-head PWA protected catalogue checks were red and required current-head CI is unverified. **Do not merge, disable guards, rebase over concurrent work carelessly, regenerate route HTML or deploy** until source/release ownership and full tests/review are resolved.
+
+
 ## PR #2747: prevent new generic and wrong-platform regressions — 14 October 2026 (draft)
 
 - Committed **`759045f`** on the EXISTING draft PR #2747 to extend `tests/game-seo-snippet-quality.test.mjs`: exact-source-fallback checks now reject any *new* generic-description slug outside the 24 documented, unresolved catalogue entries, while allowing that backlog to shrink. This does not resolve or approve the existing 24.
