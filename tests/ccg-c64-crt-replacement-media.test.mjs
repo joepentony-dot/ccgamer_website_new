@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { parseCRT } from "../js/ccg-c64/core/media/crt.js";
 import { createCartridgeFromCRT } from "../js/ccg-c64/core/cartridges/registry.js";
 import { C64Machine } from "../js/ccg-c64/core/machine.js";
-import { normaliseCatalogSearch } from "../js/ccg-c64/game-catalog.js";
+import { normaliseCatalogSearch, preferSelectedCartridges } from "../js/ccg-c64/game-catalog.js";
 
 const sha256 = data => createHash("sha256").update(data).digest("hex");
 const manifest = JSON.parse(fs.readFileSync("docs/ccg-crt-review/REPLACEMENT-MANIFEST.json", "utf8"));
@@ -28,6 +28,23 @@ const firmware = Object.fromEntries([
 
 assert.equal(manifest.candidate_count, 152);
 assert.equal(manifest.games.length, 152);
+// Every requested promoted CRT must have a prior, non-CRT counterpart kept
+// intact in the on-disk catalogue or packed libraries.
+const allEntries = [
+  ...hosted.entries,
+  ...blast.games.map(row => ({ id: row[0], title: row[1], format: row[2] })),
+  ...archive.games.map(row => ({ id: row[0], title: row[1], format: row[2] })),
+];
+const originals = allEntries.filter(item => item.format !== "crt");
+const originalsByTitle = new Set(originals.map(item => normaliseCatalogSearch(item.title)));
+const selected = preferSelectedCartridges(allEntries);
+const visibleByTitle = new Map();
+for (const row of selected) {
+  const key = normaliseCatalogSearch(row.title);
+  const versions = visibleByTitle.get(key) || [];
+  versions.push(row);
+  visibleByTitle.set(key, versions);
+}
 const paths = new Set(), titles = new Set(), failures = [], hardware = new Map();
 for (const [index, item] of manifest.games.entries()) {
   const name = item.matching_catalogue_title;
@@ -35,6 +52,18 @@ for (const [index, item] of manifest.games.entries()) {
     assert(typeof name === "string" && expectedTitles.has(normaliseCatalogSearch(name)),
       "Not an existing catalogue title: " + name);
     const key = normaliseCatalogSearch(name);
+    const hostedCRT = hosted.entries.filter(entry =>
+      entry.format === "crt" && entry.preferOverOtherFormats === true &&
+      normaliseCatalogSearch(entry.title) === key);
+    assert.equal(hostedCRT.length, 1, "Expected one promoted CRT for " + name);
+    assert.equal(hostedCRT[0].approved, true);
+    assert.equal(hostedCRT[0].url, item.proposed_path);
+    assert.equal(hostedCRT[0].sha256, item.sha256);
+    assert.equal(hostedCRT[0].bytes, item.size);
+    assert(originalsByTitle.has(key), "Rollback version must remain on disk: " + name);
+    const visible = visibleByTitle.get(key) || [];
+    assert.equal(visible.length, 1, "Only chosen CRT should be displayed: " + name);
+    assert.equal(visible[0].id, hostedCRT[0].id);
     assert(!titles.has(key), "Duplicate promotion title: " + name);
     titles.add(key);
     assert(/^\/emulator\/c64\/media\/cartridge-replacements\/[a-z0-9-]+\.crt$/.test(item.proposed_path),
