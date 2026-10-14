@@ -25567,6 +25567,49 @@
   },
   {
     "system": "C64",
+    "id": "wasteland",
+    "slug": "wasteland",
+    "title": "Wasteland",
+    "sorttitle": "Wasteland",
+    "year": 1988,
+    "genres": [
+      "role-playing",
+      "adventure"
+    ],
+    "collections": [],
+    "videoid": "7Cn_7PWy3_w",
+    "thumbnail": "resources/images/thumbnails/all/wasteland.webp",
+    "pdf": "https://drive.google.com/file/d/1O81lhqxKwn-RL03SIkaX4sV31jZ8rjs8/view?usp=drivesdk",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://www.lemon64.com/game/wasteland"
+    ],
+    "zzap": [],
+    "description": "Wasteland is a 1988 Commodore 64 post-apocalyptic role-playing adventure developed by Interplay Productions and published by Electronic Arts. Set in 2087 after nuclear war, it follows the Desert Rangers as they investigate disturbances across the American Southwest. Explore Highpool, the Agricultural Centre, Quartz, Needles and Las Vegas in a largely open-ended world where decisions and discoveries can permanently affect locations. Create a squad or lead Hell Razor, Angela Deth, Thrasher and Snake Vargas; develop weapon, medical, lock-picking, perception and technical skills, recruit companions and command turn-based battles using the keyboard. The original two-disk, four-side release also used a printed paragraph book to expand its story beyond the computer's memory. Celebrated for its scale and player freedom, Wasteland helped inspire the later Fallout series. Its early encounters can be unforgiving, but its intricate systems and enormous world reward patient exploration.",
+    "ccg_rating": 8,
+    "ccg_rating_reason": "8/10 for its ambitious open-ended post-nuclear world, flexible Ranger development, straightforward keyboard commands and decisions that can leave lasting changes. My first teams were repeatedly battered by the local wildlife and Harry the Bunny Master, so I have barely scratched the surface, but this has enormous potential for anyone willing to invest the time to learn its combat and explore.",
+    "credits": {
+      "publisher": [
+        "Electronic Arts"
+      ],
+      "producer": "Dave Albert",
+      "coder": [
+        "Alan Pavlish"
+      ],
+      "graphics": [
+        "Todd J. Camasta"
+      ],
+      "musician": [],
+      "re_releaser": [],
+      "developer": "Interplay Productions"
+    },
+    "developer": "Interplay Productions",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "water_polo",
     "slug": "water-polo",
     "title": "Water Polo",
