@@ -450,7 +450,7 @@ test('all 665 current enriched game records prefer sourced game-specific snippet
     'A game not in the previously audited source backlog fell back to generic metadata');
   // Rich editorial text is present, but some source sentences still require
   // manual fact-checked editing; never invent detail to force this to zero.
-  assert.ok(complete >= 642, 'Specific source snippets regressed: ' + pending.join(', '));
+  assert.ok(complete >= games.length - 24, 'Specific source snippets regressed: ' + pending.join(', '));
   assert.ok(generic <= 24, 'More basic snippets than reviewed threshold: ' + pending.join(', '));
 });
 
