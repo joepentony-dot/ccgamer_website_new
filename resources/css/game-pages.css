@@ -2434,3 +2434,15 @@
         overflow-wrap: anywhere;
     }
 }
+
+/* The deferred poster and activated player must occupy identical geometry.
+   Keep the 16:9 ratio used by the compact layout at every breakpoint. */
+.ccg-page--single-game #game-video-section .game-video__stage {
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+}
+.ccg-page--single-game #game-video-section .game-video__frame:not([hidden]) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+}
