@@ -322,3 +322,81 @@ test('new initial-led sentences do not join preceding mode labels', () => {
     assert.equal(buildGameSeoPreview(game, snippet).description, game.expected);
   }
 });
+
+test('all 666 enriched game records prefer sourced game-specific snippets over generic boilerplate', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const root = join(import.meta.dirname, '..');
+  const games = JSON.parse(readFileSync(join(root, 'games/games.json'), 'utf8'));
+  const payload = JSON.parse(readFileSync(join(root, 'data/game-description-enrichments.json'), 'utf8'));
+  const enrichments = payload.games || payload;
+  assert.equal(games.length, 666, 'Unexpected catalogue change; review before regenerating metadata');
+
+  let generic = 0;
+  let complete = 0;
+  const pending = [];
+  for (const game of games) {
+    const enriched = enrichments[game.slug]?.description || game.description;
+    const record = { ...game, description: enriched };
+    const description = snippet.buildSnippet(record, game.title);
+    assert.ok(description.length <= 155, game.slug);
+    assert.match(description, /[.!?]$/, game.slug);
+    assert.doesNotMatch(description, /…|\.\.\.$/, game.slug);
+    assert.equal(routes.buildRuntimeDescription(record, game.title), description, game.slug);
+
+    const isBasic = / is an? (?:Commodore 64|Amiga) game(?: published by [^.]+)?\.$/.test(description) ||
+      / on (?:Commodore 64|Amiga)\.$/.test(description);
+    if (isBasic) {
+      generic++;
+      pending.push(game.slug);
+    } else {
+      complete++;
+    }
+  }
+  // Rich editorial text is present, but some source sentences still require
+  // manual fact-checked editing; never invent detail to force this to zero.
+  assert.ok(complete >= 640, 'Specific source snippets regressed: ' + pending.join(', '));
+  assert.ok(generic <= 26, 'More basic snippets than reviewed threshold: ' + pending.join(', '));
+});
+
+test('recover complete later gameplay facts from an oversized enriched introduction', () => {
+  for (const game of [
+    {
+      title: 'B.C. Bill', slug: 'bc-bill', system: 'C64', year: 1984,
+      description: 'A detailed historical introduction about development, publication and reception that deliberately exceeds the permitted search-description space while remaining a single oversized sentence and cannot be shortened without dropping essential claims. You take on the role of Bill, a caveman protecting his family in a dangerous stone-age world. The controls are simple.'
+    },
+    {
+      title: '720 Degrees', slug: '720-degrees', system: 'C64', year: 1987,
+      description: 'This unusually lengthy piece of source history introduces the original arcade design and publisher while deliberately exceeding the entire search snippet allocation, preventing any complete opening sentence being used for metadata. You skate through Skate City completing timed arcade challenges. More discussion.'
+    }
+  ]) {
+    const actual = snippet.buildSnippet(game, game.title);
+    assert.match(actual, /(?:Bill, a caveman|Skate City)/);
+    assert.equal(actual, routes.buildRuntimeDescription(game, game.title));
+    assert.equal(buildGameSeoPreview(game, snippet).description, actual);
+    assert.ok(actual.length <= 155, game.title);
+  }
+});
+
+test('editorial fallback does not assert contradictory dates or fabricate absent facts', () => {
+  const game = {
+    title: 'Example Racer', slug: 'example-racer', system: 'C64', year: 1989,
+    publisher: 'Example',
+    description: 'A long single-sentence introduction that continues beyond the available search snippet length and gives no safe grammatical clause to extract even though it provides an extensive overview of publisher credits and game development for this example computer game. Released on another system in 1987, the game had unrelated hardware. The remaining brief fragment is incomplete'
+  };
+  assert.equal(snippet.buildSnippet(game, game.title),
+    'Example Racer (1989) is a Commodore 64 game published by Example.');
+});
+
+test('Batman: The Movie and RoboCop C64 catalogue years match owner-approved 1989', () => {
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const records = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'games/games.json'), 'utf8'));
+  const batman = records.find((game) => game.slug === 'batman-the-movie');
+  const robocop = records.find((game) => game.slug === 'robocop');
+  assert.equal(batman.year, 1989);
+  assert.match(batman.description, /1989 Commodore 64 adaptation of Tim Burton's Batman film/);
+  assert.doesNotMatch(batman.description, /released by Ocean in 1986|rather than a specific movie plot/);
+  assert.equal(robocop.year, 1989);
+});
+
