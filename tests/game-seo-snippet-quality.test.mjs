@@ -543,7 +543,7 @@ test('authoritative generator retains platform-correct curated game copy', () =>
     assert.deepEqual(descriptionErrors(selected.description), [], slug);
     assert.equal(enriched[slug].description, normalizeText(override.description), slug);
     assert.deepEqual(enriched[slug].sources, override.sources, slug);
-    assert.ok(selected.description.split(/\\s+/).length >= 90, slug + ' source too short');
+    assert.ok(selected.description.split(/\s+/).length >= 90, slug + ' source too short');
     const record = { ...game, description: selected.description };
     const result = snippet.buildSnippet(record, game.title);
     assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
