@@ -18,6 +18,42 @@ const TARGET_WORDS = 135;
 const MAX_WORDS = 165;
 
 const overrides = {
+  "red-heat": {
+    description: "Red Heat is a 1989 Commodore 64 beat-'em-up by Special FX and Ocean Software, starring Soviet officer Ivan Danko in four film-inspired stages. The game aims to translate the film’s hard-edged tone to the Commodore 64, placing story and presentation firmly at the forefront. You control Soviet police officer Ivan Danko as he pursues drug lord Viktor Rostavili, moving through a series of stages inspired by key moments from the movie. Progression is linear, with each section focused on clearing enemies using punches, kicks, and occasional weapons. Visually, Red Heat was impressive for its time, featuring large character sprites and smooth animation that gave the game a cinematic feel. Jonathan Dunn’s soundtrack adds atmosphere and weight to the action, reinforcing the gritty setting even as it repeats during longer play sessions.",
+    sources: [
+      "https://www.youtube.com/watch?v=adtijYvhxCs"
+    ]
+  },
+  "robocop": {
+    description: "RoboCop is Ocean Software's Commodore 64 action adaptation of the 1987 film, with a 1989 US release following its 1988 UK debut. Developed under license from Orion Pictures, the home computer versions were produced by Ocean in collaboration with Data East, aiming to bring the film’s gritty atmosphere to 8-bit hardware. You step into the metal boots of RoboCop, patrolling the crime-ridden streets of Detroit across seven scrolling levels. Gameplay blends beat ’em up combat with run-and-gun shooting, as RoboCop uses punches and his Auto-9 pistol to clear enemies. Bonus shooting galleries add variety, rewarding accuracy and timing between the main stages. On the Commodore 64, RoboCop delivers moody visuals and a strong sense of atmosphere that reflects the film’s tone. Jonathan Dunn’s powerful soundtrack is a standout feature, driving the action and becoming one of the most recognisable C64 game themes of the era.",
+    sources: [
+      "https://www.youtube.com/watch?v=pm3UGikm-2s"
+    ]
+  },
+  "the-chaos-engine": {
+    description: "️ The Chaos Engine (1993) – Commodore Amiga Steampunk Run-and-Gun Classic Released in 1993 by The Bitmap Brothers, The Chaos Engine is a top-down run-and-gun action game set in a twisted steampunk version of Victorian Britain. A sentient machine has warped time and space, turning the population into hostile creatures, and a team of hired mercenaries is sent in to shut it down. You choose two characters from a roster of six, each with distinct weapons and abilities, and fight your way through four worlds made up of dense, enemy-filled levels. Progress requires careful movement, managing choke points, activating nodes, and uncovering hidden routes while enemies flood the screen from every direction. Gold collected during missions can be spent on upgrades, adding a strategic layer to the relentless action. Played solo or cooperatively, the game rewards coordination, positioning, and smart character choices as difficulty steadily ramps up.",
+    sources: [
+      "https://www.youtube.com/watch?v=vyTeLuzjRmQ"
+    ]
+  },
+  "bismark": {
+    description: "️ Bismark (1983) – Commodore 64 Naval Strategy Hunt for a Legendary Battleship Released in 1983 by Argus Press Software Ltd and developed by P. Rawling, Bismark is a strategic naval warfare game that challenges you to outthink rather than outgun the enemy. Also known as Strategy II, it places careful planning and intelligence gathering at the heart of the experience. You command a fleet of twelve Allied ships tasked with locating and sinking the German battleship Bismarck before time runs out. The action unfolds on a 20×15 grid representing the North Atlantic, where every movement must be considered as you patrol sea lanes, avoid threats, and close in on your target. Rather than fast-paced action, Bismark focuses on tactical decision-making and resource management. You must interpret limited information, position ships effectively, and anticipate the Bismarck’s movements, creating constant tension as the clock ticks down.",
+    sources: [
+      "https://www.youtube.com/watch?v=dF2yBbNOH6Q"
+    ]
+  },
+  "bounder": {
+    description: "️ Bounder (1986) – Commodore 64 Action Puzzle Isometric Platform Challenge Released in 1986 by Gremlin Graphics for the Commodore 64, Bounder is an inventive action-puzzle game that puts you in control of a constantly bouncing tennis ball navigating a series of suspended platforms high above dangerous voids. The game spans 174 screens across 10 increasingly demanding levels, each built from hexagonal tiles filled with hazards, enemies, and obstacles. You must carefully time each bounce and landing while guiding the ball towards the exit on every screen. Precision and forward planning are essential for survival. Scattered throughout the stages are special tiles that introduce strategic variety, including arrows that propel the ball forward, teleporters that remove sections of the level, and mystery tiles that can either reward or punish you. Completing each stage unlocks a bonus screen, offering extra points and risk-based scoring opportunities.",
+    sources: [
+      "https://www.youtube.com/watch?v=pNczSYUJ4l0"
+    ]
+  },
+  "double-dragon-2-the-revenge": {
+    description: "️ Double Dragon II: The Revenge (1989) – Commodore 64 Arcade Beat ’Em Up Martial Arts Classic Released in 1989 by Technōs Japan and ported to the Commodore 64 by Binary Design, Double Dragon II: The Revenge continues the story of Billy and Jimmy Lee as they set out to avenge the death of Marian. Building on the success of the original, the sequel delivers faster combat, tougher enemies, and more varied stage design. The C64 version preserves the core arcade experience, featuring side-scrolling brawling action, cooperative two-player gameplay, and a wide range of martial arts techniques. You can punch, kick, jump, and use weapons to fight your way through gangs of enemies and imposing boss characters. Each stage introduces new environments and enemy types, gradually increasing the challenge. While occasional slowdown can occur during intense scenes, the smooth scrolling and colourful graphics help maintain the game’s fast-paced momentum.",
+    sources: [
+      "https://www.youtube.com/watch?v=lOkqLlPq3gA"
+    ]
+  },
   "the-immortal": {
     description: "The Immortal is a 1990 Amiga isometric action-adventure developed by Sandcastle and published by Electronic Arts. You control an ageing wizard searching for his missing mentor, Mordamir, through eight levels of a dangerous dungeon. Each floor combines exploration, deadly traps, hostile creatures and puzzles that demand close attention to the environment. Collected objects can be used to overcome obstacles, while friendly characters may offer information or trade items. Combat involves reading an opponent's impending attack and choosing when to strike or evade. Some hazards require unusual solutions, including riding a magical carpet past flames or travelling underground on a barrel. Mistakes can be fatal, and learning the layout and timing of encounters is central to progressing deeper into the labyrinth.",
     sources: [
@@ -87,7 +123,7 @@ function normalizeText(value) {
     .replace(/^[-–—•|>\s]+/, "")
     .replace(/\bproper\b/gi, "strong")
     .replace(/\bheavy lifting\b/gi, "main work")
-    .replace(/\bchaos\b/gi, "mayhem")
+    .replace(/\bchaos\b(?!\s+Engine\b)/gi, "mayhem")
     .replace(/\bclearly\b/gi, "plainly")
     .replace(/\bclean and readable\b/gi, "easy to follow")
     .replace(/\bhow immediate it feels\b/gi, "its direct response")
