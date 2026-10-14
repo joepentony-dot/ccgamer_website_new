@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
-import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL } from "../js/ccg-c64/game-catalog.js";
+import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL, preferSelectedCartridges } from "../js/ccg-c64/game-catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
@@ -33,6 +33,7 @@ async function execute(catalogueAvailable) {
     PACK_CATALOG_URL,
     ARCHIVE_READY_URL,
     parsePackedCatalog,
+    preferSelectedCartridges,
     refreshOnlineLibrarySuggestions() { statuses.refreshed = true; },
     updateSelectedLibraryGame() { statuses.selectionUpdated = true; },
     console: { warn(...message) { statuses.warning = message; } },
