@@ -274,8 +274,9 @@
   }
 
   function showMemberGate(publicReason = "") {
-    const publicEnded = publicReason === "expired";
-    mark(publicEnded ? "public-playtest-expired" : "round2-member-required");
+    // Public-facing holding page only. Existing owner-preview and time-limited
+    // playtest validation remain protected in checkAccess(); no runtime bypass.
+    mark(publicReason === "expired" ? "public-playtest-expired" : "development-unavailable");
     if (document.getElementById("ccg-member-beta-access-gate")) return;
 
     const gate = document.createElement("div");
@@ -283,29 +284,29 @@
     gate.setAttribute("role", "dialog");
     gate.setAttribute("aria-modal", "true");
     gate.setAttribute("aria-labelledby", "ccg-member-beta-access-title");
-    const returnTo = encodeURIComponent(window.location.pathname + window.location.search + window.location.hash);
     gate.innerHTML = [
       '<style>',
-      '#ccg-member-beta-access-gate{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 18%,rgba(64,35,95,.48),rgba(4,3,10,.97) 58%);font-family:Arial,sans-serif;color:#fff;}',
+      '#ccg-member-beta-access-gate{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 18%,rgba(65,33,95,.44),rgba(4,3,10,.97) 62%);font-family:Arial,sans-serif;color:#fff;}',
       '#ccg-member-beta-access-gate *{box-sizing:border-box;}',
-      '#ccg-member-beta-access-card{width:min(560px,100%);border:1px solid rgba(193,132,255,.68);border-radius:16px;padding:28px;background:linear-gradient(180deg,rgba(22,12,35,.98),rgba(8,5,15,.99));box-shadow:0 28px 80px rgba(0,0,0,.58),0 0 42px rgba(149,74,219,.16);text-align:center;}',
-      '#ccg-member-beta-access-card .ccg-kicker{display:block;margin-bottom:8px;color:#d7a8ff;font-size:12px;font-weight:800;letter-spacing:.18em;}',
-      '#ccg-member-beta-access-card h1{margin:0 0 10px;font-size:clamp(26px,6vw,38px);line-height:1.02;text-transform:uppercase;}',
-      '#ccg-member-beta-access-card p{margin:0 0 16px;color:#d4cee0;line-height:1.55;}',
-      '#ccg-member-beta-access-card .ccg-round2-note{padding:12px;border:1px solid rgba(215,168,255,.25);border-radius:9px;background:rgba(215,168,255,.06);}',
-      '#ccg-member-beta-access-card .ccg-actions{display:grid;gap:10px;margin-top:18px;}',
-      '#ccg-member-beta-access-card a{display:block;border-radius:9px;padding:13px 16px;text-decoration:none;font-weight:900;}',
-      '#ccg-member-beta-signin{background:#9c5ed0;color:#fff;}',
-      '#ccg-member-beta-exit{border:1px solid rgba(255,255,255,.18);color:#d4cee0;}',
+      '#ccg-member-beta-access-card{width:min(590px,100%);border:1px solid rgba(193,132,255,.65);border-radius:17px;padding:clamp(24px,4vw,38px);background:linear-gradient(180deg,rgba(25,13,38,.99),rgba(8,5,15,.99));box-shadow:0 25px 80px rgba(0,0,0,.6),0 0 38px rgba(149,74,219,.12);text-align:center;}',
+      '#ccg-member-beta-access-card .ccg-kicker{display:block;margin-bottom:12px;color:#d9afff;font-size:12px;font-weight:800;letter-spacing:.16em;}',
+      '#ccg-member-beta-access-card h1{margin:0 0 16px;font-size:clamp(30px,5.5vw,43px);line-height:1.08;text-transform:uppercase;}',
+      '#ccg-member-beta-access-card p{margin:0 auto 15px;max-width:480px;color:#e0d7e8;font-size:16px;line-height:1.56;}',
+      '#ccg-member-beta-access-card .ccg-round2-note{padding:15px;border:1px solid rgba(215,168,255,.24);border-radius:10px;background:rgba(215,168,255,.07);}',
+      '#ccg-member-beta-access-card .ccg-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}',
+      '#ccg-member-beta-access-card a{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:9px;padding:12px 16px;text-decoration:none;font-size:14px;font-weight:800;line-height:1.3;}',
+      '#ccg-member-beta-exit{background:#9c5ed0;color:#fff;}',
+      '#ccg-member-beta-follow{border:1px solid rgba(215,168,255,.5);color:#e2cef3;}',
+      '@media(max-width:520px){#ccg-member-beta-access-card .ccg-actions{grid-template-columns:1fr;}}',
       '</style>',
       '<div id="ccg-member-beta-access-card">',
-      '<span class="ccg-kicker">C64 DUNGEON CARNAGE · PLAYTEST</span>',
-      '<h1 id="ccg-member-beta-access-title">' + (publicEnded ? '24-Hour Playtest Ended' : 'Current Members Only') + '</h1>',
-      '<p>' + (publicEnded ? 'This public YouTube playtest link has completed its shared 24-hour test window.' : 'The public game remains protected outside an active share window.') + '</p>',
-      '<p class="ccg-round2-note">' + (publicEnded ? 'The same link cannot restart or extend the timer. Owner and currently eligible member access remain separately protected.' : 'Sign in if you already have assigned member access.') + '</p>',
+      '<span class="ccg-kicker">CHEEKY COMMODORE GAMER · GAME DEVELOPMENT</span>',
+      '<h1 id="ccg-member-beta-access-title">C64 Dungeon Carnage Is In Development</h1>',
+      '<p>We are continuing to develop and improve C64 Dungeon Carnage. Public gameplay is temporarily unavailable while the next version is being prepared.</p>',
+      '<p class="ccg-round2-note">Stay tuned to the Cheeky Commodore Gamer channel and website for development news and the next playable release.</p>',
       '<div class="ccg-actions">',
-      '<a id="ccg-member-beta-signin" href="/auth/login.html?returnTo=' + returnTo + '">SIGN IN AS AN ASSIGNED MEMBER</a>',
-      '<a id="ccg-member-beta-exit" href="' + MAINTENANCE_DESTINATION + '">Return to CCG Games</a>',
+      '<a id="ccg-member-beta-exit" href="' + MAINTENANCE_DESTINATION + '">BACK TO CCG GAMES</a>',
+      '<a id="ccg-member-beta-follow" href="https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join" target="_blank" rel="noopener noreferrer">FOLLOW DEVELOPMENT</a>',
       '</div>',
       '</div>'
     ].join("");
