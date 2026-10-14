@@ -64,18 +64,32 @@ assert.equal(PGR.inventoryAdd(partialPlayer,{...warp(),qty:3}),false,
 assert.equal(PGR.inventoryKindCount(partialPlayer,"teleport"),2,
   "Failed multi-spell add must roll back edits to the partially filled Warp stack");
 const firstAttempt=PGR.recoverDeathCache(partialPlayer,deathRun,deathCache);
-assert.equal(firstAttempt.recovered,0,"Full inventory cannot partially claim a multi-spell cache row");
-assert.equal(firstAttempt.remaining,3,"The entire unclaimed cache row stays available");
+assert.equal(firstAttempt.recovered,1,"Full inventory can reclaim just the free space in its Warp stack");
+assert.equal(firstAttempt.remaining,2,"Exactly two unavailable spells remain in the death cache");
+assert.equal(deathCache.inventory[0].qty,2,"Persistent death cache records the unrecovered quantity");
+assert.equal(PGR.inventoryKindCount(partialPlayer,"teleport"),3);
 assert.equal(deathCache.active,true);
-assert.equal(conservedWarps(),5,"A failed death-cache recovery must not duplicate Warp spells");
+assert.equal(conservedWarps(),5,"Partial recovery conserves every Warp spell");
 assert.equal(deathRun.stats.deathCachesRecovered,0);
+// Simulate checkpoint JSON round-trip; no old in-memory item references survive.
+const restoredState=JSON.parse(JSON.stringify({player:partialPlayer,cache:deathCache,run:deathRun}));
+partialPlayer.inventory=restoredState.player.inventory;
+deathCache.inventory=restoredState.cache.inventory;
+deathCache.active=restoredState.cache.active;
+deathRun.floorGames=restoredState.run.floorGames;
+deathRun.stats=restoredState.run.stats;
+assert.equal(conservedWarps(),5,"Save and reload preserve total carried plus cached Warps");
+const noRoom=PGR.recoverDeathCache(partialPlayer,deathRun,deathCache);
+assert.equal(noRoom.recovered,0,"Retry with no capacity does not manufacture a pickup");
+assert.equal(noRoom.remaining,2);
+assert.equal(conservedWarps(),5,"Blocked post-reload retry neither loses nor duplicates Warps");
 PGR.inventoryRemove(partialPlayer,PGR.firstInventory(partialPlayer,"torch"));
 const secondAttempt=PGR.recoverDeathCache(partialPlayer,deathRun,deathCache);
-assert.equal(secondAttempt.recovered,3,"A retry after freeing a slot can claim all cached Warps");
+assert.equal(secondAttempt.recovered,2,"A freed slot receives the two still-cached Warps");
 assert.equal(secondAttempt.remaining,0);
 assert.equal(deathCache.active,false);
 assert.equal(PGR.inventoryKindCount(partialPlayer,"teleport"),5);
-assert.equal(conservedWarps(),5,"Retrying recovery must conserve Warp quantity");
+assert.equal(conservedWarps(),5,"After full recovery, carried plus cached Warps remain conserved");
 assert.equal(deathRun.stats.deathCachesRecovered,1,"Fully collected death cache must count once");
 
 const toastSource=between(core,"function displayToast(entry){","function rememberTrail(p){");
