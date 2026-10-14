@@ -6899,21 +6899,6 @@
         }
       ]
     },
-    "the-happiest-days-of-your-life": {
-      "title": "The Happiest Days Of Your Life",
-      "releases": [
-        {
-          "archiveId": "2266",
-          "publisher": "Firebird Silver",
-          "year": 1986,
-          "yearLabel": "1986",
-          "loader": null,
-          "sourceRole": "publisher",
-          "url": "https://uta.pokefinder.org/Ultimate_Tape_Archive/Happiest_Days_of_Your_Life,_The_(1986_Firebird_Silver)_%5b2266%5d/",
-          "titleMatch": "exact"
-        }
-      ]
-    },
     "the-human-race": {
       "title": "The Human Race",
       "releases": [
