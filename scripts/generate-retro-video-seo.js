@@ -247,10 +247,15 @@ function buildVideoObject(entry, videoId, canonicalUrl, metadata) {
 }
 
 function removeVideoObjectScripts(html) {
-  return html.replace(
-    /<script\b[^>]*type\s*=\s*(["'])application\/ld\+json\1[^>]*>[\s\S]*?<\/script>/gi,
-    (block) => /"@type"\s*:\s*"VideoObject"/i.test(block) ? "" : block
-  );
+  // Remove the whole indented line as well as its VideoObject markup.
+  // Otherwise repeated retro-page SEO generation leaves whitespace-only
+  // lines behind, causing the generated-output git diff --check gate to fail.
+  const videoObject = block => /"@type"\s*:\s*"VideoObject"/i.test(block);
+  const indented = /^[ \t]*<script\b[^>]*type\s*=\s*(["'])application\/ld\+json\1[^>]*>[\s\S]*?<\/script>[ \t]*(?:\r?\n)?/gim;
+  const inline = /<script\b[^>]*type\s*=\s*(["'])application\/ld\+json\1[^>]*>[\s\S]*?<\/script>/gi;
+  return html
+    .replace(indented, block => videoObject(block) ? "" : block)
+    .replace(inline, block => videoObject(block) ? "" : block);
 }
 
 function injectVideoSchema(html, schemaBlock) {
@@ -430,6 +435,7 @@ module.exports = {
   buildVideoObject,
   buildVideoSitemap,
   enhancePage,
+  removeVideoObjectScripts,
   normalizeRetroSlug,
   verifiedMetadata
 };

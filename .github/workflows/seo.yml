@@ -137,6 +137,24 @@ jobs:
           node scripts/normalize-public-header-shell.js --root retro-specials --check
           node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
+      # Source-only new-game PRs do not yet have their complete generated
+      # canonical game page. Use the authoritative builder in the disposable
+      # PR checkout; only Reliable Games Publishing may commit that output.
+      - name: Preview full game pages for PR SEO validation
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          # A magazine-only PR can follow a new-game source merge while the
+          # publisher has not yet materialised its game page. Also preview when
+          # *any* current catalogue page is missing, even if games.json did not change.
+          if git diff --quiet "origin/${{ github.base_ref }}"...HEAD -- games/games.json \
+            && node -e "const fs=require('node:fs');const path=require('node:path');const games=require('./games/games.json');process.exit(games.some(g=>!fs.existsSync(path.join('games',String(g.slug),'index.html')))?1:0)"; then
+            echo "[seo] Game source unchanged and all canonical game pages exist."
+          else
+            echo "[seo] Building full canonical game pages for PR-only SEO checks."
+            node scripts/rebuild-games.js
+          fi
+
       - name: Generate game video SEO
         if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: |
@@ -183,6 +201,25 @@ jobs:
           node scripts/normalize-public-header-shell.js --root retro-events --check
           node scripts/normalize-public-header-shell.js --root retro-specials --check
           node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
+
+      # Retro SEO regeneration may leave whitespace-only lines in the
+      # disposable PR preview. Normalise only generated retro HTML before
+      # enforcing the unchanged git diff --check guard; never write to main.
+      - name: Normalise generated retro preview whitespace
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          while IFS= read -r file; do
+            case "$file" in
+              retro-events/*/index.html|retro-specials/*/index.html|amiga-demo-music/*/index.html)
+                sed -i 's/[[:blank:]]\+$//' "$file"
+                ;;
+            esac
+          done < <(git diff --name-only)
+
+      - name: Check retro VideoObject removal and whitespace stability
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
+        run: node --test tests/retro-video-script-whitespace.test.js
 
       - name: Check generated output whitespace
         if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'

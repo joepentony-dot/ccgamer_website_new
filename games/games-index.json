@@ -3816,6 +3816,12 @@
     "thumbnail": "resources/images/thumbnails/all/Walker.png"
   },
   {
+    "slug": "wasteland",
+    "title": "Wasteland",
+    "year": 1988,
+    "thumbnail": "resources/images/thumbnails/all/wasteland.webp"
+  },
+  {
     "slug": "water-polo",
     "title": "Water Polo",
     "year": 1987,
