@@ -32,14 +32,39 @@ jobs:
       - name: Check CCG shell and ROM contract
         run: node tests/ccg-c64-emulator-stage1.test.mjs
 
+      - name: Verify iPhone Safari startup and privacy fallbacks
+        run: node --test tests/ccg-c64-ios-safari.test.mjs
+
+      - name: Verify iPhone touch selection and desktop Android isolation
+        run: node --test tests/ccg-c64-ios-game-selection.test.mjs
+
+      - name: Verify mobile game buttons prevent native text selection and keep search editable
+        run: node --test tests/ccg-c64-mobile-button-selection.test.mjs
+
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
+
+      - name: Verify automatic warp remains active through post-RUN disk and tape loads
+        run: node --test tests/ccg-c64-auto-warp-loading.test.mjs
 
       - name: Verify hot disk swapping and multi-disk library controls
         run: node tests/ccg-c64-disk-swap.test.mjs
 
+      - name: Verify per-game vault slots, preserved legacy saves and backup transfers
+        run: node --test tests/ccg-c64-game-vault.test.mjs
+
+      - name: Verify real Chromium Game Vault persistence across browser restart
+        timeout-minutes: 5
+        run: node tests/ccg-c64-vault-browser-persistence.test.mjs
+
+      - name: Verify Game Vault cross-tab IndexedDB upgrade and non-destructive retry
+        run: node --test tests/ccg-c64-game-vault-blocked.test.mjs
+
       - name: Verify searchable and SHA-256-protected C64 game browser
         run: node tests/ccg-c64-game-catalog.test.mjs
+
+      - name: Verify optional clean-name archive activation and 10k-title search
+        run: node tests/ccg-c64-clean-prg-archive.test.mjs
 
       - name: Verify explicit select-then-LOAD GAME interaction
         run: node tests/ccg-c64-library-select-load.test.mjs
@@ -53,15 +78,51 @@ jobs:
       - name: Check function key touch controls
         run: node tests/ccg-c64-function-keys.test.mjs
 
-      - name: Verify consolidated C64 mobile game selection and touch keys
-        run: node tests/ccg-c64-mobile-consolidation.test.mjs
+      - name: Verify C64 secondary F2/F4/F6/F8 mobile key matrix
+        run: node --test tests/ccg-c64-mobile-consolidation.test.mjs
 
-      - name: Render C64 layout at phone and desktop viewports
+      - name: Verify dual FIRE/JUMP and saved mobile control preferences
+        run: node tests/ccg-c64-dual-action-controls.test.mjs
+
+      - name: Verify Bruce Lee cartridge replaces the old packed PRG listing
+        run: node --test tests/ccg-c64-bruce-lee-library.test.mjs
+
+      - name: Verify private local ROM export and mobile import
+        run: node --test tests/ccg-c64-local-rom-transfer.test.mjs
+
+      - name: Verify mobile game search directly below the C64 display
+        run: node --test tests/ccg-c64-mobile-library-priority.test.mjs
+
+      - name: Verify in-game mobile Pause, Save, Load and CRT contracts
+        run: node --test tests/ccg-c64-mobile-in-game-vault.test.mjs
+
+      - name: Render C64 mobile and desktop game library in Chromium
         timeout-minutes: 5
-        run: node tests/ccg-c64-mobile-rendered.test.mjs
+        run: node tests/ccg-c64-mobile-library-rendered.test.mjs
+
+      - name: Verify original C64 firmware SHA-256 and CPU BASIC boot
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-original-rom-boot.test.mjs
+
+      - name: Verify real Bruce Lee Trilogy F3 F5 F7 menu via CPU and CIA
+        timeout-minutes: 5
+        run: node --test tests/ccg-c64-bruce-lee-real-crt.test.mjs
+
+      - name: Verify CIA1 reverse keyboard scan and releases
+        run: node --test tests/ccg-c64-keyboard-reverse-scan.test.mjs
 
       - name: Verify all uploaded Blast pack files and 1878 individual PRG checksums
         run: node tests/ccg-c64-blast-integrity.test.mjs
+
+      - name: Verify Ocean Type 1 CRT hardware mapping and restoration
+        run: node tests/ccg-c64-ocean-type1.test.mjs
+
+      - name: Verify original Fun Play, Super Games, C64GS, Dinamic and Zaxxon hardware
+        run: node tests/ccg-c64-legacy-cartridges.test.mjs
+
+      - name: Validate 152 owner-supplied CRTs against real CPU and catalogue
+        timeout-minutes: 8
+        run: node tests/ccg-c64-crt-replacement-media.test.mjs
 
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
@@ -69,6 +130,7 @@ jobs:
       - name: Syntax-check CCG adapter
         run: |
           node --check js/ccg-c64/app.js
+          node --check js/ccg-c64/game-catalog.js
           node --check js/ccg-c64/coi-bootstrap.js
           node --check emulator/c64/coi-service-worker.js
           node --check js/ccg-c64/game-vault.js
@@ -77,3 +139,20 @@ jobs:
 
       - name: Syntax-check vendored core
         run: find js/ccg-c64/core -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+
+  additional-crt-qualification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
+    steps:
+      - name: Checkout 1530 checksum-bound cartridges
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify SHA-256, exact-title fallback, cartridge banking, and CPU startup
+        run: node tests/ccg-c64-more-crt-activation.test.mjs ${{ matrix.shard }} 6

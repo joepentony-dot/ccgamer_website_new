@@ -281,6 +281,46 @@ requireText(documentation, "No private pages", "Private cache documentation");
 requireText(documentation, "two-stage", "Two-stage launch documentation");
 requireText(documentation, "versioned", "Versioned icon documentation");
 
+// One-time owner-authorised, byte-for-byte Batman C64 historical correction.
+// All other catalogue records and every other protected file remain immutable.
+// Once the corrected catalogue is on main, this exception no longer matches.
+function isApprovedBatman1989CatalogueCorrection(relativePath) {
+  if (relativePath !== "games/games.json") return false;
+  let baseline = readGitFile("origin/main", relativePath);
+  // On the first merged main commit, changedFiles() audits HEAD^...HEAD.
+  // Use that transition's parent only when HEAD is exactly origin/main.
+  // Later main commits already have 1989 in their parent and cannot match.
+  if (baseline !== null && baseline === read(relativePath)) {
+    try {
+      const revision = (ref) => childProcess.execFileSync("git", ["rev-parse", ref],
+        { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+      if (revision("HEAD") === revision("origin/main")) {
+        baseline = readGitFile("HEAD^", relativePath);
+      }
+    } catch (error) { return false; }
+  }
+  if (baseline === null) return false;
+
+  const anchor = '"slug": "batman-the-movie"';
+  const start = baseline.indexOf(anchor);
+  if (start < 0 || baseline.indexOf(anchor, start + anchor.length) !== -1) return false;
+  const end = baseline.indexOf("\n  },", start);
+  if (end < 0) return false;
+
+  const oldDescription = "Batman: The Movie is a Commodore 64 action-adventure game released by Ocean in 1986. Inspired by the iconic film character rather than a specific movie plot, the game mixes side-scrolling action with puzzle elements. It became one of Ocean's most recognisable licensed releases.";
+  const newDescription = "Batman: The Movie is Ocean Software's 1989 Commodore 64 adaptation of Tim Burton's Batman film. Its five stages mix platform action, Batmobile driving, puzzles and Batwing sequences.";
+  const oldYear = '"year": 1986';
+  const oldCopy = '"description": ' + JSON.stringify(oldDescription);
+  const section = baseline.slice(start, end);
+
+  if (section.split(oldYear).length !== 2 || section.split(oldCopy).length !== 2) return false;
+  const replacement = section
+    .replace(oldYear, '"year": 1989')
+    .replace(oldCopy, '"description": ' + JSON.stringify(newDescription));
+  const expected = baseline.slice(0, start) + replacement + baseline.slice(end);
+  return read(relativePath) === expected;
+}
+
 const protectedPaths = new Set([
   "index.html",
   "home.html",
@@ -310,7 +350,7 @@ const allowedPaths = new Set([
 ]);
 
 for (const changedPath of changedFiles()) {
-  if (protectedPaths.has(changedPath) && !isApprovedDungeonHomeCtaMigration(changedPath) && !isApprovedHomeDiscoveryDashboard(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+  if (protectedPaths.has(changedPath) && !isApprovedDungeonHomeCtaMigration(changedPath) && !isApprovedHomeDiscoveryDashboard(changedPath) && !isApprovedBatman1989CatalogueCorrection(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
   if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
     failures.push(`Out-of-scope local Phase 17 change: ${changedPath}`);
   }

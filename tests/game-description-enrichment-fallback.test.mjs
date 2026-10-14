@@ -32,3 +32,25 @@ test('rejects an unavailable video when the source description is also too short
     /Add at least 40 words of finished source copy/
   );
 });
+
+test('five curated C64 editorial fixes survive repeatable YouTube enrichment', () => {
+  const { curatedGameOverrides, selectDescription, wordCount } =
+    require('../scripts/build-game-description-enrichments.js');
+  const { readFileSync } = require('node:fs');
+  const { join } = require('node:path');
+  const source = JSON.parse(readFileSync(join(import.meta.dirname, '../data/game-description-enrichments.json'), 'utf8'));
+  for (const slug of ["asterix-and-the-magic-cauldron","barbarian-2-the-dungeon-of-drax","cybernoid","donald-ducks-playground","the-new-zealand-story"]) {
+    const override = curatedGameOverrides[slug];
+    assert.ok(override?.description, slug + ' must remain in the authoritative generator');
+    assert.ok(wordCount(override.description) >= 90 && wordCount(override.description) <= 165, slug);
+    assert.ok(override.sources.length >= 2, slug + ' must retain video and independent fact-check sources');
+    const result = selectDescription(
+      { slug, description: 'A generic source fallback must not be selected.' },
+      { description: Array.from({ length: 105 }, () => 'unverified').join(' ') + '.' },
+      override
+    );
+    assert.equal(result.sourceKind, 'override', slug);
+    assert.equal(result.description, source.games[slug].description, slug + ' publisher source diverged');
+    assert.deepEqual(override.sources, source.games[slug].sources, slug + ' citation links lost');
+  }
+});

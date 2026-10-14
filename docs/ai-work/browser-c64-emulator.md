@@ -64,6 +64,32 @@
 
 The machine/video core, SID browser audio, keyboard/gamepad/touch input, D64/D71/D81 media, optional True 1541, TAP/T64, CRT cartridge loading and three local Game Vault slots are now connected. Before merge, the remaining product work is final SID analogue-fidelity qualification, a decision on G64 support, final third-party/source inventory, deployed browser acceptance, release sitemap registration and a last Lighthouse/performance review. The Stage 1 shell remains the visual contract.
 
+## Dual-action mobile input — 9 October 2026
+
+- Branch: `codex/c64-mobile-dual-action-controls-20261009`.
+- Optional JUMP uses the original joystick UP bit. FIRE uses its original bit. The original F1/F3/F5/F7 CIA-matrix keys remain, under an expandable mobile panel.
+- The hosted library applies per-game controls when loaded. Unverified games remain FIRE-only; players can opt in to JUMP and save preferences per title on their device. No guessed binary-file classification.
+- Per-button held states preserve overlapping joystick UP and JUMP, including pointer cancellations; reset releases all controls.
+- Qualify portrait/landscape, fullscreen, function keys, source contracts and performance before merge.
+
 ## Visual/legal rule
 
 Do not copy the upstream interface, panel arrangement, branding, wording or artwork. CCG presentation must remain independently designed. Do not remove copyright or licence notices from code that is actually derived from GPL source merely to hide provenance; legal attribution belongs in source/legal notices, not in the branded emulator UI.
+
+
+## Owner-supplied PRG archive and clean-name search — 13 October 2026
+
+- Implementation branch: `codex/c64-prg-archive-clean-titles-20261013`, based on the then-current main. This branch implements **optional support** for a further owner-supplied C64 PRG archive; it does **not** contain the binary archive packs.
+- User supplied `C64-rom-prg-games.zip` with 15,605 PRG files and `Raid over Moscow.prg`. The standalone Raid PRG matches exactly the unmodified release file inside the ZIP. After removing year/publisher/language/trainer/crack tags from the display names and selecting one representative PRG per case-insensitive title, the prepared offline archive contains **9,849 titles** over **48** size-bounded binary packs, with per-pack and per-game SHA-256 checks. The source-to-clean-title audit stays outside the public catalogue.
+- Existing Blast packs and the five direct hosted media entries remain untouched. The additional archive lives under `/emulator/c64/media/prg-archive/`. Pack filenames still use the established `pack-00.bin` through `pack-47.bin` convention; the validated manifest can contain up to 12,000 titles.
+- A small `ready.json` activation marker contains the manifest hash and record/pack counts. **Upload this marker last, only after all 48 packs and catalog.json are present.** If it is missing (404), the new catalogue is omitted silently; the existing Blast/direct library continues working. If present but damaged, the new catalogue is rejected and the retry state is shown.
+- Search matches normalized punctuation and apostrophes, so searching `Daley Thompsons Decathlon` finds `Daley Thompson's Decathlon`. Suggestion count remains capped at eight; no large auto-expanded dropdown appears. Existing mobile/iOS pointer and keyboard handling is unchanged.
+- Qualification contract added in `tests/ccg-c64-clean-prg-archive.test.mjs`. Do not claim live or gameplay acceptance until the owner's media packs are uploaded and tested in deployed desktop, Android and Safari sessions.
+- The uploaded archive's existence and binary SHA checks **do not establish copyright redistribution permission**. The owner must confirm rights before distributing each game publicly. Do not set up or ship the activation marker until that condition is met.
+
+## Owner CRT duplicate-version preference — 14 October 2026 (staged code only)
+
+- User supplied `cartridge_games.zip` with 230 archive members: 229 CRT and one D64. All 229 CRTs have internally valid headers/CHIP bounds. Hardware inventory: 190 type 0, 5 type 19 (currently supported); 20 type 5, 5 type 17, 4 type 15, 2 type 18, 2 type 7 and 1 type 8 (currently unsupported by `core/cartridges/registry.js`). The ZIP includes multiple alternate/old/MAX CRT editions, so matching by filename alone is not evidence of compatible replacement. This count is an asset audit, not an emulator gameplay test.
+- Candidate branch: `codex/c64-crt-preferred-duplicates-20261014`, created from 14 October main. `game-catalog.js` adds deterministic, punctuation-tolerant, **exact-title** preferred-CRT selection across direct, Blast and activated PRG archive. The preference requires a `preferOverOtherFormats: true` flag on an approved `crt` entry; it is never inferred just from a title or a cartridge format. `app.js` applies the filtering only after all catalogues are independently validated, retaining the existing raw packed media unchanged for rollback and leaving absent/unsupported/untested CRTs as original playable versions.
+- `scripts/c64-stage-crt-replacements.py` is a dry-run-first ZIP-to-direct-library preparer that requires all three catalogue manifests, validates CRT packet structure/hardware, ignores absent/ambiguous/prototype editions and existing hosted cartridges, and refuses public activation without explicit owner per-file redistribution rights and gameplay confirmation. No packed archive edits or binary-pack rewrite. The script is **not** a substitute for the owner's required desktop/Android/Safari launch testing.
+- `tests/ccg-c64-game-catalog.test.mjs` covers exact-title matching, title punctuation, no premature substitution, a stable single CRT winner, old-version suppression, and unrelated-title preservation. No new CRT bytes have been uploaded to GitHub from the user attachment; the connector cannot read/upload local ZIP binary content directly. Consequently the promotion flag is not yet present in any live game record: **no CRT replacements are active and no existing games have been removed**. Do not claim completion or merge media until rights/compatibility evidence exists, new files are committed and remote qualification passes. Preserve the user's preference for a single qualified PR, not a pile of open PRs.

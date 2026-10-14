@@ -57,7 +57,8 @@ test("high intent pages receive focused titles and synchronized social descripti
   assert.match(updated, /<title>The Last V8 C64 – Review, Manual &amp; Gameplay \| CCG<\/title>/);
   assert.match(updated, /property="og:title" content="The Last V8 C64 – Review, Manual &amp; Gameplay \| CCG"/);
   assert.match(updated, /name="twitter:title" content="The Last V8 C64 – Review, Manual &amp; Gameplay \| CCG"/);
-  assert.match(updated, /The Last V8 on Commodore 64 — review, screenshots, manual and gameplay video\./);
+  assert.match(updated, /The Last V8 \(1985\) from Mastertronic — A post-apocalyptic driving game with screenshots and game information\./);
+  assert.doesNotMatch(updated, /The Last V8 on Commodore 64 — review, screenshots/);
 });
 
 test("growth-only routes score below intervention routes so successful intent is preserved", () => {
@@ -91,4 +92,34 @@ test("opportunity application preserves the established genre fallback ordering 
     source,
     /const genreResult = scope === "all"\s*\?\s*prioritizeGenreFallbacks/
   );
+});
+
+test("opportunity layer preserves completed game snippets instead of introducing ellipses", () => {
+  const target = plan.targets.find((item) => item.observedRoute === "/games/chuckie-egg/");
+  assert.ok(target?.descriptionLead);
+  const snippet = "Chuckie Egg is a fast-paced platform game based on Nigel Alderton’s hugely popular ZX Spectrum original.";
+  const html = [
+    '<html><head>',
+    '<meta name="description" content="' + snippet + '">',
+    '<meta property="og:description" content="Old OG text">',
+    '<meta name="twitter:description" content="Old Twitter text">',
+    '</head></html>'
+  ].join("\n");
+  const updated = seo.applyMetadata(html, target);
+  assert.match(updated, /content="Chuckie Egg is a fast-paced platform game/);
+  assert.match(updated, /property="og:description" content="Chuckie Egg is a fast-paced platform game/);
+  assert.match(updated, /name="twitter:description" content="Chuckie Egg is a fast-paced platform game/);
+  assert.doesNotMatch(updated, /review, screenshots, manual and gameplay video|…/);
+  assert.equal(seo.applyMetadata(updated, target), updated);
+});
+
+test("explicit SEO description overrides remain available for a game route", () => {
+  const target = {
+    observedRoute: "/games/example/",
+    seoDescription: "Example is an arcade adventure with a verified puzzle mechanic.",
+    descriptionLead: "Example on C64 — review, screenshots and manual."
+  };
+  const html = '<meta name="description" content="Example is a complete existing C64 game description.">';
+  const result = seo.applyMetadata(html, target);
+  assert.match(result, /content="Example is an arcade adventure with a verified puzzle mechanic\."/);
 });

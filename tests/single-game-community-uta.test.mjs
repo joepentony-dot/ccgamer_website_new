@@ -416,6 +416,9 @@ test("residual curated decisions remain source-evidenced and exact-ID scoped", (
 test("residual review classifies every baseline unmatched C64 record exactly once", () => {
   const audit = JSON.parse(fs.readFileSync("data/uta-audit.json", "utf8"));
   const review = JSON.parse(fs.readFileSync("data/uta-residual-review-2026-09-23.json", "utf8"));
+  const addenda = JSON.parse(fs.readFileSync("data/uta-residual-review-addenda.json", "utf8"));
+  const currentMapping = JSON.parse(fs.readFileSync("data/uta-game-matches.json", "utf8"));
+  const allReviewed = [...review.entries, ...addenda.entries];
   const allowed = new Set([
     "verified-additional-tape",
     "catalogue-metadata-correction",
@@ -423,13 +426,29 @@ test("residual review classifies every baseline unmatched C64 record exactly onc
     "genuinely-no-uta-release"
   ]);
 
+  // The 2026-09-23 snapshot remains immutable. Later games are reviewed
+  // through dated addenda, and the combined inventory must still be exact.
   assert.equal(review.entries.length, 146);
+  assert.ok(Array.isArray(addenda.entries) && addenda.entries.length > 0);
   assert.equal(new Set(review.entries.map((entry) => entry.gameSlug)).size, 146);
+  assert.equal(new Set(allReviewed.map((entry) => entry.gameSlug)).size, allReviewed.length);
   assert.deepEqual(
-    review.entries.map((entry) => entry.gameSlug).sort(),
+    allReviewed.map((entry) => entry.gameSlug).sort(),
     audit.unmatched.map((entry) => entry.slug).sort()
   );
-  assert.ok(review.entries.every((entry) => allowed.has(entry.classification)));
+  assert.ok(allReviewed.every((entry) => allowed.has(entry.classification)));
+  for (const entry of addenda.entries) {
+    const source = audit.unmatched.find((item) => item.slug === entry.gameSlug);
+    assert.ok(source, `Unmatched UTA audit record missing for ${entry.gameSlug}`);
+    assert.equal(entry.title, source.title);
+    assert.equal(entry.year, source.year);
+    assert.deepEqual(entry.publishers, source.publishers);
+    assert.equal(entry.originalAuditStatus, source.status);
+    assert.match(entry.reviewedAt, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(String(entry.reason || "").length >= 40, entry.gameSlug);
+    assert.equal(currentMapping.games?.[entry.gameSlug], undefined,
+      `${entry.gameSlug} has a verified UTA mapping: update the review instead of retaining an unmatched classification`);
+  }
   assert.deepEqual(review.summary.classifications, {
     "verified-additional-tape": 0,
     "catalogue-metadata-correction": 4,

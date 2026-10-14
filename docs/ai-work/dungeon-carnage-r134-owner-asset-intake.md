@@ -1,0 +1,91 @@
+# Owner-supplied asset intake — 12 October 2026
+
+## Owner-confirmed zero-cost rule — 12 October 2026
+
+The owner explicitly confirmed that **nothing has been paid for** in any supplied asset bundle and will not purchase or contribute any amount to obtain commercial rights. This supersedes older references to "confirm payment", "pay for commercial use" or possible upgrades.
+
+**Permanent intake gate:** use only assets covered by the exact free/no-payment download's commercial-video-game rights; either CC0/public-domain or free commercial-use permissions (including any required attribution and asset-source redistribution restrictions). A website displaying "free download", an archive being uploaded, or a permissive paid tier does **not** prove the downloaded free tier allows commercial games. No new spend, payment, Patreon contribution, paid expansion, membership purchase or commercial-license checkout is authorised. If free commercial permission cannot be verified, keep the candidate **excluded from the game and packages**, and search for an equivalent zero-cost alternative. Never assume ownership or permission simply because a file is present.
+
+**Hard exclusions for the owner's currently unpaid downloads:**
+- **Pine Druid Dungeon Tileset Mega Pack**: $0 download is non-commercial; paid commercial tier required. **Excluded permanently under the no-pay rule**; do not re-open payment eligibility unless the owner changes the rule.
+- **BDragon1727 750 Effect and FX Pixel**: commercial use requires a paid contribution. **Excluded permanently under the no-pay rule**.
+- **Caeora Deadly Dungeons Free**: free licence lacks video-game commercial rights. **Excluded**; use alternatives with explicit free commercial permission instead.
+- **Minifantasy Dungeon Free Edition**: non-commercial-only free tier. **Excluded**.
+- **Treasure+ and unresolved-source archives**: **not approved** until the exact free edition's commercial-game rights can be verified without payment. If not, exclude.
+
+**Free-commercial candidates retained:** Stealthix (CC0), 0x72 (CC0), Niji (CC0), Kenney (CC0), Spriteshift (CC0), KayKit CC0 material, ExiLove free pack (creator permission), JoseKolos free keys (creator permission), SnowHex free version (embedded permission), Pixel_Poem free-commercial graphics (not CC0), Indie_Vova free demo (not CC0), Super Pixel Objects free sample (creator licence/credit) and CraftPix freebies (commercial games permitted, non-CC0, no source-asset redistribution). Confirm individual version and redistribution terms before selection and do not substitute premium-only files.
+
+**Runtime safety remains essential:** free/legal is necessary but insufficient. Use only better-fitting artwork with proven character/prop role, scale, direction, animation states, colour coherence, honest credits, source hash, load fallback, and game-package compliance. No automatic wholesale replacement of an established better visual merely because another pack is free.
+
+This is a selection/permission review, NOT a representation that all supplied graphics are live.
+
+| Pack | Original source | Commercial-use decision | Visual judgement / integration |
+|---|---|---|---|
+| Stealthix Animated Traps | https://stealthix.itch.io/animated-traps | CC0; commercial allowed | First four spike-frame selections are activated via existing art-override slots, fallback remains. Other traps require matching gameplay semantics, not introduced by art alone. |
+| ExiLove Purple Fantasy Dungeon FREE | https://exilove.itch.io/ | ZIP README explicitly permits commercial use; no standalone asset-pack redistribution | Candidate purple biome environment only; tiles 16×16 but atlas wall perspective differs from existing room geometry; not currently wired. |
+| JoseKolos Pixel Art RPG Keys FREE | https://josekolos.itch.io/pixel-art-rpg-keys-pack-48-variants-free-premium | Creator permits commercial use of free 32×32 iron/gold keys; free ZIP contains two presentation sheets, no paid-only special keys. | Candidate for enlarged inventory/HUD icon use; existing 16×16 Niji floor key still better fitting at ground tile scale, so no regression-prone override yet. |
+| Spriteshift Purple Dungeon | https://spriteshift.itch.io/purple-dungeon-tileset | CC0 commercial allowed | Source URL reviewed; actual PurpleDungeon.zip not supplied, and ExiLove ZIP is a DIFFERENT pack. Do not claim sprites have been imported. |
+| CraftPix Free Dungeon Props | https://craftpix.net/file-licenses/ | Freebie commercial game use allowed; prohibit redistribution of source files | Retain for selective assessment; do not bulk-copy PNG/PSD/Tiled sources to public repo or itch package. |
+| BDragon1727 750 Effect and FX Pixel FREE | https://bdragon1727.itch.io/750-effect-and-fx-pixel-all | Commercial licence requires a contribution; owner confirmed no payment | **EXCLUDED** under the zero-cost rule; do not use or request payment. |
+| Caeora Deadly Dungeons Free | https://www.caeora.com/content-use | Creator's free rights do not grant commercial video-game use | Excluded absent separate explicit video-game permission. |
+| Pine Druid Dungeon Tileset Mega Pack | https://pine-druid.itch.io/dungeon-tileset-mega-pack | Free $0 version non-commercial only; commercial payment required; owner confirmed no payment | **EXCLUDED** under the zero-cost rule, including Tileset.png and Tileset.aseprite. |
+| 0x72 / Niji / Kenney / Pixel_Poem existing R118 | arcade/lost-sizzler/assets/THIRD-PARTY-ART-CREDITS.md | Existing project-verified permissions | Preserve currently active torches, chest/barrel/crate/column, key and coin art until stronger direct comparison passes. |
+
+Policy: no paid-only source, noncommercial pack, unverified licensing, source-only downloadable art bundle, gameplay rewrite, or unrelated site feature gets silently included. Compare each candidate at real 32 px in gameplay and HUD and keep existing image-load fallback; pixel scale, room perspective and role correctness decide replacements, not raw quantity.
+
+## Historical owner archives cross-check (7–8 October)
+
+The owner explicitly requests that **all** previous assets be reviewed for commercial eligibility AND whether they improve the current graphics. A legal right to use an image does not automatically mean it is a better or suitable gameplay sprite. These are the known uploaded source groups; this inventory is not proof of activation:
+
+| Uploaded pack or group | Licence evidence / restriction | Integration decision |
+| --- | --- | --- |
+| 0x72 16x16 DungeonTileset v5 and DungeonTileset II v1.7 | Creator CC0 | Partially integrated and credited in R118. Retain working torches, crate, column, doors/room art until a superior matched replacement passes. |
+| Niji DungeonTileset Extended v1.0/v1.1 | Creator CC0, verified original v1.1 | R118 gold key active. Distinguish from JoseKolos glossy 32×32 free icons. |
+| 2D Pixel Dungeon Asset Pack v2.0 (Pixel_Poem) | Creator commercial use, not CC0 | R118 rotating gold coins active; do not relabel as CC0. |
+| SnowHex Dungeon Gathering FREE .rar | Free-version internal licence confirms commercial | Eligible, not yet a proven improvement at floor/room scale; earlier R118 recorded held candidate. No full paid edition. |
+| KayKit Dungeon Pack 1.1 FREE (two uploads) | Creator CC0, commercial OK | Contains low-poly **3D FBX/GLTF/OBJ models**, while the current game is 2D Canvas pixel art. Do not insert raw 3D model source into browser sprites. Only revisit after separately authorised consistent sprite renders. |
+| Dungeons & Pixels Free Demo | Internal LICENSE.txt permits commercial games, disallows standalone asset repack | 32×32 animated torch/trap, chest, doors and blue/red potion candidates; existing torches and player render remain stronger/coherent in baseline, potential item icon/hazard improvement needs direct in-game check. The hero is front idle only; not a usable full hero replacement. |
+| Super Pixel Objects Sample | Embedded licence grants commercial use **with credit to Will Tice**; not an asset export tool licence | Candidate animated coins/gems, key, chest, potions. Current Pixel_Poem rotating coin already exists; do not downgrade or double load overlapping coin animations. |
+| Treasure+.zip | No licence file found in supplied ZIP | Hold until original creator/page commercial rights are established; cannot infer from ZIP name. |
+| CraftPix Free Pixel Dungeon Objects (multiple uploads) | CraftPix freebie commercial game licence, no raw asset redistribution | Candidate for a few role-correct props only. R118 already rejected this pack's wooden shelf as bookcase replacement. |
+| CraftPix free character/enemy series | CraftPix freebie permission subject to CraftPix terms | Uploaded swordsman, warrior, orc, base male, fantasy enemies, skeleton and slime sprite collections. Check animation layout, palette and source-role exactness before altering established authored enemies. No automatic wholesale switch. |
+| CraftPix free magic book / bridges / paths / top-down dungeon | CraftPix freebie permission subject to CraftPix terms | Candidate environment/item/FX only where semantics and perspective match. Never publish PSD source packs. |
+| Minifantasy Dungeon v2.3 FREE | Non-commercial free tier | Excluded from commercial release. |
+| Unidentified Dungeon tileset archive variants | Origin not substantiated in R118 for one uploaded ZIP | Held, do not assume all similarly named archives inherit 0x72 or another creator's licence. |
+| Basic asset pack.zip, mixed miscellaneous uploads | Not source/rights traced in this R134 scope | Hold pending source identification and compatible in-game quality. |
+
+Additional restrictions: CraftPix licence is not CC0; its prohibition on using its art to develop/test AI systems does not grant any special permission to redistribute individual asset sheets. Source rights and packaging must be checked **per pack**. Owner confirms no payment was made for any asset and forbids any paid asset licensing. Do not treat a free download from a pay-if-commercial listing as commercial permission; Pine Druid and BDragon are excluded rather than pending payment.
+
+### Visual acceptance order after R134 spike-frame candidate
+
+1. Retain the existing 15-floor tile/hero/enemy baseline from R128–R133. Sample 32×32 mockups from ExiLove, SnowHex, Dungeons & Pixels and CraftPix on floors that already have corresponding biomes; reject palette/perspective mismatches.
+2. Review in-world pickups separately from larger inventory/HUD sprites: JoseKolos's 32×32 keys and Dungeons & Pixels free 32×32 potion art may improve inventory while Niji 16×16 and the R85 healing artwork remain superior or more recognisable on the floor.
+3. Do not change combat behaviours to fit an art asset. Selective updates to wall/fire/shock hazard visuals require matching runtime kind and active/safe semantic states; no unqualified render rewrites while PR #2695 touches game-render.
+4. For every active addition: original creator page + archive fingerprint + sprite dimensions/frame slice + SHA256 + attribution obligations + image fallback + exact-head Chromium/Node visual+itch packaging acceptance before merge.
+
+### Current R134 checkpoint
+
+- Source candidate branch `codex/dungeon-r134-free-art-intake-20261012` from main `d3d73603468b5baca6044831be90d5dc0ead928d`.
+- Draft PR #2698. Stealthix CC0 spike states are imported as four active visual-only overrides; other newly supplied packs are held candidates or excluded as above.
+- R133 PR #2695 remains independent. No deployed/live acceptance, no main-branch merge, and no change to game mechanics is implied. Audio recovery is unrelated to and does not authorise payment for third-party artwork.
+
+### Added role-correct item art candidate
+
+The uploaded Indie_Vova/Dungeons & Pixels *free demo* includes two 32×32 potion icons. The existing `images.items.mana` mapped to the identical ammo icon; replacing only mana with the free-demo **blue mana flask** restores item semantic distinction without altering healing, ammo balance, item rewards or hitboxes. The existing health potion's green cross remains unchanged. Source-and-target fingerprints are in `assets/pixel/user-r134/PROVENANCE.md`. Source licence is commercial (not CC0); only the game-embedded optimised PNG is included.
+
+## 12 October continuation — baseline safety-contract repair
+
+- Reviewed draft #2698 canonical and fast GitHub Actions failure logs rather than accepting green candidate-only checks as a release gate.
+- First blocking guard: R118 asset contract enforced null for all spike overrides (appropriate for older unknown-rights sprites). Updated `v10-42-r118-user-assets.mjs` to permit **only** paths `user-r134/stealthix-spikes-0..3.png` with an explicit Stealthix CC0 licence record, four 32×32 PNGs, source URL, creator credit, and pinned SHA-256s. Unknown-rights sprite substitutions remain forbidden.
+- Second blocking guard: R85 sprite contract expected mana to reuse the ammunition SVG. Updated `v10-42-r85-object-sprites.mjs` to retain all original authored sprites but require the separately licensed Indie_Vova 32×32 blue potion with fingerprint and source record. No ammo/health artwork or runtime mechanics changed.
+- Third blocking guard: visual-overhaul foundation required null for all `spikeTrapFrame0..3` keys. Updated it to allow only exactly declared source-audited Stealthix paths, keep all other original null-by-default slots, and preserve renderer fallback coverage.
+- Reconciled branch against current main `e1984a3683da4eadb44a1d6425671377e48d39b5` via a non-conflicting Git merge commit `2edc37189e475315a9255845d7dbd4140520427a`. Main-only homepage/SEO/iPhone emulator changes were preserved; no branch files overlapped. Further main drift must be refreshed before review/merge.
+- Earlier runs confirmed successful source-integrity, image budgets, Windows/itch staging and Workers; Chromium shards were skipped because Node contracts failed. These are **historical check results only**, not claims that subsequent source commits passed.
+- Source candidate remains draft, never merged into main or deployed. It still requires current-head complete CI, all six Chromium shards with visual acceptance, packaging/site/cache checks, independent review, and owner approval before release.
+
+## R134 late independent visual-state review — 12 October 2026
+
+- The previous candidate head `062d1a1e4bac0b252f401e4cba9a1bca44e665b8` reached 18/18 passing GitHub checks on all six Chromium shards, Node, SEO, licence, packaging and image budgets. This **does not qualify any subsequent commit**.
+- Source sheet `Spike Trap.png` has fourteen 32×32 cells. Original frame 0 is fully retracted, frame 7 is partly emerging, frame 8 is fully extended, and frame 12 is partly retreating. The game's existing `drawTraps()` cycles `spikeTrapFrame1,2,3` for the *entire active/damaging phase*; it does not distinguish entering or leaving active state.
+- Found a visual safety regression in the prior candidate: frames 1/3 used source cells 7/12 (both partly extended) while the hazard remained damaging. To prevent falsely safe appearance, keep frame 0 retracted but use the **same fully extended source frame 8 in all three active slots**. This changes artwork only; collision/hazard timing/AI and `game-render.js` remain untouched. A later state-aware renderer could animate transition frames with actual trap state, but only after independent tests and R133 reconciliation.
+- Update PNG source hashes and R118/R134 binary contracts for the amended two active slots. The earlier 18/18 pass no longer authorises merge; all exact-head checks must be rerun for the new commit. Owner manual in-game appearance and release/cache version acceptance remain pending; branch/PR remains draft.

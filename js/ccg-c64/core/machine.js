@@ -164,13 +164,6 @@ class SIDProxy {
 
 export class C64Machine {
   constructor() {
-    if (typeof SharedArrayBuffer === 'undefined') {
-      throw new Error(
-        "SharedArrayBuffer is not available. This is required for SID audio. " +
-        "Ensure your server is sending COOP/COEP headers and you are using " +
-        "a secure context (http://localhost or https)."
-      );
-    }
     this.mem = new Memory();
     this._loadTrapPhase = 0;   // see _trapLoad: 0 = load, 1/2 = printing the KERNAL's messages
     this._loadTrapA = 0;       // $FFD5 call arguments, banked at phase 0 — see _trapLoad
@@ -436,9 +429,12 @@ export class C64Machine {
     // SharedArrayBuffer for SID audio worklet.
     //   sidCtrl[0] = writeIdx, [1] = readIdx, [2] = OSC3 (unused), [3] = ENV3 (unused).
     //   sidRing32  = ring entries starting at SHARED_HEADER_BYTES.
-    this.sidShared = new SharedArrayBuffer(SHARED_BUF_SIZE);
-    this.sidCtrl = new Int32Array(this.sidShared, 0, 4);
-    this.sidRing32 = new Uint32Array(this.sidShared, SHARED_HEADER_BYTES);
+    // A browser without cross-origin isolation can still run the C64; only
+    // the separate SID audio worklet requires shared memory.
+    const sharedSidAvailable = typeof SharedArrayBuffer !== 'undefined' && globalThis.crossOriginIsolated === true;
+    this.sidShared = sharedSidAvailable ? new SharedArrayBuffer(SHARED_BUF_SIZE) : null;
+    this.sidCtrl = this.sidShared ? new Int32Array(this.sidShared, 0, 4) : null;
+    this.sidRing32 = this.sidShared ? new Uint32Array(this.sidShared, SHARED_HEADER_BYTES) : null;
 
     // Shadow SID voices on the main thread. Same SIDVoice code the
     // worklet uses, clocked in lockstep with the CPU via _runMasterCycle.
@@ -1229,11 +1225,13 @@ export class C64Machine {
   // the main-thread shadow voices so $D41B/$D41C reads see the same
   // state the worklet will reach at the corresponding cycle.
   _sidWrite(reg, val, chipIndex = 0) {
-    const wi = Atomics.load(this.sidCtrl, 0);
-    const off = (wi & (RING_CAPACITY - 1)) * 2;
-    this.sidRing32[off] = this.sidCycleCounter >>> 0;
-    this.sidRing32[off + 1] = ((val & 0xFF) << 8) | (reg & 0x1F) | (chipIndex << 5) | (chipIndex ? this.sid2Generation << 16 : 0);
-    Atomics.store(this.sidCtrl, 0, (wi + 1) & 0x7FFFFFFF);
+    if (this.sidCtrl) {
+      const wi = Atomics.load(this.sidCtrl, 0);
+      const off = (wi & (RING_CAPACITY - 1)) * 2;
+      this.sidRing32[off] = this.sidCycleCounter >>> 0;
+      this.sidRing32[off + 1] = ((val & 0xFF) << 8) | (reg & 0x1F) | (chipIndex << 5) | (chipIndex ? this.sid2Generation << 16 : 0);
+      Atomics.store(this.sidCtrl, 0, (wi + 1) & 0x7FFFFFFF);
+    }
 
     // Mirror voice-register writes to the shadow voices. Filter / vol
     // registers ($D415-$D418) are audio-output-only; the shadow doesn't

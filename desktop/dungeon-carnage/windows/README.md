@@ -17,7 +17,7 @@ application archive. **ASAR is not encryption, licensing or DRM.** A buyer with
 technical knowledge can extract its contents; this build does not contain
 Supabase credentials, service-role tokens or entitlement systems.
 
-The app launches a read-only local server bound only to 127.0.0.1 on a random
+The app launches a read-only local server bound only to 127.0.0.1 on a fixed
 port, retaining root-relative game asset URLs. It supports byte-range requests for large
 MP3 and OGG voice sprites. External game network traffic is blocked by the
 Electron session. Allowed external links open in the user's browser only when
@@ -76,6 +76,23 @@ The Windows GitHub workflow also launches the **actual unpacked EXE** and
 verifies that it serves the game HTML, accepts OGG Range audio requests, and
 denies access to dotfiles. This is a technical startup smoke only, not a
 complete manual playthrough or verified original soundtrack test.
+
+## Owner update from Windows preview 0.119.0 to 0.124.0
+
+The Windows `0.124.0` version identifies an owner-only **desktop package snapshot** of merged Dungeon Carnage R124 fixes. The canonical browser game still identifies itself as `V10.42 r119`; this packaging update does not modify the website's public version token, live page, user accounts, or production release.
+
+This is a **full replacement installer, not an automatic patch**. No in-app auto-update is configured. Use the `C64-Dungeon-Carnage-Setup-0.124.0-x64.exe` artifact, not the portable EXE, to update an existing installed copy.
+
+Owner upgrade procedure (Windows x64):
+
+1. Close C64 Dungeon Carnage normally and wait for it to exit. Do not forcibly terminate the app during a save.
+2. Make a copy of the folder `%APPDATA%\\C64 Dungeon Carnage` to another location before installing. This contains the persistent Electron browser profile; localStorage/IndexedDB game data live here.
+3. Download the GitHub Actions **C64-Dungeon-Carnage-Windows-Preview** artifact generated from the exact qualified owner-preview commit. Keep the ZIP and its `SHA256SUMS.txt`.
+4. Run the **Setup** EXE and install to the same destination as 0.119.0. Do not uninstall the old version first, clear application data or choose the separate portable edition.
+5. Launch, check the application version is 0.124.0 in Windows Installed Apps, and verify a previously saved game is still accessible. Also test resume, normal Solo play, offline soundtrack, recorded speech and a clean exit/relaunch. If game saves are missing, stop and use the backup to recover rather than starting a new save.
+6. Test uninstall only after explicit owner approval, and only after confirming whether that uninstaller retains the saved profile. Automated smoke checks are not a substitute for this manual upgrade/playthrough.
+
+The Windows appId (`uk.co.cheekycommodoregamer.dungeoncarnage`), userData profile (`%APPDATA%\\C64 Dungeon Carnage`), stable localhost origin (`http://127.0.0.1:47731`) and save-on-close behaviour must remain unchanged across this upgrade. The NSIS Setup package is unsigned, preview-only and **not a public or paid release**. The original 16 MP3 recordings are still an independent release blocker.
 
 ## Original soundtrack recovery intake (prepared, not yet populated)
 

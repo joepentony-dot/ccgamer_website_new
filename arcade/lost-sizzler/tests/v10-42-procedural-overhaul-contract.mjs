@@ -18,6 +18,74 @@ const sandbox={window:{},console};
 vm.runInNewContext(configSource,sandbox,{filename:'config.js'});
 const config=sandbox.window.CCG_CONFIG;
 
+/*
+ * Engine-first configuration guard: reject invalid data before it can reach
+ * procedural placement, AI timing, combat balance, or campaign progression.
+ * Contract-only coverage; no runtime values or existing mechanics change.
+ */
+const positiveFinite=(value,label)=>assert(Number.isFinite(value)&&value>0,
+  `${label} must be a positive finite number.`);
+const naturalInteger=(value,label)=>assert(Number.isSafeInteger(value)&&value>=0,
+  `${label} must be a non-negative integer.`);
+
+naturalInteger(config.maxFloors,'Campaign floor count');
+positiveFinite(config.worldWidth,'World width');
+positiveFinite(config.worldHeight,'World height');
+naturalInteger(config.dungeon?.minLeaf,'Minimum BSP leaf');
+naturalInteger(config.dungeon?.maxLeaf,'Maximum BSP leaf');
+assert(config.dungeon.minLeaf>0&&config.dungeon.minLeaf<=config.dungeon.maxLeaf,
+  'BSP minimum leaf cannot exceed the maximum leaf.');
+naturalInteger(config.dungeon?.targetRooms,'Dungeon room target');
+naturalInteger(config.dungeon?.sanctuaryRooms,'Sanctuary target');
+assert(config.dungeon.sanctuaryRooms<config.dungeon.targetRooms,
+  'Sanctuary allocation must leave ordinary rooms available.');
+naturalInteger(config.player?.startingInventorySlots,'Starting inventory capacity');
+naturalInteger(config.player?.inventorySlots,'Maximum inventory capacity');
+assert(config.player.startingInventorySlots>=1&&
+  config.player.startingInventorySlots<=config.player.inventorySlots,
+  'Starting inventory must fit within the established maximum.');
+for(const key of ['moveDelay','fireDelay','dashDelay','emergencyRechargeMs']){
+  positiveFinite(config.player[key],`Player ${key}`);
+}
+for(const key of ['thinkDelay','lineOfSightRange','torchSightRange','searchTime']){
+  positiveFinite(config.enemy[key],`Enemy ${key}`);
+}
+for(const [kind,delay] of Object.entries(config.enemy.chaseStep||{})){
+  positiveFinite(delay,`Enemy chase cooldown ${kind}`);
+}
+for(const [kind,delay] of Object.entries(config.enemy.alertMemory||{})){
+  positiveFinite(delay,`Enemy detection memory ${kind}`);
+}
+assert(Array.isArray(config.levelCaps)&&config.levelCaps.length===config.maxFloors&&
+  config.levelCaps.every((cap,index)=>Number.isSafeInteger(cap)&&cap>0&&
+    (index===0||cap>config.levelCaps[index-1])),
+  'Campaign level caps must be positive, strictly increasing integers per floor.');
+
+const campaignProfiles=config.proceduralDungeon?.campaignFloors;
+assert(Array.isArray(campaignProfiles)&&campaignProfiles.length===config.maxFloors,
+  'Campaign requires exactly one floor profile per floor.');
+const recognisedThemes=new Set(config.roomThemes||[]);
+assert(campaignProfiles.every((profile,index)=>profile.floor===index+1&&
+  recognisedThemes.has(profile.theme)&&typeof profile.id==='string'&&profile.id.length>0),
+  'Every campaign profile needs a unique floor index and recognised renderer theme.');
+for(const profile of campaignProfiles){
+  for(const key of ['targetMinutes','hpScale','tempo','ammoTarget','stalkerDelayMs','deathStalkerSpeed']){
+    positiveFinite(profile[key],`Floor ${profile.floor} ${key}`);
+  }
+}
+for(const name of ['CASUAL','ARCADE','SIZZLER','GOLD MEDAL']){
+  const mode=config.difficulty?.[name];
+  assert(mode&&typeof mode==='object',`Missing ${name} difficulty profile.`);
+  for(const key of ['enemyHp','enemyDamage','enemyTempo','enemyPopulation','loot','ammo','stalker']){
+    positiveFinite(mode[key],`Difficulty ${name} ${key}`);
+  }
+  naturalInteger(mode.damageGraceMs,`Difficulty ${name} damage grace`);
+}
+for(const domain of config.proceduralDungeon.keyDomains||[]){
+  assert(campaignProfiles.some(profile=>profile.floor===domain.floor&&profile.domain===domain.id),
+    `Key domain ${domain.id} must be assigned to a matching campaign floor.`);
+}
+
 assert(config.maxFloors===15,'V10.42 must expose the full fifteen-floor campaign.');
 assert(config.worldWidth>=128&&config.worldHeight>=84,'Each V10.42 floor must remain a substantial procedural dungeon.');
 assert(config.dungeon?.targetRooms>=30,'Each campaign floor must target at least thirty generated rooms.');

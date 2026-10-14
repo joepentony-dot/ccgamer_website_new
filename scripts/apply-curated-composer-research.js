@@ -38,13 +38,6 @@ function htmlEscape(value) {
     .replace(/'/g, "&#39;");
 }
 
-function replaceMetaDescription(html, description) {
-  return html
-    .replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
-    .replace(/<meta\s+property="og:description"\s+content="[^"]*">/i, `<meta property="og:description" content="${htmlEscape(description)}">`)
-    .replace(/<meta\s+name="twitter:description"\s+content="[^"]*">/i, `<meta name="twitter:description" content="${htmlEscape(description)}">`);
-}
-
 function replaceProfileHost(html, markup) {
   const host = /<div\s+id="composer-content">[\s\S]*?<\/div>(?=\s*<div\s+class="ccg-composer-support">)/i;
   if (!host.test(html)) return null;
@@ -108,7 +101,7 @@ function main() {
 
     let next = replaceProfileHost(html, markup);
     if (!next) fail(`Could not locate composer-content on curated page: ${route.slug}`);
-    next = replaceMetaDescription(next, enrich.buildDescription(route, profile, titles));
+    next = enrich.replaceMetaDescription(next, enrich.buildDescription(route, profile, titles));
     next = injectEntitySchema(next, route, profile);
 
     if (next !== html) {

@@ -2095,7 +2095,7 @@
     "slug": "batman-the-movie",
     "title": "Batman: The Movie",
     "sorttitle": "Batman: The Movie",
-    "year": 1986,
+    "year": 1989,
     "genres": [
       "action-adventure"
     ],
@@ -2107,7 +2107,7 @@
     "thumbnail": "resources/images/thumbnails/all/batman_the_movie.jpg",
     "pdf": "https://drive.google.com/file/d/1qlDGqgLBr0TN7tAbWTkKB7DcwLFZUkud/view?usp=drive_link",
     "disk": [],
-    "description": "Batman: The Movie is a Commodore 64 action-adventure game released by Ocean in 1986. Inspired by the iconic film character rather than a specific movie plot, the game mixes side-scrolling action with puzzle elements. It became one of Ocean's most recognisable licensed releases.",
+    "description": "Batman: The Movie is Ocean Software's 1989 Commodore 64 adaptation of Tim Burton's Batman film. Its five stages mix platform action, Batmobile driving, puzzles and Batwing sequences.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -10351,41 +10351,6 @@
   },
   {
     "system": "C64",
-    "id": "the_happiest_days_of_your_life",
-    "slug": "the-happiest-days-of-your-life",
-    "title": "The Happiest Days Of Your Life",
-    "sorttitle": "Happiest Days Of Your Life",
-    "year": 1986,
-    "genres": [
-      "action-adventure"
-    ],
-    "collections": [],
-    "videoid": "ght7u1k_tqw",
-    "thumbnail": "resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
-    "pdf": "https://drive.google.com/file/d/1PJ6UBgjIcG8kM6DpOnXNTBRHwHLzGhmy/view?usp=drive_link",
-    "disk": [],
-    "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64. You control a schoolboy named G. McFat, wrongly accused of stealing the headmaster’s wallet, requiring them to explore a town/school to find the wallet and photographic evidence while dodging hazards",
-    "ccg_rating": 6,
-    "ccg_rating_reason": "Not exactly in the same realm of Skool Daze. An Everyones A Wally Clone at best",
-    "credits": {
-      "publisher": [
-        "Firebird"
-      ],
-      "producer": "",
-      "coder": [],
-      "graphics": [
-        "Delvin J. Sorrell"
-      ],
-      "musician": [],
-      "re_releaser": [],
-      "developer": ""
-    },
-    "developer": "",
-    "_ccg_enforced": false,
-    "_ccg_migrated": false
-  },
-  {
-    "system": "C64",
     "id": "hawkeye",
     "slug": "hawkeye",
     "title": "Hawkeye",
@@ -16527,6 +16492,48 @@
       "coder": [],
       "graphics": [],
       "musician": [],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
+    "id": "olli_and_lissa",
+    "slug": "olli-and-lissa",
+    "title": "Olli & Lissa",
+    "sorttitle": "Olli & Lissa",
+    "year": 1987,
+    "genres": [
+      "platform"
+    ],
+    "collections": [],
+    "videoid": "iSBLT9C9xh4",
+    "thumbnail": "resources/images/thumbnails/all/olli-and-lissa.webp",
+    "pdf": "https://drive.google.com/file/d/1PTBEdMdlwefFeoahP-0hihgzzZ3u9vfU/view?usp=drivesdk",
+    "disk": [],
+    "download_status": "",
+    "lemon": [
+      "https://www.lemon64.com/game/olli-and-lissa"
+    ],
+    "zzap": [],
+    "description": "Olli & Lissa: The Ghost of Shilmoore Castle is a single-player Commodore 64 platform game published by Firebird in 1987. Paul Johnson converted the game for the C64, Ben Daglish composed the music, and Stephen Robertson is credited with the title screen. The story sends Olli through a haunted Scottish castle to collect eight ingredients for a potion that will restore Sir Humphrey's invisibility and frighten away the millionaire planning to ship the castle to America. Olli must retrieve each ingredient from the castle grounds and bring it back to Lissa's cauldron before time runs out. Ghosts, bats, spiders and other enemies patrol the flick-screen rooms, while narrow platforms and unforgiving jumps demand exact positioning. Olli cannot change direction mid-jump, and every outward journey must be repeated in reverse. The colourful cartoon presentation and unusual story have charm, but unreliable jumping makes progress frustrating. Critics disagreed, with Zzap!64 rating it 50% and Computer & Video Games awarding 9/10.",
+    "ccg_rating": 5,
+    "ccg_rating_reason": "Charming characters and a good haunted-castle premise, but the unforgiving fixed jumps, lack of mid-air control and repeated return journeys make this far more frustrating than enjoyable.",
+    "credits": {
+      "publisher": [
+        "Firebird"
+      ],
+      "producer": "",
+      "coder": [
+        "Paul Johnson"
+      ],
+      "graphics": [],
+      "musician": [
+        "Ben Daglish"
+      ],
       "re_releaser": [],
       "developer": ""
     },

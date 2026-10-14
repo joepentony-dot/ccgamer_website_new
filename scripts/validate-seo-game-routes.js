@@ -93,6 +93,23 @@ function expect(condition, message, errors) {
   if (!condition) errors.push(message);
 }
 
+// Validate game-page search and social summaries after all publishing layers.
+function validateGameSnippetMetadata(html, rel, errors) {
+  function fromTag(pattern) {
+    const tag = html.match(pattern)?.[0] || "";
+    const raw = tag.match(/\bcontent=(["'])([\s\S]*?)\1/i)?.[2] || "";
+    return decodeHtmlEntities(raw).trim();
+  }
+  const description = fromTag(/<meta\b[^>]*\bname=["']description["'][^>]*>/i);
+  const og = fromTag(/<meta\b[^>]*\bproperty=["']og:description["'][^>]*>/i);
+  const twitter = fromTag(/<meta\b[^>]*\bname=["']twitter:description["'][^>]*>/i);
+  if (!description) return;
+  expect(!/(?:…|\.\.\.)$/.test(description), `${rel}: published meta description ends in a cut-off ellipsis.`, errors);
+  expect(/[.!?][”"']?$/.test(description), `${rel}: published meta description must end with a complete sentence.`, errors);
+  expect(og === description, `${rel}: Open Graph description differs from Google description.`, errors);
+  expect(twitter === description, `${rel}: Twitter description differs from Google description.`, errors);
+}
+
 function validateCanonicalPage(root, game, sitemapLocs, errors) {
   const slug = String(game?.slug || "").trim();
   const title = String(game?.title || "").trim();
@@ -120,6 +137,7 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   expect(pageTitle.length > 0, `${rel}: title is missing.`, errors);
   expect(descriptionText.length > 0, `${rel}: meta description is missing.`, errors);
   expect(descriptionText.length <= 160, `${rel}: decoded meta description exceeds 160 characters.`, errors);
+  validateGameSnippetMetadata(html, rel, errors);
   expect(heroTitle.length > 0, `${rel}: static H1 is missing.`, errors);
   expect(hasCanonicalReadyBody(html), `${rel}: canonical page is not server-visible on first load (missing ccg-single-ready body class).`, errors);
   expect(hasPrefilledGameMarker(html), `${rel}: canonical page is missing the prefilled-content marker.`, errors);
@@ -260,4 +278,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run };
+module.exports = { run, validateGameSnippetMetadata };

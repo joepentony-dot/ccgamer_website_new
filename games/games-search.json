@@ -977,7 +977,7 @@
       "Matthew Cannon"
     ],
     "music": [],
-    "year": 1986
+    "year": 1989
   },
   {
     "title": "Battle Chess",
@@ -4799,22 +4799,6 @@
     "year": 1984
   },
   {
-    "title": "The Happiest Days Of Your Life",
-    "slug": "the-happiest-days-of-your-life",
-    "publisher": [
-      "Firebird"
-    ],
-    "genre": [
-      "action-adventure"
-    ],
-    "genres": [
-      "action-adventure"
-    ],
-    "composer": [],
-    "music": [],
-    "year": 1986
-  },
-  {
     "title": "Hawkeye",
     "slug": "hawkeye",
     "publisher": [
@@ -7670,6 +7654,24 @@
     "composer": [],
     "music": [],
     "year": 1989
+  },
+  {
+    "title": "Olli & Lissa",
+    "slug": "olli-and-lissa",
+    "publisher": [
+      "Firebird"
+    ],
+    "genre": [
+      "platform"
+    ],
+    "genres": [
+      "platform"
+    ],
+    "composer": [
+      "Ben Daglish"
+    ],
+    "music": [],
+    "year": 1987
   },
   {
     "title": "Ollie's Follies",

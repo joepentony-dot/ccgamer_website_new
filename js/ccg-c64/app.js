@@ -1,21 +1,50 @@
 import { ROMVault, ROM_SPEC, REQUIRED_ROM_KEYS, pickRomFiles } from "./rom-vault.js";
-import { C64Machine } from "./core/machine.js";
+import { HOSTED_ROM_VERSION, fetchVerifiedHostedROMs, installHostedROMs } from "./hosted-roms.js";
+import { C64Machine } from "./core/machine.js?ccg_rev=20261011_ios_silent_fallback_v1";
 import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
-import { GameVault } from "./game-vault.js";
+import { GameVault, encodeGameVaultBackup, decodeGameVaultBackup } from "./game-vault.js";
+import { mountCatalogueBrowser } from "./catalogue-browser.js";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
-import { PACK_ROOT, PACK_CATALOG_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes } from "./game-catalog.js";
+import {
+  PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
+  ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
+  parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
+  preferSelectedCartridges,
+} from "./game-catalog.js";
 
-const vault = new ROMVault();
+// Safari privacy settings can deny localStorage, even though the page and
+// emulator engine are otherwise usable. Preserve normal persistent storage
+// wherever available; use session-only memory if reads/writes are blocked.
+const localStorage = (() => {
+  try {
+    const store = window.localStorage;
+    const probe = "__ccg_c64_storage_probe__";
+    store.setItem(probe, "1");
+    store.removeItem(probe);
+    return store;
+  } catch {
+    const cache = new Map();
+    return {
+      getItem(key) { return cache.has(String(key)) ? cache.get(String(key)) : null; },
+      setItem(key, value) { cache.set(String(key), String(value)); },
+      removeItem(key) { cache.delete(String(key)); },
+    };
+  }
+})();
+const vault = new ROMVault(localStorage);
 const gameVault = new GameVault();
 const setup = document.querySelector("[data-rom-setup]");
 const finishSetup = document.querySelector("[data-finish-setup]");
 const romSummary = document.querySelector("[data-rom-summary]");
 const romSetInput = document.getElementById("ccg-rom-set");
 const romSetMessage = document.querySelector("[data-rom-set-message]");
+const romExportButton = document.querySelector("[data-rom-export]");
+const romImportInput = document.querySelector("[data-rom-import]");
+const romTransferStatus = document.querySelector("[data-rom-transfer-status]");
 const closeSetupButton = document.querySelector("[data-close-setup]");
 const loadAnyMediaButton = document.querySelector("[data-load-any-media]");
 const anyMediaInput = document.getElementById("ccg-c64-any-media-input");
@@ -45,13 +74,11 @@ statusCanvas.width = screen?.width || 384;
 statusCanvas.height = screen?.height || 272;
 const statusCtx = statusCanvas.getContext("2d");
 const fullscreenButton = document.querySelector("[data-fullscreen]");
-const mobileFullscreenButton = document.querySelector("[data-mobile-fullscreen]");
-const mobileFullscreenExit = document.querySelector("[data-mobile-fullscreen-exit]");
-const mobileGameConsole = document.querySelector(".ccg-c64-console");
 const powerButton = document.querySelector("[data-machine-power]");
 const resetButton = document.querySelector("[data-machine-reset]");
 const pauseButton = document.querySelector("[data-machine-pause]");
 const warpLoadButton = document.querySelector("[data-warp-load]");
+const mobileWarpLoadButton = document.querySelector("[data-mobile-warp-load]");
 const loadMediaButton = document.querySelector("[data-load-media]");
 const prgInput = document.getElementById("ccg-c64-prg-input");
 const loadDiskButton = document.querySelector("[data-load-disk]");
@@ -70,14 +97,24 @@ const loadCartridgeButton = document.querySelector("[data-load-cartridge]");
 const cartridgeInput = document.getElementById("ccg-c64-cartridge-input");
 const cartridgeSlotStatus = document.querySelector("[data-cartridge-slot-status]");
 const ejectCartridgeButton = document.querySelector("[data-eject-cartridge]");
+const vaultGameSelect = document.querySelector("[data-vault-game]");
+const vaultExportButton = document.querySelector("[data-vault-export]");
+const vaultImportButton = document.querySelector("[data-vault-import]");
+const vaultBackupInput = document.querySelector("[data-vault-backup-input]");
 const vaultSlot = document.querySelector("[data-vault-slot]");
 const vaultSaveButton = document.querySelector("[data-vault-save]");
 const vaultLoadButton = document.querySelector("[data-vault-load]");
 const vaultClearButton = document.querySelector("[data-vault-clear]");
 const vaultStatus = document.querySelector("[data-vault-status]");
+const vaultStorageNotice = document.querySelector("[data-vault-storage-notice]");
+const vaultRetryButton = document.querySelector("[data-vault-retry]");
+const vaultFeedback = document.querySelector("[data-vault-feedback]");
+const warpHint = document.querySelector("[data-warp-hint]");
+const playHelp = document.querySelector("[data-play-help]");
 const stageNote = document.querySelector("[data-stage-note]");
 const inputStatus = document.querySelector("[data-input-status]");
 const joystickSwapButton = document.querySelector("[data-joystick-swap]");
+const mobileJoystickSwapButton = document.querySelector("[data-mobile-joystick-swap]");
 const keyboardJoystickButton = document.querySelector("[data-keyboard-joystick]");
 const joystickPortIndicator = document.querySelector("[data-joystick-port]");
 const emulatorSpeedStatus = document.querySelector("[data-emulator-speed]");
@@ -89,34 +126,312 @@ const screenStage = document.querySelector(".ccg-c64-screen-stage");
 const screenBezel = document.querySelector(".ccg-c64-screen-bezel");
 const workspace = document.querySelector(".ccg-c64-workspace");
 
-// Move the existing library immediately under the C64 display on phones.
-// Its original DOM position and listeners remain intact for desktop.
-const libraryDesktopPosition = document.createComment("CCG desktop game library position");
-if (onlineLibraryPanel?.parentNode) {
-  onlineLibraryPanel.parentNode.insertBefore(libraryDesktopPosition, onlineLibraryPanel);
+/* Mobile/tablet gameplay: a viewport-filling console, with the screen above
+   uninterrupted touch controls. Desktop pointer/fine layouts never enter. */
+const mobilePlayConsole = document.querySelector(".ccg-c64-console");
+const mobilePlaybar = document.querySelector("[data-mobile-playbar]");
+const mobileGameActions = document.querySelector("[data-mobile-game-actions]");
+const mobilePauseButton = document.querySelector("[data-mobile-pause]");
+const mobileSaveStateButton = document.querySelector("[data-mobile-save-state]");
+const mobileLoadStateButton = document.querySelector("[data-mobile-load-state]");
+const mobileCrtButton = document.querySelector("[data-mobile-crt-mode]");
+const mobileVaultPanel = document.querySelector("[data-mobile-vault-panel]");
+const mobileVaultTitle = document.querySelector("[data-mobile-vault-title]");
+const mobileVaultHelp = document.querySelector("[data-mobile-vault-help]");
+const mobileVaultSlots = document.querySelector("[data-mobile-vault-slots]");
+const mobileVaultMessage = document.querySelector("[data-mobile-vault-message]");
+const mobileVaultClose = document.querySelector("[data-mobile-vault-close]");
+let mobileVaultAutoPaused = false;
+let mobileVaultRequestId = 0;
+const mobileExitButton = document.querySelector("[data-mobile-exit-game]");
+const mobilePlayTitle = document.querySelector("[data-mobile-play-title]");
+const mobileZoomButton = document.querySelector("[data-mobile-zoom-toggle]");
+const MOBILE_ZOOM_STORAGE_KEY = "ccg.emulator.c64.mobileZoom.v1";
+let mobileZoomEnabled = (() => {
+  try { return localStorage.getItem(MOBILE_ZOOM_STORAGE_KEY) === "1"; }
+  catch { return false; }
+})();
+const mobileKeyboardToggle = document.querySelector("[data-mobile-keyboard-toggle]");
+const mobileKeyboardClose = document.querySelector("[data-mobile-keyboard-close]");
+const mobileKeyboardPanel = document.querySelector("[id='ccg-c64-mobile-keyboard']");
+const mobileKeyboardKeys = document.querySelector("[data-mobile-keyboard-keys]");
+const mobilePlayMedia = window.matchMedia?.("(pointer: coarse)");
+
+// Mobile-only safety net for Safari's long-press callout and Android's
+// text-selection menu on buttons. Never suppress text selection in the
+// search field, actual inputs, dropdowns, or ordinary page content.
+// Capture handlers do not alter pointerdown/up, click or touch gestures.
+// BEGIN C64 MOBILE BUTTON SELECTION GUARD
+if (mobilePlayMedia?.matches) {
+  const suppressMobileControlSelection = (event) => {
+    const element = event.target?.nodeType === 1
+      ? event.target : event.target?.parentElement;
+    const control = element?.closest?.("button, summary");
+    if (control?.closest?.("body.ccg-c64-lab-body")) event.preventDefault();
+  };
+  document.addEventListener?.("selectstart", suppressMobileControlSelection, true);
+  document.addEventListener?.("contextmenu", suppressMobileControlSelection, true);
 }
-const mobileLibraryViewport = window.matchMedia(
+// END C64 MOBILE BUTTON SELECTION GUARD
+
+let mobilePlayActive = false;
+const mobileVirtualHeld = new Map();
+const MIN_MOBILE_KEY_MS = 105;
+
+const mobileKeyRows = [
+  [["RESTORE", "F12"], ["F1", "F1"], ["F3", "F3"], ["F5", "F5"],
+    ["F7", "F7"], ["RUN/STOP", "F9"], ["CLR/HOME", "F11"]],
+  [["F2", "F2"], ["F4", "F4"], ["F6", "F6"], ["F8", "F8"]],
+  [["1", "Digit1"], ["2", "Digit2"], ["3", "Digit3"], ["4", "Digit4"],
+    ["5", "Digit5"], ["6", "Digit6"], ["7", "Digit7"], ["8", "Digit8"],
+    ["9", "Digit9"], ["0", "Digit0"], ["DEL", "Backspace"]],
+  [..."QWERTYUIOP".split("").map(k => [k, "Key" + k]),
+    ["@", "@"], ["+", "+"]],
+  [..."ASDFGHJKL".split("").map(k => [k, "Key" + k]),
+    [":", ":"], [";", ";"], ["RETURN", "Enter"]],
+  [["SHIFT", "ShiftLeft"], ..."ZXCVBNM".split("").map(k => [k, "Key" + k]),
+    [",", ","], [".", "."], ["/", "/"], ["SHIFT", "ShiftRight"]],
+  [["CTRL", "ControlLeft"], ["C=", "F10"], ["-", "-"], ["*", "*"],
+    ["SPACE", "Space"], ["LEFT", "ArrowLeft"], ["UP", "ArrowUp"],
+    ["DOWN", "ArrowDown"], ["RIGHT", "ArrowRight"]]
+];
+
+function mobileVirtualBinding(code) {
+  if (code === "F12") return { restore: true };
+  const shiftedFn = { F2: "F1", F4: "F3", F6: "F5", F8: "F7" }[code];
+  if (shiftedFn) {
+    const key = KEY_MAP[shiftedFn];
+    return key ? { col: key[0], row: key[1], shift: true } : null;
+  }
+  if (code === "ArrowLeft") return { col: 0, row: 2, shift: true };
+  if (code === "ArrowUp") return { col: 0, row: 7, shift: true };
+  const physical = KEY_MAP[code];
+  if (physical) return { col: physical[0], row: physical[1], shift: false };
+  const character = CHAR_MAP[code];
+  if (character) return { col: character.col, row: character.row, shift: character.shift };
+  return null;
+}
+
+function syncMobileMatrixBit(col, row) {
+  if (!machine) return;
+  const held = [...mobileVirtualHeld.values()].some(k =>
+    (k.col === col && k.row === row) || (col === 1 && row === 7 && k.shift)) ||
+    [...heldMatrixKeys.values()].some(k => k.col === col && k.row === row) ||
+    [...touchFunctionKeyHolds.values()].some(k => k.col === col && k.row === row) ||
+    (col === 1 && row === 7 && shiftLeftPhysical) ||
+    (col === 6 && row === 4 && shiftRightPhysical);
+  machine.cia1.setKey(col, row, held);
+}
+
+function releaseMobileVirtualKeys() {
+  if (!mobileVirtualHeld.size) return;
+  const released = [...mobileVirtualHeld.values()];
+  for (const held of released) if (held.timer) clearTimeout(held.timer);
+  mobileVirtualHeld.clear();
+  if (machine) {
+    for (const held of released) {
+      if (held.restore) machine.setRestoreNmiLine(false);
+      else syncMobileMatrixBit(held.col, held.row);
+    }
+    syncMobileMatrixBit(1, 7);
+  }
+  for (const button of mobileKeyboardKeys?.querySelectorAll("button.is-pressed") || []) {
+    button.classList.remove("is-pressed");
+  }
+}
+
+function setMobileKeyboardOpen(open) {
+  const active = Boolean(open && mobilePlayActive);
+  if (!active) releaseMobileVirtualKeys();
+  if (mobileKeyboardPanel) mobileKeyboardPanel.hidden = !active;
+  mobileKeyboardToggle?.setAttribute("aria-expanded", String(active));
+  mobileKeyboardToggle?.setAttribute("aria-pressed", String(active));
+  if (mobileKeyboardToggle) mobileKeyboardToggle.textContent = active ? "HIDE KEYS" : "KEYBOARD";
+}
+
+function syncMobileZoom() {
+  // Optical zoom only: the actual 384×272 PAL canvas and input matrix
+  // stay untouched. The existing bezel clips the outer C64 border.
+  const zooming = Boolean(mobilePlayActive && mobilePlayMedia?.matches && mobileZoomEnabled);
+  mobilePlayConsole?.classList.toggle("is-mobile-zoomed", zooming);
+  mobileZoomButton?.setAttribute("aria-pressed", String(zooming));
+  mobileZoomButton?.setAttribute("aria-label", zooming
+    ? "Disable mobile game zoom"
+    : "Enable mobile game zoom");
+  if (mobileZoomButton) mobileZoomButton.textContent = zooming ? "ZOOM: ON" : "ZOOM: OFF";
+}
+
+function toggleMobileZoom() {
+  if (!mobilePlayActive || !mobilePlayMedia?.matches) return;
+  mobileZoomEnabled = !mobileZoomEnabled;
+  try { localStorage.setItem(MOBILE_ZOOM_STORAGE_KEY, mobileZoomEnabled ? "1" : "0"); }
+  catch { /* Storage can be restricted in private browsing. */ }
+  syncMobileZoom();
+}
+
+function setMobilePlaying(active, label = "") {
+  const enabled = Boolean(active && mobilePlayMedia?.matches && mobilePlayConsole);
+  // Leaving the mobile library search focused can leave iOS/Android in a
+  // scrolled, keyboard-height visual viewport just as fixed gameplay starts.
+  // Blur only native form inputs; the screen itself is focused without scroll.
+  if (enabled) {
+    const focused = document.activeElement;
+    if (/^(INPUT|TEXTAREA|SELECT)$/i.test(focused?.tagName || "")) focused.blur?.();
+  }
+  if (!enabled && mobileVaultPanel && !mobileVaultPanel.hidden) closeMobileVaultPanel();
+  mobilePlayActive = enabled;
+  // In the immersive mobile view FIRE and UP-to-jump must always be available,
+  // regardless of an older per-game toggle preference.
+  if (typeof configureJump === "function") configureJump(currentJumpGameId);
+  mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
+  document.body?.classList.toggle("is-mobile-playing", enabled);
+  if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
+  if (mobileGameActions) mobileGameActions.hidden = !enabled;
+  if (enabled && typeof setControlState === "function" && typeof vault !== "undefined") {
+    setControlState(vault.snapshot());
+  }
+  if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
+  syncMobileZoom();
+  if (!enabled) setMobileKeyboardOpen(false);
+  requestAnimationFrame(() => {
+    if (enabled && mobilePlayActive) {
+      // The fixed console occupies the visual game viewport at the top.
+      // Reset any earlier search-results scroll before measuring FIT, without
+      // smooth scrolling or focusing the canvas into an arbitrary position.
+      window.scrollTo?.({ top: 0, left: 0, behavior: "instant" });
+      screen?.focus?.({ preventScroll: true });
+    }
+    fitScreenToStage();
+  });
+}
+
+function enterMobilePlayMode(name = "") {
+  setMobilePlaying(true, name);
+}
+
+function exitMobilePlayMode() {
+  setMobilePlaying(false);
+  if (document.fullscreenElement && document.exitFullscreen) {
+    void document.exitFullscreen().catch(() => {});
+  }
+  // EXIT GAME stops the current game, but leaves downloaded catalogue, firmware
+  // and saved vault slots intact for the next LOAD.
+  if (running) powerOff();
+  window.scrollTo?.({ top: 0, behavior: "instant" });
+}
+
+mobileExitButton?.addEventListener("click", exitMobilePlayMode);
+mobileZoomButton?.addEventListener("click", toggleMobileZoom);
+syncMobileZoom();
+mobileKeyboardToggle?.addEventListener("click", () =>
+  setMobileKeyboardOpen(Boolean(mobileKeyboardPanel?.hidden)));
+mobileKeyboardClose?.addEventListener("click", () => setMobileKeyboardOpen(false));
+mobilePlayMedia?.addEventListener?.("change", () => {
+  if (!mobilePlayMedia.matches && mobilePlayActive) setMobilePlaying(false);
+});
+
+// Use the real CIA keyboard matrix, including SHIFT and RESTORE. Button presses
+// never synthesise DOM KeyboardEvents, so Android/iOS keyboards cannot interrupt
+// the joystick; pointer capture supports simultaneous multi-touch keys.
+if (mobileKeyboardKeys) {
+  for (const rowKeys of mobileKeyRows) {
+    const row = document.createElement("div");
+    row.className = "ccg-c64-mobile-keyboard-row";
+    for (const [label, code] of rowKeys) {
+      if (!mobileVirtualBinding(code)) continue;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = label;
+      button.setAttribute("data-c64-vkey", code);
+      button.setAttribute("aria-label", "C64 " + label);
+      row.appendChild(button);
+      const release = (event, force = false) => {
+        event?.preventDefault?.();
+        const held = mobileVirtualHeld.get(button);
+        if (!held || (!force && event?.pointerId != null && event.pointerId !== held.pointerId)) return;
+        const remaining = MIN_MOBILE_KEY_MS - (performance.now() - held.started);
+        if (!force && remaining > 0) {
+          if (!held.timer) held.timer = setTimeout(() => release(null, true), remaining);
+          return;
+        }
+        if (held.timer) clearTimeout(held.timer);
+        mobileVirtualHeld.delete(button);
+        button.classList.remove("is-pressed");
+        if (!machine) return;
+        if (held.restore) machine.setRestoreNmiLine(false);
+        else {
+          syncMobileMatrixBit(held.col, held.row);
+          if (held.shift) syncMobileMatrixBit(1, 7);
+        }
+      };
+      button.addEventListener("pointerdown", event => {
+        event.preventDefault();
+        if (!mobilePlayActive || !running || !machine || paused ||
+            setup?.hidden === false || mobileVirtualHeld.has(button)) return;
+        const binding = mobileVirtualBinding(code);
+        const held = { ...binding, started: performance.now(), pointerId: event.pointerId, timer: null };
+        mobileVirtualHeld.set(button, held);
+        pollGamepad();
+        if (held.restore) machine.setRestoreNmiLine(true);
+        else {
+          if (held.shift) syncMobileMatrixBit(1, 7);
+          machine.cia1.setKey(held.col, held.row, true);
+        }
+        button.classList.add("is-pressed");
+        try { button.setPointerCapture?.(event.pointerId); } catch {}
+      });
+      for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
+        button.addEventListener(type, event => release(event));
+      }
+      button.addEventListener("contextmenu", event => event.preventDefault());
+    }
+    mobileKeyboardKeys.appendChild(row);
+  }
+}
+
+
+// The same searchable game library belongs immediately below the C64 display
+// on phones. Keep its original position and all existing listeners on desktop.
+const libraryDesktopAnchor = document.createComment("Desktop C64 game library");
+if (onlineLibraryPanel?.parentNode) {
+  onlineLibraryPanel.parentNode.insertBefore(libraryDesktopAnchor, onlineLibraryPanel);
+}
+const phoneLibraryLayout = window.matchMedia(
   "(max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px)"
 );
-function positionMobileGameLibrary() {
-  if (!onlineLibraryPanel || !screenStage || !controlsDeck) return;
+function arrangePhoneLibrary() {
+  if (!screenStage || !onlineLibraryPanel || !controlsDeck) return;
   const consolePanel = screenStage.closest(".ccg-c64-console");
-  if (mobileLibraryViewport.matches && consolePanel) {
+  if (phoneLibraryLayout.matches && consolePanel) {
     if (onlineLibraryPanel.parentNode !== consolePanel) {
       screenStage.insertAdjacentElement("afterend", onlineLibraryPanel);
     }
-  } else if (libraryDesktopPosition.parentNode && onlineLibraryPanel.parentNode !== controlsDeck) {
-    libraryDesktopPosition.parentNode.insertBefore(onlineLibraryPanel, libraryDesktopPosition.nextSibling);
+  } else if (libraryDesktopAnchor.parentNode &&
+             onlineLibraryPanel.parentNode !== controlsDeck) {
+    libraryDesktopAnchor.parentNode.insertBefore(
+      onlineLibraryPanel, libraryDesktopAnchor.nextSibling
+    );
   }
 }
-positionMobileGameLibrary();
-mobileLibraryViewport.addEventListener("change", positionMobileGameLibrary);
+arrangePhoneLibrary();
+// Safari versions before MediaQueryList.addEventListener need addListener.
+if (typeof phoneLibraryLayout.addEventListener === "function") {
+  phoneLibraryLayout.addEventListener("change", arrangePhoneLibrary);
+} else if (typeof phoneLibraryLayout.addListener === "function") {
+  phoneLibraryLayout.addListener(arrangePhoneLibrary);
+}
 
 const PAL_FRAME_MS = 1000 / 50.125;
 // Turbo uses all emulation time available in each animation tick, rather than a fixed 4x cap.
 // Keep a little time for rendering, real keyboard events and browser accessibility.
 const WARP_FRAME_BUDGET_MS = 12;
 const WARP_MAX_FRAMES_PER_TICK = 1024;
+// After RUN the first loader may still have stages to fetch. Do not mistake
+// "RUN typed" for "game ready". These are emulated PAL frames, not wall time.
+const AUTO_WARP_POST_RUN_MIN_FRAMES = 300;   // observe six seconds after RUN
+const AUTO_WARP_POST_RUN_QUIET_FRAMES = 125; // finish only after 2.5 quiet seconds
+const AUTO_WARP_POST_RUN_MAX_FRAMES = 12000; // four-minute safety cap
+
 let machine = null;
 let running = false;
 let paused = false;
@@ -138,10 +453,14 @@ let activeLibraryEntryId = null;
 let activeLibraryDiskIndex = 0;
 let mountedTape = null;
 let mountedCartridge = null;
+let currentSessionGame = { gameKey: "session:basic", gameTitle: "C64 BASIC" };
+let vaultStatusVersion = 0;
+let knownVaultGames = [];
+let knownLegacySlots = [];
+let vaultListingVersion = 0;
 let joystickPort = localStorage.getItem("ccg.emulator.c64.joystickPort") === "1" ? 1 : 2;
 let keyboardJoystickEnabled = localStorage.getItem("ccg.emulator.c64.keyboardJoystick") === "1";
 const keyboardJoystickKeys = new Set();
-let keyboardPriorityUntil = 0;
 const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
   ArrowUp: 1, KeyW: 1, ArrowDown: 2, KeyS: 2,
   ArrowLeft: 4, KeyA: 4, ArrowRight: 8, KeyD: 8,
@@ -150,7 +469,63 @@ const KEYBOARD_JOYSTICK_MASKS = Object.freeze({
 let gamepadJoyByte = 0xFF;
 let touchJoyByte = 0xFF;
 let touchHeldMask = 0;
+const touchHeldButtons = new Map();
+const jumpToggle = document.querySelector("[data-jump-toggle]");
+const jumpButton = document.querySelector(".ccg-c64-touch-jump");
+const actionDeck = document.querySelector(".ccg-c64-touch-actions");
+const JUMP_PREF_KEY = "ccg.emulator.c64.jumpProfiles.v1";
+// Add entries only when UP-to-jump has been verified for that exact game.
+const VERIFIED_JUMP_UP_GAMES = Object.freeze({});
+let currentJumpGameId = null;
+let jumpEnabled = false;
+function readJumpPreferences() {
+  try {
+    const result = JSON.parse(localStorage.getItem(JUMP_PREF_KEY) || "{}");
+    return result && typeof result === "object" && !Array.isArray(result) ? result : {};
+  } catch { return {}; }
+}
+function syncTouchJoystick() {
+  touchHeldMask = 0;
+  for (const value of touchHeldButtons.values()) touchHeldMask |= value.mask;
+  touchJoyByte = 0xFF & ~touchHeldMask;
+  // Re-sample physical gamepad alongside each touch edge, not one RAF later.
+  pollGamepad();
+  applyJoystickInput();
+}
+function configureJump(gameId) {
+  currentJumpGameId = gameId || null;
+  const saved = readJumpPreferences();
+  jumpEnabled = Boolean(mobilePlayActive && mobilePlayMedia?.matches) ||
+    (currentJumpGameId && typeof saved[currentJumpGameId] === "boolean"
+      ? saved[currentJumpGameId] : VERIFIED_JUMP_UP_GAMES[currentJumpGameId] === true);
+  if (!jumpEnabled && jumpButton) {
+    touchHeldButtons.delete(jumpButton);
+    syncTouchJoystick();
+  }
+  if (jumpButton) jumpButton.hidden = !jumpEnabled;
+  actionDeck?.classList.toggle("has-jump", jumpEnabled);
+  if (jumpToggle) {
+    jumpToggle.textContent = `JUMP: ${jumpEnabled ? "ON" : "OFF"}`;
+    jumpToggle.setAttribute("aria-pressed", String(jumpEnabled));
+  }
+}
+jumpToggle?.addEventListener("click", () => {
+  const next = !jumpEnabled;
+  if (currentJumpGameId) {
+    const saved = readJumpPreferences();
+    saved[currentJumpGameId] = next;
+    try { localStorage.setItem(JUMP_PREF_KEY, JSON.stringify(saved)); } catch {}
+  }
+  if (!currentJumpGameId) {
+    jumpEnabled = next;
+    if (!next && jumpButton) { touchHeldButtons.delete(jumpButton); syncTouchJoystick(); }
+    if (jumpButton) jumpButton.hidden = !next;
+    actionDeck?.classList.toggle("has-jump", next);
+    if (jumpToggle) { jumpToggle.textContent = `JUMP: ${next ? "ON" : "OFF"}`; jumpToggle.setAttribute("aria-pressed", String(next)); }
+  } else configureJump(currentJumpGameId);
+});
 let pendingMedia = null;
+let hostedFirmwareReadyPromise = null;
 let onlineLibraryEntries = [];
 let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
@@ -161,6 +536,13 @@ let autoStartSteps = null;
 let autoStartTypeRest = "";
 let autoStartSawBusy = false;
 let autoStartBudget = 0;
+let autoWarpFrameCount = 0;
+let autoWarpPostRunStart = null;
+let autoWarpLastActivity = 0;
+let autoWarpObservedLoads = 0;
+let autoWarpLoadEvents = 0;
+let autoWarpTrackedMachine = null;
+let autoWarpPreviousLoadTrap = null;
 let crtMode = localStorage.getItem("ccg.emulator.c64.crtMode") || "tube";
 if (!CRT_MODES.includes(crtMode)) crtMode = "tube";
 let displayExpanded = ["2x", "expanded"].includes(localStorage.getItem("ccg.emulator.c64.size"));
@@ -180,6 +562,12 @@ function applyCrtMode() {
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches || false;
   presenter.setCrt(presetParams(crtMode), { reducedMotion });
   if (strong) strong.textContent = crtMode.toUpperCase();
+  const names = { on: "SCANLINES", tube: "TUBE", bw: "B&W", arcade: "ARCADE", hum: "HUM", off: "OFF" };
+  if (mobileCrtButton) {
+    mobileCrtButton.textContent = "CRT: " + (names[crtMode] || crtMode.toUpperCase());
+    mobileCrtButton.setAttribute("aria-label",
+      "CRT display " + (names[crtMode] || crtMode) + ". Tap to change effect.");
+  }
 }
 
 function cycleCrtMode() {
@@ -193,7 +581,8 @@ function fitScreenToStage() {
   if (!screenStage || !screenBezel) return;
   // Use every available pixel in fullscreen regardless of desktop breakpoints.
   // In the page, mobile layouts still size naturally from the canvas ratio.
-  if (document.fullscreenElement !== screenStage &&
+  if (!(typeof mobilePlayActive !== "undefined" && mobilePlayActive) &&
+      document.fullscreenElement !== screenStage &&
       !window.matchMedia?.("(min-width: 960px)")?.matches) {
     screenBezel.style.width = "";
     return;
@@ -263,6 +652,10 @@ async function ensureAudioGraph() {
 
 async function wireAudioToMachine() {
   if (!machine) return false;
+  if (!machine.sidShared) {
+    updateAudioUi("SILENT COMPATIBILITY MODE");
+    return false;
+  }
   try {
     if (!await ensureAudioGraph()) return false;
     sidNode.port.postMessage({
@@ -281,6 +674,14 @@ async function wireAudioToMachine() {
     return false;
   }
 }
+
+// iOS Safari normally requires a real screen tap before starting or resuming Web Audio.
+// Keep desktop autoplay behaviour, but recover the SID graph on a later gesture.
+document.addEventListener("pointerdown", () => {
+  if (sidNode && machine?.sidShared && audioContext?.state === "suspended") {
+    void audioContext.resume().then(() => updateAudioUi(audioMuted ? "MUTED" : "SID ACTIVE")).catch(() => {});
+  }
+}, { passive: true });
 
 function resetAudioForMachine() {
   if (!sidNode || !machine) return;
@@ -318,9 +719,13 @@ function toggleAudioMute() {
 
 function updateJoystickUi() {
   if (joystickPortIndicator) joystickPortIndicator.textContent = `PORT ${joystickPort}`;
-  if (joystickSwapButton) {
-    joystickSwapButton.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
-    joystickSwapButton.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  for (const button of [joystickSwapButton, mobileJoystickSwapButton]) {
+    if (!button) continue;
+    button.setAttribute("aria-label", `Swap joystick to C64 port ${joystickPort === 2 ? 1 : 2}`);
+    button.title = `Currently using C64 joystick port ${joystickPort}. Click to switch to port ${joystickPort === 2 ? 1 : 2}.`;
+  }
+  if (mobileJoystickSwapButton) {
+    mobileJoystickSwapButton.textContent = `SWAP JOYSTICK · PORT ${joystickPort}`;
   }
   if (keyboardJoystickButton) {
     keyboardJoystickButton.textContent = `KEYBOARD JOY: ${keyboardJoystickEnabled ? "ON" : "OFF"}`;
@@ -337,12 +742,11 @@ function keyboardJoystickByte() {
 
 function applyJoystickInput() {
   if (!machine) return;
-  // A browser gamepad can keep a direction/fire held down continuously.
-  // Give physical C64 keys priority while held and briefly after the last
-  // keypress, preventing those joystick bits from masking the keyboard CIA.
-  const typing = keyboardJoystickKeys.size > 0 || heldMatrixKeys.size > 0 ||
-    shiftLeftPhysical || shiftRightPhysical || performance.now() < keyboardPriorityUntil;
-  const byte = typing ? keyboardJoystickByte() : (gamepadJoyByte & touchJoyByte);
+  // Active-low bits are held joystick directions/fire. Combine the live
+  // gamepad, touchscreen and optional keyboard-joystick state every frame;
+  // physical C64 keyboard keys use the separate CIA matrix without muting
+  // a gamepad direction (e.g. run right while SPACE drops a bomb).
+  const byte = gamepadJoyByte & touchJoyByte & keyboardJoystickByte();
   machine.joyPort1 = joystickPort === 1 ? byte : 0xFF;
   machine.joyPort2 = joystickPort === 2 ? byte : 0xFF;
   // Joystick-1 FIRE shares VIC-II lightpen wiring: update its pin immediately.
@@ -359,10 +763,10 @@ function swapJoystickPort() {
 }
 
 joystickSwapButton?.addEventListener("click", swapJoystickPort);
+mobileJoystickSwapButton?.addEventListener("click", swapJoystickPort);
 keyboardJoystickButton?.addEventListener("click", () => {
   keyboardJoystickEnabled = !keyboardJoystickEnabled;
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   localStorage.setItem("ccg.emulator.c64.keyboardJoystick", keyboardJoystickEnabled ? "1" : "0");
   applyJoystickInput();
   updateJoystickUi();
@@ -392,8 +796,10 @@ function updateMediaControls(snapshot = vault.snapshot()) {
   if (tapePlayButton) tapePlayButton.disabled = !active || mountedTape?.kind !== "tap";
   if (tapeStopButton) tapeStopButton.disabled = !active || mountedTape?.kind !== "tap";
   if (tapeRewindButton) tapeRewindButton.disabled = !active || mountedTape?.kind !== "tap";
-  if (vaultSaveButton) vaultSaveButton.disabled = !active;
-  if (vaultLoadButton) vaultLoadButton.disabled = !active;
+  if (vaultSaveButton) vaultSaveButton.disabled = !active ||
+    (vaultGameSelect?.value !== "__current__" && vaultGameSelect?.value !== currentSessionGame.gameKey);
+  // Restore availability is based on the saved slot, even when C64 power is off.
+  // refreshVaultStatus() owns the RESUME SAVE disabled state.
   if (vaultClearButton) vaultClearButton.disabled = false;
   if (swapDiskButton) swapDiskButton.disabled = !active || !mountedDisk;
   if (onlineLibraryDiskSwapButton) onlineLibraryDiskSwapButton.disabled =
@@ -432,17 +838,122 @@ function currentVaultSlot() {
   return [1, 2, 3].includes(slot) ? slot : 1;
 }
 
+// The current game is the one actually loaded, not whatever the visitor has
+// typed into the catalogue search field since starting it.
+function sessionForMedia(media) {
+  if (media?.gameKey && media?.gameTitle) {
+    return { gameKey: media.gameKey, gameTitle: media.gameTitle };
+  }
+  const name = String(media?.name || "C64 BASIC");
+  const kind = String(media?.type || mediaTypeFromName(name) || "basic");
+  // Same filename can refer to different user-supplied disks. Include a
+  // content fingerprint so one local upload cannot replace another's saves.
+  const bytes = media?.bytes;
+  let hash = 2166136261;
+  if (bytes) for (const byte of bytes) hash = Math.imul(hash ^ byte, 16777619);
+  const fingerprint = (hash >>> 0).toString(16).padStart(8, "0");
+  return {
+    gameKey: "local:" + kind + ":" + name.toLowerCase() + ":" + fingerprint,
+    gameTitle: name,
+  };
+}
+
+function vaultSelection() {
+  const selected = vaultGameSelect?.value || "__current__";
+  if (selected === "__legacy__") return {
+    legacy: true, gameKey: "__legacy__", gameTitle: "Original legacy saves",
+  };
+  if (selected === "__current__") return { ...currentSessionGame, legacy: false };
+  const known = knownVaultGames.find((game) => game.gameKey === selected);
+  return known
+    ? { gameKey: known.gameKey, gameTitle: known.gameTitle, legacy: false }
+    : { ...currentSessionGame, legacy: false };
+}
+
+async function vaultRecord(selection, slot) {
+  return selection.legacy
+    ? gameVault.load(slot)
+    : gameVault.loadGame(selection.gameKey, slot);
+}
+
+function showVaultFeedback(message, error = false) {
+  if (!vaultFeedback) return;
+  vaultFeedback.textContent = message;
+  vaultFeedback.classList.toggle("is-error", Boolean(error));
+}
+
+function showVaultConnectionFailure(error) {
+  const blocked = error?.name === "GameVaultBlockedError";
+  if (vaultStatus) vaultStatus.textContent = blocked
+    ? "VAULT BUSY — ANOTHER TAB" : (error?.message || "Game Vault unavailable");
+  showVaultFeedback(error?.message || "Game Vault storage unavailable.", true);
+  if (vaultStorageNotice) {
+    vaultStorageNotice.hidden = false;
+    vaultStorageNotice.textContent = blocked
+      ? "Another C64 emulator tab is holding the old save database open. Close only the other emulator tabs, then press RETRY VAULT. Your saved games are not deleted. Do not clear browser data."
+      : "Game Vault could not open. Check whether your browser permits site storage, then press RETRY VAULT. Do not clear saved site data.";
+  }
+  if (vaultRetryButton) vaultRetryButton.hidden = false;
+  if (vaultExportButton) vaultExportButton.disabled = true;
+  if (vaultClearButton) vaultClearButton.disabled = true;
+  if (vaultLoadButton) vaultLoadButton.disabled = true;
+  if (vaultSaveButton) vaultSaveButton.disabled = true;
+}
+
 async function refreshVaultStatus() {
   if (!vaultStatus) return;
+  const version = ++vaultStatusVersion;
+  const selection = vaultSelection();
+  const slot = currentVaultSlot();
   try {
-    const record = await gameVault.load(currentVaultSlot());
+    const record = await vaultRecord(selection, slot);
+    if (version !== vaultStatusVersion) return;
     vaultStatus.textContent = record
-      ? `Slot ${record.slot} saved ${new Date(record.savedAt).toLocaleString()}`
-      : `Slot ${currentVaultSlot()} empty`;
+      ? (selection.gameTitle + " // SLOT " + slot + " SAVED " +
+          new Date(record.savedAt).toLocaleString())
+      : (selection.gameTitle + " // SLOT " + slot + " EMPTY");
+    if (vaultStorageNotice) vaultStorageNotice.hidden = true;
+    if (vaultRetryButton) vaultRetryButton.hidden = true;
+    if (vaultExportButton) vaultExportButton.disabled = !record;
+    if (vaultClearButton) vaultClearButton.disabled = !record;
+    if (vaultLoadButton) vaultLoadButton.disabled = !record;
+    if (vaultSaveButton) vaultSaveButton.disabled = !running ||
+      (vaultGameSelect?.value !== "__current__" &&
+       vaultGameSelect?.value !== currentSessionGame.gameKey);
   } catch (error) {
-    vaultStatus.textContent = error?.message || "Game Vault unavailable";
+    if (version !== vaultStatusVersion) return;
+    showVaultConnectionFailure(error);
   }
 }
+
+async function refreshVaultGameList(prefer = null) {
+  if (!vaultGameSelect) return;
+  const version = ++vaultListingVersion;
+  try {
+    const [games, legacy] = await Promise.all([
+      gameVault.listSavedGames(), gameVault.listLegacySlots(),
+    ]);
+    if (version !== vaultListingVersion) return;
+    knownVaultGames = games;
+    knownLegacySlots = legacy;
+    const selected = prefer ?? vaultGameSelect.value;
+    const currentOption = new Option("CURRENT GAME: " + currentSessionGame.gameTitle, "__current__");
+    const options = [currentOption];
+    for (const game of games) {
+      options.push(new Option(game.gameTitle + " (" +
+        Object.keys(game.slots).length + "/3 SLOTS)", game.gameKey));
+    }
+    // Even empty legacy slots remain selectable for the original restore path.
+    options.push(new Option("LEGACY SLOTS (" + legacy.length + " SAVED)", "__legacy__"));
+    vaultGameSelect.replaceChildren(...options);
+    vaultGameSelect.value = options.some((item) => item.value === selected)
+      ? selected : "__current__";
+    await refreshVaultStatus();
+  } catch (error) {
+    if (version === vaultListingVersion) showVaultConnectionFailure(error);
+  }
+}
+
 
 function attachSessionMedia(target) {
   if (mountedCartridge?.bytes) target.loadCartridge(mountedCartridge.bytes.slice());
@@ -456,7 +967,6 @@ function attachSessionMedia(target) {
 }
 
 const heldMatrixKeys = new Map();
-const touchVirtualKeyHolds = new Map();
 // Buttons hold genuine CIA1 matrix keys; never synthesise browser KeyboardEvents.
 const touchFunctionKeyHolds = new Map();
 let shiftLeftPhysical = false;
@@ -469,12 +979,10 @@ function setC64Shift(left, right) {
   machine.cia1.setKey(6, 4, Boolean(right));
 }
 
-function releaseAllInput() {
-  for (const [button, held] of touchVirtualKeyHolds) {
-    if (held.timer) clearTimeout(held.timer);
-    button.classList.remove("is-pressed");
-  }
-  touchVirtualKeyHolds.clear();
+// Form focus releases held C64 keys, not gamepad or touch joystick directions.
+// Clearing those controller bytes while a key is pressed causes a perceptible
+// one-frame movement dropout until requestAnimationFrame polls again.
+function releaseKeyboardInput() {
   for (const [button, held] of touchFunctionKeyHolds) {
     if (held.timer) clearTimeout(held.timer);
     button.classList.remove("is-pressed");
@@ -487,18 +995,27 @@ function releaseAllInput() {
     }
     setC64Shift(false, false);
     machine.cia1.setKey(7, 2, false);
-    machine.joyPort1 = 0xFF;
-    gamepadJoyByte = 0xFF;
-    touchJoyByte = 0xFF;
-    touchHeldMask = 0;
-    machine.joyPort2 = 0xFF;
     machine.setRestoreNmiLine(false);
   }
   heldMatrixKeys.clear();
   keyboardJoystickKeys.clear();
-  keyboardPriorityUntil = 0;
   shiftLeftPhysical = false;
   shiftRightPhysical = false;
+  if (typeof releaseMobileVirtualKeys === "function") releaseMobileVirtualKeys();
+  applyJoystickInput();
+}
+
+function releaseAllInput() {
+  releaseKeyboardInput();
+  if (machine) {
+    machine.joyPort1 = 0xFF;
+    gamepadJoyByte = 0xFF;
+    touchJoyByte = 0xFF;
+    touchHeldMask = 0;
+    touchHeldButtons.clear();
+    machine.joyPort2 = 0xFF;
+    machine._updateLightpen?.();
+  }
 }
 
 function physicalMatrixBinding(event) {
@@ -612,17 +1129,20 @@ function usesTextInput(target) {
 
 function handleC64Key(event, pressed) {
   if (!running || !machine) return;
+  // Sample the current pad on the SAME event turn as every physical key edge:
+  // a keyboard press/release must never leave stale joystick data waiting for
+  // the next animation frame, even when gameplay combines SPACE with motion.
+  pollGamepad();
 
   // A clicked toolbar button retains browser focus. That must NOT prevent game
   // commands such as S to start, Q to quit, or F-keys from reaching the C64.
   // Text fields and dropdowns keep their native keyboard, as do ENTER/SPACE
   // for activating a focused button or link. The ROM setup remains modal.
-  const virtualInput = event.ccgVirtual === true;
   const nativeActivation = ["Enter", "NumpadEnter", "Space"].includes(event.code) &&
     (usesNativeKeyboard(event.target) || usesNativeKeyboard(document.activeElement));
-  if (pressed && (setup?.hidden === false || (!virtualInput && (
+  if (pressed && (setup?.hidden === false ||
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
-    nativeActivation)))) return;
+    nativeActivation)) return;
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -634,18 +1154,13 @@ function handleC64Key(event, pressed) {
     event.preventDefault();
   }
 
-  // Physical keyboard always wins over the gamepad, including when a gamepad
-  // button remains pressed. The optional keyboard joystick converts arrow,
-  // WASD and fire presses to the currently selected joystick port, but does
-  // not suppress normal C64 keys (including S for game-start menus).
-  if (KEY_MAP[event.code] || CHAR_MAP[event.key] ||
-      ["ArrowLeft", "ArrowUp", "F2", "F4", "F6", "F8", "F12"].includes(event.code)) {
-    keyboardPriorityUntil = performance.now() + 1200;
-    const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
-    if (joystickMask && keyboardJoystickEnabled) {
-      if (pressed) keyboardJoystickKeys.add(event.code);
-      else keyboardJoystickKeys.delete(event.code);
-    }
+  // Physical C64 keys always reach the CIA matrix. If keyboard joystick
+  // mode is enabled, selected keys also add joystick bits; they must never
+  // suppress an independently held gamepad/touch direction.
+  const joystickMask = KEYBOARD_JOYSTICK_MASKS[event.code];
+  if (joystickMask && keyboardJoystickEnabled) {
+    if (pressed) keyboardJoystickKeys.add(event.code);
+    else keyboardJoystickKeys.delete(event.code);
     applyJoystickInput();
   }
 
@@ -797,7 +1312,7 @@ function drawStatus(snapshot, message = null) {
 }
 
 function setControlState(snapshot) {
-  const canBoot = snapshot.allRequiredReady && typeof SharedArrayBuffer !== "undefined";
+  const canBoot = snapshot.allRequiredReady;
   if (powerButton) powerButton.disabled = !canBoot;
   if (resetButton) resetButton.disabled = !running;
   if (pauseButton) pauseButton.disabled = !running;
@@ -806,6 +1321,14 @@ function setControlState(snapshot) {
     warpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
     const strong = warpLoadButton.querySelector("strong");
     if (strong) strong.textContent = warpLoadActive ? "ON · MAX" : "MAX";
+  }
+  if (mobileWarpLoadButton) {
+    mobileWarpLoadButton.disabled = !running || paused;
+    mobileWarpLoadButton.setAttribute("aria-pressed", warpLoadActive ? "true" : "false");
+    mobileWarpLoadButton.textContent = warpLoadActive ? "WARP: ON" : "WARP: OFF";
+    mobileWarpLoadButton.setAttribute("aria-label", warpLoadActive
+      ? "Turn off warp load and return to normal C64 speed"
+      : "Turn on warp load at maximum C64 speed");
   }
   if (loadMediaButton) loadMediaButton.disabled = false;
   if (loadDiskButton) loadDiskButton.disabled = false;
@@ -818,6 +1341,13 @@ function setControlState(snapshot) {
   if (pauseButton) {
     pauseButton.querySelector("strong").textContent = paused ? "RESUME" : "PAUSE";
   }
+  if (typeof mobilePauseButton !== "undefined" && mobilePauseButton) {
+    mobilePauseButton.disabled = !running;
+    mobilePauseButton.textContent = paused ? "▶ RESUME" : "Ⅱ PAUSE";
+    mobilePauseButton.setAttribute("aria-pressed", String(paused));
+  }
+  if (typeof mobileSaveStateButton !== "undefined" && mobileSaveStateButton) mobileSaveStateButton.disabled = !running;
+  if (typeof mobileLoadStateButton !== "undefined" && mobileLoadStateButton) mobileLoadStateButton.disabled = !running;
 }
 
 function render(snapshot) {
@@ -844,10 +1374,11 @@ function render(snapshot) {
   }
 
   if (finishSetup) finishSetup.disabled = !snapshot.allRequiredReady;
+  if (romExportButton) romExportButton.disabled = !snapshot.allRequiredReady;
 
   if (!running && machineState) {
-    if (snapshot.allRequiredReady && typeof SharedArrayBuffer === "undefined") {
-      machineState.textContent = "ROM BANK READY // SECURE CORE HEADERS REQUIRED";
+    if (snapshot.allRequiredReady && !window.crossOriginIsolated) {
+      machineState.textContent = "ROM BANK READY // SILENT COMPATIBILITY MODE";
     } else {
       machineState.textContent = snapshot.allRequiredReady
         ? "SYSTEM ROMS READY // LOAD MEDIA OR BOOT"
@@ -916,15 +1447,41 @@ function cancelAutoStart() {
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 0;
+  // Remove only our own load watcher. Do not modify the machine's original
+  // callback, or leave a callback attached to an abandoned machine.
+  if (autoWarpTrackedMachine) {
+    autoWarpTrackedMachine.onLoadTrap = autoWarpPreviousLoadTrap;
+  }
+  autoWarpTrackedMachine = null;
+  autoWarpPreviousLoadTrap = null;
+  autoWarpPostRunStart = null;
+  autoWarpLoadEvents = 0;
   finishAutomaticWarp();
+  if (typeof playHelp !== "undefined") playHelp?.classList.remove("is-loading");
+  if (typeof warpHint !== "undefined" && warpHint) warpHint.textContent = "WARP speeds up loading. Switch it off to return to normal speed.";
 }
 
 function queueAutoStart(steps) {
+  cancelAutoStart();
   autoStartSteps = steps.slice();
   autoStartTypeRest = "";
   autoStartSawBusy = false;
   autoStartBudget = 10 * 60 * 60;
+  autoWarpFrameCount = 0;
+  autoWarpPostRunStart = null;
+  autoWarpObservedLoads = 0;
+  if (machine && steps.some(step => step.postRun === "disk")) {
+    autoWarpTrackedMachine = machine;
+    autoWarpPreviousLoadTrap = machine.onLoadTrap;
+    const previous = autoWarpPreviousLoadTrap;
+    machine.onLoadTrap = (...args) => {
+      autoWarpLoadEvents++;
+      if (typeof previous === "function") previous(...args);
+    };
+  }
   beginAutomaticWarp();
+  if (typeof playHelp !== "undefined") playHelp?.classList.add("is-loading");
+  if (typeof warpHint !== "undefined" && warpHint) warpHint.textContent = "Game starting — WARP speeds up longer loads. Audio pauses during warp.";
 }
 
 function serviceAutoStart() {
@@ -948,8 +1505,12 @@ function serviceAutoStart() {
     autoStartTypeRest = autoStartTypeRest.slice(machine.bufferKeyboardText(autoStartTypeRest));
     if (autoStartTypeRest === "") autoStartSteps.shift();
   } else if (step.loadDone) {
+    // Fast virtual disks can finish between consecutive auto-start ticks.
+    // Their KERNAL load event is observed, but BASIC's brief busy interval
+    // can be missed. Accept that completed LOAD handshake once READY returns;
+    // slower disk/tape loads still take the existing busy-then-ready path.
     if (!basicReady()) autoStartSawBusy = true;
-    if (autoStartSawBusy && basicReady()) {
+    if (basicReady() && (autoStartSawBusy || autoWarpLoadEvents > 0)) {
       autoStartSawBusy = false;
       autoStartSteps.shift();
     }
@@ -960,6 +1521,41 @@ function serviceAutoStart() {
       return;
     }
     autoStartSteps.shift();
+  } else if (step.postRun) {
+    // BASIC returning from LOAD is only the *first* stage. RUN often starts
+    // another loader. Observe live drive/tape activity before ending warp.
+    if (autoWarpPostRunStart === null) {
+      autoWarpPostRunStart = autoWarpFrameCount;
+      autoWarpLastActivity = autoWarpFrameCount;
+      autoWarpObservedLoads = autoWarpLoadEvents;
+    }
+    let loading = false;
+    if (autoWarpObservedLoads !== autoWarpLoadEvents) {
+      autoWarpObservedLoads = autoWarpLoadEvents;
+      loading = true;
+    }
+    if (step.postRun === "disk" && machine.truedriveEnabled && machine.drive1541) {
+      // Idle 1541 firmware is not a reason to prolong warp, even if the game
+      // itself continues executing. Active IEC/drive traffic keeps it on.
+      loading = loading || !machine.drive1541.canIdleSkip();
+    }
+    if (step.postRun === "tape" && machine.datasette) {
+      loading = loading || (machine.datasette.motorOn &&
+        machine.datasette.playPressed && !machine.datasette.atEnd);
+    }
+    if (loading) autoWarpLastActivity = autoWarpFrameCount;
+    const elapsed = autoWarpFrameCount - autoWarpPostRunStart;
+    const quiet = autoWarpFrameCount - autoWarpLastActivity;
+    if (elapsed >= AUTO_WARP_POST_RUN_MAX_FRAMES) {
+      autoStartSteps.shift();
+      if (stageNote) stageNote.textContent =
+        "Auto Warp reached its safety limit. If the game is still loading, use MAX to continue.";
+    } else if (elapsed >= AUTO_WARP_POST_RUN_MIN_FRAMES &&
+        quiet >= AUTO_WARP_POST_RUN_QUIET_FRAMES) {
+      autoStartSteps.shift();
+      if (stageNote) stageNote.textContent =
+        "Auto Warp stopped after loading activity settled. If the game needs more loading, use MAX.";
+    }
   } else {
     autoStartSteps.shift();
   }
@@ -967,18 +1563,27 @@ function serviceAutoStart() {
   if (autoStartSteps && autoStartSteps.length === 0) cancelAutoStart();
 }
 
-async function prepareFreshGameSession() {
-  if (!machine || !running) return;
-  cancelAutoStart();
-  releaseAllInput();
-
+// A fresh game must not inherit a previous disk, tape or cartridge.
+// Keep verified firmware, the downloaded pack cache and Game Vault slots.
+function clearMountedGameMedia() {
   mountedDisk = null;
   mountedDiskKey = null;
   diskSideCache.clear();
   mountedTape = null;
   mountedCartridge = null;
+  currentSessionGame = { gameKey: "session:basic", gameTitle: "C64 BASIC" };
   driveMode = "fast";
   localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+  if (diskSlotStatus) diskSlotStatus.textContent = "D64 / D71 / D81 / G64";
+  if (tapeSlotStatus) tapeSlotStatus.textContent = "TAP / T64";
+  if (cartridgeSlotStatus) cartridgeSlotStatus.textContent = "CRT / EASYFLASH";
+}
+
+async function prepareFreshGameSession() {
+  if (!machine || !running) return;
+  cancelAutoStart();
+  releaseAllInput();
+  clearMountedGameMedia();
 
   const fresh = new C64Machine();
   fresh.loadROMs({
@@ -1020,6 +1625,7 @@ function frameLoop(now) {
       do {
         machine.runFrame();
         frames++;
+        if (autoStartSteps) autoWarpFrameCount++;
         if (autoStartSteps && (frames & 3) === 0) serviceAutoStart();
         if (automaticWarpActive && automaticWarpFramesRemaining > 0 &&
             --automaticWarpFramesRemaining === 0) finishAutomaticWarp();
@@ -1031,6 +1637,7 @@ function frameLoop(now) {
       frameAccumulator += delta;
       while (frameAccumulator >= PAL_FRAME_MS) {
         machine.runFrame();
+        if (autoStartSteps) autoWarpFrameCount++;
         frameAccumulator -= PAL_FRAME_MS;
         frames++;
       }
@@ -1062,6 +1669,7 @@ function frameLoop(now) {
 }
 
 function powerOff() {
+  if (typeof setMobilePlaying === "function") setMobilePlaying(false);
   captureMutableMedia();
   releaseAllInput();
   powerOffAudio();
@@ -1119,7 +1727,7 @@ async function powerOn() {
     running = false;
     if (machineState) machineState.textContent = "BOOT BLOCKED";
     drawStatus(snapshot, error?.message || "CORE START FAILED");
-    if (stageNote) stageNote.textContent = "Boot could not start. On the deployed route, the emulator requires the scoped secure COOP/COEP headers already added to this branch.";
+    if (stageNote) stageNote.textContent = "Boot could not start: " + (error?.message || "Unknown emulator error") + ". Reload the page and try again.";
     setControlState(snapshot);
   }
 }
@@ -1250,6 +1858,49 @@ if (romSetInput) {
   });
 }
 
+// Download the ROM set locally on the user's own machine; no upload to CCG.
+romExportButton?.addEventListener("click", () => {
+  try {
+    const payload = JSON.stringify(vault.exportBundle());
+    const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "CCG-C64-My-ROM-Set.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 3000);
+    if (romTransferStatus) romTransferStatus.textContent =
+      "ROM set saved to your device. Transfer the file privately to your phone.";
+  } catch (error) {
+    if (romTransferStatus) romTransferStatus.textContent =
+      error?.message || "The installed ROM set could not be saved.";
+  }
+});
+
+romImportInput?.addEventListener("change", async () => {
+  const file = romImportInput.files?.[0];
+  romImportInput.value = "";
+  if (!file) return;
+  try {
+    if (file.size > 200000) throw new Error("That ROM transfer file is unexpectedly large.");
+    const bundle = JSON.parse(await file.text());
+    const snapshot = vault.importBundle(bundle);
+    render(snapshot);
+    if (romTransferStatus) romTransferStatus.textContent =
+      "ROM transfer accepted: KERNAL, BASIC and CHARGEN are now stored on this device.";
+    if (pendingMedia) {
+      finishSetup?.click();
+    } else {
+      hideSetup();
+      if (!running) await powerOn();
+    }
+  } catch (error) {
+    if (romTransferStatus) romTransferStatus.textContent =
+      error?.message || "The ROM set could not be imported.";
+  }
+});
+
 closeSetupButton?.addEventListener("click", hideSetup);
 
 finishSetup?.addEventListener("click", async () => {
@@ -1262,7 +1913,10 @@ finishSetup?.addEventListener("click", async () => {
     if (running && machine) {
       pendingMedia = null;
       try {
-        await openMediaBytes(media);
+        if (await openMediaBytes(media)) {
+          currentSessionGame = sessionForMedia(media);
+          void refreshVaultGameList("__current__");
+        }
       } catch (error) {
         if (stageNote) stageNote.textContent = error?.message || "The queued media could not be opened.";
       }
@@ -1283,7 +1937,24 @@ document.querySelector("[data-emulator-back]")?.addEventListener("click", () => 
 powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", () => { resetMachine(); screen?.focus(); });
 pauseButton?.addEventListener("click", () => { togglePause(); screen?.focus(); });
+mobilePauseButton?.addEventListener("click", () => {
+  if (!mobilePlayActive || !running || (mobileVaultPanel && !mobileVaultPanel.hidden)) return;
+  togglePause();
+  screen?.focus?.({ preventScroll: true });
+});
+mobileCrtButton?.addEventListener("click", () => {
+  if (!mobilePlayActive) return;
+  cycleCrtMode();
+  screen?.focus?.({ preventScroll: true });
+});
+mobileSaveStateButton?.addEventListener("click", () => { void openMobileVault("save"); });
+mobileLoadStateButton?.addEventListener("click", () => { void openMobileVault("load"); });
+mobileVaultClose?.addEventListener("click", () => closeMobileVaultPanel());
+mobileVaultPanel?.addEventListener("click", event => {
+  if (event.target === mobileVaultPanel) closeMobileVaultPanel();
+});
 warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
+mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
 audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
 crtButton?.addEventListener("click", () => { cycleCrtMode(); screen?.focus(); });
 sizeButton?.addEventListener("click", () => { toggleScreenSize(); screen?.focus(); });
@@ -1462,6 +2133,7 @@ async function openMediaBytes(media) {
       { type: 'LOAD"*",8,1\r' },
       { loadDone: true },
       { type: "RUN\r" },
+      { postRun: "disk" },
     ]);
 
     if (diskSlotStatus) {
@@ -1507,6 +2179,7 @@ async function openMediaBytes(media) {
       { run: () => machine.setTapeKey("PLAY") },
       { loadDone: true },
       { type: "RUN\r" },
+      { postRun: "tape" },
     ]);
     if (tapeSlotStatus) tapeSlotStatus.textContent = `TAP AUTO-START // ${name}`;
     if (machineState) machineState.textContent = `TAP AUTO-START // ${name.toUpperCase()}`;
@@ -1539,6 +2212,11 @@ async function openMediaBytes(media) {
 }
 
 async function queueMedia(media, { freshBoot = false } = {}) {
+  // LOAD must wait if a first-time visitor is still receiving the verified
+  // original firmware. The chosen game is only queued after it has finished.
+  if (typeof hostedFirmwareReadyPromise !== "undefined" && hostedFirmwareReadyPromise) {
+    await hostedFirmwareReadyPromise;
+  }
   if (!media?.bytes?.length) throw new Error("The selected media file is empty.");
   const type = media.type || mediaTypeFromName(media.name);
   if (!type) throw new Error("Use PRG, D64, D71, D81, G64, TAP, T64 or CRT media.");
@@ -1548,6 +2226,8 @@ async function queueMedia(media, { freshBoot = false } = {}) {
     type,
     bytes: media.bytes instanceof Uint8Array ? media.bytes.slice() : new Uint8Array(media.bytes),
     sourceKey: media.sourceKey || null,
+    gameKey: media.gameKey || null,
+    gameTitle: media.gameTitle || null,
   };
 
   if (!vault.snapshot().allRequiredReady) {
@@ -1557,6 +2237,10 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   }
 
   const wasRunning = running;
+  // EXIT GAME powers off the machine but intentionally retains mounted media.
+  // Remove that media BEFORE powerOn() reattaches it to the new C64 instance.
+  // Otherwise a previous CRT can boot again instead of the selected PRG/D64.
+  if (freshBoot && !wasRunning) clearMountedGameMedia();
   if (!running) await powerOn();
   if (!running || !machine) return false;
   if (freshBoot && wasRunning) await prepareFreshGameSession();
@@ -1564,7 +2248,13 @@ async function queueMedia(media, { freshBoot = false } = {}) {
   const queued = pendingMedia;
   pendingMedia = null;
   try {
-    return await openMediaBytes(queued);
+    const loaded = await openMediaBytes(queued);
+    if (loaded) {
+      currentSessionGame = sessionForMedia(queued);
+      void refreshVaultGameList("__current__");
+    }
+    if (loaded && typeof enterMobilePlayMode === "function") enterMobilePlayMode(queued.name);
+    return loaded;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "The media could not be opened.";
     return false;
@@ -1599,7 +2289,7 @@ function updateSelectedLibraryGame() {
   }
 }
 
-function selectOnlineLibraryEntry(id) {
+function selectOnlineLibraryEntry(id, focusLoadButton = true) {
   if (onlineLibraryLoadingGame) return;
   const entry = onlineLibraryEntries.find((item) => item.id === id);
   if (!entry) return;
@@ -1608,21 +2298,9 @@ function selectOnlineLibraryEntry(id) {
   refreshOnlineLibrarySuggestions();
   setLibrarySuggestionsOpen(false);
   updateSelectedLibraryGame();
-  onlineLibraryLoadButton?.focus();
-}
-
-function positionLibrarySuggestions() {
-  if (!onlineLibrarySearch || !onlineLibrarySuggestions || onlineLibrarySuggestions.hidden) return;
-  const rect = onlineLibrarySearch.getBoundingClientRect();
-  const viewport = window.visualViewport;
-  const top = viewport?.offsetTop ?? 0;
-  const bottom = top + (viewport?.height ?? window.innerHeight);
-  const spaceBelow = Math.max(0, bottom - rect.bottom);
-  const spaceAbove = Math.max(0, rect.top - top);
-  const flip = spaceBelow < 210 && spaceAbove > spaceBelow;
-  onlineLibrarySuggestions.classList.toggle("is-drop-up", flip);
-  onlineLibrarySuggestions.style.setProperty("--ccg-suggest-height",
-    `${Math.max(80, Math.min(320, (flip ? spaceAbove : spaceBelow) - 28))}px`);
+  // iOS touch selection must not programmatically scroll/focus the button
+  // during Safari's keyboard-dismissal and visual-viewport transition.
+  if (focusLoadButton) onlineLibraryLoadButton?.focus();
 }
 
 function setLibrarySuggestionsOpen(open) {
@@ -1630,7 +2308,6 @@ function setLibrarySuggestionsOpen(open) {
     onlineLibraryEntries.length && onlineLibrarySearch?.value.trim());
   if (onlineLibrarySuggestions) onlineLibrarySuggestions.hidden = !show;
   if (onlineLibrarySearch) onlineLibrarySearch.setAttribute("aria-expanded", String(show));
-  if (show) requestAnimationFrame(positionLibrarySuggestions);
   onlineLibraryPanel?.classList.toggle("is-suggesting", show);
   if (!show) {
     activeLibrarySuggestionIndex = -1;
@@ -1729,6 +2406,23 @@ async function initialiseOnlineLibrary() {
     }
   } catch (_) { /* Optional direct-file catalogue may be empty. */ }
 
+  // The extra CRT catalogue contains only owner-authorised, exact-title
+  // replacement media. Its absence or corruption must NEVER hide original
+  // PRG/disk entries. Each CRT's bytes are SHA-256 verified on selection.
+  try {
+    const crtResponse = await fetch(ADDITIONAL_CRT_CATALOG_URL, {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (crtResponse.ok) {
+      const extra = parseAdditionalCrtCatalog(await crtResponse.json());
+      regular = regular.concat(extra);
+    } else if (crtResponse.status !== 404) {
+      throw new Error(`CRT catalogue HTTP ${crtResponse.status}`);
+    }
+  } catch (error) {
+    console.warn("[ccg-c64] Extra CRT catalogue unavailable; original games preserved:", error);
+  }
+
   let packed = [];
   let packedCatalogueError = null;
   try {
@@ -1744,7 +2438,12 @@ async function initialiseOnlineLibrary() {
     // checked by loadPackedGameBytes before it can reach the emulator.
     const directGameKeys = new Set(regular.map((entry) =>
       `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+    // The old packed Bruce Lee PRG shows a non-responsive F-key menu in our
+    // emulator. The owner-supplied Bruce Lee Trilogy CRT already exists as an
+    // identical SHA-256 checked direct-file entry, so show only that version.
+    // Keep pack bytes and checksums untouched for every other title.
     packed = data.entries.filter((entry) =>
+      entry.title.trim().toLocaleLowerCase() !== "bruce lee" &&
       !directGameKeys.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
   } catch (error) {
     packedCatalogueError = error;
@@ -1753,20 +2452,83 @@ async function initialiseOnlineLibrary() {
     console.warn("[ccg-c64] Blast catalogue unavailable:", error);
   }
 
-  onlineLibraryEntries = [...regular, ...packed];
+  // The owner's optional PRG archive is activated only after all pack files
+  // have been uploaded and the SHA-bound ready.json marker is published LAST.
+  // An absent marker is normal: the existing Blast/direct libraries keep working.
+  let archived = [];
+  let archiveError = null;
+  try {
+    const readyResponse = await fetch(ARCHIVE_READY_URL, {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (readyResponse.ok) {
+      const ready = await readyResponse.json();
+      if (ready?.version !== 1 || !Number.isInteger(ready.recordCount) ||
+          !Number.isInteger(ready.packCount) || ready.recordCount < 1 ||
+          ready.packCount < 1 || !/^[a-f0-9]{64}$/i.test(ready.catalogSHA256 || "")) {
+        throw new Error("Invalid PRG archive activation marker.");
+      }
+      const archiveResponse = await fetch(ARCHIVE_CATALOG_URL, {
+        cache: "no-store", credentials: "same-origin",
+      });
+      if (!archiveResponse.ok) {
+        throw new Error(`PRG archive catalogue HTTP ${archiveResponse.status}`);
+      }
+      const catalogueText = await archiveResponse.text();
+      if (!globalThis.crypto?.subtle) {
+        throw new Error("Secure hashing is required for this PRG archive.");
+      }
+      const catalogueDigest = await crypto.subtle.digest(
+        "SHA-256", new TextEncoder().encode(catalogueText));
+      const catalogueSHA = Array.from(new Uint8Array(catalogueDigest),
+        byte => byte.toString(16).padStart(2, "0")).join("");
+      if (catalogueSHA !== ready.catalogSHA256.toLowerCase()) {
+        throw new Error("PRG archive catalogue did not match the activation marker.");
+      }
+      const parsedArchive = parsePackedCatalog(
+        JSON.parse(catalogueText), { packRoot: ARCHIVE_PACK_ROOT });
+      if (parsedArchive.entries.length !== ready.recordCount ||
+          parsedArchive.packs.length !== ready.packCount) {
+        throw new Error("PRG archive record or pack counts do not match.");
+      }
+      const alreadyListed = new Set([...regular, ...packed].map((entry) =>
+        `${entry.title.trim().toLocaleLowerCase()}|${String(entry.format).toLowerCase()}`));
+      // The standalone Bruce Lee PRG remains deliberately withheld: the
+      // existing tested Trilogy CRT is the supported option on all devices.
+      archived = parsedArchive.entries.filter((entry) =>
+        entry.title.trim().toLocaleLowerCase() !== "bruce lee" &&
+        !alreadyListed.has(`${entry.title.trim().toLocaleLowerCase()}|${entry.format}`));
+    } else if (readyResponse.status !== 404) {
+      throw new Error(`PRG archive activation HTTP ${readyResponse.status}`);
+    }
+  } catch (error) {
+    archiveError = error;
+    console.warn("[ccg-c64] Optional PRG archive unavailable:", error);
+  }
+
+  onlineLibraryEntries = [...regular, ...packed, ...archived];
+  // Only verified, owner-selected CRT records bearing the explicit preference
+  // flag suppress the matching PRG/disk versions in both packed archives.
+  // Do not rewrite shared binary packs or hide unrelated titles.
+  onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
-  onlineLibraryStatus.textContent = packedCatalogueError
-    ? `${regular.length.toLocaleString("en-GB")} READY · BLAST UNAVAILABLE`
+  const unavailable = [];
+  if (packedCatalogueError) unavailable.push("BLAST UNAVAILABLE");
+  if (archiveError) unavailable.push("ARCHIVE UNAVAILABLE");
+  onlineLibraryStatus.textContent = unavailable.length
+    ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY · ${unavailable.join(" · ")}`
     : onlineLibraryEntries.length
       ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
-  if (packedCatalogueError && onlineLibraryCount) {
+  if ((packedCatalogueError || archiveError) && onlineLibraryCount) {
     onlineLibraryCount.textContent =
-      "Additional game catalogue unavailable. Check connection and retry.";
+      "Some additional games are unavailable. Check connection and retry.";
   }
-  if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden = !packedCatalogueError;
+  if (onlineLibraryRetryButton) onlineLibraryRetryButton.hidden =
+    !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
+  if (typeof catalogueBrowser !== "undefined") catalogueBrowser?.refresh();
 }
 
 async function loadSelectedLibraryEntry() {
@@ -1795,6 +2557,24 @@ async function loadSelectedLibraryEntry() {
       });
       if (!response.ok) throw new Error(`Game file is unavailable (HTTP ${response.status}).`);
       bytes = new Uint8Array(await response.arrayBuffer());
+      // Public CRT replacements are integrity-bound before the emulator sees
+      // them. A corrupt or stale CDN response must never boot as the chosen
+      // cartridge while the original PRG/disk archives remain intact.
+      if (String(entry.format).toLowerCase() === "crt") {
+        if (!/^[a-f0-9]{64}$/i.test(entry.sha256 || "") ||
+            !Number.isSafeInteger(entry.bytes) || bytes.length !== entry.bytes) {
+          throw new Error("Cartridge file size or catalogue metadata mismatch.");
+        }
+        if (!globalThis.crypto?.subtle) {
+          throw new Error("Secure hashing is required for cartridge integrity.");
+        }
+        const digest = await crypto.subtle.digest("SHA-256", bytes);
+        const hex = Array.from(new Uint8Array(digest), byte =>
+          byte.toString(16).padStart(2, "0")).join("");
+        if (hex !== entry.sha256.toLowerCase()) {
+          throw new Error("Cartridge SHA-256 mismatch. The original game files remain preserved.");
+        }
+      }
     }
 
     const type = String(entry.format).toLowerCase();
@@ -1802,18 +2582,16 @@ async function loadSelectedLibraryEntry() {
     const firstKey = ["d64", "d71", "d81", "g64"].includes(type)
       ? `library:${entry.id}:0` : null;
     activeLibraryEntryId = entry.id;
+    configureJump(entry.id);
     activeLibraryDiskIndex = 0;
     const queued = await queueMedia({
       name: filename, type, bytes, sourceKey: firstKey,
+      gameKey: "library:" + entry.id, gameTitle: entry.title,
     }, { freshBoot: true });
     if (!queued && !pendingMedia) activeLibraryEntryId = null;
     updateOnlineDiskUi();
     if (onlineLibraryStatus) onlineLibraryStatus.textContent =
       queued ? "GAME STARTED" : pendingMedia ? "ROM SETUP" : "LOAD FAILED";
-    if (queued && typeof mobileLibraryViewport !== "undefined" && mobileLibraryViewport.matches) {
-      onlineLibrarySearch?.blur();
-      screenStage?.scrollIntoView?.({ block: "start", behavior: "smooth" });
-    }
   } catch (error) {
     if (onlineLibraryStatus) onlineLibraryStatus.textContent = "LOAD FAILED";
     if (stageNote) stageNote.textContent = error?.message || "This game could not be started.";
@@ -1842,8 +2620,10 @@ window.addEventListener("keydown", (event) => handleC64Key(event, true), { captu
 window.addEventListener("keyup", (event) => handleC64Key(event, false), { capture: true });
 window.addEventListener("blur", releaseAllInput);
 document.addEventListener("focusin", (event) => {
-  if (running && usesNativeKeyboard(event.target)) releaseAllInput();
+  if (running && usesNativeKeyboard(event.target)) releaseKeyboardInput();
 });
+window.addEventListener("gamepadconnected", pollGamepad);
+window.addEventListener("gamepaddisconnected", pollGamepad);
 
 document.addEventListener("visibilitychange", () => {
   if (!running) return;
@@ -1857,7 +2637,6 @@ document.addEventListener("visibilitychange", () => {
 });
 
 document.addEventListener("fullscreenchange", () => {
-  syncMobileFullscreenUi();
   fitScreenToStage();
   if (!running || paused) return;
   lastFrameTime = 0;
@@ -2001,13 +2780,6 @@ mediaDropzone?.addEventListener("drop", async (event) => {
 });
 
 onlineLibraryRetryButton?.addEventListener("click", () => { void initialiseOnlineLibrary(); });
-window.visualViewport?.addEventListener("resize", positionLibrarySuggestions);
-window.visualViewport?.addEventListener("scroll", positionLibrarySuggestions);
-window.addEventListener("orientationchange", () => requestAnimationFrame(() => {
-  positionMobileGameLibrary();
-  positionLibrarySuggestions();
-  fitScreenToStage();
-}));
 onlineLibrarySearch?.addEventListener("input", () => {
   // Any edit invalidates the previous choice. The LOAD GAME button must not
   // accidentally start an old selection when the visible query has changed.
@@ -2050,55 +2822,182 @@ onlineLibraryGrid?.addEventListener("click", (event) => {
   const id = event.target.closest("[data-play-game]")?.dataset.playGame;
   if (id) selectOnlineLibraryEntry(id);
 });
+
+// On iOS Safari, tapping a suggestion can blur the search input and hide
+// its popup before the synthetic click fires. A completed touch is a more
+// reliable commit point. Track movement so scrolling the suggestions never
+// selects a game. Android and desktop retain the existing click path.
+const iosLibraryTouch = typeof navigator !== "undefined" &&
+  (/iPhone|iPad|iPod/.test(navigator.userAgent || "") ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+let pendingIosSuggestionTouch = null;
+let iosSuggestionPointerDown = false;
+if (iosLibraryTouch && onlineLibraryGrid) {
+  // Distinguish the website's game loader from the local file picker.
+  if (loadAnyMediaButton) {
+    loadAnyMediaButton.textContent = "OPEN LOCAL GAME FILE";
+    loadAnyMediaButton.setAttribute("aria-label", "Open a C64 game file stored on this iPhone or iPad");
+  }
+
+  // Pointer events can precede touchstart on modern iOS. Preserve the
+  // suggestion through any early blur before touchstart is delivered.
+  onlineLibraryGrid.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch" &&
+        event.target.closest?.("[data-play-game]")) iosSuggestionPointerDown = true;
+  }, { passive: true, capture: true });
+  onlineLibraryGrid.addEventListener("pointercancel", () => {
+    iosSuggestionPointerDown = false;
+  }, { passive: true });
+
+  onlineLibraryGrid.addEventListener("touchstart", (event) => {
+    pendingIosSuggestionTouch = null;
+    if (event.touches.length !== 1) return;
+    const option = event.target.closest?.("[data-play-game]");
+    if (!option || option.disabled) return;
+    const touch = event.touches[0];
+    pendingIosSuggestionTouch = {
+      id: option.dataset.playGame,
+      identifier: touch.identifier,
+      x: touch.clientX,
+      y: touch.clientY,
+      moved: false,
+    };
+  }, { passive: true });
+
+  onlineLibraryGrid.addEventListener("touchmove", (event) => {
+    if (!pendingIosSuggestionTouch) return;
+    const touch = Array.from(event.touches).find((item) =>
+      item.identifier === pendingIosSuggestionTouch.identifier);
+    if (!touch || Math.hypot(touch.clientX - pendingIosSuggestionTouch.x,
+        touch.clientY - pendingIosSuggestionTouch.y) > 12) {
+      pendingIosSuggestionTouch.moved = true;
+    }
+  }, { passive: true });
+
+  onlineLibraryGrid.addEventListener("touchend", (event) => {
+    const pending = pendingIosSuggestionTouch;
+    pendingIosSuggestionTouch = null;
+    iosSuggestionPointerDown = false;
+    if (!pending || pending.moved) return;
+    const touch = Array.from(event.changedTouches).find((item) =>
+      item.identifier === pending.identifier);
+    if (!touch || Math.hypot(touch.clientX - pending.x, touch.clientY - pending.y) > 12) return;
+    const option = event.target.closest?.("[data-play-game]");
+    if (!option || option.dataset.playGame !== pending.id) return;
+    event.preventDefault(); // Suppress a delayed Safari synthetic click.
+    selectOnlineLibraryEntry(pending.id, false);
+    // The user has picked a title: dismiss the iPhone's virtual keyboard
+    // without moving focus to LOAD (which can shift the viewport).
+    onlineLibrarySearch?.blur();
+  }, { passive: false });
+
+  onlineLibraryGrid.addEventListener("touchcancel", () => {
+    pendingIosSuggestionTouch = null;
+    iosSuggestionPointerDown = false;
+  }, { passive: true });
+}
 onlineLibraryLoadButton?.addEventListener("click", () => { void loadSelectedLibraryEntry(); });
 onlineLibrarySearchWrap?.addEventListener("focusout", (event) => {
+  // Safari may report relatedTarget=null while a suggestion is being tapped.
+  // Let the in-progress touch select before hiding the popup.
+  if (pendingIosSuggestionTouch || iosSuggestionPointerDown) return;
   if (!onlineLibrarySearchWrap.contains(event.relatedTarget)) setLibrarySuggestionsOpen(false);
 });
 document.addEventListener("pointerdown", (event) => {
   if (!onlineLibrarySearchWrap?.contains(event.target)) setLibrarySuggestionsOpen(false);
 });
 onlineLibraryDiskSwapButton?.addEventListener("click", () => { void swapOnlineLibraryDisk(); });
+const catalogueBrowser = mountCatalogueBrowser({
+  games: () => onlineLibraryEntries,
+  play(id) {
+    selectOnlineLibraryEntry(id, false);
+    void loadSelectedLibraryEntry();
+  },
+});
 void initialiseOnlineLibrary();
 
 async function saveGameVaultSlot() {
-  if (!machine || !running) return;
+  if (!machine || !running) return false;
+  if (vaultGameSelect?.value !== "__current__" &&
+      vaultGameSelect?.value !== currentSessionGame.gameKey) {
+    if (stageNote) stageNote.textContent =
+      "Choose CURRENT GAME before saving. Other games' slots are restore-only.";
+    showVaultFeedback("Choose CURRENT GAME above to save; other games and Legacy slots can only be resumed.", true);
+    return false;
+  }
   try {
-    captureMutableMedia();
-
     const slot = currentVaultSlot();
-    const record = await gameVault.save(slot, {
-      format: "ccg-c64-vault",
-      version: 1,
-      driveMode,
-      state: machine.serializeState(),
-      media: {
-        disk: cloneMedia(mountedDisk),
-        tape: cloneMedia(mountedTape),
-        cartridge: cloneMedia(mountedCartridge),
-      },
-    });
-    if (vaultStatus) vaultStatus.textContent = `Slot ${slot} saved ${new Date(record.savedAt).toLocaleString()}`;
-    if (machineState) machineState.textContent = `GAME VAULT // SLOT ${slot} SAVED`;
+    const existing = await gameVault.loadGame(currentSessionGame.gameKey, slot);
+    if (existing && !window.confirm("Overwrite " + currentSessionGame.gameTitle +
+        " Slot " + slot + "? You can export a backup first.")) return false;
+    captureMutableMedia();
+    const record = await gameVault.saveGame(currentSessionGame.gameKey,
+      currentSessionGame.gameTitle, slot, {
+        format: "ccg-c64-vault",
+        version: 1,
+        driveMode,
+        state: machine.serializeState(),
+        media: {
+          disk: cloneMedia(mountedDisk),
+          tape: cloneMedia(mountedTape),
+          cartridge: cloneMedia(mountedCartridge),
+          diskKey: mountedDiskKey,
+          diskSides: [...diskSideCache.entries()].map(([key, media]) =>
+            ({ key, media: cloneMedia(media) })),
+          libraryEntryId: activeLibraryEntryId,
+          libraryDiskIndex: activeLibraryDiskIndex,
+        },
+      });
+    if (machineState) machineState.textContent =
+      "GAME VAULT // " + currentSessionGame.gameTitle + " SLOT " + slot + " SAVED";
+    if (stageNote) stageNote.textContent =
+      "Saved " + currentSessionGame.gameTitle + " to Slot " + slot +
+      " in this browser. Export a backup for long-term safekeeping.";
+    showVaultFeedback("✓ " + currentSessionGame.gameTitle + " saved to Slot " + slot +
+      ". You can resume it after reloading this page.");
+    await refreshVaultGameList("__current__");
+    if (vaultStatus) vaultStatus.textContent =
+      currentSessionGame.gameTitle + " // SLOT " + slot + " SAVED " +
+      new Date(record.savedAt).toLocaleString();
     screen?.focus();
+    return true;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "Game Vault save failed.";
+    showVaultFeedback("Save failed: " + (error?.message || "Game Vault storage unavailable."), true);
+    return false;
   }
 }
 
 async function loadGameVaultSlot() {
-  if (!running) return;
+  if (!vault.snapshot().allRequiredReady) {
+    showVaultFeedback("System ROMs are needed before a saved game can resume. Open ROM SETTINGS.", true);
+    showSetup();
+    return false;
+  }
+  const selection = vaultSelection();
+  const slot = currentVaultSlot();
+  let stopped = false;
+  let old = null;
   try {
-    const slot = currentVaultSlot();
-    const record = await gameVault.load(slot);
+    const record = await vaultRecord(selection, slot);
     const payload = record?.payload;
-    if (!payload || payload.format !== "ccg-c64-vault") throw new Error(`Game Vault slot ${slot} is empty.`);
-
+    if (!payload || payload.format !== "ccg-c64-vault") {
+      throw new Error(selection.gameTitle + " Slot " + slot + " is empty.");
+    }
     const driveRom = vault.getBytes("drive1541");
     if (payload.state?.drive1541 && !driveRom) {
       throw new Error("This state used True 1541 mode. Restore the optional 1541 DOS ROM first.");
     }
 
+    // Build the replacement against its own media. Restore the previous
+    // running game intact if any part of reconstruction fails.
+    old = {
+      machine, mountedDisk, mountedTape, mountedCartridge, driveMode,
+      mountedDiskKey, activeLibraryEntryId, activeLibraryDiskIndex,
+      currentSessionGame, running, diskSides: [...diskSideCache.entries()],
+    };
     stopFrameLoop();
+    stopped = true;
     cancelAutoStart();
     warpLoadActive = false;
     setAudioPaused(true);
@@ -2107,7 +3006,21 @@ async function loadGameVaultSlot() {
     mountedTape = cloneMedia(payload.media?.tape);
     mountedCartridge = cloneMedia(payload.media?.cartridge);
     driveMode = payload.driveMode === "true" ? "true" : "fast";
-    localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
+    mountedDiskKey = payload.media?.diskKey ||
+      (mountedDisk ? "restored:" + mountedDisk.name : null);
+    activeLibraryEntryId = payload.media?.libraryEntryId ||
+      (selection.gameKey.startsWith("library:")
+        ? selection.gameKey.slice("library:".length) : null);
+    activeLibraryDiskIndex = payload.media?.libraryDiskIndex || 0;
+    diskSideCache.clear();
+    for (const item of payload.media?.diskSides || []) {
+      if (typeof item?.key === "string" && item.media?.bytes) {
+        diskSideCache.set(item.key, cloneMedia(item.media));
+      }
+    }
+    if (mountedDisk && mountedDiskKey && !diskSideCache.has(mountedDiskKey)) {
+      diskSideCache.set(mountedDiskKey, cloneMedia(mountedDisk));
+    }
 
     const restored = new C64Machine();
     restored.loadROMs({
@@ -2118,67 +3031,261 @@ async function loadGameVaultSlot() {
     if (driveRom) restored.attachDrive(driveRom);
     attachSessionMedia(restored);
     restored.restoreState(payload.state);
-
     machine = restored;
+    await wireAudioToMachine();
+    currentSessionGame = selection.legacy
+      ? sessionForMedia(payload.media?.cartridge || payload.media?.disk ||
+          payload.media?.tape || { name: "Legacy Slot " + slot, type: "basic" })
+      : { gameKey: selection.gameKey, gameTitle: selection.gameTitle };
+    localStorage.setItem("ccg.emulator.c64.driveMode", driveMode);
     applyJoystickInput();
     running = true;
     paused = false;
     frameImage = null;
     frameAccumulator = 0;
     lastFrameTime = 0;
-    await wireAudioToMachine();
     setAudioPaused(false);
     setControlState(vault.snapshot());
     blitMachine();
     frameHandle = requestAnimationFrame(frameLoop);
-    if (machineState) machineState.textContent = `GAME VAULT // SLOT ${slot} RESTORED`;
-    if (stageNote) stageNote.textContent = "Machine state and its local disk, tape and cartridge media were restored from this browser.";
+    stopped = false;
+    if (machineState) machineState.textContent =
+      "GAME VAULT // " + selection.gameTitle + " SLOT " + slot + " RESTORED";
+    if (stageNote) stageNote.textContent =
+      "Resumed " + selection.gameTitle + " from saved Slot " + slot + ".";
+    showVaultFeedback("✓ " + selection.gameTitle + " restored from Slot " + slot + ".");
     updateMediaControls(vault.snapshot());
-    await refreshVaultStatus();
+    updateOnlineDiskUi();
+    await refreshVaultGameList("__current__");
+    if (typeof enterMobilePlayMode === "function") {
+      enterMobilePlayMode(currentSessionGame.gameTitle);
+    }
     screen?.focus();
+    return true;
   } catch (error) {
+    if (stopped && old) {
+      machine = old.machine;
+      mountedDisk = old.mountedDisk;
+      mountedTape = old.mountedTape;
+      mountedCartridge = old.mountedCartridge;
+      driveMode = old.driveMode;
+      mountedDiskKey = old.mountedDiskKey;
+      activeLibraryEntryId = old.activeLibraryEntryId;
+      activeLibraryDiskIndex = old.activeLibraryDiskIndex;
+      currentSessionGame = old.currentSessionGame;
+      running = old.running;
+      diskSideCache.clear();
+      for (const [key, media] of old.diskSides) diskSideCache.set(key, media);
+    }
     if (!frameHandle && running && machine) frameHandle = requestAnimationFrame(frameLoop);
     setAudioPaused(false);
     if (stageNote) stageNote.textContent = error?.message || "Game Vault restore failed.";
+    showVaultFeedback("Restore failed: " + (error?.message || "Unknown Game Vault error."), true);
+    return false;
   }
 }
 
+// The mobile shortcuts use the SAME IndexedDB vault and machine snapshot
+// routines as the desktop Save / Resume panel: no competing save format.
+function closeMobileVaultPanel({ resume = true } = {}) {
+  ++mobileVaultRequestId;
+  if (mobileVaultPanel) mobileVaultPanel.hidden = true;
+  if (resume && mobileVaultAutoPaused && running && paused) togglePause();
+  mobileVaultAutoPaused = false;
+  if (mobilePlayActive) screen?.focus?.({ preventScroll: true });
+}
+
+async function openMobileVault(mode) {
+  if (!mobilePlayActive || !running || !machine || !mobileVaultPanel ||
+      !mobileVaultSlots || !["save", "load"].includes(mode)) return;
+  if (!mobileVaultPanel.hidden) closeMobileVaultPanel();
+  setMobileKeyboardOpen(false);
+  mobileVaultAutoPaused = !paused;
+  if (mobileVaultAutoPaused) togglePause();
+  mobileVaultPanel.hidden = false;
+  const token = ++mobileVaultRequestId;
+  if (mobileVaultTitle) mobileVaultTitle.textContent =
+    mode === "save" ? "SAVE GAME STATE" : "LOAD GAME STATE";
+  if (mobileVaultHelp) mobileVaultHelp.textContent =
+    (mode === "save" ? "Choose a slot for " : "Resume a saved slot for ") +
+    currentSessionGame.gameTitle + ". Saves remain in this browser.";
+  mobileVaultSlots.replaceChildren();
+  if (mobileVaultMessage) mobileVaultMessage.textContent = "Checking saved slots…";
+  try {
+    const slots = await Promise.all([1, 2, 3].map(slot =>
+      gameVault.loadGame(currentSessionGame.gameKey, slot)));
+    if (token !== mobileVaultRequestId) return;
+    for (let i = 0; i < slots.length; i++) {
+      const slot = i + 1;
+      const saved = slots[i];
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "ccg-c64-mobile-vault-slot";
+      const title = document.createElement("strong");
+      title.textContent = "SLOT " + slot + (saved ? " · SAVED" : " · EMPTY");
+      const details = document.createElement("span");
+      details.textContent = saved
+        ? new Date(saved.savedAt).toLocaleString()
+        : (mode === "save" ? "Save here" : "No saved game");
+      button.append(title, details);
+      button.disabled = mode === "load" && !saved;
+      button.addEventListener("click", async () => {
+        if (token !== mobileVaultRequestId || button.disabled) return;
+        for (const other of mobileVaultSlots.querySelectorAll("button")) other.disabled = true;
+        if (mobileVaultMessage) mobileVaultMessage.textContent =
+          (mode === "save" ? "Saving" : "Restoring") + " Slot " + slot + "…";
+        // Game Vault UI also exposes older game and Legacy selections. The
+        // immersive shortcuts must ONLY operate on the currently playing game.
+        if (vaultGameSelect) vaultGameSelect.value = "__current__";
+        if (vaultSlot) vaultSlot.value = String(slot);
+        const ok = mode === "save" ? await saveGameVaultSlot() : await loadGameVaultSlot();
+        if (token !== mobileVaultRequestId) return;
+        if (ok) closeMobileVaultPanel({ resume: mode === "save" });
+        else {
+          if (mobileVaultMessage) mobileVaultMessage.textContent =
+            vaultFeedback?.textContent || "Unable to access this saved game.";
+          for (const other of mobileVaultSlots.querySelectorAll("button")) {
+            const index = [...mobileVaultSlots.children].indexOf(other);
+            other.disabled = mode === "load" && !slots[index];
+          }
+        }
+      });
+      mobileVaultSlots.append(button);
+    }
+    if (mobileVaultMessage) mobileVaultMessage.textContent = mode === "save"
+      ? "An occupied slot asks before overwriting. Export backups from Save / Resume."
+      : "Only this game's existing saves can be resumed here.";
+  } catch (error) {
+    if (token !== mobileVaultRequestId) return;
+    if (mobileVaultMessage) mobileVaultMessage.textContent =
+      "Game Vault unavailable: " + (error?.message || "Check browser storage and retry.");
+  }
+}
+
+async function exportGameVaultSlot() {
+  try {
+    const selection = vaultSelection();
+    const slot = currentVaultSlot();
+    let record = await vaultRecord(selection, slot);
+    if (!record) throw new Error("This slot is empty. Save a game first.");
+    if (selection.legacy) {
+      record = {
+        ...record, gameKey: "legacy:slot-" + slot,
+        gameTitle: "Legacy Slot " + slot,
+      };
+    }
+    const backup = encodeGameVaultBackup(record);
+    const blob = new Blob([backup], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = selection.gameTitle.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 64) +
+      "-slot-" + slot + ".ccg64save.json";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30_000);
+    if (stageNote) stageNote.textContent =
+      "Backup exported for " + selection.gameTitle + " Slot " + slot +
+      ". Keep the file somewhere safe.";
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "Backup export failed.";
+  }
+}
+
+async function importGameVaultBackup(file) {
+  if (!file) return;
+  try {
+    if (file.size > 80_000_000) throw new Error("Backup file exceeds 80 MB.");
+    const backup = decodeGameVaultBackup(await file.text());
+    const old = await gameVault.loadGame(backup.gameKey, backup.slot);
+    if (old && !window.confirm(
+      "Overwrite " + backup.gameTitle + " Slot " + backup.slot +
+      " with this imported backup? The current saved state will be lost."
+    )) return;
+    await gameVault.saveGame(backup.gameKey, backup.gameTitle, backup.slot,
+      backup.payload, backup.savedAt);
+    await refreshVaultGameList(backup.gameKey);
+    if (stageNote) stageNote.textContent =
+      "Imported " + backup.gameTitle + " Slot " + backup.slot +
+      ". Select RESTORE to resume it. No other games were changed.";
+  } catch (error) {
+    if (stageNote) stageNote.textContent = error?.message || "Backup import failed.";
+  }
+}
+
+vaultRetryButton?.addEventListener("click", () => {
+  if (vaultRetryButton.disabled) return;
+  vaultRetryButton.disabled = true;
+  if (vaultStatus) vaultStatus.textContent = "RECONNECTING VAULT…";
+  void refreshVaultGameList().finally(() => { vaultRetryButton.disabled = false; });
+});
+// Returning after closing another emulator tab is an opportunity to retry.
+// This does not reset the machine or touch any saved state.
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && vaultRetryButton && !vaultRetryButton.hidden) {
+    void refreshVaultGameList();
+  }
+});
 vaultSaveButton?.addEventListener("click", () => { void saveGameVaultSlot(); });
 vaultLoadButton?.addEventListener("click", () => { void loadGameVaultSlot(); });
+vaultExportButton?.addEventListener("click", () => { void exportGameVaultSlot(); });
+vaultImportButton?.addEventListener("click", () => vaultBackupInput?.click());
+vaultBackupInput?.addEventListener("change", async () => {
+  const file = vaultBackupInput.files?.[0];
+  vaultBackupInput.value = "";
+  await importGameVaultBackup(file);
+});
 vaultClearButton?.addEventListener("click", async () => {
+  const selection = vaultSelection();
   const slot = currentVaultSlot();
-  if (!window.confirm(`Clear Game Vault slot ${slot} from this browser?`)) return;
+  if (!window.confirm("Clear " + selection.gameTitle + " Slot " + slot +
+      " from this browser? This cannot be undone without an exported backup.")) return;
   try {
-    await gameVault.clear(slot);
-    await refreshVaultStatus();
+    if (selection.legacy) await gameVault.clear(slot);
+    else await gameVault.clearGame(selection.gameKey, slot);
+    await refreshVaultGameList(vaultGameSelect?.value);
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "Game Vault slot could not be cleared.";
   }
 });
 vaultSlot?.addEventListener("change", () => { void refreshVaultStatus(); });
+vaultGameSelect?.addEventListener("change", () => {
+  const selection = vaultSelection();
+  showVaultFeedback(selection.legacy
+    ? "Original legacy saves can be resumed here. Select CURRENT GAME to save new progress."
+    : selection.gameKey === currentSessionGame.gameKey
+      ? "Saving uses the current running game. You can resume any available slot later."
+      : "Previous saved game selected. Choose a slot and press RESUME SAVE.");
+  void refreshVaultStatus();
+});
 
 for (const button of document.querySelectorAll("[data-joy-mask]")) {
   const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
-  const press = (event) => {
+  const press = event => {
     event.preventDefault();
-    touchHeldMask |= mask;
-    touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickInput();
+    if (button.hidden) return;
+    touchHeldButtons.set(button, { mask, pointerId: event.pointerId });
+    syncTouchJoystick();
     if (inputStatus) inputStatus.textContent = `TOUCH // PORT ${joystickPort}`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
   };
-  const release = (event) => {
+  const release = event => {
     event.preventDefault();
-    touchHeldMask &= ~mask;
-    touchJoyByte = 0xFF & ~touchHeldMask;
-    applyJoystickInput();
+    const held = touchHeldButtons.get(button);
+    if (!held || (event.pointerId != null && held.pointerId !== event.pointerId)) return;
+    touchHeldButtons.delete(button);
+    syncTouchJoystick();
     if (!touchHeldMask && inputStatus && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
   };
   button.addEventListener("pointerdown", press);
   button.addEventListener("pointerup", release);
   button.addEventListener("pointercancel", release);
-  button.addEventListener("contextmenu", (event) => event.preventDefault());
+  button.addEventListener("lostpointercapture", release);
+  button.addEventListener("contextmenu", event => event.preventDefault());
 }
+configureJump(null);
 
 // On phones, make short taps long enough for the C64 keyboard scan to see them.
 // Pointer capture and cancellation ensure a released F-key never remains stuck.
@@ -2213,9 +3320,8 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
     const prior = touchFunctionKeyHolds.get(button);
     if (prior?.timer) clearTimeout(prior.timer);
     touchFunctionKeyHolds.set(button, { col, row, started: performance.now(), timer: null });
+    pollGamepad();
     machine.cia1.setKey(col, row, true);
-    keyboardPriorityUntil = performance.now() + 1200;
-    applyJoystickInput();
     button.classList.add("is-pressed");
     if (inputStatus) inputStatus.textContent = `C64 ${code} // TOUCH`;
     try { button.setPointerCapture?.(event.pointerId); } catch {}
@@ -2230,98 +3336,10 @@ for (const button of document.querySelectorAll("[data-c64-fkey]")) {
   button.addEventListener("contextmenu", event => event.preventDefault());
 }
 
-void refreshVaultStatus();
-
-// Secondary mobile keys share the physical keyboard's CIA matrix route.
-// A 120ms minimum press allows the emulated 50 Hz keyboard scan to register taps.
-const MIN_TOUCH_VIRTUAL_KEY_MS = 120;
-for (const button of document.querySelectorAll("[data-c64-virtual-key]")) {
-  const code = button.getAttribute("data-c64-virtual-key");
-  const key = code === "Space" ? " " : code.startsWith("Key") ? code.slice(3).toLowerCase()
-    : code.startsWith("Digit") ? code.slice(5) : code;
-  const virtualEvent = () => ({
-    code, key, ccgVirtual: true, repeat: false,
-    shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
-    target: screen, getModifierState: () => false, preventDefault() {},
-  });
-  const release = (force = false) => {
-    const held = touchVirtualKeyHolds.get(button);
-    if (!held) return;
-    const remaining = MIN_TOUCH_VIRTUAL_KEY_MS - (performance.now() - held.started);
-    if (!force && remaining > 0) {
-      if (!held.timer) held.timer = setTimeout(() => release(true), remaining);
-      return;
-    }
-    if (held.timer) clearTimeout(held.timer);
-    touchVirtualKeyHolds.delete(button);
-    button.classList.remove("is-pressed");
-    handleC64Key(virtualEvent(), false);
-  };
-  button.addEventListener("pointerdown", event => {
-    event.preventDefault();
-    if (!running || !machine || paused || setup?.hidden === false || touchVirtualKeyHolds.has(button)) return;
-    touchVirtualKeyHolds.set(button, { started: performance.now(), timer: null });
-    handleC64Key(virtualEvent(), true);
-    button.classList.add("is-pressed");
-    try { button.setPointerCapture?.(event.pointerId); } catch {}
-  });
-  for (const name of ["pointerup", "pointercancel"]) {
-    button.addEventListener(name, event => { event.preventDefault(); release(); });
-  }
-  button.addEventListener("lostpointercapture", () => release());
-  button.addEventListener("click", event => {
-    if (event.detail !== 0 || !running || !machine || paused) return;
-    handleC64Key(virtualEvent(), true);
-    setTimeout(() => handleC64Key(virtualEvent(), false), MIN_TOUCH_VIRTUAL_KEY_MS);
-  });
-  button.addEventListener("contextmenu", event => event.preventDefault());
-}
-
-function syncMobileFullscreenUi() {
-  const active = Boolean(mobileGameConsole?.classList.contains("is-mobile-theater") ||
-    document.fullscreenElement === mobileGameConsole);
-  if (mobileFullscreenExit) mobileFullscreenExit.hidden = !active;
-  if (mobileFullscreenButton) mobileFullscreenButton.textContent =
-    active ? "EXIT FULLSCREEN" : "PLAY FULLSCREEN";
-  document.body.classList.toggle("ccg-c64-mobile-playing", active);
-}
-
-async function toggleMobileFullscreen() {
-  if (!mobileGameConsole) return;
-  if (mobileGameConsole.classList.contains("is-mobile-theater")) {
-    mobileGameConsole.classList.remove("is-mobile-theater");
-  } else if (document.fullscreenElement) {
-    await document.exitFullscreen();
-  } else {
-    try {
-      if (!mobileGameConsole.requestFullscreen) throw new Error("Fullscreen API unavailable");
-      await mobileGameConsole.requestFullscreen({ navigationUI: "hide" });
-    } catch {
-      // iPhone Safari and embedded browsers may not offer element fullscreen.
-      // Keep the emulator and touch controls together in a reversible overlay.
-      mobileGameConsole.classList.add("is-mobile-theater");
-    }
-  }
-  syncMobileFullscreenUi();
-  requestAnimationFrame(fitScreenToStage);
-}
-mobileFullscreenButton?.addEventListener("click", () => { void toggleMobileFullscreen(); });
-mobileFullscreenExit?.addEventListener("click", () => { void toggleMobileFullscreen(); });
-window.addEventListener("keydown", event => {
-  if (event.key === "Escape" && mobileGameConsole?.classList.contains("is-mobile-theater")) {
-    event.preventDefault();
-    void toggleMobileFullscreen();
-  }
-});
-
-
+void refreshVaultGameList();
 
 fullscreenButton?.addEventListener("click", async () => {
   if (!screenStage) return;
-  if (mobileLibraryViewport.matches) {
-    await toggleMobileFullscreen();
-    return;
-  }
   try {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
@@ -2333,6 +3351,7 @@ fullscreenButton?.addEventListener("click", async () => {
       const fullscreenTarget = touchLayout
         ? document.querySelector(".ccg-c64-console") || screenStage
         : screenStage;
+      if (mobilePlayMedia?.matches && running) enterMobilePlayMode("C64 GAMEPLAY");
       await fullscreenTarget.requestFullscreen({ navigationUI: "hide" });
     }
     fitScreenToStage();
@@ -2348,15 +3367,30 @@ document.querySelector("[data-ccg-c64-year]")?.replaceChildren(String(new Date()
 const initial = vault.restore();
 render(initial);
 
-// Returning visitors with a complete local ROM bank should see the real C64
-// BASIC READY screen, not the CCG pre-boot status canvas. First-time visitors
-// still retain the media-first flow and are prompted for ROMs only when needed.
-if (initial.allRequiredReady && typeof SharedArrayBuffer !== "undefined") {
-  void powerOn();
+// All visitors, desktop and mobile, load the SAME original Commodore 64
+// BASIC V2, KERNAL Rev.3 and CHARGEN from this website. Each file's SHA-256
+// is verified before the original ROMVault installs anything.
+async function bootWithHostedFirmware() {
+  try {
+    if (machineState) machineState.textContent = "STARTING COMMODORE 64";
+    if (stageNote) stageNote.textContent = "Loading the original C64 BASIC, KERNAL and CHARGEN firmware...";
+    const files = await fetchVerifiedHostedROMs();
+    const snapshot = installHostedROMs(vault, files);
+    render(snapshot);
+    if (machineState) machineState.textContent = HOSTED_ROM_VERSION;
+  } catch (error) {
+    console.error("[ccg-c64] Original C64 firmware unavailable:", error);
+    if (stageNote) stageNote.textContent =
+      "Original C64 firmware could not be loaded. Reload this page, " +
+      "or use SYSTEM ROMS to recover your installed files. " +
+      (error?.message || "");
+    render(vault.snapshot());
+  }
+  if (vault.snapshot().allRequiredReady && !running) {
+    await powerOn();
+  }
 }
-
-// Do not interrupt first-time visitors with a firmware modal. They can choose
-// media immediately; setup is requested only when the selected media needs booting.
+hostedFirmwareReadyPromise = bootWithHostedFirmware();
 
 window.addEventListener("pagehide", () => {
   releaseAllInput();

@@ -92,6 +92,7 @@ const context = vm.createContext({
     context.onlineLibraryCount.textContent = "Select a game, then click LOAD.";
   },
   updateOnlineDiskUi() {},
+  configureJump() {}, // Real library load configures per-game touch buttons before queuing.
   async queueMedia(media, opts) {
     queueCount++;
     lastQueued = { media, opts };

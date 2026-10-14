@@ -15,18 +15,25 @@ const oldGameEntry=read("games/the-lost-sizzler/index.html");
 const oldQuestEntry=read("games/ccg-games/cheeky-commodore-quest/index.html");
 const publicEntry=read("arcade/c64-dungeon-carnage/index.html");
 const version=JSON.parse(read("arcade/lost-sizzler/version.json"));
-const releaseCache="20261008r119";
-assert.equal(version.build,"V10.42 r119","R119 browser release must display the combined sanctuary and gameplay fixes");
-assert.equal(version.cacheToken,releaseCache,"R119 must trigger a fresh client cache boundary");
+const releaseCache=version.cacheToken;
+const releaseBuild=version.build;
+const releaseLabel=releaseBuild.toUpperCase();
+const releaseIndex=Number(/\br(\d+)$/i.exec(releaseBuild)?.[1]||0);
+assert.ok(releaseIndex>=134,"Dungeon Carnage must not downgrade below the licensed-art R134 release");
+assert.match(releaseBuild,/^V10\.42 r\d+$/,"Dungeon Carnage version marker must have a stable V10.42 release format");
+assert.match(releaseCache,/^\d{8}r\d+$/,"Dungeon Carnage release must publish a dated cache token");
+assert.equal(Number(/r(\d+)$/.exec(releaseCache)?.[1]||0),releaseIndex,"Cache release index must match build number");
 for(const [name,page] of [["source",index],["public",publicEntry]]){
-  assert.ok(page.includes('<meta name="ccg-lost-sizzler-build" content="V10.42 r119">'),name+" build metadata must match the R119 release");
-  assert.ok(page.includes('<meta name="ccg-lost-sizzler-cache" content="'+releaseCache+'">'),name+" must agree with R119 cache token");
-  assert.ok(page.includes('<summary>Latest Build Changes · V10.42 R119</summary>'),name+" player changelog must display R119");
+  assert.ok(page.includes(`<meta name="ccg-lost-sizzler-build" content="${releaseBuild}">`),name+" build metadata must match version.json");
+  assert.ok(page.includes(`<meta name="ccg-lost-sizzler-cache" content="${releaseCache}">`),name+" must match version.json cache token");
+  assert.ok(page.includes(`<summary>Latest Build Changes · ${releaseLabel}</summary>`),name+" visible changelog must match the release");
+  assert.ok(page.includes(`ACTIVE BUILD: ${releaseLabel}`),name+" visible active build must match the release");
   assert.ok(page.includes("flickering animated wall torches")&&page.includes("rotating gold-score coins"),name+" changelog must preserve R118 animation notes");
-  assert.ok(page.includes("R119 improves permanent sanctuary spacing")&&page.includes("Treasure Goblin"),name+" changelog must describe R119 gameplay corrections");
-  assert.ok(!page.includes("20261007r117"),name+" must not reference pre-R118 scripts or CSS");
+  assert.ok(page.includes("R119 improves permanent sanctuary spacing")&&page.includes("Treasure Goblin"),name+" changelog must preserve the R119 gameplay corrections");
+  assert.ok(page.includes("R134 upgrades the visual presentation of spike traps"),name+" must describe the R134 art release");
+  assert.ok(!page.includes("20261007r117")&&!page.includes("20261008r119"),name+" must not ship stale pre-R134 CSS/JS cache tokens");
   for(const script of ["js/v10-41-cache-guard.js","js/version-check.js","js/asset-overrides.js","js/game-render.js"]){
-    assert.ok(page.includes(script+"?v="+releaseCache),name+" must load fresh "+script+" code rather than the previous release");
+    assert.ok(page.includes(script+"?v="+releaseCache),name+" must load current "+script+" code");
   }
 }
 

@@ -13,6 +13,9 @@ on:
       - "admin/js/content-publisher-existing-game-update.js"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
+      - "js/ccg-game-seo-snippet.js"
+      - "resources/css/ccg-publisher-seo-preview.css"
+      - "tests/game-seo-snippet-quality.test.mjs"
       - "admin/js/content-publisher-completion-guard.js"
       - "admin/js/collection-values.js"
       - "admin/js/guard.js"
@@ -48,6 +51,9 @@ on:
       - "admin/js/content-publisher-existing-game-update.js"
       - "admin/js/content-publisher-status-reconciler.js"
       - "admin/js/content-publisher-source-preflight.mjs"
+      - "js/ccg-game-seo-snippet.js"
+      - "resources/css/ccg-publisher-seo-preview.css"
+      - "tests/game-seo-snippet-quality.test.mjs"
       - "admin/js/content-publisher-completion-guard.js"
       - "admin/js/collection-values.js"
       - "admin/js/guard.js"
@@ -96,6 +102,8 @@ jobs:
           node --check admin/js/content-publisher-existing-game-update.js
           node --check admin/js/content-publisher-status-reconciler.js
           node --check admin/js/content-publisher-source-preflight.mjs
+          node --check js/ccg-game-seo-snippet.js
+          node --check scripts/prepare-seo-game-routes.js
           node --check admin/js/content-publisher-completion-guard.js
           node --check admin/js/collection-values.js
           node --check admin/js/guard.js
@@ -112,6 +120,7 @@ jobs:
         run: |
           node --test tests/content-publisher.test.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
+          node --test tests/game-seo-snippet-quality.test.mjs
           node --test tests/lemon-source-discovery.test.mjs
           node --test tests/new-game-enrichment-validation.test.mjs
           node --test tests/admin-collection-values.test.mjs

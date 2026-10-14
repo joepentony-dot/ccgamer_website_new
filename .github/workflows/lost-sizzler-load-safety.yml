@@ -213,6 +213,9 @@ jobs:
         env:
           SHARD: ${{ matrix.shard }}
           TESTS_JSON: ${{ matrix.tests }}
+          # Opt-in screenshot/RAF evidence, only when explicitly requested in a PR body.
+          # The existing R51 browser contract runs once in its assigned shard.
+          CCG_DUNGEON_VISUAL_BASELINE_DIR: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.body, '[ccg-visual-baseline]') && format('{0}/dungeon-carnage-five-floor-baseline', runner.temp) || '' }}
         run: |
           set -uo pipefail
           log="$RUNNER_TEMP/dungeon-carnage-browser-shard-$SHARD.log"
@@ -266,6 +269,15 @@ jobs:
             echo "Chromium shard $SHARD failed contracts: ${failures[*]}" | tee -a "$log"
             exit 1
           fi
+
+      - name: Upload opt-in fixed-seed floor and RAF evidence
+        if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.body, '[ccg-visual-baseline]') && contains(matrix.tests, 'v10-41-r51-visual-ui-overhaul.mjs') && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dungeon-carnage-five-floor-visual-baseline
+          path: ${{ runner.temp }}/dungeon-carnage-five-floor-baseline
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Upload failing Chromium shard log
         if: failure()

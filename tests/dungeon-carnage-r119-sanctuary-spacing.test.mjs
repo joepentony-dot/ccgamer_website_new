@@ -57,6 +57,48 @@ for(const floor of [1,3,9,15]){
     minGap=Math.min(minGap,gap);minHops=Math.min(minHops,hops);samples++;
   }
 }
+// Extend the existing placement-owner contract across every campaign floor.
+// This is geometric connectivity only: it deliberately does not bypass locked
+// gates or assert that quest prerequisites are completed.
+function geometryReachable(world){
+  const key=(x,y)=>x+","+y;
+  const seen=new Set([key(world.start.x,world.start.y)]),queue=[world.start];
+  for(let at=0;at<queue.length;at++){
+    const point=queue[at];
+    if(point.x===world.exit.x&&point.y===world.exit.y)return true;
+    for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const x=point.x+dx,y=point.y+dy,id=key(x,y);
+      if(world.map[y]?.[x]!==0||seen.has(id))continue;
+      seen.add(id);queue.push({x,y});
+    }
+  }
+  return false;
+}
+let fullCampaignSamples=0,smallestGap=Infinity,smallestHops=Infinity;
+for(let floor=1;floor<=15;floor++){
+  for(let trial=0;trial<2;trial++){
+    const seed="ccg-engine-wide-floor-"+floor+"-"+trial;
+    const world=W.generate(seed),host=W.createHostState(world);
+    SYS.decorate(world,host,{floor,stats:{},seed});
+    assert.equal(world.topology?.doorTopology?.valid,true,
+      "No optional gate may be orphaned during generation: "+seed);
+    assert.equal(geometryReachable(world),true,
+      "Generated floor must retain a four-way geometric start-to-exit route: "+seed);
+    const sanctuaries=world.rooms.filter(room=>room.sanctuary);
+    assert.equal(sanctuaries.length,2,
+      "Campaign floors must retain two spaced sanctuaries: "+seed);
+    const [first,second]=sanctuaries,gap=edgeGap(first,second),hops=graphHops(world,first,second);
+    assert.ok(gap>=18&&hops>=3,
+      "Sanctuary spacing must survive every campaign floor: "+seed+" gap="+gap+" hops="+hops);
+    smallestGap=Math.min(smallestGap,gap);
+    smallestHops=Math.min(smallestHops,hops);
+    fullCampaignSamples++;
+  }
+}
+console.log("Engine-first all-floor geometry PASS: "+fullCampaignSamples+
+  " generations across 15 floors; minimum gap="+smallestGap+
+  " tiles and corridor distance="+smallestHops+" hops");
+
 console.log("R119 sanctuary spacing PASS: "+samples+
   " real early/late floor generations; 2 refuges per floor, minimum gap="+minGap+
   " tiles, minimum corridor distance="+minHops+" hops; hazards/start/exit/sigil reserved");

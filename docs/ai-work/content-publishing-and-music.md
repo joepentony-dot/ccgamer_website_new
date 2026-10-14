@@ -22,6 +22,12 @@
 - Reliable Games Publishing now requires a fresh full UTA mapping run instead of treating UTA refresh as best-effort. Ambiguous title matches remain excluded to the manual-review queue.
 - Qualification is in progress; do not merge until the exact head is green and the user explicitly authorises merge.
 
+## Retiring a video-less game — #2734 (14 October 2026)
+
+- The owner requested retiring `/games/the-happiest-days-of-your-life/` while its YouTube/Drive video is unavailable. The existing PR #2734 removes exactly one catalogue entry, stale video override, static canonical/legacy pages, and generated archive/sitemap entries; all other games, manuals, backups and media remain intact.
+- Source audit found `_redirects` still force-rewrote the deleted canonical route into `/games/game.html?slug=the-happiest-days-of-your-life`, defeating the intended removal. This same existing PR removes that one obsolete rule and strengthens `scripts/audit-legacy-game-routes.js` to reject orphaned forced game rewrites for ANY removed title.
+- At this review-head preflight the authoritative catalogue contained 665 games and 649 explicit game rewrites, including exactly one orphan for the retired title. After removing that single rule, 648 rewrites remain, with no orphan; 17 active titles continue to use their physical folders (existing allowed warning). No shared redirect rules or live routes for other games were modified.
+- This is a guarded candidate, NOT merged or deployed. Reconcile latest main changes, rerun exact-head Node/SEO/sitemap/route-publishing/site-safety/Workers tests, review changed generated output ownership and independently inspect the retired URL behavior before merging. Do not replace owner-retained manuals or originals.
 # Content publishing and game music
 
 ## Scope

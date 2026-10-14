@@ -57,6 +57,33 @@
     }catch(_){return false}
   };
 
+  /* Test and standalone releases must not fetch production CDN songs, even
+   * when asset-overrides.js pins a hardcoded Supabase music URL. */
+  const isLocalPlaybackHost=()=>{
+    let host=String(location.hostname||"").toLowerCase().replace(/\.$/,"");
+    // The URL parser canonicalizes mapped IPv4 and expanded IPv6 spellings.
+    if(host.includes(":"))try{host=new URL(`http://${host.startsWith("[")?host:`[${host}]`}`).hostname}catch(_){}
+    return host==="localhost"||host.endsWith(".localhost")||host==="::1"||host==="[::1]"||host==="::"||host==="[::]"||host==="0.0.0.0"
+      ||/^127(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(host)
+      ||/^\[::ffff:(?:7f[0-9a-f]{2}:[0-9a-f]{1,4}|0:0)\]$/.test(host);
+  };
+
+  function remoteProductionAudioDisabled(){
+    try{
+      return window.CCGDungeonCarnageItchPackage===true
+        || location.protocol==="file:"
+        || isLocalPlaybackHost()
+        || navigator.webdriver===true
+        || /HeadlessChrome/i.test(String(navigator.userAgent||""));
+    }catch(_){return true}
+  }
+
+  function safeMusicSources(sources){
+    const list=unique(sources);
+    if(!remoteProductionAudioDisabled())return list;
+    return list.filter(url=>!isMeteredRemoteTrack(url));
+  }
+
   function adminAudioPending(){
     try{
       const policy=window.CCGLostSizzlerRemoteMediaPolicy;
@@ -68,7 +95,7 @@
     const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{};
     const admin=window.CCG_ADMIN_AUDIO||{};
     const legacy=LEGACY_ADMIN_KEYS[state];
-    return unique([
+    return safeMusicSources([
       ...asList(override.playlists?.[state]),
       ...asList(override[legacy]),
       ...asList(admin.playlists?.[state]),
@@ -78,7 +105,7 @@
 
   function packagedSources(state){
     const legacy=LEGACY_ADMIN_KEYS[state],music=assets.music||{};
-    return unique([
+    return safeMusicSources([
       ...asList(music.playlists?.[state]),
       ...asList(music[state]),
       ...asList(music[legacy])

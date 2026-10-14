@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="../resources/css/ccg-admin.css" />
   <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css" />
   <link rel="stylesheet" href="../resources/css/ccg-content-publisher.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-publisher-seo-preview.css" />
 </head>
 <body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64" data-publisher-ready="false">
   <div class="ccg-bg" aria-hidden="true">
@@ -125,6 +126,16 @@
         <div class="publisher-header-actions">
           <button class="ccg-btn ccg-btn--ghost" type="button" data-action="generate-game-description">Regenerate factual description</button>
         </div>
+
+        <section class="publisher-card publisher-card--subtle ccg-publisher-seo-preview"
+                 aria-labelledby="ccg-publisher-seo-preview-heading" data-game-seo-preview>
+          <h3 id="ccg-publisher-seo-preview-heading">Google search preview (draft)</h3>
+          <p class="ccg-publisher-seo-preview__hint">Preview the canonical game URL, page title and search description before publishing. Verified video details may further enrich the public page. Google may display different snippet text.</p>
+          <p class="ccg-publisher-seo-preview__url" data-seo-preview-url>https://www.cheekycommodoregamer.co.uk/games/…/</p>
+          <strong class="ccg-publisher-seo-preview__title" data-seo-preview-title>Enter a game title and platform.</strong>
+          <p class="ccg-publisher-seo-preview__description" data-seo-preview-description>Enter accurate game details to prepare a factual search description.</p>
+          <small class="ccg-publisher-seo-preview__status" data-seo-preview-status>Draft preview only. Publish validation stays in charge of canonical routes and metadata.</small>
+        </section>
 
         <div class="publisher-grid publisher-grid--2">
           <label>YouTube URL *
@@ -431,6 +442,7 @@
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-game-seo-snippet.js" defer></script>
   <script type="module" src="/admin/js/content-publisher-image-optimizer.js?v=publisher-20260924-completion-guard"></script>
   <script type="module" src="/admin/js/content-publisher.js?v=publisher-20260924-completion-guard"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->

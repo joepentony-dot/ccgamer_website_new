@@ -177,6 +177,73 @@ export class ROMVault {
     return { loaded, snapshot: this.snapshot() };
   }
 
+  // The owner may transfer the ROMs they have already installed from one of
+  // their browsers to another. This returns data for a LOCAL download only;
+  // no firmware is fetched, bundled into site code or uploaded to CCG.
+  exportBundle() {
+    if (!this.snapshot().allRequiredReady) {
+      throw new Error("Install KERNAL, BASIC and CHARGEN before exporting this ROM set.");
+    }
+    const entries = {};
+    for (const key of Object.keys(ROM_SPEC)) {
+      const entry = this.entries[key];
+      if (!entry) continue;
+      entries[key] = {
+        name: String(entry.name || ROM_SPEC[key].label).slice(0, 120),
+        data: encodeBytes(entry.bytes),
+      };
+    }
+    return { format: "ccg-c64-local-rom-transfer", version: 1, entries };
+  }
+
+  importBundle(bundle) {
+    if (!bundle || bundle.format !== "ccg-c64-local-rom-transfer" ||
+        bundle.version !== 1 || !bundle.entries ||
+        typeof bundle.entries !== "object" || Array.isArray(bundle.entries)) {
+      throw new Error("That file is not a CCG C64 ROM transfer.");
+    }
+    const decoded = {};
+    // Validate the whole incoming bank BEFORE overwriting a single stored ROM.
+    for (const [key, spec] of Object.entries(ROM_SPEC)) {
+      const entry = Object.prototype.hasOwnProperty.call(bundle.entries, key)
+        ? bundle.entries[key] : null;
+      if (!entry) {
+        if (spec.required) throw new Error("The transfer is missing " + spec.label + ".");
+        continue;
+      }
+      if (typeof entry.data !== "string" || entry.data.length > 50000 ||
+          !/^[A-Za-z0-9+/]*={0,2}$/.test(entry.data)) {
+        throw new Error("Invalid transfer data for " + spec.label + ".");
+      }
+      const bytes = decodeBytes(entry.data);
+      if (!spec.sizes.includes(bytes.length)) {
+        throw new Error("Incorrect " + spec.label + " ROM size.");
+      }
+      decoded[key] = { bytes, name: typeof entry.name === "string"
+        ? entry.name.slice(0, 120) : spec.label };
+    }
+    const existing = { ...this.entries };
+    const stored = {};
+    for (const [key, spec] of Object.entries(ROM_SPEC)) {
+      stored[key] = this.storage.getItem(spec.storageKey);
+    }
+    try {
+      for (const [key, entry] of Object.entries(decoded)) {
+        this.install(key, entry.bytes, entry.name);
+      }
+    } catch (error) {
+      this.entries = existing;
+      for (const [key, spec] of Object.entries(ROM_SPEC)) {
+        try {
+          if (stored[key] === null) this.storage.removeItem(spec.storageKey);
+          else this.storage.setItem(spec.storageKey, stored[key]);
+        } catch {}
+      }
+      throw error;
+    }
+    return this.snapshot();
+  }
+
   clear() {
     for (const spec of Object.values(ROM_SPEC)) {
       try { this.storage.removeItem(spec.storageKey); } catch {}

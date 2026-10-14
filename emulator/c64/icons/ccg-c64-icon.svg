@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="CCG C64 Emulator icon">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#121d50"/><stop offset="1" stop-color="#070a22"/>
+    </linearGradient>
+    <linearGradient id="display" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#3545a5"/><stop offset="1" stop-color="#15245c"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="92" fill="url(#bg)"/>
+  <rect x="25" y="25" width="462" height="462" rx="74" fill="none" stroke="#9787ed" stroke-opacity=".75" stroke-width="7"/>
+  <rect x="68" y="67" width="376" height="306" rx="26" fill="#080e21" stroke="#aba1ff" stroke-width="9"/>
+  <rect x="90" y="89" width="332" height="262" rx="12" fill="url(#display)"/>
+  <path d="M105 112h302M105 332h302" stroke="#8a9ee9" stroke-opacity=".45" stroke-width="4"/>
+  <text x="256" y="167" text-anchor="middle" fill="#d9d5ff" font-size="60" font-weight="900" font-family="Arial,Helvetica,sans-serif" letter-spacing="8">CCG</text>
+  <text x="256" y="281" text-anchor="middle" fill="#ffffff" font-size="118" font-weight="900" font-family="Arial,Helvetica,sans-serif" letter-spacing="-4">C64</text>
+  <rect x="70" y="402" width="372" height="47" rx="23" fill="#101a46" stroke="#7975ba" stroke-width="4"/>
+  <circle cx="168" cy="425" r="18" fill="#d264df"/>
+  <path d="M168 410v-17" fill="none" stroke="#d264df" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="356" cy="424" r="17" fill="#7fd5ee"/>
+</svg>

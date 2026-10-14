@@ -73,9 +73,44 @@ try{
   assert.equal(chestAfterDelay,1,"the legacy delayed chest callback must not duplicate R56 delivery");
 
   const fullChest=await page.evaluate(()=>{
-    p1.inventorySlots=3;p1.inventory=[{kind:"torch",name:"Torch A"},{kind:"torch",name:"Torch B"},{kind:"torch",name:"Torch C"}];const row={id:"r56-full-chest",x:p1.x,y:p1.y,active:true,locked:false,mimic:false,depth:2,loot:{kind:"potion",amount:1,qty:1,rarity:"COMMON",name:"COMMON Restoration Potion"}};host.chests=[row];const scoreBefore=Number(score),result=openChest(p1,row);return{result,opened:Boolean(row.opened),active:row.active,scoreGain:Number(score)-scoreBefore,toast:String(document.getElementById("pickup-title")?.textContent||"")};
+    p1.inventorySlots=3;
+    p1.inventory=[{kind:"torch",name:"Torch A"},{kind:"torch",name:"Torch B"},{kind:"torch",name:"Torch C"}];
+    const row={id:"r56-full-chest",x:p1.x,y:p1.y,active:true,locked:false,mimic:false,depth:2,
+      loot:{kind:"potion",amount:1,qty:1,rarity:"COMMON",name:"COMMON Restoration Potion"}};
+    host.chests=[row];
+    // Observe the real owner passing its notice into the existing pipeline.
+    // The wrapper does not override its return, timer, priority or UI state.
+    const calls=[],source=window.showToast;
+    const majorPanel=document.getElementById("ccg-major-notification");
+    const majorBefore=majorPanel?.querySelector(".major-copy b")?.textContent||"";
+    window.showToast=function(...args){calls.push(String(args[0]||""));return source.apply(this,args)};
+    const scoreBefore=Number(score);
+    let result;
+    try{result=openChest(p1,row)}finally{window.showToast=source}
+    const toast=String(document.getElementById("pickup-title")?.textContent||""),
+      majorState=window.CCGLostSizzlerV141LandingNotificationPolish?.state,
+      majorActive=majorPanel?.dataset.visible==="true"&&document.body.dataset.ccgMajorNotification==="true"&&
+        Number(majorState?.majorUntil||0)>performance.now(),
+      retainedActive=Boolean(retainedToast&&toastTimer>0),
+      queuedHeld=toastQueue.some(entry=>/INVENTORY FULL|CHEST HELD/i.test(String(entry?.title||"")));
+    return{result,opened:Boolean(row.opened),active:row.active,lootName:row.loot?.name,
+      inventory:(p1.inventory||[]).map(item=>item.kind),scoreGain:Number(score)-scoreBefore,
+      toast,calls,majorActive,
+      majorPreserved:!majorActive||majorBefore===majorPanel?.querySelector(".major-copy b")?.textContent,
+      retainedActive,queuedHeld};
   });
-  assert.equal(fullChest.result,false,`a full inventory must not consume carried chest loot: ${JSON.stringify(fullChest)}`);assert.equal(fullChest.opened,false);assert.equal(fullChest.active,true);assert.equal(fullChest.scoreGain,0,"a held chest must not grant farmable score before it really opens");assert.match(fullChest.toast,/INVENTORY FULL|CHEST HELD/i);
+  assert.equal(fullChest.result,false,`a full inventory must not consume carried chest loot: ${JSON.stringify(fullChest)}`);
+  assert.equal(fullChest.opened,false);
+  assert.equal(fullChest.active,true);
+  assert.equal(fullChest.lootName,"COMMON Restoration Potion","blocked chest must retain the uncollected reward");
+  assert.deepEqual(fullChest.inventory,["torch","torch","torch"],"full chest must not mutate inventory");
+  assert.equal(fullChest.scoreGain,0,"held chest must not grant farmable score");
+  assert.ok(fullChest.calls.some(title=>/INVENTORY FULL|CHEST HELD/i.test(title)),
+    `the actual chest owner must attempt inventory-full feedback: ${JSON.stringify(fullChest)}`);
+  assert.equal(fullChest.majorPreserved,true,"held chest notification must not overwrite a major alert");
+  assert.ok(/INVENTORY FULL|CHEST HELD/i.test(fullChest.toast)||fullChest.queuedHeld||
+    fullChest.majorActive||fullChest.retainedActive,
+    `chest feedback must display or be legitimately deferred by major/retained notice: ${JSON.stringify(fullChest)}`);
 
   const shrineRows=[];
   for(const roll of [0.1,0.5,0.9]){

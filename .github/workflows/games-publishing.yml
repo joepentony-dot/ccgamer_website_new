@@ -76,6 +76,8 @@ on:
       - "scripts/validate-games-source.js"
       - "scripts/generate-slug-pages.js"
       - "scripts/prepare-seo-game-routes.js"
+      - "js/ccg-game-seo-snippet.js"
+      - "tests/game-seo-snippet-quality.test.mjs"
       - "scripts/validate-seo-game-routes.js"
       - "scripts/prepare-seo-genre-links.js"
       - "scripts/validate-seo-genre-links.js"
@@ -145,9 +147,12 @@ jobs:
         run: |
           node --check admin/js/content-publisher-status-reconciler.js
           node --check admin/js/content-publisher-source-preflight.mjs
+          node --check js/ccg-game-seo-snippet.js
+          node --check scripts/prepare-seo-game-routes.js
           node --check admin/js/content-publisher-completion-guard.js
           node --check scripts/validate-new-game-enrichment.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
+          node --test tests/game-seo-snippet-quality.test.mjs
 
       - name: Validate game description fallback
         run: node --test tests/game-description-enrichment-fallback.test.mjs

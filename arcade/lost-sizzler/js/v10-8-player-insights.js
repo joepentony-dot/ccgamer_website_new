@@ -40,6 +40,9 @@
   let ratingTimer=null;
   let runObserver=null;
 
+  // The standalone HTML5/Windows package deliberately contains no Supabase client.
+  // Never ask its player to send a remote rating that cannot be delivered.
+  function isStandalonePackage(){return window.CCGDungeonCarnageItchPackage===true;}
   function safe(value){return String(value??"").trim();}
   function playerNameValue(){
     try{
@@ -62,6 +65,7 @@
     try{return active&&typeof mode!=="undefined"&&mode==="playing";}catch(_){return active;}
   }
   async function sendTelemetry(eventType,extra={}){
+    if(isStandalonePackage())return false;
     try{
       const client=await window.ccgSupabase?.getClient?.();
       if(!client)return false;
@@ -89,6 +93,7 @@
   }
 
   async function accountHasRating(force=false){
+    if(isStandalonePackage())return false;
     if(accountRatingChecked&&!force)return accountAlreadyRated;
     if(accountRatingPromise)return accountRatingPromise;
     accountRatingPromise=(async()=>{
@@ -220,6 +225,7 @@
   }
 
   async function showRating(){
+    if(isStandalonePackage())return false;
     if(ratingShown||ratingCheckPending)return false;
     ratingCheckPending=true;
     try{
@@ -240,6 +246,7 @@
   }
 
   function ratingClock(){
+    if(isStandalonePackage())return;
     const now=performance.now();
     const delta=Math.min(2000,Math.max(0,now-lastPlayTick));
     lastPlayTick=now;
@@ -295,12 +302,14 @@
     injectStyles();
     retireLegacyNoticeStack();
     ensureMobileNotice();
-    ensureRatingOverlay();
+    if(!isStandalonePackage())ensureRatingOverlay();
     document.addEventListener("click",onStartClick,true);
     watchRunStarts();
     try{ratingShown=sessionStorage.getItem("ccg-lost-sizzler-rating-shown")==="1";}catch(_){}
-    accountHasRating().then(rated=>{if(rated)rememberRatingShown()});
-    ratingTimer=setInterval(ratingClock,1000);
+    if(!isStandalonePackage()){
+      accountHasRating().then(rated=>{if(rated)rememberRatingShown()});
+      ratingTimer=setInterval(ratingClock,1000);
+    }
     window.addEventListener("pagehide",cleanup,{once:true});
     window.CCGLostSizzlerPlayerInsights={showRating,accountHasRating,get state(){return{ratingShown,ratingCheckPending,accountRatingChecked,accountAlreadyRated,activePlayedMs}}};
   }

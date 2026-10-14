@@ -39,11 +39,23 @@
     return root.audio;
   }
 
+  const isLocalPlaybackHost=()=>{
+    let host=String(location.hostname||"").toLowerCase().replace(/\.$/,"");
+    // The URL parser canonicalizes mapped IPv4 and expanded IPv6 spellings.
+    if(host.includes(":"))try{host=new URL(`http://${host.startsWith("[")?host:`[${host}]`}`).hostname}catch(_){}
+    return host==="localhost"||host.endsWith(".localhost")||host==="::1"||host==="[::1]"||host==="::"||host==="[::]"||host==="0.0.0.0"
+      ||/^127(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}$/.test(host)
+      ||/^\[::ffff:(?:7f[0-9a-f]{2}:[0-9a-f]{1,4}|0:0)\]$/.test(host);
+  };
+
   function remoteMediaAllowed(){
+    // A packaged offline game must never consult Supabase, even when a test
+    // harness explicitly opts into remote media for the website build.
+    if(window.CCGDungeonCarnageItchPackage===true||location.protocol==="file:")return false;
     if(window.__CCG_ALLOW_REMOTE_TEST_ASSETS__===true)return true;
     let automated=false,local=false;
     try{automated=navigator.webdriver===true||/HeadlessChrome/i.test(String(navigator.userAgent||""))}catch(_){}
-    try{local=["localhost","127.0.0.1","::1"].includes(String(location.hostname||"").toLowerCase())}catch(_){}
+    try{local=isLocalPlaybackHost()}catch(_){}
     return !(automated||local);
   }
 
@@ -59,7 +71,18 @@
     const target=audioRoot();
     const playlists={normal:[],danger:[],sanctuary:[],named:[],stalker:[]};
     const voicePlaylists={};
-    for(const state of Object.keys(playlists))target.music.playlists[state]=[];
+    for(const state of Object.keys(playlists)){
+      // Asset overrides already selected the bundled soundtrack before this
+      // admin catalogue initialiser ran. Skipping remote media may clear
+      // website/automation catalogue values, but must not erase local music
+      // from the authorised offline game.
+      const existing=target.music.playlists[state];
+      if(window.CCGDungeonCarnageItchPackage===true&&Array.isArray(existing)){
+        playlists[state]=existing.filter(url=>typeof url==="string"&&
+          /^assets\/audio\/music\/[a-z0-9-]+\.wav(?:\?[^?#]*)?$/i.test(url));
+      }
+      target.music.playlists[state]=playlists[state];
+    }
     const admin={playlists,voice:voicePlaylists,exploration:null,danger:null,sanctuary:null,named:null,stalker:null,remoteMediaSkipped:true,skipReason:String(reason||"automated-browser"),source:"skipped"};
     window.CCG_ADMIN_AUDIO={...(window.CCG_ADMIN_AUDIO||{}),...admin};
     publishReady({applied:0,appliedMusic:0,appliedVoice:0,playlists,voice:voicePlaylists,remoteMediaSkipped:true,reason:admin.skipReason,source:"skipped"});

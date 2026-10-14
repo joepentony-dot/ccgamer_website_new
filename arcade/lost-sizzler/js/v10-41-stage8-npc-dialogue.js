@@ -111,6 +111,15 @@
   }
   function speakDialogueLine(line,{priority=44,cooldown=REPEAT_MS}={}){
     if(!line?.voiceKey||!line?.text)return false;
+    // Current Alchemist trade uses Banishment Essence, not the earlier
+    // three-Artefact exchange. Silence only the known obsolete recording;
+    // continue showing the accurate subtitle and automatically allow a new
+    // approved recording when its alias is eventually supplied.
+    if(line.voiceKey==="npc.alchemist.partial"||line.voiceKey==="npc.alchemist.ready"){
+      const clip=String(window.CCG_RECORDED_VOICE_SPRITE?.aliases?.[line.voiceKey]||"");
+      if(clip==="bring-me-three-and-i-can-help-you-deal-with-the-stalker"||
+        clip==="i-can-trade-those-artefacts-for-a-banishment-flask")return false;
+    }
     const voice=window.CCGLostSizzlerVoice;
     if(typeof voice?.sayDialogue!=="function")return false;
     try{return Boolean(voice.sayDialogue(line.voiceKey,line.text,{priority,cooldown,interrupt:false}))}catch(_){return false}

@@ -3,22 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>CCG Browser C64 Emulator | Cheeky Commodore Gamer</title>
-  <meta name="description" content="Run a cycle-accurate Commodore 64 in your browser with local ROM storage, SID audio, disks, tapes, cartridges, gamepads, touch controls and save states.">
+  <title>C64 Emulator Online – Play Commodore 64 Games | CCG</title>
+  <meta name="description" content="Play Commodore 64 games online with the CCG C64 emulator. Search the browser game library, load disk, tape or cartridge files, and use PC or mobile controls.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/emulator/c64/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Cheeky Commodore Gamer">
-  <meta property="og:title" content="CCG Browser C64 Emulator | Cheeky Commodore Gamer">
-  <meta property="og:description" content="Run a cycle-accurate Commodore 64 in your browser with local ROM storage, SID audio, disks, tapes, cartridges, gamepads, touch controls and save states.">
+  <meta property="og:title" content="C64 Emulator Online – Play Commodore 64 Games | CCG">
+  <meta property="og:description" content="Play Commodore 64 games online with the CCG C64 emulator. Search the browser game library, load disk, tape or cartridge files, and use PC or mobile controls.">
   <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/">
   <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="C64 Emulator Online – Play Commodore 64 Games | CCG">
+  <meta name="twitter:description" content="Play Commodore 64 games online with the CCG C64 emulator. Search the browser game library, load disk, tape or cartridge files, and use PC or mobile controls.">
+  <meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/emulator/c64/">
+  <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CCG Commodore 64 Emulator",
+    "alternateName": ["C64 Emulator", "Commodore 64 Emulator Online"],
+    "url": "https://www.cheekycommodoregamer.co.uk/emulator/c64/",
+    "description": "Play Commodore 64 games in your web browser. Search the C64 game library or load supported C64 disk, tape, program and cartridge files.",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "GBP" },
+    "publisher": { "@type": "Organization", "name": "Cheeky Commodore Gamer", "url": "https://www.cheekycommodoregamer.co.uk/", "logo": "https://www.cheekycommodoregamer.co.uk/resources/images/ccgamer-logo.png" },
+    "featureList": "Searchable game library, keyboard and gamepad controls, on-screen mobile joystick, disk and tape loading, cartridge loading, SID audio, optional mobile installation"
+  }
+  </script>
   <link rel="icon" href="/favicon.ico">
+  <link rel="manifest" href="/emulator/c64/manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/emulator/c64/icons/ccg-c64-apple-180.png">
+  <meta name="theme-color" content="#090d2e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="CCG C64">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261014_mobile_game_controls_v1">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -44,9 +71,38 @@
 
   <main class="ccg-c64-workspace" id="main-content" data-core-state="upstream-runtime">
     <section class="ccg-c64-console" aria-label="Commodore 64 display">
+      <div class="ccg-c64-mobile-playbar" data-mobile-playbar hidden>
+        <button type="button" class="ccg-c64-mobile-exit" data-mobile-exit-game aria-label="Exit game and return to game library">← EXIT GAME</button>
+        <div class="ccg-c64-mobile-play-centre">
+          <button type="button" class="ccg-c64-mobile-zoom-toggle" data-mobile-zoom-toggle
+            aria-pressed="false" aria-label="Enable mobile game zoom" title="Enlarge the C64 picture and trim part of its outer border">ZOOM: OFF</button>
+          <span class="ccg-c64-mobile-play-title" data-mobile-play-title>NOW PLAYING</span>
+        </div>
+        <button type="button" class="ccg-c64-mobile-keyboard-toggle" data-mobile-keyboard-toggle
+          aria-controls="ccg-c64-mobile-keyboard" aria-expanded="false" aria-pressed="false">KEYBOARD</button>
+      </div>
+      <div class="ccg-c64-mobile-game-actions" data-mobile-game-actions hidden role="group" aria-label="In-game controls">
+        <button type="button" data-mobile-pause disabled aria-pressed="false">Ⅱ PAUSE</button>
+        <button type="button" data-mobile-save-state disabled>SAVE STATE</button>
+        <button type="button" data-mobile-load-state disabled>LOAD STATE</button>
+      </div>
+        <div class="ccg-c64-install-promo" data-c64-app-install aria-label="Install C64 emulator app">
+          <div class="ccg-c64-install-promo__intro">
+            <strong>PUT THE C64 ON YOUR HOME SCREEN</strong>
+            <span>Install CCG C64 as a separate mobile app. No app-store account needed.</span>
+          </div>
+          <button type="button" data-c64-app-install-button>HOW TO INSTALL</button>
+          <p data-c64-app-install-status role="status" aria-live="polite">Opens straight into your C64 library.</p>
+          <details data-c64-app-install-help>
+            <summary>iPHONE / iPAD &amp; ANDROID INSTALLATION</summary>
+            <p><strong>iPhone / iPad:</strong> Open this page in Safari, tap Share and choose Add to Home Screen. Enable Open as Web App if offered, then tap Add.</p>
+            <p><strong>Android:</strong> Open this page in Chrome, tap Install app if offered, or open the browser menu and choose Add to Home screen / Install app.</p>
+            <p>Game downloads and first-time loading still require an internet connection. The emulator uses the same C64 game library and locally saved settings as this website in supported browsers.</p>
+          </details>
+        </div>
       <div class="ccg-c64-display-head">
         <div>
-          <span class="ccg-c64-kicker">CCG BROWSER C64 // PAL</span>
+          <h1 class="ccg-c64-kicker">C64 Emulator — Play Commodore 64 Games Online</h1>
           <strong data-machine-state>READY FOR MEDIA</strong>
         </div>
         <div class="ccg-c64-live-state">
@@ -55,7 +111,6 @@
         </div>
       </div>
 
-      <button type="button" class="ccg-c64-mobile-exit" data-mobile-fullscreen-exit hidden aria-label="Exit fullscreen C64 game">EXIT FULLSCREEN</button>
       <div class="ccg-c64-screen-stage" data-media-dropzone>
         <div class="ccg-c64-screen-bezel">
           <canvas id="ccg-c64-screen" width="384" height="272" aria-label="CCG C64 emulator display" aria-describedby="ccg-c64-drop-instructions" tabindex="0"></canvas>
@@ -64,17 +119,20 @@
         <div class="ccg-c64-drop-hint" aria-hidden="true">DRAG &amp; DROP A GAME HERE — AUTO START</div>
       </div>
 
-      <div class="ccg-c64-mobile-actions">
-        <button type="button" data-mobile-fullscreen aria-label="Play C64 in phone fullscreen">PLAY FULLSCREEN</button>
-      </div>
-
       <div class="ccg-c64-screen-foot">
         <span>C64 PAL DISPLAY</span>
         <span data-emulator-speed title="Measured PAL playback speed; 100% is real time">PAL SPEED // --%</span>
-        <span>DRAG A DISK, TAPE OR CARTRIDGE ONTO THE SCREEN</span>
+        <span>LOAD A GAME OR DROP A FILE ON THE SCREEN</span>
       </div>
 
-      <p class="ccg-c64-stage-note" data-stage-note id="ccg-c64-drop-instructions">DRAG &amp; DROP your C64 game file onto the screen to load and start it automatically. Or use LOAD &amp; AUTO START. Accepts D64, D71, D81, G64, TAP, T64, PRG and CRT.</p>
+      <p class="ccg-c64-stage-note" data-stage-note id="ccg-c64-drop-instructions" role="status" aria-live="polite">Find a game in the library and press PLAY, or open your own C64 file.</p>
+      <div class="ccg-c64-play-help" data-play-help>
+        <p><strong>Stuck at READY.?</strong> After a disk finishes loading, type <kbd>RUN</kbd> and press <kbd>RETURN</kbd>. Some games use their own startup command.</p>
+        <div class="ccg-c64-warp-action">
+          <button type="button" data-warp-load aria-pressed="false" disabled title="Run the emulator at maximum safe browser speed; use during lengthy loading"><span>WARP SPEED</span><strong>MAX</strong></button>
+          <small data-warp-hint>Loading is accelerated automatically. Use WARP to speed up further loading.</small>
+        </div>
+      </div>
 
       <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
         <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
@@ -84,55 +142,70 @@
           <button type="button" data-joy-mask="8" aria-label="Joystick right">▶</button>
           <button type="button" data-joy-mask="2" aria-label="Joystick down">▼</button>
         </div>
+        <div class="ccg-c64-touch-actions" role="group" aria-label="Joystick actions">
+          <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
+          <button type="button" class="ccg-c64-touch-jump" data-joy-mask="1" hidden>JUMP</button>
+        </div>
+      </div>
+      <div class="ccg-c64-touch-options">
+        <button type="button" class="ccg-c64-mobile-crt-mode" data-mobile-crt-mode
+          aria-label="Change in-game CRT display effect" title="Cycle OFF, SCANLINES, TUBE, BLACK & WHITE, ARCADE and HUM">CRT: TUBE</button>
+        <button type="button" class="ccg-c64-mobile-warp-load" data-mobile-warp-load
+          aria-pressed="false" disabled title="Run the C64 at maximum speed while loading. Audio is muted during warp.">WARP: OFF</button>
+        <button type="button" class="ccg-c64-mobile-joystick-swap" data-mobile-joystick-swap
+          aria-label="Swap joystick to C64 port 1"
+          title="Switch the joystick between Port 1 and Port 2 without restarting the game">SWAP JOYSTICK · PORT 2</button>
+        <details class="ccg-c64-function-drawer"><summary>FUNCTION KEYS F1–F7</summary>
         <div class="ccg-c64-touch-fkeys" role="group" aria-label="C64 function keys">
           <button type="button" data-c64-fkey="F1" aria-label="Press C64 F1">F1</button>
           <button type="button" data-c64-fkey="F3" aria-label="Press C64 F3">F3</button>
           <button type="button" data-c64-fkey="F5" aria-label="Press C64 F5">F5</button>
           <button type="button" data-c64-fkey="F7" aria-label="Press C64 F7">F7</button>
         </div>
-        <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
+        </details>
       </div>
-      <details class="ccg-c64-touch-extra" data-touch-extra-keys>
-        <summary>MORE C64 KEYS</summary>
-        <div class="ccg-c64-extra-key-grid" role="group" aria-label="Additional Commodore 64 keys">
-          <button type="button" data-c64-virtual-key="F2">F2</button>
-          <button type="button" data-c64-virtual-key="F4">F4</button>
-          <button type="button" data-c64-virtual-key="F6">F6</button>
-          <button type="button" data-c64-virtual-key="F8">F8</button>
-          <button type="button" data-c64-virtual-key="Enter">RETURN</button>
-          <button type="button" data-c64-virtual-key="Space">SPACE</button>
-          <button type="button" data-c64-virtual-key="F9">RUN/STOP</button>
-          <button type="button" data-c64-virtual-key="F12">RESTORE</button>
-          <button type="button" data-c64-virtual-key="Digit1">1</button>
-          <button type="button" data-c64-virtual-key="Digit2">2</button>
-          <button type="button" data-c64-virtual-key="Digit3">3</button>
-          <button type="button" data-c64-virtual-key="Digit4">4</button>
-          <button type="button" data-c64-virtual-key="KeyS">S</button>
-          <button type="button" data-c64-virtual-key="KeyY">Y</button>
-          <button type="button" data-c64-virtual-key="KeyN">N</button>
+      <section class="ccg-c64-mobile-vault" data-mobile-vault-panel role="dialog"
+        aria-modal="true" aria-labelledby="ccg-c64-mobile-vault-title" hidden>
+        <div class="ccg-c64-mobile-vault-card">
+          <div class="ccg-c64-mobile-vault-header">
+            <strong id="ccg-c64-mobile-vault-title" data-mobile-vault-title>SAVED GAMES</strong>
+            <button type="button" data-mobile-vault-close aria-label="Close saved-game slots">CLOSE ×</button>
+          </div>
+          <p data-mobile-vault-help>Choose one of the three slots for this game. Saves stay in this browser; export a backup from Save / Resume after exiting.</p>
+          <div class="ccg-c64-mobile-vault-slots" data-mobile-vault-slots></div>
+          <p class="ccg-c64-mobile-vault-message" data-mobile-vault-message role="status" aria-live="polite"></p>
         </div>
-      </details>
+      </section>
+      <section class="ccg-c64-mobile-keyboard" id="ccg-c64-mobile-keyboard"
+        aria-label="On-screen Commodore 64 keyboard" hidden>
+        <div class="ccg-c64-mobile-keyboard-head">
+          <strong>C64 KEYBOARD</strong>
+          <span>HOLD KEYS FOR COMBINATIONS</span>
+          <button type="button" data-mobile-keyboard-close aria-label="Close on-screen keyboard">CLOSE ×</button>
+        </div>
+        <div class="ccg-c64-mobile-keyboard-keys" data-mobile-keyboard-keys></div>
+      </section>
     </section>
 
     <aside class="ccg-c64-control-stack" aria-label="C64 controls and media">
       <section class="ccg-c64-panel ccg-c64-panel--quickload">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>PLAY C64 MEDIA</strong><em>FILE FIRST</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>LOAD YOUR OWN GAME</strong><em>OPTIONAL</em></header>
         <div class="ccg-c64-quickload">
-          <button type="button" class="ccg-c64-primary-load" data-load-any-media>LOAD &amp; AUTO START</button>
+          <button type="button" class="ccg-c64-primary-load" data-load-any-media>OPEN C64 GAME FILE</button>
           <input id="ccg-c64-any-media-input" type="file" accept=".prg,.d64,.d71,.d81,.g64,.tap,.t64,.crt" hidden>
-          <p>Choose a PRG, disk, tape or cartridge, or drop it onto the screen. Automatic start is enabled.</p>
+          <p>Have a game file? Open it here or drag it onto the screen.</p>
         </div>
       </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--library" hidden aria-label="Searchable C64 game library">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>GAME LIBRARY</strong><em data-online-library-status>LOADING</em></header>
+        <header class="ccg-c64-panel-title"><span>••</span><strong>FIND A GAME</strong><em data-online-library-status>LOADING</em><button type="button" class="ccg-c64-catalogue-open" data-catalogue-open disabled>BROWSE ALL GAMES</button></header>
         <div class="ccg-c64-library-search-wrap" data-library-search-wrap>
           <input type="search" id="ccg-c64-library-search" data-online-library-search
             role="combobox" aria-autocomplete="list" aria-haspopup="listbox"
             aria-controls="ccg-c64-library-options" aria-expanded="false"
             aria-describedby="ccg-c64-library-search-help"
             aria-label="Search playable C64 games"
-            placeholder="TYPE A GAME NAME TO SEARCH..."
+            placeholder="Search by game title..."
             autocomplete="off" spellcheck="false">
           <div class="ccg-c64-library-suggestions" data-online-library-suggestions hidden>
             <div id="ccg-c64-library-options" data-online-library-grid role="listbox"
@@ -156,29 +229,20 @@
         </div>
       </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--status">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>STATUS</strong><em data-audio-status>STARTS ON BOOT</em></header>
-        <div class="ccg-c64-status-grid">
-          <div><span>SYSTEM ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
-          <div><span>1541 DOS</span><strong data-drive-status>OPTIONAL</strong></div>
-          <div><span>SID</span><strong>6581 / 8580</strong></div>
-          <div><span>VIDEO</span><strong>PAL 50 HZ</strong></div>
-        </div>
-      </section>
 
       <section class="ccg-c64-panel ccg-c64-panel--controls">
         <header class="ccg-c64-panel-title"><span>••</span><strong>CONTROLS</strong></header>
         <div class="ccg-c64-button-grid">
           <button type="button" class="is-power" data-machine-power disabled><span>POWER</span><strong>BOOT C64</strong></button>
-          <button type="button" data-machine-reset disabled><span>RESET</span><strong>RESET</strong></button>
-          <button type="button" data-machine-pause disabled><span>PAUSE</span><strong>PAUSE</strong></button>
-          <button type="button" data-warp-load aria-pressed="false" disabled title="Run the emulator at the maximum speed this browser can sustain"><span>WARP LOAD</span><strong>MAX</strong></button>
-          <button type="button" data-crt-toggle><span>CRT</span><strong>TUBE</strong></button>
-          <button type="button" data-size-toggle><span>SIZE</span><strong>FIT</strong></button>
-          <button type="button" data-fullscreen><span>DISPLAY</span><strong>FULL</strong></button>
-          <button type="button" data-load-media><span>PROGRAM</span><strong>LOAD PRG</strong></button>
-          <button type="button" data-audio-toggle disabled><span>SID AUDIO</span><strong>MUTE</strong></button>
-          <button type="button" data-open-setup><span>SYSTEM ROMS</span><strong>SETUP</strong></button>
+          <button type="button" data-machine-reset disabled><span></span><strong>RESET</strong></button>
+          <button type="button" data-machine-pause disabled><span></span><strong>PAUSE</strong></button>
+          
+          <button type="button" data-crt-toggle><span></span><strong>CRT EFFECT</strong></button>
+          <button type="button" data-size-toggle><span></span><strong>SCREEN SIZE</strong></button>
+          <button type="button" data-fullscreen><span></span><strong>FULL SCREEN</strong></button>
+          <button type="button" data-load-media><span></span><strong>LOAD PRG</strong></button>
+          <button type="button" data-audio-toggle disabled><span></span><strong>MUTE SOUND</strong></button>
+          <button type="button" data-open-setup><span></span><strong>ROM SETTINGS</strong></button>
         </div>
         <input id="ccg-c64-prg-input" type="file" accept=".prg" hidden>
       </section>
@@ -192,11 +256,58 @@
         </div>
         <div class="ccg-c64-joystick-actions">
           <button type="button" class="ccg-c64-joystick-swap" data-joystick-swap title="Switch joystick controls between C64 port 1 and port 2">SWAP JOYSTICK</button>
-          <button type="button" class="ccg-c64-joystick-swap" data-keyboard-joystick aria-pressed="false" title="Use arrow keys or WASD to steer, and SPACE or CTRL to fire. Keyboard input has priority over the connected gamepad.">KEYBOARD JOY: OFF</button>
+          <button type="button" class="ccg-c64-joystick-swap" data-keyboard-joystick aria-pressed="false" title="Use arrow keys or WASD to steer, and SPACE or CTRL to fire. Keyboard joystick inputs combine with gamepad and touch controls.">KEYBOARD JOY: OFF</button>
         </div>
       </section>
 
-      <section class="ccg-c64-panel ccg-c64-panel--disk">
+
+
+
+      <section class="ccg-c64-panel ccg-c64-panel--vault">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>SAVE / RESUME</strong><em data-vault-status>CHECKING…</em></header>
+        <div class="ccg-c64-vault-game-row">
+          <label for="ccg-c64-vault-game">GAME</label>
+          <select id="ccg-c64-vault-game" data-vault-game aria-label="Choose current game or a previously saved game">
+            <option value="__current__">CURRENT GAME — SAVE HERE</option>
+            <option value="__legacy__">LEGACY SLOTS (ORIGINAL SAVES)</option>
+          </select>
+        </div>
+        <div class="ccg-c64-vault-row">
+          <select data-vault-slot aria-label="Game Vault slot">
+            <option value="1">SLOT 1</option>
+            <option value="2">SLOT 2</option>
+            <option value="3">SLOT 3</option>
+          </select>
+          <button type="button" data-vault-save disabled>SAVE GAME</button>
+          <button type="button" data-vault-load disabled>RESUME SAVE</button>
+          <button type="button" data-vault-clear>CLEAR</button>
+        </div>
+        <details class="ccg-c64-vault-backups"><summary>BACKUP AND IMPORT OPTIONS</summary><div class="ccg-c64-vault-backup-row">
+          <button type="button" data-vault-export>EXPORT SLOT</button>
+          <button type="button" data-vault-import>IMPORT BACKUP</button>
+          <input type="file" id="ccg-c64-vault-backup-input" accept=".json,.ccg64save" data-vault-backup-input hidden>
+        </div></details>
+        <p class="ccg-c64-vault-help">Save the current game in Slot 1, 2 or 3. To resume a previous game later, select it here and press RESUME SAVE. Saves stay in this browser unless exported.</p>
+        <p class="ccg-c64-vault-feedback" data-vault-feedback role="status" aria-live="polite">Choose CURRENT GAME to save. Older slots remain available under Legacy.</p>
+        <div class="ccg-c64-vault-recovery" data-vault-recovery>
+          <p data-vault-storage-notice role="status" aria-live="polite" hidden></p>
+          <button type="button" data-vault-retry hidden>RETRY VAULT</button>
+        </div>
+      </section>
+
+      <details class="ccg-c64-advanced">
+        <summary>ADVANCED MEDIA AND SYSTEM SETTINGS <span>Disk drive · Datasette · Cartridge · ROMs</span></summary>
+        <div class="ccg-c64-advanced-grid">
+          <section class="ccg-c64-panel ccg-c64-panel--status">
+        <header class="ccg-c64-panel-title"><span>••</span><strong>STATUS</strong><em data-audio-status>STARTS ON BOOT</em></header>
+        <div class="ccg-c64-status-grid">
+          <div><span>SYSTEM ROMS</span><strong><b data-rom-count>0</b>/3</strong></div>
+          <div><span>1541 DOS</span><strong data-drive-status>OPTIONAL</strong></div>
+          <div><span>SID</span><strong>6581 / 8580</strong></div>
+          <div><span>VIDEO</span><strong>PAL 50 HZ</strong></div>
+        </div>
+      </section>
+          <section class="ccg-c64-panel ccg-c64-panel--disk">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DISK DRIVE 8</strong><em data-disk-slot-status>D64 / D71 / D81 / G64</em></header>
         <div class="ccg-c64-media-row ccg-c64-media-row--three">
           <button type="button" data-load-disk title="Load and automatically run a game from disk">LOAD DISK</button>
@@ -206,8 +317,7 @@
         <input id="ccg-c64-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
         <input id="ccg-c64-swap-disk-input" type="file" accept=".d64,.d71,.d81,.g64" hidden>
       </section>
-
-      <section class="ccg-c64-panel ccg-c64-panel--tape">
+          <section class="ccg-c64-panel ccg-c64-panel--tape">
         <header class="ccg-c64-panel-title"><span>••</span><strong>DATASETTE</strong><em data-tape-slot-status>TAP / T64</em></header>
         <div class="ccg-c64-media-row ccg-c64-media-row--four">
           <button type="button" data-load-tape>LOAD</button>
@@ -217,8 +327,7 @@
         </div>
         <input id="ccg-c64-tape-input" type="file" accept=".tap,.t64" hidden>
       </section>
-
-      <section class="ccg-c64-panel ccg-c64-panel--cartridge">
+          <section class="ccg-c64-panel ccg-c64-panel--cartridge">
         <header class="ccg-c64-panel-title"><span>••</span><strong>CARTRIDGE</strong><em data-cartridge-slot-status>CRT / EASYFLASH</em></header>
         <div class="ccg-c64-media-row">
           <button type="button" data-load-cartridge>LOAD CRT</button>
@@ -226,30 +335,50 @@
         </div>
         <input id="ccg-c64-cartridge-input" type="file" accept=".crt" hidden>
       </section>
-
-      <section class="ccg-c64-panel ccg-c64-panel--vault">
-        <header class="ccg-c64-panel-title"><span>••</span><strong>GAME VAULT</strong><em data-vault-status>CHECKING…</em></header>
-        <div class="ccg-c64-vault-row">
-          <select data-vault-slot aria-label="Game Vault slot">
-            <option value="1">SLOT 1</option>
-            <option value="2">SLOT 2</option>
-            <option value="3">SLOT 3</option>
-          </select>
-          <button type="button" data-vault-save disabled>SAVE</button>
-          <button type="button" data-vault-load disabled>RESTORE</button>
-          <button type="button" data-vault-clear>CLEAR</button>
-        </div>
-      </section>
-
-      <section class="ccg-c64-panel ccg-c64-panel--rom">
+          <section class="ccg-c64-panel ccg-c64-panel--rom">
         <header class="ccg-c64-panel-title"><span>••</span><strong>SYSTEM ROMS</strong><em>ONE-TIME BROWSER SETUP</em></header>
         <div class="ccg-c64-media-row">
           <button type="button" data-open-setup>ADD / CHANGE</button>
           <button type="button" data-clear-roms>CLEAR</button>
         </div>
       </section>
+        </div>
+      </details>
     </aside>
   </main>
+
+  <div class="ccg-c64-catalogue" data-catalogue-dialog hidden>
+    <div class="ccg-c64-catalogue-backdrop" data-catalogue-backdrop></div>
+    <section class="ccg-c64-catalogue-dialog" role="dialog" aria-modal="true" aria-labelledby="ccg-catalogue-title" aria-describedby="ccg-catalogue-description">
+      <header class="ccg-c64-catalogue-head">
+        <div>
+          <p class="ccg-c64-catalogue-kicker">CHEEKY COMMODORE GAMER · PLAY ONLINE</p>
+          <h2 id="ccg-catalogue-title">C64 GAME CATALOGUE</h2>
+          <p id="ccg-catalogue-description">Browse the complete searchable library. Choose a game to load it in the emulator.</p>
+        </div>
+        <button type="button" data-catalogue-close-button aria-label="Close the games catalogue">CLOSE ×</button>
+      </header>
+      <div class="ccg-c64-catalogue-filters">
+        <label>SEARCH TITLES<input type="search" data-catalogue-query placeholder="Find a C64 game..." autocomplete="off" spellcheck="false"></label>
+        <label>COLLECTION<select data-catalogue-source><option value="all">All games</option><option value="hosted">CCG collection</option><option value="archive">Game archive</option></select></label>
+        <label>BEGINS WITH<select data-catalogue-letter><option value="all">Any letter</option><option value="#">0–9 / Other</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option><option value="F">F</option><option value="G">G</option><option value="H">H</option><option value="I">I</option><option value="J">J</option><option value="K">K</option><option value="L">L</option><option value="M">M</option><option value="N">N</option><option value="O">O</option><option value="P">P</option><option value="Q">Q</option><option value="R">R</option><option value="S">S</option><option value="T">T</option><option value="U">U</option><option value="V">V</option><option value="W">W</option><option value="X">X</option><option value="Y">Y</option><option value="Z">Z</option></select></label>
+      </div>
+      <div class="ccg-c64-catalogue-summary"><strong data-catalogue-count>Loading games...</strong><span>SELECT ANY GAME TO PLAY</span></div>
+      <div class="ccg-c64-catalogue-results" data-catalogue-results></div>
+      <footer class="ccg-c64-catalogue-pager">
+        <button type="button" data-catalogue-previous disabled>← PREVIOUS</button>
+        <strong data-catalogue-page>PAGE 1 / 1</strong>
+        <button type="button" data-catalogue-next disabled>NEXT →</button>
+      </footer>
+    </section>
+  </div>
+
+  <section class="ccg-c64-discovery" aria-labelledby="ccg-c64-discovery-title">
+    <h2 id="ccg-c64-discovery-title">Play Commodore 64 games online — no emulator download</h2>
+    <p>The CCG C64 Emulator runs in your browser on desktop computers, phones and tablets. Search the built-in Commodore 64 game library, select a title and press <strong>LOAD</strong> to start playing. There is no separate emulator program to download or install.</p>
+    <p>You can also load your own compatible C64 files, including PRG, D64, D71, D81, G64, TAP, T64 and CRT formats. Use keyboard or gamepad controls on a computer, or the on-screen joystick, FIRE, JUMP, WARP LOAD and optional screen zoom on mobile.</p>
+    <p>First-time game loading requires an internet connection. Mobile visitors can also add the emulator to their home screen. <a href="/emulation.html">Read the C64 emulation guide</a> for more ways to play.</p>
+  </section>
 
   <footer class="ccg-c64-footer">
     <span>&copy; <span data-ccg-c64-year></span> Cheeky Commodore Gamer.</span>
@@ -268,7 +397,20 @@
         <button type="button" class="ccg-c64-setup__exit" data-close-setup>CLOSE</button>
       </div>
 
-      <p class="ccg-c64-setup__lead">A real C64 needs KERNAL, BASIC and CHARGEN firmware before any D64, TAP, PRG or cartridge can run. Select those files once and this browser remembers them. After that, media loading is direct.</p>
+      <p class="ccg-c64-setup__lead">The original Commodore 64 BASIC, KERNAL and CHARGEN are supplied automatically by this website on desktop and mobile. If automatic firmware loading fails, you can recover using your own local ROM files here.</p>
+
+      <div class="ccg-c64-setup__transfer" role="group" aria-label="Transfer your installed C64 ROMs between devices">
+        <div>
+          <strong>ALREADY WORKING ON YOUR DESKTOP?</strong>
+          <p>On your desktop, save its locally installed C64 ROM set. Transfer that file to your phone, then select it here. CCG never receives your ROMs.</p>
+        </div>
+        <div class="ccg-c64-setup__transfer-actions">
+          <button type="button" data-rom-export disabled>SAVE ROM SET</button>
+          <label for="ccg-c64-import-rom-set">LOAD SAVED ROM SET</label>
+          <input type="file" id="ccg-c64-import-rom-set" accept=".json,application/json" data-rom-import hidden>
+        </div>
+        <output data-rom-transfer-status aria-live="polite"></output>
+      </div>
 
       <div class="ccg-c64-setup__steps">
         <section class="ccg-c64-setup-step">
@@ -325,6 +467,7 @@
     </section>
   </div>
 
-  <script type="module" src="/js/ccg-c64/coi-bootstrap.js"></script>
+  <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2" defer></script>
+  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261014_mobile_game_controls_v1"></script>
 </body>
 </html>

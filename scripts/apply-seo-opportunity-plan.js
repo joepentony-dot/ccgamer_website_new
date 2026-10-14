@@ -148,6 +148,23 @@ function buildDescription(html, target) {
   if (target.seoDescription) return truncate(target.seoDescription, 160);
   if (!target.descriptionLead) return "";
   const current = getMetaContent(html, "name", "description");
+
+  // Canonical game metadata is authored by prepare-seo-game-routes.js and
+  // shared with the admin publisher preview. Keep complete, factual snippets
+  // intact instead of prefixing generic "review / screenshots" text and
+  // truncating a finished sentence. Dedicated seoDescription overrides above
+  // remain authoritative; this protection applies only to canonical games.
+  const route = effectiveRoute(target);
+  if (
+    /^\/games\/[a-z0-9-]+\/$/.test(route) &&
+    current &&
+    current.length <= 160 &&
+    /[.!?][”"']?$/.test(current) &&
+    !current.endsWith("…")
+  ) {
+    return current;
+  }
+
   const lead = stripHtml(target.descriptionLead);
   if (!current) return truncate(lead, 160);
   if (current.toLowerCase().startsWith(lead.toLowerCase())) return truncate(current, 160);

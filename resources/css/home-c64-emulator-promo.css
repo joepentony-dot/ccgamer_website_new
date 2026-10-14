@@ -1,0 +1,90 @@
+/* C64 emulator homepage discovery banner.
+   Isolated from Omega hero, archive tile and thumbnail sizing contracts. */
+html[data-ccg-page="home"] .home-c64-emulator-promo {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.65rem, 1.8vw, 1.05rem);
+  min-width: 0;
+  margin: 0 0 16px;
+  padding: clamp(0.78rem, 1.5vw, 1rem);
+  border: 1px solid rgba(var(--accent-rgb), 0.42);
+  border-radius: 11px;
+  background: linear-gradient(105deg, rgba(var(--accent-rgb), 0.12), rgba(5, 12, 31, 0.94) 65%);
+  color: #eef6ff;
+  text-decoration: none;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.045);
+  transition: border-color 150ms ease, background 150ms ease;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo:hover,
+html[data-ccg-page="home"] .home-c64-emulator-promo:focus-visible {
+  border-color: rgba(var(--accent-rgb), 0.9);
+  background: linear-gradient(105deg, rgba(var(--accent-rgb), 0.2), rgba(5, 12, 31, 0.96) 70%);
+  outline-offset: 3px;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(var(--accent-rgb), 0.42);
+  border-radius: 10px;
+  background: rgba(var(--accent-rgb), 0.11);
+  color: #d3edff;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__icon svg {
+  width: 35px;
+  height: 35px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__copy {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 3px;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__eyebrow {
+  color: #b9d7f9;
+  font: 800 0.57rem/1.35 var(--ccg-font-mono, "Courier New", monospace);
+  letter-spacing: 0.12em;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__title {
+  color: #fff;
+  font: 700 clamp(0.9rem, 1.4vw, 1.13rem)/1.32 "Orbitron", system-ui, sans-serif;
+  overflow-wrap: anywhere;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__description {
+  color: rgba(238, 246, 255, 0.78);
+  font-size: clamp(0.68rem, 1vw, 0.82rem);
+  line-height: 1.45;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__action {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  border-radius: 8px;
+  background: rgba(var(--accent-rgb), 0.16);
+  font: 850 0.66rem var(--ccg-font-mono, "Courier New", monospace);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+html[data-ccg-page="home"] .home-c64-emulator-promo__action span {
+  margin-left: 0.3rem;
+  font-size: 1rem;
+}
+@media (max-width: 680px) {
+  html[data-ccg-page="home"] .home-c64-emulator-promo { gap: 0.62rem; flex-wrap: wrap; }
+  html[data-ccg-page="home"] .home-c64-emulator-promo__icon { flex-basis: 39px; width: 39px; height: 39px; }
+  html[data-ccg-page="home"] .home-c64-emulator-promo__icon svg { width: 28px; height: 28px; }
+  html[data-ccg-page="home"] .home-c64-emulator-promo__copy { flex-basis: calc(100% - 55px); }
+  html[data-ccg-page="home"] .home-c64-emulator-promo__action {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    text-align: center;
+  }
+}

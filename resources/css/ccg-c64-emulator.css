@@ -65,6 +65,21 @@ select:focus-visible,
   outline-offset: 2px;
 }
 
+/* Phones/tablets: emulator buttons are controls, not selectable text.
+   Cover labels nested inside buttons and the expandable function-key
+   summary. Keep input/select/textarea and ordinary page text untouched.
+   Do not override touch-action: none on the D-pad, FIRE or keyboard. */
+@media (pointer: coarse) {
+  body.ccg-c64-lab-body button,
+  body.ccg-c64-lab-body button *,
+  body.ccg-c64-lab-body summary,
+  body.ccg-c64-lab-body summary * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
 /* Header ----------------------------------------------------- */
 
 .ccg-c64-topbar {
@@ -245,6 +260,7 @@ select:focus-visible,
   min-width: 0;
 }
 
+.ccg-c64-display-head h1.ccg-c64-kicker { margin: 0; }
 .ccg-c64-kicker {
   color: var(--emu-accent);
   font-family: var(--ccg-font-mono, "Courier New", monospace);
@@ -993,7 +1009,8 @@ select:disabled {
 }
 
 .ccg-c64-touch-dpad button,
-.ccg-c64-touch-fire {
+.ccg-c64-touch-fire,
+.ccg-c64-touch-jump {
   border: 1px solid #4a4e8c;
   background: #171a3c;
   color: #e2e2ff;
@@ -1020,6 +1037,25 @@ select:disabled {
   letter-spacing: 0.1em;
 }
 
+/* Optional joystick-UP JUMP, function keys remain in expandable drawer. */
+.ccg-c64-touch-actions { display: flex; align-items: center; justify-content: center; gap: 0.3rem; min-width: 0; }
+.ccg-c64-touch-actions .ccg-c64-touch-fire, .ccg-c64-touch-jump {
+  flex: 0 1 auto; width: clamp(75px, 21vw, 102px); height: clamp(75px, 21vw, 102px);
+}
+.ccg-c64-touch-jump {
+  border: 1px solid #829be3; border-radius: 50%; background: rgba(38,65,140,0.35);
+  font: 800 0.75rem var(--ccg-font-mono, "Courier New", monospace);
+  color: #eef3ff; touch-action: none;
+}
+.ccg-c64-touch-jump[hidden] { display: none !important; }
+.ccg-c64-touch-options { display: none; align-items: flex-start; justify-content: center; gap: 0.55rem; margin-top: 0.4rem; flex-wrap: wrap; }
+.ccg-c64-touch-options button, .ccg-c64-function-drawer summary {
+  border: 1px solid #7774b9; border-radius: 7px; background: #20234d;
+  color: #f4f0ff; min-height: 44px; padding: 0.5rem; cursor: pointer;
+  font: 700 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+}
+.ccg-c64-function-drawer summary { display: list-item; }
+.ccg-c64-function-drawer .ccg-c64-touch-fkeys { margin-top: 0.35rem; }
 /* Real C64 function keys for phones (not browser key events).
    The same matrix bindings as a physical F1/F3/F5/F7 keyboard are used. */
 .ccg-c64-touch-fkeys {
@@ -1844,6 +1880,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     padding: 0.6rem 0.25rem;
     touch-action: manipulation;
   }
+  .ccg-c64-touch-options { display: flex; }
   .ccg-c64-touch-dpad {
     grid-template-columns: repeat(3, clamp(44px, 13vw, 58px));
     grid-template-rows: repeat(3, clamp(44px, 13vw, 58px));
@@ -1898,6 +1935,9 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-console:fullscreen .ccg-c64-screen-bezel { width: 100%; max-width: 100%; }
   .ccg-c64-console:fullscreen .ccg-c64-screen-foot,
   .ccg-c64-console:fullscreen .ccg-c64-stage-note { display: none; }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-options {
+    display: flex; flex: 0 0 auto; margin-top: 0.1rem;
+  }
   .ccg-c64-console:fullscreen .ccg-c64-touch-controls {
     display: flex;
     flex: 1 0 auto;
@@ -1930,6 +1970,7 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-console { margin-bottom: 0.5rem; }
   .ccg-c64-screen-stage { height: auto; min-height: 0; }
   .ccg-c64-touch-controls { display: flex; justify-content: space-around; }
+  .ccg-c64-touch-options { display: flex; }
   .ccg-c64-console:fullscreen {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(176px, 33%);
@@ -1963,6 +2004,14 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     grid-template-rows: repeat(3, 44px);
   }
   .ccg-c64-console:fullscreen .ccg-c64-touch-fire { width: 80px; height: 80px; }
+  .ccg-c64-console:fullscreen .ccg-c64-touch-options {
+    grid-column: 2; grid-row: 1; align-self: end; justify-content: center;
+    position: relative; z-index: 5; margin-top: 0; padding-bottom: 0.15rem;
+  }
+  .ccg-c64-console:fullscreen .ccg-c64-function-drawer[open] {
+    position: absolute; right: 0; bottom: 100%; padding: 0.3rem;
+    background: #0a0d24; border: 1px solid #7774b9; border-radius: 6px;
+  }
 }
 @media (max-width: 360px) {
   .ccg-c64-button-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1970,23 +2019,78 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   .ccg-c64-touch-fire { width: 78px; height: 78px; }
 }
 
-/* C64 mobile consolidation: library immediately under the picture, thumb-
-   reachable extra keys, and a reversible fullscreen fallback for mobile Safari.
-   All desktop workstation rules and firmware handling remain unchanged. */
-.ccg-c64-mobile-actions,
-.ccg-c64-mobile-exit,
-.ccg-c64-touch-extra { display: none; }
-.ccg-c64-mobile-exit[hidden] { display: none !important; }
-.ccg-c64-library-suggestions.is-drop-up {
-  top: auto;
-  bottom: calc(100% + 5px);
+/* Portable local-only ROM bank: desktop export and phone import controls. */
+.ccg-c64-setup__transfer {
+  display: grid;
+  gap: 0.55rem;
+  min-width: 0;
+  margin: 0 0 0.75rem;
+  padding: 0.72rem;
+  border: 1px solid rgba(147, 132, 232, 0.55);
+  border-radius: 8px;
+  background: rgba(19, 22, 52, 0.78);
 }
-#ccg-c64-library-options {
-  max-height: min(var(--ccg-suggest-height, 340px), 46dvh);
+.ccg-c64-setup__transfer strong {
+  font-size: 0.75rem;
+  color: #f1edff;
+}
+.ccg-c64-setup__transfer p {
+  margin: 0.35rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: #c4c3e1;
+}
+.ccg-c64-setup__transfer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.ccg-c64-setup__transfer-actions button,
+.ccg-c64-setup__transfer-actions label {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #8c83d0;
+  border-radius: 8px;
+  background: #24254a;
+  color: #f4f0ff;
+  font: 700 0.73rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-setup__transfer-actions button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.ccg-c64-setup__transfer output {
+  display: block;
+  font-size: 0.72rem;
+  color: #e0d7ff;
 }
 
+/* Mobile player flow: C64 display -> game search/select/LOAD -> controls.
+   The DOM is moved by app.js; this affects no desktop elements. */
 @media (max-width: 760px), (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  /* Library moved into the console; remove its now-empty named grid row. */
+  .ccg-c64-console > .ccg-c64-panel--library {
+    width: 100%;
+    min-width: 0;
+    margin: 0.45rem 0 0;
+    padding: 0.55rem;
+    border-radius: 8px;
+    grid-area: auto;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library[hidden] {
+    display: none !important;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library.is-suggesting {
+    position: relative;
+    z-index: 90;
+  }
+  .ccg-c64-console > .ccg-c64-panel--library input[type="search"] {
+    min-height: 46px;
+    font-size: 16px;
+  }
+  /* The old named grid has an empty library row after the panel moves. */
   .ccg-c64-control-stack,
   .ccg-c64-control-stack.has-online-library {
     grid-template-areas: none;
@@ -1996,194 +2100,12 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
     grid-area: auto;
     grid-row: auto;
   }
-  .ccg-c64-console > .ccg-c64-panel--library {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    margin: 0.4rem 0 0;
-    padding: 0.55rem;
-    grid-area: auto;
-    border-radius: 8px;
+  .ccg-c64-console > .ccg-c64-screen-foot,
+  .ccg-c64-console > .ccg-c64-drop-hint {
+    display: none;
   }
-  .ccg-c64-console > .ccg-c64-panel--library[hidden] { display: none !important; }
-  .ccg-c64-console > .ccg-c64-panel--library input[type="search"] {
-    min-height: 46px;
-    font-size: 16px;
-  }
-  .ccg-c64-console > .ccg-c64-panel--library.is-suggesting { z-index: 90; }
-  .ccg-c64-mobile-actions {
-    display: flex;
-    margin: 0.35rem 0;
-  }
-  .ccg-c64-mobile-actions button {
-    min-height: 44px;
-    padding: 0.5rem 0.9rem;
-    border: 1px solid rgba(213, 104, 219, 0.65);
-    border-radius: 8px;
-    background: #47245f;
-    color: #fff;
-    font: 800 0.66rem var(--ccg-font-mono, "Courier New", monospace);
-    touch-action: manipulation;
-  }
-  .ccg-c64-touch-extra {
-    display: block;
-    position: relative;
-    margin: 0.4rem 0 0;
-    padding: 0.36rem;
-    border: 1px solid var(--emu-line-soft);
-    border-radius: 8px;
-    background: rgba(10, 12, 34, 0.82);
-  }
-  .ccg-c64-touch-extra summary {
-    display: grid;
-    place-items: center;
-    min-height: 44px;
-    border: 1px solid #4a4e8c;
-    border-radius: 7px;
-    background: rgba(77, 69, 149, 0.18);
-    color: #e1deff;
-    font: 800 0.68rem var(--ccg-font-mono, "Courier New", monospace);
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-  .ccg-c64-extra-key-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.32rem;
-    margin-top: 0.4rem;
-  }
-  .ccg-c64-extra-key-grid button {
-    min-width: 0;
-    min-height: 44px;
-    padding: 0.4rem 0.1rem;
-    border: 1px solid #55558d;
-    border-radius: 7px;
-    background: #191b43;
-    color: #f3f0ff;
-    font: 800 0.61rem var(--ccg-font-mono, "Courier New", monospace);
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-  .ccg-c64-extra-key-grid button.is-pressed,
-  .ccg-c64-extra-key-grid button:active {
-    background: #6f4195;
-    border-color: #d6a4f2;
-  }
-  .ccg-c64-console:fullscreen > .ccg-c64-panel--library,
-  .ccg-c64-console.is-mobile-theater > .ccg-c64-panel--library,
-  .ccg-c64-console:fullscreen > .ccg-c64-mobile-actions,
-  .ccg-c64-console.is-mobile-theater > .ccg-c64-mobile-actions {
+  .ccg-c64-console:fullscreen > .ccg-c64-panel--library {
     display: none !important;
-  }
-  .ccg-c64-console:fullscreen .ccg-c64-touch-extra {
-    display: block;
-    flex: 0 0 auto;
-    max-height: min(38dvh, 230px);
-    overflow-y: auto;
-  }
-  .ccg-c64-console:fullscreen .ccg-c64-mobile-exit,
-  .ccg-c64-console.is-mobile-theater .ccg-c64-mobile-exit {
-    display: block;
-    position: absolute;
-    z-index: 15;
-    top: max(0.4rem, env(safe-area-inset-top));
-    right: max(0.4rem, env(safe-area-inset-right));
-    min-height: 44px;
-    padding: 0.45rem 0.65rem;
-    border: 1px solid #7771bc;
-    border-radius: 8px;
-    background: rgba(10, 11, 35, 0.94);
-    color: #fff;
-    font: 800 0.58rem var(--ccg-font-mono, "Courier New", monospace);
-    touch-action: manipulation;
-  }
-  .ccg-c64-console.is-mobile-theater {
-    position: fixed;
-    z-index: 2147481200;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    width: 100vw;
-    height: 100dvh;
-    max-height: 100dvh;
-    margin: 0;
-    padding: max(0.35rem, env(safe-area-inset-top))
-      max(0.35rem, env(safe-area-inset-right))
-      max(0.35rem, env(safe-area-inset-bottom))
-      max(0.35rem, env(safe-area-inset-left));
-    border: 0;
-    border-radius: 0;
-    background: #03040e;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-display-head,
-  .ccg-c64-console.is-mobile-theater .ccg-c64-screen-foot,
-  .ccg-c64-console.is-mobile-theater .ccg-c64-stage-note { display: none; }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-screen-stage {
-    flex: 0 0 auto;
-    min-height: 0;
-    height: auto;
-    width: 100%;
-    padding: 0;
-  }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-controls {
-    display: flex;
-    flex: 0 0 auto;
-  }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-extra {
-    display: block;
-    flex: 0 0 auto;
-  }
-}
-@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  .ccg-c64-console:fullscreen > .ccg-c64-touch-extra {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-}
-body.ccg-c64-mobile-playing { overflow: hidden !important; }
-
-/* Keep directional pad and FIRE usable even on 320px portrait phones. */
-@media (max-width: 360px) {
-  .ccg-c64-touch-controls { flex-wrap: wrap; }
-  .ccg-c64-touch-fkeys {
-    order: 3;
-    flex: 1 0 100%;
-    width: 100%;
-    grid-template-columns: repeat(4, minmax(44px, 1fr));
-  }
-}
-
-/* In phone landscape, give the game the dominant left-hand column. */
-@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  .ccg-c64-console.is-mobile-theater {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(175px, 33%);
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: 0.3rem;
-    align-items: center;
-  }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-screen-stage {
-    grid-column: 1;
-    grid-row: 1;
-    height: 100%;
-    min-height: 0;
-  }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-controls {
-    grid-column: 2;
-    grid-row: 1;
-    flex-direction: column;
-    justify-content: center;
-    min-width: 0;
-  }
-  .ccg-c64-console.is-mobile-theater .ccg-c64-touch-extra {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    max-height: 36dvh;
-    overflow-y: auto;
   }
 }
 
@@ -2193,5 +2115,943 @@ body.ccg-c64-mobile-playing { overflow: hidden !important; }
   .ccg-c64-media-row button,
   .ccg-c64-vault-row button {
     transition: none;
+  }
+}
+
+
+/* Immersive in-game workspace is enabled only by the coarse-pointer game
+   loader. All desktop layouts (including the FULL display control) are unchanged.
+   Position-fixed is deliberate: iOS Safari does not allow fullscreen on divs. */
+.ccg-c64-mobile-playbar[hidden],
+.ccg-c64-mobile-keyboard[hidden] { display: none !important; }
+/* Extra touch controls exist in the DOM for mobile gameplay only. */
+.ccg-c64-mobile-joystick-swap { display: none !important; }
+.ccg-c64-mobile-warp-load { display: none !important; }
+.ccg-c64-mobile-playbar,
+.ccg-c64-mobile-keyboard { display: none; }
+
+@media (pointer: coarse) {
+  body.ccg-c64-lab-body.is-mobile-playing { overflow: hidden; }
+  .ccg-c64-console.is-mobile-playing,
+  .ccg-c64-console.is-mobile-playing:fullscreen {
+    position: fixed !important;
+    z-index: 5000;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: 100%;
+    max-height: 100dvh;
+    margin: 0;
+    padding: max(0.35rem, env(safe-area-inset-top))
+      max(0.45rem, env(safe-area-inset-right))
+      max(0.35rem, env(safe-area-inset-bottom))
+      max(0.45rem, env(safe-area-inset-left));
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow: hidden;
+    overscroll-behavior: none;
+    border: 0;
+    border-radius: 0;
+    background: #040616;
+  }
+  /* Restore the original single-row mobile playbar. The zoom release used a
+     two-line grid here, shrinking the game viewport and shifting its snap. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar {
+    display: flex;
+    order: 0;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    min-height: 44px;
+    width: 100%;
+  }
+  .ccg-c64-mobile-play-centre {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+  }
+  /* Keep the current game title in the DOM for screen readers and updates,
+     without introducing a second row that can clip mobile gameplay. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-play-title {
+    display: none;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle {
+    min-height: 44px;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+    padding: 0.35rem 0.45rem;
+    border-color: #9b8be8;
+    background: #2b285f;
+    white-space: nowrap;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle[aria-pressed="true"] {
+    border-color: #f3cb70;
+    background: #5a441b;
+    color: #fff2c8;
+  }
+  .ccg-c64-mobile-playbar button,
+  .ccg-c64-mobile-keyboard-head button {
+    min-height: 44px;
+    flex: 0 0 auto;
+    padding: 0.45rem 0.7rem;
+    color: #f8f5ff;
+    font: 800 0.69rem var(--ccg-font-mono, "Courier New", monospace);
+    letter-spacing: 0.03em;
+    background: #222650;
+    border: 1px solid #827ad3;
+    border-radius: 8px;
+    touch-action: manipulation;
+  }
+  .ccg-c64-mobile-playbar .ccg-c64-mobile-exit { background: #572139; border-color: #df8da0; }
+  .ccg-c64-mobile-playbar .ccg-c64-mobile-keyboard-toggle[aria-pressed="true"] {
+    background: #4c3c83;
+    border-color: #d0b1ff;
+  }
+  .ccg-c64-mobile-play-title {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    color: #c6c7e8;
+    font: 700 0.64rem var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-display-head,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-foot,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-stage-note,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-drop-hint,
+  .ccg-c64-console.is-mobile-playing > .ccg-c64-panel--library {
+    display: none !important;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-stage,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-screen-stage {
+    display: grid;
+    order: 1;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-items: center;
+    grid-column: auto;
+    grid-row: auto;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    overflow: hidden;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-bezel,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-screen-bezel {
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    flex: 0 0 auto;
+    border-width: 2px;
+    aspect-ratio: 384 / 272;
+  }
+  /* Trim about 6.5% per edge of the emulated 384×272 PAL border.
+     Scale the picture *inside* the clipped bezel, not the bezel itself:
+     desktop, FIT measurements, touchscreen geometry and overlays are intact. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-bezel > #ccg-c64-screen {
+    transform-origin: center center;
+    transition: transform 160ms ease-out;
+  }
+  .ccg-c64-console.is-mobile-playing.is-mobile-zoomed .ccg-c64-screen-bezel > #ccg-c64-screen {
+    transform: scale(1.15);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-controls {
+    display: flex;
+    flex-direction: row;
+    order: 2;
+    grid-column: auto;
+    grid-row: auto;
+    align-self: stretch;
+    justify-content: space-around;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.28rem 0.4rem;
+    min-width: 0;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, clamp(40px, 11vw, 52px));
+    grid-template-rows: repeat(3, clamp(40px, 11vw, 52px));
+    gap: 0.1rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad button { min-width: 40px; min-height: 40px; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-fire,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-fire {
+    width: clamp(72px, 19vw, 104px);
+    height: clamp(72px, 19vw, 104px);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-options {
+    display: flex;
+    position: static;
+    order: 3;
+    grid-column: auto;
+    grid-row: auto;
+    align-self: stretch;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+  }
+  /* Always reachable at the lower-right of the mobile control deck.
+     The existing desktop switch remains in its original location. */
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1.45fr);
+    align-items: stretch;
+    gap: clamp(0.18rem, 1.2vw, 0.35rem);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options > button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.35rem 0.15rem;
+    font-size: clamp(0.54rem, 2vw, 0.69rem);
+    line-height: 1.2;
+    touch-action: manipulation;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-warp-load {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border-color: #b6a4f8;
+    background: #2d2759;
+    color: #fff3d5;
+    font-weight: 850;
+    letter-spacing: 0.01em;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-warp-load[aria-pressed="true"] {
+    border-color: #f3d06a;
+    background: #705120;
+    color: #fff8df;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-warp-load:disabled {
+    opacity: 0.53;
+    cursor: not-allowed;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick-swap {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0;
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.35rem clamp(0.18rem, 1.2vw, 0.45rem);
+    border: 1px solid #8d82ff;
+    border-radius: 8px;
+    background: #252858;
+    color: #f5f2ff;
+    font: 800 clamp(0.54rem, 2vw, 0.69rem) var(--ccg-font-mono, "Courier New", monospace);
+    letter-spacing: 0.01em;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-joystick-swap:active {
+    background: #4b418a;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-function-drawer { display: none; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-keyboard {
+    position: absolute;
+    z-index: 60;
+    display: block;
+    inset: auto 0 0;
+    max-height: min(70dvh, 410px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 0.5rem max(0.4rem, env(safe-area-inset-right))
+      max(0.55rem, env(safe-area-inset-bottom))
+      max(0.4rem, env(safe-area-inset-left));
+    border-top: 2px solid #8d82ff;
+    border-radius: 14px 14px 0 0;
+    background: rgba(9, 12, 36, 0.98);
+    box-shadow: 0 -12px 46px #000b;
+  }
+  .ccg-c64-mobile-keyboard-head {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.42rem;
+    font: 800 0.65rem var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-mobile-keyboard-head span { color: #aeb2d6; font-size: 0.53rem; }
+  .ccg-c64-mobile-keyboard-head button { min-height: 36px; }
+  .ccg-c64-mobile-keyboard-row { display: flex; min-width: 0; gap: 0.15rem; margin-bottom: 0.15rem; }
+  .ccg-c64-mobile-keyboard-row button {
+    min-width: 0;
+    flex: 1 1 0;
+    min-height: 42px;
+    padding: 0.1rem;
+    border-radius: 5px;
+    border: 1px solid #5b608f;
+    background: #20284d;
+    color: #f6f5ff;
+    font: 750 clamp(0.53rem, 1.85vw, 0.75rem) var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .ccg-c64-mobile-keyboard-row button.is-pressed {
+    background: #8067b8;
+    border-color: #e3b7ff;
+  }
+  .ccg-c64-mobile-keyboard-row button[data-c64-vkey="Space"] { flex: 4 1 0; }
+  .ccg-c64-mobile-keyboard-row button[data-c64-vkey="Enter"],
+  .ccg-c64-mobile-keyboard-row button[data-c64-vkey="ShiftLeft"],
+  .ccg-c64-mobile-keyboard-row button[data-c64-vkey="ShiftRight"] { flex: 1.7 1 0; }
+  .ccg-c64-mobile-keyboard-row button[data-c64-vkey="F12"],
+  .ccg-c64-mobile-keyboard-row button[data-c64-vkey="F9"] { flex: 1.7 1 0; }
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 490px) {
+  .ccg-c64-console.is-mobile-playing,
+  .ccg-c64-console.is-mobile-playing:fullscreen { gap: 0.15rem; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar { min-height: 38px; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar button { min-height: 38px; padding: 0.25rem 0.5rem; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-playbar .ccg-c64-mobile-zoom-toggle { min-height: 38px; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls { padding: 0.1rem 0.35rem; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, 38px);
+    grid-template-rows: repeat(3, 38px);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad button { min-width: 38px; min-height: 38px; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options button { min-height: 36px; }
+}
+
+
+/* Dedicated C64 app installation is mobile/tablet-only; the desktop emulator
+   and the separate site-wide CCG PWA retain their existing behaviour. */
+.ccg-c64-install-promo, .ccg-c64-install-promo[hidden] { display: none !important; }
+@media (pointer: coarse) {
+  .ccg-c64-console:not(.is-mobile-playing) > .ccg-c64-install-promo:not([hidden]) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.4rem 0.6rem;
+    margin: 0.1rem 0 0.75rem;
+    padding: 0.7rem 0.65rem;
+    border: 1px solid rgba(133, 154, 255, 0.5);
+    border-radius: 10px;
+    background: linear-gradient(130deg, #1a2559, #101338);
+  }
+  .ccg-c64-console:fullscreen > .ccg-c64-install-promo { display: none !important; }
+  .ccg-c64-install-promo__intro {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+  .ccg-c64-install-promo__intro strong {
+    color: #faf7ff;
+    font: 850 0.64rem var(--ccg-font-mono, "Courier New", monospace);
+    letter-spacing: 0.03em;
+  }
+  .ccg-c64-install-promo__intro span,
+  .ccg-c64-install-promo p {
+    color: #c5c9ec;
+    font: 600 0.61rem/1.45 var(--ccg-font-main, "Segoe UI", Arial, sans-serif);
+  }
+  .ccg-c64-install-promo > button {
+    min-height: 44px;
+    padding: 0.5rem;
+    border: 1px solid #9c91f5;
+    border-radius: 8px;
+    background: #52418e;
+    color: #fff;
+    font: 800 0.59rem var(--ccg-font-mono, "Courier New", monospace);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .ccg-c64-install-promo > button:disabled { opacity: 0.72; cursor: default; }
+  .ccg-c64-install-promo > p,
+  .ccg-c64-install-promo > details { grid-column: 1 / -1; margin: 0; }
+  .ccg-c64-install-promo > details {
+    padding-top: 0.35rem;
+    border-top: 1px solid #343a76;
+  }
+  .ccg-c64-install-promo summary {
+    color: #d4d9ff;
+    cursor: pointer;
+    min-height: 38px;
+    padding: 0.45rem 0.1rem;
+    font: 800 0.62rem var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-install-promo details p { margin: 0.3rem 0 0.6rem; }
+  .ccg-c64-install-promo details strong { color: #fff; }
+}
+
+/* Search landing-page description remains below the interactive emulator,
+   outside fixed mobile gameplay. It must never resize the screen or controls. */
+.ccg-c64-discovery {
+  max-width: 1160px;
+  margin: 1rem auto 1.25rem;
+  padding: 1.05rem clamp(0.8rem, 2vw, 1.4rem);
+  border: 1px solid rgba(141, 130, 255, 0.24);
+  border-radius: 12px;
+  background: rgba(8, 12, 34, 0.77);
+  color: var(--emu-text);
+}
+.ccg-c64-discovery h2 {
+  margin: 0 0 0.5rem;
+  color: #f4efff;
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+  line-height: 1.35;
+}
+.ccg-c64-discovery p {
+  margin: 0.5rem 0 0;
+  color: var(--emu-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.ccg-c64-discovery strong { color: var(--emu-text); }
+.ccg-c64-discovery a { color: #bbbcff; text-underline-offset: 3px; }
+@media (max-width: 760px) {
+  .ccg-c64-discovery { margin: 0.65rem 0.4rem 1rem; padding: 0.8rem; }
+  .ccg-c64-discovery p { font-size: 0.8rem; }
+}
+
+
+/* Per-game vault controls. Scoped to Game Vault so the mobile joystick and
+   existing game-selection layout remain unchanged. */
+.ccg-c64-vault-game-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+.ccg-c64-vault-game-row label {
+  color: #a5aed5;
+  font-size: 0.57rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+.ccg-c64-vault-game-row select,
+.ccg-c64-vault-backup-row button {
+  min-width: 0;
+  min-height: 35px;
+  border: 1px solid #373b74;
+  border-radius: 8px;
+  background: #131633;
+  color: #bfc0e3;
+  padding: 0.42rem 0.48rem;
+  font: inherit;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+.ccg-c64-vault-game-row select { width: 100%; appearance: auto; }
+.ccg-c64-vault-backup-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.ccg-c64-vault-backup-row button {
+  cursor: pointer;
+}
+.ccg-c64-vault-backup-row button:hover:not(:disabled),
+.ccg-c64-vault-game-row select:hover { border-color: var(--emu-accent); }
+.ccg-c64-vault-help {
+  margin: 0.42rem 0 0;
+  color: #a5aed5;
+  font-size: 0.6rem;
+  line-height: 1.5;
+}
+.ccg-c64-vault-recovery { margin-top: 0.5rem; }
+.ccg-c64-vault-recovery [hidden] { display: none !important; }
+.ccg-c64-vault-recovery p {
+  margin: 0 0 0.42rem;
+  color: #f0d89e;
+  font-size: 0.67rem;
+  line-height: 1.5;
+}
+.ccg-c64-vault-recovery button {
+  min-height: 36px;
+  border: 1px solid #817ec2;
+  border-radius: 8px;
+  padding: 0.46rem 0.8rem;
+  color: #e7e9ff;
+  background: #242647;
+  font: inherit;
+  font-size: 0.69rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.ccg-c64-vault-recovery button:hover:not(:disabled),
+.ccg-c64-vault-recovery button:focus-visible { border-color: var(--emu-accent); }
+.ccg-c64-vault-recovery button:disabled { opacity: 0.6; cursor: wait; }
+@media (max-width: 760px), (pointer: coarse) {
+  .ccg-c64-vault-game-row select,
+  .ccg-c64-vault-backup-row button { min-height: 44px; font-size: 0.7rem; }
+}
+
+
+/* CCG C64 usability refresh — scoped entirely to the emulator.
+   Keep the mobile joystick, iOS selector and existing screen-sizing rules. */
+.ccg-c64-play-help {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(215px, 0.56fr);
+  gap: 0.55rem;
+  align-items: center;
+  margin: 0.4rem 0 0;
+  border: 1px solid rgba(112, 124, 199, 0.36);
+  border-radius: 9px;
+  padding: 0.55rem 0.65rem;
+  background: linear-gradient(110deg, rgba(41, 54, 105, 0.44), rgba(10, 18, 47, 0.84));
+}
+.ccg-c64-play-help > p {
+  margin: 0;
+  color: #c5c9e8;
+  font-size: 0.69rem;
+  line-height: 1.65;
+}
+.ccg-c64-play-help > p strong { color: #f6edff; }
+.ccg-c64-play-help kbd {
+  display: inline-block;
+  margin: 0 0.1rem;
+  padding: 0.08rem 0.36rem;
+  border: 1px solid #868ad7;
+  border-radius: 4px;
+  background: #151b40;
+  color: #f7f5ff;
+  font: 800 0.7rem var(--ccg-font-mono, "Courier New", monospace);
+}
+.ccg-c64-warp-action {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+}
+.ccg-c64-warp-action button {
+  width: 100%;
+  min-height: 43px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.42rem 0.7rem;
+  border: 1px solid #e0c56c;
+  border-radius: 7px;
+  background: linear-gradient(120deg, #655023, #957020);
+  color: #fffaf0;
+  font: 900 0.74rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-warp-action button span { font-size: 0.65rem; }
+.ccg-c64-warp-action button strong { font-size: 0.78rem; }
+.ccg-c64-warp-action button:hover:not(:disabled),
+.ccg-c64-warp-action button:focus-visible { border-color: #fff3af; box-shadow: 0 0 14px rgba(238, 197, 92, 0.25); }
+.ccg-c64-warp-action button[aria-pressed="true"] {
+  border-color: #a3eac1;
+  background: linear-gradient(120deg, #175b53, #168365);
+}
+.ccg-c64-warp-action button:disabled { opacity: 0.5; cursor: default; }
+.ccg-c64-warp-action small { color: #aab4d6; font-size: 0.57rem; line-height: 1.4; text-align: center; }
+.ccg-c64-play-help.is-loading { border-color: rgba(239, 194, 67, 0.65); box-shadow: 0 0 15px rgba(200, 164, 55, 0.1); }
+
+.ccg-c64-panel--library .ccg-c64-panel-title {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.45rem;
+}
+.ccg-c64-panel--library .ccg-c64-panel-title > em { grid-column: 3; }
+.ccg-c64-catalogue-open {
+  grid-column: 1 / -1;
+  min-height: 40px;
+  border: 1px solid #45c8e5;
+  border-radius: 7px;
+  padding: 0.55rem;
+  background: linear-gradient(140deg, #075887, #0a416a);
+  color: #f3faff;
+  font: 900 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+  letter-spacing: 0.035em;
+  cursor: pointer;
+}
+.ccg-c64-catalogue-open:hover:not(:disabled), .ccg-c64-catalogue-open:focus-visible {
+  background: linear-gradient(140deg, #0c7ca8, #145477);
+  box-shadow: 0 0 14px rgba(21, 199, 227, 0.22);
+}
+.ccg-c64-catalogue-open:disabled { opacity: 0.55; cursor: progress; }
+
+.ccg-c64-advanced {
+  grid-column: 1 / -1;
+  min-width: 0;
+  border: 1px solid #353b78;
+  border-radius: 9px;
+  background: rgba(15, 18, 47, 0.82);
+}
+.ccg-c64-advanced > summary,
+.ccg-c64-vault-backups > summary {
+  padding: 0.72rem 0.8rem;
+  color: #e6e5ff;
+  font: 800 0.67rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-advanced > summary span {
+  color: #a0abcf;
+  font-size: 0.58rem;
+  font-weight: 400;
+  margin-left: 0.65rem;
+}
+.ccg-c64-advanced[open] > summary { border-bottom: 1px solid #353b78; }
+.ccg-c64-advanced-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.65rem;
+}
+.ccg-c64-advanced-grid > .ccg-c64-panel { grid-area: auto; grid-row: auto; grid-column: auto; margin: 0; }
+.ccg-c64-advanced-grid > .ccg-c64-panel--rom { grid-column: 1 / -1; }
+.ccg-c64-vault-backups { margin-top: 0.42rem; border-top: 1px solid rgba(135, 127, 205, 0.35); }
+.ccg-c64-vault-backups > summary { padding: 0.42rem 0; font-size: 0.59rem; color: #9ca9d6; }
+.ccg-c64-vault-feedback {
+  min-height: 1.2rem;
+  color: #c2eecf;
+  font-size: 0.65rem;
+  line-height: 1.45;
+  margin: 0.45rem 0 0;
+}
+.ccg-c64-vault-feedback.is-error { color: #ffd59d; }
+.ccg-c64-panel--vault .ccg-c64-vault-row button[data-vault-save],
+.ccg-c64-panel--vault .ccg-c64-vault-row button[data-vault-load] {
+  border-color: #248ab5;
+  background: #095379;
+  color: #fff;
+  font-size: 0.67rem;
+}
+.ccg-c64-panel--vault .ccg-c64-vault-row button:disabled { opacity: 0.52; cursor: default; }
+
+/* Catalogue browser is separate from the workspace and does not alter gameplay
+   on iOS/Android. Render only 60 games at a time, even in large archives. */
+.ccg-c64-catalogue[hidden] { display: none !important; }
+.ccg-c64-catalogue {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.6rem, 2vw, 1.4rem);
+}
+body.ccg-c64-catalogue-open { overflow: hidden; }
+.ccg-c64-catalogue-backdrop { position: absolute; inset: 0; background: rgba(2, 5, 21, 0.84); backdrop-filter: blur(5px); }
+.ccg-c64-catalogue-dialog {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 1120px);
+  height: min(93dvh, 920px);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #6670c0;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #141941, #080e2a);
+  color: #f2f1ff;
+  box-shadow: 0 25px 90px rgba(0, 0, 0, 0.7);
+}
+.ccg-c64-catalogue-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.1rem 1.25rem 0.85rem;
+  border-bottom: 1px solid #343d79;
+}
+.ccg-c64-catalogue-kicker { margin: 0; color: #69d8ed; font: 800 0.59rem var(--ccg-font-mono, "Courier New", monospace); letter-spacing: 0.1em; }
+.ccg-c64-catalogue-head h2 { margin: 0.2rem 0; font-size: clamp(1.1rem, 2.3vw, 1.7rem); line-height: 1.2; }
+.ccg-c64-catalogue-head p:not(.ccg-c64-catalogue-kicker) { margin: 0.3rem 0 0; color: #b7bfdc; font-size: 0.78rem; line-height: 1.45; }
+.ccg-c64-catalogue-head button,
+.ccg-c64-catalogue-pager button {
+  border: 1px solid #5968a5; border-radius: 7px; background: #172150;
+  color: #eef2ff; padding: 0.65rem 0.9rem;
+  font: 800 0.68rem var(--ccg-font-mono, "Courier New", monospace);
+  cursor: pointer;
+}
+.ccg-c64-catalogue-filters {
+  display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: 0.7rem; padding: 0.85rem 1.25rem;
+}
+.ccg-c64-catalogue-filters label { display: grid; gap: 0.28rem; min-width: 0; color: #c7ccee; font: 800 0.57rem var(--ccg-font-mono, "Courier New", monospace); }
+.ccg-c64-catalogue-filters input, .ccg-c64-catalogue-filters select {
+  min-height: 43px; min-width: 0; width: 100%; border: 1px solid #4f5a9a; border-radius: 7px;
+  padding: 0.55rem 0.7rem; color: #fff; background: #0c1438; font-size: 0.82rem;
+}
+.ccg-c64-catalogue-summary {
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  padding: 0 1.25rem 0.65rem; color: #b7cae8; font-size: 0.73rem;
+}
+.ccg-c64-catalogue-summary strong { color: #8ce7ef; }
+.ccg-c64-catalogue-results {
+  flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: start; gap: 0.45rem; padding: 0.65rem 1.25rem 1.1rem;
+  overflow-y: auto; scrollbar-color: #5763ad #111632;
+  border-top: 1px solid #31386d;
+}
+.ccg-c64-catalogue-item {
+  display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 0.4rem;
+  min-width: 0; min-height: 74px; padding: 0.65rem 0.75rem; text-align: left;
+  border: 1px solid #34427c; border-radius: 8px;
+  background: #151d48; color: #f5f5ff; cursor: pointer;
+}
+.ccg-c64-catalogue-item strong { width: 100%; font-size: 0.81rem; overflow-wrap: anywhere; line-height: 1.3; }
+.ccg-c64-catalogue-item span { color: #9cbbe7; font-size: 0.55rem; letter-spacing: 0.035em; }
+.ccg-c64-catalogue-item:hover, .ccg-c64-catalogue-item:focus-visible {
+  border-color: #56d4ef; background: #23346a; box-shadow: inset 3px 0 0 #49d7f5;
+}
+.ccg-c64-catalogue-empty { grid-column: 1 / -1; color: #cbd0ee; text-align: center; padding: 1.5rem; }
+.ccg-c64-catalogue-pager {
+  display: flex; justify-content: center; align-items: center; gap: 1rem;
+  padding: 0.75rem; border-top: 1px solid #373c77; background: #0d1536;
+}
+.ccg-c64-catalogue-pager strong { min-width: 95px; text-align: center; font-size: 0.66rem; }
+.ccg-c64-catalogue-pager button:disabled { opacity: 0.45; cursor: default; }
+
+@media (min-width: 960px) {
+  .ccg-c64-control-stack,
+  .ccg-c64-control-stack.has-online-library {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-areas:
+      "online online online online online online"
+      "controls controls controls controls controls controls"
+      "port port port quick quick quick"
+      "vault vault vault vault vault vault"
+      "advanced advanced advanced advanced advanced advanced";
+    align-items: start;
+  }
+  .ccg-c64-control-stack .ccg-c64-advanced { grid-area: advanced; }
+  .ccg-c64-panel--quickload { align-self: stretch; }
+  .ccg-c64-panel--controls { grid-row: auto; }
+  .ccg-c64-panel--library .ccg-c64-panel-title {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+  .ccg-c64-panel--library .ccg-c64-panel-title > em { grid-column: 3; }
+  .ccg-c64-catalogue-open { grid-column: 4; min-height: 31px; padding: 0.35rem 0.6rem; }
+  .ccg-c64-button-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.36rem; }
+  .ccg-c64-button-grid button { min-height: 42px; padding: 0.45rem; }
+  .ccg-c64-button-grid button span { display: none; }
+  .ccg-c64-button-grid button strong { font-size: 0.63rem; white-space: normal; }
+  .ccg-c64-button-grid [data-load-media],
+  .ccg-c64-button-grid [data-open-setup] { display: none; }
+  .ccg-c64-quickload p { font-size: 0.62rem; }
+  .ccg-c64-quickload .ccg-c64-primary-load { min-height: 36px; }
+  /* A grid-column:auto override here discarded the named "vault" column span.
+     It reduced Save / Resume to one 1/6-width track and inflated the page
+     height. Explicitly span the full right-hand control deck on desktop. */
+  .ccg-c64-control-stack > .ccg-c64-panel--vault {
+    grid-area: vault;
+    grid-column: 1 / -1;
+    min-width: 0;
+    width: 100%;
+  }
+  .ccg-c64-discovery { max-width: 1200px; }
+}
+@media (max-width: 959px) {
+  .ccg-c64-play-help { grid-template-columns: 1fr; }
+  .ccg-c64-advanced-grid { grid-template-columns: 1fr; }
+  .ccg-c64-advanced-grid > .ccg-c64-panel--rom { grid-column: auto; }
+}
+@media (max-width: 760px) {
+  .ccg-c64-play-help { display: none; } /* mobile play has its existing dedicated WARP and virtual keyboard */
+  .ccg-c64-advanced > summary span { display: block; margin: 0.25rem 0 0; }
+  .ccg-c64-catalogue { padding: 0; }
+  .ccg-c64-catalogue-dialog { width: 100%; height: 100dvh; border-radius: 0; }
+  .ccg-c64-catalogue-head { padding: 0.8rem; }
+  .ccg-c64-catalogue-head p:not(.ccg-c64-catalogue-kicker) { display: none; }
+  .ccg-c64-catalogue-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0.65rem; gap: 0.5rem; }
+  .ccg-c64-catalogue-filters label:first-child { grid-column: 1 / -1; }
+  .ccg-c64-catalogue-summary { padding: 0 0.7rem 0.5rem; font-size: 0.62rem; }
+  .ccg-c64-catalogue-results { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0.55rem; }
+  .ccg-c64-catalogue-item { min-height: 68px; padding: 0.5rem; }
+  .ccg-c64-catalogue-item strong { font-size: 0.7rem; }
+  .ccg-c64-catalogue-item span { font-size: 0.5rem; }
+  .ccg-c64-catalogue-open { font-size: 0.63rem; }
+}
+@media (max-width: 400px) {
+  .ccg-c64-catalogue-results { grid-template-columns: 1fr; }
+  .ccg-c64-catalogue-item { min-height: 58px; }
+}
+
+/* CCG mobile in-game actions (2026-10-14): isolated to coarse-pointer
+   immersive gameplay. Desktop layout and ordinary library remain unchanged. */
+.ccg-c64-mobile-game-actions[hidden],
+.ccg-c64-mobile-vault[hidden] { display: none !important; }
+.ccg-c64-mobile-game-actions,
+.ccg-c64-mobile-vault { display: none; }
+.ccg-c64-mobile-crt-mode { display: none !important; }
+
+@media (pointer: coarse) {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions {
+    display: grid;
+    order: 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: clamp(0.18rem, 1vw, 0.4rem);
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0.35rem 0.15rem;
+    border: 1px solid #827ad3;
+    border-radius: 6px;
+    background: #232653;
+    color: #f8f5ff;
+    font: 800 clamp(0.56rem, 2.25vw, 0.75rem)/1.15 var(--ccg-font-mono, "Courier New", monospace);
+    text-align: center;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button[aria-pressed="true"] {
+    color: #fff1c8;
+    background: #514075;
+    border-color: #f3cb70;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button:disabled {
+    opacity: 0.5;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-screen-stage,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-screen-stage { order: 2; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-controls { order: 3; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-options { order: 4; }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-fire,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-jump {
+    border-radius: 7px;
+    min-width: 0;
+    flex: 0 1 auto;
+    width: clamp(69px, 19vw, 105px);
+    height: clamp(69px, 19vw, 105px);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-jump:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-options {
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.82fr) minmax(0, 1.38fr);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-crt-mode {
+    display: inline-flex !important;
+    justify-content: center;
+    align-items: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    border-color: #afa0ec;
+    background: #262451;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-vault:not([hidden]) {
+    position: absolute;
+    inset: 0;
+    z-index: 80;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: max(0.65rem, env(safe-area-inset-top))
+      max(0.5rem, env(safe-area-inset-right))
+      max(0.65rem, env(safe-area-inset-bottom))
+      max(0.5rem, env(safe-area-inset-left));
+    background: rgba(2, 4, 16, 0.82);
+    touch-action: manipulation;
+  }
+  .ccg-c64-mobile-vault-card {
+    display: grid;
+    gap: 0.65rem;
+    width: min(100%, 430px);
+    max-height: min(85dvh, 540px);
+    min-width: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(0.75rem, 3vw, 1.1rem);
+    border: 1px solid #9389da;
+    border-radius: 9px;
+    background: #10142f;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.8);
+    color: #f6f5ff;
+  }
+  .ccg-c64-mobile-vault-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .ccg-c64-mobile-vault-header strong {
+    font: 800 0.82rem var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-mobile-vault-header button,
+  .ccg-c64-mobile-vault-slot {
+    border: 1px solid #8983cc;
+    border-radius: 5px;
+    background: #222854;
+    color: #f6f5ff;
+    font: 800 0.65rem var(--ccg-font-mono, "Courier New", monospace);
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .ccg-c64-mobile-vault-header button { min-height: 44px; padding: 0.4rem 0.7rem; }
+  .ccg-c64-mobile-vault-card p {
+    margin: 0;
+    color: #cbd0ed;
+    font: 600 0.67rem/1.5 var(--ccg-font-mono, "Courier New", monospace);
+  }
+  .ccg-c64-mobile-vault-slots { display: grid; gap: 0.4rem; min-width: 0; }
+  .ccg-c64-mobile-vault-slot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+    min-height: 56px;
+    padding: 0.65rem;
+    text-align: left;
+  }
+  .ccg-c64-mobile-vault-slot strong { font-size: 0.76rem; }
+  .ccg-c64-mobile-vault-slot span { color: #bfc6e9; font-size: 0.66rem; }
+  .ccg-c64-mobile-vault-slot:disabled { opacity: 0.42; }
+  .ccg-c64-mobile-vault-slot:not(:disabled):active { background: #49417e; }
+  .ccg-c64-mobile-vault-card .ccg-c64-mobile-vault-message {
+    min-height: 1.4rem;
+    color: #f2d997;
+  }
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 490px) {
+  .ccg-c64-console.is-mobile-playing .ccg-c64-mobile-game-actions > button {
+    min-height: 32px;
+    padding: 0.14rem 0.1rem;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad,
+  .ccg-c64-console.is-mobile-playing:fullscreen .ccg-c64-touch-dpad {
+    grid-template-columns: repeat(3, 32px);
+    grid-template-rows: repeat(3, 32px);
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-dpad button {
+    min-width: 32px;
+    min-height: 32px;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-fire,
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-jump {
+    width: 64px;
+    height: 64px;
+  }
+  .ccg-c64-console.is-mobile-playing .ccg-c64-touch-controls {
+    padding: 0.1rem;
   }
 }

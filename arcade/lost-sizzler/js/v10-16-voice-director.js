@@ -288,7 +288,7 @@
   function tutorialSilent(){const tutorial=window.CCGLostSizzlerOnboardingV120?.state;return Boolean(tutorial?.active||tutorial?.tutorialRequested||window.CCGLostSizzlerTutorialGuidanceV123?.tutorialLaunchPending)}
   function sayKey(key,opts={}){
     const entry=lines[key];if(!entry||!state.enabled||(tutorialSilent()&&!opts.allowDuringTutorial))return false;
-    const currentFloor=Math.max(0,Number(run?.floor||0));if(key==="rareLoot"&&currentFloor>0&&state.rareLootFloor===currentFloor)return false;if(key==="rareLoot"&&currentFloor>0)state.rareLootFloor=currentFloor;
+    const currentFloor=Math.max(0,Number(run?.floor||0));if(key==="rareLoot"&&currentFloor>0&&state.rareLootFloor===currentFloor)return false;/* Rare loot is marked announced only after its approved audio actually starts. */
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000),now=performance.now();if(!coolReady(key,cooldown,now))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key,reason:"unavailable",at:now};return false}
@@ -303,6 +303,7 @@
     const src=assetFor(key);let started=false;
     if(src)started=playClip(src,priority,key);if(!started)started=playSprite(key,priority);
     if(!started){state.skipped++;state.lastSkipped={key,reason:"playback",at:now};return false}
+    if(key==="rareLoot"&&currentFloor>0)state.rareLootFloor=currentFloor;
     state.lastByKey.set(key,now);state.played++;return true;
   }
   function sayDialogue(key,text,opts={}){
@@ -312,6 +313,9 @@
     const priority=Number(opts.priority??44),cooldown=Math.max(0,Number(opts.cooldown??9000)),now=performance.now();
     if(!coolReady(voiceKey,cooldown,now))return false;
     if(!state.unlocked||!soundAllowed()){state.skipped++;state.lastSkipped={key:voiceKey,reason:"unavailable",at:now};return false}
+    // Never silence an already-playing, approved recording for a dialogue
+    // prompt that has no playable owner clip. Its subtitle remains available.
+    if(!hasApprovedRecording(voiceKey)){state.skipped++;state.lastSkipped={key:voiceKey,reason:"no-approved-recording",at:now};return false}
     if(state.active){
       // Encounter-specific recorded dialogue should take precedence over less
       // important current speech rather than being lost or replayed late.
@@ -470,7 +474,7 @@
       try{
         const painPlayed=after<before?sayKey("hurt"):false;
         if(deathsAfter>deathsBefore)setTimeout(()=>sayKey("playerDeath"),painPlayed?800:0);
-        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.12&&!state.criticalHealthLatch.has(player)){state.criticalHealthLatch.add(player);sayKey("criticalHealth")}else if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28&&!state.lowHealthLatch.has(player)){state.lowHealthLatch.add(player);sayKey("lowHealth")}
+        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.12&&!state.criticalHealthLatch.has(player)){if(sayKey("criticalHealth"))state.criticalHealthLatch.add(player)}else if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28&&!state.lowHealthLatch.has(player)){if(sayKey("lowHealth"))state.lowHealthLatch.add(player)}
       }catch(_){}return result;
     };
   }
@@ -520,14 +524,14 @@
   function voiceWatch(dt){
     watchMs-=Number(dt||0);if(watchMs>0||mode!=="playing"||!p1||tutorialSilent())return;watchMs=350;
     try{
-      if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.12&&!state.criticalHealthLatch.has(p1)){state.criticalHealthLatch.add(p1);sayKey("criticalHealth")}else if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){state.lowHealthLatch.add(p1);sayKey("lowHealth")}
-      for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){state.gildedFiveWarned.add(elf.id);sayKey("gildedFive",{cooldown:0})}
+      if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.12&&!state.criticalHealthLatch.has(p1)){if(sayKey("criticalHealth"))state.criticalHealthLatch.add(p1)}else if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){if(sayKey("lowHealth"))state.lowHealthLatch.add(p1)}
+      for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){if(sayKey("gildedFive",{cooldown:0}))state.gildedFiveWarned.add(elf.id)}
       const banish=typeof banishmentState==="function"?banishmentState(p1):null;
-      if(banish?.ready&&banish.nearest&&!state.banishmentPromptSeen.has(banish.nearest)){state.banishmentPromptSeen.add(banish.nearest);sayKey("useBanishmentFlask",{cooldown:0});return}
+      if(banish?.ready&&banish.nearest&&!state.banishmentPromptSeen.has(banish.nearest)){if(sayKey("useBanishmentFlask",{cooldown:0}))state.banishmentPromptSeen.add(banish.nearest);return}
       const guardians=[host?.guardian,...(host?.enemies||[])].filter(Boolean),guardian=guardians.find(enemy=>enemy?.alive&&enemy?.guardian&&!enemy?.exitWarden&&!enemy?.sigilWarden&&sharesLiveRoom(enemy));
-      if(guardian&&!state.guardianVoiceSeen.has(guardian)){state.guardianVoiceSeen.add(guardian);sayKey("guardianEncountered",{cooldown:0});return}
+      if(guardian&&!state.guardianVoiceSeen.has(guardian)){if(sayKey("guardianEncountered",{cooldown:0}))state.guardianVoiceSeen.add(guardian);return}
       const roomId=W.roomAt(world,p1.x,p1.y),roomKey=`${Number(run?.floor||1)}:${roomId}`,ordinaryNearby=(host?.enemies||[]).some(enemy=>enemy?.alive&&!enemy?.follower&&!enemy?.guardian&&!enemy?.deathStalker&&!enemy?.exitWarden&&!enemy?.sigilWarden&&sharesLiveRoom(enemy));
-      if(ordinaryNearby&&!state.enemyRoomVoiceKeys.has(roomKey)){state.enemyRoomVoiceKeys.add(roomKey);sayKey("enemiesNearby",{cooldown:0})}
+      if(ordinaryNearby&&!state.enemyRoomVoiceKeys.has(roomKey)){if(sayKey("enemiesNearby",{cooldown:0}))state.enemyRoomVoiceKeys.add(roomKey)}
     }catch(_){}
   }
   if(typeof update==="function"){

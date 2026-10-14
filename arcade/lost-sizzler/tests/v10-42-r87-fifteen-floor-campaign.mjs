@@ -102,4 +102,46 @@ for(const html of [canonical,alias]){
   assert.match(html,/fifteen procedural floors/i,"public metadata must advertise the fifteen-floor campaign");
   assert.match(html,/15-FLOOR RUN/,"public menu must advertise the fifteen-floor run");
 }
+
+// Engine-first acceptance guard: exercise actual world + placement + trial
+// modules across every bespoke R115 floor, rather than only matching source.
+const generatedRuntime=vm.createContext({window:{},console});
+for(const owner of ["config","world","progression","systems","v10-42-r115-floor-trials"]){
+  vm.runInContext(read("arcade/lost-sizzler/js/"+owner+".js"),generatedRuntime,{filename:owner+".js"});
+}
+const generatedWorld=generatedRuntime.window.CCGWorld;
+const generatedSystems=generatedRuntime.window.CCGSystems;
+let generatedTrialSamples=0;
+for(const floor of [6,7,8,9,11,13,14]){
+  for(let sample=0;sample<4;sample++){
+    const seed="ccg-engine-trial-guard-20261009-"+floor+"-"+sample;
+    const world=generatedWorld.generate(seed);
+    const host=generatedWorld.createHostState(world);
+    generatedSystems.decorate(world,host,{floor,seed,stats:{}});
+    const trial=host.floorTrial;
+    assert.ok(trial,"A required authored floor trial must not silently disappear: "+seed);
+    if([6,7,11,14].includes(floor)){
+      assert.equal(trial.nodes.length,trial.target,"Full objective-node count must spawn: "+seed);
+      const used=new Set();
+      for(const node of trial.nodes){
+        const at=node.x+","+node.y;
+        assert.ok(!used.has(at),"Trial nodes must never share a cell: "+seed);
+        used.add(at);
+        assert.ok(generatedWorld.walkable(world.map,node.x,node.y,host),"Trial node must be walkable: "+seed);
+        assert.equal(generatedWorld.roomAt(world,node.x,node.y),node.roomId,"Trial room identity must match the map: "+seed);
+      }
+    }
+    if(floor===7)assert.ok(host.items.some(item=>item.r115TrialSupply&&item.kind==="torch"),"Crypt must supply usable torches: "+seed);
+    if([11,14].includes(floor))assert.ok(host.items.some(item=>item.r115TrialSupply&&item.kind==="ammo"),"Shoot-only trials require ammo: "+seed);
+    if(floor===8)assert.ok(host.arenas.some(arena=>arena.id===trial.sourceId),"Arena trial source must exist: "+seed);
+    if(floor===9)assert.ok(host.timedRooms.some(room=>room.id===trial.sourceId),"Timed trial source must exist: "+seed);
+    if(floor===13){
+      assert.equal(trial.enemyIds.length,trial.target,"Warden hunt must mark every target: "+seed);
+      for(const id of trial.enemyIds)assert.ok(host.enemies.some(enemy=>enemy.id===id&&enemy.alive),"Marked Warden must be alive and present: "+seed);
+    }
+    generatedTrialSamples++;
+  }
+}
+assert.equal(generatedTrialSamples,28,"Exercise all seven authored trial floors across four seeds each.");
+
 console.log("Dungeon Carnage R87 fifteen-floor campaign and floor-theme contract passed.");

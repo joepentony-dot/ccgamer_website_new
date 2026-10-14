@@ -1,6 +1,6 @@
 {
   "name": "ccg-dungeon-carnage-windows",
-  "version": "0.119.0",
+  "version": "0.124.0",
   "private": true,
   "description": "Offline Windows application for C64 Dungeon Carnage",
   "main": "main.cjs",
