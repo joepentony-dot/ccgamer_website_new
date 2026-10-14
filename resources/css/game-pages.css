@@ -2335,3 +2335,34 @@
         -webkit-line-clamp: unset;
     }
 }
+
+
+/* Keep the optional recommendations and footer from becoming empty
+   full-height blocks while their controls remain fully accessible. */
+.ccg-page--single-game #affiliate-products-section:not([hidden]) .affiliate-products-inner.game-facts__inner {
+    padding: 4px 6px;
+    gap: 4px;
+}
+
+.ccg-page--single-game #affiliate-products-section .affiliate-products-title {
+    font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+    line-height: 1.3;
+}
+
+.ccg-page--single-game > .ccg-omega-divider {
+    height: 20px;
+    margin: 12px auto 6px;
+}
+
+.ccg-page--single-game .ccg-footer--game {
+    margin-top: 0;
+    padding-block: 12px;
+}
+
+.ccg-page--single-game .ccg-footer-inner--game {
+    gap: 8px;
+}
+
+.ccg-page--single-game .ccg-footer--game .ccg-footer__col {
+    gap: 4px;
+}
