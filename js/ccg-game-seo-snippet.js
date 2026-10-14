@@ -15,6 +15,42 @@
   const DEFAULT_MAX_LENGTH = 155;
   const MIN_SENTENCE_LENGTH = 48;
 
+  // Complete names actually present in the editorial corpus. A capitalised
+  // noun after "control of" is not evidence of a person's name. Unknown
+  // initials must not absorb the next sentence; extend this set only with
+  // verified source names and regression coverage.
+  const VERIFIED_INITIAL_NAMES = [
+    'Alphonse T. Nurd', 'Andrew B. Spencer', 'Ben E. Factor',
+    'Colonel R. G. Bargie', 'Conrad B. Hart', 'David H. Schroeder',
+    'Dean M. Lock', 'Delvin J. Sorrell', 'Edward R. Hobbs', 'G. I. Ant',
+    'G. McFat', 'H. Manslayer', 'Jason C. Brooke', 'John A. Fitzpatrick',
+    'John D. Ferrari', 'John F. Kutcher', 'John M. Phillips',
+    'John S. Sinclair', 'K. C. Colossus', 'Kevin A. Moughtin',
+    'M. C. Escher', 'M. C. Lothlorien', 'Martin S. Horsley',
+    'Mervyn J. Estcourt', 'Michael J. Hanson', 'Nigel P. Johnstone',
+    'P. Rawling', 'Pete G. Curtis', 'Peter J. Favaro', 'Philip M. Taglione',
+    'R. W. Stevens', 'Robert T. Bonifacio', 'Ron J. Fortier',
+    'Sean A. Moore', 'Simon W. Sorsbie', 'Stephen R. Kellett',
+    'T. Owen', 'Terry P. Watts', 'Timothy G. Martin', 'Wile E. Coyote'
+  ].flatMap((name) => {
+    const compact = name.replace(/\.\s*/g, '.');
+    return Array.from(compact.matchAll(/\./g), (match) => ({
+      prefix: compact.slice(0, match.index + 1),
+      suffix: compact.slice(match.index + 1),
+      needsIntroduction: /^[A-Z]\./.test(compact)
+    }));
+  });
+
+  function verifiedInitialContinuation(before, next) {
+    const lead = before.replace(/\.\s*/g, '.');
+    const tail = next.replace(/\.\s*/g, '.');
+    return VERIFIED_INITIAL_NAMES.some(({ prefix, suffix, needsIntroduction }) =>
+      lead.endsWith(prefix) && tail.startsWith(suffix) &&
+      !/[\p{L}\p{N}_]/u.test(lead.charAt(lead.length - prefix.length - 1)) &&
+      !/[\p{L}\p{N}_]/u.test(tail.charAt(suffix.length)) &&
+      (!needsIntroduction || /(?:^|\b(?:by|schoolboy|schoolgirl|named|called|role of|control of|artwork of))\s*$/i.test(lead.slice(0, -prefix.length))));
+  }
+
   function normalize(value) {
     return String(value || "")
       .replace(/<[^>]*>/g, " ")
@@ -90,7 +126,7 @@
         const author = /(?:^|\s)J\.\s*R\.\s*R\.$/.test(before) && /^Tolkien\b/.test(next);
         // Keep initials within sourced names and spaced game acronyms together.
         // Terminal difficulty labels and finished acronym titles remain endings.
-        const terminalLabel = /\b(?:mode|difficulty|level|setting|grade|option|type|checkpoint|waypoint|route|path|sector|zone|section|room|stage|area|gate|door|exit|switch|button|terminal|pad|point|marker|location|objective|target|position|square|grid|tile|lane|track|column|row)\s+[A-Z]\.$/i.test(before);
+        const terminalLabel = /\b(?:mode|difficulty|level|setting|grade|option|type)\s+[A-Z]\.$/i.test(before);
         const terminalAcronym =
           /(?:H\.E\.R\.O\.|Chase\s+H\.Q\.)$/.test(before) ||
           (/\bU\.S\.$/.test(before) && !/^(?:Army|Navy|Gold)\b/.test(next)) ||
@@ -99,14 +135,15 @@
         const namedContinuation = /^[A-Z][a-z][\p{L}'’\-]*/u.test(next);
         const possessiveOrRoman = /^['’]s\b|^[IVX]{1,3}(?:\b|:)|^\(/.test(next);
         const knownUS = /(?:^|\s)U\.\s*S\.$/.test(before) && /^(?:Army|Navy|Gold)\b/.test(next);
-        const personalContext = /\b(?:[Bb]y|[Ss]choolboy|[Ss]choolgirl|[Dd]etective|[Cc]olonel|[Pp]rofessor|[Cc]aptain|[Nn]amed|[Cc]alled|role of|control of)\s+(?:[A-Z][\p{L}'’\-]*(?:,\s*|\s+)|and\s+){0,12}[A-Z](?:\.\s*[A-Z])*\.$/u.test(before);
-        const knownCharacter = /\bWile E\.$/.test(before) && /^Coyote\b/.test(next);
+        const verifiedName = verifiedInitialContinuation(before, next);
         const runWithNext = (run ? run[1] : "") + next;
-        const knownInitialSequence = /^(?:U\.\s*S\.\s*(?:Army|Navy|Gold)\b|J\.\s*R\.\s*R\.\s*Tolkien\b|M\.\s*A\.\s*D\.|H\.\s*E\.\s*R\.\s*O\.|M\.\s*U\.\s*L\.\s*E\.|S\.\s*W\.\s*I\.\s*V\.|B\.\s*C\.\s*(?:Bill|II)\b)/.test(runWithNext);
+        const knownInitialSequence = /^(?:U\.\s*S\.\s*(?:Army|Navy|Gold)\b|J\.\s*R\.\s*R\.\s*Tolkien\b|M\.\s*A\.\s*D\.|A\.\s*V\.\s*S\.|H\.\s*E\.\s*R\.\s*O\.|M\.\s*U\.\s*L\.\s*E\.|S\.\s*W\.\s*I\.\s*V\.|B\.\s*C\.\s*(?:Bill|II|['’]s)\b)/.test(runWithNext) ||
+          (/\bChase H\.$/.test(before) && /^Q\./.test(next)) ||
+          (/\bSmash T\.$/.test(before) && /^V\./.test(next));
         if (initials && !terminalLabel && !terminalAcronym &&
-            ((anotherInitial && (personalContext || knownInitialSequence)) ||
-             (namedContinuation && (personalContext || knownCharacter || initials >= 2)) ||
-             (possessiveOrRoman && (personalContext || knownInitialSequence || initials >= 2)) || knownUS)) continue;
+            ((anotherInitial && (verifiedName || knownInitialSequence)) ||
+             (namedContinuation && (verifiedName || knownUS || author)) ||
+             (possessiveOrRoman && (verifiedName || knownInitialSequence || initials >= 2)) || knownUS)) continue;
         if (initials && (moreInitials || publisher || author ||
           (initials >= 2 && /^[a-z]/.test(next)))) continue;
       }

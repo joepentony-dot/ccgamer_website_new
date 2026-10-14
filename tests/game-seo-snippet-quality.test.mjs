@@ -190,7 +190,7 @@ test('single-letter mode labels and H.E.R.O. titles retain real sentence boundar
 });
 
 test('standalone checkpoint and route letters retain their actual sentence boundary', () => {
-  for (const label of ['checkpoint X', 'route B', 'Checkpoint X', 'Route B', 'Sector C', 'Waypoint Z']) {
+  for (const label of ['checkpoint X', 'route B', 'Checkpoint X', 'Route B', 'Sector C', 'Waypoint Z', 'Site A', 'Base B', 'Bridge C', 'Building D', 'UnlistedStructure Q']) {
     for (const prefix of [
       'The Example game requires players to reach the marked ',
       'The Example game sends players to take control of ',
@@ -220,6 +220,8 @@ test('standalone checkpoint and route letters retain their actual sentence bound
   ]) {
     assert.equal(snippet.firstCompleteSentence(first + ' Players can explore another route.', 155), first);
   }
+  const labelled = 'The Example game sends players to take control of Site P.';
+  assert.equal(snippet.firstCompleteSentence(labelled + ' Rawling designed another stage.', 155), labelled);
 });
 
 test('compact US organisation initials stay within the complete factual sentence', () => {
