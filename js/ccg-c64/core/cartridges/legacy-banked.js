@@ -226,7 +226,8 @@ export class ZaxxonCartridge extends CartridgeDevice {
   resetLine() { this.powerUp(); }
   // A *real* CPU ROML read changes ROMH bank. Inspection must not do so.
   readRomLo(addr) {
-    this._select(addr >= 0x9000 ? 1 : 0);
+    const bank = addr >= 0x9000 ? 1 : 0;
+    if (this.bank !== bank) this._select(bank);
     return this.peekRomLo(addr);
   }
   peekRomLo(addr) { return this.baseRomLo[addr & 0x1fff]; }
