@@ -506,6 +506,14 @@ test('editorial source platform checks reject new C64-versus-Amiga misattributio
   assert.deepEqual(unexpected, [], 'New source descriptions must not misidentify the game platform');
 });
 
+test('game title Chaos Engine is never rewritten by the publisher-normaliser', () => {
+  const { normalizeText } = require('../scripts/build-game-description-enrichments.js');
+  assert.equal(normalizeText('The Chaos Engine is a 1993 Amiga game.'),
+    'The Chaos Engine is a 1993 Amiga game.');
+  assert.equal(normalizeText('The word chaos in ordinary prose.'),
+    'The word mayhem in ordinary prose.');
+});
+
 test('authoritative generator retains platform-correct curated game copy', () => {
   const { readFileSync } = require('node:fs');
   const { join } = require('node:path');
@@ -517,7 +525,13 @@ test('authoritative generator retains platform-correct curated game copy', () =>
   for (const [slug, expectedPlatform] of [
     ['the-immortal', 'AMIGA'],
     ['santas-xmas-caper', 'AMIGA'],
-    ['shadow-of-the-beast', 'C64']
+    ['shadow-of-the-beast', 'C64'],
+    ['red-heat', 'C64'],
+    ['robocop', 'C64'],
+    ['the-chaos-engine', 'AMIGA'],
+    ['bismark', 'C64'],
+    ['bounder', 'C64'],
+    ['double-dragon-2-the-revenge', 'C64']
   ]) {
     const game = catalogue.find(item => item.slug === slug);
     assert.ok(game, slug);
@@ -529,6 +543,7 @@ test('authoritative generator retains platform-correct curated game copy', () =>
     assert.deepEqual(descriptionErrors(selected.description), [], slug);
     assert.equal(enriched[slug].description, normalizeText(override.description), slug);
     assert.deepEqual(enriched[slug].sources, override.sources, slug);
+    assert.ok(selected.description.split(/\\s+/).length >= 90, slug + ' source too short');
     const record = { ...game, description: selected.description };
     const result = snippet.buildSnippet(record, game.title);
     assert.equal(result, routes.buildRuntimeDescription(record, game.title), slug);
