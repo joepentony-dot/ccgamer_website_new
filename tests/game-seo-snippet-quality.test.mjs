@@ -258,7 +258,7 @@ test('admin warns about generic fallback SEO snippets without blocking a valid r
     year: 1986,
     publisher: 'Elite',
     slug: '1942',
-    description: 'A long promotional introduction without a complete sentence that fits the search snippet limit and without a factual subject clause, followed much later by other sentences. The historical detail stays in the editorial description.'
+    description: 'A long promotional introduction without a complete sentence that fits the search snippet limit and without a factual subject clause continues for hundreds of characters without a full stop or any later independent sourced gameplay sentence that could safely be promoted into a factual search description without fabricating the missing mechanics and specific game details.'
   };
   const preview = buildGameSeoPreview(source, snippet);
   assert.equal(preview.url, 'https://www.cheekycommodoregamer.co.uk/games/1942/');
