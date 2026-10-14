@@ -2482,6 +2482,24 @@ async function loadSelectedLibraryEntry() {
       });
       if (!response.ok) throw new Error(`Game file is unavailable (HTTP ${response.status}).`);
       bytes = new Uint8Array(await response.arrayBuffer());
+      // Public CRT replacements are integrity-bound before the emulator sees
+      // them. A corrupt or stale CDN response must never boot as the chosen
+      // cartridge while the original PRG/disk archives remain intact.
+      if (String(entry.format).toLowerCase() === "crt") {
+        if (!/^[a-f0-9]{64}$/i.test(entry.sha256 || "") ||
+            !Number.isSafeInteger(entry.bytes) || bytes.length !== entry.bytes) {
+          throw new Error("Cartridge file size or catalogue metadata mismatch.");
+        }
+        if (!globalThis.crypto?.subtle) {
+          throw new Error("Secure hashing is required for cartridge integrity.");
+        }
+        const digest = await crypto.subtle.digest("SHA-256", bytes);
+        const hex = Array.from(new Uint8Array(digest), byte =>
+          byte.toString(16).padStart(2, "0")).join("");
+        if (hex !== entry.sha256.toLowerCase()) {
+          throw new Error("Cartridge SHA-256 mismatch. The original game files remain preserved.");
+        }
+      }
     }
 
     const type = String(entry.format).toLowerCase();
