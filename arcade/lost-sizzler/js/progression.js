@@ -178,7 +178,7 @@ window.CCGProgression=(()=>{
   function magicSackTier(player){return Math.max(0,Math.min(3,Math.floor(Number(player?.magicSacks)||0)))}
   function stackLimit(item,player=null){
     if(item?.kind==="artefact")return Number.POSITIVE_INFINITY;
-    const base=({potion:3,torch:1,teleport:1,banishment:1,mapReveal:1})[item?.kind];
+    const base=({potion:3,torch:1,teleport:3,banishment:1,mapReveal:1})[item?.kind];
     return base==null?Number.POSITIVE_INFINITY:base+magicSackTier(player)
   }
   function compactInventory(player){
@@ -204,7 +204,7 @@ window.CCGProgression=(()=>{
     player.inventory=out;return merged
   }
   function inventoryCanAdd(player,item){compactInventory(player);const inv=player?.inventory||[];if(item?.kind==="banishment"&&inv.some(x=>x?.kind==="banishment"))return false;const key=stackKey(item),limit=stackLimit(item,player);return Boolean(key&&inv.some(x=>stackKey(x)===key&&itemQty(x)<limit))||inv.length<inventoryCapacity(player)}
-  function inventoryAdd(player,item){player.inventory=player.inventory||[];compactInventory(player);if(item?.kind==="banishment"){if(player.inventory.some(x=>x?.kind==="banishment")||player.inventory.length>=inventoryCapacity(player))return false;player.inventory.push({...item,name:"Ward-Break Charge",short:"WARD BREAK",qty:1});return true}let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item,player);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player))return false;const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}compactInventory(player);return true}
+  function inventoryAdd(player,item){player.inventory=player.inventory||[];compactInventory(player);if(item?.kind==="banishment"){if(player.inventory.some(x=>x?.kind==="banishment")||player.inventory.length>=inventoryCapacity(player))return false;player.inventory.push({...item,name:"Ward-Break Charge",short:"WARD BREAK",qty:1});return true}const before=player.inventory.map(cloneItem);let remaining=itemQty(item),key=stackKey(item),limit=stackLimit(item,player);while(remaining>0){const existing=key?player.inventory.find(x=>stackKey(x)===key&&itemQty(x)<limit):null;if(existing){const add=Math.min(remaining,limit-itemQty(existing));existing.qty=itemQty(existing)+add;remaining-=add;continue}if(player.inventory.length>=inventoryCapacity(player)){player.inventory=before;return false}const add=Math.min(remaining,limit);player.inventory.push({...item,qty:add});remaining-=add}compactInventory(player);return true}
   function inventoryRemove(player,index,amount=1){player.inventory=player.inventory||[];if(index<0||index>=player.inventory.length)return null;const it=player.inventory[index],qty=itemQty(it),take=Math.max(1,Math.min(qty,Math.floor(Number(amount)||1)));if(qty>take){it.qty=qty-take;return{...it,qty:take}}return player.inventory.splice(index,1)[0]}
   function firstInventory(player,kind){return (player.inventory||[]).findIndex(x=>x.kind===kind)}
   function inventoryCount(player){return (player?.inventory||[]).reduce((n,it)=>n+itemQty(it),0)}
@@ -248,7 +248,18 @@ window.CCGProgression=(()=>{
   }
   function recoverDeathCache(player,run,cache){
     if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0,xp:0,levels:[],progressionRecovered:false};let recovered=0;const remaining=[];
-    for(const it of cache.inventory||[]){if(inventoryAdd(player,cloneItem(it)))recovered+=itemQty(it);else remaining.push(cloneItem(it))}
+    for(const it of cache.inventory||[]){
+      const stored=cloneItem(it),quantity=itemQty(stored);
+      if(inventoryAdd(player,stored)){recovered+=quantity;continue}
+      // A multi-Warp cache can partially refill an existing stack when the
+      // bag is full. Commit only successful single-spell additions; leave
+      // every unclaimed spell in the cache for a save/reload-safe retry.
+      let moved=0;
+      if(stored?.kind==="teleport"){
+        while(moved<quantity&&inventoryAdd(player,{...stored,qty:1})){moved++;recovered++}
+      }
+      if(moved<quantity)remaining.push({...stored,qty:quantity-moved})
+    }
     const games=[...(cache.games||[])];for(const g of games)if(!(run.floorGames||[]).includes(g))run.floorGames.push(g);
     const cachedArmour=Math.max(0,Math.floor(Number(cache.armour)||0)),armourBefore=Math.max(0,Math.floor(Number(player?.armor)||0)),armourRoom=Math.max(0,armourCap(player)-armourBefore),armourRecovered=Math.min(cachedArmour,armourRoom);player.armor=armourBefore+armourRecovered;cache.armour=cachedArmour-armourRecovered;
     const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0)),cachedXP=Math.max(0,Math.floor(Number(cache.xp)||0)),xpResult=cachedXP?gainXP(player,run,cachedXP,"Death cache recovered"):{amount:0,discarded:0,levels:[],restoredProgression:[]};
