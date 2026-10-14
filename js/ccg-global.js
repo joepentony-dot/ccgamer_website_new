@@ -330,13 +330,34 @@ if (IS_ADMIN_PATH) {
         ].join(","));
 
         const installGuard = (frame) => {
-            if (!(frame instanceof HTMLIFrameElement) || guarded.has(frame) || !isInlinePlayer(frame)) return;
+            if (!(frame instanceof HTMLIFrameElement) || !isInlinePlayer(frame)) return;
 
             const source = String(frame.getAttribute("src") || "");
-            if (!/youtube(?:-nocookie)?\.com\/embed\//i.test(source)) return;
-
+            const hasYouTubeSource = /youtube(?:-nocookie)?\.com\/embed\//i.test(source);
             const host = frame.parentElement;
-            if (!host) return;
+
+            /*
+             * Some existing canonical pages still start with an eager iframe.
+             * Their original wheel shield must be removed as soon as hydration
+             * clears src, not when a later Play action installs the next player.
+             * Reparenting a live iframe likewise requires a new shield owner.
+             */
+            const previousHost = frame.__ccgWheelGuardHost || null;
+            const previousShield = frame.__ccgWheelGuardShield || null;
+            if (guarded.has(frame) &&
+                (!hasYouTubeSource || !host || previousHost !== host || !previousShield?.isConnected)) {
+                guarded.delete(frame);
+                if (typeof frame.__ccgWheelGuardCleanup === "function") {
+                    frame.__ccgWheelGuardCleanup();
+                } else {
+                    previousShield?.remove?.();
+                    previousHost?.classList?.remove("ccg-wheel-guard-host", "ccg-wheel-guard-host--active");
+                    frame.classList.remove("ccg-wheel-guard-frame");
+                    delete frame.dataset.ccgWheelGuard;
+                }
+            }
+
+            if (!hasYouTubeSource || !host || guarded.has(frame)) return;
 
             guarded.add(frame);
             frame.classList.add("ccg-wheel-guard-frame");
@@ -347,6 +368,8 @@ if (IS_ADMIN_PATH) {
             // Global CTA/button minimum sizing can otherwise make the transparent
             // wheel shield larger than the iframe it is meant to cover.
             const shield = document.createElement("span");
+            frame.__ccgWheelGuardHost = host;
+            frame.__ccgWheelGuardShield = shield;
             shield.className = "ccg-wheel-guard";
             shield.setAttribute("role", "button");
             shield.setAttribute("tabindex", "0");
@@ -413,11 +436,25 @@ if (IS_ADMIN_PATH) {
             host.addEventListener("pointerleave", deactivate, { passive: true });
             window.addEventListener("resize", syncShield, { passive: true });
 
+            let resizeObserver = null;
             if (typeof ResizeObserver === "function") {
-                const resizeObserver = new ResizeObserver(syncShield);
+                resizeObserver = new ResizeObserver(syncShield);
                 resizeObserver.observe(frame);
                 resizeObserver.observe(host);
             }
+
+            frame.__ccgWheelGuardCleanup = () => {
+                host.removeEventListener("pointerleave", deactivate);
+                window.removeEventListener("resize", syncShield);
+                resizeObserver?.disconnect();
+                shield.remove();
+                host.classList.remove("ccg-wheel-guard-host", "ccg-wheel-guard-host--active");
+                frame.classList.remove("ccg-wheel-guard-frame");
+                delete frame.dataset.ccgWheelGuard;
+                delete frame.__ccgWheelGuardHost;
+                delete frame.__ccgWheelGuardShield;
+                delete frame.__ccgWheelGuardCleanup;
+            };
 
             // Size the shield before advertising readiness. The previous
             // ordering exposed a brief "ready" state with default button geometry,
