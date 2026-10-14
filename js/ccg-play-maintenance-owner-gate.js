@@ -276,7 +276,8 @@
   function showMemberGate(publicReason = "") {
     // Public-facing holding page only. Existing owner-preview and time-limited
     // playtest validation remain protected in checkAccess(); no runtime bypass.
-    mark(publicReason === "expired" ? "public-playtest-expired" : "development-unavailable");
+    const publicEnded = publicReason === "expired";
+    mark(publicEnded ? "public-playtest-expired" : "development-unavailable");
     if (document.getElementById("ccg-member-beta-access-gate")) return;
 
     const gate = document.createElement("div");
@@ -302,7 +303,9 @@
       '<div id="ccg-member-beta-access-card">',
       '<span class="ccg-kicker">CHEEKY COMMODORE GAMER · GAME DEVELOPMENT</span>',
       '<h1 id="ccg-member-beta-access-title">C64 Dungeon Carnage Is In Development</h1>',
-      '<p>We are continuing to develop and improve C64 Dungeon Carnage. Public gameplay is temporarily unavailable while the next version is being prepared.</p>',
+      '<p>' + (publicEnded
+        ? 'The 24-Hour Playtest Ended. That public access window has closed, and C64 Dungeon Carnage is now back in development.'
+        : 'We are continuing to develop and improve C64 Dungeon Carnage. Public gameplay is temporarily unavailable while the next version is being prepared.') + '</p>',
       '<p class="ccg-round2-note">Stay tuned to the Cheeky Commodore Gamer channel and website for development news and the next playable release.</p>',
       '<div class="ccg-actions">',
       '<a id="ccg-member-beta-exit" href="' + MAINTENANCE_DESTINATION + '">BACK TO CCG GAMES</a>',
