@@ -1,6 +1,6 @@
 # Wasteland (1988) — C64 owner game-publication checkpoint
 
-This guarded source branch stages **one new game only**, for the existing CCG Reliable Games Publishing pipeline. It is intentionally **not ready to merge** until the two owner-uploaded binary image assets have been committed and checks pass. Do not hand-edit generated game pages, sitemaps, or magazine ratings.
+This guarded source branch stages **one new game only**, for the existing CCG Reliable Games Publishing pipeline. It is intentionally **not ready to merge** until the remaining thumbnail WebP is uploaded and the latest exact-head checks pass. Do not hand-edit generated game pages, sitemaps, or magazine ratings.
 
 ## Verified source record
 - `games/games.json`: 665 → 666 game entries; one new `wasteland` record inserted between Walker and Water Polo, without changing old records.
@@ -19,13 +19,14 @@ This guarded source branch stages **one new game only**, for the existing CCG Re
 ## Owner-supplied artwork — outstanding upload to THIS branch
 - Thumbnail source JPEG 460 × 215 converted locally to performance-compliant WebP, 460 × 215, 30,218 bytes, SHA-256 `534f7dfa2b0dff38e5a7202bc36d47a0d3d87f0c4e642b411d355acd6e30602b`.
   Commit exact binary to `resources/images/thumbnails/all/wasteland.webp`.
-- Original 3D box source WebP 928 × 1470 converted locally to 800-pixel wide WebP, 51,838 bytes, SHA-256 `48144c76b308379088ee50d9636abd7b5fbbab507a80d7d94b50db1b6e1f18bb`.
-  Commit exact binary to `resources/images/games/boxes-3d/wasteland.webp`.
-- Both owner artwork files were prepared under the container session; the available GitHub connector cannot directly ingest mounted binary-file paths, so **neither binary is committed yet**. Do not pretend the published page has its images. Do not substitute unrelated online imagery.
+- Original 3D box **is now committed**, in the correct path `resources/images/games/boxes-3d/wasteland.webp`: 928 × 1470, 69,070 bytes, repository blob `eaab047fbc9d416bf9ae4955216b21ff95eed117`. This is the owner's unmodified WebP, under the 500 KB hard limit.
+- A smaller WebP was also prepared locally (800 × 1267, 51,838 bytes) but not committed; no need to replace the owner's original solely for a negligible size reduction.
+- Owner inadvertently uploaded JPEG `resources/images/thumbnails/all/wasteland.jpg` (460 × 215, 32,319 bytes), whereas `games.json` correctly requires `.../wasteland.webp` and new-game performance contract requires WebP. The unused JPEG has now been removed from the same review branch.
+- **Only outstanding owner asset:** upload the prepared actual WebP 460 × 215, 30,218 bytes to `resources/images/thumbnails/all/wasteland.webp` on this PR branch. The local prepared file remains at `/mnt/data/wasteland-site-upload/thumbnail/wasteland.webp`. The available GitHub connector cannot directly ingest mounted binary-file paths. Do not substitute unrelated imagery.
 
 ## Required qualification
 1. Upload the exact two WebP binary files to the specified paths in this branch.
 2. Confirm no competing `wasteland` slug/ID and no concurrent main catalogue change is overwritten; rebase/reconcile if needed.
-3. Run authoritative `node scripts/rebuild-games.js`, game-source validation, Lighthouse publishing contract, magazine/UTA enrichment, SEO/sitemap audits, and normal CI.
+3. Two catalogue-count test assertions were repaired on this branch (665 → 666) after `SEO Game Route Validation` failed for solely the expected total; the Lighthouse new-game PR check failed only due to the missing thumbnail WebP. Once uploaded, rerun authoritative `node scripts/rebuild-games.js`, game-source validation, Lighthouse publishing contract, magazine/UTA enrichment, SEO/sitemap audits, and normal CI.
 4. Confirm the generated canonical /games/wasteland/ route, hero/3D images, manual, correct 8/10 rating/reason, video link, source magazine scores and index/sitemap discovery.
 5. Only then merge after green exact-head qualification and live owner acceptance.
