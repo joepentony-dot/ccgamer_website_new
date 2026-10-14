@@ -393,7 +393,7 @@
       ]
     },
     "bismark": {
-      "description": "️ Bismark (1983) – Commodore 64 Naval Strategy Hunt for a Legendary Battleship Released in 1983 by Argus Press Software Ltd and developed by P. Rawling, Bismark is a strategic naval warfare game that challenges you to outthink rather than outgun their enemy. Also known as Strategy II, it places careful planning and intelligence gathering at the heart of the experience. You command a fleet of twelve Allied ships tasked with locating and sinking the German battleship Bismarck before time runs out. The action unfolds on a 20×15 grid representing the North Atlantic, where every movement must be considered as you patrol sea lanes, avoid threats, and close in on your target. Rather than fast-paced action, Bismark focuses on tactical decision-making and resource management. You must interpret limited information, position ships effectively, and anticipate the Bismarck’s movements, creating constant tension as the clock ticks down.",
+      "description": "️ Bismark (1983) – Commodore 64 Naval Strategy Hunt for a Legendary Battleship Released in 1983 by Argus Press Software Ltd and developed by P. Rawling, Bismark is a strategic naval warfare game that challenges you to outthink rather than outgun the enemy. Also known as Strategy II, it places careful planning and intelligence gathering at the heart of the experience. You command a fleet of twelve Allied ships tasked with locating and sinking the German battleship Bismarck before time runs out. The action unfolds on a 20×15 grid representing the North Atlantic, where every movement must be considered as you patrol sea lanes, avoid threats, and close in on your target. Rather than fast-paced action, Bismark focuses on tactical decision-making and resource management. You must interpret limited information, position ships effectively, and anticipate the Bismarck’s movements, creating constant tension as the clock ticks down.",
       "sources": [
         "https://www.youtube.com/watch?v=dF2yBbNOH6Q"
       ]
@@ -513,7 +513,7 @@
       ]
     },
     "bounder": {
-      "description": "️ Bounder (1986) – Commodore 64 Action Puzzle Isometric Platform Challenge Released in 1986 by Gremlin Graphics for the Commodore 64, Bounder is an inventive action-puzzle game that puts you in control of a constantly bouncing tennis ball navigating a series of suspended platforms high above dangerous voids. The game spans 174 screens across 10 increasingly demanding levels, each built from hexagonal tiles filled with hazards, enemies, and obstacles. You must carefully time their movements and landings while guiding the ball towards the exit on every screen. Precision and forward planning are essential for survival. Scattered throughout the stages are special tiles that introduce strategic variety, including arrows that propel the ball forward, teleporters that remove sections of the level, and mystery tiles that can either reward or punish you. Completing each stage unlocks a bonus screen, offering extra points and risk-based scoring opportunities.",
+      "description": "️ Bounder (1986) – Commodore 64 Action Puzzle Isometric Platform Challenge Released in 1986 by Gremlin Graphics for the Commodore 64, Bounder is an inventive action-puzzle game that puts you in control of a constantly bouncing tennis ball navigating a series of suspended platforms high above dangerous voids. The game spans 174 screens across 10 increasingly demanding levels, each built from hexagonal tiles filled with hazards, enemies, and obstacles. You must carefully time each bounce and landing while guiding the ball towards the exit on every screen. Precision and forward planning are essential for survival. Scattered throughout the stages are special tiles that introduce strategic variety, including arrows that propel the ball forward, teleporters that remove sections of the level, and mystery tiles that can either reward or punish you. Completing each stage unlocks a bonus screen, offering extra points and risk-based scoring opportunities.",
       "sources": [
         "https://www.youtube.com/watch?v=pNczSYUJ4l0"
       ]
@@ -1014,7 +1014,7 @@
       ]
     },
     "double-dragon-2-the-revenge": {
-      "description": "️ Double Dragon II: The Revenge (1989) – Commodore 64 Arcade Beat ’Em Up Martial Arts Classic Released in 1989 by Technōs Japan and ported to the Commodore 64 by Binary Design, Double Dragon II: The Revenge continues the story of Billy and Jimmy Lee as they set out to avenge the death of Marian. Building on the success of the original, the sequel delivers faster combat, tougher enemies, and more varied stage design. The C64 version preserves the core arcade experience, featuring side-scrolling brawling action, cooperative two-player gameplay, and a wide range of martial arts techniques. You can punch, kick, jump, and use weapons to fight their way through gangs of enemies and imposing boss characters. Each stage introduces new environments and enemy types, gradually increasing the challenge. While occasional slowdown can occur during intense scenes, the smooth scrolling and colourful graphics help maintain the game’s fast-paced momentum.",
+      "description": "️ Double Dragon II: The Revenge (1989) – Commodore 64 Arcade Beat ’Em Up Martial Arts Classic Released in 1989 by Technōs Japan and ported to the Commodore 64 by Binary Design, Double Dragon II: The Revenge continues the story of Billy and Jimmy Lee as they set out to avenge the death of Marian. Building on the success of the original, the sequel delivers faster combat, tougher enemies, and more varied stage design. The C64 version preserves the core arcade experience, featuring side-scrolling brawling action, cooperative two-player gameplay, and a wide range of martial arts techniques. You can punch, kick, jump, and use weapons to fight your way through gangs of enemies and imposing boss characters. Each stage introduces new environments and enemy types, gradually increasing the challenge. While occasional slowdown can occur during intense scenes, the smooth scrolling and colourful graphics help maintain the game’s fast-paced momentum.",
       "sources": [
         "https://www.youtube.com/watch?v=lOkqLlPq3gA"
       ]
@@ -1729,7 +1729,7 @@
       ]
     },
     "the-immortal": {
-      "description": "️ The Immortal (1990) – Commodore 64 Isometric Action Adventure Classic Released in 1990, The Immortal is a dark isometric action-adventure game developed by Sandcastle and published by Electronic Arts for the Commodore 64. Players take on the role of an ageing wizard descending into a deadly dungeon to rescue his mentor, Mordamir, uncovering a grim story of ancient civilizations, betrayal, and the pursuit of immortality along the way. The game spans eight perilous dungeon levels packed with traps, puzzles, monsters, and environmental hazards. Progress relies heavily on experimentation and learning from failure, with death often serving as a lesson rather than a setback. Exploration rewards careful observation, item collection, and cautious movement through the labyrinthine rooms. Combat is slow, deliberate, and unforgiving, requiring precise timing and smart use of magic rather than button-mashing. Encounters are tense and often brutal, with graphic death animations reinforcing the constant sense of danger and vulnerability that defines the experience.",
+      "description": "The Immortal is a 1990 Amiga action-adventure from Electronic Arts that combines isometric exploration with combat, traps, and puzzle-solving.",
       "sources": [
         "https://www.youtube.com/watch?v=VFhshKqyD9U"
       ]
@@ -2989,7 +2989,7 @@
       ]
     },
     "santas-xmas-caper": {
-      "description": "️ Santa’s Xmas Caper (1990) – Commodore 64 Festive Side-Scrolling Shoot-’Em-Up Released in 1990 by Reflective Designs and published by Zeppelin Games, Santa’s Xmas Caper is a holiday-themed side-scrolling shooter that puts a mischievous twist on Christmas cheer. After having his Christmas pudding spiked by rogue elves, Santa takes to the skies to rescue the festive season the only way he knows how. Gameplay unfolds across three themed stages, beginning in snowy Lapland, moving over the Atlantic Ocean, and ending with Santa delivering presents under fire. Players must dodge bombs, hostile toys, and enemy elves while firing an endless supply of gift-wrapped projectiles to clear the way forward. The game’s festive presentation is a major highlight, with colourful visuals that lean fully into the Christmas theme. The soundtrack features chiptune renditions of classic carols such as We Wish You a Merry Christmas and Silent Night, composed by Mark Wilson, giving the game a cheerful seasonal identity.",
+      "description": "Santa's Xmas Caper is a 1992 Amiga shooter from Zeppelin Games, featuring festive enemy waves and arcade gunplay. Santa's Xmas Caper is a 1992 Amiga shooter from Zeppelin Games that puts a festive twist on arcade gunplay, combining fast enemy waves with seasonal visuals and straightforward action.",
       "sources": [
         "https://www.youtube.com/watch?v=9AWjsbjOn3Q"
       ]
@@ -3079,7 +3079,7 @@
       ]
     },
     "shadow-of-the-beast": {
-      "description": "️ Shadow of the Beast (1989) – Commodore Amiga Dark Fantasy Action Platformer Released in 1989 by Reflections Interactive and published by Psygnosis for the Commodore Amiga, Shadow of the Beast casts you as Aarbron, a once-human warrior transformed into a monstrous servant of the evil Maletoth. After fragments of his past resurface, Aarbron sets out on a brutal journey of revenge across a hostile and surreal world. Gameplay unfolds across more than 350 side-scrolling screens filled with enemies, traps, and environmental hazards. Progress relies heavily on precise movement, sharp reflexes, and memorisation, with limited room for error. Combat is deliberate and punishing, reinforcing the game’s unforgiving tone and demanding mastery from you. The game is renowned for pushing the Amiga hardware to its limits, featuring stunning multi-layer parallax scrolling and rich 128-colour visuals that give its alien landscapes a distinctive, dreamlike quality.",
+      "description": "Shadow Of The Beast is a 1990 Commodore 64 side-scrolling platformer adapted from its Amiga counterpart. Shadow Of The Beast is a 1990 Commodore 64 arcade platformer from developer Psygnosis that adapts the striking visual style and brutal difficulty of its Amiga counterpart into a demanding side-scrolling experience.",
       "sources": [
         "https://www.youtube.com/watch?v=EeGxHtj0NBQ"
       ]
