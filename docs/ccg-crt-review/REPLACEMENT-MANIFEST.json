@@ -1,5 +1,5 @@
 {
-  "note": "NON-PUBLIC staging only. Owner public redistribution rights and emulator game-by-game tests not verified. No publication without both gates. Old packed PRGs remain unchanged.",
+  "note": "PUBLIC GITHUB REVIEW BRANCH. CCG owner attested authorisation to redistribute all 152 CRTs on 2026-10-14. Independent copyright verification and per-game gameplay acceptance have not been completed. Existing PRG/disk packs remain untouched.",
   "source_archive_sha256": "d45add0b9525a672ae6a033cc4bfccf992f2b7d44fe5543101cd46dc4dac4dcb",
   "candidate_count": 152,
   "games": [
@@ -15,7 +15,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Myth - History in the Making",
@@ -29,7 +30,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Checkers",
@@ -43,7 +45,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Princess and the Frog",
@@ -57,7 +60,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Astro Marine Corps",
@@ -71,7 +75,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Spy Hunter",
@@ -85,7 +90,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Zenji",
@@ -99,7 +105,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Kickman",
@@ -113,7 +120,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Jupiter Lander",
@@ -127,7 +135,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "International Soccer",
@@ -141,7 +150,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Lazarian",
@@ -155,7 +165,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Gorf",
@@ -169,7 +180,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Jack Attack",
@@ -183,7 +195,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Dragonsden",
@@ -197,7 +210,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Star Post",
@@ -211,7 +225,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Super Smash",
@@ -225,7 +240,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Visible Solar System",
@@ -239,7 +255,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Solar Fox",
@@ -253,7 +270,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Star Ranger",
@@ -267,7 +285,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Tooth Invaders",
@@ -281,7 +300,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Wizard of Wor",
@@ -295,7 +315,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Omega Race",
@@ -309,7 +330,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Spitball",
@@ -323,7 +345,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Adventure Creator",
@@ -337,7 +360,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Radar Rat Race",
@@ -351,7 +375,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pinball Spectacular",
@@ -365,7 +390,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Moondust",
@@ -379,7 +405,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Blueprint",
@@ -393,7 +420,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Frog Master",
@@ -407,7 +435,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "H.E.R.O",
@@ -421,7 +450,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Toy Bizarre",
@@ -435,7 +465,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pitfall",
@@ -449,7 +480,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "River Raid",
@@ -463,7 +495,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Crisis Mountain",
@@ -477,7 +510,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Zone Ranger",
@@ -491,7 +525,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Beamrider",
@@ -505,7 +540,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Miner 2049'er",
@@ -519,7 +555,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Rootin' Tootin'",
@@ -533,7 +570,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Decathlon",
@@ -547,7 +585,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "BC's Quest for Tires",
@@ -561,7 +600,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Retro Ball",
@@ -575,7 +615,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Castle Hassle",
@@ -589,7 +630,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Diamond Mine",
@@ -603,7 +645,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Motor Mania",
@@ -617,7 +660,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Tapper",
@@ -631,7 +675,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Star Trek",
@@ -645,7 +690,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Congo Bongo",
@@ -659,7 +705,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Espial",
@@ -673,7 +720,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Space Shuttle - A Journey Into Space",
@@ -687,7 +735,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Frogger",
@@ -701,7 +750,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Star Wars",
@@ -715,7 +765,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Gyruss",
@@ -729,7 +780,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Q-Bert",
@@ -743,7 +795,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Popeye",
@@ -757,7 +810,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Mountain King",
@@ -771,7 +825,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pastfinder",
@@ -785,7 +840,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Maze Master",
@@ -799,7 +855,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Lode Runner",
@@ -813,7 +870,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Seafox",
@@ -827,7 +885,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Oil's Well",
@@ -841,7 +900,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Sammy Lightfoot",
@@ -855,7 +915,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Lunar Leeper",
@@ -869,7 +930,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Buck Rogers - Planet of Zoom",
@@ -883,7 +945,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Juice!",
@@ -897,7 +960,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Badlands",
@@ -911,7 +975,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Cyberball",
@@ -925,7 +990,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Astroblitz",
@@ -939,7 +1005,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Close Encounters of the Worst Kind",
@@ -953,7 +1020,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Dot Gobbler",
@@ -967,7 +1035,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Gridrunner",
@@ -981,7 +1050,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Jawbreaker",
@@ -995,7 +1065,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Mario's Brewery",
@@ -1009,7 +1080,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Mr. Cool",
@@ -1023,7 +1095,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Mr. TNT",
@@ -1037,7 +1110,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Save New York",
@@ -1051,7 +1125,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Tank Wars",
@@ -1065,7 +1140,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pit, The",
@@ -1079,7 +1155,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Threshold",
@@ -1093,7 +1170,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Defender",
@@ -1107,7 +1185,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Dig Dug",
@@ -1121,7 +1200,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Robotron - 2084",
@@ -1135,7 +1215,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pole Position",
@@ -1149,7 +1230,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Battlezone",
@@ -1163,7 +1245,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Moon Patrol",
@@ -1177,7 +1260,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Jungle Hunt",
@@ -1191,7 +1275,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Galaxian",
@@ -1205,7 +1290,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Ms. Pac-Man",
@@ -1219,7 +1305,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Centipede",
@@ -1233,7 +1320,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pac-Man",
@@ -1247,7 +1335,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Donkey Kong",
@@ -1261,7 +1350,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Alf In the Color Caves",
@@ -1275,7 +1365,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Alphabet Zoo",
@@ -1289,7 +1380,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Ducks Ahoy!",
@@ -1303,7 +1395,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Ernie's Magic Shapes",
@@ -1317,7 +1410,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Story Machine",
@@ -1331,7 +1425,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Peanut Butter Panic",
@@ -1345,7 +1440,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Webster - The Word Game",
@@ -1359,7 +1455,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Viduzzles",
@@ -1373,7 +1470,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Gateway to Apshai",
@@ -1387,7 +1485,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pitstop",
@@ -1401,7 +1500,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Rack 'Em Up",
@@ -1415,7 +1515,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Cosmic Life",
@@ -1429,7 +1530,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Alpha Build",
@@ -1443,7 +1545,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Sea Speller",
@@ -1457,7 +1560,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Logic Levels",
@@ -1471,7 +1575,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Math Mileage",
@@ -1485,7 +1590,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Movie Musical Madness",
@@ -1499,7 +1605,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Ranch",
@@ -1513,7 +1620,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Laser Cycles",
@@ -1527,7 +1635,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Hop Along Counting",
@@ -1541,7 +1650,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Memory Manor",
@@ -1555,7 +1665,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Choplifter!",
@@ -1569,7 +1680,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Big Bird's Special Delivery",
@@ -1583,7 +1695,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Serpentine",
@@ -1597,7 +1710,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Attack of the Mutant Camels",
@@ -1611,7 +1725,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Turbo Maze Man",
@@ -1625,7 +1740,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Sea Wolf",
@@ -1639,7 +1755,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Avenger",
@@ -1653,7 +1770,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Halftime Battlin' Bands",
@@ -1667,7 +1785,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Aegean Voyage",
@@ -1681,7 +1800,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Bubble Burst",
@@ -1695,7 +1815,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Coco-Notes",
@@ -1709,7 +1830,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Delta Drawing",
@@ -1723,7 +1845,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Stix",
@@ -1737,7 +1860,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Road Race",
@@ -1751,7 +1875,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Wonderboy",
@@ -1765,7 +1890,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Kids on Keys",
@@ -1779,7 +1905,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Ghostbusters",
@@ -1793,7 +1920,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Kung Fu Master",
@@ -1807,7 +1935,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Space Action",
@@ -1821,7 +1950,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Tennis",
@@ -1835,7 +1965,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Mole Attack",
@@ -1849,7 +1980,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Park Patrol",
@@ -1863,7 +1995,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "MasterType",
@@ -1877,7 +2010,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "After the War",
@@ -1891,7 +2025,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Tenpins",
@@ -1905,7 +2040,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Nova Blast",
@@ -1919,7 +2055,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Dancing Feats",
@@ -1933,7 +2070,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pancho",
@@ -1947,7 +2085,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Bowling",
@@ -1961,7 +2100,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Aspar GP Master",
@@ -1975,7 +2115,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Alien Sidestep",
@@ -1989,7 +2130,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Billiards",
@@ -2003,7 +2145,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Bug Crusher",
@@ -2017,7 +2160,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Facemaker",
@@ -2031,7 +2175,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Jukebox",
@@ -2045,7 +2190,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Maze Man",
@@ -2059,7 +2205,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Pipes",
@@ -2073,7 +2220,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Slalom",
@@ -2087,7 +2235,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Tyler's Dungeons",
@@ -2101,7 +2250,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Up For Grabs",
@@ -2115,7 +2265,8 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     },
     {
       "title_from_zip": "Jagten Pa Bubbers Badekar",
@@ -2129,7 +2280,14 @@
       "compatible_hw": true,
       "rights_verified": false,
       "gameplay_verified": false,
-      "active": false
+      "active": false,
+      "owner_authorised": true
     }
-  ]
+  ],
+  "owner_redistribution_authorisation": {
+    "attested": true,
+    "date": "2026-10-14",
+    "scope": "152 owner-supplied CRT files; owner typed AUTHORISED into uploader",
+    "independently_audited": false
+  }
 }
