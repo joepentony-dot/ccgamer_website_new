@@ -1,5 +1,12 @@
 # SEO and generated output
 
+## PR #2747 review remediation — 14 October 2026 (source-only, pending merge)
+
+- Addressed the current-head Codex P2 findings from `b348d8dd0cee52e4b745b67800cb769976420967`: the shared snippet generator now rejects a source opening about the wrong computer before selecting a platform-neutral later sentence; its source files correct the three pre-existing Amiga/C64 mismatches (The Immortal, Santa's Xmas Caper, Shadow of the Beast) using factual original catalogue material, and three source pronoun mistakes (Bounder, Double Dragon II: The Revenge, Bismark).
+- Added complete catalogue checks that must now find zero wrong-platform source exceptions, a synthetic wrong-platform rejection fixture and six live-source canonical/admin parity assertions. A read-only 666-record comparison found exactly six changed snippets, **24** remaining known generic fallbacks, zero new generic fallbacks, zero >155-character snippets, zero stray terminal initials, and zero double terminal full stops.
+- The previous two PWA check failures described in OLDER notes below were superseded on head `b348d8d`: the same PR added a **byte-exact, one-record, two-field** Batman: The Movie 1986→1989 authorisation test in both audits, retaining protection for all other catalogue bytes and all other protected files. Both PWA checks and 14 other workflows passed on that earlier reviewed head; Dungeon Carnage Full Qualification was still running at last inspection. This limited exemption is not a general disablement of protected-file checks and becomes inactive once main contains the Batman correction.
+- Older review checkpoints below describe older commits; they are historical rather than the present release gate. This new source/test correction requires fresh **exact-head CI** and independent review. No automatic generated game HTML publication, owner gameplay acceptance, preview verification, merger, live deployment or claim of improved Google indexing follows from this commit.
+
 ## SEO specific gameplay versus atmosphere regression — 14 October 2026, 12:49 BST (DRAFT)
 
 - Owner requested continuation under the same guarded SEO draft #2747. The shared metadata generator's experimental broad alias/header salvage was **REJECTED**, not committed: an 8-output candidate changed some already-specific summaries into weak release/publisher text, while a stricter initials-only version changed none. Preserve good existing descriptions instead of changing metadata for its own sake.
