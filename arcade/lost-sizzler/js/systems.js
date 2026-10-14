@@ -574,7 +574,7 @@ window.CCGSystems=(()=>{
     // Per-floor persistent knowledge/state. These reset only when a new floor is generated.
     host.radarSigilSeen=null;host.radarSigilGateSeen=null;host.defeatedDeathStalkers=[];
 
-    host.arenas=[];if(activeFeatureRooms.length){const room=activeFeatureRooms[Math.floor(activeFeatureRooms.length*.55)];host.arenas.push({id:"arena0",roomId:room.id,triggered:false,cleared:false,wave:0,rewarded:false})}
+    host.arenas=[]; // The cancelled arena cannot spawn or seal doors in the solo campaign.
     host.timedRooms=[];if(activeFeatureRooms.length>3){const room=activeFeatureRooms[Math.floor(activeFeatureRooms.length*.7)];host.timedRooms.push({id:"timed0",roomId:room.id,triggered:false,cleared:false,timeLeft:30000,rewarded:false})}
 
     const obj=PGR.objectiveFor(run);

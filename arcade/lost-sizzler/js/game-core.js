@@ -298,6 +298,8 @@ function floorChallengeComplete(spec,explorePct=0){
   if(challenge==="boss")return Boolean(host.r114BossFight?.cleared);
   if(challenge==="rescueArena")return Boolean(host.rescue?.rescued)&&(host.arenas||[]).length>0&&(host.arenas||[]).every(a=>a.cleared);
   if(challenge==="arenaTimed")return (host.arenas||[]).length>0&&(host.arenas||[]).every(a=>a.cleared)&&(host.timedRooms||[]).length>0&&(host.timedRooms||[]).every(t=>t.cleared);
+  if(challenge==="rescueTimed")return Boolean(host.rescue?.rescued)&&(host.timedRooms||[]).some(t=>t.cleared);
+  if(challenge==="surveyTimed")return Number(explorePct)>=50&&(host.timedRooms||[]).some(t=>t.cleared);
   return false
 }
 function floorChallengeReward(spec){
