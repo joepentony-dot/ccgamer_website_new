@@ -1,5 +1,15 @@
 # SEO and generated output
 
+## PR #2747 guarded punctuation continuation — 14 October 2026
+
+- Owner approved necessary factual/SEO changes, but approval is **not** a replacement for independent source review, complete current-head CI, protected catalogue safety rules or separately authorised generated-output release.
+- On the EXISTING draft #2747 only, the shared `js/ccg-game-seo-snippet.js` source now recognises source-observed single-letter personal names, `U. S. Army` and spaced game initials without merging terminal difficulty labels or game-title acronym sentence endings. Also prevents double terminal publisher periods (e.g. `Strategic Simulations Inc..`). The shared-game regression checks now detect fallbacks by equality to an empty-source fallback rather than an error-prone publisher-name regex.
+- Executed the genuine generator against all 666 source catalogue/enrichment pairs in a read-only JavaScript VM: original 36 stray terminal single-letter initials reduced to **0**, original single `Inc..` reduced to **0**, generic fallbacks remain exactly **24**, 40 outputs changed. Ten adversarial boundary cases were evaluated in-memory; the initial spaced `H. E. R. O.` case was corrected before committing. The tests for all 666 were added in the existing file.
+- **Not release-qualified:** 40 changed summaries require further editorial assessment (some specific-but-vague descriptions), 24 generic summaries still require individual authored corrections, and the independently discovered historical/platform inaccuracies in some source enrichments and structured data must be resolved before publication.
+- User-authorised Batman 1989 catalogue correction remains in this draft's `games/games.json`. Both installable PWA checks on the prior head expressly rejected *any* protected-catalogue diff. Do not turn off or circumvent those checks; obtain an approved catalogue authoring/publishing pathway. Current main has continued advancing separately, including cache namespace v134; preserve concurrent changes on any future reconciliation.
+- New source/test commits `e5866f5`, `fb2ce66`, `daa195b`; **all current-head CI and independent review remain unverified** at this checkpoint. No merges, generated output edits, production deployment or Google indexing claims.
+
+
 ## Game snippet source-quality review — 14 October 2026 (UNMERGED)
 
 - Owner explicitly requested stronger descriptions across the entire game catalogue and a correction of Batman: The Movie's C64 release year to **1989**. The previous SEO source PR #2717 and generated page output #2737 are already merged; earlier draft-language below is historical.
