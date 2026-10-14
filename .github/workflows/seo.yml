@@ -137,18 +137,18 @@ jobs:
           node scripts/normalize-public-header-shell.js --root retro-specials --check
           node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
-      # On source-only new-game PRs, the canonical game page does not yet
-      # exist in Git. Make it locally for checks; Reliable Games Publishing
-      # remains the only workflow authorised to commit generated game output.
-      - name: Preview new game canonical shells for PR SEO validation
+      # Source-only new-game PRs do not yet have their complete generated
+      # canonical game page. Use the authoritative builder in the disposable
+      # PR checkout; only Reliable Games Publishing may commit that output.
+      - name: Preview full game pages for PR SEO validation
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
           if git diff --quiet "origin/${{ github.base_ref }}"...HEAD -- games/games.json; then
             echo "[seo] Game catalogue unchanged; no preview regeneration needed."
           else
-            echo "[seo] Building disposable canonical game shells for PR checks."
-            CCG_REMOVE_STALE_GAME_OUTPUTS=0 node scripts/generate-slug-pages.js
+            echo "[seo] Building full canonical game pages for PR-only SEO checks."
+            node scripts/rebuild-games.js
           fi
 
       - name: Generate game video SEO
