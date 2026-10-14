@@ -1,5 +1,12 @@
 # SEO and generated output
 
+## PR #2747 P1 generator-source repair — 14 October 2026 (unmerged)
+
+- Codex found P1 on reviewed head `082d1cb45b97d8ac5bf614a7fa368f5c27c7b79c`: prior short generated-file platform corrections were not persisted in the AUTHORITATIVE generator, so publishing would overwrite them, and descriptions violated the 90–165-word length contract. The former generated-only patch was NOT release-ready.
+- `scripts/build-game-description-enrichments.js` now owns three reviewed **90–165-word curated overrides** with release/manual sources for The Immortal (1990 Amiga), Santa's Xmas Caper (1992 Amiga scrolling **platform game**, not C64 shooter), Shadow Of The Beast (1990 C64). The generated enrichment entries carry the exact override text and matching source links. The generator's override-selection priority prevents stale video metadata replacing these researched entries.
+- New regression requires generator source, generated entries and source provenance to match, verifies permitted length, expected platforms and canonical/admin rendering. The 24 unrelated generic fallbacks remain as a separate research backlog; no unrelated game, protected intro, emulator or Dungeon was modified.
+- All prior green workflows apply only to prior heads. **Do not merge** until current exact-head CI and independent review qualify the new source ownership, and authoritative publisher generated-output parity has been validated.
+
 ## PR #2747 review remediation — 14 October 2026 (source-only, pending merge)
 
 - Addressed the current-head Codex P2 findings from `b348d8dd0cee52e4b745b67800cb769976420967`: the shared snippet generator now rejects a source opening about the wrong computer before selecting a platform-neutral later sentence; its source files correct the three pre-existing Amiga/C64 mismatches (The Immortal, Santa's Xmas Caper, Shadow of the Beast) using factual original catalogue material, and three source pronoun mistakes (Bounder, Double Dragon II: The Revenge, Bismark).
