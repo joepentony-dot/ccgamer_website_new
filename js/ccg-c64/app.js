@@ -1335,13 +1335,13 @@ function setControlState(snapshot) {
   if (pauseButton) {
     pauseButton.querySelector("strong").textContent = paused ? "RESUME" : "PAUSE";
   }
-  if (mobilePauseButton) {
+  if (typeof mobilePauseButton !== "undefined" && mobilePauseButton) {
     mobilePauseButton.disabled = !running;
     mobilePauseButton.textContent = paused ? "▶ RESUME" : "Ⅱ PAUSE";
     mobilePauseButton.setAttribute("aria-pressed", String(paused));
   }
-  if (mobileSaveStateButton) mobileSaveStateButton.disabled = !running;
-  if (mobileLoadStateButton) mobileLoadStateButton.disabled = !running;
+  if (typeof mobileSaveStateButton !== "undefined" && mobileSaveStateButton) mobileSaveStateButton.disabled = !running;
+  if (typeof mobileLoadStateButton !== "undefined" && mobileLoadStateButton) mobileLoadStateButton.disabled = !running;
 }
 
 function render(snapshot) {
