@@ -108,7 +108,8 @@
                         "description":  "Owner-supplied EasyFlash cartridge game; boots when selected.",
                         "title":  "Pirates!",
                         "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
-                        "approved":  true
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
                     },
                     {
                         "url":  "/emulator/c64/media/creatures.crt",
