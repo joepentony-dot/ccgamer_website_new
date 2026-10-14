@@ -248,7 +248,18 @@ window.CCGProgression=(()=>{
   }
   function recoverDeathCache(player,run,cache){
     if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0,xp:0,levels:[],progressionRecovered:false};let recovered=0;const remaining=[];
-    for(const it of cache.inventory||[]){if(inventoryAdd(player,cloneItem(it)))recovered+=itemQty(it);else remaining.push(cloneItem(it))}
+    for(const it of cache.inventory||[]){
+      const stored=cloneItem(it),quantity=itemQty(stored);
+      if(inventoryAdd(player,stored)){recovered+=quantity;continue}
+      // A multi-Warp cache can partially refill an existing stack when the
+      // bag is full. Commit only successful single-spell additions; leave
+      // every unclaimed spell in the cache for a save/reload-safe retry.
+      let moved=0;
+      if(stored?.kind==="teleport"){
+        while(moved<quantity&&inventoryAdd(player,{...stored,qty:1})){moved++;recovered++}
+      }
+      if(moved<quantity)remaining.push({...stored,qty:quantity-moved})
+    }
     const games=[...(cache.games||[])];for(const g of games)if(!(run.floorGames||[]).includes(g))run.floorGames.push(g);
     const cachedArmour=Math.max(0,Math.floor(Number(cache.armour)||0)),armourBefore=Math.max(0,Math.floor(Number(player?.armor)||0)),armourRoom=Math.max(0,armourCap(player)-armourBefore),armourRecovered=Math.min(cachedArmour,armourRoom);player.armor=armourBefore+armourRecovered;cache.armour=cachedArmour-armourRecovered;
     const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0)),cachedXP=Math.max(0,Math.floor(Number(cache.xp)||0)),xpResult=cachedXP?gainXP(player,run,cachedXP,"Death cache recovered"):{amount:0,discarded:0,levels:[],restoredProgression:[]};
