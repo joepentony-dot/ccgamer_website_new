@@ -1586,6 +1586,29 @@ function renderGame(game) {
         }
     }
     const videoIncludesOverview = !!(videoDescription && !videoDescription.hidden && videoDescription.textContent.trim());
+    // Progressive enhancement only: preserve complete crawlable HTML and no-JS copy.
+    // On pages with long editorial text, give readers an explicit, accessible choice
+    // to expand it instead of filling the first screen with a very tall paragraph.
+    if (hasVideo && videoIncludesOverview && videoDescription.textContent.trim().length > 420 &&
+        !videoDescription.closest(".ccg-game-overview")) {
+        const overview = document.createElement("div");
+        overview.className = "ccg-game-overview";
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "ccg-game-overview__toggle";
+        toggle.textContent = "Read full overview";
+        toggle.setAttribute("aria-expanded", "false");
+        if (!videoDescription.id) videoDescription.id = "ccg-game-video-overview";
+        toggle.setAttribute("aria-controls", videoDescription.id);
+        videoDescription.parentNode.insertBefore(overview, videoDescription);
+        overview.appendChild(videoDescription);
+        overview.appendChild(toggle);
+        toggle.addEventListener("click", () => {
+            const expanded = overview.classList.toggle("is-expanded");
+            toggle.setAttribute("aria-expanded", String(expanded));
+            toggle.textContent = expanded ? "Show less" : "Read full overview";
+        });
+    }
     if (hasVideo && videoIncludesOverview && descriptionSection) {
         descriptionSection.hidden = true;
         hasOverview = false;
