@@ -25,7 +25,9 @@ assert(gate.includes("ccg_has_dungeon_carnage_playtest_access"), "existing signe
 assert(gate.includes('mark("member-playtester")'), "existing assigned members must retain their member-playtester state");
 assert(gate.includes("public-playtest-expired"), "expired public links must fail closed with an explicit expired state");
 assert(gate.includes("24-Hour Playtest Ended"), "expired public links must explain why access ended");
-assert(gate.includes("SIGN IN AS AN ASSIGNED MEMBER"), "existing member sign-in fallback must remain available");
+assert(!gate.includes("SIGN IN AS AN ASSIGNED MEMBER"), "public Dungeon development gate must not advertise retired member sign-in");
+assert(gate.includes("C64 Dungeon Carnage Is In Development"), "public Dungeon game page must announce its development status");
+assert(gate.includes("ccg_has_dungeon_carnage_playtest_access"), "legacy authenticated member access remains protected internally");
 assert(gate.includes("bootstrapProtectedRuntime"), "validated member access must still own Dungeon runtime startup");
 assert(gate.includes("runtimeBoundaryReached"), "protected runtime startup must still wait for the parser boundary");
 assert(gate.includes("data-ccg-protected-runtime"), "runtime loader must consume only protected script placeholders");
