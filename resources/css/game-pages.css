@@ -2371,6 +2371,19 @@
 /* Small screens: show game artwork before the detail-heavy credits,
    and present each credit as a label/value pair rather than two rows. */
 @media (max-width: 560px) {
+    .ccg-page--single-game .game-hero__inner {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "media" "content";
+    }
+    .ccg-page--single-game .game-hero__media {
+        grid-area: media;
+        order: 0;
+        justify-self: start;
+    }
+    .ccg-page--single-game .game-hero__content {
+        grid-area: content;
+        order: 0;
+    }
     .ccg-page--single-game .game-hero--has-box3d .game-hero__inner {
         grid-template-columns: minmax(0, 1fr) minmax(96px, 112px);
         grid-template-areas: "media box" "content content";
