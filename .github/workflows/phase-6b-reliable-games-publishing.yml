@@ -65,6 +65,8 @@ on:
       - data/uta-manual-review.json
       - supabase/migrations/20260922003000_single_game_community_read_models.sql
       - tests/single-game-community-uta.test.mjs
+      - tests/single-game-dense-layout-oct2026.test.mjs
+      - tests/single-game-shared-catalogue.test.mjs
       - package.json
       - games/genres/**
       - games/collections/**
@@ -167,7 +169,7 @@ jobs:
         run: node --test tests/game-description-enrichment-fallback.test.mjs tests/game-seo-snippet-quality.test.mjs
 
       - name: Run single-game community and UTA regression
-        run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs
+        run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs tests/single-game-dense-layout-oct2026.test.mjs tests/single-game-shared-catalogue.test.mjs
 
       - name: Run current catalogue publishing chain unchanged
         run: |

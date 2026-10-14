@@ -57,11 +57,22 @@ function openingTag(html, id) {
   return html.match(expression)?.[0] || "";
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getAttributeValue(tag, name) {
+  const safe = escapeRegExp(name);
+  const match = String(tag || "").match(new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["']([^"']*)["']`, "i"));
+  return match ? match[1] : "";
+}
+
 function hasAttribute(tag, name, expected) {
+  const safe = escapeRegExp(name);
   const expression = expected == null
-    ? new RegExp(`\\b${name}\\s*=`, "i")
-    : new RegExp(`\\b${name}\\s*=\\s*["']${expected}["']`, "i");
-  return expression.test(tag);
+    ? new RegExp(`(?:^|\\s)${safe}\\s*=`, "i")
+    : new RegExp(`(?:^|\\s)${safe}\\s*=\\s*["']${escapeRegExp(expected)}["']`, "i");
+  return expression.test(String(tag || ""));
 }
 
 function validateSharedOwners(errors) {
@@ -73,9 +84,16 @@ function validateSharedOwners(errors) {
     if (!hasAttribute(video, "loading", "lazy")) {
       errors.push("games/game.html: game video iframe must retain loading=lazy.");
     }
+    if (hasAttribute(video, "src")) {
+      errors.push("games/game.html: game video iframe must not ship with an eager src.");
+    }
     if (!hasAttribute(video, "width") || !hasAttribute(video, "height")) {
       errors.push("games/game.html: game video iframe must reserve width and height.");
     }
+  }
+
+  if (!shell.includes('id="game-video-facade"') || !shell.includes('id="game-video-poster"')) {
+    errors.push("games/game.html: lightweight video facade shell is missing.");
   }
 
   const generator = readText("scripts/prepare-seo-game-routes.js");
@@ -141,8 +159,17 @@ function validateGeneratedPage(game, requireGenerated, errors) {
   const video = openingTag(html, "game-video-embed");
   if (video) {
     if (!hasAttribute(video, "loading", "lazy")) errors.push(`${relative}: video iframe must remain lazy.`);
+    const source = getAttributeValue(video, "src");
+    const provider = getAttributeValue(video, "data-video-provider");
+    if (source && !provider) errors.push(`${relative}: generated HTML must not eagerly load a video iframe src.`);
     if (!hasAttribute(video, "width") || !hasAttribute(video, "height")) {
       errors.push(`${relative}: video iframe must reserve width and height.`);
+    }
+
+    const deferredSource = getAttributeValue(video, "data-video-src");
+    if (deferredSource) {
+      if (!html.includes('id="game-video-facade"')) errors.push(`${relative}: deferred YouTube video is missing its play facade.`);
+      if (!html.includes('id="game-video-poster"')) errors.push(`${relative}: deferred YouTube video is missing its poster image.`);
     }
   }
 

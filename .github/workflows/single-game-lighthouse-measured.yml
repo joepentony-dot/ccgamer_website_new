@@ -1,0 +1,83 @@
+name: Single-Game Measured Lighthouse
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - resources/css/game-pages.css
+      - js/load-single-game.js
+      - tests/single-game-dense-layout-oct2026.test.mjs
+      - tests/single-game-shared-catalogue.test.mjs
+      - .github/workflows/single-game-lighthouse-measured.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify source and serve local site
+        run: |
+          set -euo pipefail
+          node --check js/load-single-game.js
+          node --test tests/single-game-dense-layout-oct2026.test.mjs tests/single-game-shared-catalogue.test.mjs
+          test -s games/wasteland/index.html
+          test -s games/20-tons/index.html
+          # Regenerate canonical pages from the PR candidate before measuring.
+          # Otherwise Lighthouse audits obsolete eager-iframe HTML.
+          npm run generate:video-seo
+          node --input-type=module -e '
+            import fs from "node:fs";
+            for (const slug of ["wasteland", "20-tons"]) {
+              const source=fs.readFileSync("games/"+slug+"/index.html","utf8");
+              const tag=source.match(/<iframe\b[^>]*\bid="game-video-embed"[^>]*>/i)?.[0] || "";
+              if (!tag || /\ssrc=/.test(tag) || !/data-video-src=/.test(tag) ||
+                  !source.includes("id=\"game-video-facade\"") ||
+                  !source.includes("id=\"gameVideoBtn\"")) {
+                console.error("The generated "+slug+" page does not have the deferred facade and external YouTube action");
+                process.exitCode=1;
+              }
+            }
+          '
+
+          python3 -m http.server 8976 --bind 127.0.0.1 >/tmp/ccg-http.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://127.0.0.1:8976/games/wasteland/; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/ccg-http.log
+          exit 1
+      - name: Lighthouse - actual mobile and desktop measurements
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          for slug in wasteland 20-tons; do
+            for device in mobile desktop; do
+              preset=()
+              if [ "$device" = desktop ]; then preset=(--preset=desktop); fi
+              npx --yes lighthouse@13.5.0 "http://127.0.0.1:8976/games/${slug}/" \
+                --only-categories=performance,seo,accessibility \
+                --chrome-flags="--headless --no-sandbox --disable-gpu" \
+                --output=json --output-path="reports/${slug}-${device}.json" \
+                --quiet "${preset[@]}"
+              node -e 'const fs=require("fs"); const a=JSON.parse(fs.readFileSync(process.argv[1])); console.log(process.argv[2], "Performance",Math.round(a.categories.performance.score*100), "SEO",Math.round(a.categories.seo.score*100),"Accessibility",Math.round(a.categories.accessibility.score*100));' "reports/${slug}-${device}.json" "${slug}-${device}"
+            done
+          done
+      - name: Upload audit reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-game-lighthouse-reports
+          path: reports/
+          if-no-files-found: warn
+          retention-days: 14
