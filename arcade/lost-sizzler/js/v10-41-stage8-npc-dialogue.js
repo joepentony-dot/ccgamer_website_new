@@ -342,8 +342,10 @@
       try{
         const rescue=host?.rescue;if(!rescue)return result;
         if(!before.rescued&&!before.following&&rescue.following&&rescue.found)present(rescue,lines.scout.trapped,{player});
-        // The rescue transition occurs in updateRescue(), not in triggerRescue().
-        // Repeated movement beside a following scout must never replay 'I'll follow you'.
+        // The actual hand-off fires from updateRescue(), while a later direct
+        // interaction with an already rescued Scout may acknowledge safety.
+        // Keep the following-state line disabled during ordinary movement.
+        else if(rescue.rescued&&withinReach(player,rescue))present(rescue,lines.scout.rescued,{player});
       }catch(_){}
       return result
     };
