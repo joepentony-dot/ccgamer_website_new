@@ -647,9 +647,9 @@ async function fetchGamesLibrary(options = {}) {
     if (typeof window !== "undefined" && typeof window.ccgLoadSharedGames === "function") {
         try {
             const payload = await window.ccgLoadSharedGames();
-            const enrichments = await enrichmentsPromise;
+            const sharedEnrichments = await enrichmentsPromise;
             return {
-                games: payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, enrichments))),
+                games: payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, sharedEnrichments))),
                 source: resolveGamesDataUrl()
             };
         } catch (error) {
