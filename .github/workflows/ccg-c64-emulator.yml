@@ -110,6 +110,10 @@ jobs:
       - name: Verify original Fun Play, Super Games, C64GS, Dinamic and Zaxxon hardware
         run: node tests/ccg-c64-legacy-cartridges.test.mjs
 
+      - name: Validate 152 owner-supplied CRTs against real CPU and catalogue
+        timeout-minutes: 8
+        run: node tests/ccg-c64-crt-replacement-media.test.mjs
+
       - name: Verify GPL core import closure
         run: node tests/ccg-c64-core-imports.test.mjs
 
