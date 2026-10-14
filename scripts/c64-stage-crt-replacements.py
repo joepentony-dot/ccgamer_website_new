@@ -28,7 +28,7 @@ ARCHIVE = ROOT / "emulator/c64/media/prg-archive/catalog.json"
 MEDIA_DIR = ROOT / "emulator/c64/media/cartridge-replacements"
 # See js/ccg-c64/core/cartridges/registry.js. Header validity alone does not
 # establish that the cartridge is playable: actual gameplay testing is required.
-SUPPORTED_TYPES = {0, 1, 3, 5, 19, 32}
+SUPPORTED_TYPES = {0, 1, 3, 5, 7, 8, 15, 17, 18, 19, 32}
 
 
 def key(value: str) -> str:
