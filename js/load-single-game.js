@@ -642,6 +642,22 @@ async function fetchGamesLibrary(options = {}) {
         ? fetchGameDescriptionEnrichments()
         : Promise.resolve({});
 
+    // Canonical single-game pages share one catalogue fetch with the related
+    // game and archive-schema modules, avoiding two extra full JSON transfers.
+    if (typeof window !== "undefined" && typeof window.ccgLoadSharedGames === "function") {
+        try {
+            const payload = await window.ccgLoadSharedGames();
+            const enrichments = await enrichmentsPromise;
+            return {
+                games: payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, enrichments))),
+                source: resolveGamesDataUrl()
+            };
+        } catch (error) {
+            lastError = error;
+            // Retain the original relative and canonical URL fallback chain.
+        }
+    }
+
     for (const url of urls) {
         try {
             const response = await fetch(url, { cache: cacheMode });
