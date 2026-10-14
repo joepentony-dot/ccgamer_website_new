@@ -117,13 +117,9 @@
       try{showToast("WARD-BREAK CHARGE ALREADY CARRIED","You already have one Banishment Flask. Press B near Count Loadula or a Death Stalker before distilling another.","cyan",7000)}catch(_){}
       return false;
     }
-    const availableSlots=Math.max(0,Number(PGR.inventoryCapacity(player))||0);
-    const usedSlots=Array.isArray(player.inventory)?player.inventory.length:0;
-    if(!PGR.inventoryCanAdd(player,{kind:"banishment"})){
-      diagnostics.rollbacks++;
-      try{showToast("NO UNLOCKED FLASK SLOT",`Your inventory has ${usedSlots}/${availableSlots} unlocked slots occupied. Any remaining slots marked LOCKED must be purchased at a dungeon shop before you can carry a Flask. Your Essence has not been spent.`,"red",8500)}catch(_){}
-      return false;
-    }
+    // Legacy physical Artefacts can occupy every unlocked slot; consuming
+    // their payment may free the slot needed for the Flask. Check capacity
+    // *after* payment and restore the entire snapshot if still full.
     const snapshot=snapshotPaymentState(player);
     let remaining=need;
     while(remaining>0&&physicalArtefactCount(player)>0){
@@ -140,6 +136,13 @@
       remaining-=spent;
     }
     if(remaining>0){restorePaymentState(player,snapshot);diagnostics.rollbacks++;return false}
+    const availableSlots=Math.max(0,Number(PGR.inventoryCapacity(player))||0);
+    const usedSlots=Array.isArray(player.inventory)?player.inventory.length:0;
+    if(!PGR.inventoryCanAdd(player,{kind:"banishment"})){
+      restorePaymentState(player,snapshot);diagnostics.rollbacks++;
+      try{showToast("NO UNLOCKED FLASK SLOT",`Your inventory has ${usedSlots}/${availableSlots} unlocked slots occupied after payment. Any remaining slots marked LOCKED must be purchased at a dungeon shop before you can carry a Flask. Your Essence and legacy Artefacts have been restored.`,"red",8500)}catch(_){}
+      return false;
+    }
 
     const flask={kind:"banishment",name:"Banishment Flask",short:"BANISH"};
     if(!PGR.inventoryAdd(player,flask)){
