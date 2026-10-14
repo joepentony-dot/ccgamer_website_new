@@ -11,7 +11,8 @@ import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
 import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
-  ARCHIVE_READY_URL, parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
+  ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
+  parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
   preferSelectedCartridges,
 } from "./game-catalog.js";
 
@@ -2347,6 +2348,23 @@ async function initialiseOnlineLibrary() {
           (typeof entry.dataBase64 === "string" && entry.dataBase64.length > 0)));
     }
   } catch (_) { /* Optional direct-file catalogue may be empty. */ }
+
+  // The extra CRT catalogue contains only owner-authorised, exact-title
+  // replacement media. Its absence or corruption must NEVER hide original
+  // PRG/disk entries. Each CRT's bytes are SHA-256 verified on selection.
+  try {
+    const crtResponse = await fetch(ADDITIONAL_CRT_CATALOG_URL, {
+      cache: "no-store", credentials: "same-origin",
+    });
+    if (crtResponse.ok) {
+      const extra = parseAdditionalCrtCatalog(await crtResponse.json());
+      regular = regular.concat(extra);
+    } else if (crtResponse.status !== 404) {
+      throw new Error(`CRT catalogue HTTP ${crtResponse.status}`);
+    }
+  } catch (error) {
+    console.warn("[ccg-c64] Extra CRT catalogue unavailable; original games preserved:", error);
+  }
 
   let packed = [];
   let packedCatalogueError = null;
