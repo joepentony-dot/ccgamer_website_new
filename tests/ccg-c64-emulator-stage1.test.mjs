@@ -175,11 +175,12 @@ assert(css.includes("grid-area: console"), "C64 display must stay in the left wo
 assert(css.includes("grid-area: controls"), "C64 controls must stay in the right workstation column");
 assert(css.includes(".ccg-c64-screen-stage"), "Large emulator display stage must be present");
 assert(css.includes("@media (max-width: 760px)"), "Mobile command-deck layout is required");
-assert(html.includes('data-jump-toggle aria-pressed="false">JUMP: OFF</button>') &&
+assert(!html.includes('data-jump-toggle') &&
+  html.includes('data-mobile-crt-mode') &&
   html.includes('data-mobile-warp-load') &&
-  html.indexOf('data-jump-toggle') < html.indexOf('data-mobile-warp-load') &&
+  html.indexOf('data-mobile-crt-mode') < html.indexOf('data-mobile-warp-load') &&
   html.indexOf('data-mobile-warp-load') < html.indexOf('data-mobile-joystick-swap'),
-  "Mobile control order must be JUMP, WARP LOAD, SWAP JOYSTICK");
+  "Mobile control order must be CRT, WARP LOAD, SWAP JOYSTICK");
 assert(css.includes(".ccg-c64-console.is-mobile-playing .ccg-c64-mobile-warp-load") &&
   css.includes(".ccg-c64-mobile-warp-load { display: none !important; }"),
   "Warp control must be isolated to mobile gameplay and not alter desktop");

@@ -45,7 +45,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261014_vault_grid_desktop_v3">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261014_mobile_game_controls_v1">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -80,6 +80,11 @@
         </div>
         <button type="button" class="ccg-c64-mobile-keyboard-toggle" data-mobile-keyboard-toggle
           aria-controls="ccg-c64-mobile-keyboard" aria-expanded="false" aria-pressed="false">KEYBOARD</button>
+      </div>
+      <div class="ccg-c64-mobile-game-actions" data-mobile-game-actions hidden role="group" aria-label="In-game controls">
+        <button type="button" data-mobile-pause disabled aria-pressed="false">Ⅱ PAUSE</button>
+        <button type="button" data-mobile-save-state disabled>SAVE STATE</button>
+        <button type="button" data-mobile-load-state disabled>LOAD STATE</button>
       </div>
         <div class="ccg-c64-install-promo" data-c64-app-install aria-label="Install C64 emulator app">
           <div class="ccg-c64-install-promo__intro">
@@ -143,7 +148,8 @@
         </div>
       </div>
       <div class="ccg-c64-touch-options">
-        <button type="button" data-jump-toggle aria-pressed="false">JUMP: OFF</button>
+        <button type="button" class="ccg-c64-mobile-crt-mode" data-mobile-crt-mode
+          aria-label="Change in-game CRT display effect" title="Cycle OFF, SCANLINES, TUBE, BLACK & WHITE, ARCADE and HUM">CRT: TUBE</button>
         <button type="button" class="ccg-c64-mobile-warp-load" data-mobile-warp-load
           aria-pressed="false" disabled title="Run the C64 at maximum speed while loading. Audio is muted during warp.">WARP: OFF</button>
         <button type="button" class="ccg-c64-mobile-joystick-swap" data-mobile-joystick-swap
@@ -158,6 +164,18 @@
         </div>
         </details>
       </div>
+      <section class="ccg-c64-mobile-vault" data-mobile-vault-panel role="dialog"
+        aria-modal="true" aria-labelledby="ccg-c64-mobile-vault-title" hidden>
+        <div class="ccg-c64-mobile-vault-card">
+          <div class="ccg-c64-mobile-vault-header">
+            <strong id="ccg-c64-mobile-vault-title" data-mobile-vault-title>SAVED GAMES</strong>
+            <button type="button" data-mobile-vault-close aria-label="Close saved-game slots">CLOSE ×</button>
+          </div>
+          <p data-mobile-vault-help>Choose one of the three slots for this game. Saves stay in this browser; export a backup from Save / Resume after exiting.</p>
+          <div class="ccg-c64-mobile-vault-slots" data-mobile-vault-slots></div>
+          <p class="ccg-c64-mobile-vault-message" data-mobile-vault-message role="status" aria-live="polite"></p>
+        </div>
+      </section>
       <section class="ccg-c64-mobile-keyboard" id="ccg-c64-mobile-keyboard"
         aria-label="On-screen Commodore 64 keyboard" hidden>
         <div class="ccg-c64-mobile-keyboard-head">
@@ -450,6 +468,6 @@
   </div>
 
   <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2" defer></script>
-  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261013_emulator_library_ux_v2"></script>
+  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261014_mobile_game_controls_v1"></script>
 </body>
 </html>

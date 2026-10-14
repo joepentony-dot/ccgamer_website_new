@@ -130,6 +130,19 @@ const workspace = document.querySelector(".ccg-c64-workspace");
    uninterrupted touch controls. Desktop pointer/fine layouts never enter. */
 const mobilePlayConsole = document.querySelector(".ccg-c64-console");
 const mobilePlaybar = document.querySelector("[data-mobile-playbar]");
+const mobileGameActions = document.querySelector("[data-mobile-game-actions]");
+const mobilePauseButton = document.querySelector("[data-mobile-pause]");
+const mobileSaveStateButton = document.querySelector("[data-mobile-save-state]");
+const mobileLoadStateButton = document.querySelector("[data-mobile-load-state]");
+const mobileCrtButton = document.querySelector("[data-mobile-crt-mode]");
+const mobileVaultPanel = document.querySelector("[data-mobile-vault-panel]");
+const mobileVaultTitle = document.querySelector("[data-mobile-vault-title]");
+const mobileVaultHelp = document.querySelector("[data-mobile-vault-help]");
+const mobileVaultSlots = document.querySelector("[data-mobile-vault-slots]");
+const mobileVaultMessage = document.querySelector("[data-mobile-vault-message]");
+const mobileVaultClose = document.querySelector("[data-mobile-vault-close]");
+let mobileVaultAutoPaused = false;
+let mobileVaultRequestId = 0;
 const mobileExitButton = document.querySelector("[data-mobile-exit-game]");
 const mobilePlayTitle = document.querySelector("[data-mobile-play-title]");
 const mobileZoomButton = document.querySelector("[data-mobile-zoom-toggle]");
@@ -259,10 +272,18 @@ function setMobilePlaying(active, label = "") {
     const focused = document.activeElement;
     if (/^(INPUT|TEXTAREA|SELECT)$/i.test(focused?.tagName || "")) focused.blur?.();
   }
+  if (!enabled && mobileVaultPanel && !mobileVaultPanel.hidden) closeMobileVaultPanel();
   mobilePlayActive = enabled;
+  // In the immersive mobile view FIRE and UP-to-jump must always be available,
+  // regardless of an older per-game toggle preference.
+  if (typeof configureJump === "function") configureJump(currentJumpGameId);
   mobilePlayConsole?.classList.toggle("is-mobile-playing", enabled);
   document.body?.classList.toggle("is-mobile-playing", enabled);
   if (mobilePlaybar) mobilePlaybar.hidden = !enabled;
+  if (mobileGameActions) mobileGameActions.hidden = !enabled;
+  if (enabled && typeof setControlState === "function" && typeof vault !== "undefined") {
+    setControlState(vault.snapshot());
+  }
   if (mobilePlayTitle && enabled) mobilePlayTitle.textContent = label || "C64 GAMEPLAY";
   syncMobileZoom();
   if (!enabled) setMobileKeyboardOpen(false);
@@ -468,8 +489,9 @@ function syncTouchJoystick() {
 function configureJump(gameId) {
   currentJumpGameId = gameId || null;
   const saved = readJumpPreferences();
-  jumpEnabled = currentJumpGameId && typeof saved[currentJumpGameId] === "boolean"
-    ? saved[currentJumpGameId] : VERIFIED_JUMP_UP_GAMES[currentJumpGameId] === true;
+  jumpEnabled = Boolean(mobilePlayActive && mobilePlayMedia?.matches) ||
+    (currentJumpGameId && typeof saved[currentJumpGameId] === "boolean"
+      ? saved[currentJumpGameId] : VERIFIED_JUMP_UP_GAMES[currentJumpGameId] === true);
   if (!jumpEnabled && jumpButton) {
     touchHeldButtons.delete(jumpButton);
     syncTouchJoystick();
@@ -534,6 +556,12 @@ function applyCrtMode() {
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches || false;
   presenter.setCrt(presetParams(crtMode), { reducedMotion });
   if (strong) strong.textContent = crtMode.toUpperCase();
+  const names = { on: "SCANLINES", tube: "TUBE", bw: "B&W", arcade: "ARCADE", hum: "HUM", off: "OFF" };
+  if (mobileCrtButton) {
+    mobileCrtButton.textContent = "CRT: " + (names[crtMode] || crtMode.toUpperCase());
+    mobileCrtButton.setAttribute("aria-label",
+      "CRT display " + (names[crtMode] || crtMode) + ". Tap to change effect.");
+  }
 }
 
 function cycleCrtMode() {
@@ -1307,6 +1335,13 @@ function setControlState(snapshot) {
   if (pauseButton) {
     pauseButton.querySelector("strong").textContent = paused ? "RESUME" : "PAUSE";
   }
+  if (typeof mobilePauseButton !== "undefined" && mobilePauseButton) {
+    mobilePauseButton.disabled = !running;
+    mobilePauseButton.textContent = paused ? "▶ RESUME" : "Ⅱ PAUSE";
+    mobilePauseButton.setAttribute("aria-pressed", String(paused));
+  }
+  if (typeof mobileSaveStateButton !== "undefined" && mobileSaveStateButton) mobileSaveStateButton.disabled = !running;
+  if (typeof mobileLoadStateButton !== "undefined" && mobileLoadStateButton) mobileLoadStateButton.disabled = !running;
 }
 
 function render(snapshot) {
@@ -1896,6 +1931,22 @@ document.querySelector("[data-emulator-back]")?.addEventListener("click", () => 
 powerButton?.addEventListener("click", () => { void powerOn(); });
 resetButton?.addEventListener("click", () => { resetMachine(); screen?.focus(); });
 pauseButton?.addEventListener("click", () => { togglePause(); screen?.focus(); });
+mobilePauseButton?.addEventListener("click", () => {
+  if (!mobilePlayActive || !running || (mobileVaultPanel && !mobileVaultPanel.hidden)) return;
+  togglePause();
+  screen?.focus?.({ preventScroll: true });
+});
+mobileCrtButton?.addEventListener("click", () => {
+  if (!mobilePlayActive) return;
+  cycleCrtMode();
+  screen?.focus?.({ preventScroll: true });
+});
+mobileSaveStateButton?.addEventListener("click", () => { void openMobileVault("save"); });
+mobileLoadStateButton?.addEventListener("click", () => { void openMobileVault("load"); });
+mobileVaultClose?.addEventListener("click", () => closeMobileVaultPanel());
+mobileVaultPanel?.addEventListener("click", event => {
+  if (event.target === mobileVaultPanel) closeMobileVaultPanel();
+});
 warpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
 mobileWarpLoadButton?.addEventListener("click", () => { toggleWarpLoad(); screen?.focus(); });
 audioButton?.addEventListener("click", () => { toggleAudioMute(); screen?.focus(); });
@@ -2860,19 +2911,19 @@ const catalogueBrowser = mountCatalogueBrowser({
 void initialiseOnlineLibrary();
 
 async function saveGameVaultSlot() {
-  if (!machine || !running) return;
+  if (!machine || !running) return false;
   if (vaultGameSelect?.value !== "__current__" &&
       vaultGameSelect?.value !== currentSessionGame.gameKey) {
     if (stageNote) stageNote.textContent =
       "Choose CURRENT GAME before saving. Other games' slots are restore-only.";
     showVaultFeedback("Choose CURRENT GAME above to save; other games and Legacy slots can only be resumed.", true);
-    return;
+    return false;
   }
   try {
     const slot = currentVaultSlot();
     const existing = await gameVault.loadGame(currentSessionGame.gameKey, slot);
     if (existing && !window.confirm("Overwrite " + currentSessionGame.gameTitle +
-        " Slot " + slot + "? You can export a backup first.")) return;
+        " Slot " + slot + "? You can export a backup first.")) return false;
     captureMutableMedia();
     const record = await gameVault.saveGame(currentSessionGame.gameKey,
       currentSessionGame.gameTitle, slot, {
@@ -2903,9 +2954,11 @@ async function saveGameVaultSlot() {
       currentSessionGame.gameTitle + " // SLOT " + slot + " SAVED " +
       new Date(record.savedAt).toLocaleString();
     screen?.focus();
+    return true;
   } catch (error) {
     if (stageNote) stageNote.textContent = error?.message || "Game Vault save failed.";
     showVaultFeedback("Save failed: " + (error?.message || "Game Vault storage unavailable."), true);
+    return false;
   }
 }
 
@@ -2913,7 +2966,7 @@ async function loadGameVaultSlot() {
   if (!vault.snapshot().allRequiredReady) {
     showVaultFeedback("System ROMs are needed before a saved game can resume. Open ROM SETTINGS.", true);
     showSetup();
-    return;
+    return false;
   }
   const selection = vaultSelection();
   const slot = currentVaultSlot();
@@ -3002,6 +3055,7 @@ async function loadGameVaultSlot() {
       enterMobilePlayMode(currentSessionGame.gameTitle);
     }
     screen?.focus();
+    return true;
   } catch (error) {
     if (stopped && old) {
       machine = old.machine;
@@ -3021,6 +3075,84 @@ async function loadGameVaultSlot() {
     setAudioPaused(false);
     if (stageNote) stageNote.textContent = error?.message || "Game Vault restore failed.";
     showVaultFeedback("Restore failed: " + (error?.message || "Unknown Game Vault error."), true);
+    return false;
+  }
+}
+
+// The mobile shortcuts use the SAME IndexedDB vault and machine snapshot
+// routines as the desktop Save / Resume panel: no competing save format.
+function closeMobileVaultPanel({ resume = true } = {}) {
+  ++mobileVaultRequestId;
+  if (mobileVaultPanel) mobileVaultPanel.hidden = true;
+  if (resume && mobileVaultAutoPaused && running && paused) togglePause();
+  mobileVaultAutoPaused = false;
+  if (mobilePlayActive) screen?.focus?.({ preventScroll: true });
+}
+
+async function openMobileVault(mode) {
+  if (!mobilePlayActive || !running || !machine || !mobileVaultPanel ||
+      !mobileVaultSlots || !["save", "load"].includes(mode)) return;
+  if (!mobileVaultPanel.hidden) closeMobileVaultPanel();
+  setMobileKeyboardOpen(false);
+  mobileVaultAutoPaused = !paused;
+  if (mobileVaultAutoPaused) togglePause();
+  mobileVaultPanel.hidden = false;
+  const token = ++mobileVaultRequestId;
+  if (mobileVaultTitle) mobileVaultTitle.textContent =
+    mode === "save" ? "SAVE GAME STATE" : "LOAD GAME STATE";
+  if (mobileVaultHelp) mobileVaultHelp.textContent =
+    (mode === "save" ? "Choose a slot for " : "Resume a saved slot for ") +
+    currentSessionGame.gameTitle + ". Saves remain in this browser.";
+  mobileVaultSlots.replaceChildren();
+  if (mobileVaultMessage) mobileVaultMessage.textContent = "Checking saved slots…";
+  try {
+    const slots = await Promise.all([1, 2, 3].map(slot =>
+      gameVault.loadGame(currentSessionGame.gameKey, slot)));
+    if (token !== mobileVaultRequestId) return;
+    for (let i = 0; i < slots.length; i++) {
+      const slot = i + 1;
+      const saved = slots[i];
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "ccg-c64-mobile-vault-slot";
+      const title = document.createElement("strong");
+      title.textContent = "SLOT " + slot + (saved ? " · SAVED" : " · EMPTY");
+      const details = document.createElement("span");
+      details.textContent = saved
+        ? new Date(saved.savedAt).toLocaleString()
+        : (mode === "save" ? "Save here" : "No saved game");
+      button.append(title, details);
+      button.disabled = mode === "load" && !saved;
+      button.addEventListener("click", async () => {
+        if (token !== mobileVaultRequestId || button.disabled) return;
+        for (const other of mobileVaultSlots.querySelectorAll("button")) other.disabled = true;
+        if (mobileVaultMessage) mobileVaultMessage.textContent =
+          (mode === "save" ? "Saving" : "Restoring") + " Slot " + slot + "…";
+        // Game Vault UI also exposes older game and Legacy selections. The
+        // immersive shortcuts must ONLY operate on the currently playing game.
+        if (vaultGameSelect) vaultGameSelect.value = "__current__";
+        if (vaultSlot) vaultSlot.value = String(slot);
+        const ok = mode === "save" ? await saveGameVaultSlot() : await loadGameVaultSlot();
+        if (token !== mobileVaultRequestId) return;
+        if (ok) closeMobileVaultPanel({ resume: mode === "save" });
+        else {
+          if (mobileVaultMessage) mobileVaultMessage.textContent =
+            vaultFeedback?.textContent || "Unable to access this saved game.";
+          for (const other of mobileVaultSlots.querySelectorAll("button")) {
+            const index = [...mobileVaultSlots.children].indexOf(other);
+            other.disabled = mode === "load" && !slots[index];
+          }
+        }
+      });
+      mobileVaultSlots.append(button);
+    }
+    if (mobileVaultMessage) mobileVaultMessage.textContent = mode === "save"
+      ? "An occupied slot asks before overwriting. Export backups from Save / Resume."
+      : "Only this game's existing saves can be resumed here.";
+  } catch (error) {
+    if (token !== mobileVaultRequestId) return;
+    if (mobileVaultMessage) mobileVaultMessage.textContent =
+      "Game Vault unavailable: " + (error?.message || "Check browser storage and retry.");
   }
 }
 
