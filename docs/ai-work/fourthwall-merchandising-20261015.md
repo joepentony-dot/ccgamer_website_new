@@ -18,3 +18,10 @@ Do not merge on the strength of previous-head checks. Require exact current-bran
 
 ## YouTube follow-up
 Native YouTube Shopping linkage requires an eligible channel and account-side authorization in Fourthwall/YouTube Studio. This repository alone cannot authorize that connection; do not claim it is linked until verified in the owner's account. Keep direct description/channel merch links as an immediate fallback.
+
+## 15 October 2026 — reported inactive merch-panel links, focused follow-up
+- Site owner reports homepage merchandise hyperlink access not working. Source audit found the previous homepage panel's title, brand and description were non-clickable; only the small EXPLORE MERCH control was an anchor. Existing revenue-click analytics observes but does not prevent default navigation. The direct store URL was supplied by owner; the external Fourthwall storefront could not be reliably fetched from inspection tools, so checkout/product-link functionality there is NOT independently confirmed.
+- Narrow fix branch `fix/fourthwall-clickable-home-panel-20261015` from refreshed main: retain semantic section, wrap the entire visual panel content in one accessible external anchor with keyboard focus and hover treatment; no nested anchors, scripts, extra shopping embeds, logo changes or global navigation changes. Keep destination `https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp` unchanged.
+- Maintain the strict homepage search/SEO guard by matching **both** prior baseline panel and new current panel byte-equivalently, disallowing arbitrary content. Add full-card anchor/focus regression to existing Site Safety test and increment public code cache v146 → v147 (recheck current main before merge).
+- The change remains unmerged until exact-head CI and guarded latest-main comparison; normal GitHub Pages post-merge deployment and live end-to-end destination confirmation must follow. YouTube Shopping remains postponed per owner instruction.
+

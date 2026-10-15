@@ -3,14 +3,11 @@
    Scoped below the archive/community content and above optional support. */
 html[data-ccg-page="home"] .home-merch-promo {
     box-sizing: border-box;
-    display: grid;
-    grid-template-columns: 62px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: clamp(12px, 2vw, 22px);
+    display: block;
     width: min(1200px, calc(100% - 24px));
     min-width: 0;
     margin: 18px auto 22px;
-    padding: clamp(14px, 2vw, 22px);
+    padding: 0;
     color: #f0f7ff;
     background: linear-gradient(105deg,
         rgba(var(--accent-rgb, 0, 170, 255), 0.14),
@@ -18,6 +15,29 @@ html[data-ccg-page="home"] .home-merch-promo {
     border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.48);
     border-radius: 12px;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.055), 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+html[data-ccg-page="home"] .home-merch-promo__link {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(12px, 2vw, 22px);
+    width: 100%;
+    min-width: 0;
+    padding: clamp(14px, 2vw, 22px);
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+html[data-ccg-page="home"] .home-merch-promo:hover,
+html[data-ccg-page="home"] .home-merch-promo:focus-within {
+    border-color: rgba(var(--accent-rgb, 0, 170, 255), 0.92);
+    background: linear-gradient(105deg, rgba(var(--accent-rgb, 0, 170, 255), 0.24), rgba(7, 13, 32, 0.97) 68%);
+}
+html[data-ccg-page="home"] .home-merch-promo__link:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+    border-radius: 9px;
 }
 html[data-ccg-page="home"] .home-merch-promo__mark {
     box-sizing: border-box;
@@ -71,8 +91,8 @@ html[data-ccg-page="home"] .home-merch-promo__action {
     text-decoration: none;
     white-space: nowrap;
 }
-html[data-ccg-page="home"] .home-merch-promo__action:hover,
-html[data-ccg-page="home"] .home-merch-promo__action:focus-visible {
+html[data-ccg-page="home"] .home-merch-promo:hover .home-merch-promo__action,
+html[data-ccg-page="home"] .home-merch-promo:focus-within .home-merch-promo__action {
     background: rgba(var(--accent-rgb, 0, 170, 255), 0.33);
     border-color: rgba(var(--accent-rgb, 0, 170, 255), 1);
     outline-offset: 3px;
@@ -81,7 +101,7 @@ html[data-ccg-page="home"] .home-merch-promo__action span {
     font-size: 1.06rem;
 }
 @media (max-width: 720px) {
-    html[data-ccg-page="home"] .home-merch-promo {
+    html[data-ccg-page="home"] .home-merch-promo__link {
         grid-template-columns: 46px minmax(0, 1fr);
         gap: 10px;
         padding: 14px;
