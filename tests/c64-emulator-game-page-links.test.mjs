@@ -97,3 +97,24 @@ test("the displayed link remains a select-only deep link, not an autoplay URL", 
   assert.match(generator, /parseAdditionalCrtCatalog/);
   assert.match(generator, /parsePackedCatalog/);
 });
+
+test("all 666 generated pages reconcile exactly against the validated emulator mapping", () => {
+  const report = JSON.parse(execFileSync(process.execPath,
+    ["scripts/link-c64-emulator-games.js", "--audit-json"], { encoding: "utf8" }));
+  const expected = new Map(report.mappings.map(record => [record.slug, record]));
+  let covered = 0;
+  for (const game of games) {
+    const page = read("games/" + game.slug + "/index.html");
+    const count = (page.match(/data-ccg-play-in-emulator="true"/g) || []).length;
+    const media = expected.get(game.slug);
+    if (game.system !== "C64" || !media) {
+      assert.equal(count, 0, "Unexpected emulator link on " + game.slug);
+      continue;
+    }
+    assert.equal(count, 1, "Missing or duplicate emulator action on " + game.slug);
+    assert.ok(page.includes('href="/emulator/c64/?game=' +
+      encodeURIComponent(media.id) + '"'), "Wrong emulator media ID for " + game.slug);
+    covered++;
+  }
+  assert.equal(covered, report.matched);
+});
