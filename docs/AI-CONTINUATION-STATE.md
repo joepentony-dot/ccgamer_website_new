@@ -1,3 +1,8 @@
+## Dungeon #2705 thief stolen-item recovery checkpoint — 15 October 2026
+
+- Guarded correction to `game-local-runtime.js` plus the existing playing update loop: if inventory and reachable floor are both full, stolen gear remains serialized as pending until capacity/path opens, then recovers exactly once; no duplicate kill bonus. Existing R87 test extended with direct runtime-source fixtures, including JSON restore. Original owner thief AI/minimap/Flask HUD acceptance still open; no full CI/Windows testing or merge.
+- Remain on sole cumulative #2705 draft; coordinate website SEO/emulator PRs separately and do not integrate over protected main indexes without conflict review.
+
 ## Dungeon #2705 Sigil escape Flask reservation — 15 October 2026
 
 - Corrected the owner-visible false free-Flask success announcement in the Sigil escape sequence when capacity or one-charge ownership prevented insertion. Added serializable pending entitlement and exact-once retry through the existing procedural update owner; extended existing R122 Flask regression with full bag, JSON save/restore, already-carried, immediate and failure/retry cases. Owner's separate Alchemist and Windows Flask incident remain unresolved.

@@ -1,5 +1,10 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — P0 thief lost-stash prevention and retries
+
+The old thief recovery owner marked stolen inventory permanently recovered even when a full bag and no safe overflow tile forced active loot onto the dead thief/player tile. A guarded candidate on the existing cumulative #2705 branch retains hidden original pickup entries and pending `weightBridge.stolenItems`, uses BFS from the current player through actual open doors, filters all live solid objectives/enemies/items/chests/caches and selects one unique destination per overflow stack. Existing gameplay simulation calls `recoverBridgeThiefStash(null,p1)` after thief defeat while pending remains; that function limits retries to one per 750ms wall-clock and scores the kill only at first defeat. The existing R87 test includes no-safe-tile, opened route, three unique stack drops, duplicate kill, JSON host/player restoration with freed slot and score invariance. No new PR or regression file. No original user playthrough, Chromium, installed Windows or save-migration qualification; thief cross-room AI and minimap markers still outstanding. No paid CI or protected website/music edits.
+
+
 ## 15 October 2026 — escape Sigil Flask reward reservation
 
 Actual procedural-overhaul `beginEscape` promised a free Flask even when real `CCGProgression.inventoryCanAdd` rejected full inventory or existing one-charge ownership. Fixed with a pending entitlement serialized on the run, delivered on the existing playing update owner after a free unlocked slot exists, with no second grant on repeat/re-entry. No new timer, duplicate state machine or Gold/Score cost. Existing R122 live Flask transaction test extended with actual progression runtime scenarios: full bag with JSON run/player state round trip, immediate delivery, currently carried charge and failed insertion/retry. User message distinguishes delivered from reserved.

@@ -989,6 +989,9 @@ function update(dt){
   for(const p of localPlayers())if(p&&Number(p.health)<=0)enforceCanonicalDeathState(p);
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
   enemyCD-=dt;
+  // The existing recovery owner retries a serialized stolen stash if the
+  // first return was blocked; it throttles work and cannot reaward score.
+  if(host?.weightBridge?.thiefDefeated&&(host.weightBridge.stolenItems||[]).length)recoverBridgeThiefStash(null,p1);
   const pauseProjectileCadenceHeld=Boolean(window.__CCG_PAUSE_PROJECTILE_CADENCE_HELD__);
   if(pauseProjectileCadenceHeld){
     projectileCD=0;

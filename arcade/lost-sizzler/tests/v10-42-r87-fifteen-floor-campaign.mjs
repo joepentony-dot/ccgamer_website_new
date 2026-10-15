@@ -194,6 +194,74 @@ assert.equal(checkedGeneratorFloors,8,"Sample four generator-objective floors tw
 
 
 
+// P0 bridge thief: execute the actual stolen-item recovery owner.
+const bridgeStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");
+const bridgeEnd=localRuntimeSource.indexOf("function damageEnemy(",bridgeStart);
+assert.ok(bridgeStart>=0&&bridgeEnd>bridgeStart,"Current stolen-item return owner must exist");
+const bridgeSource=localRuntimeSource.slice(bridgeStart,bridgeEnd);
+assert.match(gameplaySource,/recoverBridgeThiefStash\(null,p1\)/,"Live simulation must retry pending overflow");
+function bridgeCase({sealed=false,occupied=false,items=["banishment"],capacity=0}={}){
+  const map=Array.from({length:13},()=>Array(13).fill(sealed?1:0));if(sealed)map[5][5]=0;
+  const player={id:"P1",x:5,y:5,inventory:[]},thief={id:"thief-5",x:5,y:5,alive:false,bridgeThief:true};
+  const drops=items.map((kind,i)=>({id:"dropped-"+i,x:i+2,y:4,active:false,bridgeStolen:true,
+    carriedItem:{kind,name:kind,qty:1}}));
+  const bridge={thiefId:thief.id,collapsed:true,rebuilt:true,stolenItems:drops.map(d=>({...d,carriedItem:{...d.carriedItem}}))};
+  const hostState={weightBridge:bridge,items:drops,enemies:[thief],
+    generators:occupied?[{x:6,y:5,alive:true}]:[],
+    chests:occupied?[{x:4,y:5,active:true}]:[],
+    deathCaches:occupied?[{x:5,y:4,active:true}]:[],revision:0};
+  let now=1000,ctx;
+  ctx=vm.createContext({host:hostState,world:{map},p1:player,score:0,
+    Date:{now:()=>now},console,
+    W:{walkable:(m,x,y)=>m[y]?.[x]===0,
+      playerWalkable:(m,x,y,h)=>m[y]?.[x]===0&&!h.generators.some(g=>g.alive&&g.x===x&&g.y===y)},
+    PGR:{inventoryCanAdd:p=>p.inventory.length<capacity&&!p.inventory.some(it=>it.kind==="banishment"),
+      inventoryAdd:(p,item)=>{if(p.inventory.length>=capacity)return false;p.inventory.push({...item});return true}},
+    localPlayers:()=>[ctx.p1],S:{sfx(){}},burst(){},ring(){},P:{gold:"#ffd"},
+    showToast(){},updateQuests(){}});
+  vm.runInContext(bridgeSource,ctx,{filename:"bridge-return",timeout:3000});
+  return{ctx,bridge,thief,player,map,host:hostState,retry(){now+=800;return ctx.recoverBridgeThiefStash(null,ctx.p1)}};
+}
+const blockedBridge=bridgeCase({sealed:true}),firstBlocked=blockedBridge.ctx.recoverBridgeThiefStash(blockedBridge.thief,blockedBridge.player);
+assert.equal(firstBlocked.pending,1,"No free tile must retain stolen ownership");
+assert.equal(blockedBridge.ctx.score,750,"Thief kill bonus pays once");
+assert.equal(blockedBridge.bridge.stolenItems.length,1);
+assert.equal(blockedBridge.host.items.filter(x=>x.active).length,0,"Never put recovered loot under corpse/player");
+assert.equal(blockedBridge.ctx.recoverBridgeThiefStash(blockedBridge.thief,blockedBridge.player),null,"Cannot duplicate thief kill");
+assert.equal(blockedBridge.retry().pending,1,"Blocked room preserves pending item");
+blockedBridge.map[5][6]=0;
+assert.equal(blockedBridge.retry().pending,0,"Opening reachable ground releases pending stash");
+assert.deepEqual([blockedBridge.host.items[0].x,blockedBridge.host.items[0].y],[6,5]);
+assert.equal(blockedBridge.retry(),null,"Delivered stash cannot be reissued");
+assert.equal(blockedBridge.ctx.score,750,"No duplicate bonus after retries");
+
+const overlapBridge=bridgeCase({occupied:true,items:["potion","torch","banishment"]});
+overlapBridge.ctx.recoverBridgeThiefStash(overlapBridge.thief,overlapBridge.player);
+const placedBridge=overlapBridge.host.items.filter(x=>x.active);
+assert.equal(placedBridge.length,3);
+assert.equal(new Set(placedBridge.map(x=>x.x+","+x.y)).size,3,"Overflow stacks require unique walkable cells");
+for(const row of placedBridge){
+  assert.ok(row.x!==overlapBridge.player.x||row.y!==overlapBridge.player.y,"No player overlap");
+  assert.ok(!overlapBridge.host.generators.some(g=>g.x===row.x&&g.y===row.y),"No generator overlap");
+  assert.ok(!overlapBridge.host.chests.some(c=>c.x===row.x&&c.y===row.y),"No chest overlap");
+  assert.ok(!overlapBridge.host.deathCaches.some(c=>c.x===row.x&&c.y===row.y),"No cache overlap");
+}
+assert.equal(overlapBridge.bridge.stolenItems.length,0);
+assert.equal(overlapBridge.ctx.score,750);
+
+const restoredBridge=bridgeCase({sealed:true,capacity:1});
+restoredBridge.player.inventory=[{kind:"potion",qty:1}];
+restoredBridge.ctx.recoverBridgeThiefStash(restoredBridge.thief,restoredBridge.player);
+assert.equal(restoredBridge.bridge.stolenItems.length,1);
+restoredBridge.ctx.host=JSON.parse(JSON.stringify(restoredBridge.ctx.host));
+restoredBridge.ctx.p1=JSON.parse(JSON.stringify(restoredBridge.ctx.p1));
+restoredBridge.ctx.p1.inventory=[];
+assert.equal(restoredBridge.retry().pending,0,"JSON restored inventory can receive stolen Flask");
+assert.equal(restoredBridge.ctx.p1.inventory.filter(it=>it.kind==="banishment").length,1);
+assert.equal(restoredBridge.ctx.host.weightBridge.stolenItems.length,0);
+assert.equal(restoredBridge.retry(),null);
+assert.equal(restoredBridge.ctx.score,750);
+
 // P0 Death Stalker singleton: permanent banishment overrides duplicate
 // live records, and timed-chamber IDs must follow the sole retained actor.
 const makeFloorStalker=(id,alive=true)=>({id,alive,deathStalker:true,voidStalker:true});
