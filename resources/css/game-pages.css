@@ -2446,3 +2446,103 @@
     height: 100%;
     aspect-ratio: auto;
 }
+
+
+/* OMEGA RECORD — aligned credits and verified C64 emulator action.
+   Each credit is one two-cell row with a shared border; the previous
+   display:contents four-column grid painted broken individual lines. */
+.ccg-page--single-game .ccg-behind-pixels-inline__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0;
+    row-gap: 0;
+    align-items: stretch;
+    border-top: 1px solid rgba(255,255,255,.12);
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item {
+    display: grid;
+    grid-template-columns: minmax(105px, 32%) minmax(0, 1fr);
+    align-items: stretch;
+    min-width: 0;
+    min-height: 39px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item:nth-child(odd):not(:last-child) {
+    border-right: 1px solid rgba(255,255,255,.09);
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(105px, 16%) minmax(0, 1fr);
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+    padding: 7px 10px;
+    border: 0;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+    font-size: .69rem;
+    white-space: normal;
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+    font-size: .84rem;
+}
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 43px;
+    padding: 8px 14px;
+    border: 1px solid rgba(var(--accent-rgb), .88);
+    border-radius: 5px;
+    color: #fff;
+    background: linear-gradient(160deg, rgba(var(--accent-rgb), .34), rgba(var(--accent-rgb), .13));
+    box-shadow: 0 0 9px rgba(var(--accent-rgb), .22);
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .045em;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+}
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play:hover,
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play:focus-visible {
+    border-color: rgb(var(--accent-rgb));
+    background: rgba(var(--accent-rgb), .45);
+    box-shadow: 0 0 13px rgba(var(--accent-rgb), .48);
+}
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+@media (max-width: 900px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {grid-template-columns: minmax(0,1fr);}
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-column: auto;
+        grid-template-columns: minmax(100px, 32%) minmax(0,1fr);
+        border-right: 0;
+    }
+}
+@media (max-width: 560px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(85px, 33%) minmax(0,1fr);
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+        padding: 6px 5px;
+    }
+    .ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play {
+        min-height: 44px;
+        width: 100%;
+        white-space: normal;
+    }
+}
