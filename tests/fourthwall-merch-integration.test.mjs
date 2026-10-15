@@ -15,7 +15,7 @@ test("homepage advertises the existing Fourthwall shop below community and befor
     assert.ok(start > community && support > start, "the merch panel must follow community and precede support");
     assert.ok(html.includes('rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style"'));
     assert.ok(html.includes('<noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css"'));
-    const panel = html.slice(start, support);
+    const panel = html.slice(html.lastIndexOf("<section", start), support);
     assert.match(panel, /<section[^>]*class="home-merch-promo ccg-chapter"[^>]*>\s*<a class="home-merch-promo__link"/);
     assert.ok(panel.includes('href="' + SHOP + '"'));
     assert.ok(panel.indexOf('home-merch-promo__title') > panel.indexOf('home-merch-promo__link'));
