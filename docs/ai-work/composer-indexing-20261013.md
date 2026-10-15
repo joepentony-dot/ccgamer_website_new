@@ -1,5 +1,14 @@
 # Composer indexing: sourced biography review — 13 October 2026
 
+## Live noindex remediation — 15 October 2026 (DRAFT, NOT DEPLOYED)
+
+- Owner's Google Search Console smartphone **Test live URL** at 14:08 BST verified that `/music/neil-crossley/` was HTTP fetchable but excluded by an explicit HTML robots `noindex` meta. GSC Wizard live crawl corroborated HTTP 200, self-canonical, `noindex`, 63 words.
+- Authoritative composer registry on main: **276 composer routes, 114 indexable and 162 noindexed**. Every noindexed entry is a generated **one-credit** composer page. The responsible generator `scripts/generate-composer-pages.js` required two catalogue credits for `index,follow`; post-processing `scripts/enrich-generated-composer-pages.js` already supports vetted editorial exceptions.
+- Single bounded source PR **#2778**, branch `fix/seo-composer-single-credit-indexability-20261015`, changes the generated-page minimum to **one verified catalogue credit**; does not manufacture composer biographies or change actual game-credit attribution. A regression tests one-credit HTML robots/canonical/link, the entire 162-page existing source cohort, existing curated exclusions and the generic query-string fallback's `noindex,follow`.
+- Deliberate legacy HTML aliases, retired URLs, standalone generic music/composer query fallbacks and independently curated exclusions must **not** be mass-indexed. No protected game catalogue, Omega intro, emulator, Dungeon, media, member state, DNS or manually generated page HTML is changed.
+- After exact-final-head CI (Composer Archives, SEO, Site Safety, Lighthouse, cache, publisher/PWA where triggered) and independent review with owner-approved merge, the **existing** composer-archives workflow must regenerate canonical composer HTML, composer registry, static-page ownership and XML sitemaps. Verify the generated diff and Pages/live deployment before any Google live URL tests or changed sitemap submission. Google still decides whether to index one-credit pages, particularly those with limited on-page text. Do not claim search traffic or indexing gains on source-only changes.
+
+
 ## Evidence
 
 Google Search Console identifies both `/music/rob-hubbard/` and `/music/ben-daglish/` as **Crawled - currently not indexed**. Live audit returns HTTP 200, indexable, self-canonical for both, but only approximately 94 and 103 words of page text respectively, with only three internal links each. These are editorial enrichment opportunities, NOT evidence of a technical indexing restriction.
