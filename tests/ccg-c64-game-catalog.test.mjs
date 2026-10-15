@@ -94,8 +94,9 @@ try {
 } finally {
   globalThis.fetch = savedFetch;
 }
-// Cartridge promotion must be explicit, deterministic and title-exact across
-// independent direct/Blast/archive entries, not inferred from format alone.
+// The unified game list now has one visible entry per identity. Approved
+// CRTs win across direct/Blast/archive versions; byte-level cleanup is handled
+// separately. Never merge a numbered sequel or unrelated title.
 const versions = [
   { id: "disk-myth", title: "Myth: History in the Making", format: "d64" },
   { id: "archive-myth", title: "Myth - History in the Making", format: "prg" },
@@ -107,12 +108,15 @@ const versions = [
   { id: "archive-pirates", title: "Pirates!", format: "prg" },
 ];
 assert.deepEqual(preferSelectedCartridges(versions).map(row => row.id),
-  ["crt-myth", "other-myth", "disk-pirates", "crt-pirates", "archive-pirates"]);
-assert.equal(preferSelectedCartridges(versions.filter(row => row.id !== "crt-myth")).length, 6,
-  "An absent promoted cartridge must never hide its existing fallback");
+  ["crt-myth", "other-myth", "crt-pirates"]);
+assert.deepEqual(preferSelectedCartridges(
+  versions.filter(row => row.id !== "crt-myth")).map(row => row.id),
+  ["disk-myth", "other-myth", "crt-pirates"],
+  "Without a CRT for Myth the existing disk edition must remain available");
 assert.strictEqual(preferSelectedCartridges([]).length, 0);
 assert.equal(preferSelectedCartridges([{ title: "Gorf", format: "crt",
-  preferOverOtherFormats: false }, { title: "Gorf", format: "prg" }]).length, 2);
+  preferOverOtherFormats: false }, { title: "Gorf", format: "prg" }]).length, 1,
+  "A hosted CRT should win one visible title even without a preference flag");
 assert.deepEqual(preferSelectedCartridges([
   { id: "gorf", title: "Gorf", format: "crt", preferOverOtherFormats: true },
   { id: "gorf-variant", title: "Gorf", format: "crt", preferOverOtherFormats: true },
