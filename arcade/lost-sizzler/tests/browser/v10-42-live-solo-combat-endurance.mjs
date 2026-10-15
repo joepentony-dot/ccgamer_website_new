@@ -88,18 +88,40 @@ async function verifyOneTimeNamedDossier(page){
     return{name:follower.name,ids:enemies.map(e=>e.id),before:Number(PGR.readDossier()?.[follower.name]?.defeats||0)};
   });
   assert.ok(fixture,"two ordinary enemies and an unshown authored named dossier are required for the live encounter contract");
-  const defeat=async id=>page.evaluate(({enemyId,name})=>{
+  const defeat=async (id,hazard=false)=>page.evaluate(({enemyId,name,hazard})=>{
     const enemy=host.enemies.find(e=>e.id===enemyId);
     const follower=C.followerElites?.find(f=>f?.name===name);
     if(!enemy||enemy.alive!==true||!follower)return null;
     // Assign the authored identity and defeat in this same JavaScript turn:
     // no frame can interleave an unrelated kill of a labelled enemy.
     enemy.follower={...follower};enemy.hp=1;enemy.armor=0;
-    damageEnemy(enemy,10,"energy",p1);
+    const before={x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry};let trap=null,hazardResolved=false;
+    try{
+      if(hazard){
+        // Deterministically exercise the real recursive hazard-death path.
+        // Restore the player and remove only this test trap in the same turn.
+        let cell=null;
+        for(let y=1;y<world.map.length-1&&!cell;y++)for(let x=2;x<world.map[y].length-2;x++){
+          if([-1,0,1].every(dx=>W.playerWalkable(world.map,x+dx,y,host)&&
+            !host.enemies.some(e=>e!==enemy&&e.alive&&e.x===x+dx&&e.y===y))){cell={x,y};break}
+        }
+        if(!cell)throw new Error("No walkable three-cell knockback fixture");
+        enemy.x=cell.x;enemy.y=cell.y;p1.x=cell.x-1;p1.y=cell.y;
+        trap={id:"endurance-named-knockback",x:cell.x+1,y:cell.y,active:true,kind:"spike",phase:-performance.now(),period:1000000000};
+        host.traps.push(trap);
+        if(!window.CCGLostSizzlerEnvironmentalV121?.trapAt(trap.x,trap.y,true))throw new Error("Knockback fixture trap must be active");
+      }
+      damageEnemy(enemy,10,"energy",p1);
+      hazardResolved=Boolean(trap&&enemy.x===trap.x&&enemy.y===trap.y);
+    }finally{
+      Object.assign(p1,before);
+      if(trap)host.traps=host.traps.filter(row=>row!==trap);
+    }
     return{fallen:enemy.alive===false,defeats:Number(PGR.readDossier()?.[name]?.defeats||0),
-      autoShown:Boolean(run.namedDossierAutoShown),mode:String(mode)};
-  },{enemyId:id,name:fixture.name});
-  const first=await defeat(fixture.ids[0]);
+      autoShown:Boolean(run.namedDossierAutoShown),mode:String(mode),hazardResolved};
+  },{enemyId:id,name:fixture.name,hazard});
+  const first=await defeat(fixture.ids[0],true);
+  assert.equal(first?.hazardResolved,true,"First named defeat must execute actual knockback onto the active trap");
   assert.equal(first?.fallen,true,"first named enemy must be freed through the actual damage/death owner");
   assert.equal(first.defeats,fixture.before+1,"first named defeat must be recorded exactly once");
   assert.equal(first.autoShown,true,"first named defeat must claim the one-time dossier reward");

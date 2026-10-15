@@ -67,7 +67,9 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
   if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e)&&!(e.treasureGoblin&&e.hp<=0))knockEnemyAway(e,attacker)}
-  if(e.hp>0)return;
+  // Knockback can recursively apply lethal trap/vortex damage. If that call
+  // already completed the death, it owns all defeat and reward accounting.
+  if(!e.alive||e.hp>0)return;
   e.hp=0;e.alive=false;if(e.treasureGoblin)e.treasureGoblinDefeated=true;host.revision++;run.stats.kills++;recordEnemyDefeat(e,attacker||p1);
   let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?15000:e.spider?(e.scoreValue||15):120;
   let xp=e.follower?250:e.spider?(e.xpValue||10):100;
