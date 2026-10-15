@@ -2510,7 +2510,8 @@ async function initialiseOnlineLibrary() {
 
   // A single visible title index. Preserve the underlying media and previous
   // IDs for old bookmarks, but show only the approved CRT-first winner.
-  const allHostedEntries = [...regular, ...packed, ...archived];
+  onlineLibraryEntries = [...regular, ...packed, ...archived];
+  const allHostedEntries = onlineLibraryEntries;
   onlineLibraryEntries = preferSelectedCartridges(allHostedEntries);
   // Only a game-page button with autoplay=1 starts the matched catalogue entry.
   // Ordinary emulator searches and legacy ?game= links still require LOAD.
