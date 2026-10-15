@@ -2511,6 +2511,14 @@ async function initialiseOnlineLibrary() {
   // flag suppress the matching PRG/disk versions in both packed archives.
   // Do not rewrite shared binary packs or hide unrelated titles.
   onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
+  // A game page may deep-link to an approved game. Never fetch or launch its
+  // media automatically: the visitor still confirms by pressing LOAD.
+  let linkedGameId = "";
+  try {
+    linkedGameId = new URLSearchParams(window.location.search).get("game") || "";
+  } catch (_) { /* Invalid URL query is ignored. */ }
+  const linkedGame = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId)
+    ? onlineLibraryEntries.find(entry => entry.id === linkedGameId) : null;
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   const unavailable = [];
@@ -2521,6 +2529,11 @@ async function initialiseOnlineLibrary() {
     : onlineLibraryEntries.length
       ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
+  if (linkedGame) {
+    selectOnlineLibraryEntry(linkedGame.id, false);
+    if (stageNote) stageNote.textContent =
+      `Selected ${linkedGame.title} in the CCG C64 library. Press LOAD to play.`;
+  }
   if ((packedCatalogueError || archiveError) && onlineLibraryCount) {
     onlineLibraryCount.textContent =
       "Some additional games are unavailable. Check connection and retry.";
