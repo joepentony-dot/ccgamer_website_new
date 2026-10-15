@@ -224,3 +224,21 @@ test("a verified single-credit composer archive is indexable without promoting l
   assert.match(fallback, /name="robots" content="noindex,follow"/,
     "generic query-string fallback remains excluded");
 });
+
+test("all current single-credit generated composer routes qualify under the new source policy", () => {
+  const generator = require("../scripts/generate-composer-pages.js");
+  const { buildComposerGroups } = require("../scripts/composer-utils.js");
+  const games = JSON.parse(fs.readFileSync(path.join("games", "games.json"), "utf8"));
+  const existingMetadata = JSON.parse(fs.readFileSync(path.join("music", "composers", "composers.json"), "utf8"));
+  const oneCredit = existingMetadata.filter(entry => entry.generated && entry.count === 1);
+  assert.ok(oneCredit.length > 0, "expected a real single-credit composer cohort");
+  const routes = generator.mergeComposerRoutes(buildComposerGroups(games), []);
+  const bySlug = new Map(routes.map(item => [item.slug, item]));
+  for (const entry of oneCredit) {
+    const route = bySlug.get(entry.slug);
+    assert.ok(route, "lost credited composer " + entry.slug);
+    assert.equal(route.count, 1, "unexpected credit count change " + entry.slug);
+    assert.equal(route.indexable, true, "single-credit route remains noindex: " + entry.slug);
+    assert.match(generator.renderGeneratedComposerPage(route), /name="robots" content="index,follow"/);
+  }
+});
