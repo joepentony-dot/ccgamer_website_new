@@ -997,6 +997,7 @@ function normalizeSearchText(text) {
         .normalize("NFD")
         .replace(/[̀-ͯ]/g, "")
         .replace(/[’']/g, "")
+        .replace(/&/g, " and ")
         .replace(/[-_]+/g, " ")
         .replace(/[^a-z0-9\s]+/g, " ")
         .replace(/\s+/g, " ")
