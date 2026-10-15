@@ -18,7 +18,10 @@ const HISTORY_START = "<!-- CCG:PUBLISHER-HISTORY:START -->";
 const HISTORY_END = "<!-- CCG:PUBLISHER-HISTORY:END -->";
 const HISTORY_CSS = '<link rel="stylesheet" href="/resources/css/publisher-history.css">';
 const INTERNAL_FACT_PATTERN = /\b(?:CCG|Cheeky Commodore Gamer)\s+(?:publisher\s+)?(?:index|archive)\b/i;
-const INDEXABLE_MIN_GAMES = 2;
+// Preserve factual evidence requirements for biographies, but a dedicated
+// publisher archive with a verified catalogue credit is indexable even when
+// no independently researched publisher-history profile is available.
+const INDEXABLE_MIN_GAMES = 1;
 
 function fail(message) {
   console.error(`[publisher-history-static] ${message}`);
