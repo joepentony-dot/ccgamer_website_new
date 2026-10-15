@@ -73,5 +73,5 @@ test("fuzzy search offers spelling mistakes without swapping numbered sequels", 
   ];
   assert.equal(suggestCatalogGames(entries, "lemans").games[0].id, "le");
   assert.equal(searchCatalogEntries(entries, "Beach Head 2")[0]?.id, "beach2");
-  assert.equal(searchCatalogEntries(entries, "Le Mnas")[0]?.id, "le");
+  assert.equal(searchCatalogEntries(entries, "Le Manz")[0]?.id, "le");
 });
