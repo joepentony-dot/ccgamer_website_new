@@ -3230,26 +3230,29 @@ function setupQuickActionsFooterGuard(quickActions) {
     if (!footer) return;
 
     let ticking = false;
-    const updateLift = () => {
+    const updateFooterVisibility = () => {
         const footerRect = footer.getBoundingClientRect();
         const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-        const overlap = viewportHeight - footerRect.top;
-        const lift = overlap > 0 ? overlap + 12 : 0;
-        quickActions.style.setProperty("--ccg-quick-actions-lift", `${lift}px`);
+        // The previous lift moved the toolbar directly across the support
+        // message sitting above the footer. Retire the toolbar near the footer
+        // instead; the hero and website still expose the same actions.
+        const approachingFooter = footerRect.top <= viewportHeight + 80;
+        quickActions.classList.toggle("is-near-footer", approachingFooter);
+        quickActions.style.removeProperty("--ccg-quick-actions-lift");
     };
 
     const onScroll = () => {
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(() => {
-            updateLift();
+            updateFooterVisibility();
             ticking = false;
         });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    updateLift();
+    updateFooterVisibility();
     quickActions.dataset.footerGuard = "true";
 }
 
