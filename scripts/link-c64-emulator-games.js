@@ -6,7 +6,11 @@
 // No loose title guesses, no emulator media copying and no eager network work.
 const fs = require("node:fs");
 const path = require("node:path");
-const root = path.resolve(__dirname, "..");
+// Reuse the publishing pipeline's explicit repository root; tests can
+// exercise future game entries in an isolated temporary site without editing main.
+const root = process.env.CCG_REPO_ROOT
+  ? path.resolve(process.env.CCG_REPO_ROOT)
+  : path.resolve(__dirname, "..");
 const check = process.argv.includes("--check");
 const games = JSON.parse(fs.readFileSync(path.join(root, "games/games.json"), "utf8"));
 const library = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/library.json"), "utf8"));
@@ -176,7 +180,10 @@ let linked = 0;
 let missing = 0;
 for (const game of validGames) {
   const file = path.join(root, "games", game.slug, "index.html");
-  if (!fs.existsSync(file)) { missing++; continue; }
+  if (!fs.existsSync(file)) {
+    missing++;
+    throw new Error("Generated C64 game page missing; cannot verify emulator link: " + game.slug);
+  }
   const before = fs.readFileSync(file, "utf8");
   const expected = emulatorMatch(game);
   let updated = before.replace(anchorPattern, "");
