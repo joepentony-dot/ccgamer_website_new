@@ -1,3 +1,8 @@
+## Dungeon #2705 Warden sight-safe Ward Break — 15 October 2026
+
+- Reproduced wasted one-time Banishment Flask when a Death Stalker or Count Loadula was in Manhattan range but behind an intact locked door/solid wall. Existing Warden owner now uses real combat line-of-sight and inventory stays unchanged when blocked. Extended existing Warden source-level regression with real AI loading and saved gate, opened gate and visible-target controls. Six focused old/new scenarios passed, no full Node/Chromium/Windows qualification or owner acceptance.
+- Keep one cumulative draft and no unqualified merge/deployment; soundtrack source still blocked.
+
 ## Dungeon #2705 post-combat boss-room door recovery — 15 October 2026
 
 - Guarded correction to `game-play.js` restores stranded room doors when a restored/interrupted boss fight is already cleared and its boss dead. Uses existing door opening owner and preserves live Memory/Sigil lockdown; source-executed red/green grouped, restored, living-boss and idempotent tests added to R87. Does not establish the original paired Guardian Maw/Death Stalker freeze or Count Loadula 2/3-generator softlock, and full Node/Chromium/Windows/owner acceptance is outstanding.

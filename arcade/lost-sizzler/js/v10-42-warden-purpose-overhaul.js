@@ -49,13 +49,18 @@
   function chargeRange(){return Math.max(2,Number(CFG.stalker?.banishPromptDistance)||8)}
 
   function wardTargets(player){
-    const h=currentHost();if(!h||!player)return[];const range=chargeRange(),targets=[];
+    const h=currentHost(),w=currentWorld();if(!h||!player)return[];
+    const range=chargeRange(),targets=[];
+    // The finite Ward-Break Charge obeys the same closed-door, solid-wall
+    // and furniture sight checks as combat. Distance alone is insufficient.
+    const inSight=target=>w?.map&&typeof A!=="undefined"&&typeof A.lineOfSight==="function"&&
+      A.lineOfSight(w.map,player,target,range,h);
     for(const enemy of h.enemies||[]){
       if(!enemy?.alive||!recognisedEnemy(enemy)||enemy.v142WardenDefeated||broken(enemy))continue;
-      if(dist(enemy,player)<=range)targets.push(enemy);
+      if(dist(enemy,player)<=range&&inSight(enemy))targets.push(enemy);
     }
     const count=h.stalker;
-    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count)&&dist(count,player)<=range)targets.push(count);
+    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count)&&dist(count,player)<=range&&inSight(count))targets.push(count);
     return targets.sort((a,b)=>dist(a,player)-dist(b,player));
   }
 

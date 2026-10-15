@@ -87,8 +87,8 @@ function soloEncounter(){
     awardXP:(p,xp)=>{p.totalXp=(p.totalXp||0)+xp}
   };
   vm.createContext(ctx);
-  for(const name of ["config","world","progression","systems"])vm.runInContext(readOwner(name),ctx,{filename:`${name}.js`});
-  ctx.C=ctx.window.CCG_CONFIG;ctx.W=ctx.window.CCGWorld;ctx.PGR=ctx.window.CCGProgression;ctx.SYS=ctx.window.CCGSystems;
+  for(const name of ["config","world","progression","systems","ai"])vm.runInContext(readOwner(name),ctx,{filename:`${name}.js`});
+  ctx.C=ctx.window.CCG_CONFIG;ctx.W=ctx.window.CCGWorld;ctx.PGR=ctx.window.CCGProgression;ctx.SYS=ctx.window.CCGSystems;ctx.A=ctx.window.CCGAI;
   ctx.p1={id:"p1",name:"Solo",x:2,y:2,level:1,totalXp:0,inventory:[],inventorySlots:3,health:10,maxHealth:10,mana:0,maxMana:100};
   ctx.localPlayers=()=>[ctx.p1];
   ctx.run={floor:4,alert:0,stats:{kills:0},v142WardenFloors:{}};
@@ -276,5 +276,54 @@ assert.equal(paid.PGR.inventoryKindCount(paid.p1,"banishment"),1);
 assert.equal(paid.run.stats.wardsBroken,1,"Exactly one recorded Ward Break");
 assert.equal(paid.score,0,"Ward Break alone must not grant kill score");
 assert.notEqual(JSON.stringify(paid.p1.inventory),paidInitial,"One-charge ownership state changes only on valid payment");
+
+
+// Source-executed P0 Flask sight: the real CCGAI ray respects locked doors,
+// walls and decor, and a failed B press never charges the solo player.
+function wardSightFixture({asCount=false,gate="locked",wall=false}={}){
+  const t=soloEncounter(),ctx=t.ctx;
+  if(asCount){
+    ctx.host.enemies=ctx.host.enemies.filter(e=>!e.deathStalker);
+    t.count.x=5;t.count.y=5;
+  }
+  ctx.host.doors=gate==="none"?[]:[{id:"ward-line-gate",type:"room",roomId:0,
+    x:3,y:3,locked:gate==="locked",open:gate==="open"}];
+  if(wall)ctx.world.map[3][3]=1;
+  assert.equal(ctx.PGR.inventoryAdd(ctx.p1,{kind:"banishment",qty:1,name:"Ward-Break Charge"}),true);
+  return t;
+}
+for(const asCount of [false,true]){
+  const f=wardSightFixture({asCount}),ctx=f.ctx;
+  const initial=JSON.stringify(ctx.p1.inventory);
+  assert.equal(ctx.banishmentState(ctx.p1).ready,false,
+    "Closed room gate must block B targeting, even inside the charge range");
+  assert.equal(ctx.activateBanishment(ctx.p1),false);
+  assert.equal(JSON.stringify(ctx.p1.inventory),initial,"Closed gate must preserve exact Flask");
+  assert.equal(ctx.run.stats.wardsBroken||0,0);
+  ctx.host=JSON.parse(JSON.stringify(ctx.host));
+  assert.equal(ctx.banishmentState(ctx.p1).ready,false,"Saved locked gate remains blocked");
+  ctx.host.doors[0].open=true;ctx.host.doors[0].locked=false;
+  assert.equal(ctx.banishmentState(ctx.p1).ready,true);
+  assert.equal(ctx.activateBanishment(ctx.p1),true,"Opening room gate restores normal B use");
+  assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
+  assert.equal(ctx.run.stats.wardsBroken,1);
+  const target=asCount?ctx.host.stalker:ctx.host.enemies.find(e=>e.deathStalker);
+  assert.equal(target.v142WardBroken,true);
+  assert.equal(ctx.activateBanishment(ctx.p1),false,"No second charge can be spent");
+}
+const wallWard=wardSightFixture({gate:"none",wall:true}),wallCtx=wallWard.ctx;
+assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,false,"Solid stone blocks supernatural ward-break");
+assert.equal(wallCtx.activateBanishment(wallCtx.p1),false);
+assert.equal(wallCtx.PGR.inventoryKindCount(wallCtx.p1,"banishment"),1);
+wallCtx.world.map[3][3]=0;
+assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,true);
+assert.equal(wallCtx.activateBanishment(wallCtx.p1),true);
+const visibleWard=wardSightFixture({gate:"none",wall:true}),visibleCtx=visibleWard.ctx;
+visibleWard.count.x=2;visibleWard.count.y=7;
+assert.equal(visibleCtx.banishmentState(visibleCtx.p1).nearest,visibleWard.count,
+  "Visible Count may be selected instead of nearer blocked Stalker");
+assert.equal(visibleCtx.activateBanishment(visibleCtx.p1),true);
+assert.notEqual(visibleWard.death.v142WardBroken,true);
+assert.equal(visibleWard.count.v142WardBroken,true);
 
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
