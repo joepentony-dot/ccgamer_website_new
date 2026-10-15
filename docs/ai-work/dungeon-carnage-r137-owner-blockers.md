@@ -1,5 +1,12 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — bounded generator-accessibility regression
+
+Current-head source generation exercised 48 deterministic generator-objective floors, 12 each on Floors 2, 5, 9 and 12, using real world generation, systems decoration and player walkability. All sampled generators were approachable after treating ordinary room doors as opened. The initial result using initially closed room doors was a false positive and was discarded. The existing R87 campaign test now asserts generator target/count and reachable attack adjacency for eight additional seeded floors and checks that an artificially sealed generator is detected. No duplicate regression test file was introduced.
+
+**Limited scope:** these tests do not reproduce the owner's specific 2/3 Count Loadula deadlock, prove in-game door-opening sequences, fix Flask issues, exercise browser/Windows runtime, or qualify for release. No gameplay source, website HTML, assets, protected files, saves or music changed. No paid CI dispatched. Existing #2705 stays draft/unmerged.
+
+
 ## 15 October 2026, 15:04 BST — bounded P0 Warden Cache checkpoint
 
 Source/test commit **`9752a2cf0441353c4ab8240a66d532f12eb98cee`**, parent `ac4c3e34a214b2599f6ddc020c1d4024a7f3d402`, on the existing cumulative draft **#2705** / `fix/dungeon-r137-release-blockers-voice-scout-20261013`. Refreshed main `0f9a2a028dca833b7f2942f03e45a093826cbc40`; 13 commits behind, 47 ahead at source checkpoint. No integration attempted: both public HTML paths need conflict-aware preservation of main's development/registration notices. Other open PR: #2778; untouched. Earlier sections below are historical; R136 is already consolidated in #2705, not a separate active vehicle.

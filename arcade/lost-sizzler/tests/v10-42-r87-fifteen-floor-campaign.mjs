@@ -148,6 +148,51 @@ for(const floor of [6,7,8,9,11,13,14]){
 }
 assert.equal(generatedTrialSamples,28,"Exercise all seven authored trial floors across four seeds each.");
 
+// P0: approach every mandatory generator after ordinary room doors are opened.
+// This tests structural reachability, not actual owner-save/door interactions.
+const generatorAdjacency=[[1,0],[-1,0],[0,1],[0,-1]];
+function generatorWalkRegion(worldState,hostState){
+  const queue=[worldState.start],visited=new Set([worldState.start.x+","+worldState.start.y]);
+  for(let index=0;index<queue.length;index++){
+    const current=queue[index];
+    for(const [dx,dy] of generatorAdjacency){
+      const x=current.x+dx,y=current.y+dy,key=x+","+y;
+      if(visited.has(key)||!generatedWorld.playerWalkable(worldState.map,x,y,hostState))continue;
+      visited.add(key);queue.push({x,y});
+    }
+  }
+  return visited;
+}
+function generatorHasAdjacentApproach(generator,visited){
+  return generatorAdjacency.some(([dx,dy])=>visited.has((generator.x+dx)+","+(generator.y+dy)));
+}
+let checkedGeneratorFloors=0;
+for(const floor of [2,5,9,12]){
+  for(let index=0;index<2;index++){
+    const seed="ccg-p0-generator-route-20261015-"+floor+"-"+index;
+    const worldState=generatedWorld.generate(seed),hostState=generatedWorld.createHostState(worldState);
+    generatedSystems.decorate(worldState,hostState,{floor,seed,stats:{}});
+    assert.equal(hostState.objective?.type,"generators","The sampled floor must require generators: "+seed);
+    assert.equal(hostState.generators.length,C.dungeon.generatorCount,"All three generators must be placed: "+seed);
+    assert.equal(hostState.objective.target,hostState.generators.length,"Objective target must match actual generators: "+seed);
+    const openHost={...hostState,doors:(hostState.doors||[]).map(door=>door.type==="room"?{...door,open:true,locked:false}:door)};
+    const reachable=generatorWalkRegion(worldState,openHost);
+    for(const generator of hostState.generators){
+      assert.ok(generatorHasAdjacentApproach(generator,reachable),"Generator has no attack approach after ordinary doors open: "+seed+" "+generator.id);
+    }
+    if(floor===2&&index===0){
+      // Negative control: artificially surrounded generator must be rejected.
+      const generator=hostState.generators[0];
+      const surround=generatorAdjacency.map(([dx,dy],n)=>({id:"route-block-"+n,x:generator.x+dx,y:generator.y+dy}));
+      const sealed={...openHost,blockingDecor:[...(openHost.blockingDecor||[]),...surround]};
+      assert.equal(generatorHasAdjacentApproach(generator,generatorWalkRegion(worldState,sealed)),false,"Reachability test must reject a deliberately sealed generator");
+    }
+    checkedGeneratorFloors++;
+  }
+}
+assert.equal(checkedGeneratorFloors,8,"Sample four generator-objective floors twice each.");
+
+
 
 // Exercise actual R115 reward placement through its VM owner, not just source text.
 const rewardWalk=(m,x,y)=>m[y]?.[x]===0;
