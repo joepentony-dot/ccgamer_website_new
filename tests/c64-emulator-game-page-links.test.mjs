@@ -31,7 +31,7 @@ test("Amiga-only pages never acquire C64 play links; newly matched C64 games do"
   assert.doesNotMatch(html, /data-ccg-play-in-emulator="true"/);
   const newlyLinked = read("games/20-tons/index.html");
   assert.match(newlyLinked, /data-ccg-play-in-emulator="true"/);
-  assert.match(newlyLinked, /href="\\/emulator\\/c64\\/\\?game=blast-0008"/);
+  assert.match(newlyLinked, /href="\/emulator\/c64\/\?game=blast-0008"/);
   assert.match(generator, /g\.system === "C64"/);
   assert.match(generator, /e\.approved === true/);
   assert.match(generator, /gameCounts\.get\(title\) !== 1/);
