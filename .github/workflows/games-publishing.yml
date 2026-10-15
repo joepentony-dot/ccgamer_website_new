@@ -25,6 +25,7 @@ on:
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
       - "tests/single-game-community-uta.test.mjs"
+      - "tests/c64-new-game-auto-emulator-link.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
       - "resources/images/thumbnails/all/**"
@@ -148,6 +149,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "24"
+
+      - name: Verify future C64 game emulator auto-link and one-click launch contract
+        run: node --test tests/c64-new-game-auto-emulator-link.test.mjs tests/ccg-c64-game-page-autoload.test.mjs
 
       - name: Validate Content Publisher recovery controls
         run: |
