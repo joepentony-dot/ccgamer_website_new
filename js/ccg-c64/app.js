@@ -13,7 +13,7 @@ import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
-  preferSelectedCartridges,
+  preferSelectedCartridges, catalogGameIdentity,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -2508,11 +2508,11 @@ async function initialiseOnlineLibrary() {
     console.warn("[ccg-c64] Optional PRG archive unavailable:", error);
   }
 
+  // A single visible title index. Preserve the underlying media and previous
+  // IDs for old bookmarks, but show only the approved CRT-first winner.
   onlineLibraryEntries = [...regular, ...packed, ...archived];
-  // Only verified, owner-selected CRT records bearing the explicit preference
-  // flag suppress the matching PRG/disk versions in both packed archives.
-  // Do not rewrite shared binary packs or hide unrelated titles.
-  onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
+  const allHostedEntries = onlineLibraryEntries;
+  onlineLibraryEntries = preferSelectedCartridges(allHostedEntries);
   // Only a game-page button with autoplay=1 starts the matched catalogue entry.
   // Ordinary emulator searches and legacy ?game= links still require LOAD.
   let linkedGameId = "";
@@ -2522,8 +2522,16 @@ async function initialiseOnlineLibrary() {
     linkedGameId = deepLink.get("game") || "";
     linkedGameAutoplay = deepLink.get("autoplay") === "1";
   } catch (_) { /* Invalid URL query is ignored. */ }
-  const linkedGame = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId)
-    ? onlineLibraryEntries.find(entry => entry.id === linkedGameId) : null;
+  // Existing game pages still use some older BLAST/PRG IDs. Resolve the
+  // bookmark to the selected CRT without changing unrelated game pages.
+  const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
+  const linkedOriginal = validLinkedId
+    ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+  const linkedGame = validLinkedId
+    ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
+       (linkedOriginal && onlineLibraryEntries.find(entry =>
+         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))))
+    : null;
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   const unavailable = [];
