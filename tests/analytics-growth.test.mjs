@@ -94,8 +94,9 @@ test('GA4 report covers games, acquisition, audience and YouTube crossover', () 
   assert.match(script, /isYouTubeLink/);
 });
 
-test('successful consented registrations emit the standard GA4 sign_up event', () => {
-  assert.match(register, /ccgConsentState\?\.analytics/);
-  assert.match(register, /gtag\('event', 'sign_up', \{ method: 'email' \}\)/);
-  assert.match(register, /trackSuccessfulRegistration\(\)/);
+test('registration maintenance does not collect personal data or falsely log sign-ups', () => {
+  assert.match(register, /Registration Temporarily Unavailable/);
+  assert.match(register, /Existing account holders can still sign in/);
+  assert.doesNotMatch(register, /<form\b|type="password"|trackSuccessfulRegistration\(\)|gtag\('event', 'sign_up'/);
+  assert.match(register, /href="\.\/login\.html"/);
 });
