@@ -70,8 +70,13 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
         return { ok: false, status: 404 }; // No optional archive media is published yet.
       }
       if (url === PACK_CATALOG_URL) {
+        // Simulate a physically retired historic PRG when checking its alias.
+        const retiredFixture = deepLinkId === "blast-0000"
+          ? { ...blast, recordCount: blast.recordCount - 1,
+              games: blast.games.filter(row => row[0] !== "blast-0000") }
+          : blast;
         return catalogueAvailable
-          ? { ok: true, json: async () => blast }
+          ? { ok: true, json: async () => retiredFixture }
           : { ok: false, status: 503 };
       }
       throw new Error("Unexpected URL: " + url);
