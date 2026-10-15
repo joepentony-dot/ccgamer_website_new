@@ -19,6 +19,7 @@ on:
       - "_headers"
       - "**/.htaccess"
       - "scripts/audit-site-safety.py"
+      - "tests/dungeon-development-and-registration-notices.test.mjs"
       - "scripts/audit-legacy-game-routes.js"
       - "scripts/audit-music-navigation.js"
       - "scripts/audit-zzap64-awards.js"
@@ -63,6 +64,11 @@ jobs:
 
       - name: Validate audit syntax
         run: python -m py_compile scripts/audit-site-safety.py
+
+      - name: Validate development and registration notices
+        run: |
+          node --check js/ccg-play-maintenance-owner-gate.js
+          node --test tests/dungeon-development-and-registration-notices.test.mjs
 
       - name: Validate critical JavaScript syntax
         run: |
