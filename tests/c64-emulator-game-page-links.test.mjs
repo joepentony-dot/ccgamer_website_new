@@ -35,14 +35,14 @@ test("owner-approved CRT-first catalogue is active and all listed media have tit
 });
 
 test("all three media priorities create the expected exact-game deep links", () => {
-  assert.match(linked("wasteland"), /href="\/emulator\/c64\/\?game=wasteland"/);
-  assert.match(linked("sanxion"), /href="\/emulator\/c64\/\?game=owner-crt-more-sanxion"/);
+  assert.match(linked("wasteland"), /href="\/emulator\/c64\/\?game=wasteland\&amp;autoplay=1"/);
+  assert.match(linked("sanxion"), /href="\/emulator\/c64\/\?game=owner-crt-more-sanxion\&amp;autoplay=1"/);
   assert.match(linked("dan-dare-pilot-of-the-future"),
-    /href="\/emulator\/c64\/\?game=owner-crt-more-dan-dare-pilot-of-the-future"/);
+    /href="\/emulator\/c64\/\?game=owner-crt-more-dan-dare-pilot-of-the-future\&amp;autoplay=1"/);
   assert.match(linked("720-degrees"),
-    /href="\/emulator\/c64\/\?game=owner-crt-more-720-degrees"/);
-  assert.match(linked("20-tons"), /href="\/emulator\/c64\/\?game=blast-0008"/);
-  assert.match(linked("paradroid"), /href="\/emulator\/c64\/\?game=owner-crt-more-paradroid"/);
+    /href="\/emulator\/c64\/\?game=owner-crt-more-720-degrees\&amp;autoplay=1"/);
+  assert.match(linked("20-tons"), /href="\/emulator\/c64\/\?game=blast-0008\&amp;autoplay=1"/);
+  assert.match(linked("paradroid"), /href="\/emulator\/c64\/\?game=owner-crt-more-paradroid\&amp;autoplay=1"/);
 });
 
 test("no fabricated emulator media and only C64 archive pages are considered", () => {
@@ -62,14 +62,14 @@ test("no fabricated emulator media and only C64 archive pages are considered", (
     /data-ccg-play-in-emulator="true"/);
 });
 
-test("a deep link only selects the approved entry; visitor must explicitly LOAD", () => {
-  assert.match(c64App, /new URLSearchParams\(window\.location\.search\)\.get\("game"\)/);
+test("game-page deep links request one-click load without changing ordinary search selection", () => {
+  assert.match(c64App, /new URLSearchParams\(window\.location\.search\)/);
+  assert.match(c64App, /deepLink\.get\("game"\)/);
+  assert.match(c64App, /deepLink\.get\("autoplay"\) === "1"/);
   assert.match(c64App, /onlineLibraryEntries\.find\(entry => entry\.id === linkedGameId\)/);
   assert.match(c64App, /selectOnlineLibraryEntry\(linkedGame\.id, false\)/);
-  const start = c64App.indexOf("// A game page may deep-link");
-  const end = c64App.indexOf("  if (onlineLibraryPanel)", start);
-  assert.ok(start > 0 && end > start);
-  assert.doesNotMatch(c64App.slice(start, end), /loadSelectedLibraryEntry\(/);
+  assert.match(c64App, /linkedGame && linkedGameAutoplay && !gamePageAutoloadConsumed/);
+  assert.match(c64App, /gamePageAutoloadConsumed = true;\s*void loadSelectedLibraryEntry\(\)/);
   assert.match(c64App, /Press LOAD to play/);
 });
 
