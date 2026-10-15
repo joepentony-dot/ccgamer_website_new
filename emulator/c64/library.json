@@ -3,40 +3,108 @@
     "policy":  "Contains only games explicitly authorised for redistribution by the Cheeky Commodore Gamer website owner. Full C64 system firmware remains user-supplied. Each hosted image is checked against its supplied SHA-256.",
     "entries":  [
                     {
-                        "id":  "forbidden-forest",
-                        "title":  "Forbidden Forest",
-                        "filename":  "forbidden-forest.d64",
-                        "format":  "d64",
-                        "description":  "Disk game; auto-LOAD/RUN on selection.",
-                        "url":  "/emulator/c64/media/forbidden-forest.d64",
-                        "bytes":  174848,
-                        "sha256":  "540701ccff2b57927f795b922ade006d2bb687f75a7af65dce44eae232bcfdea",
-                        "license":  "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
-                        "approved":  true
-                    },
-                    {
-                        "id":  "paradroid",
-                        "title":  "Paradroid",
-                        "filename":  "paradroid.d64",
-                        "format":  "d64",
-                        "description":  "Disk game; auto-LOAD/RUN on selection.",
-                        "url":  "/emulator/c64/media/paradroid.d64",
-                        "bytes":  174848,
-                        "sha256":  "3c31e9cd4426d6665afd9d17a7dec13bc2bec9e14fc5d2158eedc7c8a6c89439",
-                        "license":  "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
-                        "approved":  true
-                    },
-                    {
-                        "id":  "uridium",
+                        "id":  "owner-crt-more-uridium-14770873b1ee",
                         "title":  "Uridium",
-                        "filename":  "uridium.d64",
-                        "format":  "d64",
-                        "description":  "Disk game; auto-LOAD/RUN on selection.",
-                        "url":  "/emulator/c64/media/uridium.d64",
-                        "bytes":  174848,
-                        "sha256":  "841aeb992636a0a9b8133dcc2b11c5153124cb0398cce0c4d142a03590bd61c5",
-                        "license":  "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
-                        "approved":  true
+                        "filename":  "uridium-14770873b1ee.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired directly hosted D64; original disk retained in Git history.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/uridium-14770873b1ee.crt",
+                        "bytes":  82144,
+                        "sha256":  "14770873b1ee255fed185d4ff9b1ca90474c7a6c8fa03d5f552bb8b17631c29e",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-rodland",
+                        "title":  "Rodland",
+                        "filename":  "rodland.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired directly hosted D64; original disk retained in Git history.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/rodland.crt",
+                        "bytes":  164224,
+                        "sha256":  "edcaef89b182a3e23aa70dd537628e802872116104a783dbb3c101cc7c9e5245",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-racing-destruction-set",
+                        "title":  "Racing Destruction Set",
+                        "filename":  "racing-destruction-set.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired directly hosted D64; original disk retained in Git history.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/racing-destruction-set.crt",
+                        "bytes":  369424,
+                        "sha256":  "1d1fb9ad25d7f9e2e7b6e7fcaf1107a08314cb171e8bf822d6ff02e2c36a8f7e",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-katakis",
+                        "title":  "Katakis",
+                        "filename":  "katakis.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired directly hosted D64; original disk retained in Git history.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/katakis.crt",
+                        "bytes":  279136,
+                        "sha256":  "5e7e84e6f3cb694ce76a9b6a9a5f769ec8430bf0a1bc4a74792a3662767a2ae2",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-bomberland",
+                        "title":  "Bomberland",
+                        "filename":  "bomberland.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired directly hosted D64; original disk retained in Git history.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/bomberland.crt",
+                        "bytes":  65728,
+                        "sha256":  "3f98a426b02728764315bb4f3144a24e36973afcb114b557a7cb1cb0f5a09456",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-forbidden-forest",
+                        "title":  "Forbidden Forest",
+                        "filename":  "forbidden-forest.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired direct D64. Legacy disk no longer hosted.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/forbidden-forest.crt",
+                        "bytes":  65728,
+                        "sha256":  "3ec92c29744dab4cb9a1c2883c51976579bfe37b45d4d9aae822303e74fdab4d",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-paradroid",
+                        "title":  "Paradroid",
+                        "filename":  "paradroid.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired direct D64. Legacy disk no longer hosted.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/paradroid.crt",
+                        "bytes":  65728,
+                        "sha256":  "996dce6db737481d2df473cc61247499cb19ce1c33597f4a01e3cf75314a18d8",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-slicks",
+                        "title":  "Slicks",
+                        "filename":  "slicks.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired direct D64. Legacy disk no longer hosted.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/slicks.crt",
+                        "bytes":  106768,
+                        "sha256":  "3c6a19adcc1bd22a82348021d07541035de9e8062273a48c4458b7a7d17ef2d9",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
                     },
                     {
                         "id":  "master-of-magic",
@@ -244,18 +312,6 @@
                         "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
                     },
                     {
-                        "id":  "rodland",
-                        "title":  "Rodland",
-                        "filename":  "rodland.d64",
-                        "format":  "d64",
-                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
-                        "url":  "/emulator/c64/media/rodland.d64",
-                        "bytes":  174848,
-                        "sha256":  "0982faaaf5d160a413685db5354946284c145fcace6a75d7b918f28c7e942471",
-                        "approved":  true,
-                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
-                    },
-                    {
                         "id":  "the-castles-of-dr-creep",
                         "title":  "The Castles of Dr. Creep",
                         "filename":  "the-castles-of-dr-creep.d64",
@@ -292,18 +348,6 @@
                         "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
                     },
                     {
-                        "id":  "slicks",
-                        "title":  "Slicks",
-                        "filename":  "slicks.d64",
-                        "format":  "d64",
-                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
-                        "url":  "/emulator/c64/media/slicks.d64",
-                        "bytes":  174848,
-                        "sha256":  "dba29901ef780361a4f35d9adc274269cdbd6683a8a13b5d814c61e6e475210c",
-                        "approved":  true,
-                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
-                    },
-                    {
                         "id":  "x-out",
                         "title":  "X-Out",
                         "filename":  "x-out-disk-1.d64",
@@ -332,18 +376,6 @@
                                           "sha256":  "a7d3ba9ac804bc36deca8f6be31fc29ba4886acac05bf62aa894220b36eb61d3"
                                       }
                                   ]
-                    },
-                    {
-                        "id":  "racing-destruction-set",
-                        "title":  "Racing Destruction Set",
-                        "filename":  "racing-destruction-set.d64",
-                        "format":  "d64",
-                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
-                        "url":  "/emulator/c64/media/racing-destruction-set.d64",
-                        "bytes":  174848,
-                        "sha256":  "a588a1faf851f485a3912db848daba93112d8c6d85d4a528a14b75c3272da34e",
-                        "approved":  true,
-                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
                     },
                     {
                         "id":  "tass-times-in-tonetown",
@@ -570,18 +602,6 @@
                                           "sha256":  "942ff819e253739db65980bf182002ac307c80427bc1ef30e54c01d9f273d299"
                                       }
                                   ]
-                    },
-                    {
-                        "id":  "katakis",
-                        "title":  "Katakis",
-                        "filename":  "katakis.d64",
-                        "format":  "d64",
-                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
-                        "url":  "/emulator/c64/media/katakis.d64",
-                        "bytes":  174848,
-                        "sha256":  "6be405d89cdbc342a08b9a724d543d4741a24f89fb1a4d4f2e8abe6d474c3959",
-                        "approved":  true,
-                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
                     },
                     {
                         "id":  "world-games",
@@ -1058,18 +1078,6 @@
                           "sha256":  "7943b483c80d75d898e7ff4d30735d88eaa0c39ed106241ab2aa6efcd148aaab"
                       }
                   ]
-    },
-    {
-        "id":  "bomberland",
-        "title":  "Bomberland",
-        "filename":  "bomberland.d64",
-        "format":  "d64",
-        "description":  "C64 disk image; auto-loads when selected. Use SWAP DISK for multi-disk titles.",
-        "url":  "/emulator/c64/media/bomberland.d64",
-        "bytes":  174848,
-        "sha256":  "e3ed1709d9b106732bb1e78b6bf9d14a0d9267355b3ecf178a7fb8f9719fe60a",
-        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13",
-        "approved":  true
     },
     {
         "id":  "zak-mckracken-and-the-alien-mindbenders",

@@ -44,10 +44,20 @@ const results = preferSelectedCartridges([...originals, ...candidates]);
 for (const [i, chosen] of candidates.entries()) {
   const key = catalogGameIdentity(chosen.title);
   if (i < 1530) {
-    // Preserve the original 1,530-image contract: every promoted CRT replaces
-    // a previously selectable non-CRT and never displaces an existing CRT.
-    assert(oldTitles.has(key), "Missing original non-CRT fallback: " + chosen.title);
-    assert(!oldCRT.has(key), "Original CRT would hide an existing CRT: " + chosen.title);
+    // The original 1,530 replacements must still suppress a former format,
+    // except for exact same-ID, same-SHA direct CRT fallbacks promoted when
+    // their obsolete standalone D64 binaries were retired.
+    const directCRT = direct.entries.find(e =>
+      e.format === "crt" && catalogGameIdentity(e.title) === key);
+    if (directCRT) {
+      assert.equal(directCRT.id, chosen.id,
+        "Direct CRT fallback conflicts with optional cartridge: " + chosen.title);
+      assert.equal(directCRT.sha256, chosen.sha256,
+        "Direct CRT fallback has different ROM bytes: " + chosen.title);
+    } else {
+      assert(oldTitles.has(key), "Missing original non-CRT fallback: " + chosen.title);
+      assert(!oldCRT.has(key), "Original CRT would hide another CRT: " + chosen.title);
+    }
   }
   const matches = results.filter(x => catalogGameIdentity(x.title) === key);
   assert.equal(matches.length, 1, "A competing version remains: " + chosen.title);
