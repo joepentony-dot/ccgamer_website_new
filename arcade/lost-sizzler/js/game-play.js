@@ -395,6 +395,19 @@ function activateSequenceTorch(torch,p){
   showToast("TORCH ORDER WRONG",spawned?`${torch.dir} was not next. The sequence resets and one guardian enters the chamber. Step on the torches only; weapon fire cannot activate them. The faded blood clue from Floor 2 contains the order.`:`${torch.dir} was not next. The sequence resets. The existing puzzle guardian remains, but no additional enemy is spawned. The faded blood clue from Floor 2 contains the order.`,"red",10000);
   host.revision++;return false
 }
+function reconcileSequenceTorchPosition(p){
+  const z=host?.sequenceTorchPuzzle;if(!z||z.solved||!p)return;
+  z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
+  const id=String(p.id||p.name||"P1");
+  const torch=(z.torches||[]).find(t=>Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y));
+  z.entryByPlayer[id]=torch?String(torch.dir||""):"";
+}
+function reconcileSequenceTorchOccupants(){
+  // Passive forced motion refreshes occupancy only. A torch activates solely
+  // through triggerSequenceTorch(p,true) at the deliberate movement boundary.
+  if(!host?.sequenceTorchPuzzle||host.sequenceTorchPuzzle.solved)return;
+  for(const player of localPlayers())if(player)reconcileSequenceTorchPosition(player);
+}
 function triggerSequenceTorch(p,deliberate=false){
   const z=host.sequenceTorchPuzzle;if(!z||z.solved||!deliberate||!p)return false;
   z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
@@ -988,6 +1001,8 @@ function update(dt){
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
   for(const p of localPlayers())if(p&&Number(p.health)<=0)enforceCanonicalDeathState(p);
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
+  // Pick up teleport/knockback changes made outside a deliberate movement.
+  reconcileSequenceTorchOccupants();
   enemyCD-=dt;
   // The existing recovery owner retries a serialized stolen stash if the
   // first return was blocked; it throttles work and cannot reaward score.
@@ -1019,7 +1034,7 @@ function update(dt){
     }
     projectileCD=0
   }else if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendCD=100}if(worldCD<=0){worldCD=350}
-  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);reconcileSequenceTorchOccupants();updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
   updateActiveTrapContacts("simulation-post");

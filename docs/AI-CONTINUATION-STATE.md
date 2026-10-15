@@ -1,3 +1,8 @@
+## Dungeon #2705 Floor 4 torch forced-motion re-entry guard — 15 October 2026
+
+- Reproduced stale `entryByPlayer` on knockback/teleport, which prevents legitimate re-entry to the same torch. Added a passive occupancy refresh before movement and after boulder/encounter systems; only deliberate `triggerSequenceTorch(p,true)` can activate. Extended existing R87 campaign source test for forced off/on, no auto-trigger, repeat rejection, JSON restore, 4-pad exact-once reward. Focused V8 pass only; full Node/six Chromium/Windows/owner acceptance remains outstanding.
+- Single cumulative draft #2705, no merger or release; preserve main website and original music block.
+
 ## Dungeon #2705 rebuilt-bridge thief radar guard — 15 October 2026
 
 - Independent source negative control: the bridge switch sets `weightBridge.collapsed=false` while the thief remains alive, but the new radar selector required `collapsed=true` and therefore hid the thief after the player rebuilt the bridge. A one-condition correction keeps tracking the unique post-theft living actor through rebuild, while still hiding pre-theft and defeated actors. Existing R87 regression extended; no new test file, inventory or AI change.

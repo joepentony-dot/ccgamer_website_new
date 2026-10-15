@@ -60,6 +60,92 @@ assert.equal(C.proceduralDungeon.pickupDistribution.length,15,"A-Z collectible d
 assert.equal(C.proceduralDungeon.pickupDistribution.reduce((sum,n)=>sum+n,0),26,"A-Z collectible campaign must still contain exactly 26 slots");
 assert.match(gameplaySource,/function triggerSequenceTorch\(p,deliberate=false\)[\s\S]*!deliberate/,"Floor 4 torch sequence must accept only deliberate player movement");
 assert.match(gameplaySource,/isLocal=localPlayers\(\)\.some/,"torch input must verify a real local player owns the step");
+// P0 Floor 4: passive displacement updates the torch-pad entry ledger but
+// can never light one. Deliberate keyboard/gamepad re-entry must register once.
+const torchOwnerStart=gameplaySource.indexOf("function solveSequenceTorch(p){");
+const torchOwnerEnd=gameplaySource.indexOf("function weightBridgeCell(",torchOwnerStart);
+assert.ok(torchOwnerStart>=0&&torchOwnerEnd>torchOwnerStart,
+  "The live Floor 4 torch owner is extractable from game-play.js");
+assert.match(gameplaySource,/function reconcileSequenceTorchOccupants\(/,
+  "The shared passive displacement reconciler must exist");
+assert.match(gameplaySource,/reconcileSequenceTorchOccupants\(\);\s*enemyCD-=dt/,
+  "Teleport changes must reconcile before the next deliberate movement frame");
+assert.match(gameplaySource,/updateBoulder\(dt\);reconcileSequenceTorchOccupants\(\)/,
+  "Late knockback/boulder movement must reconcile before the next frame");
+const torchOwnerCode=gameplaySource.slice(torchOwnerStart,torchOwnerEnd);
+function torchReentryCase(){
+  const player={id:"P1",x:5,y:5,health:10};
+  const z={roomId:1,solved:false,progress:0,failures:0,
+    sequence:["N","E","S","W"],entryByPlayer:{P1:"N"},
+    torches:[{dir:"N",x:5,y:5,lit:false},{dir:"E",x:7,y:5,lit:false},
+      {dir:"S",x:5,y:7,lit:false},{dir:"W",x:3,y:5,lit:false}]};
+  const hostState={sequenceTorchPuzzle:z,chests:[],enemies:[],revision:0};
+  let notices=0,rewards=0,ambushes=0;
+  const context=vm.createContext({
+    host:hostState,world:{},score:0,
+    W:{roomAt:()=>1},localPlayers:()=>[player],
+    S:{sfx(){}},P:{gold:"#ffd"},showToast(){notices++},
+    floatText(){},awardXP(){rewards++},
+    spawnPuzzleAmbush(){ambushes++;return 1}
+  });
+  vm.runInContext(torchOwnerCode,context,{filename:"game-play.js::Floor4SequenceTorch",timeout:3000});
+  return{context,hostState,player,z,
+    getNotices:()=>notices,getRewards:()=>rewards,getAmbushes:()=>ambushes};
+}
+const forcedTorch=torchReentryCase();
+forcedTorch.player.x=6;forcedTorch.player.y=5; // involuntary knockback
+forcedTorch.context.reconcileSequenceTorchOccupants();
+assert.equal(forcedTorch.z.entryByPlayer.P1,"","Forced departure must forget the previously occupied pad");
+assert.equal(forcedTorch.z.progress,0,"Knockback itself may not advance puzzle progress");
+assert.equal(forcedTorch.getNotices(),0,"Knockback may not announce a torch activation");
+forcedTorch.player.x=5;forcedTorch.player.y=5;
+assert.equal(forcedTorch.context.triggerSequenceTorch(forcedTorch.player,true),true,
+  "Deliberate re-entry onto the old pad must now advance the puzzle");
+assert.equal(forcedTorch.z.progress,1);
+assert.equal(forcedTorch.context.triggerSequenceTorch(forcedTorch.player,true),false,
+  "Repeated stationary input may not relight an occupied pad");
+assert.equal(forcedTorch.z.progress,1);
+
+forcedTorch.player.x=7;forcedTorch.player.y=5; // teleported onto next pad
+forcedTorch.context.reconcileSequenceTorchOccupants();
+assert.equal(forcedTorch.z.entryByPlayer.P1,"E","Forced landing must remember the newly occupied pad");
+assert.equal(forcedTorch.z.progress,1,"Teleport onto a torch must not light it");
+assert.equal(forcedTorch.context.triggerSequenceTorch(forcedTorch.player,true),false,
+  "Pressing movement while still on the forced-landing pad may not claim an entry");
+forcedTorch.player.x=6;forcedTorch.player.y=5;
+forcedTorch.context.reconcileSequenceTorchOccupants();
+forcedTorch.player.x=7;forcedTorch.player.y=5;
+assert.equal(forcedTorch.context.triggerSequenceTorch(forcedTorch.player,true),true,
+  "Deliberate step away and return must activate the next torch exactly once");
+assert.equal(forcedTorch.z.progress,2);
+
+const restoredTorch=torchReentryCase();
+restoredTorch.player.x=6;restoredTorch.player.y=5;
+restoredTorch.context.reconcileSequenceTorchOccupants();
+restoredTorch.context.host.sequenceTorchPuzzle=JSON.parse(JSON.stringify(restoredTorch.z));
+restoredTorch.player.x=5;restoredTorch.player.y=5;
+assert.equal(restoredTorch.context.triggerSequenceTorch(restoredTorch.player,true),true,
+  "JSON-restored entry memory permits a genuine re-entry after displacement");
+assert.equal(restoredTorch.context.host.sequenceTorchPuzzle.progress,1);
+assert.equal(restoredTorch.getAmbushes(),0,"Legitimate re-entry must not trigger a wrong-order ambush");
+
+const solvedTorch=torchReentryCase();
+solvedTorch.player.x=6;solvedTorch.player.y=5;
+solvedTorch.context.reconcileSequenceTorchOccupants();
+for(const [x,y] of [[5,5],[7,5],[5,7],[3,5]]){
+  solvedTorch.player.x=x;solvedTorch.player.y=y;
+  assert.equal(solvedTorch.context.triggerSequenceTorch(solvedTorch.player,true),true);
+}
+assert.equal(solvedTorch.z.solved,true);
+assert.equal(solvedTorch.context.score,650,"Completed torch puzzle pays its score once");
+assert.equal(solvedTorch.getRewards(),1,"Completed torch puzzle awards XP once");
+solvedTorch.player.x=6;solvedTorch.player.y=5;
+solvedTorch.context.reconcileSequenceTorchOccupants();
+solvedTorch.player.x=5;solvedTorch.player.y=5;
+assert.equal(solvedTorch.context.triggerSequenceTorch(solvedTorch.player,true),false);
+assert.equal(solvedTorch.context.score,650,"Completed puzzle never pays repeated score");
+assert.equal(solvedTorch.getRewards(),1,"Completed puzzle never duplicates XP");
+
 assert.doesNotMatch(gameplaySource,/puzzleTorch[\s\S]{0,240}activateSequenceTorch/,"player projectiles must never activate sequence torches");
 assert.match(gameplaySource,/punishmentAlive=.*torch-fail-/,"torch puzzle failure punishment must be capped while an existing punishment enemy is alive");
 assert.match(gameplaySource,/TORCH SEQUENCE PUZZLE[\s\S]*Only your footsteps count/,"entering the torch room must explain the player-only interaction");
