@@ -69,6 +69,7 @@ Do Not Override
         ["Zzap!64 Reviews & Awards", "/zzap64/"],
         ["Quiz", "/quiz/quiz.html"],
         ["Emulation", "/emulation.html"],
+        ["Merch", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
         ["Install CCG App", "/install-app.html"],
         ["About Me", "/about.html"],
         ["Contact", "/contact.html"]
@@ -203,6 +204,10 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
             link.href = href;
             link.className = "ccg-nav__link";
             link.textContent = label;
+            if (new URL(href, window.location.href).origin !== window.location.origin) {
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+            }
             if (canonicalPath(href) === "/install-app.html") {
                 link.setAttribute("data-ccg-pwa-install-nav", "true");
             }
