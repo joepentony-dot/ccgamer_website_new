@@ -282,6 +282,23 @@
         return response.json();
     }
 
+    async function loadBadgeGames() {
+        // Individual game pages already hold a shared, page-lifetime catalogue.
+        // Reuse it instead of downloading a second 0.8MB games.json for awards.
+        // Other pages and failed shared requests retain their old direct fallback.
+        if (typeof window.ccgLoadSharedGames === "function") {
+            try {
+                return await window.ccgLoadSharedGames();
+            } catch (error) {
+                // Badge rendering may still recover independently.
+            }
+        }
+        const response = await fetch("/games/games.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Game archive HTTP ${response.status}`);
+        const data = await response.json();
+        return Array.isArray(data) ? data : (data.games || []);
+    }
+
     async function init() {
         ensureStylesheet();
         try {
@@ -289,14 +306,11 @@
             const matcher = window.CCGZzap64Matcher;
             if (!matcher) throw new Error("Zzap matcher unavailable");
 
-            const [gamesResponse, rawEntries, reviewData] = await Promise.all([
-                fetch("/games/games.json", { cache: "no-store" }),
+            const [games, rawEntries, reviewData] = await Promise.all([
+                loadBadgeGames(),
                 loadAwards(),
                 loadReviewLinks()
             ]);
-            if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
-            const gamesData = await gamesResponse.json();
-            const games = Array.isArray(gamesData) ? gamesData : (gamesData.games || []);
             const requestedId = normalizeRequestedId();
             const game = resolveGame(games, requestedId, matcher);
             if (!game) return;
