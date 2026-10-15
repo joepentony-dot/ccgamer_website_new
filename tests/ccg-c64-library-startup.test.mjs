@@ -74,8 +74,8 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 222,
-  "Retain 70 original directly hosted games plus 152 owner-approved CRT replacements");
+assert.equal(direct.entries.length, 219,
+  "Retain owner-approved direct media while retiring three replaced D64 entries");
 assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 153,
   "152 new CRT-first entries and existing Pirates! preference must survive");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
