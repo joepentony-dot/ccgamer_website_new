@@ -156,16 +156,41 @@ async function armEnemy(page){
   });
 }
 
-async function fireCycle(page,key,round){
+async function fireCycle(page,key,round,dossierRace=false){
   await settleGameplayMode(page,`round ${round} before ${key}`);
-  const before=await snap(page);
-  await page.keyboard.down(key);await page.waitForTimeout(520);await page.keyboard.up(key);await page.waitForTimeout(120);
+  let before=await snap(page),dossierDismissed=false;
+  // A discovery callback can open a real dossier after the pre-input mode
+  // check. Space then belongs to that panel, not to the gameplay FIRE owner.
+  // Observe the event's actual mode; never retry a rejected gameplay press.
+  const press=async()=>{
+    await page.evaluate(()=>{window.__ccgEnduranceAttackKey=null});
+    await page.keyboard.down(key);await page.waitForTimeout(520);await page.keyboard.up(key);await page.waitForTimeout(120);
+    return page.evaluate(()=>window.__ccgEnduranceAttackKey);
+  };
+  if(dossierRace)await page.evaluate(()=>showNamedDossier(C.followerElites[0].name,true));
+  let delivery=await press();
+  if(key==="Space"&&delivery?.mode==="dossier"){
+    assert.equal(delivery.dossierVisible,true,`round ${round}: dossier mode must have a visible panel`);
+    assert.equal(delivery.knownDossier,true,`round ${round}: Space may dismiss only an established authored dossier`);
+    const dismissed=await snap(page);
+    assert.equal(dismissed.mode,"playing",`round ${round}: dossier Space must return to gameplay`);
+    assert.equal(await page.evaluate(()=>UI.namedDossier.classList.contains("hidden")),true);
+    assert.equal(dismissed.attackIntents,before.attackIntents,`round ${round}: panel-owned Space must not also attack`);
+    assert.equal(dismissed.updateFaults,before.updateFaults);
+    assert.equal(dismissed.renderFaults,before.renderFaults);
+    assert.equal(dismissed.directAttackErrors,before.directAttackErrors);
+    dossierDismissed=true;
+    await settleGameplayMode(page,`round ${round} after dossier dismissal`);
+    before=await snap(page);
+    delivery=await press();
+  }
+  assert.equal(delivery?.mode,"playing",`round ${round}: expected gameplay keydown, observed ${JSON.stringify(delivery)}`);
   await settleGameplayMode(page,`round ${round} after ${key}`);
   const after=await snap(page);
   assert.equal(after.active,"true",`round ${round}: run deactivated during ${key}`);
   assert.ok(after.elapsed>before.elapsed,`round ${round}: simulation stopped advancing during ${key}`);
   assert.ok(after.rafFrames>before.rafFrames,`round ${round}: requestAnimationFrame stopped advancing during ${key}`);
-  assert.ok(after.attackIntents>before.attackIntents,`round ${round}: ${key} never reached the authoritative attack input owner`);
+  assert.ok(after.attackIntents>before.attackIntents,`round ${round}: ${key} never reached the authoritative attack input owner ${JSON.stringify({delivery,before,after})}`);
   assert.ok(after.projectileSteps>before.projectileSteps||after.mana<before.mana,`round ${round}: firing input reached the attack owner but no attack/projectile work occurred for ${key}`);
   assert.equal(after.lifecycleOwner,true,`round ${round}: #2118 projectile lifecycle lost ownership`);
   assert.equal(after.projectileFaultSweeps,before.projectileFaultSweeps,`round ${round}: projectile lifecycle encountered a new downstream fault`);
@@ -175,7 +200,7 @@ async function fireCycle(page,key,round){
   assert.ok(after.bullets<80&&after.enemyBullets<160,`round ${round}: projectile pools grew unexpectedly (${after.bullets}/${after.enemyBullets})`);
   assert.ok(after.particles<=360&&after.rings<=72&&after.floaters<=140,`round ${round}: visual collections exceeded bounded runtime limits`);
   assert.ok(after.maxRafGap<5000,`round ${round}: browser frame gap reached ${Math.round(after.maxRafGap)}ms`);
-  return after;
+  return{...after,dossierDismissed};
 }
 
 async function directQueueAttackCycle(page,round){
@@ -208,7 +233,18 @@ try{
   // services. Stub production Supabase calls so localhost CORS policy cannot
   // create false console failures after the gameplay assertions have passed.
   await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
-  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  await context.addInitScript(()=>{
+    try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}
+    // Capture at window entry, ahead of document-level panel/FIRE handlers.
+    addEventListener("keydown",event=>{
+      if(event.repeat||!["Space","Numpad0"].includes(event.code))return;
+      const name=typeof dossierFocusName==="string"?dossierFocusName:"";
+      const row=typeof PGR!=="undefined"?PGR.readDossier()?.[name]:null;
+      window.__ccgEnduranceAttackKey={code:event.code,mode:typeof mode!=="undefined"?mode:"",target:event.target?.id||"",
+        dossierVisible:Boolean(document.getElementById("named-dossier-panel")&&!document.getElementById("named-dossier-panel").classList.contains("hidden")),
+        knownDossier:Boolean(typeof C!=="undefined"&&C.followerElites.some(f=>f.name===name)&&((row?.encounters||0)>0||(row?.defeats||0)>0))};
+    },true);
+  });
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
   const pageErrors=[],consoleErrors=[],failedScripts=[],http404s=[],v142Requests=[];
@@ -252,6 +288,9 @@ try{
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
 
   await verifyOneTimeNamedDossier(page);
+  assert.equal(await armEnemy(page),true,"dossier/input ownership enemy unavailable");
+  const ownership=await fireCycle(page,"Space",0,true);
+  assert.equal(ownership.dossierDismissed,true,"Late dossier must consume its own Space before a separate gameplay press");
   const keys=["Space","Numpad0"];
   for(let round=1;round<=96;round++){
     await settleGameplayMode(page,`round ${round} start`);
