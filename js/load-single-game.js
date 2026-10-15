@@ -3236,7 +3236,8 @@ function setupQuickActionsFooterGuard(quickActions) {
         // The previous lift moved the toolbar directly across the support
         // message sitting above the footer. Retire the toolbar near the footer
         // instead; the hero and website still expose the same actions.
-        const approachingFooter = footerRect.top <= viewportHeight + 80;
+        const supportClearance = Math.max(240, Math.min(400, viewportHeight * 0.42));
+        const approachingFooter = footerRect.top <= viewportHeight + supportClearance;
         quickActions.classList.toggle("is-near-footer", approachingFooter);
         quickActions.style.removeProperty("--ccg-quick-actions-lift");
     };
