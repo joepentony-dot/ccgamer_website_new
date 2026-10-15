@@ -278,3 +278,19 @@ test("publisher and developer single-credit routes are indexable without inventi
   assert.match(pubHtml, /rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/publishers\/example-publisher\/"/);
   assert.match(devHtml, /rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/developers\/example-developer\/"/);
 });
+
+test("single-game canonical year archive emits indexable robots and stable discovery links", () => {
+  const years = require("../scripts/generate-year-platform-pages.js");
+  const games = JSON.parse(fs.readFileSync(path.join("games", "games.json"), "utf8"));
+  const data = years.buildArchiveData(games);
+  const singletonYears = data.years.filter(group => group.count === 1);
+  assert.ok(singletonYears.length >= 1, "the catalogue must include a one-title year for this regression");
+  assert.equal(years.INDEXABLE_MIN_GAMES, 1);
+  for (const group of singletonYears) {
+    assert.equal(group.indexable, true);
+    const html = years.renderYearPage(group);
+    assert.match(html, /name="robots" content="index,follow"/);
+    assert.ok(html.includes('rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/years/' + group.year + '/"'));
+    assert.ok(html.includes('/games/' + group.games[0].slug + '/'));
+  }
+});
