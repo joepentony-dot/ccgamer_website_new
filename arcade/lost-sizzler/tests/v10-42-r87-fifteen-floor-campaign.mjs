@@ -151,11 +151,12 @@ assert.equal(generatedTrialSamples,28,"Exercise all seven authored trial floors 
 
 // Exercise actual R115 reward placement through its VM owner, not just source text.
 const rewardWalk=(m,x,y)=>m[y]?.[x]===0;
-function rewardFixture(map,items=[]){
+function rewardFixture(map,items=[],overrides={}){
   const h={items:items.map(([x,y])=>({x,y,active:true})),
     enemies:[{x:5,y:7,alive:true}],generators:[{x:7,y:5,active:true}],
     chests:[{x:3,y:5,active:true}],switches:[],shrines:[],doors:[],shops:[],revision:0,
     floorTrial:{kind:"tape-relays",floor:6,label:"TAPE RELAYS",progress:4,target:4,lastPos:{x:5,y:5},rewarded:false}};
+  Object.assign(h,overrides);
   const ctx=vm.createContext({window:{CCG_CONFIG:{},CCGProgression:{},
     CCGWorld:{walkable:rewardWalk,playerWalkable:rewardWalk,roomAt:()=>0},
     CCGSystems:{decorate(){},updateObjective(){return true},objectiveText(){return ""}}},
@@ -189,5 +190,48 @@ assert.equal(deferredTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Retry
 assert.equal(deferredTrial.ctx.score,1000);
 deferredTrial.owner.refreshTrial(deferredTrial.h);
 assert.equal(deferredTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Retry cannot duplicate cache");
+
+
+// R115 negative/positive occupancy controls: defeated actors vacate a cell,
+// an active Death Cache retains ownership, and deferred reward retries once.
+const singleFreeRewardMap=()=>{
+  const map=Array.from({length:11},()=>Array(11).fill(1));
+  map[5][5]=0;map[5][6]=0;return map
+};
+for(const [label,overrides] of [
+  ["defeated enemy",{enemies:[{x:6,y:5,alive:false}]}],
+  ["destroyed generator",{generators:[{x:6,y:5,alive:false}]}],
+  ["recovered Death Cache",{deathCaches:[{x:6,y:5,active:false}]}]
+]){
+  const fixture=rewardFixture(singleFreeRewardMap(),[],overrides);
+  fixture.owner.refreshTrial(fixture.h);
+  const rewards=fixture.h.chests.filter(c=>c.r115TrialReward);
+  assert.equal(rewards.length,1,`${label} must free its tile for a reward`);
+  assert.equal(rewards[0].x,6);assert.equal(rewards[0].y,5);
+  assert.equal(fixture.ctx.score,1000,`${label} yields the existing reward once`);
+  fixture.owner.refreshTrial(fixture.h);
+  assert.equal(fixture.h.chests.filter(c=>c.r115TrialReward).length,1,`${label} may not duplicate rewards`);
+}
+for(const [label,overrides] of [
+  ["living enemy",{enemies:[{x:6,y:5,alive:true}]}],
+  ["living generator",{generators:[{x:6,y:5,alive:true}]}]
+]){
+  const fixture=rewardFixture(singleFreeRewardMap(),[],overrides);
+  fixture.owner.refreshTrial(fixture.h);
+  assert.equal(fixture.h.chests.filter(c=>c.r115TrialReward).length,0,`${label} must block reward placement`);
+  assert.equal(fixture.ctx.score,0);
+  assert.equal(fixture.h.floorTrial.rewarded,false);
+}
+const ownedCacheTrial=rewardFixture(singleFreeRewardMap(),[],{deathCaches:[{x:6,y:5,active:true}]});
+ownedCacheTrial.owner.refreshTrial(ownedCacheTrial.h);
+assert.equal(ownedCacheTrial.h.chests.filter(c=>c.r115TrialReward).length,0,"An active Death Cache blocks trial rewards");
+assert.equal(ownedCacheTrial.h.floorTrial.rewarded,false,"An occupied reward stays pending");
+assert.equal(ownedCacheTrial.ctx.score,0,"An occupied reward must not award score prematurely");
+ownedCacheTrial.h.deathCaches[0].active=false;
+ownedCacheTrial.h.floorTrial.rewardRetryAt=0;
+ownedCacheTrial.owner.refreshTrial(ownedCacheTrial.h);
+ownedCacheTrial.owner.refreshTrial(ownedCacheTrial.h);
+assert.equal(ownedCacheTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Recovered Death Cache permits exactly one pending reward");
+assert.equal(ownedCacheTrial.ctx.score,1000,"Deferred trial score is granted exactly once");
 
 console.log("Dungeon Carnage R87 fifteen-floor campaign and floor-theme contract passed.");

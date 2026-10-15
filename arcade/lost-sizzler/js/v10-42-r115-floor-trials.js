@@ -35,8 +35,10 @@
   const cellKey=(x,y)=>`${x},${y}`;
   const roomAt=(worldState,x,y)=>{try{return W.roomAt(worldState,x,y)}catch(_){return-1}};
   const occupied=(hostState,x,y)=>{
-    const groups=[hostState.items,hostState.enemies,hostState.chests,hostState.switches,hostState.shrines,hostState.generators];
-    if(groups.some(rows=>(rows||[]).some(row=>row?.active!==false&&Number(row.x)===x&&Number(row.y)===y)))return true;
+    const activeAt=(rows,isActive)=>Array.isArray(rows)&&rows.some(row=>row&&isActive(row)&&Number(row.x)===x&&Number(row.y)===y);
+    // Defeated enemies / broken generators free their cells. Active death
+    // caches still own their tile until all recoverable contents are claimed.
+    if(activeAt(hostState.items,row=>row.active!==false)||activeAt(hostState.chests,row=>row.active!==false)||activeAt(hostState.switches,row=>row.active!==false)||activeAt(hostState.shrines,row=>row.active!==false)||activeAt(hostState.deathCaches,row=>row.active!==false)||activeAt(hostState.enemies,row=>row.alive===true)||activeAt(hostState.generators,row=>row.alive===true))return true;
     if((hostState.doors||[]).some(row=>Number(row.x)===x&&Number(row.y)===y))return true;
     return false
   };
