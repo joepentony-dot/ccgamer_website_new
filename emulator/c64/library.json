@@ -3,30 +3,6 @@
     "policy":  "Contains only games explicitly authorised for redistribution by the Cheeky Commodore Gamer website owner. Full C64 system firmware remains user-supplied. Each hosted image is checked against its supplied SHA-256.",
     "entries":  [
                     {
-                        "id":  "forbidden-forest",
-                        "title":  "Forbidden Forest",
-                        "filename":  "forbidden-forest.d64",
-                        "format":  "d64",
-                        "description":  "Disk game; auto-LOAD/RUN on selection.",
-                        "url":  "/emulator/c64/media/forbidden-forest.d64",
-                        "bytes":  174848,
-                        "sha256":  "540701ccff2b57927f795b922ade006d2bb687f75a7af65dce44eae232bcfdea",
-                        "license":  "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
-                        "approved":  true
-                    },
-                    {
-                        "id":  "paradroid",
-                        "title":  "Paradroid",
-                        "filename":  "paradroid.d64",
-                        "format":  "d64",
-                        "description":  "Disk game; auto-LOAD/RUN on selection.",
-                        "url":  "/emulator/c64/media/paradroid.d64",
-                        "bytes":  174848,
-                        "sha256":  "3c31e9cd4426d6665afd9d17a7dec13bc2bec9e14fc5d2158eedc7c8a6c89439",
-                        "license":  "Public redistribution permission confirmed by the CCG website owner on 2026-10-08",
-                        "approved":  true
-                    },
-                    {
                         "id":  "uridium",
                         "title":  "Uridium",
                         "filename":  "uridium.d64",
@@ -288,18 +264,6 @@
                         "url":  "/emulator/c64/media/rick-dangerous-2.d64",
                         "bytes":  174848,
                         "sha256":  "01ce6a9eb968b150a9eb5da1ab53d90d967f8838672ed7460a7058b257d6cfa5",
-                        "approved":  true,
-                        "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
-                    },
-                    {
-                        "id":  "slicks",
-                        "title":  "Slicks",
-                        "filename":  "slicks.d64",
-                        "format":  "d64",
-                        "description":  "C64 disk image; auto-LOAD/RUN when selected.",
-                        "url":  "/emulator/c64/media/slicks.d64",
-                        "bytes":  174848,
-                        "sha256":  "dba29901ef780361a4f35d9adc274269cdbd6683a8a13b5d814c61e6e475210c",
                         "approved":  true,
                         "license":  "Public redistribution permission confirmed by CCG website owner on 2026-10-13"
                     },
