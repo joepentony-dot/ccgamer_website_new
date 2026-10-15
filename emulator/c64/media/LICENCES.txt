@@ -1,0 +1,25 @@
+CCG Browser C64 — third-party game licenses and source attribution
+=================================================================
+
+Silk Dust — Copyright (c) Davide Bucci
+Licence: GNU GPL version 3 (GPL-3.0-only).
+Original unmodified C64 disk: silk-dust.d64 (174848 bytes).
+Official repository: https://github.com/DarwinNE/Silk-Dust
+Official pinned commit: d46aedc955209840a8ee6e27edc6d6c49a3c5105
+Upstream disk blob SHA-1: 5dfca5290550fad6ef098b24d72902183977bd8b
+Disk SHA-256: 4df24b97c47f5a2d317c252d79056363d71a20ec60ae6949c89724d13e82fef8
+Source and build instructions: https://github.com/DarwinNE/Silk-Dust/tree/d46aedc955209840a8ee6e27edc6d6c49a3c5105
+GPL version 3 full text: https://www.cheekycommodoregamer.co.uk/emulator/c64/GPL-3.0.txt
+Licence-specific details: ../licenses/SILK-DUST.txt
+
+Dust — Copyright (c) 2026 IkeC
+Licence: MIT.
+Original unmodified C64 disk: dust.d64 (174848 bytes).
+Official repository: https://github.com/IkeC/InteractiveFiction
+Official pinned commit: a39158876ce51a4f2c39bb7e30d144f2f31e19b6
+Upstream disk blob SHA-1: ac662aafcb32966ecb563c76e3ffa6c1fe435456
+Disk SHA-256: f3337fdf68c80e739b2361c91f2ce3f823abdd3c98693490524057135760b9bf
+Source and build files: https://github.com/IkeC/InteractiveFiction/tree/a39158876ce51a4f2c39bb7e30d144f2f31e19b6
+Full MIT notice, including the author, conditions and warranty disclaimer: ../licenses/DUST-MIT.txt
+
+These are independent game copyrights and do not supersede the C64 emulator runtime's GPL notices.

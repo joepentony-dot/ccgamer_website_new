@@ -11,7 +11,10 @@
                         "url": "/emulator/c64/media/dust.d64",
                         "bytes": 174848,
                         "sha256": "f3337fdf68c80e739b2361c91f2ce3f823abdd3c98693490524057135760b9bf",
-                        "license": "MIT; (c) 2026 IkeC. Original C64 disk image from https://github.com/IkeC/InteractiveFiction",
+                        "license": "MIT",
+                        "source": "https://github.com/IkeC/InteractiveFiction",
+                        "sourceCommit": "a39158876ce51a4f2c39bb7e30d144f2f31e19b6",
+                        "sourceBlob": "ac662aafcb32966ecb563c76e3ffa6c1fe435456",
                         "approved": true
                     },
                     {
@@ -23,7 +26,10 @@
                         "url": "/emulator/c64/media/silk-dust.d64",
                         "bytes": 174848,
                         "sha256": "4df24b97c47f5a2d317c252d79056363d71a20ec60ae6949c89724d13e82fef8",
-                        "license": "GPL-3.0-only; (c) Davide Bucci. Official source and unchanged C64 disk image: https://github.com/DarwinNE/Silk-Dust",
+                        "license": "GPL-3.0-only",
+                        "source": "https://github.com/DarwinNE/Silk-Dust",
+                        "sourceCommit": "d46aedc955209840a8ee6e27edc6d6c49a3c5105",
+                        "sourceBlob": "5dfca5290550fad6ef098b24d72902183977bd8b",
                         "approved": true
                     },
                     {

@@ -478,7 +478,7 @@ assert(onlineLibrary.entries.every((entry) =>
   !["snake64", "8bit-island", "meteor-storm", "ccg-emulator-test-prg"].includes(entry.id)),
   "Removed game titles must not return to the public Online Library");
 
-const gameNotices = onlineLibrary.entries.some((entry) => entry.license === "MIT")
+const gameNotices = onlineLibrary.entries.some((entry) => Boolean(entry.sourceBlob))
   ? read("emulator/c64/media/LICENCES.txt") : "";
 const seenGameIds = new Set();
 for (const entry of onlineLibrary.entries) {
@@ -506,7 +506,7 @@ for (const entry of onlineLibrary.entries) {
       "CRT game must use an emulator-supported cartridge hardware type: " + entry.id);
   }
   if (entry.sourceBlob) {
-    assert(entry.license === "MIT", "Source-republished games must retain their original licence");
+    assert(["MIT", "GPL-3.0-only"].includes(entry.license), "Source-republished games must retain a supported original open-source licence");
     assert(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+$/.test(entry.source) &&
       /^[a-f0-9]{40}$/.test(entry.sourceCommit) &&
       /^[a-f0-9]{40}$/.test(entry.sourceBlob),
@@ -514,7 +514,10 @@ for (const entry of onlineLibrary.entries) {
     const hash = createHash("sha1").update(`blob ${program.length}\0`).update(program).digest("hex");
     assert.equal(hash, entry.sourceBlob, "Hosted game must match original developer's binary: " + entry.id);
     assert(gameNotices.includes(entry.sourceBlob) && gameNotices.includes(entry.sourceCommit),
-      "MIT game must retain its third-party licence notices: " + entry.id);
+      "Open-source game must retain its third-party licence notices: " + entry.id);
+    assert(/^[a-f0-9]{64}$/.test(entry.sha256) &&
+      createHash("sha256").update(program).digest("hex") === entry.sha256,
+      "Open-source media must match its pinned SHA-256: " + entry.id);
   } else {
     assert(/^[a-f0-9]{64}$/.test(entry.sha256) &&
       entry.license.includes("CCG website owner"),
