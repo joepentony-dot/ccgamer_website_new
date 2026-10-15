@@ -26,9 +26,12 @@ test("Wasteland is a verified approved emulator item and page gets a deep link",
   assert.match(html, /gameManualBtn/);
 });
 
-test("unmatched and Amiga-only pages do not acquire C64 play links", () => {
-  const html = read("games/20-tons/index.html");
+test("Amiga-only pages never acquire C64 play links; newly matched C64 games do", () => {
+  const html = read("games/agony/index.html");
   assert.doesNotMatch(html, /data-ccg-play-in-emulator="true"/);
+  const newlyLinked = read("games/20-tons/index.html");
+  assert.match(newlyLinked, /data-ccg-play-in-emulator="true"/);
+  assert.match(newlyLinked, /href="\\/emulator\\/c64\\/\\?game=blast-0008"/);
   assert.match(generator, /g\.system === "C64"/);
   assert.match(generator, /e\.approved === true/);
   assert.match(generator, /gameCounts\.get\(title\) !== 1/);
@@ -69,7 +72,8 @@ test("shared publisher audit identifies actual CRT and Blast deep links without 
     mapped.get("dan-dare-pilot-of-the-future")?.id,
     mapped.get("dan-dare-pilot-of-the-future")?.source,
   ], ["owner-crt-more-dan-dare-pilot-of-the-future", "additional-crt"]);
-  assert.equal(mapped.get("20-tons"), undefined);
+  assert.equal(mapped.get("20-tons")?.id, "blast-0008");
+  assert.equal(mapped.get("agony"), undefined);
   const seen = new Set();
   for (const item of report.mappings) {
     assert.match(item.slug, /^[a-z0-9-]+$/);
