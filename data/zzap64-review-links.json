@@ -16,8 +16,8 @@
     "directCoveragePercent": 100,
     "reviewRecords": 835,
     "additionalReviewRecords": 549,
-    "gameReviewGames": 348,
-    "awardRecordsLinkedToGames": 100,
+    "gameReviewGames": 349,
+    "awardRecordsLinkedToGames": 101,
     "unmatchedCachedReviewPages": 27
   },
   "entries": {
@@ -1750,7 +1750,10 @@
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=41&page=56",
       "source": "live-lemon64-magazine-reference",
-      "lemonUrl": "https://www.lemon64.com/game/wasteland"
+      "lemonUrl": "https://www.lemon64.com/game/wasteland",
+      "gameSlug": "wasteland",
+      "gameTitle": "Wasteland",
+      "gameSystem": "c64"
     },
     "1988|september|c64|Slimey's Mine": {
       "issue": 41,
