@@ -3,6 +3,45 @@
     "policy":  "Contains only games explicitly authorised for redistribution by the Cheeky Commodore Gamer website owner. Full C64 system firmware remains user-supplied. Each hosted image is checked against its supplied SHA-256.",
     "entries":  [
                     {
+                        "id":  "owner-crt-more-forbidden-forest",
+                        "title":  "Forbidden Forest",
+                        "filename":  "forbidden-forest.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired direct D64. Legacy disk no longer hosted.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/forbidden-forest.crt",
+                        "bytes":  65728,
+                        "sha256":  "3ec92c29744dab4cb9a1c2883c51976579bfe37b45d4d9aae822303e74fdab4d",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-paradroid",
+                        "title":  "Paradroid",
+                        "filename":  "paradroid.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired direct D64. Legacy disk no longer hosted.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/paradroid.crt",
+                        "bytes":  65728,
+                        "sha256":  "996dce6db737481d2df473cc61247499cb19ce1c33597f4a01e3cf75314a18d8",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
+                        "id":  "owner-crt-more-slicks",
+                        "title":  "Slicks",
+                        "filename":  "slicks.crt",
+                        "format":  "crt",
+                        "description":  "CRT-first replacement for retired direct D64. Legacy disk no longer hosted.",
+                        "url":  "/emulator/c64/media/cartridge-replacements/slicks.crt",
+                        "bytes":  106768,
+                        "sha256":  "3c6a19adcc1bd22a82348021d07541035de9e8062273a48c4458b7a7d17ef2d9",
+                        "license":  "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+                        "approved":  true,
+                        "preferOverOtherFormats":  true
+                    },
+                    {
                         "id":  "uridium",
                         "title":  "Uridium",
                         "filename":  "uridium.d64",
