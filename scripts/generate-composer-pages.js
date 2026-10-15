@@ -18,7 +18,10 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// A verified catalogue music credit is enough to make a dedicated, self-canonical
+// composer route eligible for indexing. Zero-credit/legacy fallback routes retain
+// their independently established indexing policies.
+const INDEXABLE_MIN_GAMES = 1;
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const musicDir = path.join(repoRoot, "music");
 const composersDir = path.join(musicDir, "composers");
@@ -641,7 +644,8 @@ function renderReport({ games, creditedGroups, existingPages, routes, generatedW
 
 - Existing curated composer pages remain unchanged and retain their current indexing policy.
 - Newly generated pages with at least ${INDEXABLE_MIN_GAMES} credited games use \`index,follow\`.
-- Newly generated one-game pages use \`noindex,follow\` until another matching credit is present.
+- Newly generated one-game pages with a verified catalogue credit use \`index,follow\`; they are not excluded solely for having one credit.
+- Zero-credit fallback routes and existing curated pages retain their independently established indexing policies.
 - The music hub and all-composers hub are static, indexable and link to every route.
 
 ## Most represented composer credits
