@@ -302,10 +302,15 @@ function validateBaselineRegistry(current, baseline, problems) {
     }
 }
 
-function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
+function validateBaselineSitemap(currentXml, baselineXml, label, problems, authoritativeArchiveUrls = new Set()) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
     const reviewedAdditions = REVIEWED_FOREIGN_SITEMAP_ADDITIONS.get(label) || new Set();
+    // A newly indexable canonical year is a source-owned addition, not an
+    // unreviewed foreign URL. All other baseline and noncanonical guards stay.
+    const newlyIndexableOwned = label === "sitemap-pages.xml"
+        ? new Set([...authoritativeArchiveUrls].filter((url) => !baselineLocs.includes(url)))
+        : new Set();
     const reviewedRemovals = REVIEWED_FOREIGN_SITEMAP_REMOVALS.get(label) || new Set();
     const expectedLocs = baselineLocs.filter((url) => (
         url !== PHASE5B_EXCLUDED_SITEMAP_URL &&
@@ -313,7 +318,7 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
         !reviewedRemovals.has(url)
     ));
     const comparableCurrent = currentLocs.filter((url) => (
-        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
+        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url) && !newlyIndexableOwned.has(url)
     ));
 
     const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
@@ -612,7 +617,7 @@ function main() {
         ["--baseline-sitemap-games", sitemapGames, "sitemap-games.xml"]
     ].forEach(([option, currentXml, label]) => {
         const baselinePath = optionPath(option);
-        if (baselinePath) validateBaselineSitemap(currentXml, readRequired(baselinePath), label, problems);
+        if (baselinePath) validateBaselineSitemap(currentXml, readRequired(baselinePath), label, problems, new Set(expectedUrls));
     });
 
     if (!fs.existsSync(phase4cReportPath)) problems.push("Phase 4C report is missing");
