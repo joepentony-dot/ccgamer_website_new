@@ -20,10 +20,14 @@ const end = app.indexOf("async function loadSelectedLibraryEntry()", begin);
 assert(begin >= 0 && end > begin, "Library startup must be identifiable");
 const code = app.slice(begin, end) + "\nglobalThis.startLibrary = initialiseOnlineLibrary;";
 
-async function execute(catalogueAvailable, activateExtraCrt = false) {
+async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId = "") {
   const statuses = {};
   const fetchRequests = [];
   const context = vm.createContext({
+    window: { location: { search: deepLinkId ? "?game=" + encodeURIComponent(deepLinkId) : "" } },
+    URLSearchParams,
+    stageNote: { textContent: "" },
+    selectOnlineLibraryEntry(id) { statuses.selected = id; },
     onlineLibraryGrid: {},
     onlineLibraryStatus: { textContent: "" },
     onlineLibrarySearch: { value: "" },
@@ -48,6 +52,12 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
       if (opts?.method === "HEAD") {
         throw new Error("HEAD denied by CDN"); // All old results would disappear.
       }
+      if (url === "/emulator/c64/media/blast/retired-ids.json") {
+        return { ok: true, json: async () => ({
+          version: 1, source: "blast", recordCount: 1,
+          mappings: { "blast-0000": "owner-crt-more-10th-frame" },
+        }) };
+      }
       if (url === "/emulator/c64/library.json") {
         return { ok: true, json: async () => direct };
       }
@@ -60,8 +70,13 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
         return { ok: false, status: 404 }; // No optional archive media is published yet.
       }
       if (url === PACK_CATALOG_URL) {
+        // Simulate a physically retired historic PRG when checking its alias.
+        const retiredFixture = deepLinkId === "blast-0000"
+          ? { ...blast, recordCount: blast.recordCount - 1,
+              games: blast.games.filter(row => row[0] !== "blast-0000") }
+          : blast;
         return catalogueAvailable
-          ? { ok: true, json: async () => blast }
+          ? { ok: true, json: async () => retiredFixture }
           : { ok: false, status: 503 };
       }
       throw new Error("Unexpected URL: " + url);
@@ -130,6 +145,18 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 }
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
+
+// A previously shared packed PRG ID must still select the approved CRT after
+// physical compaction. The alias is fetched only for an unresolved deep link.
+const oldBookmark = await execute(true, true, "blast-0000");
+assert.equal(oldBookmark.statuses.selected, "owner-crt-more-10th-frame",
+  "Retired packed PRG bookmark must select its replacement CRT");
+assert.equal(oldBookmark.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/blast/retired-ids.json").length, 1,
+  "Only retired packed game bookmarks may fetch the alias map");
+assert.equal(activated.fetchRequests.filter(x =>
+  x.url.endsWith("/retired-ids.json")).length, 0,
+  "Normal emulator browsing must not download retirement aliases");
 
 console.log("PASS: 2010 distinct selectable library entries appear without HEAD; owner-authorised CRTs survive catalogue errors, and retry is exposed.");
 
