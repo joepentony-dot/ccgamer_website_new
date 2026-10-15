@@ -10,6 +10,12 @@ on:
       - "games/index.html"
       - "games/game.html"
       - "games/games.json"
+      - "emulator/c64/library.json"
+      - "emulator/c64/media/cartridge-replacements/active.json"
+      - "emulator/c64/media/blast/catalog.json"
+      - "emulator/c64/media/prg-archive/catalog.json"
+      - "emulator/c64/media/prg-archive/ready.json"
+      - "scripts/link-c64-emulator-games.js"
       - "js/ccg-community-ratings.js"
       - "js/ccg-community-comments.js"
       - "js/ccg-uta-archive.js"
@@ -19,6 +25,7 @@ on:
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
       - "tests/single-game-community-uta.test.mjs"
+      - "tests/c64-new-game-auto-emulator-link.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
       - "resources/images/thumbnails/all/**"
@@ -142,6 +149,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "24"
+
+      - name: Verify future C64 game emulator auto-link and one-click launch contract
+        run: node --test tests/c64-new-game-auto-emulator-link.test.mjs tests/ccg-c64-game-page-autoload.test.mjs
 
       - name: Validate Content Publisher recovery controls
         run: |

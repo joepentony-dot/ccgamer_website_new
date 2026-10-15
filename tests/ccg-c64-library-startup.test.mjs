@@ -8,7 +8,7 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL,
   ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
-  preferSelectedCartridges } from "../js/ccg-c64/game-catalog.js";
+  preferSelectedCartridges, catalogGameIdentity } from "../js/ccg-c64/game-catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
@@ -39,6 +39,7 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
     parseAdditionalCrtCatalog,
     parsePackedCatalog,
     preferSelectedCartridges,
+    catalogGameIdentity,
     refreshOnlineLibrarySuggestions() { statuses.refreshed = true; },
     updateSelectedLibraryGame() { statuses.selectionUpdated = true; },
     console: { warn(...message) { statuses.warning = message; } },
@@ -95,9 +96,9 @@ for (const [id, title] of [
     game.url === "/emulator/c64/media/" + id + ".crt" && game.approved,
     "Verified EasyFlash title must remain published at its exact local URL: " + id);
 }
-assert.equal(good.context.onlineLibraryEntries.length, 2015,
-  "All approved titles except the withdrawn Bruce Lee PRG must appear even if HEAD is unavailable");
-assert.equal(good.context.onlineLibraryStatus.textContent, "2,015 READY");
+assert.equal(good.context.onlineLibraryEntries.length, 2010,
+  "All distinct playable titles must remain available, with five duplicate identities shown once");
+assert.equal(good.context.onlineLibraryStatus.textContent, "2,010 READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
 assert.equal(good.fetchRequests.length, 4, "Direct, optional CRT, Blast and archive activation are probed once");
@@ -113,13 +114,14 @@ assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
 assert(failed.statuses.warning, "A catalogue failure must be logged instead of swallowed");
 
-// The separate 1,530-file cartridge manifest must actually suppress exact
+// The expanded 2,064-file cartridge manifest must suppress exact
 // matching packed PRGs, not just validate as static JSON. Broken deployments
 // must fall back to all original games (tested above with a 404 response).
 const activated = await execute(true, true);
-assert.equal(moreCrt.recordCount, 1530);
-assert.equal(activated.context.onlineLibraryEntries.filter(e =>
-  e.id.startsWith("owner-crt-more-")).length, 1530);
+assert.equal(moreCrt.recordCount, 2064);
+assert(activated.context.onlineLibraryEntries.filter(e =>
+  e.id.startsWith("owner-crt-more-")).length >= 2040,
+  "Expanded owner CRT catalogue must preserve existing selections and expose new individual games");
 for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
   const entries = activated.context.onlineLibraryEntries.filter(e => e.title === title);
   assert.equal(entries.length, 1, "Only the chosen CRT may remain visible for " + title);
@@ -129,7 +131,7 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
 
-console.log("PASS: 2015 selectable library entries appear without HEAD, owner-authorised CRTs survive catalogue errors, and retry is exposed.");
+console.log("PASS: 2010 distinct selectable library entries appear without HEAD; owner-authorised CRTs survive catalogue errors, and retry is exposed.");
 
 // CCG_BATCH_VERIFIED_MEDIA â€” owner-supplied individual disks and every swap side.
 const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"rodland","title":"Rodland"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"slicks","title":"Slicks"},{"id":"x-out","title":"X-Out"},{"id":"racing-destruction-set","title":"Racing Destruction Set"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"},{"id":"katakis","title":"Katakis"},{"id":"world-games","title":"World Games"},{"id":"kennedy-approach","title":"Kennedy Approach"},{"id":"hessian","title":"Hessian"},{"id":"soul-force","title":"Soul Force"},{"id":"lords-of-conquest","title":"Lords of Conquest"},{"id":"times-of-lore","title":"Times of Lore"},{"id":"supremacy","title":"Supremacy: Your Will Be Done"},{"id":"strike-fleet","title":"Strike Fleet"},{"id":"the-legend-of-blacksilver","title":"The Legend of Blacksilver"},{"id":"killed-until-dead","title":"Killed Until Dead"},{"id":"pool-of-radiance","title":"Pool of Radiance"},{"id":"ultima-iii-exodus","title":"Ultima III: Exodus"},{"id":"buck-rogers-countdown-to-doomsday","title":"Buck Rogers: Countdown to Doomsday"},{"id":"briley-witch-chronicles","title":"Briley Witch Chronicles"},{"id":"project-firestart","title":"Project Firestart"},{"id":"legacy-of-the-ancients","title":"Legacy of the Ancients"},{"id":"project-stealth-fighter","title":"Project Stealth Fighter"}];

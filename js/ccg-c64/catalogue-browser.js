@@ -1,3 +1,5 @@
+import { searchCatalogEntries } from "./game-catalog.js";
+
 // CCG C64 full library browser. Uses the already verified in-page catalogue;
 // it never scrapes external archives or downloads unapproved game media.
 export function mountCatalogueBrowser({ games, play }) {
@@ -15,7 +17,6 @@ export function mountCatalogueBrowser({ games, play }) {
   const previous = dialog.querySelector("[data-catalogue-previous]");
   const next = dialog.querySelector("[data-catalogue-next]");
   const PAGE_SIZE = 60;
-  const collator = new Intl.Collator("en-GB", { sensitivity: "base", numeric: true });
   let page = 0;
   let returnFocus = null;
 
@@ -33,16 +34,16 @@ export function mountCatalogueBrowser({ games, play }) {
       : "LIBRARY LOADING...";
     if (dialog.hidden) return;
 
-    const query = String(input.value || "").trim().toLocaleLowerCase();
+    const query = String(input.value || "").trim();
     const type = source.value;
     const initial = letter.value;
-    const matches = catalogue.filter((entry) => {
+    const visible = catalogue.filter((entry) => {
       if (!entry || !entry.title || !entry.id) return false;
       if (type !== "all" && kind(entry) !== type) return false;
       const first = entry.title.trim().charAt(0).toLocaleUpperCase();
-      if (initial !== "all" && !(initial === "#" ? !/^[A-Z]$/.test(first) : first === initial)) return false;
-      return !query || entry.title.toLocaleLowerCase().includes(query);
-    }).sort((a, b) => collator.compare(a.title, b.title));
+      return initial === "all" || (initial === "#" ? !/^[A-Z]$/.test(first) : first === initial);
+    });
+    const matches = searchCatalogEntries(visible, query);
 
     const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
     page = Math.max(0, Math.min(page, pages - 1));

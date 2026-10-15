@@ -2446,3 +2446,358 @@
     height: 100%;
     aspect-ratio: auto;
 }
+
+
+/* OMEGA RECORD — aligned credits and verified C64 emulator action.
+   Each credit is one two-cell row with a shared border; the previous
+   display:contents four-column grid painted broken individual lines. */
+.ccg-page--single-game .ccg-behind-pixels-inline__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0;
+    row-gap: 0;
+    align-items: stretch;
+    border-top: 1px solid rgba(255,255,255,.12);
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item {
+    display: grid;
+    grid-template-columns: minmax(105px, 32%) minmax(0, 1fr);
+    align-items: stretch;
+    min-width: 0;
+    min-height: 39px;
+    border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item:nth-child(odd):not(:last-child) {
+    border-right: 1px solid rgba(255,255,255,.09);
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(105px, 16%) minmax(0, 1fr);
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+    padding: 7px 10px;
+    border: 0;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+    font-size: .69rem;
+    white-space: normal;
+}
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+    font-size: .84rem;
+}
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 43px;
+    padding: 8px 14px;
+    border: 1px solid rgba(var(--accent-rgb), .88);
+    border-radius: 5px;
+    color: #fff;
+    background: linear-gradient(160deg, rgba(var(--accent-rgb), .34), rgba(var(--accent-rgb), .13));
+    box-shadow: 0 0 9px rgba(var(--accent-rgb), .22);
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .045em;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+}
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play:hover,
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play:focus-visible {
+    border-color: rgb(var(--accent-rgb));
+    background: rgba(var(--accent-rgb), .45);
+    box-shadow: 0 0 13px rgba(var(--accent-rgb), .48);
+}
+.ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+@media (max-width: 900px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {grid-template-columns: minmax(0,1fr);}
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-column: auto;
+        grid-template-columns: minmax(100px, 32%) minmax(0,1fr);
+        border-right: 0;
+    }
+}
+@media (max-width: 560px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(85px, 33%) minmax(0,1fr);
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+        padding: 6px 5px;
+    }
+    .ccg-page--single-game .game-hero__actions .ccg-btn--emulator-play {
+        min-height: 44px;
+        width: 100%;
+        white-space: normal;
+    }
+}
+
+
+/* ==============================================================
+   2026-10-15 | SINGLE-GAME PRESENTATION ACCEPTANCE
+   Credit labels, horizontally scrolled related cards and floating
+   shortcuts only. Never affect the gallery, catalogue or homepage.
+   ============================================================== */
+
+/* A full credit row owns its border and aligns both label and value
+   on the same centreline. Give the longest label, PROGRAMMER, room. */
+.ccg-page--single-game .ccg-behind-pixels-inline__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item,
+.ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+    grid-template-columns: minmax(148px, 36%) minmax(0, 1fr);
+    min-width: 0;
+    align-items: stretch;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    min-height: 40px;
+    padding: 6px 10px;
+    margin: 0;
+    line-height: 1.45;
+    border-bottom: 0;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+    letter-spacing: 0.025em;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 0;
+    line-height: inherit;
+    vertical-align: middle;
+}
+
+/* The horizontal scrollport must grow to the complete height of its
+   tallest card: never conceal publisher/genre match labels below. */
+.ccg-page--single-game .game-section--related .related-carousel__viewport {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding-block: 10px 17px;
+    scroll-padding-inline: 42px;
+}
+
+.ccg-page--single-game .game-section--related .related-carousel__track {
+    display: flex;
+    align-items: stretch;
+    height: auto;
+    min-height: max-content;
+    max-height: none;
+    padding-block: 3px 12px;
+}
+
+.ccg-page--single-game .related-carousel .related-card {
+    align-self: stretch;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+}
+
+.ccg-page--single-game .related-carousel .related-card__meta {
+    align-content: start;
+    margin-top: auto;
+    gap: 5px;
+    min-height: 0;
+}
+
+.ccg-page--single-game .related-carousel .related-card__tag {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+    text-align: center;
+}
+
+/* Do not move the floating CTA bar over the footer's actual support
+   link. Hide it when the footer approaches; its actions remain
+   available from the hero and on the underlying website. */
+.ccg-page--single-game .game-quick-actions {
+    transition: opacity 160ms ease, visibility 160ms ease;
+}
+
+.ccg-page--single-game .game-quick-actions.is-near-footer {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(136px, 35%) minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(108px, 39%) minmax(0, 1fr);
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+        font-size: 0.64rem;
+        letter-spacing: 0;
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+        min-height: 38px;
+        padding: 6px 5px;
+    }
+    .ccg-page--single-game .game-section--related .related-carousel__viewport {
+        padding-block: 8px 13px;
+        scroll-padding-inline: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-page--single-game .game-quick-actions { transition: none; }
+}
+
+
+/* 2026-10-15 PHONE REGRESSION REPAIR
+   The preceding presentation block sets repeat(2) after the old media
+   queries: restore exactly ONE complete credit record at tablet/phone
+   widths. Keep the label + its value in the SAME record row. */
+@media (max-width: 900px) {
+    html[data-ccg-page="single-game"] .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        gap: 0;
+        min-width: 0;
+        align-items: stretch;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(116px, 32%) minmax(0, 1fr);
+        width: 100%;
+        min-width: 0;
+        min-height: 38px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dt,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        min-width: 0;
+        margin: 0;
+        padding: 8px 7px;
+        line-height: 1.4;
+        align-self: stretch;
+        align-items: center;
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        overflow-wrap: break-word;
+    }
+}
+
+@media (max-width: 560px) {
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline {
+        padding: 9px;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(105px, 35%) minmax(0, 1fr);
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dt,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        padding: 8px 5px;
+        font-size: clamp(0.68rem, 2.55vw, 0.82rem);
+        letter-spacing: 0;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        font-size: clamp(0.76rem, 3.25vw, 0.87rem);
+    }
+
+    /* The globally shared five-action dock has narrow phone columns.
+       Scale down excessive spacing instead of chopping the Collections
+       label or shrinking the entire page to fit. */
+    html[data-ccg-page="single-game"] .ccg-floating-nav__bar {
+        gap: 3px;
+        padding: 5px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    html[data-ccg-page="single-game"] .ccg-floating-nav__btn {
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 7px 1px;
+        gap: 5px;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-floating-nav__label {
+        display: block;
+        max-width: 100%;
+        min-width: 0;
+        white-space: nowrap;
+        font-size: clamp(0.49rem, 2vw, 0.59rem);
+        letter-spacing: 0;
+        line-height: 1.1;
+        text-align: center;
+        overflow: visible;
+    }
+
+    html[data-ccg-page="single-game"]
+      .ccg-floating-nav__btn[data-ccg-floating-section="collections"]
+      .ccg-floating-nav__label {
+        font-size: clamp(0.46rem, 1.85vw, 0.56rem);
+        letter-spacing: -0.015em;
+    }
+
+    /* The fixed five-button dock already includes TOP. Hide the second
+       floating arrow to keep Privacy Choices and legal links usable. */
+    html[data-ccg-page="single-game"].ccg-has-floating-nav
+      .ccg-back-to-top-wrap {
+        display: none !important;
+    }
+}

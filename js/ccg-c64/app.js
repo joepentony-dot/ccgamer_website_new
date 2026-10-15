@@ -13,7 +13,7 @@ import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
-  preferSelectedCartridges,
+  preferSelectedCartridges, catalogGameIdentity,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -531,6 +531,8 @@ let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
 let selectedLibraryEntryId = null;
 let onlineLibraryLoadingGame = false;
+// One automatic launch per emulator navigation; library retries never reboot a game.
+let gamePageAutoloadConsumed = false;
 const onlineLibraryPackCache = new Map();
 let autoStartSteps = null;
 let autoStartTypeRest = "";
@@ -2506,11 +2508,30 @@ async function initialiseOnlineLibrary() {
     console.warn("[ccg-c64] Optional PRG archive unavailable:", error);
   }
 
+  // A single visible title index. Preserve the underlying media and previous
+  // IDs for old bookmarks, but show only the approved CRT-first winner.
   onlineLibraryEntries = [...regular, ...packed, ...archived];
-  // Only verified, owner-selected CRT records bearing the explicit preference
-  // flag suppress the matching PRG/disk versions in both packed archives.
-  // Do not rewrite shared binary packs or hide unrelated titles.
-  onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
+  const allHostedEntries = onlineLibraryEntries;
+  onlineLibraryEntries = preferSelectedCartridges(allHostedEntries);
+  // Only a game-page button with autoplay=1 starts the matched catalogue entry.
+  // Ordinary emulator searches and legacy ?game= links still require LOAD.
+  let linkedGameId = "";
+  let linkedGameAutoplay = false;
+  try {
+    const deepLink = new URLSearchParams(window.location.search);
+    linkedGameId = deepLink.get("game") || "";
+    linkedGameAutoplay = deepLink.get("autoplay") === "1";
+  } catch (_) { /* Invalid URL query is ignored. */ }
+  // Existing game pages still use some older BLAST/PRG IDs. Resolve the
+  // bookmark to the selected CRT without changing unrelated game pages.
+  const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
+  const linkedOriginal = validLinkedId
+    ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+  const linkedGame = validLinkedId
+    ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
+       (linkedOriginal && onlineLibraryEntries.find(entry =>
+         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))))
+    : null;
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   const unavailable = [];
@@ -2521,6 +2542,12 @@ async function initialiseOnlineLibrary() {
     : onlineLibraryEntries.length
       ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
+  if (linkedGame) {
+    selectOnlineLibraryEntry(linkedGame.id, false);
+    if (stageNote) stageNote.textContent = linkedGameAutoplay
+      ? `Starting ${linkedGame.title} automatically in the CCG C64 emulator...`
+      : `Selected ${linkedGame.title} in the CCG C64 library. Press LOAD to play.`;
+  }
   if ((packedCatalogueError || archiveError) && onlineLibraryCount) {
     onlineLibraryCount.textContent =
       "Some additional games are unavailable. Check connection and retry.";
@@ -2529,6 +2556,12 @@ async function initialiseOnlineLibrary() {
     !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
   if (typeof catalogueBrowser !== "undefined") catalogueBrowser?.refresh();
+  if (linkedGame && linkedGameAutoplay && !gamePageAutoloadConsumed) {
+    // Use the same SHA-verified media path and firmware gate as a manual LOAD.
+    // Consume before invoking: a retry cannot start this game a second time.
+    gamePageAutoloadConsumed = true;
+    void loadSelectedLibraryEntry();
+  }
 }
 
 async function loadSelectedLibraryEntry() {

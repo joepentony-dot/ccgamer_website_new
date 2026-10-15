@@ -941,14 +941,19 @@ function getFilteredGames() {
     const query = CCG_ACTIVE_QUERY.trim();
     const queryData = getSearchQueryData(query);
     const systemFilter = CCG_ACTIVE_SYSTEM_FILTER;
-    return CCG_ALL_GAMES.filter(game => {
-        const matchesQuery = matchesSearchQuery(game, queryData);
+    const eligible = CCG_ALL_GAMES.filter(game => {
         const matchesSystem =
             systemFilter === "all" ||
             normalizeSystemValue(game.system) === systemFilter.toUpperCase();
-        const matchesYear = matchesYearRange(game.year);
-        return matchesQuery && matchesSystem && matchesYear;
+        return matchesSystem && matchesYearRange(game.year);
     });
+    if (!queryData.normalized) return eligible;
+    const matches = eligible.filter(game =>
+        matchesSearchQuery(game, queryData) || fuzzyArchiveTitleMatch(game, queryData.normalized));
+    if (matches.length) return matches;
+    // A near spelling is suggested ONLY if the ordinary archive search found
+    // zero results. Do not fill A–Z with unrelated titles for common queries.
+    return eligible.filter(game => fuzzyArchiveTitleTypo(game, queryData.normalized));
 }
 
 /* ============================================================
@@ -992,10 +997,72 @@ function normalizeSearchText(text) {
         .normalize("NFD")
         .replace(/[̀-ͯ]/g, "")
         .replace(/[’']/g, "")
+        .replace(/&/g, " and ")
         .replace(/[-_]+/g, " ")
         .replace(/[^a-z0-9\s]+/g, " ")
         .replace(/\s+/g, " ")
         .trim();
+}
+
+
+// Permissive LOOKUP only. A-Z results continue to use their canonical
+// title/slug/platform; do not change identity, SEO, game records or media links.
+const CCG_TITLE_ROMAN_NUMERALS = Object.freeze({
+    i: "1", ii: "2", iii: "3", iv: "4", v: "5", vi: "6",
+    vii: "7", viii: "8", ix: "9", x: "10"
+});
+const CCG_FUZZY_TITLE_CACHE = new WeakMap();
+function archiveFuzzyTitle(value) {
+    const tokens = normalizeSearchText(value).split(" ").filter(Boolean).map(
+        token => CCG_TITLE_ROMAN_NUMERALS[token] || (token === "n" ? "and" : token)
+    ).filter(token => token !== "the");
+    return {
+        core: tokens.join(" "),
+        compact: tokens.join(""),
+        numbers: tokens.filter(token => /^[0-9]+$/.test(token)).join("|")
+    };
+}
+function archiveGameTitleData(game) {
+    if (CCG_FUZZY_TITLE_CACHE.has(game)) return CCG_FUZZY_TITLE_CACHE.get(game);
+    const titles = [game?.title, game?.sorttitle].filter(Boolean).map(archiveFuzzyTitle);
+    CCG_FUZZY_TITLE_CACHE.set(game, titles);
+    return titles;
+}
+function archiveTitleVersionsAgree(a, b) {
+    return !(a.numbers && b.numbers && a.numbers !== b.numbers);
+}
+function fuzzyArchiveTitleMatch(game, query) {
+    const wanted = archiveFuzzyTitle(query);
+    if (!wanted.compact) return false;
+    return archiveGameTitleData(game).some(candidate =>
+        archiveTitleVersionsAgree(candidate, wanted) &&
+        (candidate.core === wanted.core ||
+            (wanted.compact.length >= 4 && candidate.compact.startsWith(wanted.compact))));
+}
+function fuzzyArchiveTitleTypo(game, query) {
+    const wanted = archiveFuzzyTitle(query);
+    if (wanted.compact.length < 5) return false;
+    const allowed = wanted.compact.length >= 9 ? 2 : 1;
+    return archiveGameTitleData(game).some(candidate => {
+        if (candidate.numbers !== wanted.numbers ||
+            candidate.compact[0] !== wanted.compact[0] ||
+            Math.abs(candidate.compact.length - wanted.compact.length) > allowed) return false;
+        const a = candidate.compact, b = wanted.compact;
+        let previous = Array.from({ length: b.length + 1 }, (_, n) => n);
+        for (let i = 1; i <= a.length; i++) {
+            const next = [i];
+            let min = next[0];
+            for (let j = 1; j <= b.length; j++) {
+                const n = Math.min(next[j - 1] + 1, previous[j] + 1,
+                    previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+                next.push(n);
+                if (n < min) min = n;
+            }
+            if (min > allowed) return false;
+            previous = next;
+        }
+        return previous[b.length] <= allowed;
+    });
 }
 
 function getSearchQueryData(query) {

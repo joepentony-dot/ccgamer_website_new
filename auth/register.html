@@ -4,129 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,follow" />
-    <script src="/js/analytics.js" defer></script>
-  <title>Register | CCG Auth</title>
+  <title>Registration Temporarily Unavailable | Cheeky Commodore Gamer</title>
+  <meta name="description" content="CCG account registration is temporarily unavailable while the member database and account services are being improved. Existing members can still sign in." />
+  <script src="/js/analytics.js" defer></script>
   <link rel="stylesheet" href="../resources/css/auth.css" />
-  <link rel="stylesheet" href="../resources/css/notification-preferences.css" />
 </head>
 <body>
   <main class="auth-shell">
-    <div id="authStatusBadge" class="auth-badge" aria-live="polite"></div>
-
-    <section class="auth-card">
-      <h1>Create Account</h1>
-      <p class="auth-subtitle">Register using a secure email + password account.</p>
-
-      <form id="registerForm" novalidate>
-        <div class="auth-field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" autocomplete="email" required />
-        </div>
-
-        <div class="auth-field">
-          <label for="password">Password</label>
-          <div class="password-wrap">
-            <input id="password" name="password" type="password" autocomplete="new-password" minlength="10" required aria-describedby="passwordHelp" />
-            <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password"></button>
-          </div>
-          <small id="passwordHelp" class="auth-field-help">Use at least 10 characters.</small>
-        </div>
-
-        <fieldset class="auth-notification-preferences">
-          <legend>Optional email alerts</legend>
-          <label class="auth-notification-preferences__choice">
-            <input id="notifyNewGames" name="notifyNewGames" type="checkbox" />
-            <span>Email me when new Commodore games are added to the CCG archive.</span>
-          </label>
-          <label class="auth-notification-preferences__choice">
-            <input id="notifyNewsletter" name="notifyNewsletter" type="checkbox" />
-            <span>Email me about new CCG videos, Zzap!64 features and Retro Specials.</span>
-          </label>
-          <p class="auth-notification-preferences__note">
-            Both choices are optional and start unticked. You can change them later in Member Hub account settings.
-          </p>
-        </fieldset>
-
-        <div id="formMessage" class="auth-message" aria-live="polite"></div>
-
-        <button type="submit" class="auth-btn">Register</button>
-      </form>
-
-      <nav class="auth-links">
-        <a href="./login.html">Already have an account? Log in</a>
-        <a href="./forgot.html">Forgot password?</a>
+    <section class="auth-card" aria-labelledby="registration-heading">
+      <p class="auth-maintenance-eyebrow">CHEEKY COMMODORE GAMER · ACCOUNT UPDATE</p>
+      <h1 id="registration-heading">Registration Temporarily Unavailable</h1>
+      <p class="auth-subtitle">We're upgrading the CCG database and account services.</p>
+      <div class="auth-maintenance-note" role="status">
+        <strong>New member registrations are paused for now.</strong>
+        <p>You won't need to keep retrying or entering your details. We're improving the member system before reopening registration.</p>
+        <p>Existing account holders can still sign in. Please check the Cheeky Commodore Gamer website for updates.</p>
+      </div>
+      <nav class="auth-maintenance-actions" aria-label="Account and website links">
+        <a class="auth-maintenance-primary" href="./login.html">EXISTING MEMBER SIGN IN</a>
+        <a class="auth-maintenance-secondary" href="/">RETURN TO CCG</a>
       </nav>
     </section>
   </main>
-
-  <script src="../js/ccg-supabase-config.js" defer></script>
-  <script src="../js/ccg-supabase-client.js" defer></script>
-
-  <script type="module">
-    import { registerUser } from '../resources/js/auth/auth-core.js';
-    import { attachPasswordToggle, byId, setMessage } from '../resources/js/auth/ui-helpers.js';
-    import { initAuthBadge } from '../resources/js/auth/auth-status.js';
-
-    const form = byId('registerForm');
-    const message = byId('formMessage');
-
-    attachPasswordToggle(byId('togglePassword'), byId('password'));
-    initAuthBadge();
-
-    function trackSuccessfulRegistration() {
-      if (!window.ccgConsentState?.analytics || typeof window.gtag !== 'function') return;
-      window.gtag('event', 'sign_up', { method: 'email' });
-    }
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      setMessage(message, 'Creating account...', 'info');
-
-      const email = byId('email').value;
-      const password = byId('password').value;
-
-      if (password.length < 10) {
-        setMessage(message, 'Password must be at least 10 characters.', 'error');
-        byId('password').focus();
-        return;
-      }
-
-      const notificationPreferences = {
-        notifyNewGames: Boolean(byId('notifyNewGames').checked),
-        notifyNewsletter: Boolean(byId('notifyNewsletter').checked),
-        choiceRecorded: true
-      };
-
-      const { data, error } = await registerUser(email, password, notificationPreferences);
-
-      if (error) {
-        const duplicate = error.category === 'duplicate_email';
-        if (duplicate) {
-          message.innerHTML = 'Already registered. <a href="./forgot.html">Reset your password</a>.';
-          message.classList.remove('is-success', 'is-info');
-          message.classList.add('is-error');
-        } else {
-          setMessage(message, error.message || 'Unable to create account right now.', 'error');
-        }
-        if (error.detail) {
-          console.error('[CCG-AUTH] register-ui', { category: error.category, detail: error.detail });
-        }
-        return;
-      }
-
-      trackSuccessfulRegistration();
-
-      if (data?.user && !data?.session) {
-        setMessage(
-          message,
-          'Registration successful. Check your email to confirm your account before logging in.',
-          'success'
-        );
-        return;
-      }
-
-      setMessage(message, 'Registration successful and signed in.', 'success');
-    });
-  </script>
 </body>
 </html>

@@ -29,7 +29,7 @@ for (const path of [
   assert.match(dungeon, /data-ccg-play-maintenance-gate="owner-preview"/, path + " must load the protected Dungeon access gate");
   assert.ok(dungeon.includes(`src="/js/ccg-supabase-config.js?v=${dungeonCache}"`), path + " must load the current Supabase config cache identity");
   assert.ok(dungeon.includes(`src="/js/ccg-supabase-client.js?v=${dungeonCache}"`), path + " must load the current Supabase client cache identity");
-  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261007-public24h-v1"/);
+  assert.match(dungeon, /src="\/js\/ccg-play-maintenance-owner-gate\.js\?v=20261015-development-v1"/);
   assert.match(dungeon, /c64-dungeon-carnage-home-v2\.webp\?v=20260922-r51-owner-preview/, "Dungeon loader must retain supplied WebP");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-main\.js/, path + " must keep game-main inert until access is validated");
   assert.match(dungeon, /type="application\/ccg-protected-runtime" data-ccg-protected-runtime src="js\/game-core\.js/, path + " must protect the core runtime");
@@ -62,10 +62,11 @@ assert.match(ownerGate, /data-ccg-protected-runtime/);
 assert.match(ownerGate, /runtimeAccessGranted = true/);
 assert.match(ownerGate, /showMemberGate\(/);
 assert.match(ownerGate, /mark\("member-playtester"\)/);
-assert.match(ownerGate, /round2-member-required/);
+assert.match(ownerGate, /development-unavailable/, "public Dungeon holding screen should announce development, not member recruitment");
 assert.match(ownerGate, /mark\("owner-preview"\)/);
 assert.doesNotMatch(ownerGate, /ccg_validate_dungeon_carnage_tester_code/, "Round 2 must not use the retired tester-code path");
-assert.match(ownerGate, /Current Members Only/, "Round 2 denial must explain the closed current-member cohort");
+assert.match(ownerGate, /C64 Dungeon Carnage Is In Development/, "public denied access should announce ongoing game development");
+assert.doesNotMatch(ownerGate, /Current Members Only|SIGN IN AS AN ASSIGNED MEMBER/, "public holding screen must not display obsolete member-only prompts");
 assert.doesNotMatch(ownerGate, /window\.location\.replace\(MAINTENANCE_DESTINATION\)/, "Dungeon access denial must use the member gate rather than the retired redirect");
 
 const hub = read("games/ccg-games/index.html");

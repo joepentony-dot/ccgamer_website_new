@@ -19,6 +19,7 @@ const steps = [
   ["build-games.js"],
   ["enforce-manual-only-game-pages.js"],
   ["prepare-seo-game-routes.js", "--output-root", "."],
+  ["link-c64-emulator-games.js"],
   ["apply-game-review-seo.js"],
   ["ensure-magazine-review-runtime.js"],
   ["ensure-manual-viewer-polish.js", "--root", "."],
@@ -74,6 +75,7 @@ const steps = [
   ["ensure-publisher-history-runtime.js", "--check"],
   ["ensure-manual-viewer-polish.js", "--root", ".", "--check"],
   ["validate-downloads-page.js"],
+  ["link-c64-emulator-games.js", "--check"],
   ["validate-game-performance-contract.mjs", "--require-generated"],
   ["normalize-public-header-shell.js", "--root", ".", "--check"],
 ];
