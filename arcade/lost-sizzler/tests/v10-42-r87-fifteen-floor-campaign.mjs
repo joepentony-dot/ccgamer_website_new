@@ -442,6 +442,114 @@ for(const floor of [2,5,9,12]){
 }
 assert.equal(checkedGeneratorFloors,8,"Sample four generator-objective floors twice each.");
 
+// P0 Floor 5: real threshold door/animation and generator damage owners.
+// Scripted walking routes; NOT proof of natural combat, UI input or owner save.
+const f5DoorStart=gameplaySource.indexOf("function beginDoorOpening(");
+const f5DoorEnd=gameplaySource.indexOf("function chestScoreReward(",f5DoorStart);
+const f5GenStart=gameplaySource.indexOf("function damageGenerator(g,power,p){");
+const f5GenEnd=gameplaySource.indexOf("function hitStalker(",f5GenStart);
+assert.ok(f5DoorStart>=0&&f5DoorEnd>f5DoorStart&&f5GenStart>=0&&f5GenEnd>f5GenStart,
+  "Extract real door and generator owners for scripted route regression");
+const f5Owners=gameplaySource.slice(f5DoorStart,f5DoorEnd)+
+  gameplaySource.slice(f5GenStart,f5GenEnd);
+const f5Dirs=[[1,0],[-1,0],[0,1],[0,-1]],f5Key=(x,y)=>x+","+y;
+let f5Routes=0,f5DoorCount=0;
+for(let sample=0;sample<12;sample++){
+  const seed="ccg-owner-natural-route-floor5-20261015-"+sample;
+  let runState={floor:5,seed,stats:{generators:0}};
+  const worldState=generatedWorld.generate(seed+"-F5");
+  let hostState=generatedWorld.createHostState(worldState);
+  generatedSystems.decorate(worldState,hostState,runState);
+  assert.equal(hostState.generators.length,3,"Required generators remain exactly three");
+  let clock=1000;
+  const player={id:"P1",x:worldState.start.x,y:worldState.start.y,
+    health:25,bronzeKeys:0};
+  const context=vm.createContext({
+    host:hostState,world:worldState,run:runState,
+    W:generatedWorld,SYS:generatedSystems,PGR:generatedRuntime.window.CCGProgression,
+    p1:player,stats:{generators:0,doors:0,secrets:0},score:0,mode:"playing",
+    explored:new Map([[player.id,new Set()]]),P:{orange:"#ff0"},
+    performance:{now:()=>clock},S:{sfx(){}},showToast(){},updateQuests(){},floatText(){}
+  });
+  vm.runInContext(f5Owners,context,{filename:"game-play.js::Floor5-owner-route",timeout:3000});
+  const gate=hostState.doors.find(d=>d.type==="room"&&!d.locked);
+  assert.ok(gate,"Every generated Floor 5 path should have a room threshold");
+  gate.locked=true;
+  assert.equal(context.tryDoor(player,gate.x,gate.y),false,
+    "Locked room gate must reject movement");
+  assert.equal(gate.locked,true);
+  assert.notEqual(gate.open,true);
+  gate.locked=false;
+  let openings=0;
+  for(let index=0;index<3;index++){
+    const generator=hostState.generators[index],start=f5Key(player.x,player.y);
+    const queue=[{x:player.x,y:player.y}],seen=new Set([start]),prev=new Map();
+    let adjacent=null;
+    for(let q=0;q<queue.length;q++){
+      const cell=queue[q];
+      if(Math.abs(cell.x-generator.x)+Math.abs(cell.y-generator.y)===1){
+        adjacent=cell;break;
+      }
+      for(const[dx,dy]of f5Dirs){
+        const x=cell.x+dx,y=cell.y+dy,key=f5Key(x,y);
+        if(seen.has(key)||worldState.map[y]?.[x]!==0||
+          generatedWorld.generatorAt(hostState,x,y)||
+          (hostState.blockingDecor||[]).some(d=>d.x===x&&d.y===y&&!d.destroyed))continue;
+        const door=generatedWorld.doorAt(hostState,x,y);
+        if(door&&(door.type!=="room"||door.locked))continue;
+        seen.add(key);prev.set(key,f5Key(cell.x,cell.y));queue.push({x,y});
+      }
+    }
+    assert.ok(adjacent,seed+" "+generator.id+" requires an accessible attack approach");
+    const steps=[];
+    for(let node=f5Key(adjacent.x,adjacent.y);node!==start;node=prev.get(node)){
+      assert.ok(node,"Route predecessor must return to player position");
+      const[x,y]=node.split(",").map(Number);steps.push({x,y});
+    }
+    steps.reverse();
+    for(const tile of steps){
+      const door=generatedWorld.doorAt(hostState,tile.x,tile.y);
+      if(door&&!door.open){
+        assert.equal(context.tryDoor(player,tile.x,tile.y),false,
+          "An unopened room door must initiate an animation");
+        assert.equal(door.opening,true);
+        clock+=1200;context.updateDoors();openings++;
+        assert.equal(door.open,true,"Actual door owner must complete opening");
+      }
+      if(door)assert.equal(context.tryDoor(player,tile.x,tile.y),true);
+      assert.equal(generatedWorld.playerWalkable(worldState.map,tile.x,tile.y,hostState),true,
+        "All planned steps must be valid against real player collision");
+      player.x=tile.x;player.y=tile.y;
+    }
+    assert.equal(Math.abs(player.x-generator.x)+Math.abs(player.y-generator.y),1,
+      "Player should attack from a neighbouring square");
+    context.damageGenerator(generator,generator.hp,player);
+    assert.equal(generator.alive,false,"Actual generator damage function defeats target");
+    assert.equal(context.stats.generators,index+1);
+    assert.equal(runState.stats.generators,index+1);
+    assert.equal(context.score,700*(index+1),"No duplicate generator reward");
+    assert.equal(hostState.objective.complete,index===2,
+      "Objective must not complete at 2/3 or before");
+    if(sample===0&&index===1){
+      context.host=JSON.parse(JSON.stringify(hostState));
+      context.run=JSON.parse(JSON.stringify(runState));
+      hostState=context.host;runState=context.run;
+      assert.equal(hostState.generators.filter(g=>!g.alive).length,2);
+      assert.equal(hostState.objective.complete,false);
+    }
+  }
+  assert.ok(openings>0,seed+" must traverse doors initially closed");
+  assert.equal(player.bronzeKeys,0,"Mandatory generators cannot demand bronze keys");
+  assert.equal(hostState.exitOpen,false,"Floor exit still requires collected Exit Sigil");
+  assert.ok(hostState.doors.filter(d=>d.sigilGate).every(d=>!d.locked),
+    "Final generator must open the Sigil route, not bypass Sigil pickup");
+  f5DoorCount+=openings;
+  f5Routes++;
+}
+assert.equal(f5Routes,12);
+assert.ok(f5DoorCount>=12);
+
+
 
 
 // P0 bridge thief: execute the actual stolen-item recovery owner.

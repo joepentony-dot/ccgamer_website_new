@@ -1,3 +1,8 @@
+## Dungeon #2705 Floor 5 generated door-owner route — 15 October 2026
+
+- Source-level tested 38 seeds with 395 actual ordinary-door animations, then 20 seeds using real HP-based damage of 60 generators. Extended existing R87 campaign Node test with 12 seeded complete routes, locked-door veto, exact 2/3→3/3 objective, JSON restore, no bronze keys, exit still Sigil-gated; direct test section passed V8. This is not original owner natural browser input/save acceptance; no generator defect reproduced and no gameplay source change.
+- Preserve one Dungeon draft; full Node/six Chromium/Windows/independent review and original owner P0 reproduction remain outstanding.
+
 ## Dungeon #2705 Floor Challenge Cache collision safeguard — 15 October 2026
 
 - Existing `game-core.js` reward owner now reserves a featured challenge chest until an accessible unoccupied tile is free, persists retry through save, and never repeats an opened cache. Existing R87 tests extended; focused V8 and syntax only, no complete Node/Chromium/Windows or original owner save repro.

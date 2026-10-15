@@ -1,5 +1,10 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — scripted real-door Floor 5 generator-route regression
+
+A 38-seed fixed Floor 5 survey used the original door handlers, starting with closed room doors; all 114 generators had a player-walkable attack neighbour and 395 real animated threshold openings succeeded without bronze keys. A follow-on 20-seed run called the real `damageGenerator` function for 60 machines, with one 700-point award per defeat and objective false at 1/3 and 2/3, true at 3/3; the Sigil requirement correctly continued to block the exit. Added 12 persistent cases to the existing R87 Node file, using real world/decor, tryDoor/updateDoors, damageGenerator, JSON state roundtrip at 2/3 and a locked-room negative control. Authored section executed against source modules in V8 before commit, but full Node suite not run. Scripted movement omits the full `movePlayer`, AI, hazards, Count battle and owner original save, so original Count Loadula/Guardian Maw+Death Stalker incident remains UNRESOLVED. No gameplay production fix, new PR, paid CI, merge or deployment.
+
+
 ## 15 October 2026 — featured challenge cache collision and pending ownership
 
 The `game-core.js` featured Floor Challenge reward owner, separate from R114 boss rewards, could place the chest over living generator/enemy/active floor loot or directly under the player when no adjacent cell was free. Source-executed regression demonstrates old generator collision and the new near-player BFS placement; current owner refuses occupied or sealed tiles, reserves the reward, retries after space or a door opens including JSON host restore, and prevents reissuing already-opened save caches by stable ID. The existing R87 campaign test now includes these positive/negative cases; no new test file or competing PR. Focused V8 checks and source/test syntax passed. Full Node, all six Chromium shards, installed Windows, original Count Loadula 2/3 state, paired Guardian Maw/Stalker freeze, independent review and owner acceptance remain outstanding. No paid CI, release or merge.
