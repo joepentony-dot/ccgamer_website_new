@@ -1,3 +1,8 @@
+## Dungeon #2705 thief cross-room AI/minimap — 15 October 2026
+
+- Existing `CCGAI` now treats bridge thief as a global fleeing target rather than a sleeping/attacking ambusher, using a bounded connected route, normal unlocked-door opening and collision rules; the HUD radar tracks its true actor position only after theft, with an off-screen directional T and removal on defeat. Extended existing R87 live-source two-room AI/radar regression (not new test file). The owner Flask HUD, original bridge encounter and actual Windows/Chromium acceptance remain unresolved.
+- Retain one cumulative draft PR, current-head Node and all six Chromium shards/reviews/install gates, and original music licensing block. Do not merge or deploy without independent qualification.
+
 ## Dungeon #2705 thief stolen-item recovery checkpoint — 15 October 2026
 
 - Guarded correction to `game-local-runtime.js` plus the existing playing update loop: if inventory and reachable floor are both full, stolen gear remains serialized as pending until capacity/path opens, then recovers exactly once; no duplicate kill bonus. Existing R87 test extended with direct runtime-source fixtures, including JSON restore. Original owner thief AI/minimap/Flask HUD acceptance still open; no full CI/Windows testing or merge.

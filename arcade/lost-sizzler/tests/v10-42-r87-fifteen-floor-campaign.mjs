@@ -68,6 +68,81 @@ assert.match(systemsSource,/weightBridgeSwitch:true/,"the far side of the trick 
 assert.match(systemsSource,/r114TrickTreatReward\s*=\s*true|r114TrickTreatReward\s*:\s*true/,"the far side bridge cache must be marked as the upgraded Trickster reward");
 assert.match(gameplaySource,/function bridgeStashedItems\(b\)/,"bridge collapse must own the dropped-stash theft transaction");
 assert.match(gameplaySource,/bridgeThief:true/,"crossing the bridge must create a distinct Dungeon Thief target");
+
+// P0 thief AI and post-theft minimap tracking: execute the real existing
+// enemy AI module on a deterministic two-room corridor with an ordinary door.
+const thiefAiSource=read("arcade/lost-sizzler/js/ai.js");
+function thiefRouteCase({locked=false,distant=false}={}){
+  const map=Array.from({length:34},()=>Array(34).fill(1));
+  for(let y=1;y<=9;y++)for(let x=1;x<=9;x++)map[y][x]=0;
+  for(let x=1;x<=9;x++)map[4][x]=1;
+  map[4][5]=0;
+  const WTest={
+    roomAt:(_world,x,y)=>y<=3?0:y>=5?1:-1,
+    sameRoom:(_world,a,b)=>a.y<=3&&b.y<=3||a.y>=5&&b.y>=5,
+    doorAt:(host,x,y)=>(host.doors||[]).find(door=>door.x===x&&door.y===y)||null,
+    walkable:(grid,x,y,host)=>grid[y]?.[x]===0&&
+      !(host.doors||[]).some(door=>door.x===x&&door.y===y&&!door.open)
+  };
+  const windowTest={CCG_CONFIG:C,CCGWorld:WTest,CCGSystems:{inSanctuary:()=>false}};
+  const context=vm.createContext({window:windowTest,performance:{now:()=>0},console});
+  vm.runInContext(thiefAiSource,context,{filename:"ai.js::bridge-thief",timeout:3000});
+  const thief={id:"bridge-thief-f5",kind:"ambusher",bridgeThief:true,alive:true,
+    x:5,y:2,hp:15,maxHp:15,moveCooldown:0,attackCooldown:0,chargeCooldown:0,
+    facing:{x:1,y:0},aiState:"idle",moveSpeedScale:.82};
+  const player={id:"P1",x:distant?30:5,y:distant?30:2,health:10};
+  const hostState={enemies:[thief],doors:[{x:5,y:4,type:"room",locked,open:false}],enteredRoomIds:[0]};
+  const worldState={map,rooms:[{id:0},{id:1}],graph:[[1],[0]]};
+  let attacks=0,overlap=false;
+  const visited=new Set(),initial=windowTest.CCGAI.simulationEligibleForTest(thief,worldState,[player],new Set([0]));
+  for(let i=0;i<80;i++){
+    windowTest.CCGAI.stepEnemies(hostState,map,[player],600,{
+      melee(){attacks++},shoot(){attacks++}
+    },worldState);
+    visited.add(thief.y>=5?1:0);
+    if(thief.x===player.x&&thief.y===player.y)overlap=true;
+  }
+  return{thief,player,hostState,visited,attacks,overlap,initial};
+}
+const crossingThief=thiefRouteCase();
+assert.equal(crossingThief.initial,true,"Thief must remain in the simulation beyond the local room");
+assert.ok(crossingThief.visited.has(0)&&crossingThief.visited.has(1),
+  "Fleeing thief must cross a real ordinary unlocked door and move between rooms");
+assert.equal(crossingThief.hostState.doors[0].open,true,"Thief opens an unlocked room door");
+assert.equal(crossingThief.attacks,0,"Thief must flee instead of attacking");
+assert.equal(crossingThief.overlap,false,"Thief cannot step onto player");
+assert.equal(crossingThief.thief.aiState,"flee","Thief must retain fleeing state");
+const lockedThief=thiefRouteCase({locked:true});
+assert.equal(lockedThief.hostState.doors[0].open,false,"Thief may not unlock an actual locked gate");
+assert.equal(lockedThief.visited.has(1),false,"Locked route cannot be bypassed");
+assert.equal(lockedThief.attacks,0);
+assert.equal(lockedThief.overlap,false);
+const distantThief=thiefRouteCase({distant:true});
+assert.equal(distantThief.initial,true,"Distant thief remains eligible for global simulation");
+assert.equal(distantThief.attacks,0);
+
+const radarThiefStart=renderSource.indexOf("function radarBridgeThief(hostState){");
+const radarThiefEnd=renderSource.indexOf("function renderRadarPanel(p){",radarThiefStart);
+assert.ok(radarThiefStart>=0&&radarThiefEnd>radarThiefStart,"Real minimap thief selector must exist");
+const radarThiefContext=vm.createContext({});
+vm.runInContext(renderSource.slice(radarThiefStart,radarThiefEnd),radarThiefContext,
+  {filename:"game-render.js::bridge-thief-radar",timeout:3000});
+const thiefMarkerEnemy={id:"bridge-thief-f5",bridgeThief:true,alive:true,x:12,y:13};
+const thiefHost={weightBridge:{crossed:true,collapsed:true,thiefId:thiefMarkerEnemy.id},
+  enemies:[thiefMarkerEnemy]};
+assert.equal(radarThiefContext.radarBridgeThief(thiefHost)?.id,thiefMarkerEnemy.id);
+assert.equal(radarThiefContext.radarBridgeThief({...thiefHost,
+  weightBridge:{...thiefHost.weightBridge,crossed:false}}),null,"No advance reveal before theft");
+assert.equal(radarThiefContext.radarBridgeThief({...thiefHost,
+  weightBridge:{...thiefHost.weightBridge,thiefDefeated:true}}),null,"Defeat removes marker");
+assert.equal(radarThiefContext.radarBridgeThief({...thiefHost,
+  enemies:[{...thiefMarkerEnemy,alive:false}]}),null,"Dead thief cannot retain marker");
+thiefMarkerEnemy.x=19;thiefMarkerEnemy.y=21;
+assert.equal(radarThiefContext.radarBridgeThief(thiefHost)?.x,19,"Marker tracks real actor X");
+assert.equal(radarThiefContext.radarBridgeThief(thiefHost)?.y,21,"Marker tracks real actor Y");
+assert.match(renderSource,/radarCtx\.fillText\("T",x,y\+\.25\)/,
+  "Radar must draw a recognisable T for tracked thief");
+
 assert.match(gameplaySource,/function ensureBridgeSwitchAmmo\(p,b\)[\s\S]*bridge-emergency-weapon[\s\S]*bridge-emergency-ammo/,"the far-side switch must provide both firearm and ammo failsafes when needed");
 assert.match(gameplaySource,/TRICK! THE BRIDGE COLLAPSES/,"successful empty-handed crossing must trigger the trick rather than stabilising the old bridge");
 assert.match(gameplaySource,/BRIDGE SWITCH — SHOOT IT/,"the rebuild mechanism must explain that it is a projectile switch");
