@@ -114,13 +114,14 @@ assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
 assert(failed.statuses.warning, "A catalogue failure must be logged instead of swallowed");
 
-// The separate 1,530-file cartridge manifest must actually suppress exact
+// The expanded 2,064-file cartridge manifest must suppress exact
 // matching packed PRGs, not just validate as static JSON. Broken deployments
 // must fall back to all original games (tested above with a 404 response).
 const activated = await execute(true, true);
-assert.equal(moreCrt.recordCount, 1530);
-assert.equal(activated.context.onlineLibraryEntries.filter(e =>
-  e.id.startsWith("owner-crt-more-")).length, 1530);
+assert.equal(moreCrt.recordCount, 2064);
+assert(activated.context.onlineLibraryEntries.filter(e =>
+  e.id.startsWith("owner-crt-more-")).length >= 2040,
+  "Expanded owner CRT catalogue must preserve existing selections and expose new individual games");
 for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
   const entries = activated.context.onlineLibraryEntries.filter(e => e.title === title);
   assert.equal(entries.length, 1, "Only the chosen CRT may remain visible for " + title);

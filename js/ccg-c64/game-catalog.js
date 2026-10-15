@@ -80,7 +80,7 @@ export function parseAdditionalCrtCatalog(data) {
       throw new Error("Invalid cartridge metadata.");
     }
     const id = "owner-crt-more-" + filename.slice(0, -4);
-    const nameKey = normaliseCatalogSearch(title);
+    const nameKey = catalogGameIdentity(title);
     if (!nameKey || ids.has(id) || titles.has(nameKey)) {
       throw new Error("Duplicate cartridge title or media path.");
     }

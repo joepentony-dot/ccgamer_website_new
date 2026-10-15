@@ -45,7 +45,7 @@ function activatedCartridges() {
   const data = readJson(file);
   if (data.version !== 1 || data.ownerRedistributionAttested !== true ||
       data.originalFormatsPreserved !== true || !Array.isArray(data.games) ||
-      data.recordCount !== data.games.length || data.games.length > 2000) {
+      data.recordCount !== data.games.length || data.games.length > 6000) {
     throw new Error("Invalid owner-approved CRT activation manifest.");
   }
   return data.games.map(row => {
