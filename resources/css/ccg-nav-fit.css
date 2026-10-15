@@ -103,7 +103,6 @@
        mobile drawer because this rule is desktop-only.
     */
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/games/ccg-games/"]),
-    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/install-app.html"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]) {
