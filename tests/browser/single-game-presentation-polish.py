@@ -7,7 +7,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
 CSS = "\n".join((ROOT / path).read_text("utf-8") for path in (
-    "resources/css/games.css", "resources/css/game-pages.css",
+    "resources/css/ccg-master.css", "resources/css/games.css", "resources/css/game-pages.css",
 ))
 JS = (ROOT / "js/load-single-game.js").read_text("utf-8")
 TEMPLATE = (ROOT / "games/game.html").read_text("utf-8")
@@ -23,9 +23,9 @@ GUARD = match.group(1)
 CREDITS = "".join(
     f'<div class="ccg-behind-pixels-inline__item"><dt>{label}</dt><dd>{value}</dd></div>'
     for label, value in (
-        ("Publisher", "<a href='/games/publishers/commodore/'>Commodore</a>"),
-        ("Programmer", "Jeff Bruette"),
-        ("Graphics", "Jeff Bruette"),
+        ("Publisher", "<a href='/games/publishers/electronic-arts/'>Electronic Arts</a>"),
+        ("Programmer", "Alan Pavlish"),
+        ("Graphics", "Todd J. Camasta"),
     )
 )
 CARDS = "".join(
@@ -40,7 +40,7 @@ CARDS = "".join(
     '</div></a>' for _ in range(8)
 )
 HTML = (
-    '<!doctype html><html><head><meta charset="utf-8"><style>' + CSS +
+    '<!doctype html><html data-ccg-page="single-game" class="ccg-has-floating-nav"><head><meta charset="utf-8"><style>' + CSS +
     '</style></head><body class="ccg-page--single-game"><main class="game-shell">'
     '<section class="ccg-behind-pixels-inline">'
     '<h2 class="ccg-behind-pixels-inline__title">Game Credits</h2>'
@@ -92,6 +92,17 @@ def run(browser, width, height):
             assert item["centerDifference"] < 2.5, f"{width}: misaligned {item}"
             if item["linkedCenterDifference"] is not None:
                 assert item["linkedCenterDifference"] < 4, f"{width}: publisher link misaligned: {item}"
+        if width <= 560:
+            assert page.locator(".ccg-behind-pixels-inline__list").evaluate(
+                "(n)=>getComputedStyle(n).gridTemplateColumns.trim().split(/\s+/).length"
+            ) == 1, f"{width}: credits must use one full-width record per row"
+            for row in page.locator(".ccg-behind-pixels-inline__item").all():
+                metrics = row.locator("dd").evaluate("""n => {
+                  const range=document.createRange();range.selectNodeContents(n);
+                  return {width:n.getBoundingClientRect().width, lines:range.getClientRects().length};
+                }""")
+                assert metrics["width"] >= 105, f"{width}: squeezed credit value: {metrics}"
+                assert metrics["lines"] <= 3, f"{width}: letter-by-letter name wrapping: {metrics}"
         assert outcome["lastTagBottom"] <= outcome["portBottom"] - 2, (
             f"{width}: related publisher labels clipped: {outcome}"
         )
@@ -129,7 +140,9 @@ def main():
         browser = p.chromium.launch(executable_path=binary, headless=True, args=["--no-sandbox"])
         try:
             run(browser, 1740, 900)
+            run(browser, 430, 900)
             run(browser, 390, 844)
+            run(browser, 360, 780)
         finally:
             browser.close()
 
