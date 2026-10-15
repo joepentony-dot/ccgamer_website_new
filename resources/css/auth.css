@@ -166,3 +166,67 @@ body {
   padding: 6px 10px;
   cursor: pointer;
 }
+
+/* Registration maintenance state: informational, no credential inputs. */
+.auth-maintenance-eyebrow {
+  margin: 0 0 12px;
+  color: #84cbff;
+  font-size: 0.73rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  line-height: 1.5;
+}
+
+.auth-maintenance-note {
+  padding: 15px 16px;
+  border: 1px solid rgba(100, 181, 255, 0.34);
+  border-radius: 10px;
+  background: rgba(100, 181, 255, 0.07);
+  color: var(--auth-text);
+  line-height: 1.58;
+}
+
+.auth-maintenance-note strong {
+  font-size: 1rem;
+}
+
+.auth-maintenance-note p {
+  margin: 8px 0 0;
+  color: var(--auth-muted);
+  font-size: 0.93rem;
+}
+
+.auth-maintenance-actions {
+  display: grid;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.auth-maintenance-actions a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px;
+  border-radius: 9px;
+  border: 1px solid var(--auth-border);
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.auth-maintenance-primary {
+  background: var(--auth-primary);
+  color: #071224;
+}
+
+.auth-maintenance-secondary {
+  background: #11192c;
+  color: var(--auth-text);
+}
+
+.auth-maintenance-actions a:focus-visible {
+  outline: 3px solid var(--auth-primary);
+  outline-offset: 2px;
+}
