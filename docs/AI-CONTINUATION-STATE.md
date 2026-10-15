@@ -1,3 +1,8 @@
+## Dungeon #2705 post-combat boss-room door recovery — 15 October 2026
+
+- Guarded correction to `game-play.js` restores stranded room doors when a restored/interrupted boss fight is already cleared and its boss dead. Uses existing door opening owner and preserves live Memory/Sigil lockdown; source-executed red/green grouped, restored, living-boss and idempotent tests added to R87. Does not establish the original paired Guardian Maw/Death Stalker freeze or Count Loadula 2/3-generator softlock, and full Node/Chromium/Windows/owner acceptance is outstanding.
+- Keep sole Dungeon PR #2705 draft/unmerged; avoid new PRs, paid CI, protected site edits and soundtrack substitutions.
+
 ## Dungeon #2705 R114 boss reward ownership — 15 October 2026
 
 - Reproduced the actual R114 boss completion chest on a live generator. Improved the existing reward owner to select distinct accessible unoccupied chest and Floor 5/10 side-item cells, reserve if blocked, retry after save/unblock, and preserve exactly-once score. Existing R87 campaign test extended; focused source/VM assertions passed only, no full Node/Chromium/Windows/owner repro or merge.

@@ -561,6 +561,76 @@ assert.equal(restoredLegacy.hostState.chests.length,0,"Old paid save cannot recr
 assert.equal(restoredLegacy.hostState.items.length,0,"Old paid save cannot recreate consumed map");
 assert.equal(restoredLegacy.ctx.score,0,"Older save must not receive another boss payout");
 
+// P0 boss-room recovery: an interrupted/saved post-combat clear can retain
+// locked doors. Test actual boss + door-opening owners, not a substitute fixer.
+const bossDoorOpenStart=gameplaySource.indexOf("function beginDoorOpening(");
+const bossDoorOpenEnd=gameplaySource.indexOf("function closeNearbyDoor(",bossDoorOpenStart);
+assert.ok(bossDoorOpenStart>=0&&bossDoorOpenEnd>bossDoorOpenStart,"Door owner source must exist");
+const bossRoomRecoverySource=gameplaySource.slice(bossDoorOpenStart,bossDoorOpenEnd)+
+  gameplaySource.slice(bossBegin,bossEnd);
+function savedClearedBossDoor({alive=false,locked=true,memory=false,sigil=false}={}){
+  const boss={id:"guardian-maw",alive,x:4,y:4};
+  const fight={floor:5,roomId:1,bossId:boss.id,cleared:true,triggered:false,
+    rewarded:true,rewardSpawnVersion:2,sideRewarded:true,rewardPaid:true};
+  const hostState={r114BossFight:fight,enemies:[boss],chests:[],items:[],revision:0,
+    doors:[{id:"leaf-a",type:"room",roomId:1,groupId:"gate",x:2,y:4,locked,open:!locked},
+      {id:"leaf-b",type:"room",roomId:1,groupId:"gate",x:3,y:4,locked,open:!locked}]};
+  if(memory)hostState.memoryPuzzle={roomId:1,lockdownActive:true,solved:false};
+  if(sigil){hostState.sigilRoomId=1;hostState.sigilLockdown=true;hostState.sigilResolved=false}
+  const player={id:"P1",x:3,y:3,health:15};
+  let clock=1000,sounds=0,toasts=0;
+  const context=vm.createContext({
+    host:hostState,world:{rooms:[null,{id:1,x:1,y:1,w:7,h:7,depth:6}],
+      map:Array.from({length:10},()=>Array(10).fill(0))},
+    p1:player,score:1200,SYS:generatedSystems,
+    localPlayers:()=>[player],W:{roomAt:()=>1,playerWalkable:()=>true},
+    performance:{now:()=>clock},Date:{now:()=>clock},
+    S:{sfx(){sounds++}},showToast(){toasts++},spawnEnemyShot(){},spawnPuzzleAmbush(){},P:{}
+  });
+  vm.runInContext(bossRoomRecoverySource,context,{filename:"game-play.js::boss-clear-recovery",timeout:3000});
+  return{context,hostState,fight,
+    update(){context.updateBossFight(16)},
+    finishDoor(){clock+=1000;context.updateDoors()},
+    sounds:()=>sounds,toasts:()=>toasts};
+}
+const staleClear=savedClearedBossDoor();
+staleClear.update();
+assert.ok(staleClear.hostState.doors.every(d=>!d.locked&&d.opening),
+  "Restored cleared boss must release all previously locked group leaves");
+assert.equal(staleClear.sounds(),2,"A grouped gate may start opening only once");
+staleClear.finishDoor();
+assert.ok(staleClear.hostState.doors.every(d=>d.open&&!d.opening),
+  "Authoritative door animation must complete the recovery");
+assert.equal(staleClear.context.score,1200,"Recovered clear cannot award defeat score again");
+assert.equal(staleClear.toasts(),0,"Recovered clear cannot reannounce boss victory");
+const revisionBefore=staleClear.hostState.revision;
+staleClear.update();
+assert.equal(staleClear.hostState.revision,revisionBefore,"Reconciliation is one-time");
+assert.equal(staleClear.context.score,1200);
+
+const livingClear=savedClearedBossDoor({alive:true});
+livingClear.update();
+assert.ok(livingClear.hostState.doors.every(d=>d.locked),
+  "A living boss must not be bypassed by stale clear metadata");
+assert.equal(livingClear.sounds(),0);
+const alreadyOpen=savedClearedBossDoor({locked:false});
+alreadyOpen.update();
+assert.ok(alreadyOpen.hostState.doors.every(d=>d.open),"Open doors remain open");
+assert.equal(alreadyOpen.sounds(),0);
+for(const conflict of [{memory:true},{sigil:true}]){
+  const separateChallenge=savedClearedBossDoor(conflict);
+  separateChallenge.update();
+  assert.ok(separateChallenge.hostState.doors.every(d=>d.locked),
+    "Boss recovery must preserve an independent active challenge's lockdown");
+  assert.equal(separateChallenge.sounds(),0);
+}
+const jsonRestored=savedClearedBossDoor();
+jsonRestored.context.host=JSON.parse(JSON.stringify(jsonRestored.context.host));
+jsonRestored.update();
+assert.ok(jsonRestored.context.host.doors.every(d=>!d.locked&&d.opening),
+  "JSON-restored stale room flags must recover");
+assert.equal(jsonRestored.context.score,1200);
+
 // P0 Timed Chamber: exercise the actual gameplay trigger function in isolation.
 // A completed challenge must never restart or teleport the floor's Stalker.
 const timedTriggerStart=gameplaySource.indexOf("function triggerTimed(p){");

@@ -553,7 +553,29 @@ function reconcileBossRewards(fight,force=false){
 }
 function updateBossFight(dt){
   const fight=bossFightState();if(!fight)return;
-  if(fight.cleared){reconcileBossRewards(fight);return}
+  if(fight.cleared){
+    // A saved/interrupted clear may preserve old locked door flags after the
+    // boss died. Recover the original room-door owner without paying twice.
+    const boss=bossEnemyForFight(fight);
+    const otherLockdown=Boolean(
+      (host.memoryPuzzle?.roomId===fight.roomId&&host.memoryPuzzle.lockdownActive&&!host.memoryPuzzle.solved)||
+      (host.sigilRoomId===fight.roomId&&host.sigilLockdown&&!host.sigilResolved)
+    );
+    if(!boss?.alive&&!otherLockdown){
+      const stale=(host.doors||[]).some(d=>d.type==="room"&&d.roomId===fight.roomId&&d.locked);
+      if(stale){
+        SYS.lockRoomDoors(host,fight.roomId,false);
+        const groups=new Set();
+        for(const door of host.doors||[])if(door.type==="room"&&door.roomId===fight.roomId){
+          const id=String(door.groupId||door.id||door.x+","+door.y);
+          if(groups.has(id))continue;
+          groups.add(id);beginDoorOpening(door,900);
+        }
+        host.revision=(Number(host.revision)||0)+1;
+      }
+    }
+    reconcileBossRewards(fight);return;
+  }
   const boss=bossEnemyForFight(fight);if(!boss||!boss.alive){
     fight.cleared=true;fight.triggered=false;SYS.lockRoomDoors(host,fight.roomId,false);
     for(const d of host.doors||[])if(d.type==="room"&&d.roomId===fight.roomId)beginDoorOpening(d,900);
