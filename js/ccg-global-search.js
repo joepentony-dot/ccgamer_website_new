@@ -280,6 +280,85 @@
             .map((entry) => entry.item);
     }
 
+    // Game-name search is deliberately more tolerant than URL/media resolution.
+    // It only ranks EXISTING game pages; punctuation, suffixes and typos never
+    // manufacture a URL or imply two different releases are the same title.
+    const FUZZY_GAME_NUMBERS = Object.freeze({
+        i: "1", ii: "2", iii: "3", iv: "4", v: "5", vi: "6",
+        vii: "7", viii: "8", ix: "9", x: "10"
+    });
+    const fuzzyGameTitleCache = new Map();
+    function fuzzyGameTitle(value) {
+        const raw = normalize(value);
+        if (fuzzyGameTitleCache.has(raw)) return fuzzyGameTitleCache.get(raw);
+        const tokens = raw.split(" ").filter(Boolean).map(token =>
+            FUZZY_GAME_NUMBERS[token] || (token === "n" ? "and" : token))
+            .filter(token => token !== "the");
+        const core = tokens.join(" ");
+        const result = {
+            core,
+            compact: tokens.join(""),
+            numbers: tokens.filter(token => /^[0-9]+$/.test(token)).join("|")
+        };
+        if (fuzzyGameTitleCache.size > 4000) fuzzyGameTitleCache.clear();
+        fuzzyGameTitleCache.set(raw, result);
+        return result;
+    }
+    function fuzzyGameTitleScore(title, query) {
+        const candidate = fuzzyGameTitle(title);
+        const wanted = fuzzyGameTitle(query);
+        if (!wanted.compact || !candidate.compact) return Infinity;
+        // Prevent "Beach Head 1" from matching "Beach Head 2" or vice versa.
+        if (candidate.numbers && wanted.numbers && candidate.numbers !== wanted.numbers) {
+            return Infinity;
+        }
+        if (candidate.core === wanted.core) return 2;
+        if (wanted.compact.length >= 4 && candidate.compact === wanted.compact) return 3;
+        return Infinity;
+    }
+    function fuzzyGameTypo(title, query) {
+        const candidate = fuzzyGameTitle(title);
+        const wanted = fuzzyGameTitle(query);
+        if (wanted.compact.length < 5 ||
+            candidate.compact[0] !== wanted.compact[0] ||
+            candidate.numbers !== wanted.numbers) return Infinity;
+        const allowed = wanted.compact.length >= 9 ? 2 : 1;
+        const a = candidate.compact, b = wanted.compact;
+        if (Math.abs(a.length - b.length) > allowed) return Infinity;
+        let previous = Array.from({ length: b.length + 1 }, (_, j) => j);
+        for (let i = 1; i <= a.length; i++) {
+            const next = [i];
+            let minimum = next[0];
+            for (let j = 1; j <= b.length; j++) {
+                const value = Math.min(next[j - 1] + 1, previous[j] + 1,
+                    previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+                next.push(value);
+                if (value < minimum) minimum = value;
+            }
+            if (minimum > allowed) return Infinity;
+            previous = next;
+        }
+        return previous[b.length] <= allowed ? 50 + previous[b.length] : Infinity;
+    }
+    function findGameMatches(items, query) {
+        const results = items.map(item => ({
+            item, score: Math.min(scoreItem(item, query), fuzzyGameTitleScore(item.title, query))
+        })).filter(match => Number.isFinite(match.score));
+        // Only search by edit-distance if no direct, metadata or title alias
+        // matches exist; this avoids noisy near-hits for ordinary searches.
+        if (!results.length) {
+            for (const item of items) {
+                const score = fuzzyGameTypo(item.title, query);
+                if (Number.isFinite(score)) results.push({ item, score });
+            }
+        }
+        return results
+            .sort((a, b) => a.score - b.score ||
+                a.item.title.localeCompare(b.item.title, "en-GB", { sensitivity: "base", numeric: true }))
+            .map(result => result.item);
+    }
+
+
     function createResultLink(item, type) {
         const link = document.createElement("a");
         link.className = "ccg-global-search__result";
@@ -359,7 +438,7 @@
 
         const groups = [
             ["Website Sections", "Section", findMatches(state.sections, query)],
-            ["Games", "Game", findMatches(state.games, query)],
+            ["Games", "Game", findGameMatches(state.games, query)],
             ["Videos", "Video", findMatches(state.videos, query)],
             ["Publishers", "Publisher", findMatches(state.publishers, query)],
             ["Composers", "Composer", findMatches(state.composers, query)],
