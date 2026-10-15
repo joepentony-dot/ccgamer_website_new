@@ -42,7 +42,7 @@ test("all three media priorities create the expected exact-game deep links", () 
   assert.match(linked("720-degrees"),
     /href="\/emulator\/c64\/\?game=owner-crt-more-720-degrees"/);
   assert.match(linked("20-tons"), /href="\/emulator\/c64\/\?game=blast-0008"/);
-  assert.match(linked("paradroid"), /href="\/emulator\/c64\/\?game=paradroid"/);
+  assert.match(linked("paradroid"), /href="\/emulator\/c64\/\?game=owner-crt-more-paradroid"/);
 });
 
 test("no fabricated emulator media and only C64 archive pages are considered", () => {
