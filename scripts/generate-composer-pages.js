@@ -581,7 +581,12 @@ function updateStaticPages(routes, previousMetadata) {
     const next = [];
     current.forEach((entry) => {
         if (typeof entry !== "string") return;
-        if (staleGenerated.has(entry) && !desired.has(entry)) return;
+        // Other owners rebuild publisher/developer entries before composers.
+        // Always remove our prior generated block, then reappend the desired
+        // composer block below in one stable order. Preserving the old block's
+        // position made pass 1 and pass 2 disagree when new composers became
+        // indexable and another generator reordered its own entries.
+        if (staleGenerated.has(entry)) return;
         if (seen.has(entry)) return;
         seen.add(entry);
         next.push(entry);
