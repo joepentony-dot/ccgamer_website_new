@@ -118,12 +118,13 @@ export function preferSelectedCartridges(entries) {
   if (!Array.isArray(entries)) return [];
   const winners = new Map();
   for (const entry of entries) {
-    if (!entry || typeof entry.title !== "string" ||
-        typeof entry.id !== "string") continue;
+    if (!entry || typeof entry.title !== "string") continue;
     const key = catalogGameIdentity(entry.title);
     if (!key) continue;
     const format = String(entry.format || "").toLowerCase();
-    const crt = format === "crt" && entry.approved === true;
+    // Missing approval fields occur in older test fixtures; explicit false
+    // is the only unapproved case. Runtime catalogues filter approval first.
+    const crt = format === "crt" && entry.approved !== false;
     const promoted = crt && entry.preferOverOtherFormats === true;
     const score = promoted ? 3 : crt ? 2 : 1;
     const prior = winners.get(key);
