@@ -146,9 +146,9 @@ assert.match(renderSource,/radarCtx\.fillText\("T",x,y\+\.25\)/,
 assert.match(gameplaySource,/function ensureBridgeSwitchAmmo\(p,b\)[\s\S]*bridge-emergency-weapon[\s\S]*bridge-emergency-ammo/,"the far-side switch must provide both firearm and ammo failsafes when needed");
 assert.match(gameplaySource,/TRICK! THE BRIDGE COLLAPSES/,"successful empty-handed crossing must trigger the trick rather than stabilising the old bridge");
 assert.match(gameplaySource,/BRIDGE SWITCH — SHOOT IT/,"the rebuild mechanism must explain that it is a projectile switch");
-assert.match(localRuntimeSource,/function recoverBridgeThiefStash\(e,attacker=p1\)/,"the thief kill path must own stolen-item recovery");
-assert.match(localRuntimeSource,/PGR\.inventoryCanAdd\(holder,item\)&&PGR\.inventoryAdd\(holder,item\)/,"recovered stolen items must return through canonical inventory stack rules");
-assert.match(localRuntimeSource,/bridgeRecovered:true/,"overflow stolen stacks must be dropped safely at the defeated thief instead of being deleted");
+assert.match(localRuntimeSource,/function recoverBridgeThiefStash\(e=null,attacker=p1\)/,"the thief kill and deferred-retry path must share the canonical stolen-item recovery owner");
+assert.match(localRuntimeSource,/PGR\.inventoryCanAdd\(player,item\)&&PGR\.inventoryAdd\(player,item\)/,"recovered stolen items must return through canonical inventory stack rules");
+assert.match(localRuntimeSource,/bridgeRecovered:true/,"recoverable overflow stacks must preserve their original item identity on an accessible unoccupied floor tile");
 assert.match(localRuntimeSource,/if\(e\.bridgeThief\)recoverBridgeThiefStash/,"defeating the Dungeon Thief must actually execute the recovery transaction");
 assert.match(coreSource,/TRICKSTER BRIDGE — Find and kill the Dungeon Thief/,"the quest panel must explicitly direct the player to recover the stolen stash");
 assert.match(renderSource,/BRIDGE COLLAPSED — SHOOT THE SWITCH/,"collapsed bridge state must be visible in-world");
