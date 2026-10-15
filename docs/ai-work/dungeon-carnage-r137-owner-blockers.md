@@ -1,5 +1,84 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — finite Flask cannot break Warden through a sealed door
+
+Reproduced the active Warden target owner spending the last Ward-Break Charge on a Warden behind a locked room gate or stone wall. The original nearest-target resolver used only Manhattan range, so both supernatural enemy classes could lose immunity while inaccessible. Added canonical existing `CCGAI.lineOfSight(world.map,player,target,range,host)` to selection, respecting intact locked/closed doors, terrain and solid furniture while preserving in-range visible activation. Existing Warden Essence ownership test now loads actual AI and covers both Warden classes, locked and JSON-restored gate, opening the gate, rock wall/unblocked path, and selecting a visible alternative target. Six source-executed red/green scenarios (old consumed charge, new preserves) passed. No new PR or test file, and no claim of full Node/Chromium/Windows or original 2/3-generator owner acceptance.
+
+
+## 15 October 2026 — post-combat Guardian Maw restored-room release
+
+Reproduced a narrow saved-state deadlock in the authoritative `updateBossFight`: when `fight.cleared` was already true, the function returned after reward reconciliation without unlocking room doors left sealed during an interrupted boss defeat or checkpoint restoration. Added a guarded release through the existing door owner if the boss is dead/missing and no independent live Memory/Sigil lockdown controls the room. The recovery animates grouped doors and remains idempotent without rewarding another kill, chest or announcement. Existing R87 regression directly extracts both the boss and door-opening source to test restored stale locks, JSON host round-trip, grouped doors, living-boss and independent-challenge veto, exact-once score and no repeated notices. Old source fails the case; amended source passes focused V8. The owner-observed Guardian Maw+Death Stalker double-death freeze and Count Loadula 2/3 generators remain separate unresolved P0 incidents. No full exact-head Node/six Chromium/Windows owner test, CI dispatch, new PR or unrelated website/media changes.
+
+
+## 15 October 2026 — R114 boss chest placement, delayed reward and save-state ownership
+
+Source execution reproduced an R114 reward chest placed on a living generator at room centre. The same canonical `updateBossFight` owner now searches player-reachable interior floor cells, excluding living actors, occupied equipment/loot, caches, generators, chests and other active interactables. Floor 5 Cartographer's Eye and Floor 10 Magic Sack use separate safe tile assignments. When the chamber has no free tile, rewards remain owed on the fight and are retried after space opens or save/restore; one defeat bonus and one win announcement. Legacy already-paid `rewarded:true` saves cannot recreate collected items. Existing R87 campaign regression (not a new file) directly source-tests occupied centre, pending and delivery, JSON state round-trip, twice-processed completion and legacy saves. Focused V8 tests passed only; actual Node/six Chromium/Windows installed build, Count Loadula 2/3 original seed, Guardian Maw/Stalker freeze and owner acceptance remain open. Kept one cumulative draft #2705, no CI dispatch or unrelated website/music edits.
+
+
+## 15 October 2026 — atomic Warden Charge on Count/Death Stalker
+
+Current source review traced the active Ward-Break override, not the older legacy `permanentlyBanish` implementation. On a failed `PROG.inventoryRemove`, the old code still attempted `breakWard` and could break immunity without payment; on a rejected/interrupted break, the removed charge was never restored. Patched `v10-42-warden-purpose-overhaul.js` to snapshot the actual inventory and settle charge and ward together. On missing/wrong item, rejected target or exception, original inventory is restored; on a valid break exactly one charge is spent and no kill or gold/score is granted. Extended the existing `v10-42-warden-essence-ownership-contract.mjs` with real `soloEncounter` and real progression inventory fixtures, no duplicate file. The old source failed negative controls and the modified extracted owner passed focused preflight. Additionally sampled 72 generated mandatory-generator floors (18 each Floors 2, 5, 9, 12): all three accessible from floor start once ordinary doors were opened, with all optional locks retained; this topology does NOT prove the owner's 2/3 Count Loadula incident resolved.
+
+Status: original owner save/seed, real Count Loadaula + guardian collision, six Chromium shards, exact-head full Node, Windows installer and save migration, independent review and owner acceptance still outstanding. No PR merge, unrelated SEO/emulator/intro change, soundtrack change, or paid CI dispatch.
+
+
+## 15 October 2026 — Floor 4 torch genuine re-entry after involuntary movement
+
+The actual Floor 4 torch-input owner keeps `sequenceTorchPuzzle.entryByPlayer[id]` as the last deliberately stepped-on torch. A boulder/knockback/teleport that moves the player off a pad without calling `movementTriggers(p,true)` can leave this last entry stale; returning to the same pad deliberately then fails `current===previous` and progression can stall. Added passive occupancy reconciliation before player-input movement and after the boulder/event phase, using the existing host/player puzzle ledger and no independent puzzle state machine. Forced movement never awards progress, while subsequent deliberate stepping from off-pad activates exactly once. Extended existing R87 direct-source fixture: forced departure, teleport onto pad (no activation), stationary duplicate rejection, manual departure/re-entry, JSON-restored occupancy, full 4-pad completion, 650 score once and one XP grant. Old source fails re-entry; modified source passes focused V8 cases. No new PR/test file/website edits, CI dispatch, media or protected changes. User save/seed, real keyboard/gamepad Chromium, Windows acceptance and Q/M/D/O remain outstanding.
+
+
+## 15 October 2026 — thief roams between rooms and is trackable after theft
+
+The bridge thief was generated as an `ambusher` and inherited ordinary room-sleep/combat pursuit; a controlled two-room source test showed he never crossed the ordinary door and attacked rather than fleeing. Updated canonical AI eligibility/crowd planning to include only bridgeThief actors globally; added a bounded connected escape route with existing passability and normal unlocked-door opening to avoid A* greedy-corner oscillation, while respecting locked doors, sanctuary and player occupancy. `game-render.js` radar now draws a single tracked 'T' from the live theft ID only after the bridge collapses; when outside radar viewport the marker is clipped towards that direction, no unexplored tiles revealed, and it disappears on death. The existing R87 campaign test uses actual `ai.js` with deterministic two-room unlocked/locked/distant-player cases and live marker state (before theft/after/defeated/moved). Isolated source checks passed with no thief attack and no player overlap. No new PR, new test file or new AI owner. The original owner Flask HUD desync and end-to-end bridge chase remain unverified; full Node/six Chromium/Windows owner save testing and all release gates are outstanding.
+
+
+## 15 October 2026 — P0 thief lost-stash prevention and retries
+
+The old thief recovery owner marked stolen inventory permanently recovered even when a full bag and no safe overflow tile forced active loot onto the dead thief/player tile. A guarded candidate on the existing cumulative #2705 branch retains hidden original pickup entries and pending `weightBridge.stolenItems`, uses BFS from the current player through actual open doors, filters all live solid objectives/enemies/items/chests/caches and selects one unique destination per overflow stack. Existing gameplay simulation calls `recoverBridgeThiefStash(null,p1)` after thief defeat while pending remains; that function limits retries to one per 750ms wall-clock and scores the kill only at first defeat. The existing R87 test includes no-safe-tile, opened route, three unique stack drops, duplicate kill, JSON host/player restoration with freed slot and score invariance. No new PR or regression file. No original user playthrough, Chromium, installed Windows or save-migration qualification; thief cross-room AI and minimap markers still outstanding. No paid CI or protected website/music edits.
+
+
+## 15 October 2026 — escape Sigil Flask reward reservation
+
+Actual procedural-overhaul `beginEscape` promised a free Flask even when real `CCGProgression.inventoryCanAdd` rejected full inventory or existing one-charge ownership. Fixed with a pending entitlement serialized on the run, delivered on the existing playing update owner after a free unlocked slot exists, with no second grant on repeat/re-entry. No new timer, duplicate state machine or Gold/Score cost. Existing R122 live Flask transaction test extended with actual progression runtime scenarios: full bag with JSON run/player state round trip, immediate delivery, currently carried charge and failed insertion/retry. User message distinguishes delivered from reserved.
+
+**Not a release sign-off:** no original owner save/seed, exact 2/3 encounter, full browser/Windows tests, external original music, independent review, merge or acceptance. Existing draft #2705 only; no unrelated website files changed and no paid CI dispatched.
+
+
+## 15 October 2026 — P0 Timed Chamber safe hunter placement
+
+Source-level scenario proved the initial Timed Chamber trigger teleported the existing Stalker directly to the room centre even when the tile contained a player, live Guardian, living generator/enemy or active Death Cache, or when all available tiles contained active items. Revised source uses existing puzzle-floor cell walkability plus active-object exclusions and minimum player distance; chooses the centre when available, keeps the existing Stalker position if no free cell exists and preserves the 30-second challenge. The placement now synchronises `rx/ry` with `x/y`. Existing R87 campaign contract extended, including existing completed/first-entry tests and specific overlap/fallback controls. Original source fails the new overlap test; corrected source passes the isolated extracted-function controls.
+
+**Limits:** source/VM regression only, not full Node, browser, Windows, original seed or owner acceptance. No extra Stalker spawn, no player 2/arena, no public page/art/audio edits and no paid CI dispatch. Keep #2705 draft/unmerged; Q/M/D/O remain unqualified.
+
+
+## 15 October 2026 — singleton permanent-banishment state correction
+
+Actual `systems.js::enforceDeathStalkerSingleton` chooses the first Death Stalker record even if another duplicate is already defeated, potentially retaining a live copy of a banished actor and a stale Timed Chamber hunter ID. Source-executed negative/positive fixtures proved this specific failure on the old source. The guarded change preserves the existing canonical actor, applies known permanent defeat from a duplicate or existing banishment ledger, retargets any Timed Chamber hunter reference and keeps defeat recording idempotent. Existing R87 test extended with duplicate/dead, ledger, stale single-actor restoration, canonical preference and repeated reconciliation cases. No alternative gameplay owner, new PR or extra test file.
+
+**Limits:** no live owner seed or Windows crash trace, no definitive paired Guardian Maw/Death Stalker freeze fix, no complete save/restore validation, and no full Node/six Chromium/installer/owner acceptance. All non-target gameplay, website and original media unchanged; no paid CI dispatched.
+
+
+## 15 October 2026 — Solo endurance test isolation and FIRE diagnostics
+
+On published-main shard 2, recorded named-defeat count was 2 versus expected 1 (run 38666514685), and Space produced no attack intent on round 91 (run 38669465532). Tightened the existing `v10-42-live-solo-combat-endurance.mjs` test without changing gameplay: one synchronous `page.evaluate` now measures a named defeat's persisted dossier, run named count, run kill count and recap before/after, and repeats damage to the already-dead actor to catch duplicates. The once-only dossier panel assertion is retained. A read-only, capture-phase keyboard event trace records trusted/repeated Space/Numpad0 key delivery and, only upon failure, focus, overlays, attack trace and held-state diagnostics. No retries or relaxed assertion. Isolated JS harness with corrected one-time dossier behaviour: original test fails a simulated between-operations persisted count, revised test passes; deliberate double count still fails. Real Playwright endurance was not executed here.
+
+**Status:** regression isolated/instrumented on draft #2705 only; original owner crash/Count Loadula/Flask/thief incidents, genuine input failure, complete browser/Node/Windows tests and all merge/deployment/owner gates remain open. No CI dispatch, source engine changes or other PRs.
+
+
+## 15 October 2026 — completed Timed Chamber reactivation guard
+
+Actual `game-play.js::triggerTimed` source was executed against a completed challenge. Before correction, re-entry reset the countdown and teleported a surviving Death Stalker to the chamber centre; when already defeated, it still restarted the trial. A single additional `!t.cleared` condition prevents both while preserving first entry, running-trial and outside-room behaviour. Extended the existing R87 fifteen-floor campaign regression with the extracted original trigger function and positive/negative cases (no new regression file). Controlled source preflight: 2 old failing scenarios, 5 corrected passing scenarios. The existing `updateTimed` already sets `t.cleared=true` and `t.triggered=false` when the countdown finishes.
+
+**Boundaries:** no original owner save/seed or browser/Windows crash reproduction; no proof of canonical death persistence, no actual Windows acceptance and no full Node/six-shard qualification. The draft remains unmerged; release status stays REPORTED/REPRODUCED/IMPLEMENTED/FOCUSED TEST ONLY. No website, media, packaging or protected file edits. Paid CI not dispatched.
+
+
+## 15 October 2026 — bounded generator-accessibility regression
+
+Current-head source generation exercised 48 deterministic generator-objective floors, 12 each on Floors 2, 5, 9 and 12, using real world generation, systems decoration and player walkability. All sampled generators were approachable after treating ordinary room doors as opened. The initial result using initially closed room doors was a false positive and was discarded. The existing R87 campaign test now asserts generator target/count and reachable attack adjacency for eight additional seeded floors and checks that an artificially sealed generator is detected. No duplicate regression test file was introduced.
+
+**Limited scope:** these tests do not reproduce the owner's specific 2/3 Count Loadula deadlock, prove in-game door-opening sequences, fix Flask issues, exercise browser/Windows runtime, or qualify for release. No gameplay source, website HTML, assets, protected files, saves or music changed. No paid CI dispatched. Existing #2705 stays draft/unmerged.
+
+
 ## 15 October 2026, 15:04 BST — bounded P0 Warden Cache checkpoint
 
 Source/test commit **`9752a2cf0441353c4ab8240a66d532f12eb98cee`**, parent `ac4c3e34a214b2599f6ddc020c1d4024a7f3d402`, on the existing cumulative draft **#2705** / `fix/dungeon-r137-release-blockers-voice-scout-20261013`. Refreshed main `0f9a2a028dca833b7f2942f03e45a093826cbc40`; 13 commits behind, 47 ahead at source checkpoint. No integration attempted: both public HTML paths need conflict-aware preservation of main's development/registration notices. Other open PR: #2778; untouched. Earlier sections below are historical; R136 is already consolidated in #2705, not a separate active vehicle.

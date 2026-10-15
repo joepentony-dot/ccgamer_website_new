@@ -49,13 +49,18 @@
   function chargeRange(){return Math.max(2,Number(CFG.stalker?.banishPromptDistance)||8)}
 
   function wardTargets(player){
-    const h=currentHost();if(!h||!player)return[];const range=chargeRange(),targets=[];
+    const h=currentHost(),w=currentWorld();if(!h||!player)return[];
+    const range=chargeRange(),targets=[];
+    // The finite Ward-Break Charge obeys the same closed-door, solid-wall
+    // and furniture sight checks as combat. Distance alone is insufficient.
+    const inSight=target=>w?.map&&typeof A!=="undefined"&&typeof A.lineOfSight==="function"&&
+      A.lineOfSight(w.map,player,target,range,h);
     for(const enemy of h.enemies||[]){
       if(!enemy?.alive||!recognisedEnemy(enemy)||enemy.v142WardenDefeated||broken(enemy))continue;
-      if(dist(enemy,player)<=range)targets.push(enemy);
+      if(dist(enemy,player)<=range&&inSight(enemy))targets.push(enemy);
     }
     const count=h.stalker;
-    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count)&&dist(count,player)<=range)targets.push(count);
+    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count)&&dist(count,player)<=range&&inSight(count))targets.push(count);
     return targets.sort((a,b)=>dist(a,player)-dist(b,player));
   }
 
@@ -203,7 +208,23 @@
   activateBanishment=function(player){
     if(!player)return false;const ix=inventoryChargeIndex(player);if(ix<0){sfx("empty");announce("NO WARD-BREAK CHARGE","Distil Banishment Essence at an Alchemist. The charge breaks a supernatural Warden's immunity; it does not kill the target for you.","red",7200);return false}
     const state=banishmentStateV142(player);if(!state.ready){announce("NO SEALED WARD IN RANGE",`Move within ${state.range} tiles of a sealed Death Stalker or ${String(CFG.stalker?.name||"Count Loadula")}. If its ward has already been broken, use your weapons and finish the fight.`,"cyan",7200);return false}
-    PROG.inventoryRemove(player,ix);return breakWard(state.nearest,player);
+    // The Ward-Break Charge is spent only when the target actually loses
+    // immunity. Retain exact inventory contents for a failed or interrupted
+    // payment, including an older saved charge stack.
+    const before=(player.inventory||[]).map(item=>({...item}));
+    let payment=null;try{payment=PROG.inventoryRemove(player,ix)}catch(_){}
+    if(!payment||payment.kind!=="banishment"){
+      player.inventory=before;
+      announce("WARD-BREAK NOT APPLIED","No Banishment Charge was spent. The charge remains in your inventory.","cyan",5500);
+      return false;
+    }
+    let applied=false;try{applied=breakWard(state.nearest,player)===true}catch(_){}
+    if(!applied){
+      player.inventory=before;
+      announce("WARD-BREAK NOT APPLIED","The target's ward changed before the charge could take effect. Your charge has been returned.","cyan",6000);
+      return false;
+    }
+    return true;
   };
   useBanishment=function(player){return activateBanishment(player)};
 

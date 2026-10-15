@@ -87,8 +87,8 @@ function soloEncounter(){
     awardXP:(p,xp)=>{p.totalXp=(p.totalXp||0)+xp}
   };
   vm.createContext(ctx);
-  for(const name of ["config","world","progression","systems"])vm.runInContext(readOwner(name),ctx,{filename:`${name}.js`});
-  ctx.C=ctx.window.CCG_CONFIG;ctx.W=ctx.window.CCGWorld;ctx.PGR=ctx.window.CCGProgression;ctx.SYS=ctx.window.CCGSystems;
+  for(const name of ["config","world","progression","systems","ai"])vm.runInContext(readOwner(name),ctx,{filename:`${name}.js`});
+  ctx.C=ctx.window.CCG_CONFIG;ctx.W=ctx.window.CCGWorld;ctx.PGR=ctx.window.CCGProgression;ctx.SYS=ctx.window.CCGSystems;ctx.A=ctx.window.CCGAI;
   ctx.p1={id:"p1",name:"Solo",x:2,y:2,level:1,totalXp:0,inventory:[],inventorySlots:3,health:10,maxHealth:10,mana:0,maxMana:100};
   ctx.localPlayers=()=>[ctx.p1];
   ctx.run={floor:4,alert:0,stats:{kills:0},v142WardenFloors:{}};
@@ -203,4 +203,127 @@ assert.equal(countKill.count.awake,false);
 assert.equal(k.host.chests.length,1,"Count and Death Stalker use the same safe cache owner");
 countKill.advance(2100);
 assert.equal(k.run.stats.kills,1);assert.equal(k.host.chests.length,1);
+
+
+// P0 charge ownership: exercise actual Warden source, progression inventory
+// and live Solo encounter. A failed removal or stale ward may never charge
+// the player or leave the supernatural actor in the wrong state.
+function wardPaymentFixture(){
+  const fixture=soloEncounter(),ctx=fixture.ctx;
+  assert.equal(ctx.PGR.inventoryAdd(ctx.p1,{kind:"banishment",name:"Ward-Break Charge",qty:1}),true);
+  return fixture;
+}
+const missingPayment=wardPaymentFixture(),missing=missingPayment.ctx;
+const missingOriginalRemove=missing.PGR.inventoryRemove;
+const missingInventoryBefore=JSON.stringify(missing.p1.inventory);
+missing.PGR.inventoryRemove=(player,index)=>{
+  missingOriginalRemove(player,index,1);return null;
+};
+assert.equal(missing.activateBanishment(missing.p1),false,"No successful removal means no free ward break");
+assert.equal(JSON.stringify(missing.p1.inventory),missingInventoryBefore,"Failed payment restores exact Flask inventory");
+assert.equal(missingPayment.death.v142WardBroken,undefined,"Failed payment must not strip Death Stalker immunity");
+assert.equal(missing.run.stats.wardsBroken||0,0);
+assert.equal(missing.score,0,"Failed Flask payment cannot award score");
+missing.PGR.inventoryRemove=missingOriginalRemove;
+assert.equal(missing.activateBanishment(missing.p1),true,"A restored charge can be spent on a valid retry");
+assert.equal(missing.PGR.inventoryKindCount(missing.p1,"banishment"),0);
+assert.equal(missing.run.stats.wardsBroken,1);
+
+const stalePayment=wardPaymentFixture(),stale=stalePayment.ctx;
+const staleOriginalRemove=stale.PGR.inventoryRemove;
+const staleInventoryBefore=JSON.stringify(stale.p1.inventory);
+stale.PGR.inventoryRemove=(player,index)=>{
+  const charge=staleOriginalRemove(player,index,1);
+  stalePayment.death.v142WardenDefeated=true; // simulate target changing after target selection
+  return charge;
+};
+assert.equal(stale.activateBanishment(stale.p1),false,"Rejected stale ward must not consume its charge");
+assert.equal(JSON.stringify(stale.p1.inventory),staleInventoryBefore,"Rejected ward must refund exact item");
+assert.equal(stale.run.stats.wardsBroken||0,0);
+assert.equal(stale.score,0);
+stale.PGR.inventoryRemove=staleOriginalRemove;
+stalePayment.death.v142WardenDefeated=false;
+assert.equal(stale.activateBanishment(stale.p1),true,"Revalidated sealed ward accepts refunded charge");
+assert.equal(stale.PGR.inventoryKindCount(stale.p1,"banishment"),0);
+assert.equal(stale.run.stats.wardsBroken,1);
+
+for(const issue of ["unexpected item","exception"]){
+  const fixture=wardPaymentFixture(),ctx=fixture.ctx,prior=JSON.stringify(ctx.p1.inventory);
+  const remove=ctx.PGR.inventoryRemove;
+  ctx.PGR.inventoryRemove=(player,index)=>{
+    const paid=remove(player,index,1);
+    if(issue==="exception")throw Error("simulated inventory interruption");
+    return{...paid,kind:"torch"};
+  };
+  assert.equal(ctx.activateBanishment(ctx.p1),false,issue+": no ward change on invalid payment");
+  assert.equal(JSON.stringify(ctx.p1.inventory),prior,issue+": exact Flask restored");
+  assert.equal(fixture.death.v142WardBroken,undefined,issue+": enemy remains sealed");
+  assert.equal(ctx.score,0,issue+": no score granted");
+  ctx.PGR.inventoryRemove=remove;
+}
+
+const exactPayment=wardPaymentFixture(),paid=exactPayment.ctx;
+const paidInitial=JSON.stringify(paid.p1.inventory);
+assert.equal(paid.activateBanishment(paid.p1),true,"Successful charge breaks one actual sealed ward");
+assert.equal(exactPayment.death.alive,true,"One Flask removes immunity, not the whole enemy");
+assert.equal(exactPayment.death.v142WardBroken,true);
+assert.equal(paid.run.stats.wardsBroken,1);
+assert.equal(paid.PGR.inventoryKindCount(paid.p1,"banishment"),0);
+assert.equal(paid.activateBanishment(paid.p1),false,"No second activation without charge");
+assert.equal(paid.PGR.inventoryAdd(paid.p1,{kind:"banishment",qty:1}),true);
+assert.equal(paid.activateBanishment(paid.p1),false,"Already-broken supernatural ward cannot eat a second charge");
+assert.equal(paid.PGR.inventoryKindCount(paid.p1,"banishment"),1);
+assert.equal(paid.run.stats.wardsBroken,1,"Exactly one recorded Ward Break");
+assert.equal(paid.score,0,"Ward Break alone must not grant kill score");
+assert.notEqual(JSON.stringify(paid.p1.inventory),paidInitial,"One-charge ownership state changes only on valid payment");
+
+
+// Source-executed P0 Flask sight: the real CCGAI ray respects locked doors,
+// walls and decor, and a failed B press never charges the solo player.
+function wardSightFixture({asCount=false,gate="locked",wall=false}={}){
+  const t=soloEncounter(),ctx=t.ctx;
+  if(asCount){
+    ctx.host.enemies=ctx.host.enemies.filter(e=>!e.deathStalker);
+    t.count.x=5;t.count.y=5;
+  }
+  ctx.host.doors=gate==="none"?[]:[{id:"ward-line-gate",type:"room",roomId:0,
+    x:3,y:3,locked:gate==="locked",open:gate==="open"}];
+  if(wall)ctx.world.map[3][3]=1;
+  assert.equal(ctx.PGR.inventoryAdd(ctx.p1,{kind:"banishment",qty:1,name:"Ward-Break Charge"}),true);
+  return t;
+}
+for(const asCount of [false,true]){
+  const f=wardSightFixture({asCount}),ctx=f.ctx;
+  const initial=JSON.stringify(ctx.p1.inventory);
+  assert.equal(ctx.banishmentState(ctx.p1).ready,false,
+    "Closed room gate must block B targeting, even inside the charge range");
+  assert.equal(ctx.activateBanishment(ctx.p1),false);
+  assert.equal(JSON.stringify(ctx.p1.inventory),initial,"Closed gate must preserve exact Flask");
+  assert.equal(ctx.run.stats.wardsBroken||0,0);
+  ctx.host=JSON.parse(JSON.stringify(ctx.host));
+  assert.equal(ctx.banishmentState(ctx.p1).ready,false,"Saved locked gate remains blocked");
+  ctx.host.doors[0].open=true;ctx.host.doors[0].locked=false;
+  assert.equal(ctx.banishmentState(ctx.p1).ready,true);
+  assert.equal(ctx.activateBanishment(ctx.p1),true,"Opening room gate restores normal B use");
+  assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
+  assert.equal(ctx.run.stats.wardsBroken,1);
+  const target=asCount?ctx.host.stalker:ctx.host.enemies.find(e=>e.deathStalker);
+  assert.equal(target.v142WardBroken,true);
+  assert.equal(ctx.activateBanishment(ctx.p1),false,"No second charge can be spent");
+}
+const wallWard=wardSightFixture({gate:"none",wall:true}),wallCtx=wallWard.ctx;
+assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,false,"Solid stone blocks supernatural ward-break");
+assert.equal(wallCtx.activateBanishment(wallCtx.p1),false);
+assert.equal(wallCtx.PGR.inventoryKindCount(wallCtx.p1,"banishment"),1);
+wallCtx.world.map[3][3]=0;
+assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,true);
+assert.equal(wallCtx.activateBanishment(wallCtx.p1),true);
+const visibleWard=wardSightFixture({gate:"none",wall:true}),visibleCtx=visibleWard.ctx;
+visibleWard.count.x=2;visibleWard.count.y=7;
+assert.equal(visibleCtx.banishmentState(visibleCtx.p1).nearest,visibleWard.count,
+  "Visible Count may be selected instead of nearer blocked Stalker");
+assert.equal(visibleCtx.activateBanishment(visibleCtx.p1),true);
+assert.notEqual(visibleWard.death.v142WardBroken,true);
+assert.equal(visibleWard.count.v142WardBroken,true);
+
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");

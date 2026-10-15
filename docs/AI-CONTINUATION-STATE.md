@@ -1,3 +1,68 @@
+## Dungeon #2705 Warden sight-safe Ward Break — 15 October 2026
+
+- Reproduced wasted one-time Banishment Flask when a Death Stalker or Count Loadula was in Manhattan range but behind an intact locked door/solid wall. Existing Warden owner now uses real combat line-of-sight and inventory stays unchanged when blocked. Extended existing Warden source-level regression with real AI loading and saved gate, opened gate and visible-target controls. Six focused old/new scenarios passed, no full Node/Chromium/Windows qualification or owner acceptance.
+- Keep one cumulative draft and no unqualified merge/deployment; soundtrack source still blocked.
+
+## Dungeon #2705 post-combat boss-room door recovery — 15 October 2026
+
+- Guarded correction to `game-play.js` restores stranded room doors when a restored/interrupted boss fight is already cleared and its boss dead. Uses existing door opening owner and preserves live Memory/Sigil lockdown; source-executed red/green grouped, restored, living-boss and idempotent tests added to R87. Does not establish the original paired Guardian Maw/Death Stalker freeze or Count Loadula 2/3-generator softlock, and full Node/Chromium/Windows/owner acceptance is outstanding.
+- Keep sole Dungeon PR #2705 draft/unmerged; avoid new PRs, paid CI, protected site edits and soundtrack substitutions.
+
+## Dungeon #2705 R114 boss reward ownership — 15 October 2026
+
+- Reproduced the actual R114 boss completion chest on a live generator. Improved the existing reward owner to select distinct accessible unoccupied chest and Floor 5/10 side-item cells, reserve if blocked, retry after save/unblock, and preserve exactly-once score. Existing R87 campaign test extended; focused source/VM assertions passed only, no full Node/Chromium/Windows/owner repro or merge.
+- Count Loadula generator and paired Guardian Maw/Death Stalker lockups remain release blockers. Single cumulative draft, protect main website and original soundtrack access block.
+
+## Dungeon #2705 atomic Warden charge settlement — 15 October 2026
+
+- Reproduced the active Warden override's failure to verify charge removal/refund when `breakWard` refuses or throws. Guarded candidate snapshots serializable inventory and only pays one charge after a genuine Ward Break; existing Warden Essence test extended for removal failure, unexpected item, exception, changed target, retry and normal exact-once flow. Focused pre-fail/post-pass V8 source tests only; full Node/Chromium/Windows not qualified.
+- Current-head separate topology check sampled 72 generator floors with ordinary room doors open and optional locks intact; all three generators reachable in these samples. Original Count Loadula 2/3 softlock remains unproven against owner's save, so no generator layout change. One Dungeon draft only, no merge/deploy/paid CI; owner music remains blocked.
+
+## Dungeon #2705 Floor 4 torch forced-motion re-entry guard — 15 October 2026
+
+- Reproduced stale `entryByPlayer` on knockback/teleport, which prevents legitimate re-entry to the same torch. Added a passive occupancy refresh before movement and after boulder/encounter systems; only deliberate `triggerSequenceTorch(p,true)` can activate. Extended existing R87 campaign source test for forced off/on, no auto-trigger, repeat rejection, JSON restore, 4-pad exact-once reward. Focused V8 pass only; full Node/six Chromium/Windows/owner acceptance remains outstanding.
+- Single cumulative draft #2705, no merger or release; preserve main website and original music block.
+
+## Dungeon #2705 rebuilt-bridge thief radar guard — 15 October 2026
+
+- Independent source negative control: the bridge switch sets `weightBridge.collapsed=false` while the thief remains alive, but the new radar selector required `collapsed=true` and therefore hid the thief after the player rebuilt the bridge. A one-condition correction keeps tracking the unique post-theft living actor through rebuild, while still hiding pre-theft and defeated actors. Existing R87 regression extended; no new test file, inventory or AI change.
+- Isolated extracted-source before/after tests passed; exact-head full Node/Chromium/Windows, owner Flask HUD/bridge acceptance and independent review still required. Draft #2705 only, no merge, public HTML or paid CI.
+
+## Dungeon #2705 thief cross-room AI/minimap — 15 October 2026
+
+- Existing `CCGAI` now treats bridge thief as a global fleeing target rather than a sleeping/attacking ambusher, using a bounded connected route, normal unlocked-door opening and collision rules; the HUD radar tracks its true actor position only after theft, with an off-screen directional T and removal on defeat. Extended existing R87 live-source two-room AI/radar regression (not new test file). The owner Flask HUD, original bridge encounter and actual Windows/Chromium acceptance remain unresolved.
+- Retain one cumulative draft PR, current-head Node and all six Chromium shards/reviews/install gates, and original music licensing block. Do not merge or deploy without independent qualification.
+
+## Dungeon #2705 thief stolen-item recovery checkpoint — 15 October 2026
+
+- Guarded correction to `game-local-runtime.js` plus the existing playing update loop: if inventory and reachable floor are both full, stolen gear remains serialized as pending until capacity/path opens, then recovers exactly once; no duplicate kill bonus. Existing R87 test extended with direct runtime-source fixtures, including JSON restore. Original owner thief AI/minimap/Flask HUD acceptance still open; no full CI/Windows testing or merge.
+- Remain on sole cumulative #2705 draft; coordinate website SEO/emulator PRs separately and do not integrate over protected main indexes without conflict review.
+
+## Dungeon #2705 Sigil escape Flask reservation — 15 October 2026
+
+- Corrected the owner-visible false free-Flask success announcement in the Sigil escape sequence when capacity or one-charge ownership prevented insertion. Added serializable pending entitlement and exact-once retry through the existing procedural update owner; extended existing R122 Flask regression with full bag, JSON save/restore, already-carried, immediate and failure/retry cases. Owner's separate Alchemist and Windows Flask incident remain unresolved.
+- Draft remains unqualified and unmerged; no paid CI, public website or original-media modifications. See master audit and R137 workstream.
+
+## Dungeon #2705 P0 Timed Chamber occupancy — 15 October 2026
+
+- Source-verified original first-entry Stalker teleport could land on a player/Guardian/active objective/cache. Fixed destination selection to use existing puzzle walkability and active-object exclusions, keeping the Stalker at its existing position if all chamber cells are taken. Extended existing R87 campaign test; pre-fail/post-pass isolated VM evidence. Windows/browser/owner encounter reproduction outstanding.
+- Draft #2705 stays unmerged and current-head CI-unqualified; no paid runs or unrelated page/media edits. Master audit and R137 workstream record limits.
+
+## Dungeon #2705 Death Stalker singleton correction — 15 October 2026
+
+- Corrected `systems.js` singleton reconciliation to preserve permanent defeat across duplicate/stale Stalker records and retarget timed-chamber IDs. Extended existing R87 regression; old source failed controlled duplicate-banished scenario, corrected source passed; original owner crash and full runtime qualification remain outstanding.
+- Current head must be independently Node/Chromium/Windows-qualified and reviewed before any merge. No website changes, paid CI or release.
+
+## Dungeon #2705 Solo endurance diagnostics — 15 October 2026
+
+- Existing Chromium endurance test updated to use synchronous per-defeat dossier/run/recap deltas, strict repeated-dead-actor no-duplication and capture-phase key arrival diagnostics. Isolated negative/positive JS harness passed; actual Chromium and user-reported encounter save have not been tested. No gameplay engine change or production deployment.
+- Draft #2705 remains the sole Dungeon implementation PR; full exact-head Node/six Chromium, Windows installer, independent review and owner acceptance blocked. See R137 workstream and owner master audit.
+
+## Dungeon #2705 P0 Timed Chamber correction — 15 October 2026
+
+- Guarded candidate fix in `game-play.js::triggerTimed`: an already-cleared chamber may no longer restart its trial and relocate the surviving Death Stalker. The actual original and corrected function were executed with five controlled lifecycle scenarios: two previously failed; all five candidate scenarios passed. Source-derived R87 regression added. Original simultaneous guardian/Stalker freeze and owner seed remain unverified.
+- This draft is NOT current-head CI-qualified, merged, deployed or owner-accepted. No paid CI dispatched. See `docs/ai-work/dungeon-carnage-r137-owner-blockers.md` and the master request audit for exact boundaries; preserve the protected website and soundtrack.
+
 ## Dungeon #2705 bounded P0 checkpoint — 15 October 2026, 15:04 BST
 
 - Existing cumulative draft only: `fix/dungeon-r137-release-blockers-voice-scout-20261013`, refreshed remote head `ac4c3e34a214b2599f6ddc020c1d4024a7f3d402`. Verified source/test commit `9752a2cf0441353c4ab8240a66d532f12eb98cee` repairs Warden Cache occupied/unreachable placement and preserves deferred Seal eligibility; extends the existing Warden contract and corrects the R87 generator fixture's canonical `alive` field without changing its assertions.

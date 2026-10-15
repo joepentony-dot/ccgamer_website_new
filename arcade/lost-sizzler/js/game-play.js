@@ -317,7 +317,45 @@ window.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi;
 function triggerRescue(p){const r=host.rescue;if(!r||r.rescued)return;if(!r.following&&md(p,r)<=1){r.following=true;r.found=true;showToast("CCG SCOUT FOUND","Escort the scout itself into one of the permanently lit sanctuary rooms. It follows the nearest player.","green",9000);const activeRun=run;setTimeout(()=>{try{if(run===activeRun&&mode==="playing"&&r.following&&!r.rescued)window.CCGLostSizzlerVoice?.say?.("escortScout",{cooldown:0})}catch(_){}},2400)}}
 function triggerArena(p){for(const a of host.arenas||[])if(!a.triggered&&W.roomAt(world,p.x,p.y)===a.roomId){a.triggered=true;a.wave=1;SYS.lockRoomDoors(host,a.roomId,true);showToast("ARENA LOCKDOWN","Doors sealed. Survive the ambush to reopen them and earn a bonus chest.","red",7000);spawnArenaWave(a,4)}}
 function timedChamberCountdown(t=null){const node=document.getElementById("timed-chamber-countdown");if(!node)return;const active=t||((host?.timedRooms||[]).find(row=>row?.triggered&&!row?.cleared));if(!active){node.classList.add("hidden");node.textContent="TIMED CHAMBER · 30s";return}const seconds=Math.max(0,Math.ceil(Number(active.timeLeft||0)/1000));node.textContent=`TIMED CHAMBER · ${seconds}s`;node.classList.remove("hidden")}
-function triggerTimed(p){for(const t of host.timedRooms||[])if(!t.triggered&&W.roomAt(world,p.x,p.y)===t.roomId){t.triggered=true;t.timeLeft=30000;timedChamberCountdown(t);const room=world.rooms[t.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},stalker=host.enemies.find(e=>e.deathStalker&&e.voidStalker);t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));if(!alreadyDefeated){stalker.x=q.x;stalker.y=q.y;stalker.timedHunter=true;stalker.aiState="chase";stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;stalker.moveCooldown=250;stalker.attackCooldown=420;showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range — or survive until the chamber timer expires.","red",11000)}else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500)}}
+function triggerTimed(p){
+  for(const t of host.timedRooms||[])if(!t.triggered&&!t.cleared&&W.roomAt(world,p.x,p.y)===t.roomId){
+    t.triggered=true;t.timeLeft=30000;timedChamberCountdown(t);
+    const stalker=(host.enemies||[]).find(e=>e.deathStalker&&e.voidStalker);
+    t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;
+    const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));
+    if(!alreadyDefeated){
+      // Keep the floor's existing Stalker. Never teleport it into an occupied
+      // room-centre tile; if no safe tile exists, it keeps its current position.
+      const q=timedHunterSpawnCell(t.roomId,p,stalker);
+      if(q){stalker.x=q.x;stalker.y=q.y;stalker.rx=q.x;stalker.ry=q.y}
+      stalker.timedHunter=true;stalker.aiState="chase";
+      stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;
+      stalker.moveCooldown=250;stalker.attackCooldown=420;
+      showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range — or survive until the chamber timer expires.","red",11000);
+    }else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500);
+  }
+}
+function timedHunterSpawnCell(roomId,player,stalker){
+  const room=world.rooms?.[roomId];if(!room)return null;
+  const centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
+  const occupied=(rows,q,active)=>Array.isArray(rows)&&rows.some(o=>o&&active(o)&&o.x===q.x&&o.y===q.y);
+  return puzzleFloorCells(roomId).filter(q=>{
+    if(Math.abs(q.x-player.x)+Math.abs(q.y-player.y)<=1)return false;
+    if(occupied(host.items,q,o=>o.active!==false)||
+       occupied(host.chests,q,o=>o.active!==false)||
+       occupied(host.deathCaches,q,o=>o.active!==false)||
+       occupied(host.switches,q,o=>o.active!==false)||
+       occupied(host.shrines,q,o=>o.active!==false)||
+       occupied(host.shops,q,o=>o.active!==false)||
+       occupied(host.generators,q,o=>o.alive===true))return false;
+    if([host.guardian,host.stalker,host.rescue,host.trader].some(o=>o&&o.x===q.x&&o.y===q.y&&o.alive!==false&&!o.permanentlyBanished&&!o.rescued))return false;
+    return !occupied(host.enemies,q,o=>o!==stalker&&o.alive===true);
+  }).sort((a,b)=>{
+    const da=Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y);
+    const db=Math.abs(b.x-centre.x)+Math.abs(b.y-centre.y);
+    return da-db||a.y-b.y||a.x-b.x;
+  })[0]||null;
+}
 function triggerTrader(p){const shops=host.shops?.length?host.shops:[host.trader].filter(Boolean);const t=shops.find(x=>x.active&&x.x===p.x&&x.y===p.y);if(t)openShop(t,p)}
 function triggerDeathCache(p){for(const c of host.deathCaches||[])if(c.active&&c.x===p.x&&c.y===p.y){const r=PGR.recoverDeathCache(p,run,c);score+=r.score||0;S.sfx("pickup");host.revision++;const restored=r.progressionRecovered?(r.restoredSkill?` Level/stat restored: ${r.restoredSkill}.`:r.pendingLevelRestored?" Lost level entitlement restored.":r.restoredLevel?" Lost level restored.":""):"";showToast("DEATH CACHE RECOVERED",`${r.recovered} carried item${r.recovered===1?"":"s"}, ${r.games} rescued game${r.games===1?"":"s"}, ${Number(r.score||0).toLocaleString()} score and ${Number(r.xp||0).toLocaleString()} XP recovered.${restored}${r.remaining?` ${r.remaining} item${r.remaining===1?"":"s"} remain because your inventory is full.`:""}`,r.remaining?"cyan":"green",10000);if(r.levels?.length){S.sfx("level");if(Math.max(0,Number(p.pendingLevels)||0)>0)queueLevelChoice(p)}}}
 function triggerSigilRoom(p){
@@ -356,6 +394,19 @@ function activateSequenceTorch(torch,p){
   S.sfx("alert");
   showToast("TORCH ORDER WRONG",spawned?`${torch.dir} was not next. The sequence resets and one guardian enters the chamber. Step on the torches only; weapon fire cannot activate them. The faded blood clue from Floor 2 contains the order.`:`${torch.dir} was not next. The sequence resets. The existing puzzle guardian remains, but no additional enemy is spawned. The faded blood clue from Floor 2 contains the order.`,"red",10000);
   host.revision++;return false
+}
+function reconcileSequenceTorchPosition(p){
+  const z=host?.sequenceTorchPuzzle;if(!z||z.solved||!p)return;
+  z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
+  const id=String(p.id||p.name||"P1");
+  const torch=(z.torches||[]).find(t=>Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y));
+  z.entryByPlayer[id]=torch?String(torch.dir||""):"";
+}
+function reconcileSequenceTorchOccupants(){
+  // Passive forced motion refreshes occupancy only. A torch activates solely
+  // through triggerSequenceTorch(p,true) at the deliberate movement boundary.
+  if(!host?.sequenceTorchPuzzle||host.sequenceTorchPuzzle.solved)return;
+  for(const player of localPlayers())if(player)reconcileSequenceTorchPosition(player);
 }
 function triggerSequenceTorch(p,deliberate=false){
   const z=host.sequenceTorchPuzzle;if(!z||z.solved||!deliberate||!p)return false;
@@ -431,19 +482,108 @@ function bossBurst(fight,boss,phase){
   for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
   S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
 }
+function bossRewardCell(fight){
+  const room=world.rooms?.[fight.roomId];if(!room)return null;
+  const player=localPlayers().find(p=>p&&p.health>0&&W.roomAt(world,p.x,p.y)===fight.roomId);
+  if(!player)return null;
+  // Traverse only the player's currently reachable room component.
+  const walk=(x,y)=>W.playerWalkable(world.map,x,y,host)&&W.roomAt(world,x,y)===fight.roomId;
+  if(!walk(player.x,player.y))return null;
+  const key=(x,y)=>x+","+y,queue=[{x:player.x,y:player.y}],seen=new Set([key(player.x,player.y)]);
+  const occupied=(q,rows,valid)=>Array.isArray(rows)&&rows.some(o=>o&&valid(o)&&o.x===q.x&&o.y===q.y);
+  const active=o=>o.active!==false,alive=o=>o.alive===true;
+  const specials=[host.guardian,host.stalker,host.rescue,host.trader,host.startShop];
+  const centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},candidates=[];
+  for(let i=0;i<queue.length;i++){
+    const q=queue[i];
+    if(q.x>room.x&&q.y>room.y&&q.x<room.x+room.w&&q.y<room.y+room.h&&
+       !occupied(q,localPlayers(),()=>true)&&!occupied(q,host.enemies,alive)&&
+       !occupied(q,specials,o=>o.alive!==false&&!o.permanentlyBanished&&!o.rescued&&o.active!==false)&&
+       !occupied(q,host.generators,alive)&&!occupied(q,host.items,active)&&
+       !occupied(q,host.chests,active)&&!occupied(q,host.deathCaches,active)&&
+       !occupied(q,host.switches,active)&&!occupied(q,host.shrines,active)&&
+       !occupied(q,host.shops,active))candidates.push(q);
+    for(const [dx,dy]of[[0,-1],[1,0],[0,1],[-1,0]]){
+      const x=q.x+dx,y=q.y+dy,k=key(x,y);
+      if(seen.has(k)||!walk(x,y))continue;
+      seen.add(k);queue.push({x,y});
+    }
+  }
+  candidates.sort((a,b)=>{
+    const da=Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y),
+      db=Math.abs(b.x-centre.x)+Math.abs(b.y-centre.y);
+    return da-db||a.y-b.y||a.x-b.x;
+  });
+  return candidates[0]||null;
+}
+function reconcileBossRewards(fight,force=false){
+  if(!fight?.cleared)return false;
+  const now=Date.now();if(!force&&Number(fight.rewardRetryAt||0)>now)return false;
+  fight.rewardRetryAt=now+850;
+  // Pre-v2 rewarded saves may already have collected both rewards.
+  if(fight.rewarded&&!fight.rewardSpawnVersion){
+    fight.rewardSpawnVersion=2;fight.sideRewarded=true;
+  }
+  if(!fight.rewardSpawnVersion)fight.rewardSpawnVersion=2;
+  host.chests=host.chests||[];host.items=host.items||[];
+  const id="r114-boss-chest-f"+fight.floor;
+  if(!fight.rewarded){
+    if(host.chests.some(c=>c.id===id))fight.rewarded=true;
+    else{
+      const q=bossRewardCell(fight);
+      if(q){
+        const room=world.rooms[fight.roomId];
+        host.chests.push({id,...q,locked:false,active:true,depth:(room.depth||0)+18,
+          roomId:fight.roomId,r114BossReward:true});
+        fight.rewarded=true;host.revision++;
+      }
+    }
+  }
+  if(fight.rewarded&&!fight.sideRewarded){
+    const side=fight.floor===5?{id:"r114-boss-map-"+fight.floor,kind:"mapReveal",title:"CARTOGRAPHER'S EYE"}:
+      fight.floor===10?{id:"r114-boss-sack-"+fight.floor,kind:"magicSack",title:"MAGIC SACK"}:null;
+    if(!side)fight.sideRewarded=true;
+    else if(host.items.some(item=>item.id===side.id))fight.sideRewarded=true;
+    else{
+      const q=bossRewardCell(fight);
+      if(q){host.items.push({...side,...q,active:true});fight.sideRewarded=true;host.revision++}
+    }
+  }
+  return Boolean(fight.rewarded&&fight.sideRewarded);
+}
 function updateBossFight(dt){
-  const fight=bossFightState();if(!fight||fight.cleared)return;
+  const fight=bossFightState();if(!fight)return;
+  if(fight.cleared){
+    // A saved/interrupted clear may preserve old locked door flags after the
+    // boss died. Recover the original room-door owner without paying twice.
+    const boss=bossEnemyForFight(fight);
+    const otherLockdown=Boolean(
+      (host.memoryPuzzle?.roomId===fight.roomId&&host.memoryPuzzle.lockdownActive&&!host.memoryPuzzle.solved)||
+      (host.sigilRoomId===fight.roomId&&host.sigilLockdown&&!host.sigilResolved)
+    );
+    if(!boss?.alive&&!otherLockdown){
+      const stale=(host.doors||[]).some(d=>d.type==="room"&&d.roomId===fight.roomId&&d.locked);
+      if(stale){
+        SYS.lockRoomDoors(host,fight.roomId,false);
+        const groups=new Set();
+        for(const door of host.doors||[])if(door.type==="room"&&door.roomId===fight.roomId){
+          const id=String(door.groupId||door.id||door.x+","+door.y);
+          if(groups.has(id))continue;
+          groups.add(id);beginDoorOpening(door,900);
+        }
+        host.revision=(Number(host.revision)||0)+1;
+      }
+    }
+    reconcileBossRewards(fight);return;
+  }
   const boss=bossEnemyForFight(fight);if(!boss||!boss.alive){
     fight.cleared=true;fight.triggered=false;SYS.lockRoomDoors(host,fight.roomId,false);
     for(const d of host.doors||[])if(d.type==="room"&&d.roomId===fight.roomId)beginDoorOpening(d,900);
-    if(!fight.rewarded){
-      fight.rewarded=true;score+=fight.floor===15?5000:2500;
-      const room=world.rooms[fight.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
-      host.chests.push({id:`r114-boss-chest-f${fight.floor}`,...q,locked:false,active:true,depth:(room.depth||0)+18,roomId:fight.roomId,r114BossReward:true});
-      if(fight.floor===5)host.items.push({id:`r114-boss-map-${Date.now()}`,x:q.x+1,y:q.y,kind:"mapReveal",active:true,title:"CARTOGRAPHER'S EYE"});
-      if(fight.floor===10)host.items.push({id:`r114-boss-sack-${Date.now()}`,x:q.x-1,y:q.y,kind:"magicSack",active:true,title:"MAGIC SACK"});
+    if(!fight.rewardPaid&&!fight.rewarded){
+      fight.rewardPaid=true;score+=fight.floor===15?5000:2500;
     }
-    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":"The arena doors reopen. A high-tier boss cache has appeared.","green",10000);host.revision++;return
+    const rewardReady=reconcileBossRewards(fight,true);
+    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":rewardReady?"The chamber doors reopen. Your boss reward is available.":"The chamber doors reopen. Your boss reward is reserved until a reachable tile is free.","green",10000);host.revision++;return
   }
   if(!fight.triggered)return;
   const pct=Math.max(0,Number(boss.hp||0)/Math.max(1,Number(boss.maxHp||1))),phase=pct<=.30?3:pct<=.65?2:1;
@@ -950,7 +1090,12 @@ function update(dt){
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
   for(const p of localPlayers())if(p&&Number(p.health)<=0)enforceCanonicalDeathState(p);
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
+  // Pick up teleport/knockback changes made outside a deliberate movement.
+  reconcileSequenceTorchOccupants();
   enemyCD-=dt;
+  // The existing recovery owner retries a serialized stolen stash if the
+  // first return was blocked; it throttles work and cannot reaward score.
+  if(host?.weightBridge?.thiefDefeated&&(host.weightBridge.stolenItems||[]).length)recoverBridgeThiefStash(null,p1);
   const pauseProjectileCadenceHeld=Boolean(window.__CCG_PAUSE_PROJECTILE_CADENCE_HELD__);
   if(pauseProjectileCadenceHeld){
     projectileCD=0;
@@ -978,7 +1123,7 @@ function update(dt){
     }
     projectileCD=0
   }else if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendCD=100}if(worldCD<=0){worldCD=350}
-  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);reconcileSequenceTorchOccupants();updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
   updateActiveTrapContacts("simulation-post");
