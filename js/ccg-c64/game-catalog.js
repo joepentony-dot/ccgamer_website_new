@@ -160,7 +160,12 @@ function searchRank(forms, query) {
   if (query.core && forms.core === query.core) return 1;
   if (query.compact.length >= 4 && forms.compact === query.compact) return 1;
   if (forms.literal.startsWith(query.literal)) return 2;
-  if (query.core && forms.core.startsWith(query.core + " ")) return 2;
+  if (query.core && forms.core.startsWith(query.core + " ") &&
+      forms.numbers === query.numbers) return 2;
+  // A full archive subtitle may not exist in the shorter emulator display name.
+  // Only suggest it when the game/version prefix and explicit numbers agree.
+  if (forms.core.length >= 7 && query.core.startsWith(forms.core + " ") &&
+      forms.numbers === query.numbers) return 3;
   const index = forms.literal.indexOf(query.literal);
   if (index >= 0) return index === 0 ? 2 : forms.literal.charAt(index - 1) === " " ? 3 : 4;
   if (query.core && forms.core.includes(query.core)) return 3;
