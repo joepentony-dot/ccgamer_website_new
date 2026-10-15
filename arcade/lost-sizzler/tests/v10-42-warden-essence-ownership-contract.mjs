@@ -10,7 +10,7 @@ const death={id:"death-stalker-test",x:4,y:2,alive:true,deathStalker:true,armor:
 const pursuer={id:"ordinary-pursuer",x:5,y:2,alive:true,armor:2,moveCooldown:700};
 const host={enemies:[death,pursuer],stalker:null,chests:[],timedRooms:[],revision:0};
 const run={floor:3,alert:0,stats:{kills:0}};
-const world={rooms:[null,{id:1,x:0,y:0,w:11,h:11,depth:6},{id:2,x:20,y:0,w:11,h:11,depth:7}]};
+const world={map:Array.from({length:12},()=>Array(32).fill(0)),rooms:[null,{id:1,x:0,y:0,w:11,h:11,depth:6},{id:2,x:20,y:0,w:11,h:11,depth:7}]};
 const roomAt=(w,x)=>Number(x)<12?1:Number(x)>=20?2:-1;
 const context={
   console,
@@ -28,7 +28,7 @@ const context={
   host,run,world,p1,p2,mode:"playing",score:0,shake:0,
   localPlayers:()=>[p1,p2],
   P:{purple:"purple",gold:"gold",white:"white"},
-  W:{roomAt},
+  W:{roomAt,playerWalkable:(map,x,y)=>map[y]?.[x]===0},
   S:{sfx:()=>{},setStalkerNear:()=>{}},
   showToast:()=>{},broadcastWorld:()=>{},burst:()=>{},ring:()=>{},floatText:()=>{},
   isDeathStalkerEnemy:enemy=>Boolean(enemy?.deathStalker),
@@ -72,3 +72,135 @@ assert.equal(pursuer.memoryMs,2800,"Aftershock pursuit should keep the existing 
 assert.equal(pursuer.moveCooldown,500,"Aftershock pursuit should keep the existing movement-pressure ceiling");
 
 console.log("PASS v10-42 Warden P2 kill keeps operational Essence on P1 and Aftershock pursuit split-safe");
+
+// Solo P0 regression: real damage/death, inventory and Warden owners. Only
+// presentation/audio/network side effects are inert; no mocked killing blow.
+const readOwner=name=>fs.readFileSync(new URL(`../js/${name}.js`,import.meta.url),"utf8");
+function soloEncounter(){
+  let now=10000;const ticks=[];
+  const ctx={window:{},console,document:{querySelector:()=>null,querySelectorAll:()=>[]},
+    performance:{now:()=>now},setInterval:fn=>(ticks.push(fn),ticks.length),clearInterval(){},addEventListener(){},
+    setTimeout(){},mode:"playing",score:0,shake:0,stats:{},UI:{},explored:new Map(),
+    S:{sfx(){},setStalkerNear(){}},P:{purple:"purple",gold:"gold",white:"white",orange:"orange",blue:"blue",cyan:"cyan",pink:"pink"},
+    showToast(){},broadcastWorld(){},sync(){},burst(){},ring(){},floatText(){},onFX(){},
+    knockEnemyAway(){},updateQuests(){},OVERRIDES:{images:{}},
+    awardXP:(p,xp)=>{p.totalXp=(p.totalXp||0)+xp}
+  };
+  vm.createContext(ctx);
+  for(const name of ["config","world","progression","systems"])vm.runInContext(readOwner(name),ctx,{filename:`${name}.js`});
+  ctx.C=ctx.window.CCG_CONFIG;ctx.W=ctx.window.CCGWorld;ctx.PGR=ctx.window.CCGProgression;ctx.SYS=ctx.window.CCGSystems;
+  ctx.p1={id:"p1",name:"Solo",x:2,y:2,level:1,totalXp:0,inventory:[],inventorySlots:3,health:10,maxHealth:10,mana:0,maxMana:100};
+  ctx.localPlayers=()=>[ctx.p1];
+  ctx.run={floor:4,alert:0,stats:{kills:0},v142WardenFloors:{}};
+  ctx.world={map:Array.from({length:13},(_,y)=>Array.from({length:13},(_,x)=>x&&y&&x<12&&y<12?0:1)),rooms:[{id:0,x:1,y:1,w:10,h:10,depth:8}]};
+  const death={id:"death-stalker-floor-4",x:5,y:5,kind:"ghost",alive:true,hp:10,maxHp:10,deathStalker:true,voidStalker:true};
+  const guardian={id:"guardian",x:6,y:5,kind:"guardian",alive:true,hp:4,maxHp:4,guardian:true};
+  const count={id:"count-loadula",x:8,y:5,awake:true,hp:20,maxHp:20,spawnTimer:0};
+  ctx.host={enemies:[death,guardian],guardian,stalker:count,items:[],chests:[],deathCaches:[],switches:[],shrines:[],doors:[],shops:[],generators:[],timedRooms:[],blockingDecor:[],revision:0};
+  vm.runInContext(readOwner("game-local-runtime"),ctx,{filename:"game-local-runtime.js"});
+  const gameplay=readOwner("game-play"),hitStart=gameplay.indexOf("function hitStalker(b){"),hitEnd=gameplay.indexOf("\nfunction projectilePathClear",hitStart);
+  assert.ok(hitStart>=0&&hitEnd>hitStart,"Real Count projectile owner must be available");
+  vm.runInContext(gameplay.slice(hitStart,hitEnd),ctx,{filename:"game-play.js::hitStalker"});
+  vm.runInContext(source,ctx,{filename:"v10-42-warden-purpose-overhaul.js"});
+  const tick=()=>{for(const fn of ticks)fn()};
+  return{ctx,death,guardian,count,tick,advance:ms=>{now+=ms;tick()}};
+}
+
+const pair=soloEncounter(),c=pair.ctx;
+c.damageEnemy(pair.death,999,"energy",c.p1);
+assert.equal(pair.death.hp,10,"Sealed Death Stalker must retain ordinary-fire immunity");
+c.damageEnemy(pair.guardian,999,"energy",c.p1);
+assert.equal(pair.guardian.alive,false,"Ordinary guardian alongside Stalker needs no Flask");
+assert.equal(c.run.stats.kills,1,"Guardian defeat must be recorded once");
+assert.equal(c.activateBanishment(c.p1),false,"No-charge activation must not break either supernatural ward");
+assert.equal(pair.death.v142WardBroken,undefined);
+c.PGR.inventoryAdd(c.p1,{kind:"banishment",qty:1});
+assert.equal(c.activateBanishment(c.p1),true);
+assert.equal(c.PGR.inventoryKindCount(c.p1,"banishment"),0,"One ward consumes exactly one charge");
+assert.equal(pair.death.alive,true,"Ward break permits combat; it does not grant a free kill");
+assert.equal(pair.count.v142WardBroken,undefined,"Nearest-target activation must not break the second supernatural ward");
+c.damageEnemy(pair.death,999,"energy",c.p1);
+assert.equal(pair.death.alive,false);
+assert.equal(pair.death.v142WardenDefeated,true);
+assert.equal(c.run.stats.kills,2);
+assert.deepEqual(Array.from(c.host.defeatedDeathStalkers),[pair.death.id]);
+assert.equal(c.score,900+7500,"Paired ordinary guardian and Warden retain their separate rewards");
+assert.equal(c.p1.totalXp,100+250);
+for(let i=0;i<4;i++){c.damageEnemy(pair.death,999,"energy",c.p1);c.damageEnemy(pair.guardian,999,"energy",c.p1);pair.advance(2100)}
+assert.equal(c.run.stats.kills,2,"Repeated combat/ticks must not revive or re-reward defeated actors");
+assert.equal(c.host.chests.length,1);
+assert.equal(c.score,8400);
+assert.equal(c.p1.banishmentEssence,1);
+
+function killAtOccupiedCell(kind){
+  const fixture=soloEncounter(),{ctx,death}=fixture;
+  const occupied={x:death.x,y:death.y,active:true,alive:true,id:"occupied"};
+  if(kind==="player"){ctx.p1.x=death.x;ctx.p1.y=death.y}
+  else if(kind==="count"){fixture.count.x=death.x;fixture.count.y=death.y}
+  else if(kind==="rescue")ctx.host.rescue={...occupied};
+  else ctx.host[kind].push({...occupied});
+  ctx.permanentlyBanish(death,ctx.p1);ctx.damageEnemy(death,999,"energy",ctx.p1);
+  const cache=ctx.host.chests.find(chest=>chest.v142WardenCache);
+  assert.ok(cache,`${kind}: a reachable alternate should receive the Warden Cache`);
+  assert.notEqual(`${cache.x},${cache.y}`,`${occupied.x},${occupied.y}`,`${kind}: reward must not overlap active occupancy`);
+  assert.equal(ctx.W.playerWalkable(ctx.world.map,cache.x,cache.y,ctx.host),true);
+  fixture.advance(2100);
+  assert.equal(ctx.host.chests.filter(chest=>chest.v142WardenCache).length,1,`${kind}: no duplicate reward`);
+}
+for(const kind of ["generators","enemies","items","chests","deathCaches","switches","shrines","doors","shops","rescue","player","count"])killAtOccupiedCell(kind);
+
+for(const list of ["enemies","generators","items","chests","deathCaches"]){
+  const fixture=soloEncounter(),{ctx,death}=fixture;
+  ctx.host[list].push({x:death.x,y:death.y,active:false,alive:false});
+  ctx.permanentlyBanish(death,ctx.p1);ctx.damageEnemy(death,999,"energy",ctx.p1);
+  const cache=ctx.host.chests.find(q=>q.v142WardenCache);
+  assert.equal(cache.x,death.x,`${list}: inactive/dead occupancy must free the original kill tile`);
+  assert.equal(cache.y,death.y);
+}
+
+const deferred=soloEncounter(),d=deferred.ctx;
+d.openChest=(_player,chest)=>{chest.active=false;return true};
+vm.runInContext(readOwner("v10-42-warden-domain-progression"),d,{filename:"v10-42-warden-domain-progression.js"});
+// All reachable reward cells occupied; a physically free tile behind a locked
+// door must never be selected merely because it is close to the enemy.
+for(let y=1;y<12;y++)for(let x=1;x<12;x++)d.host.items.push({x,y,active:true});
+d.host.items=d.host.items.filter(q=>q.x!==10);
+for(let y=1;y<12;y++)d.world.map[y][9]=1;
+d.world.map[5][9]=0;d.host.doors=[{id:"sealed",x:9,y:5,locked:true,open:false}];
+d.permanentlyBanish(deferred.death,d.p1);d.damageEnemy(deferred.death,999,"energy",d.p1);
+assert.equal(d.host.chests.length,0,"No cache may spawn on occupied cells or across the sealed route");
+assert.equal(deferred.death.v142WardenCachePending,true);
+assert.equal(d.score,7500,"Completed kill reward is retained even while cache placement is reserved");
+// Domain resolution can happen before the reserved cache is placed.
+deferred.tick();
+assert.equal(d.run.v142WardenFloors["4"].resolvedSourceId,deferred.death.id);
+assert.equal(d.run.v142SealFragments,1,"Actual domain cleansing must award only its kill half before cache placement");
+d.host.items.find(q=>q.x===5&&q.y===5).active=false;
+deferred.advance(1999);
+assert.equal(d.host.chests.length,0,"Retry is bounded, not a search on every maintenance tick");
+d.mode="paused";deferred.advance(1);
+assert.equal(d.host.chests.length,0,"Paused game must not place a reserved reward");
+d.mode="playing";deferred.tick();
+assert.equal(d.host.chests.length,1,"Vacated reachable tile should release the reserved cache");
+assert.equal(d.host.chests[0].x,5);assert.equal(d.host.chests[0].y,5);
+assert.equal(d.host.chests[0].v142SealEligible,true,"Deferred domain cache must retain its Seal Fragment eligibility");
+assert.equal(d.host.chests[0].v142WardenFloor,4);
+d.openChest(d.p1,d.host.chests[0]);
+assert.equal(d.run.v142SealFragments,2,"Actual domain chest-open owner must award the deferred cache half");
+d.openChest(d.p1,d.host.chests[0]);deferred.advance(2100);
+assert.equal(d.run.v142SealFragments,2,"Repeated opening/ticks cannot duplicate the deferred Seal Fragment");
+assert.equal(d.host.chests.length,1,"Opening the cache must not recreate it");
+assert.equal(d.score,7500);assert.equal(d.p1.totalXp,250);assert.equal(d.p1.banishmentEssence,1);
+deferred.death.v142WardenCachePending=true;deferred.death.v142WardenCacheRetryAt=0;deferred.tick();
+assert.equal(deferred.death.v142WardenCachePending,false,"Restored pending flag must reconcile an already-created/opened cache");
+assert.equal(d.host.chests.length,1);
+
+const countKill=soloEncounter(),k=countKill.ctx;
+k.permanentlyBanish(countKill.count,k.p1);
+k.hitStalker({x:countKill.count.x,y:countKill.count.y,power:999,owner:"p1"});
+assert.equal(countKill.count.permanentlyBanished,true,"Count defeat must retain its permanent no-respawn state");
+assert.equal(countKill.count.awake,false);
+assert.equal(k.host.chests.length,1,"Count and Death Stalker use the same safe cache owner");
+countKill.advance(2100);
+assert.equal(k.run.stats.kills,1);assert.equal(k.host.chests.length,1);
+console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");

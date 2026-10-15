@@ -153,7 +153,8 @@ assert.equal(generatedTrialSamples,28,"Exercise all seven authored trial floors 
 const rewardWalk=(m,x,y)=>m[y]?.[x]===0;
 function rewardFixture(map,items=[],overrides={}){
   const h={items:items.map(([x,y])=>({x,y,active:true})),
-    enemies:[{x:5,y:7,alive:true}],generators:[{x:7,y:5,active:true}],
+    // Canonical generators use alive (world.generatorAt), not item.active.
+    enemies:[{x:5,y:7,alive:true}],generators:[{x:7,y:5,alive:true}],
     chests:[{x:3,y:5,active:true}],switches:[],shrines:[],doors:[],shops:[],revision:0,
     floorTrial:{kind:"tape-relays",floor:6,label:"TAPE RELAYS",progress:4,target:4,lastPos:{x:5,y:5},rewarded:false}};
   Object.assign(h,overrides);
