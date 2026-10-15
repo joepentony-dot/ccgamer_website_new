@@ -207,3 +207,49 @@ The owner should be told the build is ready for full gameplay testing only when:
 8. Run the owner manual acceptance list on the deployed final candidate.
 
 Do not delete an item from this file merely because a PR once existed. Move it to COMPLETE only when current main/runtime or an explicitly external completed action proves it.
+
+---
+
+## 10. 15 October 2026 — authoritative owner intake / P0-first guarded audit
+
+**Intake:** [owner's full 14–15 October request](https://github.com/joepentony-dot/ccgamer_website_new/pull/2705#issuecomment-6180930995). This section supplements, and does **not** replace, historical sections 1–9. Older labels such as COMPLETE refer to prior code milestones, not fresh owner acceptance of the newly reported faults. Do not revive retired two-player or arena gameplay.
+
+**Snapshot, not release qualification:** website `main` `cdc6a3b9f0d509da8231e561f552ceb0871292d6`; cumulative **OPEN DRAFT** PR #2705 head `eb96b8e25e7227737bba317dcf707168a19d5918`, 44 commits ahead and 11 behind main, 27 changed candidate paths. Main and candidate both change the two Dungeon public `index.html` files: integration must preserve main's development/registration notice. The three other open PRs at snapshot are #2778 (composer SEO), #2779 and #2780 (emulator links); no cross-scope edits or merges were made. The GitHub commit-workflow lookup returned no PR-triggered runs for this exact candidate head, and combined legacy statuses were empty. Therefore **zero current-head full-suite qualification** is claimed. Independent published-main/browser reports also identify a red solo-combat endurance contract (named defeat exactly once / Space attack input ownership); investigate it, do not dismiss it as flaky.
+
+**Status key:** Y = established for the **specific new request**; P = partial source implementation or prior narrow test, not full owner scenario; N = not established; B = blocked. **R** reported, **Rep** reproduced, **I** implemented on cumulative draft or preserved source, **T** regression-tested for the specific scenario, **Q** qualified at exact current PR head, **M** merged to main, **D** deployed as accepted candidate, **O** owner-accepted. P in the implementation column does not imply the requested behaviour works. Earlier released features and old CI do not advance Q/M/D/O for this intake.
+
+| # | Priority / new owner request | R | Rep | I | T | Q | M | D | O |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | P0 Guardian Maw + Death Stalker paired death, respawn, single Stalker per floor, liveness | Y | N | P | N | N | N | N | N |
+| 2 | P0 Count Loadula, 2/3 generators, locked guardian room, missing Flask escape | Y | N | P | P | N | N | N | N |
+| 3 | P0 bridge thief one-time stolen inventory, mobile roaming/fleeing, minimap, exact recovery and Flask HUD | Y | N | P | N | N | N | N | N |
+| 4 | P0 reward chest occupied-tile collision and reachable fallback | Y | Y* | Y | P | N | N | N | N |
+| 5 | P0 Floor 4 torch re-entry after forced displacement | Y | N | P | P | N | N | N | N |
+| 6 | P0 Alchemist three Artefacts/Essence, post-payment freed slot, atomic single Flask, unchanged Gold/Score | Y | P | P | P | N | N | N | N |
+| 7 | P1 Superior Torch and general stronger wearable swap, no loss/duplication, save continuity | Y | N | N | N | N | N | N | N |
+| 8 | P1 full helmet/gloves/boots, equipped hero identity | Y | N | P | N | N | N | N | N |
+| 9 | P1 crates/furniture collision and visual footprints | Y | N | P | P | N | N | N | N |
+| 10 | P1 coloured minimap, single YOU triangle, Sanctuary/Key/Sigil/Cache/Warden/Exit/thief icons | Y | P | P | N | N | N | N | N |
+| 11 | P1 replace placeholder torches/keys/switches/potions/traps/interactables with provenanced sprites | Y | N | P | N | N | N | N | N |
+| 12 | P1 Scout rescued voice once, objective/timed/door feedback | Y | P | P | P | N | N | N | N |
+| 13 | P2 premium 15-floor environmental art, animation, lighting, performance/licensing | Y | N | P | N | N | N | N | N |
+| 14 | P2 recover all 16 **original** owner MP3s and verify soundtrack transitions | Y | B | B | B | N | N | N | N |
+| 15 | P2 older RPG/endgame/tutorial/HUD/fullscreen/solo Windows installer requests | Y | P | P | P | N | N | N | N |
+
+\* **Chest source reproduction only:** the former R115 `rewardCell()` returned an unvalidated fallback (potentially the player/objective tile) when six neighbouring candidates were occupied. Commit `eb96b8e25e7227737bba317dcf707168a19d5918` changes the search to reachable unoccupied tiles and defers reward/score if none exists. An earlier source-executed fixture and an extended existing R87 Node regression were recorded in [the PR discussion](https://github.com/joepentony-dot/ccgamer_website_new/pull/2705#issuecomment-6181853566). Neither full 15-floor/browser/Windows nor owner seed has passed on the current head.
+
+### New source observations and remaining falsification tests
+
+- `systems.js` currently creates **Count Loadula as `host.stalker`** and one separately modelled **Death Stalker in `host.enemies`** per generated floor, then calls `enforceDeathStalkerSingleton` during decoration. The helper filters duplicate `deathStalker && voidStalker` records and retains the first. This **does not** prove the owner saw no duplicate encounter after death, save, respawn or late spawn. Verify canonical permanent-banishment, both classes' kill bookkeeping, no duplicate spawn from later wrappers, and reachable progression without a second Flask. The current save UI describes **floor-entry checkpoint restore, not a mid-combat quick save**; test that actual behaviour explicitly.
+- `game-play.js` includes a guarded recovery of `sigilLockdown` with no living defenders, but that **does not** solve an incomplete 2/3-generator objective or a room with a living inaccessible defender. The actual owner save/seed and Windows crash trace remain missing. Build separate positive and negative objective/door/defender fixtures, including inaccessible generator and Flask exhaustion.
+- `game-render.js` `renderRadarPanel` currently declares `playerMarker.shape: "square"` and draws a cyan square, not the requested single triangle; it has no `bridgeThief` minimap marker. The current Key is a circle and Death Cache is an X, so the new icon specification is **not** complete despite earlier minimap milestones. Respect earned discovery, current coordinates and small/mobile dimensions when correcting it.
+- `game-play.js` `bridgeStashedItems` collects active `dropped-` items with `carriedItem` around the bridge and marks them stolen; `spawnBridgeThief` creates an ordinary ambusher-labelled actor. No proof yet that the theft touches only the intended stacks, preserves the Banishment HUD, moves away across rooms, or recovers items exactly once after reload. Reproduce inventory quantities and minimap position through a full bridge cycle before editing the live thief AI.
+- The source has a dedicated `v10-42-artefact-shop-stability.js` transaction wrapper and narrow capacity/rollback tests. The owner must still test **three real Artefacts/Essence with every unlocked slot initially occupied**, exactly one Flask, no prerequisite Gold Flask and unchanged Gold/Score. Distinguish physical legacy Artefacts from Vessel Essence and test both rollback and successful slot-release cases.
+- The published-main six-shard browser report [PR comment](https://github.com/joepentony-dot/ccgamer_website_new/pull/2705#issuecomment-6193040260) cites `v10-42-live-solo-combat-endurance.mjs` failures on runs 38666514685 and 38669465532 (named-defeat accounting and Space input). They are separate release blockers, not evidence that the new draft passes.
+
+### Guarded next actions
+
+1. **P0 first:** isolate simultaneous guardian/Stalker and objective-lock scenarios using real source/runtime and deterministic fixtures, preserving the solo campaign; extend existing tests rather than adding a new tiny regression file per fix. Do not equate a floor-start checkpoint with a live encounter save.
+2. Inspect the current-main versus candidate overlap on both Dungeon public index pages **before any integration**. Preserve the live development notice, registration protections and all unrelated website/SEO/emulator changes. No blind restack or forced ref update.
+3. Resolve the solo-combat endurance failure and run exact-head Node plus six Chromium shards, relevant site/SEO/cache/package/itch and Windows installed-EXE save migration checks, independent review and owner acceptance **before** merging. A draft head moving again resets Q.
+4. Original 16 owner MP3s remain **BLOCKED** pending authorised Supabase access, verified binaries and rights/provenance. Do not substitute generated tracks or publish a commercial package. Preserve existing saves, appId `uk.co.cheekycommodoregamer.dungeoncarnage`, `127.0.0.1:47731` and `%APPDATA%\\C64 Dungeon Carnage` continuity.
