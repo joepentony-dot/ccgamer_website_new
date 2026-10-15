@@ -9,7 +9,7 @@ const canonicalEntry = fs.readFileSync("arcade/c64-dungeon-carnage/index.html", 
 const legacyEntry = fs.readFileSync("arcade/lost-sizzler/index.html", "utf8");
 const round2Migration = fs.readFileSync("supabase/migrations/20261002203000_dungeon_carnage_beta_round2_closed_cohort.sql", "utf8");
 const publicMigration = fs.readFileSync("supabase/migrations/20261007034000_dungeon_carnage_public_24h_playtest_link.sql", "utf8");
-const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261007-public24h-v1";
+const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261015-development-v1";
 const gameCore = fs.readFileSync("arcade/lost-sizzler/js/game-core.js", "utf8");
 
 assert(!gate.includes("TESTER_SESSION_KEY"), "public playtest must not revive the retired tester-code session path");
