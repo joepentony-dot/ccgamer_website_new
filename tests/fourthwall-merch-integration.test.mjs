@@ -16,7 +16,12 @@ test("homepage advertises the existing Fourthwall shop below community and befor
     assert.ok(html.includes('rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style"'));
     assert.ok(html.includes('<noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css"'));
     const panel = html.slice(start, support);
+    assert.match(panel, /<section[^>]*class="home-merch-promo ccg-chapter"[^>]*>\s*<a class="home-merch-promo__link"/);
     assert.ok(panel.includes('href="' + SHOP + '"'));
+    assert.ok(panel.indexOf('home-merch-promo__title') > panel.indexOf('home-merch-promo__link'));
+    assert.ok(panel.indexOf('home-merch-promo__action') < panel.lastIndexOf('</a>'));
+    assert.doesNotMatch(panel, /<a\b[^>]*class="home-merch-promo__action"/);
+    assert.equal((panel.match(/<a\b/g) || []).length, 1, "one full-panel link");
     assert.match(panel, /target="_blank" rel="noopener noreferrer"/);
     assert.match(panel, /data-ccg-revenue-link="fourthwall-merch"/);
     assert.ok(panel.includes('id="home-merch-title"'));
@@ -27,13 +32,16 @@ test("merch promotion leaves canonical homepage navigation untouched", () => {
     const html = read("home.html");
     const core = read("js/ccg-nav-core.js");
     assert.doesNotMatch(core, /fourthwall\.com/);
-    assert.equal(html.split(SHOP).length - 1, 1, "only the dedicated CTA should point to Fourthwall");
+    assert.equal(html.split(SHOP).length - 1, 1, "only the full-panel link should point to Fourthwall");
     assert.ok(html.includes('<li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>'));
 });
 
 test("merchandise styles are scoped and don't alter archive tiles or create heavy embeds", () => {
     const css = read("resources/css/home-fourthwall-merch.css");
     assert.match(css, /html\[data-ccg-page="home"\] \.home-merch-promo/);
+    assert.match(css, /\.home-merch-promo__link\s*\{/);
+    assert.match(css, /\.home-merch-promo__link:focus-visible/);
+    assert.match(css, /\.home-merch-promo:focus-within/);
     assert.doesNotMatch(css, /ccg-card|home-archive-route|home-video-card|object-fit|position:\s*fixed/);
     assert.doesNotMatch(css, /@import|url\(|animation:/i);
 });
