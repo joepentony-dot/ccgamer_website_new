@@ -54,7 +54,14 @@ HTML = (
     '<div class="game-quick-actions" data-game-quick-actions>'
     '<button>Watch</button><button>Share</button><button>Subscribe</button></div>'
     '</main><footer class="ccg-footer"><p>Copyright CCG</p></footer>'
-    '</body></html>'
+    '<div class="ccg-back-to-top-wrap" data-ccg-back-to-top-wrap><button>↑</button></div>'
+    '<div class="ccg-floating-nav ccg-floating-nav--visible"><nav class="ccg-floating-nav__bar">'
+    + ''.join(
+        '<a class="ccg-floating-nav__btn" data-ccg-floating-section="' + label.lower() + '" href="#">'
+        '<span class="ccg-floating-nav__icon">◉</span>'
+        '<span class="ccg-floating-nav__label">' + label + '</span></a>'
+        for label in ("Home", "Games", "Genres", "Collections", "Top")
+    ) + '</nav></div></body></html>'
 )
 
 def run(browser, width, height):
@@ -96,6 +103,17 @@ def run(browser, width, height):
             assert page.locator(".ccg-behind-pixels-inline__list").evaluate(
                 "(n)=>getComputedStyle(n).gridTemplateColumns.trim().split(/\s+/).length"
             ) == 1, f"{width}: credits must use one full-width record per row"
+            for nav in page.locator(".ccg-floating-nav__btn").all():
+                measures = nav.evaluate("""n => {
+                  const label=n.querySelector('.ccg-floating-nav__label');
+                  return {text:label.textContent, required:label.scrollWidth, available:label.clientWidth};
+                }""")
+                assert measures["required"] <= measures["available"] + 1, (
+                    f"{width}: floating nav label overflows: {measures}"
+                )
+            assert page.locator(".ccg-back-to-top-wrap").evaluate(
+                "(n)=>getComputedStyle(n).display"
+            ) == "none", f"{width}: duplicate TOP button overlaps footer links"
             for row in page.locator(".ccg-behind-pixels-inline__item").all():
                 metrics = row.locator("dd").evaluate("""n => {
                   const range=document.createRange();range.selectNodeContents(n);
