@@ -98,10 +98,16 @@ test("the website accepts shortened terms and misspellings without unrelated gam
 });
 
 test("C64/Amiga filter and page identity remain unchanged", () => {
-  const target = fixtures.find(game => game.title === "The Captive");
-  assert.equal(target.system, "AMIGA");
-  assert.ok(archiveLookup(fixtures, "Captive The", "amiga").includes("The Captive"));
-  assert.ok(!archiveLookup(fixtures, "Captive The", "c64").includes("The Captive"));
+  const c64Target = fixtures.find(game => game.title === "The Captive");
+  const amigaTarget = fixtures.find(game => game.title === "B.C. II: Grog's Revenge");
+  assert.equal(c64Target.system, "C64");
+  assert.equal(amigaTarget.system, "AMIGA");
+  assert.ok(archiveLookup(fixtures, "Captive The", "c64").includes("The Captive"));
+  assert.ok(!archiveLookup(fixtures, "Captive The", "amiga").includes("The Captive"));
+  assert.ok(archiveLookup(fixtures, "BC II - Grog's Revenge", "amiga")
+    .includes("B.C. II: Grog's Revenge"));
+  assert.ok(!archiveLookup(fixtures, "BC II - Grog's Revenge", "c64")
+    .includes("B.C. II: Grog's Revenge"));
   assert.match(globalSearch, /"Games", "Game", findGameMatches\(state\.games, query\)/);
   assert.match(globalSearch, /"Publishers", "Publisher", findMatches\(state\.publishers, query\)/);
   assert.match(globalSearch, /MAX_GROUP_RESULTS\s*=\s*8/);
