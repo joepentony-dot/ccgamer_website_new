@@ -20,13 +20,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Require this isolated branch to be current with main
+      - name: Reject conflicting main changes while allowing unrelated SEO updates
         shell: bash
         run: |
           test "$(git branch --show-current)" = "codex/c64-blast-prg-physical-repack-20261016"
           test -z "$(git status --porcelain)"
           git fetch origin main
-          test "$(git rev-list --count HEAD..origin/main)" = 0
+          base="$(git merge-base HEAD origin/main)"
+          test -n "$base"
+          test -z "$(git diff --name-only "$base" origin/main -- emulator/c64/media/blast emulator/c64/library.json emulator/c64/media/cartridge-replacements/active.json)"
       - name: Read-only audit with original BLAST pack bytes
         run: |
           node --check scripts/ccg-repack-retired-c64-prgs.mjs
