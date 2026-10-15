@@ -1,3 +1,8 @@
+## Dungeon #2705 atomic Warden charge settlement — 15 October 2026
+
+- Reproduced the active Warden override's failure to verify charge removal/refund when `breakWard` refuses or throws. Guarded candidate snapshots serializable inventory and only pays one charge after a genuine Ward Break; existing Warden Essence test extended for removal failure, unexpected item, exception, changed target, retry and normal exact-once flow. Focused pre-fail/post-pass V8 source tests only; full Node/Chromium/Windows not qualified.
+- Current-head separate topology check sampled 72 generator floors with ordinary room doors open and optional locks intact; all three generators reachable in these samples. Original Count Loadula 2/3 softlock remains unproven against owner's save, so no generator layout change. One Dungeon draft only, no merge/deploy/paid CI; owner music remains blocked.
+
 ## Dungeon #2705 Floor 4 torch forced-motion re-entry guard — 15 October 2026
 
 - Reproduced stale `entryByPlayer` on knockback/teleport, which prevents legitimate re-entry to the same torch. Added a passive occupancy refresh before movement and after boulder/encounter systems; only deliberate `triggerSequenceTorch(p,true)` can activate. Extended existing R87 campaign source test for forced off/on, no auto-trigger, repeat rejection, JSON restore, 4-pad exact-once reward. Focused V8 pass only; full Node/six Chromium/Windows/owner acceptance remains outstanding.

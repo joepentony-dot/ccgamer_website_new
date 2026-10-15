@@ -203,4 +203,78 @@ assert.equal(countKill.count.awake,false);
 assert.equal(k.host.chests.length,1,"Count and Death Stalker use the same safe cache owner");
 countKill.advance(2100);
 assert.equal(k.run.stats.kills,1);assert.equal(k.host.chests.length,1);
+
+
+// P0 charge ownership: exercise actual Warden source, progression inventory
+// and live Solo encounter. A failed removal or stale ward may never charge
+// the player or leave the supernatural actor in the wrong state.
+function wardPaymentFixture(){
+  const fixture=soloEncounter(),ctx=fixture.ctx;
+  assert.equal(ctx.PGR.inventoryAdd(ctx.p1,{kind:"banishment",name:"Ward-Break Charge",qty:1}),true);
+  return fixture;
+}
+const missingPayment=wardPaymentFixture(),missing=missingPayment.ctx;
+const missingOriginalRemove=missing.PGR.inventoryRemove;
+const missingInventoryBefore=JSON.stringify(missing.p1.inventory);
+missing.PGR.inventoryRemove=(player,index)=>{
+  missingOriginalRemove(player,index,1);return null;
+};
+assert.equal(missing.activateBanishment(missing.p1),false,"No successful removal means no free ward break");
+assert.equal(JSON.stringify(missing.p1.inventory),missingInventoryBefore,"Failed payment restores exact Flask inventory");
+assert.equal(missing.death.v142WardBroken,undefined,"Failed payment must not strip Death Stalker immunity");
+assert.equal(missing.run.stats.wardsBroken||0,0);
+assert.equal(missing.score,0,"Failed Flask payment cannot award score");
+missing.PGR.inventoryRemove=missingOriginalRemove;
+assert.equal(missing.activateBanishment(missing.p1),true,"A restored charge can be spent on a valid retry");
+assert.equal(missing.PGR.inventoryKindCount(missing.p1,"banishment"),0);
+assert.equal(missing.run.stats.wardsBroken,1);
+
+const stalePayment=wardPaymentFixture(),stale=stalePayment.ctx;
+const staleOriginalRemove=stale.PGR.inventoryRemove;
+const staleInventoryBefore=JSON.stringify(stale.p1.inventory);
+stale.PGR.inventoryRemove=(player,index)=>{
+  const charge=staleOriginalRemove(player,index,1);
+  stalePayment.death.v142WardenDefeated=true; // simulate target changing after target selection
+  return charge;
+};
+assert.equal(stale.activateBanishment(stale.p1),false,"Rejected stale ward must not consume its charge");
+assert.equal(JSON.stringify(stale.p1.inventory),staleInventoryBefore,"Rejected ward must refund exact item");
+assert.equal(stale.run.stats.wardsBroken||0,0);
+assert.equal(stale.score,0);
+stale.PGR.inventoryRemove=staleOriginalRemove;
+stalePayment.death.v142WardenDefeated=false;
+assert.equal(stale.activateBanishment(stale.p1),true,"Revalidated sealed ward accepts refunded charge");
+assert.equal(stale.PGR.inventoryKindCount(stale.p1,"banishment"),0);
+assert.equal(stale.run.stats.wardsBroken,1);
+
+for(const issue of ["unexpected item","exception"]){
+  const fixture=wardPaymentFixture(),ctx=fixture.ctx,prior=JSON.stringify(ctx.p1.inventory);
+  const remove=ctx.PGR.inventoryRemove;
+  ctx.PGR.inventoryRemove=(player,index)=>{
+    const paid=remove(player,index,1);
+    if(issue==="exception")throw Error("simulated inventory interruption");
+    return{...paid,kind:"torch"};
+  };
+  assert.equal(ctx.activateBanishment(ctx.p1),false,issue+": no ward change on invalid payment");
+  assert.equal(JSON.stringify(ctx.p1.inventory),prior,issue+": exact Flask restored");
+  assert.equal(fixture.death.v142WardBroken,undefined,issue+": enemy remains sealed");
+  assert.equal(ctx.score,0,issue+": no score granted");
+  ctx.PGR.inventoryRemove=remove;
+}
+
+const exactPayment=wardPaymentFixture(),paid=exactPayment.ctx;
+const paidInitial=JSON.stringify(paid.p1.inventory);
+assert.equal(paid.activateBanishment(paid.p1),true,"Successful charge breaks one actual sealed ward");
+assert.equal(exactPayment.death.alive,true,"One Flask removes immunity, not the whole enemy");
+assert.equal(exactPayment.death.v142WardBroken,true);
+assert.equal(paid.run.stats.wardsBroken,1);
+assert.equal(paid.PGR.inventoryKindCount(paid.p1,"banishment"),0);
+assert.equal(paid.activateBanishment(paid.p1),false,"No second activation without charge");
+assert.equal(paid.PGR.inventoryAdd(paid.p1,{kind:"banishment",qty:1}),true);
+assert.equal(paid.activateBanishment(paid.p1),false,"Already-broken supernatural ward cannot eat a second charge");
+assert.equal(paid.PGR.inventoryKindCount(paid.p1,"banishment"),1);
+assert.equal(paid.run.stats.wardsBroken,1,"Exactly one recorded Ward Break");
+assert.equal(paid.score,0,"Ward Break alone must not grant kill score");
+assert.notEqual(JSON.stringify(paid.p1.inventory),paidInitial,"One-charge ownership state changes only on valid payment");
+
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
