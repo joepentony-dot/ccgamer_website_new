@@ -190,3 +190,37 @@ test("curated and generated composer social metadata are source-consistent and i
   assert.match(first, /name="twitter:description" content="Composer A&amp;F worked on the game Ghosts &#39;n Goblins\."/);
   assert.doesNotMatch(first, /&amp;amp;/);
 });
+
+test("a verified single-credit composer archive is indexable without promoting legacy fallbacks", () => {
+  const generator = require("../scripts/generate-composer-pages.js");
+  const credited = {
+    name: "Neil Crossley",
+    slug: "neil-crossley",
+    variants: ["Neil Crossley"],
+    count: 1,
+    c64Count: 1,
+    amigaCount: 0,
+    firstYear: 1991,
+    lastYear: 1991,
+    games: [{ title: "Shadow Dancer", slug: "shadow-dancer", year: 1991, system: "C64" }]
+  };
+  assert.equal(generator.INDEXABLE_MIN_GAMES, 1);
+  const [single] = generator.mergeComposerRoutes([credited], []);
+  assert.equal(single.indexable, true);
+  assert.equal(single.generated, true);
+  const html = generator.renderGeneratedComposerPage(single);
+  assert.match(html, /name="robots" content="index,follow"/);
+  assert.match(html, /rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/music\/neil-crossley\/"/);
+  assert.match(html, /href="\/games\/shadow-dancer\/"/);
+  assert.doesNotMatch(html, /name="robots" content="noindex/);
+
+  const [curated] = generator.mergeComposerRoutes([credited], [{
+    name: "Neil Crossley", slug: "neil-crossley", indexable: false
+  }]);
+  assert.equal(curated.generated, false);
+  assert.equal(curated.indexable, false, "existing curated exclusions remain preserved");
+
+  const fallback = fs.readFileSync(path.join("music", "composer.html"), "utf8");
+  assert.match(fallback, /name="robots" content="noindex,follow"/,
+    "generic query-string fallback remains excluded");
+});
