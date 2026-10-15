@@ -3236,8 +3236,15 @@ function setupQuickActionsFooterGuard(quickActions) {
         // The previous lift moved the toolbar directly across the support
         // message sitting above the footer. Retire the toolbar near the footer
         // instead; the hero and website still expose the same actions.
-        const supportClearance = Math.max(240, Math.min(400, viewportHeight * 0.42));
-        const approachingFooter = footerRect.top <= viewportHeight + supportClearance;
+        // The editorial support prompt sits above the footer rather than
+        // inside it. Check its real link visibility instead of guessing the
+        // height of intervening sections or pushing the bar over that prompt.
+        const supportPromptVisible = Array.from(document.querySelectorAll('a[href$="/support.html"]'))
+            .some(link => {
+                const rect = link.getBoundingClientRect();
+                return rect.bottom > 0 && rect.top < viewportHeight;
+            });
+        const approachingFooter = footerRect.top <= viewportHeight + 80 || supportPromptVisible;
         quickActions.classList.toggle("is-near-footer", approachingFooter);
         quickActions.style.removeProperty("--ccg-quick-actions-lift");
     };
