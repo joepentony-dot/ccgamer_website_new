@@ -1,5 +1,12 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — escape Sigil Flask reward reservation
+
+Actual procedural-overhaul `beginEscape` promised a free Flask even when real `CCGProgression.inventoryCanAdd` rejected full inventory or existing one-charge ownership. Fixed with a pending entitlement serialized on the run, delivered on the existing playing update owner after a free unlocked slot exists, with no second grant on repeat/re-entry. No new timer, duplicate state machine or Gold/Score cost. Existing R122 live Flask transaction test extended with actual progression runtime scenarios: full bag with JSON run/player state round trip, immediate delivery, currently carried charge and failed insertion/retry. User message distinguishes delivered from reserved.
+
+**Not a release sign-off:** no original owner save/seed, exact 2/3 encounter, full browser/Windows tests, external original music, independent review, merge or acceptance. Existing draft #2705 only; no unrelated website files changed and no paid CI dispatched.
+
+
 ## 15 October 2026 — P0 Timed Chamber safe hunter placement
 
 Source-level scenario proved the initial Timed Chamber trigger teleported the existing Stalker directly to the room centre even when the tile contained a player, live Guardian, living generator/enemy or active Death Cache, or when all available tiles contained active items. Revised source uses existing puzzle-floor cell walkability plus active-object exclusions and minimum player distance; chooses the centre when available, keeps the existing Stalker position if no free cell exists and preserves the 30-second challenge. The placement now synchronises `rx/ry` with `x/y`. Existing R87 campaign contract extended, including existing completed/first-entry tests and specific overlap/fallback controls. Original source fails the new overlap test; corrected source passes the isolated extracted-function controls.

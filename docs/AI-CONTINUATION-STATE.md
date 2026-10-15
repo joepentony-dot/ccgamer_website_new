@@ -1,3 +1,8 @@
+## Dungeon #2705 Sigil escape Flask reservation — 15 October 2026
+
+- Corrected the owner-visible false free-Flask success announcement in the Sigil escape sequence when capacity or one-charge ownership prevented insertion. Added serializable pending entitlement and exact-once retry through the existing procedural update owner; extended existing R122 Flask regression with full bag, JSON save/restore, already-carried, immediate and failure/retry cases. Owner's separate Alchemist and Windows Flask incident remain unresolved.
+- Draft remains unqualified and unmerged; no paid CI, public website or original-media modifications. See master audit and R137 workstream.
+
 ## Dungeon #2705 P0 Timed Chamber occupancy — 15 October 2026
 
 - Source-verified original first-entry Stalker teleport could land on a player/Guardian/active objective/cache. Fixed destination selection to use existing puzzle walkability and active-object exclusions, keeping the Stalker at its existing position if all chamber cells are taken. Extended existing R87 campaign test; pre-fail/post-pass isolated VM evidence. Windows/browser/owner encounter reproduction outstanding.
