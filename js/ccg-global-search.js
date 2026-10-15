@@ -314,6 +314,7 @@
         }
         if (candidate.core === wanted.core) return 2;
         if (wanted.compact.length >= 4 && candidate.compact === wanted.compact) return 3;
+        if (wanted.compact.length >= 4 && candidate.compact.startsWith(wanted.compact)) return 12;
         return Infinity;
     }
     function fuzzyGameTypo(title, query) {
