@@ -1,0 +1,16 @@
+Silk Dust — Commodore 64 disk image licensing and provenance
+================================================================
+
+Game author: Davide Bucci.
+Game title: Silk Dust (2021).
+Licence: GNU GPL version 3 (GPL-3.0-only), as declared in the upstream repository.
+Source repository: https://github.com/DarwinNE/Silk-Dust
+Source snapshot: https://github.com/DarwinNE/Silk-Dust/tree/d46aedc955209840a8ee6e27edc6d6c49a3c5105
+Original, unmodified binary: https://github.com/DarwinNE/Silk-Dust/blob/d46aedc955209840a8ee6e27edc6d6c49a3c5105/build/C64/silk%20dust%20c64.d64
+
+CCG's copy is stored at /emulator/c64/media/silk-dust.d64 without modification.
+Source Git blob SHA-1: 5dfca5290550fad6ef098b24d72902183977bd8b
+Disk size: 174848 bytes.
+Disk SHA-256: 4df24b97c47f5a2d317c252d79056363d71a20ec60ae6949c89724d13e82fef8
+
+The corresponding source code, build instructions and GPLv3 licence are available in the source repository above. The GPLv3 text is also hosted by CCG at /emulator/c64/GPL-3.0.txt. Preserve author credit and license when sharing this game. This entry does not alter the independent GPL obligations of the emulator runtime.

@@ -3,6 +3,18 @@
     "policy":  "Contains only games explicitly authorised for redistribution by the Cheeky Commodore Gamer website owner. Full C64 system firmware remains user-supplied. Each hosted image is checked against its supplied SHA-256.",
     "entries":  [
                     {
+                        "id": "silk-dust",
+                        "title": "Silk Dust",
+                        "filename": "silk-dust.d64",
+                        "format": "d64",
+                        "description": "Davide Bucci's four-part 2021 C64 text adventure. First program SD-LOADER launches the disk-based game; use the keyboard to enter commands.",
+                        "url": "/emulator/c64/media/silk-dust.d64",
+                        "bytes": 174848,
+                        "sha256": "4df24b97c47f5a2d317c252d79056363d71a20ec60ae6949c89724d13e82fef8",
+                        "license": "GPL-3.0-only; (c) Davide Bucci. Official source and unchanged C64 disk image: https://github.com/DarwinNE/Silk-Dust",
+                        "approved": true
+                    },
+                    {
                         "id":  "forbidden-forest",
                         "title":  "Forbidden Forest",
                         "filename":  "forbidden-forest.d64",

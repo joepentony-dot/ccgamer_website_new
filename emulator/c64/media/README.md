@@ -17,3 +17,8 @@ On 8 October 2026, the Cheeky Commodore Gamer website owner confirmed permission
 The live catalogue is `/emulator/c64/library.json` and records each listed file's SHA-256, size and redistribution attestation. The C64 emulator verification workflow checks those files directly.
 
 These five images are each single game media files. For future multi-disk games, list multiple `disks` objects in the catalogue and use the emulator's disk-side selector or **SWAP DISK** button. Changing a disk does not reset the C64.
+
+## GPLv3 game: Silk Dust
+
+`silk-dust.d64` is an unmodified 174,848-byte disk image from Davide Bucci's official [Silk Dust source repository](https://github.com/DarwinNE/Silk-Dust). It is released under GPLv3, rather than under an owner-only authorisation. The CCG catalogue records its SHA-256 and exact file length. See [`../licenses/SILK-DUST.txt`](../licenses/SILK-DUST.txt) for provenance, author credit and the corresponding source-code link.
+
