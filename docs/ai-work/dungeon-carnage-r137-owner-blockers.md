@@ -1,5 +1,12 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — P0 Timed Chamber safe hunter placement
+
+Source-level scenario proved the initial Timed Chamber trigger teleported the existing Stalker directly to the room centre even when the tile contained a player, live Guardian, living generator/enemy or active Death Cache, or when all available tiles contained active items. Revised source uses existing puzzle-floor cell walkability plus active-object exclusions and minimum player distance; chooses the centre when available, keeps the existing Stalker position if no free cell exists and preserves the 30-second challenge. The placement now synchronises `rx/ry` with `x/y`. Existing R87 campaign contract extended, including existing completed/first-entry tests and specific overlap/fallback controls. Original source fails the new overlap test; corrected source passes the isolated extracted-function controls.
+
+**Limits:** source/VM regression only, not full Node, browser, Windows, original seed or owner acceptance. No extra Stalker spawn, no player 2/arena, no public page/art/audio edits and no paid CI dispatch. Keep #2705 draft/unmerged; Q/M/D/O remain unqualified.
+
+
 ## 15 October 2026 — singleton permanent-banishment state correction
 
 Actual `systems.js::enforceDeathStalkerSingleton` chooses the first Death Stalker record even if another duplicate is already defeated, potentially retaining a live copy of a banished actor and a stale Timed Chamber hunter ID. Source-executed negative/positive fixtures proved this specific failure on the old source. The guarded change preserves the existing canonical actor, applies known permanent defeat from a duplicate or existing banishment ledger, retargets any Timed Chamber hunter reference and keeps defeat recording idempotent. Existing R87 test extended with duplicate/dead, ledger, stale single-actor restoration, canonical preference and repeated reconciliation cases. No alternative gameplay owner, new PR or extra test file.

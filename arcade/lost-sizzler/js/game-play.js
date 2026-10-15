@@ -317,7 +317,45 @@ window.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi;
 function triggerRescue(p){const r=host.rescue;if(!r||r.rescued)return;if(!r.following&&md(p,r)<=1){r.following=true;r.found=true;showToast("CCG SCOUT FOUND","Escort the scout itself into one of the permanently lit sanctuary rooms. It follows the nearest player.","green",9000);const activeRun=run;setTimeout(()=>{try{if(run===activeRun&&mode==="playing"&&r.following&&!r.rescued)window.CCGLostSizzlerVoice?.say?.("escortScout",{cooldown:0})}catch(_){}},2400)}}
 function triggerArena(p){for(const a of host.arenas||[])if(!a.triggered&&W.roomAt(world,p.x,p.y)===a.roomId){a.triggered=true;a.wave=1;SYS.lockRoomDoors(host,a.roomId,true);showToast("ARENA LOCKDOWN","Doors sealed. Survive the ambush to reopen them and earn a bonus chest.","red",7000);spawnArenaWave(a,4)}}
 function timedChamberCountdown(t=null){const node=document.getElementById("timed-chamber-countdown");if(!node)return;const active=t||((host?.timedRooms||[]).find(row=>row?.triggered&&!row?.cleared));if(!active){node.classList.add("hidden");node.textContent="TIMED CHAMBER · 30s";return}const seconds=Math.max(0,Math.ceil(Number(active.timeLeft||0)/1000));node.textContent=`TIMED CHAMBER · ${seconds}s`;node.classList.remove("hidden")}
-function triggerTimed(p){for(const t of host.timedRooms||[])if(!t.triggered&&!t.cleared&&W.roomAt(world,p.x,p.y)===t.roomId){t.triggered=true;t.timeLeft=30000;timedChamberCountdown(t);const room=world.rooms[t.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},stalker=host.enemies.find(e=>e.deathStalker&&e.voidStalker);t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));if(!alreadyDefeated){stalker.x=q.x;stalker.y=q.y;stalker.timedHunter=true;stalker.aiState="chase";stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;stalker.moveCooldown=250;stalker.attackCooldown=420;showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range — or survive until the chamber timer expires.","red",11000)}else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500)}}
+function triggerTimed(p){
+  for(const t of host.timedRooms||[])if(!t.triggered&&!t.cleared&&W.roomAt(world,p.x,p.y)===t.roomId){
+    t.triggered=true;t.timeLeft=30000;timedChamberCountdown(t);
+    const stalker=(host.enemies||[]).find(e=>e.deathStalker&&e.voidStalker);
+    t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;
+    const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));
+    if(!alreadyDefeated){
+      // Keep the floor's existing Stalker. Never teleport it into an occupied
+      // room-centre tile; if no safe tile exists, it keeps its current position.
+      const q=timedHunterSpawnCell(t.roomId,p,stalker);
+      if(q){stalker.x=q.x;stalker.y=q.y;stalker.rx=q.x;stalker.ry=q.y}
+      stalker.timedHunter=true;stalker.aiState="chase";
+      stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;
+      stalker.moveCooldown=250;stalker.attackCooldown=420;
+      showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range — or survive until the chamber timer expires.","red",11000);
+    }else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500);
+  }
+}
+function timedHunterSpawnCell(roomId,player,stalker){
+  const room=world.rooms?.[roomId];if(!room)return null;
+  const centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
+  const occupied=(rows,q,active)=>Array.isArray(rows)&&rows.some(o=>o&&active(o)&&o.x===q.x&&o.y===q.y);
+  return puzzleFloorCells(roomId).filter(q=>{
+    if(Math.abs(q.x-player.x)+Math.abs(q.y-player.y)<=1)return false;
+    if(occupied(host.items,q,o=>o.active!==false)||
+       occupied(host.chests,q,o=>o.active!==false)||
+       occupied(host.deathCaches,q,o=>o.active!==false)||
+       occupied(host.switches,q,o=>o.active!==false)||
+       occupied(host.shrines,q,o=>o.active!==false)||
+       occupied(host.shops,q,o=>o.active!==false)||
+       occupied(host.generators,q,o=>o.alive===true))return false;
+    if([host.guardian,host.stalker,host.rescue,host.trader].some(o=>o&&o.x===q.x&&o.y===q.y&&o.alive!==false&&!o.permanentlyBanished&&!o.rescued))return false;
+    return !occupied(host.enemies,q,o=>o!==stalker&&o.alive===true);
+  }).sort((a,b)=>{
+    const da=Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y);
+    const db=Math.abs(b.x-centre.x)+Math.abs(b.y-centre.y);
+    return da-db||a.y-b.y||a.x-b.x;
+  })[0]||null;
+}
 function triggerTrader(p){const shops=host.shops?.length?host.shops:[host.trader].filter(Boolean);const t=shops.find(x=>x.active&&x.x===p.x&&x.y===p.y);if(t)openShop(t,p)}
 function triggerDeathCache(p){for(const c of host.deathCaches||[])if(c.active&&c.x===p.x&&c.y===p.y){const r=PGR.recoverDeathCache(p,run,c);score+=r.score||0;S.sfx("pickup");host.revision++;const restored=r.progressionRecovered?(r.restoredSkill?` Level/stat restored: ${r.restoredSkill}.`:r.pendingLevelRestored?" Lost level entitlement restored.":r.restoredLevel?" Lost level restored.":""):"";showToast("DEATH CACHE RECOVERED",`${r.recovered} carried item${r.recovered===1?"":"s"}, ${r.games} rescued game${r.games===1?"":"s"}, ${Number(r.score||0).toLocaleString()} score and ${Number(r.xp||0).toLocaleString()} XP recovered.${restored}${r.remaining?` ${r.remaining} item${r.remaining===1?"":"s"} remain because your inventory is full.`:""}`,r.remaining?"cyan":"green",10000);if(r.levels?.length){S.sfx("level");if(Math.max(0,Number(p.pendingLevels)||0)>0)queueLevelChoice(p)}}}
 function triggerSigilRoom(p){

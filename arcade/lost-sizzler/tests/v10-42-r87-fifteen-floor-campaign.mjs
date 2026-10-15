@@ -251,20 +251,28 @@ const timedTriggerStart=gameplaySource.indexOf("function triggerTimed(p){");
 const timedTriggerEnd=gameplaySource.indexOf("function triggerTrader(p){",timedTriggerStart);
 assert.ok(timedTriggerStart>=0&&timedTriggerEnd>timedTriggerStart,"Current timed-chamber source must be available for direct execution");
 const timedTriggerOwner=gameplaySource.slice(timedTriggerStart,timedTriggerEnd);
+const timedPuzzleStart=gameplaySource.indexOf("function puzzleFloorCells(roomId){");
+const timedPuzzleEnd=gameplaySource.indexOf("function spawnPuzzleAmbush(",timedPuzzleStart);
+assert.ok(timedPuzzleStart>=0&&timedPuzzleEnd>timedPuzzleStart,"Use actual puzzle cell walkability owner");
+const timedPuzzleFloorCells=gameplaySource.slice(timedPuzzleStart,timedPuzzleEnd);
 function runTimedTriggerFixture({cleared=false,triggered=false,defeated=false,inside=true}={}){
   const chamber={id:"timed0",roomId:1,triggered,cleared,stalkerDefeated:defeated,timeLeft:0};
   const stalker={id:"death-stalker-floor-4",x:9,y:9,alive:!defeated,deathStalker:true,voidStalker:true};
-  const hostState={timedRooms:[chamber],enemies:[stalker],defeatedDeathStalkers:defeated?[stalker.id]:[]};
+  const player=inside?{x:3,y:3}:{x:0,y:0};
+  const hostState={timedRooms:[chamber],enemies:[stalker],defeatedDeathStalkers:defeated?[stalker.id]:[],
+    items:[],chests:[],deathCaches:[],switches:[],shrines:[],shops:[],generators:[]};
   let countdownCalls=0,noticeCalls=0;
-  const worldState={rooms:[null,{id:1,x:2,y:2,w:5,h:5}]};
+  const worldState={rooms:[null,{id:1,x:2,y:2,w:5,h:5}],
+    map:Array.from({length:15},()=>Array(15).fill(0))};
   const context=vm.createContext({
     host:hostState,world:worldState,run:{floor:4},
-    W:{roomAt:(_world,x,y)=>x===3&&y===3?1:0},
-    timedChamberCountdown(){countdownCalls++},
+    W:{roomAt:(_world,x,y)=>x>=3&&x<=6&&y>=3&&y<=6?1:0,
+       playerWalkable:(map,x,y,host)=>generatedWorld.playerWalkable(map,x,y,host)},
+    localPlayers:()=>[player],timedChamberCountdown(){countdownCalls++},
     showToast(){noticeCalls++}
   });
-  vm.runInContext(timedTriggerOwner,context,{filename:"game-play.js::triggerTimed",timeout:3000});
-  const player=inside?{x:3,y:3}:{x:0,y:0};
+  vm.runInContext(timedPuzzleFloorCells+timedTriggerOwner,context,
+    {filename:"game-play.js::timed-chamber",timeout:3000});
   context.triggerTimed(player);
   context.triggerTimed(player); // repeated update must not create another trigger
   return{chamber,stalker,countdownCalls,noticeCalls};
@@ -286,6 +294,51 @@ assert.equal(firstTimedEntry.stalker.y,4);
 assert.equal(firstTimedEntry.countdownCalls,1,"Repeated entry during the same active trial may not restart it");
 assert.equal(runTimedTriggerFixture({triggered:true}).countdownCalls,0,"Already-active chambers cannot retrigger");
 assert.equal(runTimedTriggerFixture({inside:false}).countdownCalls,0,"A player outside the chamber cannot trigger it");
+
+// P0 chamber spawn/overlap: the former direct room-centre teleport ignores
+// live player, Guardian, generators and active loot, even when no free cell.
+function timedSpawnScenario({player={x:3,y:3},guardian=null,generator=null,cache=null,enemy=null,allOccupied=false}={}){
+  const stalker={id:"death-stalker-floor-4",x:9,y:9,rx:9,ry:9,alive:true,deathStalker:true,voidStalker:true};
+  const hostState={timedRooms:[{id:"timed0",roomId:1,triggered:false,cleared:false,timeLeft:0}],
+    enemies:[stalker,...(enemy?[enemy]:[])],defeatedDeathStalkers:[],
+    guardian,generators:generator?[generator]:[],deathCaches:cache?[cache]:[],
+    items:[],chests:[],switches:[],shrines:[],shops:[]};
+  if(allOccupied)for(let y=3;y<=6;y++)for(let x=3;x<=6;x++)hostState.items.push({x,y,active:true});
+  const room={id:1,x:2,y:2,w:5,h:5},worldState={rooms:[null,room],map:Array.from({length:15},()=>Array(15).fill(0))};
+  let notices=0;
+  const ctx=vm.createContext({
+    host:hostState,world:worldState,run:{floor:4},
+    W:{roomAt:(_world,x,y)=>x>=3&&x<=6&&y>=3&&y<=6?1:0,
+       playerWalkable:(map,x,y,host)=>generatedWorld.playerWalkable(map,x,y,host)},
+    localPlayers:()=>[player],timedChamberCountdown(){},showToast(){notices++}
+  });
+  vm.runInContext(timedPuzzleFloorCells+timedTriggerOwner,ctx,{filename:"game-play.js::timed-placement",timeout:3000});
+  ctx.triggerTimed(player);
+  return{stalker,hostState,notices};
+}
+const spawnOverPlayer=timedSpawnScenario({player:{x:4,y:4}});
+assert.notDeepEqual([spawnOverPlayer.stalker.x,spawnOverPlayer.stalker.y],[4,4],"Timed Stalker cannot spawn on the current player");
+assert.equal(spawnOverPlayer.hostState.timedRooms[0].triggered,true,"Player collision must not softlock challenge");
+
+for(const [name,fixture] of [
+  ["guardian",{guardian:{x:4,y:4,alive:true}}],
+  ["live generator",{generator:{x:4,y:4,alive:true}}],
+  ["active Death Cache",{cache:{x:4,y:4,active:true}}],
+  ["living enemy",{enemy:{x:4,y:4,alive:true}}],
+]){
+  const result=timedSpawnScenario(fixture);
+  assert.notDeepEqual([result.stalker.x,result.stalker.y],[4,4],name+" must block timed hunter teleport");
+  assert.equal(result.hostState.timedRooms[0].timeLeft,30000,name+" must not stop challenge timer");
+}
+const blockedTimedSpawn=timedSpawnScenario({allOccupied:true});
+assert.deepEqual([blockedTimedSpawn.stalker.x,blockedTimedSpawn.stalker.y],[9,9],"No safe position: retain Stalker location instead of overlapping loot");
+assert.equal(blockedTimedSpawn.hostState.timedRooms[0].triggered,true,"No free chamber tile must not strand challenge");
+assert.equal(blockedTimedSpawn.notices,1,"Unavailable destination must not repeat challenge notices");
+const openTimedSpawn=timedSpawnScenario();
+assert.deepEqual([openTimedSpawn.stalker.x,openTimedSpawn.stalker.y],[4,4],"Unoccupied centre remains the preferred first-entry cell");
+assert.equal(openTimedSpawn.stalker.rx,4,"Teleport must also synchronise interpolated X coordinate");
+assert.equal(openTimedSpawn.stalker.ry,4,"Teleport must also synchronise interpolated Y coordinate");
+
 
 // Exercise actual R115 reward placement through its VM owner, not just source text.
 const rewardWalk=(m,x,y)=>m[y]?.[x]===0;

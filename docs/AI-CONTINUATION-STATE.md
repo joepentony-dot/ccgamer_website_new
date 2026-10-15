@@ -1,3 +1,8 @@
+## Dungeon #2705 P0 Timed Chamber occupancy — 15 October 2026
+
+- Source-verified original first-entry Stalker teleport could land on a player/Guardian/active objective/cache. Fixed destination selection to use existing puzzle walkability and active-object exclusions, keeping the Stalker at its existing position if all chamber cells are taken. Extended existing R87 campaign test; pre-fail/post-pass isolated VM evidence. Windows/browser/owner encounter reproduction outstanding.
+- Draft #2705 stays unmerged and current-head CI-unqualified; no paid runs or unrelated page/media edits. Master audit and R137 workstream record limits.
+
 ## Dungeon #2705 Death Stalker singleton correction — 15 October 2026
 
 - Corrected `systems.js` singleton reconciliation to preserve permanent defeat across duplicate/stale Stalker records and retarget timed-chamber IDs. Extended existing R87 regression; old source failed controlled duplicate-banished scenario, corrected source passed; original owner crash and full runtime qualification remain outstanding.
