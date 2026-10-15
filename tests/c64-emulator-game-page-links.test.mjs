@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import test from "node:test";
 
@@ -30,7 +31,7 @@ test("unmatched and Amiga-only pages do not acquire C64 play links", () => {
   assert.doesNotMatch(html, /data-ccg-play-in-emulator="true"/);
   assert.match(generator, /g\.system === "C64"/);
   assert.match(generator, /e\.approved === true/);
-  assert.match(generator, /gameCounts\.get\(title\) === 1/);
+  assert.match(generator, /gameCounts\.get\(title\) !== 1/);
   assert.match(generator, /matches\.length === 1/);
   assert.match(generator, /e\.license\.trim\(\)/);
   assert.match(generator, /e\.sha256/);
@@ -52,4 +53,43 @@ test("credits rows share continuous borders and CTA keeps visible focus",()=>{
   assert.match(css, /\.ccg-behind-pixels-inline__item\s*\{\s*display: grid;/);
   assert.match(css, /\.ccg-btn--emulator-play:focus-visible/);
   assert.match(css, /@media \(max-width: 560px\)/);
+});
+
+test("shared publisher audit identifies actual CRT and Blast deep links without touching generated pages", () => {
+  const report = JSON.parse(execFileSync(process.execPath,
+    ["scripts/link-c64-emulator-games.js", "--audit-json"], { encoding: "utf8" }));
+  assert.equal(report.c64Games, games.filter(g => g.system === "C64").length);
+  assert.ok(report.additionalCrt > 0, "Active attested CRT catalogue must parse");
+  assert.ok(report.blast > 0, "Blast packed catalogue must parse");
+  assert.ok(report.matched > 200, "Shared linker must include packed and CRT media, not direct-only");
+  const mapped = new Map(report.mappings.map(item => [item.slug, item]));
+  assert.deepEqual([mapped.get("sanxion")?.id, mapped.get("sanxion")?.source],
+    ["owner-crt-more-sanxion", "additional-crt"]);
+  assert.deepEqual([
+    mapped.get("dan-dare-pilot-of-the-future")?.id,
+    mapped.get("dan-dare-pilot-of-the-future")?.source,
+  ], ["owner-crt-more-dan-dare-pilot-of-the-future", "additional-crt"]);
+  assert.equal(mapped.get("20-tons"), undefined);
+  const seen = new Set();
+  for (const item of report.mappings) {
+    assert.match(item.slug, /^[a-z0-9-]+$/);
+    assert.match(item.id, /^[a-z0-9-]+$/);
+    assert.ok(!seen.has(item.slug), "Duplicate deep link for " + item.slug);
+    seen.add(item.slug);
+  }
+  // The PRG archive is only available when its own SHA-bound catalogue validates.
+  if (fs.readFileSync("emulator/c64/media/prg-archive/catalog.json", "utf8").trim() === "") {
+    assert.equal(report.prgArchive, 0);
+    assert.match(report.warnings.join(" "), /Optional PRG archive excluded/);
+    assert.equal(report.mappings.some(item => item.source === "prg-archive"), false);
+  }
+});
+
+test("the displayed link remains a select-only deep link, not an autoplay URL", () => {
+  assert.match(generator, /href="\/emulator\/c64\/\?game=/);
+  assert.match(generator, /data-ccg-play-in-emulator="true"/);
+  assert.match(c64App, /selectOnlineLibraryEntry\(linkedGame\.id, false\)/);
+  assert.match(generator, /preferSelectedCartridges/);
+  assert.match(generator, /parseAdditionalCrtCatalog/);
+  assert.match(generator, /parsePackedCatalog/);
 });
