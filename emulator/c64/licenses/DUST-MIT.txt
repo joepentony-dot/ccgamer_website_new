@@ -1,0 +1,37 @@
+Dust (Commodore 64 PunyInform version) — licence and provenance
+================================================================
+
+Copyright (c) 2026 IkeC. Released under the MIT License.
+Full upstream repository, source and compiled disk:
+https://github.com/IkeC/InteractiveFiction
+Pinned source revision:
+https://github.com/IkeC/InteractiveFiction/tree/a39158876ce51a4f2c39bb7e30d144f2f31e19b6
+Unmodified C64 disk:
+https://github.com/IkeC/InteractiveFiction/blob/a39158876ce51a4f2c39bb7e30d144f2f31e19b6/Dust/PunyDust/Build/dust_c64.d64
+
+CCG repository path: /emulator/c64/media/dust.d64
+Bytes: 174848
+Source Git blob SHA: ac662aafcb32966ecb563c76e3ffa6c1fe435456
+SHA-256: f3337fdf68c80e739b2361c91f2ce3f823abdd3c98693490524057135760b9bf
+
+MIT License
+
+Copyright (c) 2026 IkeC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -3,6 +3,18 @@
     "policy":  "Contains only games explicitly authorised for redistribution by the Cheeky Commodore Gamer website owner. Full C64 system firmware remains user-supplied. Each hosted image is checked against its supplied SHA-256.",
     "entries":  [
                     {
+                        "id": "dust",
+                        "title": "Dust",
+                        "filename": "dust.d64",
+                        "format": "d64",
+                        "description": "IkeC's Wild West interactive-fiction game (C64 PunyInform port, 2026). The disk contains the LOADER and STORY programs; start with the first file.",
+                        "url": "/emulator/c64/media/dust.d64",
+                        "bytes": 174848,
+                        "sha256": "f3337fdf68c80e739b2361c91f2ce3f823abdd3c98693490524057135760b9bf",
+                        "license": "MIT; (c) 2026 IkeC. Original C64 disk image from https://github.com/IkeC/InteractiveFiction",
+                        "approved": true
+                    },
+                    {
                         "id": "silk-dust",
                         "title": "Silk Dust",
                         "filename": "silk-dust.d64",

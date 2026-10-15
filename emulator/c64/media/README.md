@@ -22,3 +22,7 @@ These five images are each single game media files. For future multi-disk games,
 
 `silk-dust.d64` is an unmodified 174,848-byte disk image from Davide Bucci's official [Silk Dust source repository](https://github.com/DarwinNE/Silk-Dust). It is released under GPLv3, rather than under an owner-only authorisation. The CCG catalogue records its SHA-256 and exact file length. See [`../licenses/SILK-DUST.txt`](../licenses/SILK-DUST.txt) for provenance, author credit and the corresponding source-code link.
 
+
+## MIT-licensed game: Dust
+
+`dust.d64` is an unmodified 174,848-byte Commodore 64 build from [IkeC's Interactive Fiction repository](https://github.com/IkeC/InteractiveFiction). The 2024 story was ported to C64 with PunyInform in 2026. The first disk program is `LOADER`. Its MIT notice, verified SHA-256 and pinned source link are documented in [`../licenses/DUST-MIT.txt`](../licenses/DUST-MIT.txt).
