@@ -158,7 +158,15 @@ function titleForms(entry) {
 function searchRank(forms, query) {
   if (forms.literal === query.literal) return 0;
   // Do not turn an explicitly requested sequel/version into another one.
-  if (forms.numbers && query.numbers && forms.numbers !== query.numbers) return -1;
+  if (forms.numbers && query.numbers && forms.numbers !== query.numbers) {
+    // Preserve partial typing: "Game 9" still finds "Game 90"–"Game 99".
+    // A complete wrong sequel number (Beach Head 1 vs 2) never matches.
+    const partialNumber = forms.literal.startsWith(query.literal) &&
+      forms.numbers.length > query.numbers.length &&
+      forms.numbers.startsWith(query.numbers) &&
+      /^[0-9]$/.test(query.numbers);
+    if (!partialNumber) return -1;
+  }
   if (query.core && forms.core === query.core) return 1;
   if (query.compact.length >= 4 && forms.compact === query.compact) return 1;
   if (forms.literal.startsWith(query.literal)) return 2;
