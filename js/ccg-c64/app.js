@@ -531,6 +531,8 @@ let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
 let selectedLibraryEntryId = null;
 let onlineLibraryLoadingGame = false;
+// One automatic launch per emulator navigation; library retries never reboot a game.
+let gamePageAutoloadConsumed = false;
 const onlineLibraryPackCache = new Map();
 let autoStartSteps = null;
 let autoStartTypeRest = "";
@@ -2511,11 +2513,14 @@ async function initialiseOnlineLibrary() {
   // flag suppress the matching PRG/disk versions in both packed archives.
   // Do not rewrite shared binary packs or hide unrelated titles.
   onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
-  // A game page may deep-link to an approved game. Never fetch or launch its
-  // media automatically: the visitor still confirms by pressing LOAD.
+  // Only a game-page button with autoplay=1 starts the matched catalogue entry.
+  // Ordinary emulator searches and legacy ?game= links still require LOAD.
   let linkedGameId = "";
+  let linkedGameAutoplay = false;
   try {
-    linkedGameId = new URLSearchParams(window.location.search).get("game") || "";
+    const deepLink = new URLSearchParams(window.location.search);
+    linkedGameId = deepLink.get("game") || "";
+    linkedGameAutoplay = deepLink.get("autoplay") === "1";
   } catch (_) { /* Invalid URL query is ignored. */ }
   const linkedGame = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId)
     ? onlineLibraryEntries.find(entry => entry.id === linkedGameId) : null;
@@ -2531,8 +2536,9 @@ async function initialiseOnlineLibrary() {
   refreshOnlineLibrarySuggestions();
   if (linkedGame) {
     selectOnlineLibraryEntry(linkedGame.id, false);
-    if (stageNote) stageNote.textContent =
-      `Selected ${linkedGame.title} in the CCG C64 library. Press LOAD to play.`;
+    if (stageNote) stageNote.textContent = linkedGameAutoplay
+      ? `Starting ${linkedGame.title} automatically in the CCG C64 emulator...`
+      : `Selected ${linkedGame.title} in the CCG C64 library. Press LOAD to play.`;
   }
   if ((packedCatalogueError || archiveError) && onlineLibraryCount) {
     onlineLibraryCount.textContent =
@@ -2542,6 +2548,12 @@ async function initialiseOnlineLibrary() {
     !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
   if (typeof catalogueBrowser !== "undefined") catalogueBrowser?.refresh();
+  if (linkedGame && linkedGameAutoplay && !gamePageAutoloadConsumed) {
+    // Use the same SHA-verified media path and firmware gate as a manual LOAD.
+    // Consume before invoking: a retry cannot start this game a second time.
+    gamePageAutoloadConsumed = true;
+    void loadSelectedLibraryEntry();
+  }
 }
 
 async function loadSelectedLibraryEntry() {

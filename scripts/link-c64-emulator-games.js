@@ -164,7 +164,7 @@ function emulatorMatch(game) {
 
 const playAnchor = id => [
   '<a class="ccg-btn ccg-btn--emulator-play" data-ccg-play-in-emulator="true"',
-  ' href="/emulator/c64/?game=' + encodeURIComponent(id) + '"',
+  ' href="/emulator/c64/?game=' + encodeURIComponent(id) + '&amp;autoplay=1"',
   ' aria-label="Play this C64 game in the CCG emulator">',
   '<span class="ccg-btn__icon" aria-hidden="true">&#9654;</span>',
   '<span class="ccg-btn__label">Play in C64 Emulator</span></a>'
