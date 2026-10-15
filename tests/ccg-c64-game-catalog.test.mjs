@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import {
   parsePackedCatalog, filterCatalog, suggestCatalogGames, loadPackedGameBytes,
   PACK_CATALOG_URL, PACK_ROOT, GAME_PAGE_SIZE, preferSelectedCartridges,
+  searchCatalogEntries,
 } from "../js/ccg-c64/game-catalog.js";
 
 assert.equal(PACK_CATALOG_URL, "/emulator/c64/media/blast/catalog.json");
@@ -133,3 +134,59 @@ assert.deepEqual(preferSelectedCartridges([
 ]).map(item => item.id), ["pirates", "another-game"]);
 
 console.log("CCG C64 game catalogue, bounded typeahead, search ranking, pack caching and SHA-256 checks passed.");
+
+
+// All public emulator search surfaces use the same tolerant, ranked title rules.
+// Suggestions may include a shortened/alternative name; game-page auto-links
+// must remain separately verified and may not be guessed from fuzzy search.
+const aliasPairs = [
+  ["B.C.'S Quest For Tires", "BC's Quest for Tires"],
+  ["B.C. II: Grog's Revenge", "BC II - Grog's Revenge"],
+  ["Beach-Head II", "Beach-head 2"],
+  ["Boulder Dash", "Boulderdash"],
+  ["The Captive", "Captive, The"],
+  ["Cops 'N' Robbers", "Cops & Robbers"],
+  ["Creatures 2: Torture Trouble", "Creatures 2"],
+  ["Dan Dare III - The Escape", "Dan Dare 3 - The Escape"],
+  ["Double Dragon II: The Revenge", "Double Dragon 2"],
+  ["Dragon Skulle", "Dragonskulle"],
+  ["The Faces Of Haarne", "Faces of Haarne, The"],
+  ["Ghetto Blaster", "Ghettoblaster"],
+  ["The Great Escape", "Great Escape, The"],
+  ["Halls Of The Things", "Halls of the Things, The"],
+  ["He-Man and the Masters of the Universe: The Ilearth Stone",
+    "He-Man and Masters of the Universe - The Ilearth Stone"],
+  ["The Hitchhikers Guide To The Galaxy", "Hitchhiker's Guide to the Galaxy, The"],
+  ["The Trap Door", "Trapdoor"],
+];
+const fuzzyFixture = aliasPairs.map(([query, title], n) => ({
+  id: "alias-" + n, title, format: "prg",
+}));
+fuzzyFixture.push(
+  { id: "unrelated", title: "Beach-Head II: Special Edition", format: "crt" },
+  { id: "wrong-version", title: "Beach Head 3", format: "prg" },
+  { id: "another-game", title: "Boulder Dash II", format: "prg" },
+);
+for (let n = 0; n < aliasPairs.length; n++) {
+  const [query, title] = aliasPairs[n];
+  const suggestions = suggestCatalogGames(fuzzyFixture, query, 8);
+  assert.equal(suggestions.games[0]?.title, title, "Quick search failed: " + query);
+  assert.equal(filterCatalog(fuzzyFixture, { query }).games[0]?.title, title,
+    "Paginated search failed: " + query);
+  assert.equal(searchCatalogEntries(fuzzyFixture, query)[0]?.title, title,
+    "Full browser search failed: " + query);
+}
+assert.equal(suggestCatalogGames(fuzzyFixture, "Boulderdash").games[0].title, "Boulderdash");
+assert.equal(suggestCatalogGames(fuzzyFixture, "Bouldr Dash").games[0].title, "Boulderdash",
+  "A short spelling mistake must be suggested after exact matches fail");
+assert.equal(suggestCatalogGames(fuzzyFixture, "Beach Head 1").total, 0,
+  "A differently numbered sequel must not be suggested as a typo");
+assert.ok(!searchCatalogEntries(fuzzyFixture, "Boulder Dash").some(entry =>
+  entry.title === "Beach-head 2" || entry.title === "Beach Head 3"),
+"Never confuse Boulder Dash with Beach-Head or another unrelated game");
+assert.deepEqual(suggestCatalogGames(fuzzyFixture, "").games, []);
+assert.ok(suggestCatalogGames(fuzzyFixture, "the").games.length <= 8,
+  "Fuzzy search must not open an unbounded suggestions list");
+const browserSource = readFileSync(new URL("../js/ccg-c64/catalogue-browser.js", import.meta.url), "utf8");
+assert.match(browserSource, /searchCatalogEntries\(visible, query\)/,
+  "Browse All must use the same fuzzy matching implementation as the quick search");
