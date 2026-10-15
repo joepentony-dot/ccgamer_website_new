@@ -39,4 +39,32 @@ for (const fn of ["F1", "F3", "F5", "F7"]) {
 assert(css.includes(".ccg-c64-touch-fkeys button"), "Function-key targets must be sized for touch");
 assert(app.includes("MIN_TOUCH_FUNCTION_KEY_MS = 120"), "Rapid taps must survive the C64 keyboard scan");
 assert(app.includes("touchFunctionKeyHolds.clear()"), "Function keys must release on blur or reset");
-console.log("PASS C64 phone portrait/landscape and touch fullscreen responsive source contracts.");
+
+const greenFinder = css.split("/* Owner-approved FIND A GAME green beacon")[1] || "";
+assert(greenFinder.length > 1600, "Approved green Find a Game visual treatment must be present");
+assert(css.includes(".ccg-c64-panel--library[hidden]") &&
+  css.includes(".ccg-c64-library-load[hidden]") &&
+  css.includes(".ccg-c64-library-suggestions[hidden]"),
+  "Colour enhancement must retain all existing hidden-state selectors");
+for (const selector of [
+  ".ccg-c64-panel--library {",
+  ".ccg-c64-panel--library .ccg-c64-panel-title",
+  ".ccg-c64-panel--library .ccg-c64-catalogue-open",
+  ".ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type=\"search\"]",
+  ".ccg-c64-panel--library .ccg-c64-library-load",
+  ".ccg-c64-panel--library .ccg-c64-library-suggestions"
+]) {
+  assert(greenFinder.includes(selector), "Find a Game visual must cover " + selector);
+}
+assert(greenFinder.includes("border-color: #41ee86;") &&
+  greenFinder.includes("background: linear-gradient(145deg, #0b9d51, #086b3b)") &&
+  greenFinder.includes("--ccg-find-green: #4dff91;"),
+  "The green Browse All and title contrast contract must survive");
+assert(greenFinder.includes(".ccg-c64-library-load:focus-visible") &&
+  greenFinder.includes(".ccg-c64-library-load:disabled") &&
+  greenFinder.includes(".ccg-c64-library-option:focus-visible"),
+  "LOAD and listbox focus/disabled states remain accessible");
+assert(!/(?:^|[;\n])\s*(?:position|display|grid-template-[\w-]+|width|height|min-height|max-height|padding|margin|overflow|transform|inset|order)\s*:/m.test(greenFinder),
+  "Owner-approved green restyle must not change mobile/desktop layout geometry");
+
+console.log("PASS C64 phone portrait/landscape, green FIND A GAME, and touch fullscreen source contracts.");
