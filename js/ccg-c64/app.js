@@ -2534,6 +2534,11 @@ async function initialiseOnlineLibrary() {
     "forbidden-forest": "Forbidden Forest",
     "paradroid": "Paradroid",
     "slicks": "Slicks",
+    "uridium": "Uridium",
+    "rodland": "Rodland",
+    "racing-destruction-set": "Racing Destruction Set",
+    "katakis": "Katakis",
+    "bomberland": "Bomberland",
   };
   const retiredTitle = Object.hasOwn(retiredDirectAliases, linkedGameId)
     ? retiredDirectAliases[linkedGameId] : "";
