@@ -1,3 +1,8 @@
+## Dungeon #2705 Death Stalker singleton correction — 15 October 2026
+
+- Corrected `systems.js` singleton reconciliation to preserve permanent defeat across duplicate/stale Stalker records and retarget timed-chamber IDs. Extended existing R87 regression; old source failed controlled duplicate-banished scenario, corrected source passed; original owner crash and full runtime qualification remain outstanding.
+- Current head must be independently Node/Chromium/Windows-qualified and reviewed before any merge. No website changes, paid CI or release.
+
 ## Dungeon #2705 Solo endurance diagnostics — 15 October 2026
 
 - Existing Chromium endurance test updated to use synchronous per-defeat dossier/run/recap deltas, strict repeated-dead-actor no-duplication and capture-phase key arrival diagnostics. Isolated negative/positive JS harness passed; actual Chromium and user-reported encounter save have not been tested. No gameplay engine change or production deployment.

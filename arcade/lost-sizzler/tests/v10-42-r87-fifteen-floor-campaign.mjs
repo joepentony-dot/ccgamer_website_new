@@ -194,6 +194,57 @@ assert.equal(checkedGeneratorFloors,8,"Sample four generator-objective floors tw
 
 
 
+// P0 Death Stalker singleton: permanent banishment overrides duplicate
+// live records, and timed-chamber IDs must follow the sole retained actor.
+const makeFloorStalker=(id,alive=true)=>({id,alive,deathStalker:true,voidStalker:true});
+const duplicateBanishedHost={
+  enemies:[makeFloorStalker("floor-stalker-original"),makeFloorStalker("floor-stalker-duplicate",false)],
+  deathStalkerId:"floor-stalker-original",defeatedDeathStalkers:[],
+  timedRooms:[{id:"timed0",hunterId:"floor-stalker-duplicate",stalkerDefeated:false}]
+};
+const originalCanonical=duplicateBanishedHost.enemies[0];
+generatedSystems.enforceDeathStalkerSingleton(duplicateBanishedHost);
+assert.equal(duplicateBanishedHost.enemies.length,1,"Only one canonical Death Stalker may remain");
+assert.equal(duplicateBanishedHost.enemies[0],originalCanonical,"Preserve the existing canonical actor identity");
+assert.equal(originalCanonical.alive,false,"A defeated duplicate must never resurrect the canonical actor");
+assert.ok(duplicateBanishedHost.defeatedDeathStalkers.includes(originalCanonical.id),"Canonical defeat must be recorded");
+assert.equal(duplicateBanishedHost.deathStalkerId,originalCanonical.id);
+assert.equal(duplicateBanishedHost.timedRooms[0].hunterId,originalCanonical.id,"Timed Chamber must target the retained actor");
+assert.equal(duplicateBanishedHost.timedRooms[0].stalkerDefeated,true,"Timed Chamber must preserve banishment");
+generatedSystems.enforceDeathStalkerSingleton(duplicateBanishedHost);
+assert.equal(duplicateBanishedHost.defeatedDeathStalkers.filter(id=>id===originalCanonical.id).length,1,"Repeated reconciliation must not duplicate the defeat record");
+assert.equal(duplicateBanishedHost.enemies.length,1,"Repeated reconciliation must not create an actor");
+
+const rememberedDefeatHost={
+  enemies:[makeFloorStalker("floor-stalker-original"),makeFloorStalker("floor-stalker-duplicate")],
+  deathStalkerId:"floor-stalker-original",defeatedDeathStalkers:["floor-stalker-duplicate"],
+  timedRooms:[{hunterId:"floor-stalker-duplicate"}]
+};
+generatedSystems.enforceDeathStalkerSingleton(rememberedDefeatHost);
+assert.equal(rememberedDefeatHost.enemies.length,1);
+assert.equal(rememberedDefeatHost.enemies[0].alive,false,"Permanent ledger must override stale living duplicate");
+assert.equal(rememberedDefeatHost.timedRooms[0].hunterId,"floor-stalker-original");
+assert.equal(rememberedDefeatHost.timedRooms[0].stalkerDefeated,true);
+
+const soloLedgerHost={
+  enemies:[makeFloorStalker("floor-stalker-original")],
+  defeatedDeathStalkers:["floor-stalker-original"],timedRooms:[{hunterId:"floor-stalker-original"}]
+};
+generatedSystems.enforceDeathStalkerSingleton(soloLedgerHost);
+assert.equal(soloLedgerHost.enemies[0].alive,false,"A restored living actor cannot override its banishment ledger");
+
+const activeDoublesHost={
+  enemies:[makeFloorStalker("floor-stalker-new"),makeFloorStalker("floor-stalker-original")],
+  deathStalkerId:"floor-stalker-original",defeatedDeathStalkers:[],
+  timedRooms:[{hunterId:"floor-stalker-new"}]
+};
+generatedSystems.enforceDeathStalkerSingleton(activeDoublesHost);
+assert.equal(activeDoublesHost.enemies.length,1);
+assert.equal(activeDoublesHost.enemies[0].id,"floor-stalker-original","Prefer the previously established canonical identity");
+assert.equal(activeDoublesHost.enemies[0].alive,true,"Two active duplicates must not imply a banishment");
+assert.equal(activeDoublesHost.defeatedDeathStalkers.length,0);
+assert.equal(activeDoublesHost.timedRooms[0].hunterId,"floor-stalker-original","Retarget references to a removed duplicate");
+
 // P0 Timed Chamber: exercise the actual gameplay trigger function in isolation.
 // A completed challenge must never restart or teleport the floor's Stalker.
 const timedTriggerStart=gameplaySource.indexOf("function triggerTimed(p){");

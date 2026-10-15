@@ -1,5 +1,12 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — singleton permanent-banishment state correction
+
+Actual `systems.js::enforceDeathStalkerSingleton` chooses the first Death Stalker record even if another duplicate is already defeated, potentially retaining a live copy of a banished actor and a stale Timed Chamber hunter ID. Source-executed negative/positive fixtures proved this specific failure on the old source. The guarded change preserves the existing canonical actor, applies known permanent defeat from a duplicate or existing banishment ledger, retargets any Timed Chamber hunter reference and keeps defeat recording idempotent. Existing R87 test extended with duplicate/dead, ledger, stale single-actor restoration, canonical preference and repeated reconciliation cases. No alternative gameplay owner, new PR or extra test file.
+
+**Limits:** no live owner seed or Windows crash trace, no definitive paired Guardian Maw/Death Stalker freeze fix, no complete save/restore validation, and no full Node/six Chromium/installer/owner acceptance. All non-target gameplay, website and original media unchanged; no paid CI dispatched.
+
+
 ## 15 October 2026 — Solo endurance test isolation and FIRE diagnostics
 
 On published-main shard 2, recorded named-defeat count was 2 versus expected 1 (run 38666514685), and Space produced no attack intent on round 91 (run 38669465532). Tightened the existing `v10-42-live-solo-combat-endurance.mjs` test without changing gameplay: one synchronous `page.evaluate` now measures a named defeat's persisted dossier, run named count, run kill count and recap before/after, and repeats damage to the already-dead actor to catch duplicates. The once-only dossier panel assertion is retained. A read-only, capture-phase keyboard event trace records trusted/repeated Space/Numpad0 key delivery and, only upon failure, focus, overlays, attack trace and held-state diagnostics. No retries or relaxed assertion. Isolated JS harness with corrected one-time dossier behaviour: original test fails a simulated between-operations persisted count, revised test passes; deliberate double count still fails. Real Playwright endurance was not executed here.
