@@ -631,6 +631,43 @@ assert.ok(jsonRestored.context.host.doors.every(d=>!d.locked&&d.opening),
   "JSON-restored stale room flags must recover");
 assert.equal(jsonRestored.context.score,1200);
 
+// Owner P0 combination: a cleared Maw room must release independently of
+// Count Loadula, the floor's still-sealed Stalker, and the third generator.
+// This is a restored-state contract, not a reproduction of the owner's save.
+const pairedClear=savedClearedBossDoor(),pairedContext=pairedClear.context;
+pairedContext.world.rooms[0]={id:0,x:0,y:0,w:1,h:1};
+pairedContext.host.stalker={id:"count-loadula",x:6,y:6,awake:true,hp:20,maxHp:20};
+pairedContext.host.enemies.push({id:"death-stalker-floor-5",x:5,y:6,alive:true,hp:10,deathStalker:true,voidStalker:true});
+pairedContext.host.generators=[{id:"gen0",alive:false},{id:"gen1",alive:false},{id:"gen2",x:7,y:7,hp:1,alive:true}];
+pairedContext.host.objective={type:"generators",target:3,complete:false};
+pairedContext.host.exitSigilCollected=false;
+pairedContext.p1.inventory=[];
+pairedContext.run={floor:5,stats:{generators:2}};
+pairedContext.stats={generators:2};pairedContext.explored=new Map();
+pairedContext.PGR=generatedRuntime.window.CCGProgression;
+pairedContext.floatText=()=>{};
+pairedContext.SYS.updateObjective(pairedContext.host,pairedContext.run,0);
+assert.equal(pairedContext.host.objective.complete,false,"2/3 generators cannot complete the floor");
+pairedContext.host=JSON.parse(JSON.stringify(pairedContext.host));
+pairedClear.update();pairedClear.finishDoor();
+assert.ok(pairedContext.host.doors.every(door=>!door.locked&&door.open),"Cleared Maw room must reopen with two living supernatural threats and no Flask");
+assert.equal(pairedContext.host.objective.complete,false,"Releasing the defeated boss room must not bypass the third generator");
+assert.equal(pairedContext.host.exitOpen,false,"Incomplete objective keeps the floor exit shut");
+assert.equal(pairedContext.host.stalker.awake,true,"Room recovery cannot silently banish Count Loadula");
+assert.equal(pairedContext.host.enemies.find(enemy=>enemy.deathStalker).alive,true,"Room recovery cannot grant a free Stalker kill");
+const generatorDamageStart=gameplaySource.indexOf("function damageGenerator(g,power,p){");
+const generatorDamageEnd=gameplaySource.indexOf("function hitStalker(",generatorDamageStart);
+assert.ok(generatorDamageStart>=0&&generatorDamageEnd>generatorDamageStart);
+vm.runInContext(gameplaySource.slice(generatorDamageStart,generatorDamageEnd),pairedContext,{filename:"game-play.js::damageGenerator"});
+pairedContext.damageGenerator(pairedContext.host.generators[2],99,pairedContext.p1);
+assert.equal(pairedContext.host.objective.complete,true,"Actual final generator destruction must finish the objective despite Count Loadula");
+assert.equal(pairedContext.run.stats.generators,3);
+const generatorScore=pairedContext.score;
+pairedContext.damageGenerator(pairedContext.host.generators[2],99,pairedContext.p1);
+assert.equal(pairedContext.run.stats.generators,3,"Destroyed generator cannot count twice");
+assert.equal(pairedContext.score,generatorScore);
+assert.equal(pairedContext.p1.inventory.length,0,"Room escape and generator completion require no Flask expenditure");
+
 // P0 Timed Chamber: exercise the actual gameplay trigger function in isolation.
 // A completed challenge must never restart or teleport the floor's Stalker.
 const timedTriggerStart=gameplaySource.indexOf("function triggerTimed(p){");
