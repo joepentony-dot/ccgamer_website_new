@@ -85,12 +85,12 @@ function updateStaticPages(metadata) {
     const expectedOwned = buildExpectedStaticEntries(metadata);
     const expectedOwnedSet = new Set(expectedOwned);
 
-    // Keep all existing valid entries exactly where they are. Remove only stale
-    // year/platform entries owned by this workflow, then append missing owned
-    // entries in their stable expected order.
-    const next = current.filter((entry) => !isOwnedArchiveEntry(entry) || expectedOwnedSet.has(entry));
-    const missingOwned = expectedOwned.filter((entry) => !next.includes(entry));
-    next.push(...missingOwned);
+    // Preserve every foreign owner's exact relative order. Rebuild just the
+    // year/platform-owned block in the source metadata order: otherwise adding
+    // one newly indexable year after old platform entries fails the stable
+    // ordering contract on both first and subsequent publishing passes.
+    const next = [...foreignBefore, ...expectedOwned];
+    const missingOwned = expectedOwned.filter((entry) => !current.includes(entry));
 
     const foreignAfter = next.filter((entry) => !isOwnedArchiveEntry(entry));
     if (JSON.stringify(foreignAfter) !== JSON.stringify(foreignBefore)) {
@@ -269,7 +269,7 @@ function buildReport(metadata, registryResult) {
 - Phase 4C reapplies discovery links after generated pages are rebuilt.
 - Validation checks registry membership, sitemap membership, route cross-links and foreign-entry order.
 - Existing publisher, developer, composer, download, retro, genre, collection and core registry entries are not rewritten by the Phase 4C integration script.
-- Existing valid year/platform entries are not removed and re-appended, preventing registry-order ping-pong with other archive workflows.
+- The year/platform-owned block is rebuilt in the same metadata order on every pass, while foreign registry entries remain byte-equivalent and in their existing relative order.
 
 ## Explicit exclusions
 
