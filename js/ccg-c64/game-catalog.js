@@ -61,7 +61,7 @@ export function parsePackedCatalog(data, { packRoot = PACK_ROOT } = {}) {
 export function parseAdditionalCrtCatalog(data) {
   if (!data || data.version !== 1 || data.ownerRedistributionAttested !== true ||
       data.originalFormatsPreserved !== true || !Array.isArray(data.games) ||
-      data.recordCount !== data.games.length || data.games.length > 2000) {
+      data.recordCount !== data.games.length || data.games.length > 6000) {
     throw new Error("Invalid optional cartridge catalogue.");
   }
   const ids = new Set();
@@ -102,20 +102,36 @@ export function parseAdditionalCrtCatalog(data) {
 // media stay untouched until a reviewed, verified, owner-approved CRT is listed.
 // Matching is punctuation-insensitive but never substring-based ("Pitfall" must
 // not hide "Pitfall II", nor a compilation hide its individual games).
+// A strict game-identity key, NOT a fuzzy-search key. Distinguish sequels,
+// numbered games and "+" editions; only merge the owner-approved Le Mans alias.
+// Keep fuzzy/typo matching confined to the search interface.
+export function catalogGameIdentity(title) {
+  const key = normaliseCatalogSearch(String(title ?? "").replace(/\+/g, " plus "));
+  return key === "lemans" ? "le mans" : key;
+}
+
+// The emulator displays ONE playable row per exact game identity even when the
+// underlying approved media still resides in several older packed archives.
+// CRT has priority; identical formats keep their earlier entry/order.
+// This is a VIEW only: never deletes packed bytes, so rollback remains possible.
 export function preferSelectedCartridges(entries) {
   if (!Array.isArray(entries)) return [];
-  const preferred = new Map();
+  const winners = new Map();
   for (const entry of entries) {
-    if (entry?.preferOverOtherFormats !== true ||
-        String(entry.format || "").toLowerCase() !== "crt" ||
-        typeof entry.title !== "string") continue;
-    const key = normaliseCatalogSearch(entry.title);
-    if (key && !preferred.has(key)) preferred.set(key, entry);
+    if (!entry || typeof entry.title !== "string" ||
+        typeof entry.id !== "string") continue;
+    const key = catalogGameIdentity(entry.title);
+    if (!key) continue;
+    const format = String(entry.format || "").toLowerCase();
+    const crt = format === "crt" && entry.approved === true;
+    const promoted = crt && entry.preferOverOtherFormats === true;
+    const score = promoted ? 3 : crt ? 2 : 1;
+    const prior = winners.get(key);
+    if (!prior || score > prior.score) winners.set(key, { entry, score });
   }
-  if (!preferred.size) return entries;
   return entries.filter(entry => {
-    const key = typeof entry?.title === "string" ? normaliseCatalogSearch(entry.title) : "";
-    return !preferred.has(key) || preferred.get(key) === entry;
+    if (!entry || typeof entry.title !== "string") return false;
+    return winners.get(catalogGameIdentity(entry.title))?.entry === entry;
   });
 }
 
