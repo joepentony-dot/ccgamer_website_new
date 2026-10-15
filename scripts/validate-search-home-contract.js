@@ -183,7 +183,8 @@ function stripApprovedHomeFooterCssDeferral(html) {
 
 // Owner-approved CCG merchandise entry, narrowly pinned to the existing
 // Fourthwall GBP checkout. This does not permit unrelated homepage edits.
-const APPROVED_FOURTHWALL_PANEL = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <a class=\"home-merch-promo__action\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </a> </section>";
+const APPROVED_FOURTHWALL_PANEL_PREVIOUS = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <a class=\"home-merch-promo__action\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </a> </section>";
+const APPROVED_FOURTHWALL_PANEL = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <a class=\"home-merch-promo__link\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <span class=\"home-merch-promo__action\" aria-hidden=\"true\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </span> </a> </section>";
 const FOURTHWALL_STYLE_RE = /\s*<link rel="preload" href="\/resources\/css\/home-fourthwall-merch\.css" as="style" onload="this\.onload=null;this\.rel='stylesheet'">\s*<noscript><link rel="stylesheet" href="\/resources\/css\/home-fourthwall-merch\.css" \/><\/noscript>/g;
 
 function stripApprovedFourthwallMerch(html, role) {
@@ -195,7 +196,9 @@ function stripApprovedFourthwallMerch(html, role) {
   if (matches.length !== 1 || styleMatches.length !== 1) {
     fail("Fourthwall merch homepage panel and its deferred stylesheet must each appear exactly once.");
   }
-  if (matches[0][0].replace(/\s+/g, " ").trim() !== APPROVED_FOURTHWALL_PANEL) {
+  const normalizedPanel = matches[0][0].replace(/\s+/g, " ").trim();
+  const approvedPanel = role === "baseline" ? APPROVED_FOURTHWALL_PANEL_PREVIOUS : APPROVED_FOURTHWALL_PANEL;
+  if (normalizedPanel !== approvedPanel) {
     fail("Homepage Fourthwall merchandise panel differs from the approved design or destination.");
   }
   source = source.replace(styleMatches[0][0], " ");
