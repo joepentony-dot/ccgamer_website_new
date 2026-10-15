@@ -10,6 +10,8 @@ on:
       - "games/index.html"
       - "games/game.html"
       - "games/games.json"
+      - "emulator/c64/library.json"
+      - "scripts/link-c64-emulator-games.js"
       - "js/ccg-community-ratings.js"
       - "js/ccg-community-comments.js"
       - "js/ccg-uta-archive.js"

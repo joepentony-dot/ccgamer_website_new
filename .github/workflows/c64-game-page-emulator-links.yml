@@ -1,0 +1,39 @@
+name: C64 Game Page Emulator Links
+
+on:
+  pull_request:
+    paths:
+      - "scripts/link-c64-emulator-games.js"
+      - "scripts/rebuild-games.js"
+      - "emulator/c64/library.json"
+      - "emulator/c64/index.html"
+      - "js/ccg-c64/app.js"
+      - "js/ccg-c64/coi-bootstrap.js"
+      - "resources/css/game-pages.css"
+      - "tests/c64-emulator-game-page-links.test.mjs"
+      - ".github/workflows/c64-game-page-emulator-links.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  link-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact PR candidate
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify source and deterministic linked pages
+        run: |
+          set -euo pipefail
+          node --check scripts/link-c64-emulator-games.js
+          node --input-type=module --check < js/ccg-c64/app.js
+          node scripts/link-c64-emulator-games.js
+          node scripts/link-c64-emulator-games.js --check
+          node --test tests/c64-emulator-game-page-links.test.mjs
+          git diff --check
