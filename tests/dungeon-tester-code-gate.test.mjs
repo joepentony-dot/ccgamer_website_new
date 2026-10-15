@@ -9,7 +9,7 @@ const canonicalEntry = fs.readFileSync("arcade/c64-dungeon-carnage/index.html", 
 const legacyEntry = fs.readFileSync("arcade/lost-sizzler/index.html", "utf8");
 const round2Migration = fs.readFileSync("supabase/migrations/20261002203000_dungeon_carnage_beta_round2_closed_cohort.sql", "utf8");
 const publicMigration = fs.readFileSync("supabase/migrations/20261007034000_dungeon_carnage_public_24h_playtest_link.sql", "utf8");
-const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261007-public24h-v1";
+const cacheToken = "/js/ccg-play-maintenance-owner-gate.js?v=20261015-development-v1";
 const gameCore = fs.readFileSync("arcade/lost-sizzler/js/game-core.js", "utf8");
 
 assert(!gate.includes("TESTER_SESSION_KEY"), "public playtest must not revive the retired tester-code session path");
@@ -25,7 +25,9 @@ assert(gate.includes("ccg_has_dungeon_carnage_playtest_access"), "existing signe
 assert(gate.includes('mark("member-playtester")'), "existing assigned members must retain their member-playtester state");
 assert(gate.includes("public-playtest-expired"), "expired public links must fail closed with an explicit expired state");
 assert(gate.includes("24-Hour Playtest Ended"), "expired public links must explain why access ended");
-assert(gate.includes("SIGN IN AS AN ASSIGNED MEMBER"), "existing member sign-in fallback must remain available");
+assert(!gate.includes("SIGN IN AS AN ASSIGNED MEMBER"), "public Dungeon development gate must not advertise retired member sign-in");
+assert(gate.includes("C64 Dungeon Carnage Is In Development"), "public Dungeon game page must announce its development status");
+assert(gate.includes("ccg_has_dungeon_carnage_playtest_access"), "legacy authenticated member access remains protected internally");
 assert(gate.includes("bootstrapProtectedRuntime"), "validated member access must still own Dungeon runtime startup");
 assert(gate.includes("runtimeBoundaryReached"), "protected runtime startup must still wait for the parser boundary");
 assert(gate.includes("data-ccg-protected-runtime"), "runtime loader must consume only protected script placeholders");
