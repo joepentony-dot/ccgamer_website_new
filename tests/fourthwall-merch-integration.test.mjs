@@ -45,3 +45,24 @@ test("merchandise styles are scoped and don't alter archive tiles or create heav
     assert.doesNotMatch(css, /ccg-card|home-archive-route|home-video-card|object-fit|position:\s*fixed/);
     assert.doesNotMatch(css, /@import|url\(|animation:/i);
 });
+
+test("mobile navigation always offers the official merch shop at the top of Explore more", () => {
+    const source = read("js/ccg-global.js");
+    const navStyles = read("resources/css/ccg-nav.css");
+    const navSection = source.match(/const buildDrawer = \(\) => \{[\s\S]*?\n        \};/)?.[0] || "";
+
+    assert.ok(navSection.includes('drawerSecondary.innerHTML = "<div class=\\\"ccg-nav-drawer__label\\\">Explore more</div>"'));
+    assert.ok(navSection.includes('merchLink.href = "' + SHOP + '"'));
+    assert.ok(navSection.includes('merchLink.textContent = "Merch Shop"'));
+    assert.ok(navSection.includes('merchLink.className = "ccg-nav__link ccg-nav__link--mobile ccg-nav__link--merch"'));
+    assert.ok(navSection.includes('merchLink.target = "_blank"'));
+    assert.ok(navSection.includes('merchLink.rel = "noopener noreferrer"'));
+    assert.ok(navSection.includes('drawerSecondary.appendChild(merchLink)'));
+    assert.ok(navSection.indexOf('drawerSecondary.appendChild(merchLink)') < navSection.indexOf('secondaryList?.querySelectorAll("a")'),
+        "merch must be easy to find above the other secondary links");
+    assert.match(source, /header\.addEventListener\("click", event => \{\s*const link = event\.target\.closest\("\.ccg-nav__link"\)/);
+    assert.match(navStyles, /@media \(max-width: 1199px\) \{[\s\S]*?\.ccg-nav-drawer \.ccg-nav__link--merch \{/);
+    assert.match(navStyles, /\.ccg-nav-drawer \.ccg-nav__link--merch:focus-visible/);
+    assert.doesNotMatch(read("js/ccg-nav-core.js"), /fourthwall\.com/,
+        "do not change canonical desktop/header navigation to insert the mobile-only merch action");
+});

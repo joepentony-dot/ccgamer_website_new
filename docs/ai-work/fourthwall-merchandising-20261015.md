@@ -25,3 +25,10 @@ Native YouTube Shopping linkage requires an eligible channel and account-side au
 - Maintain the strict homepage search/SEO guard by matching **both** prior baseline panel and new current panel byte-equivalently, disallowing arbitrary content. Add full-card anchor/focus regression to existing Site Safety test and increment public code cache v146 → v147 (recheck current main before merge).
 - The change remains unmerged until exact-head CI and guarded latest-main comparison; normal GitHub Pages post-merge deployment and live end-to-end destination confirmation must follow. YouTube Shopping remains postponed per owner instruction.
 
+
+## Mobile navigation discoverability — 15 October 2026
+- Owner could not see the merch link on mobile. Root cause: the previous PRs put the shop only in a homepage feature **below** featured content; the canonical mobile navigation drawer did not include merchandise at all.
+- Single-scope repair `fix/fourthwall-mobile-drawer-link-20261015`: append one Fourthwall `Merch Shop` link at the start of the existing **Menu → Explore more** drawer section in `js/ccg-global.js`. It has standard anchor behaviour, opens the existing GBP shop in a new tab, and is rebuilt idempotently with each drawer rendering. Style only this drawer link in `resources/css/ccg-nav.css` with a 44px tap target and visible focus. No changes to canonical public header, first-paint nav lists, homepage hero or intro.
+- Extend the existing Fourthwall integration regression test already run by Site Safety, and advance the public-code cache namespace v147 → v148 (reconfirm current main before merge).
+- User-facing expectation: on mobile, tap **Menu**, then **Merch Shop** is the **first option** in **Explore more**. Existing full-card homepage link remains as secondary discovery.
+- Guarded merge requires exact-head CI with site safety, navigation, PWA, cache and Lighthouse and latest-main freshness; website publishing/real mobile menu click verification follows. YouTube Shopping remains deferred.

@@ -2264,6 +2264,19 @@ if (IS_ADMIN_PATH) {
 
             if (drawerSecondary) {
                 drawerSecondary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Explore more</div>";
+                /* Merch lives in the existing mobile drawer, not in the
+                   canonical desktop nav list. Preserve the header generator's
+                   fixed first-paint structure on every public page. */
+                const merchLink = document.createElement("a");
+                merchLink.href = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
+                merchLink.className = "ccg-nav__link ccg-nav__link--mobile ccg-nav__link--merch";
+                merchLink.textContent = "Merch Shop";
+                merchLink.target = "_blank";
+                merchLink.rel = "noopener noreferrer";
+                merchLink.setAttribute("data-ccg-revenue-link", "fourthwall-merch");
+                merchLink.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
+                drawerSecondary.appendChild(merchLink);
+
                 secondaryList?.querySelectorAll("a").forEach(link => {
                     drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
                 });

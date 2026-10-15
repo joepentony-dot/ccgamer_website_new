@@ -483,3 +483,30 @@ button.ccg-nav-toggle.ccg-btn-ghost:not(:hover):not(:focus-visible):not(:active)
         transition: none;
     }
 }
+
+/* Official merch: visible in the existing mobile drawer only.
+   Desktop navigation geometry and the canonical header stay unchanged. */
+@media (max-width: 1199px) {
+    .ccg-nav-drawer .ccg-nav__link--merch {
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        width: 100%;
+        min-height: 44px;
+        padding: 11px 14px;
+        color: #fff;
+        border: 1px solid rgba(var(--accent-rgb), 0.75);
+        border-radius: 9px;
+        background: rgba(var(--accent-rgb), 0.18);
+        font-weight: 800;
+        text-decoration: none;
+        text-align: left;
+    }
+    .ccg-nav-drawer .ccg-nav__link--merch:hover,
+    .ccg-nav-drawer .ccg-nav__link--merch:focus-visible {
+        color: #fff;
+        background: rgba(var(--accent-rgb), 0.32);
+        border-color: rgba(var(--accent-rgb), 1);
+        outline-offset: 3px;
+    }
+}
