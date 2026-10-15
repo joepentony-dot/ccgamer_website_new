@@ -1,3 +1,8 @@
+## Dungeon #2705 Floor Challenge Cache collision safeguard — 15 October 2026
+
+- Existing `game-core.js` reward owner now reserves a featured challenge chest until an accessible unoccupied tile is free, persists retry through save, and never repeats an opened cache. Existing R87 tests extended; focused V8 and syntax only, no complete Node/Chromium/Windows or original owner save repro.
+- Preserve single unmerged cumulative Dungeon PR and current main website; no new PR or paid CI.
+
 ## Dungeon #2705 reconciled P0 qualification — 15 October 2026
 
 - Tested source `d06e4b55e28d03c3bcca5935b2fd3f22b7a06626`, existing cumulative branch only. Standard merge e5c8390f3 preserves concurrent remote dc045e667 and all incoming gameplay/diagnostic work. Fixed recursive hazard double-defeat in the existing death owner; corrected a Warden fixture context reference without weakening its assertion. Extended existing tests for actual hazard/dossier ownership, panel-owned Space versus rejected gameplay input, and cleared Maw-room release at 2/3 generators with Count/Stalker alive and no Flask.

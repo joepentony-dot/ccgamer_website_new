@@ -1,5 +1,10 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — featured challenge cache collision and pending ownership
+
+The `game-core.js` featured Floor Challenge reward owner, separate from R114 boss rewards, could place the chest over living generator/enemy/active floor loot or directly under the player when no adjacent cell was free. Source-executed regression demonstrates old generator collision and the new near-player BFS placement; current owner refuses occupied or sealed tiles, reserves the reward, retries after space or a door opens including JSON host restore, and prevents reissuing already-opened save caches by stable ID. The existing R87 campaign test now includes these positive/negative cases; no new test file or competing PR. Focused V8 checks and source/test syntax passed. Full Node, all six Chromium shards, installed Windows, original Count Loadula 2/3 state, paired Guardian Maw/Stalker freeze, independent review and owner acceptance remain outstanding. No paid CI, release or merge.
+
+
 ## 15 October 2026 — reconciled P0 qualification checkpoint
 
 **Verified candidate:** `d06e4b55e28d03c3bcca5935b2fd3f22b7a06626`. Started from live #2705 head `96375408e03b9400074951dcd0f38e122edf7669`; refreshed again when concurrent work advanced to `dc045e66715eab5412e89d3cbec31de6f1e6f845`. Standard merge `e5c8390f33c00500f83cef34338f2c648678ad7b` retains all 15 incoming commits and our endurance fixes. The shared browser-test conflict preserves incoming synchronous dossier/run/recap deltas, dead-actor idempotency and key diagnostics alongside deterministic hazard and panel controls. No main integration. Main `b65f2889e34e0e9a321140bc45da4a31b4d32bc2` is 23 commits ahead of candidate ancestry; protect its website changes. Existing branch/draft #2705 only.

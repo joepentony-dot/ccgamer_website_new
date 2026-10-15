@@ -45,6 +45,88 @@ assert.match(coreSource,/function floorChallengeComplete\(spec,explorePct=0\)/,"
 assert.match(coreSource,/r114-floor-challenge-cache-f/,"featured floor challenges must create a high-tier reward cache");
 assert.match(coreSource,/FLOOR CHALLENGE COMPLETE/,"featured floor challenges must announce completion and reward");
 
+// P0: challenge caches have a separate reward owner from R114 boss chests.
+// Execute the actual canonical function, including deferred JSON-state replay.
+const challengeStart=coreSource.indexOf("function floorChallengeRewardCell(){");
+const challengeEnd=coreSource.indexOf("function updateQuests(){",challengeStart);
+assert.ok(challengeStart>=0&&challengeEnd>challengeStart,"Challenge cache owner must exist");
+function challengeFixture({occupied=false,full=false,isolated=false,locked=false}={}){
+  const map=Array.from({length:15},()=>Array(15).fill(1));
+  for(let y=3;y<=11;y++)for(let x=3;x<=11;x++)map[y][x]=0;
+  const player={id:"P1",x:7,y:7,health:10};
+  const hostState={enemies:[],generators:[],items:[],chests:[],doors:[],
+    shops:[],shrines:[],switches:[],deathCaches:[],revision:0};
+  if(occupied){
+    hostState.generators.push({id:"active-gen",x:8,y:7,alive:true});
+    hostState.enemies.push({id:"active-enemy",x:6,y:7,alive:true});
+    hostState.items.push({id:"floor-loot",x:7,y:8,active:true});
+    hostState.stalker={id:"count-loadula",x:7,y:6,awake:true};
+  }
+  if(full)for(let y=3;y<=11;y++)for(let x=3;x<=11;x++)
+    if(x!==7||y!==7)hostState.items.push({x,y,active:true});
+  if(isolated||locked){
+    for(let y=3;y<=11;y++)for(let x=3;x<=11;x++)if(x!==7||y!==7)map[y][x]=1;
+    if(locked){
+      map[7][8]=0;hostState.doors.push({x:8,y:7,locked:true,open:false});
+    }
+  }
+  let now=1000,toasts=0,sounds=0;
+  const ctx=vm.createContext({p1:player,host:hostState,run:{floor:5},
+    world:{map,exit:{x:6,y:6}},Date:{now:()=>now},
+    W:{roomAt:()=>1,playerWalkable:(grid,x,y,h)=>grid[y]?.[x]===0&&
+      !(h.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)&&
+      !(h.doors||[]).some(d=>d.x===x&&d.y===y&&(!d.open||d.locked))},
+    S:{sfx(){sounds++}},showToast(){toasts++}});
+  vm.runInContext(coreSource.slice(challengeStart,challengeEnd),ctx,
+    {filename:"game-core.js::floorChallengeReward",timeout:3000});
+  return{ctx,hostState,player,step(){return ctx.floorChallengeReward({challengeTitle:"Bridge"})},
+    later(){now+=1000},toasts:()=>toasts,sounds:()=>sounds};
+}
+const activeCache=challengeFixture({occupied:true});
+assert.equal(activeCache.step(),true);
+const cache=activeCache.hostState.chests[0];
+assert.ok(cache.r114FloorChallengeReward);
+for(const objects of [activeCache.hostState.generators,activeCache.hostState.enemies,
+  activeCache.hostState.items,[activeCache.hostState.stalker],[activeCache.player]]){
+  assert.ok(!objects.some(o=>o.x===cache.x&&o.y===cache.y),
+    "Challenge cache must not collide with an occupied tile");
+}
+assert.equal(activeCache.step(),false);
+assert.equal(activeCache.hostState.chests.length,1);
+assert.equal(activeCache.toasts(),1);
+assert.equal(activeCache.sounds(),1);
+
+const pendingCache=challengeFixture({full:true});
+assert.equal(pendingCache.step(),false,"No free cell leaves the reward pending");
+assert.equal(pendingCache.hostState.chests.length,0);
+assert.equal(pendingCache.toasts(),0);
+pendingCache.ctx.host=JSON.parse(JSON.stringify(pendingCache.ctx.host));
+pendingCache.ctx.host.items.find(o=>o.x===8&&o.y===7).active=false;
+assert.equal(pendingCache.step(),false,"Retry is throttled");
+pendingCache.later();
+assert.equal(pendingCache.step(),true,"Restored pending reward delivers after a cell opens");
+assert.deepEqual([pendingCache.ctx.host.chests[0].x,pendingCache.ctx.host.chests[0].y],[8,7]);
+assert.equal(pendingCache.ctx.host.chests.length,1);
+assert.equal(pendingCache.step(),false);
+assert.equal(pendingCache.toasts(),1);
+
+const oldCache=challengeFixture();
+oldCache.hostState.chests.push({id:"r114-floor-challenge-cache-f5",x:8,y:7,active:false});
+assert.equal(oldCache.step(),false,"Opened legacy cache may never reappear");
+assert.equal(oldCache.hostState.r114FloorChallengeRewarded,true);
+assert.equal(oldCache.hostState.chests.length,1);
+const trappedCache=challengeFixture({isolated:true});
+assert.equal(trappedCache.step(),false,"Never fall back onto the player");
+assert.equal(trappedCache.hostState.chests.length,0);
+const gatedCache=challengeFixture({locked:true});
+assert.equal(gatedCache.step(),false,"Locked door prevents reward on far side");
+assert.equal(gatedCache.hostState.chests.length,0);
+gatedCache.hostState.doors[0].locked=false;gatedCache.hostState.doors[0].open=true;
+gatedCache.later();
+assert.equal(gatedCache.step(),true);
+assert.deepEqual([gatedCache.hostState.chests[0].x,gatedCache.hostState.chests[0].y],[8,7]);
+
+
 assert.equal(floors[0].theme,"C64_ARCHIVE","Floor 1 must retain the neutral opening archive identity");
 assert.equal(floors[14].theme,"BLOOD_CITADEL","Floor 15 must end in the danger-red Blood Citadel");
 assert.match(worldSource,/BLOOD_CITADEL:\{name:"Blood Citadel",floor:"#24090d"/,"world palette must define the authored danger-red final theme");
