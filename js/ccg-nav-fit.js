@@ -16,10 +16,9 @@
     const CSS_PATH = "/resources/css/ccg-nav-fit.css";
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
-    const PINNED_MORE_LABELS = new Set(["ccg games", "merch", "install ccg app", "about", "about me", "contact"]);
+    const PINNED_MORE_LABELS = new Set(["ccg games", "install ccg app", "about", "about me", "contact"]);
     const BASE_MORE_LINKS = [
         ["CCG Games", "/games/ccg-games/"],
-        ["Merch", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
         ["Install CCG App", "/install-app.html"],
         ["About Me", "/about.html"],
         ["Contact", "/contact.html"]
@@ -262,10 +261,6 @@
         link.href = href;
         link.className = "ccg-nav__link ccg-nav-fit__link";
         link.textContent = label;
-        if (new URL(href, window.location.href).origin !== window.location.origin) {
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-        }
         link.setAttribute("role", "menuitem");
         menu.appendChild(link);
         seen.add(absolute);
