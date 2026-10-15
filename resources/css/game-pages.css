@@ -2682,3 +2682,122 @@
 @media (prefers-reduced-motion: reduce) {
     .ccg-page--single-game .game-quick-actions { transition: none; }
 }
+
+
+/* 2026-10-15 PHONE REGRESSION REPAIR
+   The preceding presentation block sets repeat(2) after the old media
+   queries: restore exactly ONE complete credit record at tablet/phone
+   widths. Keep the label + its value in the SAME record row. */
+@media (max-width: 900px) {
+    html[data-ccg-page="single-game"] .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+        gap: 0;
+        min-width: 0;
+        align-items: stretch;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(116px, 32%) minmax(0, 1fr);
+        width: 100%;
+        min-width: 0;
+        min-height: 38px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dt,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        min-width: 0;
+        margin: 0;
+        padding: 8px 7px;
+        line-height: 1.4;
+        align-self: stretch;
+        align-items: center;
+        overflow-wrap: normal;
+        word-break: normal;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        overflow-wrap: break-word;
+    }
+}
+
+@media (max-width: 560px) {
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline {
+        padding: 9px;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(105px, 35%) minmax(0, 1fr);
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dt,
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        padding: 8px 5px;
+        font-size: clamp(0.68rem, 2.55vw, 0.82rem);
+        letter-spacing: 0;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-page--single-game
+      .ccg-behind-pixels-inline__item dd {
+        font-size: clamp(0.76rem, 3.25vw, 0.87rem);
+    }
+
+    /* The globally shared five-action dock has narrow phone columns.
+       Scale down excessive spacing instead of chopping the Collections
+       label or shrinking the entire page to fit. */
+    html[data-ccg-page="single-game"] .ccg-floating-nav__bar {
+        gap: 3px;
+        padding: 5px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    html[data-ccg-page="single-game"] .ccg-floating-nav__btn {
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 7px 1px;
+        gap: 5px;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-floating-nav__label {
+        display: block;
+        max-width: 100%;
+        min-width: 0;
+        white-space: nowrap;
+        font-size: clamp(0.49rem, 2vw, 0.59rem);
+        letter-spacing: 0;
+        line-height: 1.1;
+        text-align: center;
+        overflow: visible;
+    }
+
+    html[data-ccg-page="single-game"]
+      .ccg-floating-nav__btn[data-ccg-floating-section="collections"]
+      .ccg-floating-nav__label {
+        font-size: clamp(0.46rem, 1.85vw, 0.56rem);
+        letter-spacing: -0.015em;
+    }
+
+    /* The fixed five-button dock already includes TOP. Hide the second
+       floating arrow to keep Privacy Choices and legal links usable. */
+    html[data-ccg-page="single-game"].ccg-has-floating-nav
+      .ccg-back-to-top-wrap {
+        display: none !important;
+    }
+}
