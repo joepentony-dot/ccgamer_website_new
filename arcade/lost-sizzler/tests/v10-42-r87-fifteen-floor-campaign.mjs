@@ -131,6 +131,13 @@ const thiefMarkerEnemy={id:"bridge-thief-f5",bridgeThief:true,alive:true,x:12,y:
 const thiefHost={weightBridge:{crossed:true,collapsed:true,thiefId:thiefMarkerEnemy.id},
   enemies:[thiefMarkerEnemy]};
 assert.equal(radarThiefContext.radarBridgeThief(thiefHost)?.id,thiefMarkerEnemy.id);
+// Shooting the bridge switch sets collapsed=false while the thief is still
+// roaming. Tracking must continue until that specific thief is defeated.
+const rebuiltBridgeHost={...thiefHost,weightBridge:{...thiefHost.weightBridge,
+  collapsed:false,rebuilt:true,stabilized:true}};
+assert.equal(radarThiefContext.radarBridgeThief(rebuiltBridgeHost)?.id,thiefMarkerEnemy.id,
+  "Rebuilding the bridge must not hide the still-living thief");
+
 assert.equal(radarThiefContext.radarBridgeThief({...thiefHost,
   weightBridge:{...thiefHost.weightBridge,crossed:false}}),null,"No advance reveal before theft");
 assert.equal(radarThiefContext.radarBridgeThief({...thiefHost,

@@ -1700,7 +1700,7 @@ function drawRadarCross(ctx,x,y,colour,size=6){
 }
 function radarBridgeThief(hostState){
   const bridge=hostState?.weightBridge;
-  if(!bridge?.crossed||!bridge.collapsed||bridge.thiefDefeated||!bridge.thiefId)return null;
+  if(!bridge?.crossed||bridge.thiefDefeated||!bridge.thiefId)return null;
   return (hostState.enemies||[]).find(e=>e?.bridgeThief&&e.alive&&e.id===bridge.thiefId)||null;
 }
 function renderRadarPanel(p){

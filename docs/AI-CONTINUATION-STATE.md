@@ -1,3 +1,8 @@
+## Dungeon #2705 rebuilt-bridge thief radar guard — 15 October 2026
+
+- Independent source negative control: the bridge switch sets `weightBridge.collapsed=false` while the thief remains alive, but the new radar selector required `collapsed=true` and therefore hid the thief after the player rebuilt the bridge. A one-condition correction keeps tracking the unique post-theft living actor through rebuild, while still hiding pre-theft and defeated actors. Existing R87 regression extended; no new test file, inventory or AI change.
+- Isolated extracted-source before/after tests passed; exact-head full Node/Chromium/Windows, owner Flask HUD/bridge acceptance and independent review still required. Draft #2705 only, no merge, public HTML or paid CI.
+
 ## Dungeon #2705 thief cross-room AI/minimap — 15 October 2026
 
 - Existing `CCGAI` now treats bridge thief as a global fleeing target rather than a sleeping/attacking ambusher, using a bounded connected route, normal unlocked-door opening and collision rules; the HUD radar tracks its true actor position only after theft, with an off-screen directional T and removal on defeat. Extended existing R87 live-source two-room AI/radar regression (not new test file). The owner Flask HUD, original bridge encounter and actual Windows/Chromium acceptance remain unresolved.
