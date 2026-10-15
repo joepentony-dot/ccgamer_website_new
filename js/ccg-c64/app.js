@@ -2542,7 +2542,7 @@ async function initialiseOnlineLibrary() {
   };
   const retiredTitle = Object.hasOwn(retiredDirectAliases, linkedGameId)
     ? retiredDirectAliases[linkedGameId] : "";
-  const linkedGame = validLinkedId
+  let linkedGame = validLinkedId
     ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
        (linkedOriginal && onlineLibraryEntries.find(entry =>
          catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
@@ -2550,6 +2550,33 @@ async function initialiseOnlineLibrary() {
          entry.format === "crt" &&
          catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle))))
     : null;
+  // Packed PRG IDs are stable bookmarks. After retiring an exact-title PRG,
+  // request the small SHA-audited retirement map ONLY for an unresolved legacy
+  // deep link. Never fetch this extra asset on ordinary library browsing.
+  if (!linkedGame && validLinkedId &&
+      /^(?:blast-\\d{4}|archive-\\d{5})$/.test(linkedGameId)) {
+    const source = linkedGameId.startsWith("blast-") ? "blast" : "prg-archive";
+    try {
+      const response = await fetch("/emulator/c64/media/" + source + "/retired-ids.json",
+        { credentials: "same-origin", cache: "no-store" });
+      if (response.ok) {
+        const aliasData = await response.json();
+        if (aliasData && aliasData.version === 1 && aliasData.source === source &&
+            Number.isSafeInteger(aliasData.recordCount) &&
+            aliasData.recordCount >= 0 && aliasData.recordCount <= 12000 &&
+            aliasData.mappings && typeof aliasData.mappings === "object" &&
+            !Array.isArray(aliasData.mappings) &&
+            Object.hasOwn(aliasData.mappings, linkedGameId)) {
+          const replacementId = aliasData.mappings[linkedGameId];
+          if (/^owner-crt-more-[a-z0-9-]+$/.test(replacementId)) {
+            linkedGame = onlineLibraryEntries.find(entry =>
+              entry.id === replacementId && entry.format === "crt" &&
+              entry.approved !== false) || null;
+          }
+        }
+      }
+    } catch (_) { /* A missing alias must not affect ordinary game loading. */ }
+  }
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   const unavailable = [];
