@@ -1,5 +1,12 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — completed Timed Chamber reactivation guard
+
+Actual `game-play.js::triggerTimed` source was executed against a completed challenge. Before correction, re-entry reset the countdown and teleported a surviving Death Stalker to the chamber centre; when already defeated, it still restarted the trial. A single additional `!t.cleared` condition prevents both while preserving first entry, running-trial and outside-room behaviour. Extended the existing R87 fifteen-floor campaign regression with the extracted original trigger function and positive/negative cases (no new regression file). Controlled source preflight: 2 old failing scenarios, 5 corrected passing scenarios. The existing `updateTimed` already sets `t.cleared=true` and `t.triggered=false` when the countdown finishes.
+
+**Boundaries:** no original owner save/seed or browser/Windows crash reproduction; no proof of canonical death persistence, no actual Windows acceptance and no full Node/six-shard qualification. The draft remains unmerged; release status stays REPORTED/REPRODUCED/IMPLEMENTED/FOCUSED TEST ONLY. No website, media, packaging or protected file edits. Paid CI not dispatched.
+
+
 ## 15 October 2026 — bounded generator-accessibility regression
 
 Current-head source generation exercised 48 deterministic generator-objective floors, 12 each on Floors 2, 5, 9 and 12, using real world generation, systems decoration and player walkability. All sampled generators were approachable after treating ordinary room doors as opened. The initial result using initially closed room doors was a false positive and was discarded. The existing R87 campaign test now asserts generator target/count and reachable attack adjacency for eight additional seeded floors and checks that an artificially sealed generator is detected. No duplicate regression test file was introduced.

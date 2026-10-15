@@ -194,6 +194,48 @@ assert.equal(checkedGeneratorFloors,8,"Sample four generator-objective floors tw
 
 
 
+// P0 Timed Chamber: exercise the actual gameplay trigger function in isolation.
+// A completed challenge must never restart or teleport the floor's Stalker.
+const timedTriggerStart=gameplaySource.indexOf("function triggerTimed(p){");
+const timedTriggerEnd=gameplaySource.indexOf("function triggerTrader(p){",timedTriggerStart);
+assert.ok(timedTriggerStart>=0&&timedTriggerEnd>timedTriggerStart,"Current timed-chamber source must be available for direct execution");
+const timedTriggerOwner=gameplaySource.slice(timedTriggerStart,timedTriggerEnd);
+function runTimedTriggerFixture({cleared=false,triggered=false,defeated=false,inside=true}={}){
+  const chamber={id:"timed0",roomId:1,triggered,cleared,stalkerDefeated:defeated,timeLeft:0};
+  const stalker={id:"death-stalker-floor-4",x:9,y:9,alive:!defeated,deathStalker:true,voidStalker:true};
+  const hostState={timedRooms:[chamber],enemies:[stalker],defeatedDeathStalkers:defeated?[stalker.id]:[]};
+  let countdownCalls=0,noticeCalls=0;
+  const worldState={rooms:[null,{id:1,x:2,y:2,w:5,h:5}]};
+  const context=vm.createContext({
+    host:hostState,world:worldState,run:{floor:4},
+    W:{roomAt:(_world,x,y)=>x===3&&y===3?1:0},
+    timedChamberCountdown(){countdownCalls++},
+    showToast(){noticeCalls++}
+  });
+  vm.runInContext(timedTriggerOwner,context,{filename:"game-play.js::triggerTimed",timeout:3000});
+  const player=inside?{x:3,y:3}:{x:0,y:0};
+  context.triggerTimed(player);
+  context.triggerTimed(player); // repeated update must not create another trigger
+  return{chamber,stalker,countdownCalls,noticeCalls};
+}
+for(const defeated of [false,true]){
+  const previous=runTimedTriggerFixture({cleared:true,defeated});
+  assert.equal(previous.chamber.triggered,false,"A completed chamber cannot restart after returning");
+  assert.equal(previous.chamber.timeLeft,0,"A completed challenge cannot reset its countdown");
+  assert.equal(previous.stalker.x,9,"A completed chamber cannot relocate the Stalker");
+  assert.equal(previous.stalker.y,9,"A completed chamber cannot relocate the Stalker");
+  assert.equal(previous.countdownCalls,0,"A cleared chamber must not reopen countdown UI");
+  assert.equal(previous.noticeCalls,0,"A cleared chamber must not announce a new challenge");
+}
+const firstTimedEntry=runTimedTriggerFixture();
+assert.equal(firstTimedEntry.chamber.triggered,true,"First genuine entry still starts the trial");
+assert.equal(firstTimedEntry.chamber.timeLeft,30000,"First entry still gets the 30-second trial");
+assert.equal(firstTimedEntry.stalker.x,4,"An active first trial still calls the existing Stalker encounter");
+assert.equal(firstTimedEntry.stalker.y,4);
+assert.equal(firstTimedEntry.countdownCalls,1,"Repeated entry during the same active trial may not restart it");
+assert.equal(runTimedTriggerFixture({triggered:true}).countdownCalls,0,"Already-active chambers cannot retrigger");
+assert.equal(runTimedTriggerFixture({inside:false}).countdownCalls,0,"A player outside the chamber cannot trigger it");
+
 // Exercise actual R115 reward placement through its VM owner, not just source text.
 const rewardWalk=(m,x,y)=>m[y]?.[x]===0;
 function rewardFixture(map,items=[],overrides={}){

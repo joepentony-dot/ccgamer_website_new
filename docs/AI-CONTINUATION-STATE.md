@@ -1,3 +1,8 @@
+## Dungeon #2705 P0 Timed Chamber correction — 15 October 2026
+
+- Guarded candidate fix in `game-play.js::triggerTimed`: an already-cleared chamber may no longer restart its trial and relocate the surviving Death Stalker. The actual original and corrected function were executed with five controlled lifecycle scenarios: two previously failed; all five candidate scenarios passed. Source-derived R87 regression added. Original simultaneous guardian/Stalker freeze and owner seed remain unverified.
+- This draft is NOT current-head CI-qualified, merged, deployed or owner-accepted. No paid CI dispatched. See `docs/ai-work/dungeon-carnage-r137-owner-blockers.md` and the master request audit for exact boundaries; preserve the protected website and soundtrack.
+
 ## Dungeon #2705 bounded P0 checkpoint — 15 October 2026, 15:04 BST
 
 - Existing cumulative draft only: `fix/dungeon-r137-release-blockers-voice-scout-20261013`, refreshed remote head `ac4c3e34a214b2599f6ddc020c1d4024a7f3d402`. Verified source/test commit `9752a2cf0441353c4ab8240a66d532f12eb98cee` repairs Warden Cache occupied/unreachable placement and preserves deferred Seal eligibility; extends the existing Warden contract and corrects the R87 generator fixture's canonical `alive` field without changing its assertions.

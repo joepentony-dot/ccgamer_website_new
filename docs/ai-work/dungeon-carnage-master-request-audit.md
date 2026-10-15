@@ -242,6 +242,9 @@ Do not delete an item from this file merely because a PR once existed. Move it t
 
 ### New source observations and remaining falsification tests
 
+**15 October 2026 — P0 completed Timed Chamber replay correction:** Executing the exact `game-play.js::triggerTimed` source established that a cleared chamber (`cleared:true`, `triggered:false`) could restart its 30-second timer and teleport an *existing* living Stalker back to the chamber. The source now rejects completed chambers, with positive/negative source-executed cases appended to the existing R87 regression; the old source reactivated both completed/living and completed/defeated fixtures, while the candidate preserved initial entry, active-trial and outside-room cases. This is a narrow chamber-lifecycle repair only; it does **not** reproduce the owner's simultaneous guardian/Stalker freeze, prove save/reload liveness, prevent every duplicate spawn or qualify Windows. **P0 row 1 remains only partially implemented/tested, and Q/M/D/O remain N.**
+
+
 **15 October 2026 — generator topology falsification:** Source-executed actual world generation, decoration and canonical player walkability on **48 seeded generator-objective floors** (12 each of Floors 2, 5, 9 and 12) showed all three generators had a reachable adjacent tile **after ordinary room doors were opened**. A first-pass analysis that mistakenly treated ordinary unopened doors as permanently impassable was discarded. An eight-seed regression with a deliberately sealed negative control was added to the existing R87 campaign test on draft #2705. This is structural reachability only: actual door interactions, the owner's original seed, Count Loadula/Flask, generator destruction, combat liveness and Windows remain unverified. **P0 row 2 remains open, not owner-accepted.**
 
 
