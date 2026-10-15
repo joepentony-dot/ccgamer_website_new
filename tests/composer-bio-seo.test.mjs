@@ -294,3 +294,13 @@ test("single-game canonical year archive emits indexable robots and stable disco
     assert.ok(html.includes('/games/' + group.games[0].slug + '/'));
   }
 });
+
+test("publisher-history postprocessing cannot undo one-credit indexability", () => {
+  const histories = require("../scripts/materialize-publisher-histories.js");
+  assert.equal(histories.INDEXABLE_MIN_GAMES, 1);
+  assert.equal(histories.isPublisherIndexable({ count: 1 }, null), true);
+  assert.equal(histories.isPublisherIndexable({ count: 0 }, null), false,
+    "zero-credit unrelated routes are not promoted");
+  assert.equal(histories.isPublisherIndexable({ count: 0 }, { sourceBacked: true }), true,
+    "existing independently sourced exceptions remain supported");
+});
