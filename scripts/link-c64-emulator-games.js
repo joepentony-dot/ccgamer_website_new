@@ -19,7 +19,7 @@ const isC64Game = g => g && g.system === "C64" && usableId(g.slug) && g.title;
 const approved = e => e && e.approved === true && usableId(e.id)
   && typeof e.title === "string" && e.title.trim().length > 0
   && typeof e.license === "string" && e.license.trim().length > 0
-  && typeof e.url === "string" && /^\/emulator\/c64\/media\/[a-z0-9][a-z0-9._-]+$/i.test(e.url)
+  && typeof e.url === "string" && /^\/emulator\/c64\/media\/(?:cartridge-replacements\/)?[a-z0-9][a-z0-9._-]+$/i.test(e.url)
   && /^[a-f0-9]{64}$/i.test(String(e.sha256 || ""))
   && ["prg", "d64", "d71", "d81", "g64", "tap", "t64", "crt"].includes(e.format);
 
@@ -68,7 +68,7 @@ for (const game of validGames) {
   if (expected) {
     if (!actionsPattern.test(updated)) throw Error("Game hero actions missing: " + game.slug);
     updated = updated.replace(actionsPattern, (_all, start, body, end) =>
-      start + body + "\n                        " + playAnchor(expected.id) + "\n                    " + end);
+      start + body.trimEnd() + "\n                        " + playAnchor(expected.id) + "\n                    " + end);
     linked++;
   }
   if (updated !== before) {
