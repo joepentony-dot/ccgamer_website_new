@@ -482,19 +482,86 @@ function bossBurst(fight,boss,phase){
   for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
   S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
 }
+function bossRewardCell(fight){
+  const room=world.rooms?.[fight.roomId];if(!room)return null;
+  const player=localPlayers().find(p=>p&&p.health>0&&W.roomAt(world,p.x,p.y)===fight.roomId);
+  if(!player)return null;
+  // Traverse only the player's currently reachable room component.
+  const walk=(x,y)=>W.playerWalkable(world.map,x,y,host)&&W.roomAt(world,x,y)===fight.roomId;
+  if(!walk(player.x,player.y))return null;
+  const key=(x,y)=>x+","+y,queue=[{x:player.x,y:player.y}],seen=new Set([key(player.x,player.y)]);
+  const occupied=(q,rows,valid)=>Array.isArray(rows)&&rows.some(o=>o&&valid(o)&&o.x===q.x&&o.y===q.y);
+  const active=o=>o.active!==false,alive=o=>o.alive===true;
+  const specials=[host.guardian,host.stalker,host.rescue,host.trader,host.startShop];
+  const centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},candidates=[];
+  for(let i=0;i<queue.length;i++){
+    const q=queue[i];
+    if(q.x>room.x&&q.y>room.y&&q.x<room.x+room.w&&q.y<room.y+room.h&&
+       !occupied(q,localPlayers(),()=>true)&&!occupied(q,host.enemies,alive)&&
+       !occupied(q,specials,o=>o.alive!==false&&!o.permanentlyBanished&&!o.rescued&&o.active!==false)&&
+       !occupied(q,host.generators,alive)&&!occupied(q,host.items,active)&&
+       !occupied(q,host.chests,active)&&!occupied(q,host.deathCaches,active)&&
+       !occupied(q,host.switches,active)&&!occupied(q,host.shrines,active)&&
+       !occupied(q,host.shops,active))candidates.push(q);
+    for(const [dx,dy]of[[0,-1],[1,0],[0,1],[-1,0]]){
+      const x=q.x+dx,y=q.y+dy,k=key(x,y);
+      if(seen.has(k)||!walk(x,y))continue;
+      seen.add(k);queue.push({x,y});
+    }
+  }
+  candidates.sort((a,b)=>{
+    const da=Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y),
+      db=Math.abs(b.x-centre.x)+Math.abs(b.y-centre.y);
+    return da-db||a.y-b.y||a.x-b.x;
+  });
+  return candidates[0]||null;
+}
+function reconcileBossRewards(fight,force=false){
+  if(!fight?.cleared)return false;
+  const now=Date.now();if(!force&&Number(fight.rewardRetryAt||0)>now)return false;
+  fight.rewardRetryAt=now+850;
+  // Pre-v2 rewarded saves may already have collected both rewards.
+  if(fight.rewarded&&!fight.rewardSpawnVersion){
+    fight.rewardSpawnVersion=2;fight.sideRewarded=true;
+  }
+  if(!fight.rewardSpawnVersion)fight.rewardSpawnVersion=2;
+  host.chests=host.chests||[];host.items=host.items||[];
+  const id="r114-boss-chest-f"+fight.floor;
+  if(!fight.rewarded){
+    if(host.chests.some(c=>c.id===id))fight.rewarded=true;
+    else{
+      const q=bossRewardCell(fight);
+      if(q){
+        const room=world.rooms[fight.roomId];
+        host.chests.push({id,...q,locked:false,active:true,depth:(room.depth||0)+18,
+          roomId:fight.roomId,r114BossReward:true});
+        fight.rewarded=true;host.revision++;
+      }
+    }
+  }
+  if(fight.rewarded&&!fight.sideRewarded){
+    const side=fight.floor===5?{id:"r114-boss-map-"+fight.floor,kind:"mapReveal",title:"CARTOGRAPHER'S EYE"}:
+      fight.floor===10?{id:"r114-boss-sack-"+fight.floor,kind:"magicSack",title:"MAGIC SACK"}:null;
+    if(!side)fight.sideRewarded=true;
+    else if(host.items.some(item=>item.id===side.id))fight.sideRewarded=true;
+    else{
+      const q=bossRewardCell(fight);
+      if(q){host.items.push({...side,...q,active:true});fight.sideRewarded=true;host.revision++}
+    }
+  }
+  return Boolean(fight.rewarded&&fight.sideRewarded);
+}
 function updateBossFight(dt){
-  const fight=bossFightState();if(!fight||fight.cleared)return;
+  const fight=bossFightState();if(!fight)return;
+  if(fight.cleared){reconcileBossRewards(fight);return}
   const boss=bossEnemyForFight(fight);if(!boss||!boss.alive){
     fight.cleared=true;fight.triggered=false;SYS.lockRoomDoors(host,fight.roomId,false);
     for(const d of host.doors||[])if(d.type==="room"&&d.roomId===fight.roomId)beginDoorOpening(d,900);
-    if(!fight.rewarded){
-      fight.rewarded=true;score+=fight.floor===15?5000:2500;
-      const room=world.rooms[fight.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
-      host.chests.push({id:`r114-boss-chest-f${fight.floor}`,...q,locked:false,active:true,depth:(room.depth||0)+18,roomId:fight.roomId,r114BossReward:true});
-      if(fight.floor===5)host.items.push({id:`r114-boss-map-${Date.now()}`,x:q.x+1,y:q.y,kind:"mapReveal",active:true,title:"CARTOGRAPHER'S EYE"});
-      if(fight.floor===10)host.items.push({id:`r114-boss-sack-${Date.now()}`,x:q.x-1,y:q.y,kind:"magicSack",active:true,title:"MAGIC SACK"});
+    if(!fight.rewardPaid&&!fight.rewarded){
+      fight.rewardPaid=true;score+=fight.floor===15?5000:2500;
     }
-    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":"The arena doors reopen. A high-tier boss cache has appeared.","green",10000);host.revision++;return
+    const rewardReady=reconcileBossRewards(fight,true);
+    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":rewardReady?"The chamber doors reopen. Your boss reward is available.":"The chamber doors reopen. Your boss reward is reserved until a reachable tile is free.","green",10000);host.revision++;return
   }
   if(!fight.triggered)return;
   const pct=Math.max(0,Number(boss.hp||0)/Math.max(1,Number(boss.maxHp||1))),phase=pct<=.30?3:pct<=.65?2:1;

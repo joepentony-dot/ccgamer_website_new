@@ -1,3 +1,8 @@
+## Dungeon #2705 R114 boss reward ownership — 15 October 2026
+
+- Reproduced the actual R114 boss completion chest on a live generator. Improved the existing reward owner to select distinct accessible unoccupied chest and Floor 5/10 side-item cells, reserve if blocked, retry after save/unblock, and preserve exactly-once score. Existing R87 campaign test extended; focused source/VM assertions passed only, no full Node/Chromium/Windows/owner repro or merge.
+- Count Loadula generator and paired Guardian Maw/Death Stalker lockups remain release blockers. Single cumulative draft, protect main website and original soundtrack access block.
+
 ## Dungeon #2705 atomic Warden charge settlement — 15 October 2026
 
 - Reproduced the active Warden override's failure to verify charge removal/refund when `breakWard` refuses or throws. Guarded candidate snapshots serializable inventory and only pays one charge after a genuine Ward Break; existing Warden Essence test extended for removal failure, unexpected item, exception, changed target, retry and normal exact-once flow. Focused pre-fail/post-pass V8 source tests only; full Node/Chromium/Windows not qualified.

@@ -481,6 +481,86 @@ assert.equal(activeDoublesHost.enemies[0].alive,true,"Two active duplicates must
 assert.equal(activeDoublesHost.defeatedDeathStalkers.length,0);
 assert.equal(activeDoublesHost.timedRooms[0].hunterId,"floor-stalker-original","Retarget references to a removed duplicate");
 
+
+// R114 boss reward collision: use actual boss completion code and serialize
+// the same fight state; do not synthesize a separate reward implementation.
+const bossBegin=gameplaySource.indexOf("function bossFightState(){");
+const bossEnd=gameplaySource.indexOf("function triggerBoulder(p)",bossBegin);
+assert.ok(bossBegin>=0&&bossEnd>bossBegin,"Live R114 boss reward owner must be extractable");
+assert.match(gameplaySource,/function reconcileBossRewards\(fight,force=false\)/);
+function bossRewardCase({floor=5,generator=false,blocked=false}={}){
+  const map=Array.from({length:12},()=>Array(12).fill(1));
+  for(let y=2;y<=7;y++)for(let x=2;x<=7;x++)map[y][x]=0;
+  const player={id:"P1",x:3,y:3,health:10},boss={id:"boss",x:5,y:5,alive:false};
+  const fight={floor,roomId:1,bossId:"boss",cleared:false,triggered:true,name:"Guardian Maw"};
+  const hostState={r114BossFight:fight,enemies:[boss],generators:generator?[{x:4,y:4,alive:true}]:[],
+    items:[],chests:[],doors:[],deathCaches:[],switches:[],shrines:[],revision:0};
+  if(blocked)for(let y=2;y<=7;y++)for(let x=2;x<=7;x++)
+    if(x!==player.x||y!==player.y)hostState.items.push({x,y,active:true});
+  let tick=1000,announcements=0;
+  const ctx=vm.createContext({
+    host:hostState,world:{rooms:[null,{id:1,x:1,y:1,w:7,h:7,depth:6}],map},
+    p1:player,W:{roomAt:(_w,x,y)=>x>=2&&x<=7&&y>=2&&y<=7?1:-1,
+      playerWalkable:(m,x,y)=>m[y]?.[x]===0},
+    localPlayers:()=>[player],SYS:{lockRoomDoors(){}},S:{sfx(){}},
+    showToast(){announcements++},beginDoorOpening(){},spawnEnemyShot(){},
+    spawnPuzzleAmbush(){},P:{},performance:{now:()=>tick},Date:{now:()=>tick},score:0
+  });
+  vm.runInContext(gameplaySource.slice(bossBegin,bossEnd),ctx,{filename:"game-play.js::R114",timeout:3000});
+  return{ctx,hostState,fight,player,advance(ms=1000){tick+=ms;ctx.updateBossFight(16)},
+    getAnnouncements:()=>announcements};
+}
+const generatorBoss=bossRewardCase({generator:true});
+generatorBoss.advance();
+assert.equal(generatorBoss.hostState.chests.length,1);
+assert.equal(generatorBoss.hostState.items.length,1);
+const firstChest=generatorBoss.hostState.chests[0],firstSide=generatorBoss.hostState.items[0];
+assert.notDeepEqual([firstChest.x,firstChest.y],[4,4],"Boss chest cannot overlap a live generator");
+assert.notDeepEqual([firstSide.x,firstSide.y],[4,4],"Boss side reward cannot overlap generator");
+assert.notDeepEqual([firstChest.x,firstChest.y],[firstSide.x,firstSide.y],"Chest and side item cannot overlap");
+assert.notDeepEqual([firstChest.x,firstChest.y],[3,3],"Boss chest cannot overlap player");
+assert.equal(generatorBoss.ctx.score,2500);
+generatorBoss.advance();
+assert.equal(generatorBoss.hostState.chests.length,1);
+assert.equal(generatorBoss.hostState.items.length,1);
+assert.equal(generatorBoss.ctx.score,2500,"Duplicate updates cannot pay boss defeat twice");
+
+const pendingBoss=bossRewardCase({blocked:true});
+pendingBoss.advance();
+assert.equal(pendingBoss.hostState.chests.length,0,"Full room must not force invalid chest");
+assert.equal(pendingBoss.fight.rewarded,undefined,"Unplaced chest stays owed");
+assert.equal(pendingBoss.ctx.score,2500);
+assert.equal(pendingBoss.getAnnouncements(),1);
+pendingBoss.hostState.items.find(i=>i.x===5&&i.y===5).active=false;
+pendingBoss.advance();
+assert.equal(pendingBoss.hostState.chests.length,1,"Freed reachable cell receives owed chest");
+assert.equal(pendingBoss.fight.sideRewarded,undefined,"Side item still pending when only one cell free");
+pendingBoss.ctx.host=JSON.parse(JSON.stringify(pendingBoss.ctx.host));
+pendingBoss.ctx.host.items.find(i=>i.x===6&&i.y===6).active=false;
+pendingBoss.advance();
+assert.equal(pendingBoss.ctx.host.items.filter(i=>i.kind==="mapReveal").length,1,
+  "Saved pending side reward is delivered exactly once");
+assert.equal(pendingBoss.ctx.host.chests.length,1);
+assert.equal(pendingBoss.ctx.score,2500);
+pendingBoss.advance();
+assert.equal(pendingBoss.ctx.host.items.filter(i=>i.kind==="mapReveal").length,1);
+assert.equal(pendingBoss.ctx.host.chests.length,1);
+assert.equal(pendingBoss.ctx.score,2500);
+assert.equal(pendingBoss.getAnnouncements(),1,"Deferred rewards do not repeat victory announcement");
+
+const tenthBoss=bossRewardCase({floor:10,generator:true});
+tenthBoss.advance();
+assert.equal(tenthBoss.hostState.items.filter(i=>i.kind==="magicSack").length,1);
+assert.notDeepEqual([tenthBoss.hostState.chests[0].x,tenthBoss.hostState.chests[0].y],
+  [tenthBoss.hostState.items[0].x,tenthBoss.hostState.items[0].y]);
+
+const restoredLegacy=bossRewardCase();
+restoredLegacy.fight.cleared=true;restoredLegacy.fight.rewarded=true;
+restoredLegacy.advance();
+assert.equal(restoredLegacy.hostState.chests.length,0,"Old paid save cannot recreate consumed chest");
+assert.equal(restoredLegacy.hostState.items.length,0,"Old paid save cannot recreate consumed map");
+assert.equal(restoredLegacy.ctx.score,0,"Older save must not receive another boss payout");
+
 // P0 Timed Chamber: exercise the actual gameplay trigger function in isolation.
 // A completed challenge must never restart or teleport the floor's Stalker.
 const timedTriggerStart=gameplaySource.indexOf("function triggerTimed(p){");
