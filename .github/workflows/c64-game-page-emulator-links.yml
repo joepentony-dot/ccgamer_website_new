@@ -15,6 +15,7 @@ on:
       - "js/ccg-c64/coi-bootstrap.js"
       - "resources/css/game-pages.css"
       - "tests/c64-emulator-game-page-links.test.mjs"
+      - "tests/c64-new-game-auto-emulator-link.test.mjs"
       - "tests/ccg-c64-game-page-autoload.test.mjs"
       - ".github/workflows/c64-game-page-emulator-links.yml"
   workflow_dispatch:
@@ -40,5 +41,5 @@ jobs:
           node --input-type=module --check < js/ccg-c64/app.js
           node scripts/link-c64-emulator-games.js
           node scripts/link-c64-emulator-games.js --check
-          node --test tests/c64-emulator-game-page-links.test.mjs tests/ccg-c64-game-page-autoload.test.mjs
+          node --test tests/c64-emulator-game-page-links.test.mjs tests/ccg-c64-game-page-autoload.test.mjs tests/c64-new-game-auto-emulator-link.test.mjs
           git diff --check
