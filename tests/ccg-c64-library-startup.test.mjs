@@ -74,10 +74,10 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 219,
-  "Retain owner-approved direct media while retiring three replaced D64 entries");
-assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 153,
-  "152 new CRT-first entries and existing Pirates! preference must survive");
+assert.equal(direct.entries.length, 222,
+  "Three retired D64 entries must be replaced by directly available CRT fallbacks");
+assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 156,
+  "Preserve all existing promoted CRTs plus three direct replacements for retired disks");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
