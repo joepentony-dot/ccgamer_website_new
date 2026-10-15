@@ -2554,7 +2554,7 @@ async function initialiseOnlineLibrary() {
   // request the small SHA-audited retirement map ONLY for an unresolved legacy
   // deep link. Never fetch this extra asset on ordinary library browsing.
   if (!linkedGame && validLinkedId &&
-      /^(?:blast-\\d{4}|archive-\\d{5})$/.test(linkedGameId)) {
+      /^(?:blast-\d{4}|archive-\d{5})$/.test(linkedGameId)) {
     const source = linkedGameId.startsWith("blast-") ? "blast" : "prg-archive";
     try {
       const response = await fetch("/emulator/c64/media/" + source + "/retired-ids.json",
