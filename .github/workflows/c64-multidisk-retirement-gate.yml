@@ -1,0 +1,21 @@
+name: C64 Multi-disk CRT Retirement Gate
+on:
+  pull_request:
+    paths:
+      - 'emulator/c64/library.json'
+      - 'emulator/c64/media/**'
+      - 'tests/c64-multidisk-retirement-gate.test.mjs'
+      - '.github/workflows/c64-multidisk-retirement-gate.yml'
+  workflow_dispatch:
+jobs:
+  preservation-contract:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify six CRTs and preserve all multi-disk sides
+        run: node tests/c64-multidisk-retirement-gate.test.mjs
