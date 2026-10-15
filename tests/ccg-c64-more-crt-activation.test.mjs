@@ -11,7 +11,7 @@ import { parseCRT } from "../js/ccg-c64/core/media/crt.js";
 import { createCartridgeFromCRT } from "../js/ccg-c64/core/cartridges/registry.js";
 import { C64Machine } from "../js/ccg-c64/core/machine.js";
 import {
-  parseAdditionalCrtCatalog, preferSelectedCartridges, normaliseCatalogSearch,
+  parseAdditionalCrtCatalog, preferSelectedCartridges, catalogGameIdentity,
 } from "../js/ccg-c64/game-catalog.js";
 
 const shard = Number(process.argv[2]);
@@ -35,21 +35,21 @@ const originals = [
   ...archive.games.map(x => ({ id: x[0], title: x[1], format: x[2] })),
 ];
 const oldTitles = new Set(originals.filter(x => x.format !== "crt")
-  .map(x => normaliseCatalogSearch(x.title)));
+  .map(x => catalogGameIdentity(x.title)));
 const oldCRT = new Set(originals.filter(x => x.format === "crt")
-  .map(x => normaliseCatalogSearch(x.title)));
+  .map(x => catalogGameIdentity(x.title)));
 const candidates = parseAdditionalCrtCatalog(activation);
 assert.equal(candidates.length, 2064);
 const results = preferSelectedCartridges([...originals, ...candidates]);
 for (const [i, chosen] of candidates.entries()) {
-  const key = normaliseCatalogSearch(chosen.title);
+  const key = catalogGameIdentity(chosen.title);
   if (i < 1530) {
     // Preserve the original 1,530-image contract: every promoted CRT replaces
     // a previously selectable non-CRT and never displaces an existing CRT.
     assert(oldTitles.has(key), "Missing original non-CRT fallback: " + chosen.title);
     assert(!oldCRT.has(key), "Original CRT would hide an existing CRT: " + chosen.title);
   }
-  const matches = results.filter(x => normaliseCatalogSearch(x.title) === key);
+  const matches = results.filter(x => catalogGameIdentity(x.title) === key);
   assert.equal(matches.length, 1, "A competing version remains: " + chosen.title);
   if (!oldCRT.has(key)) {
     assert.equal(matches[0].id, chosen.id, "CRT was not prioritised: " + chosen.title);
