@@ -159,6 +159,9 @@ jobs:
       - name: Run Home render-blocking CSS regression guard
         run: node --test tests/home-render-blocking-css.test.mjs
 
+      - name: Validate Fourthwall merchandise homepage integration
+        run: node --test tests/fourthwall-merch-integration.test.mjs
+
       - name: Run mobile-lite startup regression guard
         run: node tests/ccg-mobile-lite-startup.mjs
 
