@@ -49,7 +49,7 @@ HTML = (
     '<div class="related-carousel"><button class="related-carousel__nav related-carousel__nav--prev">‹</button>'
     '<div class="related-carousel__viewport"><div class="related-carousel__track">' + CARDS + '</div></div>'
     '<button class="related-carousel__nav related-carousel__nav--next">›</button></div></section>'
-    '<div style="height:800px"></div>'
+    '<div style="height:1600px"></div>'
     '<p id="support-cta">Enjoying the archive? <a href="/support.html">Support CCG</a></p>'
     '<div class="game-quick-actions" data-game-quick-actions>'
     '<button>Watch</button><button>Share</button><button>Subscribe</button></div>'
