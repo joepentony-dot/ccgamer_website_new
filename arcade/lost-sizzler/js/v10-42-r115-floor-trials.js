@@ -166,19 +166,42 @@
     return t.summary||t.label
   }
   function rewardCell(t){
-    const p=(typeof p1!=="undefined"&&p1)?p1:null,last=t.lastPos||p;if(!last)return null;
-    const candidates=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1]].map(([dx,dy])=>({x:last.x+dx,y:last.y+dy}));
-    return candidates.find(q=>{try{return W.walkable(world.map,q.x,q.y,host)&&!occupied(host,q.x,q.y)}catch(_){return false}})||{x:last.x,y:last.y}
+    const p=(typeof p1!=="undefined"&&p1)?p1:null,last=t.lastPos||p;
+    if(!last||!world?.map||!host)return null;
+    const canWalk=(x,y)=>{try{return typeof W.playerWalkable==="function"?W.playerWalkable(world.map,x,y,host):W.walkable(world.map,x,y,host)}catch(_){return false}};
+    const taken=(x,y)=>{
+      if(p&&p.x===x&&p.y===y)return true;
+      if(host.stalker?.awake&&host.stalker.x===x&&host.stalker.y===y)return true;
+      if([host.trader,host.startShop,host.alchemist,host.sanctuaryKeeper,host.rescue,host.deathCache,...(host.shops||[])].some(a=>a&&a.x===x&&a.y===y&&a.active!==false))return true;
+      return occupied(host,x,y)
+    };
+    // Search reachable floor near the completed mechanism; never fall back
+    // to an occupied player's, objective's or other entity's tile.
+    const directions=[[1,0],[-1,0],[0,1],[0,-1]],queue=[{x:last.x,y:last.y}],seen=new Set([`${last.x},${last.y}`]);
+    for(let i=0;i<queue.length;i++){
+      const q=queue[i];
+      if(canWalk(q.x,q.y)&&!taken(q.x,q.y))return q;
+      for(const [dx,dy] of directions){
+        const x=q.x+dx,y=q.y+dy,key=`${x},${y}`;
+        if(seen.has(key)||!canWalk(x,y))continue;
+        seen.add(key);queue.push({x,y})
+      }
+    }
+    return null
   }
   function finishTrial(hostState,trial){
     if(!trial||trial.rewarded||!trialProgress(hostState).complete)return false;
-    trial.rewarded=true;state.completions++;
+    if(Number(trial.rewardRetryAt||0)>Date.now())return false;
+    let q=null;try{q=rewardCell(trial)}catch(_){}
+    if(!q){trial.rewardRetryAt=Date.now()+2000;return false}
     try{
-      const q=rewardCell(trial);
-      if(q){const roomId=W.roomAt(world,q.x,q.y),room=world.rooms?.[roomId];hostState.chests.push({id:`r115-trial-cache-f${trial.floor}-${Date.now()}`,x:q.x,y:q.y,locked:false,active:true,depth:(room?.depth||0)+14,roomId,r115TrialReward:true})}
-      score+=1000;
-      S.sfx("open");
-      showToast(`${trial.label} COMPLETE`,`Floor trial complete. +1,000 score and a high-tier Trial Cache have been awarded.`,"gold",9500);
+      const roomId=W.roomAt(world,q.x,q.y),room=world.rooms?.[roomId];
+      hostState.chests.push({id:`r115-trial-cache-f${trial.floor}-${Date.now()}`,x:q.x,y:q.y,locked:false,active:true,depth:(room?.depth||0)+14,roomId,r115TrialReward:true})
+    }catch(_){trial.rewardRetryAt=Date.now()+2000;return false}
+    trial.rewarded=true;delete trial.rewardRetryAt;state.completions++;
+    try{
+      score+=1000;S.sfx("open");
+      showToast(`${trial.label} COMPLETE`,"Floor trial complete. +1,000 score and a high-tier Trial Cache have been awarded.","gold",9500);
       hostState.revision++;updateQuests?.()
     }catch(_){}
     return true

@@ -148,4 +148,46 @@ for(const floor of [6,7,8,9,11,13,14]){
 }
 assert.equal(generatedTrialSamples,28,"Exercise all seven authored trial floors across four seeds each.");
 
+
+// Exercise actual R115 reward placement through its VM owner, not just source text.
+const rewardWalk=(m,x,y)=>m[y]?.[x]===0;
+function rewardFixture(map,items=[]){
+  const h={items:items.map(([x,y])=>({x,y,active:true})),
+    enemies:[{x:5,y:7,alive:true}],generators:[{x:7,y:5,active:true}],
+    chests:[{x:3,y:5,active:true}],switches:[],shrines:[],doors:[],shops:[],revision:0,
+    floorTrial:{kind:"tape-relays",floor:6,label:"TAPE RELAYS",progress:4,target:4,lastPos:{x:5,y:5},rewarded:false}};
+  const ctx=vm.createContext({window:{CCG_CONFIG:{},CCGProgression:{},
+    CCGWorld:{walkable:rewardWalk,playerWalkable:rewardWalk,roomAt:()=>0},
+    CCGSystems:{decorate(){},updateObjective(){return true},objectiveText(){return ""}}},
+    world:{map,rooms:[{id:0,depth:0}]},host:h,p1:{x:5,y:5},score:0,console,
+    S:{sfx(){}},showToast(){},updateQuests(){}});
+  vm.runInContext(floorTrials,ctx,{filename:"v10-42-r115-floor-trials.js",timeout:3000});
+  return{h,ctx,owner:ctx.window.CCGLostSizzlerV142R115FloorTrials}
+}
+const busyItems=[[6,5],[4,5],[5,6],[5,4],[6,6],[4,4]];
+const busyTrial=rewardFixture(Array.from({length:13},()=>Array(13).fill(0)),busyItems);
+busyTrial.owner.refreshTrial(busyTrial.h);
+const chest=busyTrial.h.chests.find(c=>c.r115TrialReward);
+assert.ok(chest,"Six occupied neighbours must still yield a Trial Cache");
+assert.ok(chest.x!==5||chest.y!==5,"Trial Cache must not overlap player");
+for(const rows of [busyTrial.h.items,busyTrial.h.enemies,busyTrial.h.generators,busyTrial.h.chests.filter(c=>c!==chest)])
+  assert.ok(!rows.some(row=>row.x===chest.x&&row.y===chest.y),"Trial cache cannot overlap item, enemy, generator or chest");
+assert.equal(busyTrial.ctx.score,1000);
+busyTrial.owner.refreshTrial(busyTrial.h);
+assert.equal(busyTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"No duplicated cache");
+assert.equal(busyTrial.ctx.score,1000,"No duplicated score");
+const blockedMap=Array.from({length:13},()=>Array(13).fill(1));blockedMap[5][5]=0;
+const deferredTrial=rewardFixture(blockedMap);
+deferredTrial.owner.refreshTrial(deferredTrial.h);
+assert.equal(deferredTrial.h.chests.filter(c=>c.r115TrialReward).length,0,"Never issue reward under player when no free tiles");
+assert.equal(deferredTrial.h.floorTrial.rewarded,false,"Unplaceable cache stays pending");
+assert.ok(deferredTrial.h.floorTrial.rewardRetryAt>0,"Retry bounded");
+assert.equal(deferredTrial.ctx.score,0);
+blockedMap[5][6]=0;deferredTrial.h.floorTrial.rewardRetryAt=0;
+deferredTrial.owner.refreshTrial(deferredTrial.h);
+assert.equal(deferredTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Retry when space becomes free");
+assert.equal(deferredTrial.ctx.score,1000);
+deferredTrial.owner.refreshTrial(deferredTrial.h);
+assert.equal(deferredTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Retry cannot duplicate cache");
+
 console.log("Dungeon Carnage R87 fifteen-floor campaign and floor-theme contract passed.");
