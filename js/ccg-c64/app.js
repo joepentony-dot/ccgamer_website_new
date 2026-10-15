@@ -2527,10 +2527,23 @@ async function initialiseOnlineLibrary() {
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
   const linkedOriginal = validLinkedId
     ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+  // Preserve bookmarks to directly hosted D64s retired after the matching
+  // owner-selected CRT was installed. These IDs no longer occur in the
+  // direct library, so they need an explicit, reviewed identity mapping.
+  const retiredDirectAliases = {
+    "forbidden-forest": "Forbidden Forest",
+    "paradroid": "Paradroid",
+    "slicks": "Slicks",
+  };
+  const retiredTitle = Object.hasOwn(retiredDirectAliases, linkedGameId)
+    ? retiredDirectAliases[linkedGameId] : "";
   const linkedGame = validLinkedId
     ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
        (linkedOriginal && onlineLibraryEntries.find(entry =>
-         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))))
+         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
+       (retiredTitle && onlineLibraryEntries.find(entry =>
+         entry.format === "crt" &&
+         catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle))))
     : null;
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);

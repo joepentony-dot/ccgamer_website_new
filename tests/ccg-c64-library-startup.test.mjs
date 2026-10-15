@@ -75,9 +75,9 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
 const good = await execute(true);
 assert.equal(blast.recordCount, 1878);
 assert.equal(direct.entries.length, 222,
-  "Retain 70 original directly hosted games plus 152 owner-approved CRT replacements");
-assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 153,
-  "152 new CRT-first entries and existing Pirates! preference must survive");
+  "Three retired D64 entries must be replaced by directly available CRT fallbacks");
+assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 156,
+  "Preserve all existing promoted CRTs plus three direct replacements for retired disks");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
@@ -134,7 +134,21 @@ assert.equal(activated.fetchRequests.filter(x =>
 console.log("PASS: 2010 distinct selectable library entries appear without HEAD; owner-authorised CRTs survive catalogue errors, and retry is exposed.");
 
 // CCG_BATCH_VERIFIED_MEDIA â€” owner-supplied individual disks and every swap side.
-const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"rodland","title":"Rodland"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"slicks","title":"Slicks"},{"id":"x-out","title":"X-Out"},{"id":"racing-destruction-set","title":"Racing Destruction Set"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"},{"id":"katakis","title":"Katakis"},{"id":"world-games","title":"World Games"},{"id":"kennedy-approach","title":"Kennedy Approach"},{"id":"hessian","title":"Hessian"},{"id":"soul-force","title":"Soul Force"},{"id":"lords-of-conquest","title":"Lords of Conquest"},{"id":"times-of-lore","title":"Times of Lore"},{"id":"supremacy","title":"Supremacy: Your Will Be Done"},{"id":"strike-fleet","title":"Strike Fleet"},{"id":"the-legend-of-blacksilver","title":"The Legend of Blacksilver"},{"id":"killed-until-dead","title":"Killed Until Dead"},{"id":"pool-of-radiance","title":"Pool of Radiance"},{"id":"ultima-iii-exodus","title":"Ultima III: Exodus"},{"id":"buck-rogers-countdown-to-doomsday","title":"Buck Rogers: Countdown to Doomsday"},{"id":"briley-witch-chronicles","title":"Briley Witch Chronicles"},{"id":"project-firestart","title":"Project Firestart"},{"id":"legacy-of-the-ancients","title":"Legacy of the Ancients"},{"id":"project-stealth-fighter","title":"Project Stealth Fighter"}];
+const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"rodland","title":"Rodland"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"x-out","title":"X-Out"},{"id":"racing-destruction-set","title":"Racing Destruction Set"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"},{"id":"katakis","title":"Katakis"},{"id":"world-games","title":"World Games"},{"id":"kennedy-approach","title":"Kennedy Approach"},{"id":"hessian","title":"Hessian"},{"id":"soul-force","title":"Soul Force"},{"id":"lords-of-conquest","title":"Lords of Conquest"},{"id":"times-of-lore","title":"Times of Lore"},{"id":"supremacy","title":"Supremacy: Your Will Be Done"},{"id":"strike-fleet","title":"Strike Fleet"},{"id":"the-legend-of-blacksilver","title":"The Legend of Blacksilver"},{"id":"killed-until-dead","title":"Killed Until Dead"},{"id":"pool-of-radiance","title":"Pool of Radiance"},{"id":"ultima-iii-exodus","title":"Ultima III: Exodus"},{"id":"buck-rogers-countdown-to-doomsday","title":"Buck Rogers: Countdown to Doomsday"},{"id":"briley-witch-chronicles","title":"Briley Witch Chronicles"},{"id":"project-firestart","title":"Project Firestart"},{"id":"legacy-of-the-ancients","title":"Legacy of the Ancients"},{"id":"project-stealth-fighter","title":"Project Stealth Fighter"}];
+// Slicks was deliberately retired as a direct D64: its SHA-verified CRT
+// must remain directly selectable even when the optional manifest is offline.
+const retiredSlicks = direct.entries.find(item =>
+  item.id === "owner-crt-more-slicks" && item.title === "Slicks");
+const chosenSlicks = moreCrt.games.find(row => row[0] === "Slicks");
+assert(retiredSlicks && chosenSlicks &&
+  retiredSlicks.format === "crt" && retiredSlicks.approved === true &&
+  retiredSlicks.url === "/emulator/c64/media/cartridge-replacements/" + chosenSlicks[1] &&
+  retiredSlicks.bytes === chosenSlicks[2] &&
+  retiredSlicks.sha256 === chosenSlicks[3] &&
+  !direct.entries.some(item => item.id === "slicks" || item.url === "/emulator/c64/media/slicks.d64"),
+  "Retired Slicks disk must be replaced by the exact published CRT");
+assert(!fs.existsSync(path.join(root, "emulator/c64/media/slicks.d64")),
+  "Superseded Slicks disk must not remain in the published tree");
 const { createHash: batchHash } = await import("node:crypto");
 for (const expected of verifiedBatchGames) {
   const game = direct.entries.find(item => item.id === expected.id);
