@@ -97,8 +97,12 @@ function updateStaticPages(metadata) {
         fail("A non-year/platform static-page entry was removed or reordered.");
     }
 
-    if (next.includes("games/years/2023/index.html")) {
-        fail("The noindex 2023 route must not be registered as an indexable static page.");
+    // Derive exclusions from authoritative archive metadata, not a frozen year.
+    const excludedYears = (metadata.years || []).filter(group => group.indexable !== true);
+    for (const group of excludedYears) {
+        if (next.includes(`games/years/${group.year}/index.html`)) {
+            fail(`Noindex year ${group.year} must not be in the static registry.`);
+        }
     }
 
     const duplicates = next.filter((entry, index, all) => all.indexOf(entry) !== index);
@@ -256,7 +260,7 @@ function buildReport(metadata, registryResult) {
 ## Sitemap policy
 
 - Registered both archive hubs, both platform routes and the ${indexableYears.length} indexable year routes.
-- Kept \`/games/years/2023/\` out of the static registry and sitemap while it remains \`noindex,follow\`.
+- Registered only current metadata-indexable years; excluded any years still marked \`noindex,follow\`.
 - Preserved every existing valid registry entry in place and appended only missing year/platform entries.
 
 ## Permanent safeguards
@@ -272,7 +276,7 @@ function buildReport(metadata, registryResult) {
 - No changes to \`games/games.json\`.
 - No homepage or intro-loader changes.
 - No new public route families.
-- No sitemap inclusion for the noindex 2023 route.
+- No sitemap inclusion for any route marked noindex by current year metadata.
 
 ## Rollback
 
