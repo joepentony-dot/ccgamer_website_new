@@ -247,7 +247,6 @@ function buildReport(metadata, registryResult) {
 | Archive hubs registered | **2** |
 | Platform routes registered | **${(metadata.platforms || []).length}** |
 | Total archive entries managed in static registry | **${registryResult.archiveCount}** |
-| New archive entries appended this run | **${registryResult.appendedCount}** |
 | Existing non-archive registry entries preserved in order | **${registryResult.foreignCount}** |
 
 ## Discovery integration
