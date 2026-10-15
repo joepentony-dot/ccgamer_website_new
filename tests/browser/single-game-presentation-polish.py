@@ -6,8 +6,12 @@ import shutil
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
-CSS = "\n".join((ROOT / path).read_text("utf-8") for path in (
-    "resources/css/ccg-master.css", "resources/css/games.css", "resources/css/game-pages.css",
+MASTER_CSS = (ROOT / "resources/css/ccg-master.css").read_text("utf-8")
+nav_start = MASTER_CSS.index(".ccg-floating-nav {")
+nav_end = MASTER_CSS.index("@media (prefers-reduced-motion: reduce)", nav_start)
+NAV_CSS = MASTER_CSS[nav_start:nav_end]
+CSS = NAV_CSS + "\n" + "\n".join((ROOT / path).read_text("utf-8") for path in (
+    "resources/css/games.css", "resources/css/game-pages.css",
 ))
 JS = (ROOT / "js/load-single-game.js").read_text("utf-8")
 TEMPLATE = (ROOT / "games/game.html").read_text("utf-8")
