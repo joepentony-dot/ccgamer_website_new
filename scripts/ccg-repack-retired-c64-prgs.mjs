@@ -150,11 +150,51 @@ function calculate(root, scope) {
     version: 1, recordCount: next.recordCount,
     packCount: next.packs.length, catalogSHA256: sha(nextBytes),
   }) + "\n") : null;
+  // A retired PRG must not depend exclusively on an optional CRT manifest:
+  // publish its already-SHA-verified cartridge in the direct core catalogue.
+  // This adds metadata only, not duplicate cartridge binary files.
+  const corePath = path.join(root, "emulator/c64/library.json");
+  const core = JSON.parse(fs.readFileSync(corePath, "utf8"));
+  assert(core.version === 1 && Array.isArray(core.entries),
+    "Original direct C64 library missing or invalid.");
+  const existingDirect = new Map();
+  for (const entry of core.entries) {
+    assert(entry && typeof entry.id === "string" && !existingDirect.has(entry.id),
+      "Invalid or duplicate direct game ID.");
+    existingDirect.set(entry.id, entry);
+  }
+  const retiredTargetIds = new Set(Object.values(retired));
+  const newDirect = [];
+  for (const chosen of selected.values()) {
+    if (!retiredTargetIds.has(chosen.id)) continue;
+    const prior = existingDirect.get(chosen.id);
+    if (prior) {
+      assert(prior.format === "crt" && prior.sha256 === chosen.sum &&
+        prior.url === "/emulator/c64/media/cartridge-replacements/" + chosen.filename &&
+        prior.bytes === chosen.size && prior.approved === true,
+        "Conflicting direct CRT registration: " + chosen.id);
+      continue;
+    }
+    newDirect.push({
+      id: chosen.id, title: chosen.title, filename: chosen.filename,
+      format: "crt",
+      description: "CRT-first replacement for a physically retired packed PRG.",
+      url: "/emulator/c64/media/cartridge-replacements/" + chosen.filename,
+      bytes: chosen.size, sha256: chosen.sum,
+      license: "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
+      approved: true, preferOverOtherFormats: true,
+    });
+  }
+  const coreBytes = newDirect.length
+    ? Buffer.from(JSON.stringify({ ...core,
+      entries: [...newDirect, ...core.entries] }, null, 2) + "\n")
+    : null;
   return { packDir, catalogPath, scope, originalCount: catalog.recordCount,
     survivorCount: ordered.length, retiredCount: Object.keys(retired).length,
     retiredBytes, originalBytes: originalPacks.reduce((n, p) => n + p.length, 0),
     newBytes: nextPacks.reduce((n, p) => n + p.bytes, 0),
-    packWrites, retiredFiles, nextBytes, aliasBytes, readyBytes };
+    packWrites, retiredFiles, nextBytes, aliasBytes, readyBytes,
+    corePath, coreBytes, coreAdded: newDirect.length };
 }
 
 function stage(plan) {
@@ -167,6 +207,7 @@ function stage(plan) {
   fs.writeFileSync(plan.catalogPath, plan.nextBytes);
   fs.writeFileSync(path.join(plan.packDir, "retired-ids.json"), plan.aliasBytes);
   if (plan.readyBytes) fs.writeFileSync(path.join(plan.packDir, "ready.json"), plan.readyBytes);
+  if (plan.coreBytes) fs.writeFileSync(plan.corePath, plan.coreBytes);
 }
 
 const args = process.argv.slice(2);
@@ -180,14 +221,17 @@ const results = {
   originalPackBytes: plan.originalBytes, repackedBytes: plan.newBytes,
   freedPackedBytes: plan.originalBytes - plan.newBytes,
   remainingPacks: plan.packWrites.length, emptiedPacks: plan.retiredFiles,
+  coreCRTRegistrationsAdded: plan.coreAdded,
   mode: apply ? "stage locally on branch" : "read-only audit",
 };
 if (apply) {
   const expectedSource = Number(option(args, "--expected-source"));
   const expectedRetired = Number(option(args, "--expected-retired"));
+  const expectedCore = Number(option(args, "--expected-core-added"));
   const branch = option(args, "--branch");
   assert(Number.isSafeInteger(expectedSource) && expectedSource === plan.originalCount &&
     Number.isSafeInteger(expectedRetired) && expectedRetired === plan.retiredCount &&
+    Number.isSafeInteger(expectedCore) && expectedCore === plan.coreAdded &&
     expectedRetired > 0, "Expected count mismatch: refusing to stage.");
   assert(branch && branch.startsWith("codex/c64-") && path.resolve(root) === projectRoot,
     "Refusing to modify another folder or unreviewed branch.");
