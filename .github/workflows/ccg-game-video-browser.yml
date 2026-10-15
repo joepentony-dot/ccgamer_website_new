@@ -11,6 +11,7 @@ on:
       - 'resources/css/game-pages.css'
       - 'scripts/generate-video-seo.js'
       - 'tests/browser/game-video-facade-live.py'
+      - 'tests/browser/single-game-presentation-polish.py'
       - '.github/workflows/ccg-game-video-browser.yml'
   push:
     branches:
@@ -49,3 +50,7 @@ jobs:
           python -m py_compile tests/browser/game-video-facade-live.py
       - name: Check real Chromium poster and deferred iframe interactions
         run: python tests/browser/game-video-facade-live.py
+      - name: Verify full-height related cards, aligned credits and unobstructed footer
+        run: |
+          python -m py_compile tests/browser/single-game-presentation-polish.py
+          python tests/browser/single-game-presentation-polish.py

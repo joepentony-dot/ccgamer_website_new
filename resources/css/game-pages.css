@@ -2546,3 +2546,139 @@
         white-space: normal;
     }
 }
+
+
+/* ==============================================================
+   2026-10-15 | SINGLE-GAME PRESENTATION ACCEPTANCE
+   Credit labels, horizontally scrolled related cards and floating
+   shortcuts only. Never affect the gallery, catalogue or homepage.
+   ============================================================== */
+
+/* A full credit row owns its border and aligns both label and value
+   on the same centreline. Give the longest label, PROGRAMMER, room. */
+.ccg-page--single-game .ccg-behind-pixels-inline__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item,
+.ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+    grid-template-columns: minmax(148px, 36%) minmax(0, 1fr);
+    min-width: 0;
+    align-items: stretch;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    min-height: 40px;
+    padding: 6px 10px;
+    margin: 0;
+    line-height: 1.45;
+    border-bottom: 0;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+    letter-spacing: 0.025em;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 0;
+    line-height: inherit;
+    vertical-align: middle;
+}
+
+/* The horizontal scrollport must grow to the complete height of its
+   tallest card: never conceal publisher/genre match labels below. */
+.ccg-page--single-game .game-section--related .related-carousel__viewport {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding-block: 10px 17px;
+    scroll-padding-inline: 42px;
+}
+
+.ccg-page--single-game .game-section--related .related-carousel__track {
+    display: flex;
+    align-items: stretch;
+    height: auto;
+    min-height: max-content;
+    max-height: none;
+    padding-block: 3px 12px;
+}
+
+.ccg-page--single-game .related-carousel .related-card {
+    align-self: stretch;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+}
+
+.ccg-page--single-game .related-carousel .related-card__meta {
+    align-content: start;
+    margin-top: auto;
+    gap: 5px;
+    min-height: 0;
+}
+
+.ccg-page--single-game .related-carousel .related-card__tag {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+    text-align: center;
+}
+
+/* Do not move the floating CTA bar over the footer's actual support
+   link. Hide it when the footer approaches; its actions remain
+   available from the hero and on the underlying website. */
+.ccg-page--single-game .game-quick-actions {
+    transition: opacity 160ms ease, visibility 160ms ease;
+}
+
+.ccg-page--single-game .game-quick-actions.is-near-footer {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@media (max-width: 900px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(136px, 35%) minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 560px) {
+    .ccg-page--single-game .ccg-behind-pixels-inline__item,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item:last-child:nth-child(odd) {
+        grid-template-columns: minmax(108px, 39%) minmax(0, 1fr);
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+        font-size: 0.64rem;
+        letter-spacing: 0;
+    }
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dt,
+    .ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+        min-height: 38px;
+        padding: 6px 5px;
+    }
+    .ccg-page--single-game .game-section--related .related-carousel__viewport {
+        padding-block: 8px 13px;
+        scroll-padding-inline: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-page--single-game .game-quick-actions { transition: none; }
+}
