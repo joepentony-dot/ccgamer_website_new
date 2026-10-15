@@ -157,6 +157,8 @@ function titleForms(entry) {
 }
 function searchRank(forms, query) {
   if (forms.literal === query.literal) return 0;
+  // Do not turn an explicitly requested sequel/version into another one.
+  if (forms.numbers && query.numbers && forms.numbers !== query.numbers) return -1;
   if (query.core && forms.core === query.core) return 1;
   if (query.compact.length >= 4 && forms.compact === query.compact) return 1;
   if (forms.literal.startsWith(query.literal)) return 2;
