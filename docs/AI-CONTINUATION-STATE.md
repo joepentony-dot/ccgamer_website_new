@@ -1,3 +1,8 @@
+## Dungeon #2705 Solo endurance diagnostics — 15 October 2026
+
+- Existing Chromium endurance test updated to use synchronous per-defeat dossier/run/recap deltas, strict repeated-dead-actor no-duplication and capture-phase key arrival diagnostics. Isolated negative/positive JS harness passed; actual Chromium and user-reported encounter save have not been tested. No gameplay engine change or production deployment.
+- Draft #2705 remains the sole Dungeon implementation PR; full exact-head Node/six Chromium, Windows installer, independent review and owner acceptance blocked. See R137 workstream and owner master audit.
+
 ## Dungeon #2705 P0 Timed Chamber correction — 15 October 2026
 
 - Guarded candidate fix in `game-play.js::triggerTimed`: an already-cleared chamber may no longer restart its trial and relocate the surviving Death Stalker. The actual original and corrected function were executed with five controlled lifecycle scenarios: two previously failed; all five candidate scenarios passed. Source-derived R87 regression added. Original simultaneous guardian/Stalker freeze and owner seed remain unverified.

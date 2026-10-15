@@ -1,5 +1,12 @@
 # C64 Dungeon Carnage R137 — owner-observed release blockers
 
+## 15 October 2026 — Solo endurance test isolation and FIRE diagnostics
+
+On published-main shard 2, recorded named-defeat count was 2 versus expected 1 (run 38666514685), and Space produced no attack intent on round 91 (run 38669465532). Tightened the existing `v10-42-live-solo-combat-endurance.mjs` test without changing gameplay: one synchronous `page.evaluate` now measures a named defeat's persisted dossier, run named count, run kill count and recap before/after, and repeats damage to the already-dead actor to catch duplicates. The once-only dossier panel assertion is retained. A read-only, capture-phase keyboard event trace records trusted/repeated Space/Numpad0 key delivery and, only upon failure, focus, overlays, attack trace and held-state diagnostics. No retries or relaxed assertion. Isolated JS harness with corrected one-time dossier behaviour: original test fails a simulated between-operations persisted count, revised test passes; deliberate double count still fails. Real Playwright endurance was not executed here.
+
+**Status:** regression isolated/instrumented on draft #2705 only; original owner crash/Count Loadula/Flask/thief incidents, genuine input failure, complete browser/Node/Windows tests and all merge/deployment/owner gates remain open. No CI dispatch, source engine changes or other PRs.
+
+
 ## 15 October 2026 — completed Timed Chamber reactivation guard
 
 Actual `game-play.js::triggerTimed` source was executed against a completed challenge. Before correction, re-entry reset the countdown and teleported a surviving Death Stalker to the chamber centre; when already defeated, it still restarted the trial. A single additional `!t.cleared` condition prevents both while preserving first entry, running-trial and outside-room behaviour. Extended the existing R87 fifteen-floor campaign regression with the extracted original trigger function and positive/negative cases (no new regression file). Controlled source preflight: 2 old failing scenarios, 5 corrected passing scenarios. The existing `updateTimed` already sets `t.cleared=true` and `t.triggered=false` when the countdown finishes.
