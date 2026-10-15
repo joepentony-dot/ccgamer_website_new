@@ -1037,7 +1037,7 @@ function fuzzyArchiveTitleMatch(game, query) {
     return archiveGameTitleData(game).some(candidate =>
         archiveTitleVersionsAgree(candidate, wanted) &&
         (candidate.core === wanted.core ||
-            (wanted.compact.length >= 4 && candidate.compact === wanted.compact)));
+            (wanted.compact.length >= 4 && candidate.compact.startsWith(wanted.compact))));
 }
 function fuzzyArchiveTitleTypo(game, query) {
     const wanted = archiveFuzzyTitle(query);
