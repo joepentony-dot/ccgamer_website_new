@@ -66,7 +66,7 @@ jobs:
             assert.equal(originalIds.size,8321);
             const verified=new Set();
             for(const [formerId,replacementId] of Object.entries(aliases.mappings)){
-              assert(/^archive-\\d{5}$/.test(formerId),"Unexpected former archive ID: "+formerId);
+              assert(/^archive-[0-9]{5}$/.test(formerId),"Unexpected former archive ID: "+formerId);
               assert(!originalIds.has(formerId),"Retired PRG still present: "+formerId);
               const target=byId.get(replacementId);
               const crt=activeById.get(replacementId);
