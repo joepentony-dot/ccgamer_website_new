@@ -979,7 +979,25 @@ function updateGenerators(dt){
     const lit=generatorIlluminated(g);if(!lit){g.powered=false;continue}if(!g.powered){g.powered=true;g.spawnCooldown=Math.max(g.spawnCooldown||0,1700);if(localPlayers().some(p=>W.sameRoom(world,p,g)))S.sfx("generator")}
     g.spawnCooldown-=dt;const rate=run.modifier?.id==="RESTLESS_DUNGEON"?.65:1;if(g.spawnCooldown>0)continue;
     g.spawnCooldown=(7200+Math.random()*2800)*rate;const aliveSpawned=(host.enemies||[]).filter(e=>e.alive&&e.generatorId===g.id).length;if(aliveSpawned>=C.dungeon.generatorSpawnCap)continue;
-    const pos=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:g.x+dx,y:g.y+dy})).find(q=>W.walkable(world.map,q.x,q.y,host)&&!SYS.inSanctuary(world,q.x,q.y)&&!host.enemies.some(e=>e.alive&&e.x===q.x&&e.y===q.y));if(!pos)continue;
+    // Generator reinforcements must not materialise on the player, another
+    // machine, actors, loot, chests or other interactive occupied cells.
+    // Geometry (including doors and blocking furniture) remains owned by W.
+    const at=(rows,q,active)=>Array.isArray(rows)&&rows.some(o=>o&&active(o)&&o.x===q.x&&o.y===q.y);
+    const spawnBlocked=q=>
+      at(localPlayers(),q,()=>true)||
+      at(host.enemies,q,o=>o.alive===true)||
+      at(host.generators,q,o=>o.alive===true)||
+      at(host.items,q,o=>o.active!==false)||
+      at(host.chests,q,o=>o.active!==false)||
+      at(host.deathCaches,q,o=>o.active!==false)||
+      at(host.shrines,q,o=>o.active!==false)||
+      at([host.stalker],q,o=>o.awake&&!o.permanentlyBanished)||
+      at([host.guardian,host.rescue,host.trader,host.startShop,...(host.shops||[])],q,o=>o.alive!==false&&o.active!==false&&!o.rescued)||
+      at(host.doors,q,o=>o.locked||!o.open);
+    const pos=[[1,0],[-1,0],[0,1],[0,-1]]
+      .map(([dx,dy])=>({x:g.x+dx,y:g.y+dy}))
+      .find(q=>W.walkable(world.map,q.x,q.y,host)&&!SYS.inSanctuary(world,q.x,q.y)&&!spawnBlocked(q));
+    if(!pos)continue;
     g.spawnTotal=(g.spawnTotal||0)+1;host.enemies.push({id:`spawn-${Date.now()}-${Math.random()}`,...pos,kind:Math.random()<.3?"hunter":"scout",hp:2+run.floor,maxHp:2+run.floor,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,generatorId:g.id,generatorSpawnOrdinal:g.spawnTotal});S.sfx("generator");host.revision++
   }
 }

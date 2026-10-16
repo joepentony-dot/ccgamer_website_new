@@ -1039,4 +1039,50 @@ ownedCacheTrial.owner.refreshTrial(ownedCacheTrial.h);
 assert.equal(ownedCacheTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Recovered Death Cache permits exactly one pending reward");
 assert.equal(ownedCacheTrial.ctx.score,1000,"Deferred trial score is granted exactly once");
 
+
+// Actual generator spawning owner: a reinforcement must NEVER spawn onto
+// the attacking hero, active floor loot, a living Guardian, or a Death Cache.
+// These tests expose the original bug (first neighbour was the hero).
+const spawnStart=gameplaySource.indexOf("function updateGenerators(dt){");
+const spawnEnd=gameplaySource.indexOf("\nfunction updateRescue(){",spawnStart);
+assert.ok(spawnStart>=0&&spawnEnd>spawnStart,"Real generator-spawn owner must remain extractable");
+const spawnSource=gameplaySource.slice(spawnStart,spawnEnd);
+function generatorSpawnFixture({blockedFourth=false}={}){
+  const player={id:"hero",x:6,y:5,health:20},
+    gen={id:"gen0",x:5,y:5,alive:true,powered:true,spawnCooldown:0,spawnTotal:0},
+    cache={id:"cache",x:5,y:4,active:blockedFourth},
+    host={generators:[gen],enemies:[],items:[{id:"loot",x:4,y:5,active:true}],
+      chests:[],deathCaches:[cache],shrines:[],doors:[],
+      guardian:{id:"maw",x:5,y:6,alive:true},stalker:null,
+      rescue:null,trader:null,startShop:null,shops:[],revision:0},
+    ctx={host,world:{map:[]},run:{floor:5,modifier:null},
+      C:{dungeon:{generatorSpawnCap:4}},
+      generatorIlluminated:()=>true,localPlayers:()=>[player],
+      W:{walkable:()=>true,sameRoom:()=>false},
+      SYS:{inSanctuary:()=>false},S:{sfx(){}},Date,Math};
+  vm.createContext(ctx);
+  vm.runInContext(spawnSource+";this.generatorTick=updateGenerators;",ctx,{timeout:1200});
+  return{host,gen,cache,player,tick:ctx.generatorTick};
+}
+const spaceForSpawn=generatorSpawnFixture();
+spaceForSpawn.tick(16);
+assert.equal(spaceForSpawn.host.enemies.length,1,"Free fourth neighbouring tile must permit one reinforcement");
+assert.equal(spaceForSpawn.host.enemies[0].x,5);
+assert.equal(spaceForSpawn.host.enemies[0].y,4,"Reinforcement must skip hero, loot and Guardian");
+assert.equal(spaceForSpawn.gen.spawnTotal,1);
+assert.equal(spaceForSpawn.host.revision,1);
+const fullyBlockedSpawn=generatorSpawnFixture({blockedFourth:true});
+fullyBlockedSpawn.tick(16);
+assert.equal(fullyBlockedSpawn.host.enemies.length,0,"All four occupied cells must prevent spawn");
+assert.equal(fullyBlockedSpawn.gen.spawnTotal,0,"No phantom spawned tally when all cells are occupied");
+fullyBlockedSpawn.cache.active=false;
+fullyBlockedSpawn.gen.spawnCooldown=0;
+fullyBlockedSpawn.tick(16);
+assert.equal(fullyBlockedSpawn.host.enemies.length,1,"Freeing recovered cache permits reinforcement");
+assert.equal(fullyBlockedSpawn.host.enemies[0].x,5);
+assert.equal(fullyBlockedSpawn.host.enemies[0].y,4);
+fullyBlockedSpawn.gen.spawnCooldown=0;
+fullyBlockedSpawn.tick(16);
+assert.equal(fullyBlockedSpawn.host.enemies.length,1,"Occupied existing spawn blocks repeated collision");
+
 console.log("Dungeon Carnage R87 fifteen-floor campaign and floor-theme contract passed.");
