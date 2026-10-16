@@ -80,43 +80,57 @@ async function probeFloorFiveSoftlockGuards(page){
       count:Boolean(count.awake&&!count.permanentlyBanished),stalker:Boolean(stalker.alive),
       stalkerCount:(host.enemies||[]).filter(e=>e.deathStalker&&e.voidStalker).length};
     const sigilAfter=sigilStatus();
-    const room=world.rooms?.[host.sigilRoomId];if(!room)return{error:"Sigil chamber missing",sigilBefore,sigilAfter,bothAlive,twoComplete,twoExit,after};
-    let cell=null;
-    for(let y=room.y+1;y<room.y+room.h&&!cell;y++)for(let x=room.x+1;x<room.x+room.w;x++)
-      if(world.map[y]?.[x]===0&&W.playerWalkable(world.map,x,y,host)&&!host.enemies.some(e=>e.alive&&e.x===x&&e.y===y)){cell={x,y};break}
-    if(!cell)return{error:"No safe Sigil chamber floor cell",bothAlive,twoComplete,twoExit,after};
-    p1.x=cell.x;p1.y=cell.y;p1.rx=cell.x;p1.ry=cell.y;
-    triggerSigilRoom(p1);
-    const defenders=SYS.sigilDefendersAlive(host),lockdown=host.sigilLockdown;
-    for(const e of defenders)e.alive=false; // interrupted final-hit callback recovery case
-    updateFloorObjective();
-    const recovered={resolved:host.sigilResolved,locked:host.sigilLockdown,
-      sigils:host.items.filter(i=>i.active&&i.kind==="exitSigil").length,
-      gates:(host.doors||[]).filter(d=>d.sigilGate).every(d=>!d.locked),exit:host.exitOpen};
-    updateFloorObjective();
-    recovered.sigilsAfterRetry=host.items.filter(i=>i.active&&i.kind==="exitSigil").length;
-    return{bothAlive,twoComplete,twoExit,after,lockdown,defenders:defenders.length,recovered,mode};
+    // Floors 1–14 in the fifteen-floor campaign have boss-gated stairs,
+    // not a Sigil chamber; only Floor 15 has the final Sigil encounter.
+    const fight=host.r114BossFight,guardian=(host.enemies||[]).find(e=>e.id===fight?.bossId);
+    if(!guardian?.alive)return{error:"Floor 5 Guardian Maw missing",sigilBefore,sigilAfter,bothAlive,twoComplete,twoExit,after};
+    const beforeBoss={alive:guardian.alive,cleared:Boolean(fight.cleared),objective:Boolean(host.objective.complete),exit:Boolean(host.exitOpen)};
+    guardian.alive=false; // simulate interrupted final hit, not normal player combat
+    updateBossFight(16);updateFloorObjective();
+    const afterBoss={
+      cleared:Boolean(fight.cleared),objective:Boolean(host.objective.complete),exit:Boolean(host.exitOpen),
+      sigilRoomId:host.sigilRoomId??null,sigilResolved:Boolean(host.sigilResolved),
+      defenderCount:SYS.sigilDefendersAlive(host).length,
+      activeSigils:(host.items||[]).filter(i=>i.kind==="exitSigil"&&i.active).length,
+      doorsUnlocked:(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===fight.roomId).every(d=>!d.locked),
+      countAwake:Boolean(count.awake&&!count.permanentlyBanished),stalkerAlive:Boolean(stalker.alive)
+    };
+    const paid=score,chests=(host.chests||[]).length;
+    updateBossFight(16);updateFloorObjective();
+    afterBoss.repeatScore=score-paid;afterBoss.repeatChests=(host.chests||[]).length-chests;
+    return{bothAlive,twoComplete,twoExit,after,sigilBefore,sigilAfter,beforeBoss,afterBoss,mode};
   });
   assert.ok(!state.error,`Generated Floor 5 scenario: ${state.error||""} ${state.error?JSON.stringify({sigilBefore:state.sigilBefore,sigilAfter:state.sigilAfter,after:state.after}):""}`);
   assert.equal(state.bothAlive,true,"Count and Death Stalker must coexist");
   assert.equal(state.twoComplete,false,"2/3 generators cannot complete objective");
   assert.equal(state.twoExit,false);
   assert.equal(state.after.dead,3);
-  assert.equal(state.after.complete,true,"Real final generator defeat must complete objective");
-  assert.equal(state.after.kills,3,"No duplicate generator payouts");
-  assert.equal(state.after.score,2100);
-  assert.equal(state.after.exit,false,"Exit Sigil still required");
+  assert.equal(state.after.complete,false,"The living Guardian must keep Floor 5 incomplete");
+  assert.equal(state.after.kills,3,"Generators must pay exactly once");
+  assert.equal(state.after.score,2100,"Three generators pay exactly 700 each");
+  assert.equal(state.after.exit,false,"Third generator alone cannot open stairs");
   assert.equal(state.after.count,true);
   assert.equal(state.after.stalker,true);
   assert.equal(state.after.stalkerCount,1);
-  assert.equal(state.lockdown,true,"Sigil chamber must seal on entry");
-  assert.ok(state.defenders>0);
-  assert.equal(state.recovered.resolved,true,"Interrupted defender callback must not trap player");
-  assert.equal(state.recovered.locked,false);
-  assert.equal(state.recovered.gates,true);
-  assert.equal(state.recovered.sigils,1);
-  assert.equal(state.recovered.sigilsAfterRetry,1);
-  assert.equal(state.recovered.exit,false,"Recovery cannot bypass Exit Sigil pickup");
+  assert.equal(state.sigilBefore.id,null,"Interim Floor 5 must not require a final Sigil");
+  assert.equal(state.sigilAfter.id,null,"Generator completion cannot create an interim Sigil");
+  assert.equal(state.sigilAfter.defendersAlive,0);
+  assert.equal(state.beforeBoss.alive,true);
+  assert.equal(state.beforeBoss.cleared,false);
+  assert.equal(state.beforeBoss.objective,false);
+  assert.equal(state.beforeBoss.exit,false);
+  assert.equal(state.afterBoss.cleared,true,"Boss death must clear the Guardian chamber");
+  assert.equal(state.afterBoss.objective,true,"Guardian plus three generators complete Floor 5");
+  assert.equal(state.afterBoss.exit,true,"Interim stairs open without Exit Sigil");
+  assert.equal(state.afterBoss.sigilRoomId,null);
+  assert.equal(state.afterBoss.sigilResolved,true);
+  assert.equal(state.afterBoss.defenderCount,0);
+  assert.equal(state.afterBoss.activeSigils,0);
+  assert.equal(state.afterBoss.doorsUnlocked,true);
+  assert.equal(state.afterBoss.countAwake,true);
+  assert.equal(state.afterBoss.stalkerAlive,true);
+  assert.equal(state.afterBoss.repeatScore,0,"Boss completion must not pay twice");
+  assert.equal(state.afterBoss.repeatChests,0,"Boss completion must not duplicate caches");
   assert.equal(state.mode,"playing");
   await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
 }
