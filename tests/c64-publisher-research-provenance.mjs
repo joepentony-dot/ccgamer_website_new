@@ -84,9 +84,12 @@ for(const entry of pendingReview.entries) {
   assert(existing.publishers.includes(entry.currentPublisher)&&existing.year===null,
     "Pending C64 credit changed without source review: "+entry.key);
 }
-assert(meta.get("slap fight")?.publishers.includes("Erbe") &&
-  meta.get("slap fight")?.year===null,
-  "Regional Slap Fight attribution changed without resolving quarantine");
+const slapQuarantine=ledger.quarantined.find(x=>x.key==="slap fight");
+assert(slapQuarantine?.status==="unverified-regional-edition" &&
+  slapQuarantine.rejectedCandidate.publisher==="Erbe",
+  "Unresolved regional Slap Fight publisher requires explicit quarantine");
+assert(!meta.has("slap fight") && !researchKeys.has("slap fight"),
+  "Generic Slap Fight must not inherit Spanish/European publisher without verified edition");
 
 const q=ledger.quarantined.find(x=>x.key==="armageddon");
 assert(q&&q.status==="unverified-game-identity","Ambiguous Armageddon must be quarantined");
