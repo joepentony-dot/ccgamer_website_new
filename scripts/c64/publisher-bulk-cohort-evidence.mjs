@@ -43,7 +43,7 @@ function gitBlob(file){const b=fs.readFileSync(file);return createHash("sha1").u
 function snapshot(){const d={},blobs={};for(const [key,file] of Object.entries(PATHS)){d[key]=JSON.parse(fs.readFileSync(file,"utf8"));blobs[file]=gitBlob(file)}blobs[".github/workflows/c64-catalogue-publisher-year.yml"]=gitBlob(".github/workflows/c64-catalogue-publisher-year.yml");return {d,blobs}}
 const args=process.argv.slice(2);
 if(args.includes("--verify-dir")){
- const dir="docs/ccg-c64-publisher-cohorts",files=fs.readdirSync(dir).filter(x=>/^batch-\\d+-\\d+\\.json$/.test(x)).sort((a,b)=>Number(a.match(/\\d+/)[0])-Number(b.match(/\\d+/)[0]));
+ const dir="docs/ccg-c64-publisher-cohorts",files=fs.readdirSync(dir).filter(x=>/^batch-\d+-\d+\.json$/.test(x)).sort((a,b)=>Number(a.match(/\d+/)[0])-Number(b.match(/\\d+/)[0]));
  if(!files.length)throw Error("No committed publisher cohorts");
  const {d,blobs}=snapshot();let previous=-1,verified=0;
  for(const file of files){const saved=JSON.parse(fs.readFileSync(path.join(dir,file),"utf8"));if(saved.cursor<previous)throw Error("Overlapping cohorts");const expected=build(d,blobs,saved.cursor,saved.batchSize);assert.deepStrictEqual(saved,expected,"Stale or modified publisher evidence cohort: "+file);if(file!==`batch-${saved.cursor}-${saved.nextCursor-1}.json`)throw Error("Incorrect cohort filename");previous=saved.nextCursor;verified+=saved.rows.length}
