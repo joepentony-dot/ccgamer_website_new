@@ -59,3 +59,34 @@ jobs:
           node tests/ccg-c64-library-startup.test.mjs
           node tests/ccg-c64-blast-integrity.test.mjs
           test -z "$(git status --porcelain)"
+
+  verify-latest-main-merge-tree:
+    needs: [verify-exact-head-staged-202]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Verify newest main and simulate exact-head integration without a merge commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -z "$(git status --porcelain)"
+          git fetch --no-tags origin main
+          echo "PR head: $(git rev-parse HEAD)"
+          echo "Latest main: $(git rev-parse origin/main)"
+          echo "Merge base: $(git merge-base HEAD origin/main)"
+          report="$RUNNER_TEMP/ccg-c64-readonly-merge-tree.txt"
+          if git merge-tree --write-tree HEAD origin/main > "$report" 2>&1; then
+            echo "PASS: clean automatic merge tree; neither working tree nor branch updated."
+            sed -n '1,30p' "$report"
+          else
+            echo "::error::Latest main cannot be automatically reconciled. No branch changes attempted."
+            sed -n '1,160p' "$report"
+            exit 1
+          fi
+          test -z "$(git status --porcelain)"
