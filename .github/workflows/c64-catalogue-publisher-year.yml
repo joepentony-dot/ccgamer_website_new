@@ -6,6 +6,7 @@ on:
     paths:
       - 'games/games.json'
       - 'emulator/c64/catalogue-metadata.json'
+      - 'emulator/c64/publisher-research-sources.json'
       - 'emulator/c64/index.html'
       - 'resources/css/ccg-c64-emulator.css'
       - 'js/ccg-c64/catalogue-browser.js'
@@ -14,6 +15,7 @@ on:
       - 'js/ccg-c64/coi-bootstrap.js'
       - 'scripts/c64/rebuild-catalogue-metadata.mjs'
       - 'tests/c64-catalogue-publisher-year.mjs'
+      - 'tests/c64-publisher-research-provenance.mjs'
       - '.github/workflows/c64-catalogue-publisher-year.yml'
   push:
     branches: [main]
@@ -22,6 +24,7 @@ on:
       - 'emulator/c64/catalogue-metadata.json'
       - 'scripts/c64/rebuild-catalogue-metadata.mjs'
       - 'tests/c64-catalogue-publisher-year.mjs'
+      - 'tests/c64-publisher-research-provenance.mjs'
       - '.github/workflows/c64-catalogue-publisher-year.yml'
 
 permissions:
@@ -43,4 +46,6 @@ jobs:
           node --check js/ccg-c64/coi-bootstrap.js
           node --check scripts/c64/rebuild-catalogue-metadata.mjs
       - name: Run C64 catalogue metadata and filter regression tests
-        run: node tests/c64-catalogue-publisher-year.mjs
+        run: |
+          node tests/c64-catalogue-publisher-year.mjs
+          node tests/c64-publisher-research-provenance.mjs
