@@ -55,7 +55,11 @@ for (const [index, item] of manifest.games.entries()) {
     const hostedCRT = hosted.entries.filter(entry =>
       entry.format === "crt" && entry.preferOverOtherFormats === true &&
       normaliseCatalogSearch(entry.title) === key);
-    assert.equal(hostedCRT.length, 1, "Expected one promoted CRT for " + name);
+    // Earlier approved editions retain first priority; an additional SHA-verified
+    // replacement may coexist for a retired BLAST ID without displacing it.
+    assert(hostedCRT.length >= 1, "Missing approved promoted CRT for " + name);
+    assert.equal(hostedCRT[0].url, item.proposed_path,
+      "Existing promoted CRT must remain canonical for " + name);
     assert.equal(hostedCRT[0].approved, true);
     assert.equal(hostedCRT[0].url, item.proposed_path);
     assert.equal(hostedCRT[0].sha256, item.sha256);
