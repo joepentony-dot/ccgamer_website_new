@@ -33,16 +33,20 @@ function bridgeThiefRecoveryCells(player,bridge){
   const origin=bridge.thiefRecoveryOrigin||player;
   const q=[{x:Number(player.x),y:Number(player.y)}],seen=new Set([player.x+","+player.y]);
   const walk=(x,y)=>typeof W.playerWalkable==="function"?W.playerWalkable(world.map,x,y,host):W.walkable(world.map,x,y,host);
-  const broken=[...(bridge.pitTiles||[]),...(bridge.bridgeTiles||[])];
+  // The bridge's pit never becomes traversable, even after its temporary
+  // replacement is deployed. Only the bridge span itself changes state.
+  // W.playerWalkable checks terrain and doors, not this floor's special pit.
+  const blocked=[...(bridge.pitTiles||[]),...(bridge.collapsed&&!bridge.rebuilt?bridge.bridgeTiles||[]:[])],
+    inaccessible=new Set(blocked.map(cell=>cell.x+","+cell.y));
   for(let i=0;i<q.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
     const x=q[i].x+dx,y=q[i].y+dy,key=x+","+y;
-    if(seen.has(key)||!walk(x,y)||(bridge.collapsed&&!bridge.rebuilt&&broken.some(p=>p.x===x&&p.y===y)))continue;
+    if(seen.has(key)||inaccessible.has(key)||!walk(x,y))continue;
     seen.add(key);q.push({x,y});
   }
   const occupied=(p,rows,active)=>Array.isArray(rows)&&rows.some(row=>row&&active(row)&&row.x===p.x&&row.y===p.y);
   const players=typeof localPlayers==="function"?localPlayers():[player];
   return q.filter(p=>
-    walk(p.x,p.y)&&
+    !inaccessible.has(p.x+","+p.y)&&walk(p.x,p.y)&&
     !occupied(p,players,()=>true)&&
     !occupied(p,host.enemies,e=>e.alive===true)&&
     !occupied(p,[host.guardian,host.stalker,host.rescue,host.trader],e=>e.alive!==false&&!e.rescued&&!e.permanentlyBanished)&&
