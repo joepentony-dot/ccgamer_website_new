@@ -1015,6 +1015,11 @@ function releaseAllInput() {
     touchJoyByte = 0xFF;
     touchHeldMask = 0;
     touchHeldButtons.clear();
+    touchDpadPointerId = null;
+    for (const button of touchDpadDirections.values()) {
+      button.classList.remove("is-pressed");
+      button.setAttribute("aria-pressed", "false");
+    }
     machine.joyPort2 = 0xFF;
     machine._updateLightpen?.();
   }
@@ -3351,7 +3356,70 @@ vaultGameSelect?.addEventListener("change", () => {
   void refreshVaultStatus();
 });
 
+// Mobile D-pad: one captured pointer can slide across all eight directions.
+// Diagonals combine two active-low C64 joystick bits; FIRE/JUMP keep their
+// independent pointers so the player can steer and fire simultaneously.
+const touchDpad = document.querySelector(".ccg-c64-touch-dpad");
+const touchDpadDirections = new Map(
+  Array.from(touchDpad?.querySelectorAll("button[data-joy-mask]") || [],
+    button => [Number(button.dataset.joyMask), button])
+);
+let touchDpadPointerId = null;
+
+function touchDpadMaskAt(clientX, clientY) {
+  if (!touchDpad) return 0;
+  const rect = touchDpad.getBoundingClientRect();
+  if (!rect.width || !rect.height ||
+      clientX < rect.left || clientX >= rect.right ||
+      clientY < rect.top || clientY >= rect.bottom) return 0;
+  const col = Math.min(2, Math.floor(3 * (clientX - rect.left) / rect.width));
+  const row = Math.min(2, Math.floor(3 * (clientY - rect.top) / rect.height));
+  return (row === 0 ? 1 : row === 2 ? 2 : 0) |
+    (col === 0 ? 4 : col === 2 ? 8 : 0);
+}
+
+function setTouchDpadMask(mask) {
+  const current = touchHeldButtons.get(touchDpad)?.mask || 0;
+  if (current === mask) return;
+  if (mask) touchHeldButtons.set(touchDpad, { mask, pointerId: touchDpadPointerId });
+  else touchHeldButtons.delete(touchDpad);
+  for (const [direction, button] of touchDpadDirections) {
+    const active = direction === mask;
+    button.classList.toggle("is-pressed", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+  syncTouchJoystick();
+  if (inputStatus) {
+    if (mask) inputStatus.textContent = `TOUCH // PORT ${joystickPort}`;
+    else if (!touchHeldMask && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
+  }
+}
+
+touchDpad?.addEventListener("pointerdown", event => {
+  if (touchDpadPointerId !== null ||
+      (event.pointerType === "mouse" && event.button !== 0)) return;
+  event.preventDefault();
+  touchDpadPointerId = event.pointerId;
+  setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY));
+  try { touchDpad.setPointerCapture(event.pointerId); } catch {}
+});
+touchDpad?.addEventListener("pointermove", event => {
+  if (event.pointerId !== touchDpadPointerId) return;
+  event.preventDefault();
+  setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY));
+});
+const releaseTouchDpad = event => {
+  if (event.pointerId !== touchDpadPointerId) return;
+  event.preventDefault();
+  touchDpadPointerId = null;
+  setTouchDpadMask(0);
+};
+for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
+  touchDpad?.addEventListener(name, releaseTouchDpad);
+touchDpad?.addEventListener("contextmenu", event => event.preventDefault());
+
 for (const button of document.querySelectorAll("[data-joy-mask]")) {
+  if (touchDpad?.contains(button)) continue;
   const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
   const press = event => {
     event.preventDefault();
