@@ -135,6 +135,74 @@ async function probeFloorFiveSoftlockGuards(page){
   await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
 }
 
+// Real browser death/respawn integration for the repaired Trickster Bridge.
+// This stages the collapsed-bridge condition on a generated Floor 5, then
+// invokes the authoritative player-death owner. It is NOT a natural keyboard
+// crossing, owner's original saved incident or complete Windows acceptance.
+async function probeFloorFiveBridgeDeath(page){
+  const before=await snapshot(page);
+  assert.equal(before.floor,5,"Bridge death probe requires the generated fifth floor");
+  const result=await page.evaluate(()=>{
+    const bridge=host?.weightBridge;
+    if(!bridge?.rewardPos||!bridge?.switchId)return{error:"Generated Trickster Bridge/switch missing"};
+    const switchOwner=(host.switches||[]).find(s=>s.id===bridge.switchId&&s.weightBridgeSwitch);
+    if(!switchOwner)return{error:"Real far-side rebuild switch missing"};
+    const farSide={...bridge.rewardPos},playerId=String(p1.id||p1.name||"P1");
+    // Stage only the hard-to-reach state. The actual death, cache, respawn,
+    // bridge release and confirmation below run through canonical owners.
+    bridge.crossed=true;bridge.collapsed=true;bridge.rebuilt=false;
+    bridge.stabilized=false;bridge.crossingPlayer=null;
+    bridge.thiefId=bridge.thiefId||"floor-five-bridge-death-fixture";
+    bridge.thiefDefeated=false;
+    bridge.stolenItems=[{id:"dropped-bridge-flask-fixture",carriedItem:{kind:"banishment",qty:1}}];
+    switchOwner.active=true;switchOwner.toggled=false;
+    run.daily=false;
+    p1.totalXp=Math.max(10000,Number(p1.totalXp)||0);
+    p1.xp=Math.max(1000,Number(p1.xp)||0);
+    run.bankedXP=Math.max(10000,Number(run.bankedXP)||0);
+    score=Math.max(2000,Number(score)||0);
+    p1.x=farSide.x;p1.y=farSide.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.health=1;p1.invuln=0;p1.armor=0;p1.hitStunMs=0;
+    const deathsBefore=Number(run.stats.deaths||0),scoreBefore=score;
+    hurtPlayer(p1,1,false,"bridge recovery regression");
+    const deathCache=(host.deathCaches||[]).find(c=>c.active&&c.x===farSide.x&&c.y===farSide.y);
+    const state={
+      modeAfterDeath:mode,
+      deaths:Number(run.stats.deaths||0)-deathsBefore,
+      scoreBefore,scoreAfter:score,
+      playerAtStart:p1.x===world.start.x&&p1.y===world.start.y,
+      repaired:bridge.rebuilt&&!bridge.collapsed&&bridge.stabilized,
+      switchDisabled:switchOwner.active===false&&switchOwner.toggled===true,
+      stolenFlaskCount:(bridge.stolenItems||[]).filter(x=>x.carriedItem?.kind==="banishment").length,
+      thiefId:bridge.thiefId,
+      deathCache:!!deathCache,
+      message:String(pendingDeathConfirmation?.toastText||""),
+      confirmed:false,
+      modeAfterConfirm:""
+    };
+    // Consume the actual death confirmation; do not leave the existing
+    // browser suite trapped in a modal or with gameplay disabled.
+    if(mode==="respawning")state.confirmed=finishPendingDeathRespawn({playerId});
+    state.modeAfterConfirm=mode;
+    return state;
+  });
+  assert.ok(!result.error,JSON.stringify(result));
+  assert.equal(result.modeAfterDeath,"respawning","Fatal hit must enter canonical death confirmation");
+  assert.equal(result.deaths,1,"A single bridge death must count once");
+  assert.equal(result.scoreAfter,Math.floor(result.scoreBefore/2),"Death must retain the normal score penalty");
+  assert.equal(result.playerAtStart,true,"Real respawn must return the hero to floor entrance");
+  assert.equal(result.repaired,true,"The collapsed bridge must become traversable on respawn");
+  assert.equal(result.switchDisabled,true,"The far-side switch cannot remain a second required action");
+  assert.equal(result.stolenFlaskCount,1,"A stolen Banishment Flask must not vanish on death");
+  assert.ok(result.thiefId,"Bridge thief tracking must survive the player's death");
+  assert.equal(result.deathCache,true,"Actual death-cache owner must preserve recoverable belongings/score");
+  assert.match(result.message,/Trickster Bridge has rebuilt after your death/);
+  assert.equal(result.confirmed,true,"Canonical confirmation must resume play");
+  assert.equal(result.modeAfterConfirm,"playing");
+  await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,
+    before.acceptedFrames,{timeout:3500,polling:25});
+}
+
 async function proveFire(page,floor){
   const before=await page.evaluate(()=>{
     p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;p1.invuln=0;p1.hitStunMs=0;
@@ -190,6 +258,8 @@ try{
     if(next===5)await probeFloorFiveSoftlockGuards(page);
     floors.push(await proveFire(page,next));
   }
+
+  await probeFloorFiveBridgeDeath(page);
 
   assert.deepEqual(floors.map(row=>row.floor),[1,2,3,4,5],"real campaign transition path must reach all five floors in order");
   assert.equal(floors[1].clue,true,"Floor 2 must install the blood-clue puzzle");
