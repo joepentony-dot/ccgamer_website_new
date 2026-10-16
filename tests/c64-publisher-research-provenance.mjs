@@ -78,12 +78,26 @@ for(const [key,games] of identities) {
 }
 unmatched.sort();
 assert(unmatched.includes("armageddon"));
+// Packed PRGs with identical displayed title identities but different bytes
+// require edition identification before any GameBase publisher candidate.
+const packedDigests = new Map();
+for (const game of [...blast.games, ...archive.games]) {
+  const identity = catalogGameIdentity(game[1]);
+  if (!identity || typeof game[6] !== "string") continue;
+  if (!packedDigests.has(identity)) packedDigests.set(identity, new Set());
+  packedDigests.get(identity).add(game[6]);
+}
+const packedPRGCollisionTitleKeys = [...packedDigests.entries()]
+  .filter(([,digests]) => digests.size > 1)
+  .map(([identity]) => identity).sort();
+assert(packedPRGCollisionTitleKeys.includes("armageddon"));
 // Opt-in full ledger for research; default CI remains concise. This is deliberately
 // read-only and derives titles from current media catalogues, never guessed matches.
 if (process.argv.includes("--unmatched-json")) {
   console.log(JSON.stringify({
     auditScope:"direct library + BLAST + packed PRG archive only",
     unmatchedTitleKeys:unmatched.length,
+    packedPRGCollisionTitleKeys,
     unmatched
   },null,2));
 }
