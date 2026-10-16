@@ -18,6 +18,8 @@ on:
       - 'tests/c64-publisher-research-provenance.mjs'
       - 'tests/c64-gamebase-publisher-candidates.test.py'
       - 'scripts/c64/gamebase64-publisher-candidates.py'
+      - 'scripts/c64/mame-bulk-publisher-candidates.py'
+      - 'tests/c64-mame-bulk-publisher-candidates.test.py'
       - '.github/workflows/c64-catalogue-publisher-year.yml'
   push:
     branches: [main]
@@ -29,6 +31,8 @@ on:
       - 'tests/c64-publisher-research-provenance.mjs'
       - 'tests/c64-gamebase-publisher-candidates.test.py'
       - 'scripts/c64/gamebase64-publisher-candidates.py'
+      - 'scripts/c64/mame-bulk-publisher-candidates.py'
+      - 'tests/c64-mame-bulk-publisher-candidates.test.py'
       - '.github/workflows/c64-catalogue-publisher-year.yml'
 
 permissions:
@@ -54,3 +58,4 @@ jobs:
           node tests/c64-catalogue-publisher-year.mjs
           node tests/c64-publisher-research-provenance.mjs
           python3 tests/c64-gamebase-publisher-candidates.test.py
+          python3 tests/c64-mame-bulk-publisher-candidates.test.py
