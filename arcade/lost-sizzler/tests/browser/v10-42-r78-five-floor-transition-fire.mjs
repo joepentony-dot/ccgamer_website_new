@@ -135,6 +135,95 @@ async function probeFloorFiveSoftlockGuards(page){
   await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
 }
 
+// Controlled live browser bridge crossing, switch and stolen-item return.
+// The origin is staged near the bridge to avoid unrelated exploration and
+// combat. Crossing and return use real movePlayer boundaries, the bridge
+// switch uses the real shot-qualified handler, and the thief's defeat uses
+// actual damageEnemy. This is not a natural complete Floor 5 playthrough.
+async function probeFloorFiveBridgeTraversal(page){
+  const state=await page.evaluate(()=>{
+    const bridge=host?.weightBridge,side=bridge?.entranceSide;
+    if(run?.floor!==5||mode!=="playing"||!bridge?.bridgeTiles?.length||
+       !["west","east","north","south"].includes(side))return{error:"Bridge traversal fixture not installed on active Floor 5"};
+    const s=(host.switches||[]).find(q=>q.id===bridge.switchId&&q.weightBridgeSwitch);
+    if(!s?.active)return{error:"Fresh bridge rebuild switch missing"};
+    if(bridge.crossed||bridge.collapsed||bridge.rebuilt)return{error:"Bridge was already triggered"};
+    const horizontal=side==="west"||side==="east",dx=side==="west"?1:side==="east"?-1:0,
+      dy=side==="north"?1:side==="south"?-1:0;
+    const ordered=[...bridge.bridgeTiles].sort((a,b)=>horizontal?(a.x-b.x)*dx:(a.y-b.y)*dy);
+    const near={x:ordered[0].x-dx,y:ordered[0].y-dy},
+      far={x:ordered.at(-1).x+dx,y:ordered.at(-1).y+dy};
+    if(world.map[near.y]?.[near.x]!==0||world.map[far.y]?.[far.x]!==0)
+      return{error:"Generated bridge approach has impassable underlying terrain",near,far,side};
+    // Create an actual TAB-drop at the entrance and cross empty-handed.
+    p1.inventory=[{kind:"banishment",name:"Banishment Flask",short:"BANISH",qty:1}];
+    p1.x=near.x;p1.y=near.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.hitStunMs=0;p1.health=Math.max(5000,Number(p1.health)||0);
+    const droppedBefore=new Set((host.items||[]).map(i=>i.id));
+    dropInventorySlot(p1,0);
+    const dropped=(host.items||[]).find(i=>!droppedBefore.has(i.id)&&i.active&&i.carriedItem?.kind==="banishment");
+    if(!dropped||PGR.inventoryCount(p1)!==0)return{error:"Actual inventory drop was not available"};
+    const positions=[];
+    for(let i=0;i<ordered.length+1;i++){
+      movePlayer(p1,dx,dy);
+      positions.push({x:p1.x,y:p1.y});
+    }
+    const thief=(host.enemies||[]).find(e=>e.id===bridge.thiefId&&e.bridgeThief);
+    const afterCross={
+      crossed:bridge.crossed,collapsed:bridge.collapsed,rebuilt:bridge.rebuilt,
+      playerAtFar:p1.x===far.x&&p1.y===far.y,
+      stolen:bridge.stolenItems?.filter(i=>i.carriedItem?.kind==="banishment").length||0,
+      dropInactive:dropped.active===false,
+      thiefAlive:Boolean(thief?.alive),thiefId:bridge.thiefId,
+      path:positions
+    };
+    movePlayer(p1,-dx,-dy);
+    const blockedReturn=p1.x===far.x&&p1.y===far.y;
+    const switchActuated=activateSwitch(s,p1,true);
+    const afterSwitch={rebuilt:bridge.rebuilt,collapsed:bridge.collapsed,
+      stabilized:bridge.stabilized,switchInactive:!s.active,switchToggled:s.toggled,
+      actuated:Boolean(switchActuated)};
+    const back=[];
+    for(let i=0;i<ordered.length+1;i++){movePlayer(p1,-dx,-dy);back.push({x:p1.x,y:p1.y})}
+    const returned=p1.x===near.x&&p1.y===near.y;
+    const beforeScore=score;
+    if(thief?.alive){thief.hp=1;thief.armor=0;damageEnemy(thief,500,"energy",p1)}
+    return{
+      side,near,far,afterCross,blockedReturn,afterSwitch,returned,returnPath:back,
+      thiefDefeated:Boolean(bridge.thiefDefeated&&thief?.alive===false),
+      flaskCount:PGR.inventoryKindCount(p1,"banishment"),
+      recoveredCount:Number(bridge.recoveredItemCount||0),
+      recoveredToInventory:Number(bridge.recoveredToInventory||0),
+      pending:Number(bridge.pendingStolenItemCount||0),
+      scoreDelta:score-beforeScore,
+      mode
+    };
+  });
+  assert.ok(!state.error,JSON.stringify(state));
+  assert.equal(state.afterCross.crossed,true,"Actual movement must trigger the Trickster Bridge");
+  assert.equal(state.afterCross.collapsed,true,"Crossing must collapse the first span");
+  assert.equal(state.afterCross.rebuilt,false);
+  assert.equal(state.afterCross.playerAtFar,true,JSON.stringify(state.afterCross.path));
+  assert.equal(state.afterCross.stolen,1,"A real dropped Flask must move to the thief ledger");
+  assert.equal(state.afterCross.dropInactive,true,"Stolen floor item must be deactivated");
+  assert.equal(state.afterCross.thiefAlive,true,"Bridge crossing must spawn a live Dungeon Thief");
+  assert.equal(state.blockedReturn,true,"Walking back onto collapsed span must be refused");
+  assert.equal(state.afterSwitch.actuated,true,"Shot-qualified switch owner must accept rebuild");
+  assert.equal(state.afterSwitch.rebuilt,true);
+  assert.equal(state.afterSwitch.collapsed,false);
+  assert.equal(state.afterSwitch.stabilized,true);
+  assert.equal(state.afterSwitch.switchInactive,true);
+  assert.equal(state.afterSwitch.switchToggled,true);
+  assert.equal(state.returned,true,JSON.stringify(state.returnPath));
+  assert.equal(state.thiefDefeated,true,"Actual damage owner must resolve the thief defeat");
+  assert.equal(state.flaskCount,1,"Stolen Flask must return to the player's inventory once");
+  assert.equal(state.recoveredCount,1);
+  assert.equal(state.recoveredToInventory,1);
+  assert.equal(state.pending,0);
+  assert.ok(state.scoreDelta>=750,"Defeated Dungeon Thief must still grant his advertised bonus");
+  assert.equal(state.mode,"playing");
+}
+
 // Real browser death/respawn integration for the repaired Trickster Bridge.
 // This stages the collapsed-bridge condition on a generated Floor 5, then
 // invokes the authoritative player-death owner. It is NOT a natural keyboard
@@ -259,6 +348,7 @@ try{
     floors.push(await proveFire(page,next));
   }
 
+  await probeFloorFiveBridgeTraversal(page);
   await probeFloorFiveBridgeDeath(page);
 
   assert.deepEqual(floors.map(row=>row.floor),[1,2,3,4,5],"real campaign transition path must reach all five floors in order");
