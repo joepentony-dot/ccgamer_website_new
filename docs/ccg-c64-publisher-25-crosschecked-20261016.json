@@ -6,29 +6,8 @@
   "scope": "New catalogue rows only; original game media, stable IDs, filters and source credits unchanged",
   "publicationCaveat": "C64 publisher and historical release years are indexed by exact title, not attested as the specific hosted executable's distributor or reissue edition; PRG/CRT SHA hashes are independent and no equality is claimed.",
   "source": "https://www.lemon64.com/game/ (individual C64 game pages cross-checked against earlier research and packed playable title identities)",
-  "newCredits": 23,
+  "newCredits": 22,
   "rows": [
-    {
-      "key": "airwolf 2",
-      "publisher": "Encore",
-      "year": 1987,
-      "sourceUrl": "https://www.lemon64.com/game/airwolf-2",
-      "publisherRole": "original publisher (not copyright/developer/budget re-releaser)",
-      "runtimeMedia": [
-        {
-          "title": "Airwolf 2",
-          "mediaType": "prg",
-          "catalogue": "blast",
-          "sha256": "9db99a54dbe683c2189d1cc0367eb1ab57182df6773fd145a668a539ffe2f939"
-        },
-        {
-          "title": "Airwolf 2",
-          "mediaType": "prg",
-          "catalogue": "archive",
-          "sha256": "60c8b4f18763b038d716739a025054ffcf4727ff4bc5bc3313e060cf1d28c773"
-        }
-      ]
-    },
     {
       "key": "beat it",
       "publisher": "Mastertronic",
@@ -424,6 +403,14 @@
       "key": "moon patrol",
       "source": "https://www.lemon64.com/games/list.php?list_letter=M&list_year=1983",
       "reason": "More than one unrelated C64 Moon Patrol publisher/edition listed by Lemon64: Atarisoft and Avalon Hill. BLAST/archive PRG hashes are different; no hosted binary-to-publisher proof. Do not attribute either publisher by generic title alone."
+    },
+    {
+      "key": "airwolf 2",
+      "source": "https://www.lemon64.com/game/airwolf-2",
+      "existingSourceKey": "airwolf ii",
+      "existingOriginalPublisher": "Hit-Pak",
+      "historicalSourcePublisher": "Encore",
+      "reason": "Original 1987 launch attributed to Hit-Pak in existing CCG metadata; Lemon64 publisher lists Encore but documents Encore tape as 1989 edition. Current BLAST and archive PRG media are not specifically release-certified; never mark Encore as original 1987 publisher."
     }
   ],
   "screenedCredits": 25
