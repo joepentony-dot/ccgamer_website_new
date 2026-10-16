@@ -66,6 +66,37 @@ with tempfile.TemporaryDirectory() as directory:
     assert not any((root / filename).exists()
                    for filename in ('catalogue-metadata.json', 'library.json'))
 
+    # The newer ledger includes active CRTs and deduplicated on-screen titles;
+    # the same conservative GameBase policy must apply to ALL visible games.
+    full_scope = ('direct library + active cartridges + BLAST + packed '
+                  'PRG archive (loader-equivalent view)')
+    full = {'auditScope': full_scope, 'unmatchedTitleKeys': len(titles),
+            'packedPRGCollisionTitleKeys': ['armageddon', 'shadow fighter'],
+            'unmatched': titles}
+    ledger.write_text(json.dumps(full))
+    full_report = json.loads(subprocess.run(
+        command, capture_output=True, text=True, check=True).stdout)
+    assert full_report['scope'] == full_scope
+    assert full_report['candidateCount'] == 1
+    assert full_report['manualReviewCount'] == 6
+    assert full_report['candidates'][0]['key'] == 'zaxxon'
+    assert full_report['unmatchedOrAmbiguous'] == report['unmatchedOrAmbiguous']
+
+    # An arbitrary scope, duplicate key or noncanonical identity is rejected.
+    ledger.write_text(json.dumps({**full, 'auditScope': 'invented-scope'}))
+    invalid = subprocess.run(command, capture_output=True, text=True)
+    assert invalid.returncode != 0
+    assert 'Expected canonical, collision-aware' in invalid.stderr
+    ledger.write_text(json.dumps({**full, 'unmatched': titles + ['zaxxon'],
+                                   'unmatchedTitleKeys': len(titles) + 1}))
+    invalid = subprocess.run(command, capture_output=True, text=True)
+    assert invalid.returncode != 0
+    ledger.write_text(json.dumps({**full, 'unmatched': titles[:-1] + ['Unknown Name'],
+                                   'unmatchedTitleKeys': len(titles)}))
+    invalid = subprocess.run(command, capture_output=True, text=True)
+    assert invalid.returncode != 0
+    ledger.write_text(json.dumps(full))
+
     # An ambiguity in publisher foreign keys must fail rather than guess.
     table('Publishers', ['PU_Id', 'PU_Name'], [
         ['7', 'Sega'], ['7', 'Ocean'], ['8', 'Ocean'],

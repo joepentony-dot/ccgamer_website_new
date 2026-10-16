@@ -68,7 +68,11 @@ def audit(game_file, publisher_file, year_file, unmatched_file):
     ledger = json.loads(Path(unmatched_file).read_text(encoding='utf-8'))
     unmatched = ledger.get('unmatched')
     collision = ledger.get('packedPRGCollisionTitleKeys')
-    if (ledger.get('auditScope') != 'direct library + BLAST + packed PRG archive only'
+    supported_scopes = {
+        'direct library + BLAST + packed PRG archive only',
+        'direct library + active cartridges + BLAST + packed PRG archive (loader-equivalent view)',
+    }
+    if (ledger.get('auditScope') not in supported_scopes
             or not isinstance(unmatched, list)
             or not all(isinstance(x, str) for x in unmatched)
             or ledger.get('unmatchedTitleKeys') != len(unmatched)
