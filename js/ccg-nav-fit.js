@@ -18,6 +18,7 @@
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
     const PINNED_MORE_LABELS = new Set(["ccg games", "install ccg app", "about", "about me", "contact"]);
     const BASE_MORE_LINKS = [
+        ["Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
         ["CCG Games", "/games/ccg-games/"],
         ["Install CCG App", "/install-app.html"],
         ["About Me", "/about.html"],
@@ -262,6 +263,12 @@
         link.className = "ccg-nav__link ccg-nav-fit__link";
         link.textContent = label;
         link.setAttribute("role", "menuitem");
+        if (label === "Merch Shop") {
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.setAttribute("data-ccg-revenue-link", "fourthwall-merch");
+            link.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
+        }
         menu.appendChild(link);
         seen.add(absolute);
     }
