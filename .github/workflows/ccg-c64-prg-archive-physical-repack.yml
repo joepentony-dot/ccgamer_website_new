@@ -1,87 +1,54 @@
-name: CCG C64 guarded archive PRG physical repack
+name: CCG C64 SHA-verified archive retirement guard
 on:
   pull_request:
-    branches:
-      - main
     paths:
       - .github/workflows/ccg-c64-prg-archive-physical-repack.yml
+      - emulator/c64/library.json
+      - emulator/c64/media/prg-archive/**
 permissions:
-  contents: write
+  contents: read
 jobs:
-  stage-verified-archive-survivors:
-    if: github.event_name == 'pull_request' && github.head_ref == 'codex/c64-prg-archive-physical-repack-20261016'
+  verify-retired-archive-and-survivors:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          persist-credentials: true
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Require dedicated clean branch and reject concurrent C64 media changes
-        shell: bash
-        run: |
-          test "$(git branch --show-current)" = "codex/c64-prg-archive-physical-repack-20261016"
-          test -z "$(git status --porcelain)"
-          git fetch origin main
-          base="$(git merge-base HEAD origin/main)"
-          test -n "$base"
-          test -z "$(git diff --name-only "$base" origin/main -- emulator/c64/media/prg-archive emulator/c64/library.json emulator/c64/media/cartridge-replacements/active.json)"
-      - name: Verify 9849 original PRGs and match exact-owner-authorised replacement CRTs
+      - name: Audit all surviving 8321 original PRGs byte-for-byte and all 48 pack hashes
         shell: bash
         run: |
           node --check scripts/ccg-repack-retired-c64-prgs.mjs
-          node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive > /tmp/ccg-archive-original-audit.json
-          node --input-type=module -e '
-            import fs from "node:fs";
-            import assert from "node:assert/strict";
-            const a=JSON.parse(fs.readFileSync("/tmp/ccg-archive-original-audit.json","utf8"));
-            const core=JSON.parse(fs.readFileSync("emulator/c64/library.json","utf8"));
-            assert.equal(a.mode,"read-only audit");
-            assert.equal(a.scope,"prg-archive");
-            assert.equal(a.sourceGames,9849);
-            assert.equal(a.survivors,8321);
-            assert.equal(a.retiredPRGs,1528);
-            assert.equal(a.coreCRTRegistrationsAdded,823);
-            assert.equal(a.originalPackBytes,198614190);
-            assert.equal(a.repackedBytes,150615840);
-            assert.equal(a.freedPackedBytes,47998350);
-            assert.equal(a.remainingPacks,48);
-            assert.equal(a.emptiedPacks.length,0);
-            assert.equal(core.entries.length,947);
-            console.log("SOURCE VERIFIED", JSON.stringify(a));
-          '
-          test -z "$(git status --porcelain)"
-      - name: Compact 1528 exact-CRT superseded PRGs on review branch only
-        run: |
-          node scripts/ccg-repack-retired-c64-prgs.mjs \
-            --scope prg-archive --apply \
-            --branch codex/c64-prg-archive-physical-repack-20261016 \
-            --expected-source 9849 --expected-retired 1528 --expected-core-added 823
-      - name: Revalidate all 8321 surviving original PRGs, 48 pack hashes and 1528 CRT aliases
-        shell: bash
-        run: |
-          node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive > /tmp/ccg-archive-repacked-audit.json
+          node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive > /tmp/ccg-archive-survivor-audit.json
           node --input-type=module -e '
             import fs from "node:fs";
             import assert from "node:assert/strict";
             import crypto from "node:crypto";
-            const root="emulator/c64/media/prg-archive/";
+            const path="emulator/c64/media/prg-archive/";
             const sha=data=>crypto.createHash("sha256").update(data).digest("hex");
-            const a=JSON.parse(fs.readFileSync("/tmp/ccg-archive-repacked-audit.json","utf8"));
-            const catalogBytes=fs.readFileSync(root+"catalog.json");
+            const report=JSON.parse(fs.readFileSync("/tmp/ccg-archive-survivor-audit.json","utf8"));
+            const catalogBytes=fs.readFileSync(path+"catalog.json");
             const catalog=JSON.parse(catalogBytes);
-            const ready=JSON.parse(fs.readFileSync(root+"ready.json","utf8"));
-            const aliases=JSON.parse(fs.readFileSync(root+"retired-ids.json","utf8"));
-            const core=JSON.parse(fs.readFileSync("emulator/c64/library.json","utf8"));
-            assert.equal(a.sourceGames,8321);
-            assert.equal(a.retiredPRGs,0);
-            assert.equal(a.coreCRTRegistrationsAdded,0);
+            const ready=JSON.parse(fs.readFileSync(path+"ready.json","utf8"));
+            const aliases=JSON.parse(fs.readFileSync(path+"retired-ids.json","utf8"));
+            const direct=JSON.parse(fs.readFileSync("emulator/c64/library.json","utf8"));
+            const active=JSON.parse(fs.readFileSync("emulator/c64/media/cartridge-replacements/active.json","utf8"));
+            assert.equal(report.mode,"read-only audit");
+            assert.equal(report.scope,"prg-archive");
+            assert.equal(report.sourceGames,8321);
+            assert.equal(report.retiredPRGs,0);
+            assert.equal(report.survivors,8321);
+            assert.equal(report.coreCRTRegistrationsAdded,0);
+            assert.equal(report.remainingPacks,48);
+            assert.equal(report.emptiedPacks.length,0);
+            assert.equal(report.repackedBytes,150615840);
             assert.equal(catalog.recordCount,8321);
             assert.equal(catalog.packs.length,48);
+            assert.equal(ready.version,1);
             assert.equal(ready.recordCount,8321);
             assert.equal(ready.packCount,48);
             assert.equal(ready.catalogSHA256,sha(catalogBytes));
@@ -89,32 +56,35 @@ jobs:
             assert.equal(aliases.source,"prg-archive");
             assert.equal(aliases.recordCount,1528);
             assert.equal(Object.keys(aliases.mappings).length,1528);
-            assert.equal(core.entries.length,1770);
-            const byId=new Map(core.entries.map(e=>[e.id,e]));
-            assert.equal(byId.size,core.entries.length);
-            const surviving=new Set(catalog.games.map(row=>row[0]));
-            assert.equal(surviving.size,8321);
-            const targetIds=new Set();
-            for(const [id,crtId] of Object.entries(aliases.mappings)){
-              assert(!surviving.has(id),"Retired archive PRG still appears: "+id);
-              const e=byId.get(crtId);
-              assert(e&&e.format==="crt"&&e.approved===true&&e.preferOverOtherFormats===true,
-                "No directly registered verified CRT fallback: "+id);
-              targetIds.add(crtId);
+            assert.equal(catalog.recordCount+aliases.recordCount,9849);
+            assert.equal(direct.entries.length,1770);
+            assert.equal(active.recordCount,2064);
+            const byId=new Map(direct.entries.map(e=>[e.id,e]));
+            assert.equal(byId.size,1770,"Duplicate directly hosted game ID");
+            const activeById=new Map(active.games.map(row=>["owner-crt-more-"+row[1].slice(0,-4),row]));
+            const originalIds=new Set(catalog.games.map(row=>row[0]));
+            assert.equal(originalIds.size,8321);
+            const verified=new Set();
+            for(const [formerId,replacementId] of Object.entries(aliases.mappings)){
+              assert(/^archive-\\d{5}$/.test(formerId),"Unexpected former archive ID: "+formerId);
+              assert(!originalIds.has(formerId),"Retired PRG still present: "+formerId);
+              const target=byId.get(replacementId);
+              const crt=activeById.get(replacementId);
+              assert(target&&crt&&target.format==="crt"&&target.approved===true&&
+                target.preferOverOtherFormats===true,"Missing approved direct replacement for "+formerId);
+              assert.equal(target.title,crt[0]);
+              assert.equal(target.url,"/emulator/c64/media/cartridge-replacements/"+crt[1]);
+              assert.equal(target.bytes,crt[2]);
+              assert.equal(target.sha256,crt[3]);
+              if(!verified.has(replacementId)){
+                const bytes=fs.readFileSync("emulator/c64/media/cartridge-replacements/"+crt[1]);
+                assert.equal(bytes.length,crt[2]);
+                assert.equal(sha(bytes),crt[3],"CRT checksum changed: "+crt[1]);
+                verified.add(replacementId);
+              }
             }
-            assert(targetIds.size>0);
-            assert.equal(a.repackedBytes,150615840);
-            console.log("REPACK VERIFIED: 8321 original game slices SHA checked; 1528 aliases; "+
-              targetIds.size+" CRT targets; 48 pack hashes; activation marker updated.");
+            assert(verified.size>=823,"Insufficient unique verified CRT targets");
+            console.log("PASS: all 8321 original PRGs remain SHA-verified in 48 packs; "+
+              "1528 legacy links backed by "+verified.size+" verified cartridge images.");
           '
           git diff --check
-      - name: Commit exact reviewed archive media changes only to this PR branch
-        shell: bash
-        run: |
-          git add emulator/c64/media/prg-archive emulator/c64/library.json
-          test -n "$(git diff --cached --name-only)"
-          git diff --cached --stat
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "C64: retire 1528 superseded archive PRGs and preserve 8321 originals"
-          git push origin HEAD:refs/heads/codex/c64-prg-archive-physical-repack-20261016
