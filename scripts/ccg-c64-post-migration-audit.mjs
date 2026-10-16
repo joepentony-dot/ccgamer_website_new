@@ -95,6 +95,28 @@ for(const [source,aliases] of [["blast",blastAliases],["prg-archive",archiveAlia
   }
 }
 
+// Verify the full contents of every *direct* CRT that might replace
+// one of the remaining packed PRGs. Title matching alone is not enough.
+const directById = new Map(library.entries.map(e => [e.id, e]));
+const directTargets = new Set();
+const exactMatchBySource = { blast: 0, archive: 0 };
+for (const entry of packedSurvivorMatches) {
+  exactMatchBySource[entry.source]++;
+  const replacement = directById.get(entry.crt);
+  assert(replacement && replacement.approved === true &&
+    replacement.format === "crt" && replacement.preferOverOtherFormats === true,
+    "Unapproved or missing direct CRT for packed PRG: " + entry.id);
+  if (directTargets.has(entry.crt)) continue;
+  assert(/^\\/emulator\\/c64\\/media\\/(?:[a-zA-Z0-9._-]+\\.crt|cartridge-replacements\\/[a-z0-9-]+\\.crt)$/.test(replacement.url),
+    "Unsafe direct CRT path for " + entry.crt);
+  const bytes = fs.readFileSync(replacement.url.slice(1));
+  assert.equal(bytes.length, replacement.bytes, "Direct CRT size mismatch: " + entry.crt);
+  assert.equal(sha(bytes), replacement.sha256, "Direct CRT SHA mismatch: " + entry.crt);
+  assert.equal(bytes.subarray(0, 13).toString("ascii"), "C64 CARTRIDGE",
+    "Not a CRT file: " + entry.crt);
+  directTargets.add(entry.crt);
+}
+
 const sorted = values => values.sort((a,b) => a.title.localeCompare(b.title,"en-GB"));
 const summary = {
   libraryEntries: library.entries.length,
@@ -107,10 +129,12 @@ const summary = {
   exactTitleMultiDiskCrtCandidates: multi.length,
   exactTitleDirectPrgCrtCandidates: directPrgMatches.length,
   exactTitleRemainingPackedPrgMatches: packedSurvivorMatches.length,
+  exactPackedMatchesBySource: exactMatchBySource,
+  shaVerifiedDirectCrtTargets: directTargets.size,
   singleDiskCandidates: sorted(simple),
   multiDiskCandidates: sorted(multi),
   directPrgCandidates: sorted(directPrgMatches),
-  stillPackedCrtMatches: sorted(packedSurvivorMatches).slice(0,100),
+  stillPackedCrtMatches: sorted(packedSurvivorMatches),
   allStillPackedMatchCount: packedSurvivorMatches.length,
   disclaimer: "Exact title, SHA and startup do not prove full-game CRT functionality; no deletion authorised."
 };
