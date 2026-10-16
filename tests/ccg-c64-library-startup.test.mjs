@@ -91,8 +91,15 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1150, "All 1,150 surviving BLAST PRGs remain packed and SHA verified");
-assert.equal(direct.entries.length, 1770,
-  "The 947 former entries and 823 archive replacement CRTs must remain registered");
+assert.equal(direct.entries.length, 1771,
+  "Existing 1,770 approved games and the new Cheeky Commodore Edition must remain registered");
+assert(direct.entries.some(e => e.id === "owner-crt-more-friday-the-13th" && e.format === "crt"),
+  "Original Friday the 13th cartridge must remain listed");
+assert(direct.entries.some(e => e.id === "owner-d64-friday-13th-cheeky-commodore-edition" &&
+  e.format === "d64" && e.title === "Friday 13th - Cheeky Commodore Edition"),
+  "New Cheeky Commodore disk edition must be listed separately");
+assert(app.includes('"friday the 13th - hammer challenge ii"'),
+  "Withdrawn Hammer Challenge II PRG must be excluded from the displayed archive");
 assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 1709,
   "Preserve previous promoted CRTs and all 823 new archive replacement CRTs");
 assert.equal(retiredArchive.recordCount, 1528,
