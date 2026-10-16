@@ -1047,7 +1047,7 @@ const spawnStart=gameplaySource.indexOf("function updateGenerators(dt){");
 const spawnEnd=gameplaySource.indexOf("\nfunction updateRescue(){",spawnStart);
 assert.ok(spawnStart>=0&&spawnEnd>spawnStart,"Real generator-spawn owner must remain extractable");
 const spawnSource=gameplaySource.slice(spawnStart,spawnEnd);
-function generatorSpawnFixture({blockedFourth=false}={}){
+function generatorSpawnFixture({blockedFourth=false,sanctuaryFourth=false}={}){
   const player={id:"hero",x:6,y:5,health:20},
     gen={id:"gen0",x:5,y:5,alive:true,powered:true,spawnCooldown:0,spawnTotal:0},
     cache={id:"cache",x:5,y:4,active:blockedFourth},
@@ -1059,7 +1059,7 @@ function generatorSpawnFixture({blockedFourth=false}={}){
       C:{dungeon:{generatorSpawnCap:4}},
       generatorIlluminated:()=>true,localPlayers:()=>[player],
       W:{walkable:()=>true,sameRoom:()=>false},
-      SYS:{inSanctuary:()=>false},S:{sfx(){}},Date,Math};
+      SYS:{inSanctuary:(_world,x,y)=>sanctuaryFourth&&x===5&&y===4},S:{sfx(){}},Date,Math};
   vm.createContext(ctx);
   vm.runInContext(spawnSource+";this.generatorTick=updateGenerators;",ctx,{timeout:1200});
   return{host,gen,cache,player,tick:ctx.generatorTick};
@@ -1075,6 +1075,10 @@ const fullyBlockedSpawn=generatorSpawnFixture({blockedFourth:true});
 fullyBlockedSpawn.tick(16);
 assert.equal(fullyBlockedSpawn.host.enemies.length,0,"All four occupied cells must prevent spawn");
 assert.equal(fullyBlockedSpawn.gen.spawnTotal,0,"No phantom spawned tally when all cells are occupied");
+const sanctuarySpawn=generatorSpawnFixture({sanctuaryFourth:true});
+sanctuarySpawn.tick(16);
+assert.equal(sanctuarySpawn.host.enemies.length,0,"Only free Sanctuary cell must reject a generator spawn");
+assert.equal(sanctuarySpawn.gen.spawnTotal,0,"A blocked Sanctuary spawn must not count as an enemy");
 fullyBlockedSpawn.cache.active=false;
 fullyBlockedSpawn.gen.spawnCooldown=0;
 fullyBlockedSpawn.tick(16);
