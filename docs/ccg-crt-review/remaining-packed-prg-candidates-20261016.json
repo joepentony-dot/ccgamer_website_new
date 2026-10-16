@@ -1,0 +1,1109 @@
+{
+  "version": 1,
+  "auditDate": "2026-10-16",
+  "sourceCommit": "2fec52b66009f51164c844da3c329edbb9cc969e",
+  "purpose": "READ-ONLY discovery of further possible CRT-versus-packed-PRG duplicate listings; NO GAME MEDIA DELETION AUTHORITY",
+  "rules": [
+    "Exact digit/punctuation/whitespace/diacritic normalized matches are only candidate discovery; not game/edition identity evidence",
+    "Translated game titles, side/part programs, distinct releases, languages, fixes and hacks must be preserved unless independently verified",
+    "Retain all existing PRG bytes, D64/multi-disk media, old IDs, archive/BLAST aliases and links",
+    "Only a second independent source/edition and binary-aware validation may authorise a future migration"
+  ],
+  "sources": [
+    {
+      "file": "emulator/c64/media/blast/catalog.json",
+      "gitBlobSha": "6449c2aa90e3c0cbc0e86801a25373e247e9b5f2"
+    },
+    {
+      "file": "emulator/c64/media/prg-archive/catalog.json",
+      "gitBlobSha": "e492850afff381aa6046c1a0e41b7deda3780982"
+    },
+    {
+      "file": "emulator/c64/media/blast/retired-ids.json",
+      "gitBlobSha": "597f5c21ab27b6536b5eb33a1e25afd0da84b48f"
+    },
+    {
+      "file": "emulator/c64/media/prg-archive/retired-ids.json",
+      "gitBlobSha": "895685a0b4231ff661d248b88e2be8129277a691"
+    }
+  ],
+  "counts": {
+    "remainingPackedPrgs": 9269,
+    "retiredLegacyAliases": 2458,
+    "distinctExistingCartridgeAliasTargets": 1687,
+    "normalizedTitleCandidates": 112,
+    "cauldronTitleVariants": 10
+  },
+  "normalizedTitleCandidates": [
+    {
+      "prgId": "archive-00075",
+      "title": "3D Skramble",
+      "possibleCartridgeIds": [
+        "owner-crt-more-3-d-skramble"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-00268",
+      "title": "Agent U.S.A",
+      "possibleCartridgeIds": [
+        "owner-crt-more-agent-usa"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-00697",
+      "title": "Automania",
+      "possibleCartridgeIds": [
+        "owner-crt-more-auto-mania"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-00771",
+      "title": "Ballfever",
+      "possibleCartridgeIds": [
+        "owner-crt-more-ball-fever"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-00873",
+      "title": "Battle Field",
+      "possibleCartridgeIds": [
+        "owner-crt-more-battlefield"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-00905",
+      "title": "Bc Bill",
+      "possibleCartridgeIds": [
+        "owner-crt-more-b-c-bill"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-00986",
+      "title": "Big Nose's USA Adventure",
+      "possibleCartridgeIds": [
+        "owner-crt-more-bignoses-usa-adventure"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01125",
+      "title": "Blue Print",
+      "possibleCartridgeIds": [
+        "owner-crt-blueprint"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01128",
+      "title": "Bluemoon",
+      "possibleCartridgeIds": [
+        "owner-crt-more-blue-moon"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01759",
+      "title": "Chuckie Egg 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-chuckie-egg-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-02463",
+      "title": "Disc-O-Very",
+      "possibleCartridgeIds": [
+        "owner-crt-more-discovery"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-02578",
+      "title": "Dragon Hawk",
+      "possibleCartridgeIds": [
+        "owner-crt-more-dragonhawk"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-02581",
+      "title": "Dragon's Den",
+      "possibleCartridgeIds": [
+        "owner-crt-dragonsden"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-03113",
+      "title": "Fire Trap",
+      "possibleCartridgeIds": [
+        "owner-crt-more-firetrap"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-03225",
+      "title": "Flyerfox",
+      "possibleCartridgeIds": [
+        "owner-crt-more-flyer-fox"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-03418",
+      "title": "G.U.T.Z",
+      "possibleCartridgeIds": [
+        "owner-crt-more-gutz"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-03443",
+      "title": "Galaxibirds",
+      "possibleCartridgeIds": [
+        "owner-crt-more-galax-i-birds"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-03820",
+      "title": "Gunfighter",
+      "possibleCartridgeIds": [
+        "owner-crt-more-gun-fighter"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04046",
+      "title": "High Noon",
+      "possibleCartridgeIds": [
+        "owner-crt-more-highnoon"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04162",
+      "title": "Hunch Back 2 - Quasimodo's Revenge",
+      "possibleCartridgeIds": [
+        "owner-crt-more-hunchback-ii-quasimodos-revenge"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04436",
+      "title": "Jaw Breaker",
+      "possibleCartridgeIds": [
+        "owner-crt-jawbreaker"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04520",
+      "title": "Juke Box",
+      "possibleCartridgeIds": [
+        "owner-crt-jukebox"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04566",
+      "title": "Kane 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-kane-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04651",
+      "title": "Killer Watt",
+      "possibleCartridgeIds": [
+        "owner-crt-more-killerwatt"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04794",
+      "title": "L.E.D. Storm",
+      "possibleCartridgeIds": [
+        "owner-crt-more-led-storm"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-05249",
+      "title": "Master Mind",
+      "possibleCartridgeIds": [
+        "owner-crt-more-mastermind"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-05280",
+      "title": "Matchday 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-match-day-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-05286",
+      "title": "Matchpoint",
+      "possibleCartridgeIds": [
+        "owner-crt-more-match-point"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-05696",
+      "title": "Moon Dust",
+      "possibleCartridgeIds": [
+        "owner-crt-moondust"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-05879",
+      "title": "N.O.M.A.D",
+      "possibleCartridgeIds": [
+        "owner-crt-more-nomad"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-05986",
+      "title": "Nightracer",
+      "possibleCartridgeIds": [
+        "owner-crt-more-night-racer"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-06092",
+      "title": "O' Rileys Mine",
+      "possibleCartridgeIds": [
+        "owner-crt-more-orileys-mine"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-06300",
+      "title": "Pacman",
+      "possibleCartridgeIds": [
+        "owner-crt-pac-man"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-06709",
+      "title": "Protector 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-protector-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-06865",
+      "title": "R.I.S.K",
+      "possibleCartridgeIds": [
+        "owner-crt-more-risk"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07026",
+      "title": "Red L.E.D",
+      "possibleCartridgeIds": [
+        "owner-crt-more-red-led"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07152",
+      "title": "Roadrace",
+      "possibleCartridgeIds": [
+        "owner-crt-road-race"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07253",
+      "title": "Roundabout",
+      "possibleCartridgeIds": [
+        "owner-crt-more-round-about"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07473",
+      "title": "Seawolf",
+      "possibleCartridgeIds": [
+        "owner-crt-sea-wolf"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07538",
+      "title": "Shamus Case 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-shamus-case-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07588",
+      "title": "Shootout",
+      "possibleCartridgeIds": [
+        "owner-crt-more-shoot-out"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07621",
+      "title": "Silk Worm",
+      "possibleCartridgeIds": [
+        "owner-crt-more-silkworm"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07689",
+      "title": "Sky Jet",
+      "possibleCartridgeIds": [
+        "owner-crt-more-skyjet"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07710",
+      "title": "Slap Shot",
+      "possibleCartridgeIds": [
+        "owner-crt-more-slapshot"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-07942",
+      "title": "Space Pilot 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-space-pilot-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-08219",
+      "title": "Starpost",
+      "possibleCartridgeIds": [
+        "owner-crt-star-post"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-08313",
+      "title": "Streetmachine",
+      "possibleCartridgeIds": [
+        "owner-crt-more-street-machine"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-08381",
+      "title": "Supacatchatroopa",
+      "possibleCartridgeIds": [
+        "owner-crt-more-supa-catcha-troopa"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-08415",
+      "title": "Super Hero",
+      "possibleCartridgeIds": [
+        "owner-crt-more-superhero"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-08659",
+      "title": "Ten Pins",
+      "possibleCartridgeIds": [
+        "owner-crt-tenpins"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-08903",
+      "title": "Trail Blazer",
+      "possibleCartridgeIds": [
+        "owner-crt-more-trailblazer"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-09105",
+      "title": "UFO",
+      "possibleCartridgeIds": [
+        "owner-crt-more-u-f-o"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-09218",
+      "title": "Velocipede 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-velocipede-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-09341",
+      "title": "War Games",
+      "possibleCartridgeIds": [
+        "owner-crt-more-wargames"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-09353",
+      "title": "War!",
+      "possibleCartridgeIds": [
+        "owner-crt-more-w-a-r"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-09467",
+      "title": "Who Dares Wins 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-who-dares-wins-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-09484",
+      "title": "Wild-Fire",
+      "possibleCartridgeIds": [
+        "owner-crt-more-wildfire"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0011",
+      "title": "3d Skramble",
+      "possibleCartridgeIds": [
+        "owner-crt-more-3-d-skramble"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0031",
+      "title": "Acidrunner",
+      "possibleCartridgeIds": [
+        "owner-crt-more-acid-runner"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0064",
+      "title": "Alleycat",
+      "possibleCartridgeIds": [
+        "owner-crt-more-alley-cat"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0209",
+      "title": "Bladerunner",
+      "possibleCartridgeIds": [
+        "owner-crt-more-blade-runner"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0235",
+      "title": "Bombjack",
+      "possibleCartridgeIds": [
+        "owner-crt-more-bomb-jack"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0237",
+      "title": "Bombuzal",
+      "possibleCartridgeIds": [
+        "owner-crt-more-bomb-uzal"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0296",
+      "title": "Bugblaster",
+      "possibleCartridgeIds": [
+        "owner-crt-more-bug-blaster"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0302",
+      "title": "Burgertime",
+      "possibleCartridgeIds": [
+        "owner-crt-more-burger-time"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0309",
+      "title": "Cadcam Warrior",
+      "possibleCartridgeIds": [
+        "owner-crt-more-cad-cam-warrior"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0340",
+      "title": "Cavelon 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-cavelon-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0363",
+      "title": "Chomperman",
+      "possibleCartridgeIds": [
+        "owner-crt-more-chomper-man"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0367",
+      "title": "Chuckie Egg 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-chuckie-egg-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0376",
+      "title": "Cleanup Time",
+      "possibleCartridgeIds": [
+        "owner-crt-more-clean-up-time"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0474",
+      "title": "D.n.a. Warrior",
+      "possibleCartridgeIds": [
+        "owner-crt-more-dna-warrior"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0557",
+      "title": "Dragons Den",
+      "possibleCartridgeIds": [
+        "owner-crt-dragonsden"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0675",
+      "title": "Frontline",
+      "possibleCartridgeIds": [
+        "owner-crt-more-front-line"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0681",
+      "title": "G.u.t.z",
+      "possibleCartridgeIds": [
+        "owner-crt-more-gutz"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0686",
+      "title": "Galaxibirds",
+      "possibleCartridgeIds": [
+        "owner-crt-more-galax-i-birds"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0812",
+      "title": "Hotpop!",
+      "possibleCartridgeIds": [
+        "owner-crt-more-hot-pop"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0834",
+      "title": "Hypercircuit",
+      "possibleCartridgeIds": [
+        "owner-crt-more-hyper-circuit"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0838",
+      "title": "Iball",
+      "possibleCartridgeIds": [
+        "owner-crt-more-i-ball"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0883",
+      "title": "Jetboys",
+      "possibleCartridgeIds": [
+        "owner-crt-more-jet-boys"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0888",
+      "title": "Johnny Reb 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-johnny-reb-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0921",
+      "title": "Kik-start",
+      "possibleCartridgeIds": [
+        "owner-crt-more-kikstart"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0994",
+      "title": "Mad Balls",
+      "possibleCartridgeIds": [
+        "owner-crt-more-madballs"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1015",
+      "title": "Matchday 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-match-day-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1016",
+      "title": "Matchday",
+      "possibleCartridgeIds": [
+        "owner-crt-more-match-day"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1018",
+      "title": "Matchpoint",
+      "possibleCartridgeIds": [
+        "owner-crt-more-match-point"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1025",
+      "title": "Meanstreak",
+      "possibleCartridgeIds": [
+        "owner-crt-more-mean-streak"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1042",
+      "title": "Metroblitz",
+      "possibleCartridgeIds": [
+        "owner-crt-more-metro-blitz"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1060",
+      "title": "Mission A.d.",
+      "possibleCartridgeIds": [
+        "owner-crt-more-mission-ad"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1080",
+      "title": "Moonbuggy",
+      "possibleCartridgeIds": [
+        "owner-crt-more-moon-buggy"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1085",
+      "title": "Moonshuttle",
+      "possibleCartridgeIds": [
+        "owner-crt-more-moon-shuttle"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1091",
+      "title": "Motormania",
+      "possibleCartridgeIds": [
+        "owner-crt-motor-mania"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1104",
+      "title": "Ms. Pacman",
+      "possibleCartridgeIds": [
+        "owner-crt-ms-pac-man"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1117",
+      "title": "N.o.m.a.d.",
+      "possibleCartridgeIds": [
+        "owner-crt-more-nomad"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1162",
+      "title": "Onfield Football",
+      "possibleCartridgeIds": [
+        "owner-crt-more-on-field-football"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1181",
+      "title": "Pacman",
+      "possibleCartridgeIds": [
+        "owner-crt-pac-man"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1219",
+      "title": "Pitstop 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-pitstop-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1241",
+      "title": "Protector 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-protector-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1260",
+      "title": "Quovadis",
+      "possibleCartridgeIds": [
+        "owner-crt-more-quo-vadis"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1262",
+      "title": "R.i.s.k.",
+      "possibleCartridgeIds": [
+        "owner-crt-more-risk"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1334",
+      "title": "Rocketball",
+      "possibleCartridgeIds": [
+        "owner-crt-more-rocket-ball"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1348",
+      "title": "Roundabout",
+      "possibleCartridgeIds": [
+        "owner-crt-more-round-about"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1382",
+      "title": "Seawolf",
+      "possibleCartridgeIds": [
+        "owner-crt-sea-wolf"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1427",
+      "title": "Skooldaze",
+      "possibleCartridgeIds": [
+        "owner-crt-more-skool-daze"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1470",
+      "title": "Space Pilot 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-space-pilot-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1479",
+      "title": "Speedking",
+      "possibleCartridgeIds": [
+        "owner-crt-more-speed-king"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1535",
+      "title": "Starpost",
+      "possibleCartridgeIds": [
+        "owner-crt-star-post"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1553",
+      "title": "Streetmachine",
+      "possibleCartridgeIds": [
+        "owner-crt-more-street-machine"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1752",
+      "title": "Ufo",
+      "possibleCartridgeIds": [
+        "owner-crt-more-u-f-o"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1766",
+      "title": "Velocipede 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-velocipede-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1811",
+      "title": "Who Dares Wins 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-who-dares-wins-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1842",
+      "title": "Yie Ar Kung-fu 2",
+      "possibleCartridgeIds": [
+        "owner-crt-more-yie-ar-kung-fu-ii"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-1859",
+      "title": "Zimsalabim",
+      "possibleCartridgeIds": [
+        "owner-crt-more-zim-sala-bim"
+      ],
+      "reason": "normalized-title-equivalence-with-previously-verified-CRT-target",
+      "status": "unverified-do-not-retire"
+    }
+  ],
+  "cauldronTitleVariants": [
+    {
+      "prgId": "archive-01594",
+      "title": "Cauldron - Draculon",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01595",
+      "title": "Cauldron - Hexenkuche",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01596",
+      "title": "Cauldron 1 - Hexenkueche",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01597",
+      "title": "Cauldron 2 - The Pumpkin Strikes Back",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01598",
+      "title": "Cauldron II - La Calebaza Cintraataca",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01599",
+      "title": "Cauldron II - La Citrouille Contre Attaque",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-01600",
+      "title": "Cauldron II - The Pumpkin Strikes Back",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04022",
+      "title": "Hexenkueche",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "archive-04023",
+      "title": "Hexenkueche 2",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    },
+    {
+      "prgId": "blast-0335",
+      "title": "Cauldron 2",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire"
+    }
+  ]
+}
