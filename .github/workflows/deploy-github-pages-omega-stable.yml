@@ -170,7 +170,7 @@ jobs:
             grep -Fq 'ccg-socials__icon--fb' "$page"
             grep -Fq 'ccg-socials__icon--discord' "$page"
             grep -Fq 'src="/js/ccg-header-auth-loader.js"' "$page"
-            grep -Fq 'src="/js/ccg-nav-fit.js' "$page"
+            grep -Fq 'src="/js/ccg-nav-fit.js"' "$page"
           done
 
           # Retro editorial collections must publish the unified collection presentation.
