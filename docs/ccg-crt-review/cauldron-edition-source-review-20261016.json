@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "date": "2026-10-16",
+  "state": "source-title-family-confirmed; actual hosted binaries and editions UNVERIFIED",
+  "sourceLinks": [
+    {
+      "url": "https://www.lemon64.com/game/cauldron",
+      "identity": "Cauldron (1985), Palace Software Europe; Brøderbund US, Silverbird budget reissue",
+      "languageNotes": "Lemon64 cross-references Hexenküche as German language edition"
+    },
+    {
+      "url": "https://www.lemon64.com/game/cauldron-2",
+      "identity": "Cauldron II: The Pumpkin Strikes Back (1986), Palace Software",
+      "languageNotes": "Lemon64 cross-references Hexenküche II German and Silverbird budget reissue"
+    },
+    {
+      "url": "https://www.lemon64.com/doc/cauldron-2/131",
+      "identity": "Contemporary Cauldron II manual confirms full subtitle and copyright Palace Software Ltd"
+    }
+  ],
+  "policy": "These are literature-level release-family references ONLY, NOT evidence the hosted PRG binaries match the original games or CRT edition. Do not retire, redirect or hide until programme identity, part/side, variation, gameplay and legacy link behaviour verified.",
+  "candidates": [
+    {
+      "prgId": "archive-01594",
+      "title": "Cauldron - Draculon",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-original",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-01595",
+      "title": "Cauldron - Hexenkuche",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-original",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-01596",
+      "title": "Cauldron 1 - Hexenkueche",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-original",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-01597",
+      "title": "Cauldron 2 - The Pumpkin Strikes Back",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-ii",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-01598",
+      "title": "Cauldron II - La Calebaza Cintraataca",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-ii",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-01599",
+      "title": "Cauldron II - La Citrouille Contre Attaque",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-ii",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-01600",
+      "title": "Cauldron II - The Pumpkin Strikes Back",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-ii",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-04022",
+      "title": "Hexenkueche",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-original",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "archive-04023",
+      "title": "Hexenkueche 2",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-ii",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    },
+    {
+      "prgId": "blast-0335",
+      "title": "Cauldron 2",
+      "reason": "owner-screenshot-title-or-language-variant",
+      "status": "unverified-do-not-retire",
+      "externalTitleFamily": "possible-cauldron-ii",
+      "verifiedMediaIdentity": false,
+      "approvedForRetirement": false
+    }
+  ]
+}

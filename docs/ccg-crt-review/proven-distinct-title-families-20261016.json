@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-10-16",
+  "sourceCandidateLedger": "docs/ccg-crt-review/full-catalogue-crt-prg-candidates-20261016.json",
+  "sourceCandidateLedgerBlob": "a048f2193537af1ebabd10736c31801afb786e1e",
+  "status": "EXPLICIT NEGATIVE CONTROLS — prevent accidental cross-game title similarity replacement",
+  "rules": [
+    "Proven separate C64 game families must not be consolidated on title similarity, even if their text scores highly.",
+    "Both original packaged PRGs and approved CRTs remain unchanged; this is no media identity or binary compatibility test.",
+    "No new PRG retirement, game-page alias or autoplay reroute is authorised by these findings."
+  ],
+  "distinctTitleFamilyPairs": [
+    {
+      "prgId": "archive-00235",
+      "prgTitle": "Adventure Island",
+      "prgSha256": "9b81309f29d5c12383f52a2ba88db5e4e58aea591f371ccf01ad44da53964486",
+      "crtId": "owner-crt-more-adventureland-41cf6ba8ac18",
+      "crtTitle": "Adventureland",
+      "crtSha256": "41cf6ba8ac18200e3d101902e27fa8bfc7104f477fad6cb8ff7ed02c71fcbeef",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "C64 Adventure Island, credited to J. B. Cattley, is not Scott Adams' 1982/1984 Adventureland. No assertion is made about which binary edition is hosted.",
+      "sources": [
+        "https://solutionarchive.com/list/platform%2C1/",
+        "https://www.lemon64.com/game/adventureland-scott-adams",
+        "https://www.lemon64.com/game/adventureland-adventure-international"
+      ]
+    },
+    {
+      "prgId": "archive-00551",
+      "prgTitle": "Armageddon",
+      "prgSha256": "7cc3baf0abe5d3b2f62714be13ae4121d62a599995ea555f4b3d688a751285b2",
+      "crtId": "owner-crt-more-armageddonmanthe-f383a5fa7755",
+      "crtTitle": "Armageddon Man, The",
+      "crtSha256": "f383a5fa7755de3093afb4e042b61b4d8c6397f4ffbd92454a5b9556fa17c4c4",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "Armageddon is a 1983 title with distinct C64 releases credited to Ocean and Visions; The Armageddon Man is a separate 1987 Martech geopolitical strategy game. A lexical prefix is not shared game identity.",
+      "sources": [
+        "https://www.lemon64.com/games/list.php?list_company=operasoft&list_year=1983",
+        "https://www.lemon64.com/game/armageddon-man",
+        "https://www.computinghistory.org.uk/det/18034/Armageddon/"
+      ]
+    },
+    {
+      "prgId": "archive-00891",
+      "prgTitle": "Battlefield Earth",
+      "prgSha256": "870a2a0f445745ba6250f5c3add897b8d714aabe25dd43f1a297e4404e310c41",
+      "crtId": "owner-crt-more-battlefield",
+      "crtTitle": "Battlefield",
+      "crtSha256": "22ab76ee2c07fbb979e6c5fcb1c67bc5473392bea1b62a4c7ca0a1b0ae6f4ab9",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "Battlefield Earth is catalogued as an unreleased C64 preview, while Battlefield is Atlantis Software's 1988 two-player duel shooter. Do not fold the preview into the retail game.",
+      "sources": [
+        "https://www.gamesthatwerent.com/gtw64/gtwindex/b/items/120/",
+        "https://www.lemon64.com/game/battlefield",
+        "https://www.planetemu.net/roms/commodore-c64-games-shootem-up-t64?page=B&screenshots=true&startId=13"
+      ]
+    },
+    {
+      "prgId": "archive-00983",
+      "prgTitle": "Big Mad",
+      "prgSha256": "cb05adab4902f42650b19fc063ebbe98f48f7a8d385bc6b5e2c3a090ca6748b6",
+      "crtId": "owner-crt-more-big-mac",
+      "crtTitle": "Big Mac",
+      "crtSha256": "8f9ef9c2f06812d0785281d335b216351e068863aff4cc11234c6aa276aa458b",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "The independently catalogued C64 Big Mad game is distinct from Mastertronic's 1985 Big Mac. Superficial edit distance does not authorise retirement.",
+      "sources": [
+        "https://www.planetemu.net/en/roms/commodore-c64-games-arcade-prg?page=B",
+        "https://www.lemon64.com/game/big-mac",
+        "https://www.lemon64.com/forum/viewtopic.php?start=180&t=38137"
+      ]
+    },
+    {
+      "prgId": "archive-01057",
+      "prgTitle": "Blagger Junior",
+      "prgSha256": "e5270376f6f82f2b72b5756ecde3834b6f8f9bf2290778bdadd42328b8cdaca4",
+      "crtId": "owner-crt-more-blagger",
+      "crtTitle": "Blagger",
+      "crtSha256": "8af1c2640ea7fb19759faacc252c2d3f1d4398425ad0e459cd73e2a91d0a07d3",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "Blagger (1983, Alligata) and the name Blagger Junior (also attached to 1985 TC Mine in Lemon64) do not identify the same game. The actual hosted Junior edition is still unverified; do not fold it into the original Blagger CRT.",
+      "sources": [
+        "https://www.lemon64.com/game/blagger",
+        "https://www.lemon64.com/game/tc-mine",
+        "https://www.c64.com/games/gamers_diary.php"
+      ]
+    }
+  ]
+}

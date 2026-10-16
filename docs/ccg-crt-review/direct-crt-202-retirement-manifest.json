@@ -1,0 +1,1222 @@
+{
+  "version": 1,
+  "sourceAuditRun": 38831402483,
+  "recordCount": 202,
+  "blastCount": 69,
+  "archiveCount": 133,
+  "uniqueCartridgeCount": 136,
+  "rows": [
+    [
+      "archive",
+      "archive-00231",
+      "Adventure Creator",
+      "owner-crt-adventure-creator"
+    ],
+    [
+      "archive",
+      "archive-00249",
+      "Aegean Voyage",
+      "owner-crt-aegean-voyage"
+    ],
+    [
+      "archive",
+      "archive-00262",
+      "After the War",
+      "owner-crt-after-the-war"
+    ],
+    [
+      "archive",
+      "archive-00320",
+      "Alf in the Color Caves",
+      "owner-crt-alf-in-the-color-caves"
+    ],
+    [
+      "archive",
+      "archive-00348",
+      "Alien Sidestep",
+      "owner-crt-alien-sidestep"
+    ],
+    [
+      "archive",
+      "archive-00388",
+      "Alpha Build",
+      "owner-crt-alpha-build"
+    ],
+    [
+      "archive",
+      "archive-00395",
+      "Alphabet Zoo",
+      "owner-crt-alphabet-zoo"
+    ],
+    [
+      "archive",
+      "archive-00591",
+      "Aspar GP Master",
+      "owner-crt-aspar-gp-master"
+    ],
+    [
+      "archive",
+      "archive-00620",
+      "Astro Marine Corps",
+      "owner-crt-astro-marine-corps"
+    ],
+    [
+      "archive",
+      "archive-00627",
+      "Astroblitz",
+      "owner-crt-astroblitz"
+    ],
+    [
+      "archive",
+      "archive-00664",
+      "Attack of the Mutant Camels",
+      "owner-crt-attack-of-the-mutant-camels"
+    ],
+    [
+      "archive",
+      "archive-00706",
+      "Avenger",
+      "owner-crt-avenger"
+    ],
+    [
+      "archive",
+      "archive-00898",
+      "Battlezone",
+      "owner-crt-battlezone"
+    ],
+    [
+      "archive",
+      "archive-00918",
+      "Beamrider",
+      "owner-crt-beamrider"
+    ],
+    [
+      "archive",
+      "archive-00973",
+      "Big Bird's Special Delivery",
+      "owner-crt-big-birds-special-delivery"
+    ],
+    [
+      "archive",
+      "archive-01001",
+      "Billiards",
+      "owner-crt-billiards"
+    ],
+    [
+      "archive",
+      "archive-01262",
+      "Bowling",
+      "owner-crt-bowling"
+    ],
+    [
+      "archive",
+      "archive-01354",
+      "Bubble Burst",
+      "owner-crt-bubble-burst"
+    ],
+    [
+      "archive",
+      "archive-01364",
+      "Buck Rogers - Planet of Zoom",
+      "owner-crt-buck-rogers-planet-of-zoom"
+    ],
+    [
+      "archive",
+      "archive-01375",
+      "Bug Crusher",
+      "owner-crt-bug-crusher"
+    ],
+    [
+      "archive",
+      "archive-01552",
+      "Castle Hassle",
+      "owner-crt-castle-hassle"
+    ],
+    [
+      "archive",
+      "archive-01640",
+      "Centipede",
+      "owner-crt-centipede"
+    ],
+    [
+      "archive",
+      "archive-01682",
+      "Checkers",
+      "owner-crt-checkers"
+    ],
+    [
+      "archive",
+      "archive-01739",
+      "Choplifter",
+      "owner-crt-choplifter"
+    ],
+    [
+      "archive",
+      "archive-01827",
+      "Close Encounters of the Worst Kind",
+      "owner-crt-close-encounters-of-the-worst-kind"
+    ],
+    [
+      "archive",
+      "archive-01853",
+      "Coco-Notes",
+      "owner-crt-coco-notes"
+    ],
+    [
+      "archive",
+      "archive-02008",
+      "Cosmic Life",
+      "owner-crt-cosmic-life"
+    ],
+    [
+      "archive",
+      "archive-02108",
+      "Crisis Mountain",
+      "owner-crt-crisis-mountain"
+    ],
+    [
+      "archive",
+      "archive-02169",
+      "Cyberball",
+      "owner-crt-cyberball"
+    ],
+    [
+      "archive",
+      "archive-02228",
+      "Dancing Feats",
+      "owner-crt-dancing-feats"
+    ],
+    [
+      "archive",
+      "archive-02318",
+      "Decathlon",
+      "owner-crt-decathlon"
+    ],
+    [
+      "archive",
+      "archive-02334",
+      "Defender",
+      "owner-crt-defender"
+    ],
+    [
+      "archive",
+      "archive-02349",
+      "Delta Drawing",
+      "owner-crt-delta-drawing"
+    ],
+    [
+      "archive",
+      "archive-02429",
+      "Diamond Mine",
+      "owner-crt-diamond-mine"
+    ],
+    [
+      "archive",
+      "archive-02445",
+      "Dig Dug",
+      "owner-crt-dig-dug"
+    ],
+    [
+      "archive",
+      "archive-02527",
+      "Donkey Kong",
+      "owner-crt-donkey-kong"
+    ],
+    [
+      "archive",
+      "archive-02539",
+      "Dot Gobbler",
+      "owner-crt-dot-gobbler"
+    ],
+    [
+      "archive",
+      "archive-02589",
+      "Dragonsden",
+      "owner-crt-dragonsden"
+    ],
+    [
+      "archive",
+      "archive-02635",
+      "Ducks Ahoy!",
+      "owner-crt-ducks-ahoy"
+    ],
+    [
+      "archive",
+      "archive-02851",
+      "Ernie's Magic Shapes",
+      "owner-crt-ernies-magic-shapes"
+    ],
+    [
+      "archive",
+      "archive-02887",
+      "Espial",
+      "owner-crt-espial"
+    ],
+    [
+      "archive",
+      "archive-02973",
+      "Facemaker",
+      "owner-crt-facemaker"
+    ],
+    [
+      "archive",
+      "archive-03301",
+      "Fraction Fever",
+      "owner-crt-fraction-fever"
+    ],
+    [
+      "archive",
+      "archive-03340",
+      "Frog Master",
+      "owner-crt-frog-master"
+    ],
+    [
+      "archive",
+      "archive-03441",
+      "Galaxian",
+      "owner-crt-galaxian"
+    ],
+    [
+      "archive",
+      "archive-03683",
+      "Gorf",
+      "owner-crt-gorf"
+    ],
+    [
+      "archive",
+      "archive-03764",
+      "Gridrunner",
+      "owner-crt-gridrunner"
+    ],
+    [
+      "archive",
+      "archive-03842",
+      "Gyruss",
+      "owner-crt-gyruss"
+    ],
+    [
+      "archive",
+      "archive-03856",
+      "Halftime Battlin' Bands",
+      "owner-crt-halftime-battlin-bands"
+    ],
+    [
+      "archive",
+      "archive-04102",
+      "Hop Along Counting",
+      "owner-crt-hop-along-counting"
+    ],
+    [
+      "archive",
+      "archive-04329",
+      "International Soccer",
+      "owner-crt-international-soccer"
+    ],
+    [
+      "archive",
+      "archive-04409",
+      "Jack Attack",
+      "owner-crt-jack-attack"
+    ],
+    [
+      "archive",
+      "archive-04420",
+      "Jagten Pa Bubbers Badekar",
+      "owner-crt-jagten-pa-bubbers-badekar"
+    ],
+    [
+      "archive",
+      "archive-04537",
+      "Jungle Hunt",
+      "owner-crt-jungle-hunt"
+    ],
+    [
+      "archive",
+      "archive-04548",
+      "Jupiter Lander",
+      "owner-crt-jupiter-lander"
+    ],
+    [
+      "archive",
+      "archive-04629",
+      "Kickman",
+      "owner-crt-kickman"
+    ],
+    [
+      "archive",
+      "archive-04634",
+      "Kids on Keys",
+      "owner-crt-kids-on-keys"
+    ],
+    [
+      "archive",
+      "archive-04841",
+      "Laser Cycles",
+      "owner-crt-laser-cycles"
+    ],
+    [
+      "archive",
+      "archive-04886",
+      "Lazarian",
+      "owner-crt-lazarian"
+    ],
+    [
+      "archive",
+      "archive-05022",
+      "Lode Runner",
+      "owner-crt-lode-runner"
+    ],
+    [
+      "archive",
+      "archive-05026",
+      "Logic Levels",
+      "owner-crt-logic-levels"
+    ],
+    [
+      "archive",
+      "archive-05085",
+      "Lunar Leeper",
+      "owner-crt-lunar-leeper"
+    ],
+    [
+      "archive",
+      "archive-05222",
+      "Mario's Brewery",
+      "owner-crt-marios-brewery"
+    ],
+    [
+      "archive",
+      "archive-05264",
+      "Mastertype",
+      "owner-crt-mastertype"
+    ],
+    [
+      "archive",
+      "archive-05294",
+      "Math Mileage",
+      "owner-crt-math-mileage"
+    ],
+    [
+      "archive",
+      "archive-05335",
+      "Maze Man",
+      "owner-crt-maze-man"
+    ],
+    [
+      "archive",
+      "archive-05337",
+      "Maze Master",
+      "owner-crt-maze-master"
+    ],
+    [
+      "archive",
+      "archive-05401",
+      "Memory Manor",
+      "owner-crt-memory-manor"
+    ],
+    [
+      "archive",
+      "archive-05537",
+      "Miner 2049'er",
+      "owner-crt-miner-2049er"
+    ],
+    [
+      "archive",
+      "archive-05633",
+      "Mole Attack",
+      "owner-crt-mole-attack"
+    ],
+    [
+      "archive",
+      "archive-05698",
+      "Moon Patrol",
+      "owner-crt-moon-patrol"
+    ],
+    [
+      "archive",
+      "archive-05748",
+      "Motor Mania",
+      "owner-crt-motor-mania"
+    ],
+    [
+      "archive",
+      "archive-05755",
+      "Mountain King",
+      "owner-crt-mountain-king"
+    ],
+    [
+      "archive",
+      "archive-05772",
+      "Movie Musical Madness",
+      "owner-crt-movie-musical-madness"
+    ],
+    [
+      "archive",
+      "archive-05780",
+      "Mr. Cool",
+      "owner-crt-mr-cool"
+    ],
+    [
+      "archive",
+      "archive-05796",
+      "Mr. TNT",
+      "owner-crt-mr-tnt"
+    ],
+    [
+      "archive",
+      "archive-05803",
+      "Mr.Tnt",
+      "owner-crt-mr-tnt"
+    ],
+    [
+      "archive",
+      "archive-05806",
+      "Ms. Pac-Man",
+      "owner-crt-ms-pac-man"
+    ],
+    [
+      "archive",
+      "archive-06043",
+      "Nova Blast",
+      "owner-crt-nova-blast"
+    ],
+    [
+      "archive",
+      "archive-06130",
+      "Oils Well",
+      "owner-crt-oils-well"
+    ],
+    [
+      "archive",
+      "archive-06154",
+      "Omega Race",
+      "owner-crt-omega-race"
+    ],
+    [
+      "archive",
+      "archive-06289",
+      "Pac-Man",
+      "owner-crt-pac-man"
+    ],
+    [
+      "archive",
+      "archive-06358",
+      "Park Patrol",
+      "owner-crt-park-patrol"
+    ],
+    [
+      "archive",
+      "archive-06366",
+      "Pastfinder",
+      "owner-crt-pastfinder"
+    ],
+    [
+      "archive",
+      "archive-06385",
+      "Peanut Butter Panic",
+      "owner-crt-peanut-butter-panic"
+    ],
+    [
+      "archive",
+      "archive-06495",
+      "Pinball Spectacular",
+      "owner-crt-pinball-spectacular"
+    ],
+    [
+      "archive",
+      "archive-06506",
+      "Pipes",
+      "owner-crt-pipes"
+    ],
+    [
+      "archive",
+      "archive-06514",
+      "Pirates",
+      "pirates"
+    ],
+    [
+      "archive",
+      "archive-06516",
+      "Pit, The",
+      "owner-crt-pit-the"
+    ],
+    [
+      "archive",
+      "archive-06517",
+      "Pitfall",
+      "owner-crt-pitfall"
+    ],
+    [
+      "archive",
+      "archive-06592",
+      "Pole Position",
+      "owner-crt-pole-position"
+    ],
+    [
+      "archive",
+      "archive-06675",
+      "Princess and the Frog",
+      "owner-crt-princess-and-the-frog"
+    ],
+    [
+      "archive",
+      "archive-06786",
+      "Q-Bert",
+      "owner-crt-q-bert"
+    ],
+    [
+      "archive",
+      "archive-06882",
+      "Rack 'em Up",
+      "owner-crt-rack-em-up"
+    ],
+    [
+      "archive",
+      "archive-06888",
+      "Radar Rat Race",
+      "owner-crt-radar-rat-race"
+    ],
+    [
+      "archive",
+      "archive-06956",
+      "Ranch",
+      "owner-crt-ranch"
+    ],
+    [
+      "archive",
+      "archive-07071",
+      "Retro Ball",
+      "owner-crt-retro-ball"
+    ],
+    [
+      "archive",
+      "archive-07127",
+      "River Raid",
+      "owner-crt-river-raid"
+    ],
+    [
+      "archive",
+      "archive-07141",
+      "Road Race",
+      "owner-crt-road-race"
+    ],
+    [
+      "archive",
+      "archive-07179",
+      "Robotron 2084",
+      "owner-crt-robotron-2084"
+    ],
+    [
+      "archive",
+      "archive-07240",
+      "Rootin' Tootin'",
+      "owner-crt-rootin-tootin"
+    ],
+    [
+      "archive",
+      "archive-07331",
+      "Sammy Lightfoot",
+      "owner-crt-sammy-lightfoot"
+    ],
+    [
+      "archive",
+      "archive-07363",
+      "Save New York",
+      "owner-crt-save-new-york"
+    ],
+    [
+      "archive",
+      "archive-07457",
+      "Sea Speller",
+      "owner-crt-sea-speller"
+    ],
+    [
+      "archive",
+      "archive-07458",
+      "Sea Wolf",
+      "owner-crt-sea-wolf"
+    ],
+    [
+      "archive",
+      "archive-07462",
+      "Seafox",
+      "owner-crt-seafox"
+    ],
+    [
+      "archive",
+      "archive-07702",
+      "Slalom",
+      "owner-crt-slalom"
+    ],
+    [
+      "archive",
+      "archive-07840",
+      "Solar Fox",
+      "owner-crt-solar-fox"
+    ],
+    [
+      "archive",
+      "archive-07882",
+      "Space Action",
+      "owner-crt-space-action"
+    ],
+    [
+      "archive",
+      "archive-07958",
+      "Space Shuttle - A Journey Into Space",
+      "owner-crt-space-shuttle-a-journey-into-space"
+    ],
+    [
+      "archive",
+      "archive-08057",
+      "Spitball",
+      "owner-crt-spitball"
+    ],
+    [
+      "archive",
+      "archive-08097",
+      "Spy Hunter",
+      "owner-crt-spy-hunter"
+    ],
+    [
+      "archive",
+      "archive-08163",
+      "Star Post",
+      "owner-crt-star-post"
+    ],
+    [
+      "archive",
+      "archive-08165",
+      "Star Ranger",
+      "owner-crt-star-ranger"
+    ],
+    [
+      "archive",
+      "archive-08174",
+      "Star Trek",
+      "owner-crt-star-trek"
+    ],
+    [
+      "archive",
+      "archive-08258",
+      "Stix",
+      "owner-crt-stix"
+    ],
+    [
+      "archive",
+      "archive-08289",
+      "Story Machine",
+      "owner-crt-story-machine"
+    ],
+    [
+      "archive",
+      "archive-08445",
+      "Super Smash",
+      "owner-crt-super-smash"
+    ],
+    [
+      "archive",
+      "archive-08594",
+      "Tank Wars",
+      "owner-crt-tank-wars"
+    ],
+    [
+      "archive",
+      "archive-08662",
+      "Tennis",
+      "owner-crt-tennis"
+    ],
+    [
+      "archive",
+      "archive-08668",
+      "Tenpins",
+      "owner-crt-tenpins"
+    ],
+    [
+      "archive",
+      "archive-08731",
+      "Threshold",
+      "owner-crt-threshold"
+    ],
+    [
+      "archive",
+      "archive-08842",
+      "Tooth Invaders",
+      "owner-crt-tooth-invaders"
+    ],
+    [
+      "archive",
+      "archive-08889",
+      "Toy Bizarre",
+      "owner-crt-toy-bizarre"
+    ],
+    [
+      "archive",
+      "archive-09037",
+      "Turbo Maze Man",
+      "owner-crt-turbo-maze-man"
+    ],
+    [
+      "archive",
+      "archive-09081",
+      "Tyler's Dungeons",
+      "owner-crt-tylers-dungeons"
+    ],
+    [
+      "archive",
+      "archive-09162",
+      "Up for Grabs",
+      "owner-crt-up-for-grabs"
+    ],
+    [
+      "archive",
+      "archive-09255",
+      "Viduzzles",
+      "owner-crt-viduzzles"
+    ],
+    [
+      "archive",
+      "archive-09273",
+      "Visible Solar System",
+      "owner-crt-visible-solar-system"
+    ],
+    [
+      "archive",
+      "archive-09408",
+      "Webster - The Word Game",
+      "owner-crt-webster-the-word-game"
+    ],
+    [
+      "archive",
+      "archive-09529",
+      "Wizard of Wor",
+      "owner-crt-wizard-of-wor"
+    ],
+    [
+      "archive",
+      "archive-09768",
+      "Zenji",
+      "owner-crt-zenji"
+    ],
+    [
+      "archive",
+      "archive-09811",
+      "Zone Ranger",
+      "owner-crt-zone-ranger"
+    ],
+    [
+      "blast",
+      "blast-0117",
+      "Aspar Gp Master",
+      "owner-crt-aspar-gp-master"
+    ],
+    [
+      "blast",
+      "blast-0127",
+      "Astroblitz",
+      "owner-crt-astroblitz"
+    ],
+    [
+      "blast",
+      "blast-0129",
+      "Attack Of The Mutant Camels",
+      "owner-crt-attack-of-the-mutant-camels"
+    ],
+    [
+      "blast",
+      "blast-0135",
+      "Avenger",
+      "owner-crt-avenger"
+    ],
+    [
+      "blast",
+      "blast-0176",
+      "Battlezone",
+      "owner-crt-battlezone"
+    ],
+    [
+      "blast",
+      "blast-0182",
+      "Beamrider",
+      "owner-crt-beamrider"
+    ],
+    [
+      "blast",
+      "blast-0199",
+      "Billiards",
+      "owner-crt-billiards"
+    ],
+    [
+      "blast",
+      "blast-0221",
+      "Blueprint",
+      "owner-crt-blueprint"
+    ],
+    [
+      "blast",
+      "blast-0270",
+      "Bowling!",
+      "owner-crt-bowling"
+    ],
+    [
+      "blast",
+      "blast-0348",
+      "Centipede",
+      "owner-crt-centipede"
+    ],
+    [
+      "blast",
+      "blast-0364",
+      "Choplifter",
+      "owner-crt-choplifter"
+    ],
+    [
+      "blast",
+      "blast-0444",
+      "Crisis Mountain",
+      "owner-crt-crisis-mountain"
+    ],
+    [
+      "blast",
+      "blast-0461",
+      "Cyberball",
+      "owner-crt-cyberball"
+    ],
+    [
+      "blast",
+      "blast-0504",
+      "Decathlon",
+      "owner-crt-decathlon"
+    ],
+    [
+      "blast",
+      "blast-0508",
+      "Defender",
+      "owner-crt-defender"
+    ],
+    [
+      "blast",
+      "blast-0529",
+      "Dig Dug",
+      "owner-crt-dig-dug"
+    ],
+    [
+      "blast",
+      "blast-0543",
+      "Donkey Kong",
+      "owner-crt-donkey-kong"
+    ],
+    [
+      "blast",
+      "blast-0572",
+      "Ducks Ahoy!",
+      "owner-crt-ducks-ahoy"
+    ],
+    [
+      "blast",
+      "blast-0610",
+      "Espial",
+      "owner-crt-espial"
+    ],
+    [
+      "blast",
+      "blast-0622",
+      "Facemaker",
+      "owner-crt-facemaker"
+    ],
+    [
+      "blast",
+      "blast-0661",
+      "Fraction Fever",
+      "owner-crt-fraction-fever"
+    ],
+    [
+      "blast",
+      "blast-0671",
+      "Frog Master",
+      "owner-crt-frog-master"
+    ],
+    [
+      "blast",
+      "blast-0685",
+      "Galaxian",
+      "owner-crt-galaxian"
+    ],
+    [
+      "blast",
+      "blast-0723",
+      "Gorf",
+      "owner-crt-gorf"
+    ],
+    [
+      "blast",
+      "blast-0740",
+      "Gridrunner",
+      "owner-crt-gridrunner"
+    ],
+    [
+      "blast",
+      "blast-0758",
+      "Gyruss",
+      "owner-crt-gyruss"
+    ],
+    [
+      "blast",
+      "blast-0877",
+      "Jawbreaker",
+      "owner-crt-jawbreaker"
+    ],
+    [
+      "blast",
+      "blast-0895",
+      "Jukebox",
+      "owner-crt-jukebox"
+    ],
+    [
+      "blast",
+      "blast-0900",
+      "Jungle Hunt",
+      "owner-crt-jungle-hunt"
+    ],
+    [
+      "blast",
+      "blast-0904",
+      "Jupiter Lander",
+      "owner-crt-jupiter-lander"
+    ],
+    [
+      "blast",
+      "blast-0918",
+      "Kickman",
+      "owner-crt-kickman"
+    ],
+    [
+      "blast",
+      "blast-0964",
+      "Lazarian",
+      "owner-crt-lazarian"
+    ],
+    [
+      "blast",
+      "blast-0988",
+      "Lode Runner",
+      "owner-crt-lode-runner"
+    ],
+    [
+      "blast",
+      "blast-0992",
+      "Lunar Leeper",
+      "owner-crt-lunar-leeper"
+    ],
+    [
+      "blast",
+      "blast-1078",
+      "Moon Patrol",
+      "owner-crt-moon-patrol"
+    ],
+    [
+      "blast",
+      "blast-1082",
+      "Moondust",
+      "owner-crt-moondust"
+    ],
+    [
+      "blast",
+      "blast-1093",
+      "Mountain King",
+      "owner-crt-mountain-king"
+    ],
+    [
+      "blast",
+      "blast-1095",
+      "Mr. Cool",
+      "owner-crt-mr-cool"
+    ],
+    [
+      "blast",
+      "blast-1100",
+      "Mr. Tnt",
+      "owner-crt-mr-tnt"
+    ],
+    [
+      "blast",
+      "blast-1149",
+      "Oil's Well",
+      "owner-crt-oils-well"
+    ],
+    [
+      "blast",
+      "blast-1157",
+      "Omega Race",
+      "owner-crt-omega-race"
+    ],
+    [
+      "blast",
+      "blast-1192",
+      "Park Patrol",
+      "owner-crt-park-patrol"
+    ],
+    [
+      "blast",
+      "blast-1194",
+      "Pastfinder",
+      "owner-crt-pastfinder"
+    ],
+    [
+      "blast",
+      "blast-1214",
+      "Pipes",
+      "owner-crt-pipes"
+    ],
+    [
+      "blast",
+      "blast-1218",
+      "Pitfall",
+      "owner-crt-pitfall"
+    ],
+    [
+      "blast",
+      "blast-1229",
+      "Pole Position",
+      "owner-crt-pole-position"
+    ],
+    [
+      "blast",
+      "blast-1250",
+      "Q-bert",
+      "owner-crt-q-bert"
+    ],
+    [
+      "blast",
+      "blast-1263",
+      "Rack 'em Up",
+      "owner-crt-rack-em-up"
+    ],
+    [
+      "blast",
+      "blast-1264",
+      "Radar Rat Race",
+      "owner-crt-radar-rat-race"
+    ],
+    [
+      "blast",
+      "blast-1279",
+      "Ranch",
+      "owner-crt-ranch"
+    ],
+    [
+      "blast",
+      "blast-1303",
+      "Retro Ball",
+      "owner-crt-retro-ball"
+    ],
+    [
+      "blast",
+      "blast-1316",
+      "River Raid",
+      "owner-crt-river-raid"
+    ],
+    [
+      "blast",
+      "blast-1346",
+      "Rootin' Tootin'",
+      "owner-crt-rootin-tootin"
+    ],
+    [
+      "blast",
+      "blast-1362",
+      "Sammy Lightfoot",
+      "owner-crt-sammy-lightfoot"
+    ],
+    [
+      "blast",
+      "blast-1371",
+      "Save New York",
+      "owner-crt-save-new-york"
+    ],
+    [
+      "blast",
+      "blast-1378",
+      "Seafox",
+      "owner-crt-seafox"
+    ],
+    [
+      "blast",
+      "blast-1436",
+      "Slalom",
+      "owner-crt-slalom"
+    ],
+    [
+      "blast",
+      "blast-1453",
+      "Solar Fox",
+      "owner-crt-solar-fox"
+    ],
+    [
+      "blast",
+      "blast-1494",
+      "Spitball",
+      "owner-crt-spitball"
+    ],
+    [
+      "blast",
+      "blast-1503",
+      "Spy Hunter",
+      "owner-crt-spy-hunter"
+    ],
+    [
+      "blast",
+      "blast-1524",
+      "Star Trek",
+      "owner-crt-star-trek"
+    ],
+    [
+      "blast",
+      "blast-1542",
+      "Stix",
+      "owner-crt-stix"
+    ],
+    [
+      "blast",
+      "blast-1688",
+      "Threshold",
+      "owner-crt-threshold"
+    ],
+    [
+      "blast",
+      "blast-1710",
+      "Tooth Invaders",
+      "owner-crt-tooth-invaders"
+    ],
+    [
+      "blast",
+      "blast-1719",
+      "Toy Bizarre",
+      "owner-crt-toy-bizarre"
+    ],
+    [
+      "blast",
+      "blast-1771",
+      "Viduzzles",
+      "owner-crt-viduzzles"
+    ],
+    [
+      "blast",
+      "blast-1829",
+      "Wizard Of Wor",
+      "owner-crt-wizard-of-wor"
+    ],
+    [
+      "blast",
+      "blast-1852",
+      "Zenji",
+      "owner-crt-zenji"
+    ],
+    [
+      "blast",
+      "blast-1867",
+      "Zone Ranger",
+      "owner-crt-zone-ranger"
+    ]
+  ]
+}
