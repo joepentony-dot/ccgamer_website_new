@@ -105,7 +105,7 @@ if (retirements) {
       assert.equal(target.bytes, bytes);
       assert.equal(target.sha256, digest);
     } else {
-      assert(/^\/emulator\/c64\/media\/[a-z0-9.-]+\.crt$/.test(target.url),
+      assert(/^\/emulator\/c64\/media\/(?:[a-z0-9.-]+\.crt|cartridge-replacements\/[a-z0-9-]+\.crt)$/.test(target.url),
         "Unapproved direct CRT media URL: " + cartridgeId);
     }
     if (!verifiedCartridges.has(cartridgeId)) {
