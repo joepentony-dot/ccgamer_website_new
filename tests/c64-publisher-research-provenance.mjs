@@ -100,6 +100,7 @@ if (process.argv.includes("--unmatched-json")) {
     packedPRGCollisionTitleKeys,
     unmatched
   },null,2));
+  process.exit(0); // The importer requires exactly one valid JSON document.
 }
 
 console.log(JSON.stringify({
