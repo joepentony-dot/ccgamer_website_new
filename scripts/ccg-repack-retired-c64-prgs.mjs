@@ -187,7 +187,7 @@ function calculate(root, scope) {
   }
   const coreBytes = newDirect.length
     ? Buffer.from(JSON.stringify({ ...core,
-      entries: [...newDirect, ...core.entries] }, null, 2) + "\n")
+      entries: [...core.entries, ...newDirect] }, null, 2) + "\n")
     : null;
   return { packDir, catalogPath, scope, originalCount: catalog.recordCount,
     survivorCount: ordered.length, retiredCount: Object.keys(retired).length,
