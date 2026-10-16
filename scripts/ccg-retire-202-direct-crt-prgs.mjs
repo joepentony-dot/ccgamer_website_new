@@ -148,7 +148,7 @@ if(mode==="--verify-post") {
 assert(state.reduce((n,x)=>n+x.sourceCount,0)===9471);
 const report={mode,blastRetirements:69,archiveRetirements:133,
   uniqueCRT:targets.size,oldPackedGames:9471,newPackedGames:9269,
-  changedFiles:59,retainedDirectGames:1770};
+  changedFiles:64,retainedDirectGames:1770};
 if(mode!=="--apply") {console.log(JSON.stringify(report));process.exit(0);}
 
 const branch="codex/c64-direct-crt-202-prg-retirement-20261016";
