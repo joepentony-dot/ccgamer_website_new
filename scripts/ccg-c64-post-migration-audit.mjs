@@ -21,11 +21,11 @@ assert.equal(library.version, 1);
 assert.equal(active.recordCount, active.games.length);
 assert.equal(active.recordCount, 2064);
 assert.equal(blast.recordCount, blast.games.length);
-assert.equal(blast.recordCount, 1150);
+assert.equal(blast.recordCount, 1081);
 assert.equal(archive.recordCount, archive.games.length);
-assert.equal(archive.recordCount, 8321);
-assert.equal(blastAliases.recordCount, 728);
-assert.equal(archiveAliases.recordCount, 1528);
+assert.equal(archive.recordCount, 8188);
+assert.equal(blastAliases.recordCount, 797);
+assert.equal(archiveAliases.recordCount, 1661);
 assert.equal(library.entries.length, 1770);
 const directIds = new Set(library.entries.map(x => x.id));
 assert.equal(directIds.size, library.entries.length, "Duplicate direct game ID");
@@ -122,6 +122,8 @@ for (const entry of packedSurvivorMatches) {
   directTargets.add(entry.crt);
 }
 
+assert.equal(packedSurvivorMatches.length, 0,
+  "All SHA-confirmed, exact-title packed PRGs backed by direct CRTs should now be retired");
 const sorted = values => values.sort((a,b) => a.title.localeCompare(b.title,"en-GB"));
 const summary = {
   libraryEntries: library.entries.length,
