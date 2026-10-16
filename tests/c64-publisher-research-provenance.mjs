@@ -39,6 +39,32 @@ for(const row of ledger.added) {
     "Generic unknown credited as publisher: "+row[0]);
   researchKeys.add(row[0]);
 }
+// Independent, source-specific C64 publisher/year corroboration. Records not
+// present in this subset remain research candidates, not source-verified.
+const verified = ledger.independentlyVerified;
+assert(verified && /^20\\d{2}-\\d{2}-\\d{2}$/.test(verified.reviewedOn));
+assert(Array.isArray(verified.entries) && verified.entries.length === 4);
+const reviewedKeys = new Set();
+for (const record of verified.entries) {
+  assert.equal(record.platform, "Commodore 64");
+  assert(!reviewedKeys.has(record.key), "Duplicate independently verified C64 title");
+  reviewedKeys.add(record.key);
+  assert(ledger.added.some(row => row[0] === record.key && row[1] === record.source),
+    "Verified C64 title missing identical source provenance: " + record.key);
+  assert(record.source.startsWith("https://www.lemon64.com/game/"));
+  assert(Array.isArray(record.publishers) && record.publishers.length > 0);
+  assert.deepEqual(meta.get(record.key)?.publishers, record.publishers,
+    "Source-checked publisher identities changed: " + record.key);
+  assert.equal(meta.get(record.key)?.year, record.releaseYear,
+    "Source-checked C64 release year changed: " + record.key);
+  assert(Array.isArray(record.developerNotPublisher));
+  assert(Array.isArray(record.releaserNotOriginalPublisher));
+  for (const excluded of [...record.developerNotPublisher,
+      ...record.releaserNotOriginalPublisher]) {
+    assert(!record.publishers.includes(excluded),
+      "Developer or reissue company silently promoted to publisher: " + record.key);
+  }
+}
 const q=ledger.quarantined.find(x=>x.key==="armageddon");
 assert(q&&q.status==="unverified-game-identity","Ambiguous Armageddon must be quarantined");
 assert(!meta.has("armageddon"),"Do not attribute unrelated Armageddon games from a shared name");
