@@ -91,6 +91,50 @@ assert(slapQuarantine?.status==="unverified-regional-edition" &&
 assert(!meta.has("slap fight") && !researchKeys.has("slap fight"),
   "Generic Slap Fight must not inherit Spanish/European publisher without verified edition");
 
+// Batch-derived publisher credits may inherit only from an already credited
+// exact C64 parent title; check the pinned packed PRG identity and SHA each run.
+const inheritedBatch = ledger.bulkInheritedBatch;
+assert(inheritedBatch && inheritedBatch.status ===
+  "source-inherited-candidate-pending-exact-head-CI");
+assert(Array.isArray(inheritedBatch.entries) && inheritedBatch.entries.length === 18);
+const packedRecords = [...blast.games, ...archive.games];
+const testedBatchKeys = new Set();
+for (const record of inheritedBatch.entries) {
+  const {key,parent,type,mediaId,mediaTitle,mediaSHA256,publishers,year} = record;
+  assert(!testedBatchKeys.has(key), "Duplicated batch identity: " + key);
+  testedBatchKeys.add(key);
+  assert(researchKeys.has(key) && ledger.added.some(row =>
+    row[0] === key && row[1] === "meta:" + parent),
+    "Publisher source missing for derived identity: " + key);
+  const gameRows = packedRecords.filter(row =>
+    catalogGameIdentity(row[1]) === key);
+  assert.equal(gameRows.length, 1, "Batch media identity changed: " + key);
+  assert.deepEqual([gameRows[0][0],gameRows[0][1],gameRows[0][6]],
+    [mediaId,mediaTitle,mediaSHA256], "Packed media SHA drift: " + key);
+  assert.equal(catalogGameIdentity(mediaTitle),key);
+  assert(meta.has(parent) && meta.get(parent).publishers.length > 0,
+    "Inherited source credit no longer exists: " + parent);
+  assert.deepEqual(meta.get(key)?.publishers, publishers);
+  assert.deepEqual(meta.get(parent)?.publishers, publishers,
+    "Parent publisher changed; manually reverify descendant: " + key);
+  assert.equal(meta.get(key)?.year, year);
+  assert.equal(meta.get(parent)?.year, year);
+  if (type === "article") {
+    assert(key === parent.replace(/^the /,"") ||
+      key === parent.replace(/^the /,"") + " the" ||
+      "the " + key === parent || key === parent.replace(/ the$/,""),
+      "Not an exact definite-article variant: " + key);
+    const sourceRows = packedRecords.filter(row =>
+      catalogGameIdentity(row[1]) === parent);
+    assert(sourceRows.length > 0 && new Set(sourceRows.map(row => row[6])).size === 1,
+      "Article variant base game lost unique PRG identity: " + parent);
+  } else {
+    assert.equal(type, "part");
+    assert(new RegExp("^" + parent.replace(/[.*+?^${}()|[\\]\\]/g, "\\const q=ledger.quarantined.find(x=>x.key==="armageddon");") +
+      " (?:part|side|disk|disc|tape) (?:[1-9]|a|b)$").test(key),
+      "Not a checked explicit side/part identity: " + key);
+  }
+}
 const q=ledger.quarantined.find(x=>x.key==="armageddon");
 assert(q&&q.status==="unverified-game-identity","Ambiguous Armageddon must be quarantined");
 assert(!meta.has("armageddon"),"Do not attribute unrelated Armageddon games from a shared name");
