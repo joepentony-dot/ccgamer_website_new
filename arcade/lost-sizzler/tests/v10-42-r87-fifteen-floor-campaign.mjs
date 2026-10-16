@@ -609,37 +609,44 @@ const puzzleFnStart=gameplaySource.indexOf("function puzzleFloorCells(roomId){")
 const puzzleFnEnd=gameplaySource.indexOf("function spawnPuzzleAmbush(",puzzleFnStart);
 assert.ok(thiefFnStart>=0&&thiefFnEnd>thiefFnStart&&puzzleFnStart>=0&&puzzleFnEnd>puzzleFnStart);
 const realThiefCode=gameplaySource.slice(puzzleFnStart,puzzleFnEnd)+"\n"+gameplaySource.slice(thiefFnStart,thiefFnEnd);
-let accessibleThiefCount=0,optionalGateCases=0;
+let accessibleThiefCount=0,rebuiltBridgeDestinations=0;
 for(let seedIndex=0;seedIndex<35;seedIndex++){
   const seed="ccg-bridge-thief-route-"+(seedIndex*91+3)+"-F5";
   const w=generatedWorld.generate(seed),h=generatedWorld.createHostState(w),r=generatedRuntime.window.CCGProgression.makeRun();
   w.floor=5;r.floor=5;generatedSystems.decorate(w,h,r);
-  const openable=(h.doors||[]).filter(d=>d.type==="room"&&!d.locked);
-  for(const d of openable){d.open=true;d.opening=false}
-  const player={id:"P1",x:w.start.x,y:w.start.y,health:8},
-    bridge={...(h.weightBridge||{}),roomId:h.weightBridge?.roomId??-100};
-  const ctx=vm.createContext({world:w,host:h,W:generatedWorld,localPlayers:()=>[player],Math});
-  vm.runInContext(realThiefCode+";this.pickThief=bridgeThiefCell;",ctx,{timeout:2000});
-  const cell=ctx.pickThief(player,bridge),roomId=generatedWorld.roomAt(w,cell.x,cell.y);
-  const visited=new Set([player.x+","+player.y]),queue=[{x:player.x,y:player.y}];
-  for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
-    const x=queue[i].x+dx,y=queue[i].y+dy,k=x+","+y;
-    if(visited.has(k)||w.map[y]?.[x]!==0)continue;
-    if(h.blockingDecor?.some(d=>d.x===x&&d.y===y))continue;
-    if(h.generators?.some(g=>g.alive&&g.x===x&&g.y===y))continue;
-    if(bridge.collapsed&&!bridge.rebuilt&&[...(bridge.pitTiles||[]),...(bridge.bridgeTiles||[])].some(q=>q.x===x&&q.y===y))continue;
-    if(!generatedWorld.playerWalkable(w.map,x,y,h))continue;
-    visited.add(k);queue.push({x,y})
+  // Ordinary unlocked doors are allowed to open; optional gated doors stay
+  // locked, reproducing the route available without bronze or secret keys.
+  for(const d of h.doors||[])if(d.type==="room"&&!d.locked){d.open=true;d.opening=false}
+  for(const phase of ["ordinary","post-switch"]){
+    const floorBridge={...(h.weightBridge||{}),roomId:h.weightBridge?.roomId??-100,
+      collapsed:phase==="post-switch",rebuilt:false};
+    const base=phase==="post-switch"?floorBridge.rewardPos:w.start;
+    assert.ok(base,seed+": generated bridge must contain a far-side reward position");
+    const player={id:"P1",x:base.x,y:base.y,health:8};
+    const ctx=vm.createContext({world:w,host:h,W:generatedWorld,localPlayers:()=>[player],Math});
+    vm.runInContext(realThiefCode+";this.pickThief=bridgeThiefCell;",ctx,{timeout:2000});
+    const target=ctx.pickThief(player,floorBridge),roomId=generatedWorld.roomAt(w,target.x,target.y);
+    const pit=new Set((floorBridge.pitTiles||[]).map(q=>q.x+","+q.y)),
+      visited=new Set([player.x+","+player.y]),queue=[{x:player.x,y:player.y}];
+    for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const x=queue[i].x+dx,y=queue[i].y+dy,k=x+","+y;
+      if(visited.has(k)||pit.has(k)||w.map[y]?.[x]!==0)continue;
+      if(h.blockingDecor?.some(d=>d.x===x&&d.y===y))continue;
+      if(h.generators?.some(g=>g.alive&&g.x===x&&g.y===y))continue;
+      if(!generatedWorld.playerWalkable(w.map,x,y,h))continue;
+      visited.add(k);queue.push({x,y})
+    }
+    assert.ok(visited.has(target.x+","+target.y),seed+" / "+phase+": player must reach the thief without optional keys after rebuilding the bridge");
+    assert.notEqual(roomId,floorBridge.roomId,seed+" / "+phase+": thief must flee the bridge chamber");
+    assert.ok(!(w.rooms[roomId]||{}).optional||
+      !(h.doors||[]).some(d=>d.roomId===roomId&&d.locked&&d.type!=="room"),
+      seed+" / "+phase+": thief must not hide behind an optional locked gate");
+    if(phase==="post-switch")rebuiltBridgeDestinations++;
+    accessibleThiefCount++;
   }
-  assert.ok(visited.has(cell.x+","+cell.y),seed+": thief must be reachable through openable ordinary doors only");
-  assert.ok(roomId!==bridge.roomId,seed+": thief must not remain inside collapsed bridge room");
-  const locked=(h.doors||[]).filter(d=>d.roomId===roomId&&d.locked);
-  assert.equal(locked.length,0,seed+": thief must never require an optional locked gate");
-  if((w.rooms[roomId]||{}).optional)optionalGateCases++;
-  accessibleThiefCount++
 }
-assert.equal(accessibleThiefCount,35,"All 35 generated Floor 5 thief destinations must remain reachable");
-assert.equal(optionalGateCases,0,"No thief should be hidden inside inaccessible optional vaults");
+assert.equal(accessibleThiefCount,70,"35 generated floors × normal/post-switch reachability");
+assert.equal(rebuiltBridgeDestinations,35,"All 35 bridge crossings must allow a remote reachable hideout");
 
 // P0 bridge thief: execute the actual stolen-item recovery owner.
 const bridgeStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");

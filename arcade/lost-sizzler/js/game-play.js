@@ -422,9 +422,10 @@ function bridgeThiefCell(p,b){
   // The thief carries the player's stolen inventory. Never hide it inside a
   // Bronze Key, secret or locked challenge room the player cannot reach.
   // Ordinary unlocked threshold doors are traversable after opening them.
-  // The collapsed bridge stays blocked until the player shoots its switch.
-  const key=(x,y)=>x+","+y,blockedBridge=b?.collapsed&&!b?.rebuilt
-    ?new Set([...(b.pitTiles||[]),...(b.bridgeTiles||[])].map(q=>key(q.x,q.y))):new Set(),
+  // Choose the thief's hideout as reachable *after* firing the switch to
+  // rebuild the bridge. The pit remains unsafe, but restored bridge tiles
+  // become traversable, allowing the thief to flee beyond this chamber.
+  const key=(x,y)=>x+","+y,blockedBridge=new Set((b.pitTiles||[]).map(q=>key(q.x,q.y))),
     queue=[{x:p.x,y:p.y}],reachable=new Set([key(p.x,p.y)]);
   const canReach=(x,y)=>{
     if(world.map[y]?.[x]!==0||blockedBridge.has(key(x,y)))return false;
