@@ -1,73 +1,51 @@
-name: CCG C64 guarded 202 direct-CRT PRG staging
+name: CCG C64 guarded 202 direct-CRT post-migration audit
 on:
   pull_request:
     branches:
       - main
     paths:
       - .github/workflows/ccg-c64-202-direct-crt-stage.yml
+      - docs/ccg-crt-review/direct-crt-202-retirement-manifest.json
+      - scripts/ccg-retire-202-direct-crt-prgs.mjs
+      - emulator/c64/library.json
+      - emulator/c64/media/blast/**
+      - emulator/c64/media/prg-archive/**
+      - emulator/c64/media/cartridge-replacements/**
 permissions:
-  contents: write
+  contents: read
 jobs:
-  stage-exact-202-only-on-review-branch:
-    if: github.event_name == 'pull_request' && github.head_ref == 'codex/c64-direct-crt-202-prg-retirement-20261016'
+  verify-exact-head-staged-202:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'codex/c64-direct-crt-202-prg-retirement-20261016'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          persist-credentials: true
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Reject changes on main to source media and approved direct cartridges
+      - name: Verify exact PR head and unchanged source-media baseline on main
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
-          test "$(git branch --show-current)" = "codex/c64-direct-crt-202-prg-retirement-20261016"
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           test -z "$(git status --porcelain)"
-          git fetch origin main
+          git fetch --no-tags origin main
           base="$(git merge-base HEAD origin/main)"
           test -n "$base"
-          test -z "$(git diff --name-only "$base" origin/main -- emulator/c64/library.json emulator/c64/media/blast emulator/c64/media/prg-archive emulator/c64/media/cartridge-replacements)"
-      - name: Audit exact 202 PRGs and verify 136 original direct CRT binaries
+          git diff --quiet "$base" origin/main -- emulator/c64/library.json emulator/c64/media/blast emulator/c64/media/prg-archive emulator/c64/media/cartridge-replacements
+          other_media="$(git diff --name-only "$base" HEAD -- emulator/c64/media | grep -vE '^emulator/c64/media/(blast|prg-archive)/' || true)"
+          test -z "$other_media"
+          git diff --check "$base" HEAD
+      - name: Verify all 202 retirements, 2458 bookmarks, 136 CRTs, 9269 survivor slices and all 59 pack digests
         shell: bash
         run: |
+          set -euo pipefail
           node --check scripts/ccg-retire-202-direct-crt-prgs.mjs
-          node scripts/ccg-retire-202-direct-crt-prgs.mjs > /tmp/ccg-202-source-audit.json
-          node --input-type=module -e '
-            import fs from "node:fs";
-            import assert from "node:assert/strict";
-            const a=JSON.parse(fs.readFileSync("/tmp/ccg-202-source-audit.json","utf8"));
-            assert.equal(a.mode,"--audit");
-            assert.equal(a.blastRetirements,69);
-            assert.equal(a.archiveRetirements,133);
-            assert.equal(a.uniqueCRT,136);
-            assert.equal(a.oldPackedGames,9471);
-            assert.equal(a.newPackedGames,9269);
-            assert.equal(a.retainedDirectGames,1770);
-          '
-      - name: Physically compact ONLY the 202 pinned PRGs on the review branch
-        shell: bash
-        run: node scripts/ccg-retire-202-direct-crt-prgs.mjs --apply
-      - name: Verify every surviving PRG byte, 59 pack hashes and all existing/new aliases
-        shell: bash
-        run: |
           node scripts/ccg-retire-202-direct-crt-prgs.mjs --verify-post
-          git diff --check
-      - name: Commit exact 64 media/catalogue files to PR branch, never main
-        shell: bash
-        run: |
-          git add emulator/c64/media/blast emulator/c64/media/prg-archive
-          changed="$(git diff --cached --name-only | wc -l)"
-          test "$changed" -ge 6
-          test "$changed" -le 64
-          for expected in emulator/c64/media/blast/catalog.json emulator/c64/media/blast/retired-ids.json emulator/c64/media/prg-archive/catalog.json emulator/c64/media/prg-archive/retired-ids.json emulator/c64/media/prg-archive/ready.json; do
-            git diff --cached --name-only | grep -Fx "$expected" >/dev/null
-          done
-          test -z "$(git diff --cached --name-only | grep -vE '^emulator/c64/media/(blast|prg-archive)/')"
-          git diff --cached --stat
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "C64: retire 202 direct-CRT-backed PRGs without losing surviving games"
-          git push origin HEAD:refs/heads/codex/c64-direct-crt-202-prg-retirement-20261016
+          test -z "$(git status --porcelain)"
