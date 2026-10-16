@@ -8,6 +8,8 @@ const root = process.cwd();
 const read = p => JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
 const ledger = read("docs/ccg-crt-review/remaining-packed-prg-candidates-20261016.json");
 const library = read("emulator/c64/library.json");
+const activeCartridges = read("emulator/c64/media/cartridge-replacements/active.json");
+assert.equal(activeCartridges.recordCount, activeCartridges.games.length);
 const blast = read("emulator/c64/media/blast/catalog.json");
 const archive = read("emulator/c64/media/prg-archive/catalog.json");
 const oldBlast = read("emulator/c64/media/blast/retired-ids.json");
@@ -79,8 +81,27 @@ for (const pair of excluded.distinctTitleFamilyPairs) {
     "Distinct release-family evidence changed: " + pair.prgId);
   const original = byId.get(pair.prgId);
   assert.equal(original?.[6], pair.prgSha256, "Distinct PRG no longer survives: " + pair.prgId);
-  assert.equal(direct.get(pair.crtId)?.sha256, pair.crtSha256,
-    "Distinct comparison CRT changed: " + pair.crtId);
+  // A genuine registered CRT may be present in the direct library, the
+  // active-cartridge manifest, or both. Check every present registration
+  // against the identical pinned title+SHA rather than weakening the guard.
+  const inDirectLibrary = direct.get(pair.crtId);
+  const activeEntries = activeCartridges.games.filter(row =>
+    "owner-crt-more-" + row[1].replace(/\.crt$/i, "") === pair.crtId);
+  assert(activeEntries.length <= 1, "Duplicated active CRT registration: " + pair.crtId);
+  const inActiveManifest = activeEntries[0];
+  assert(inDirectLibrary || inActiveManifest,
+    "Distinct comparison CRT no longer registered: " + pair.crtId);
+  if (inDirectLibrary) {
+    assert.deepEqual([inDirectLibrary.format, inDirectLibrary.title, inDirectLibrary.sha256],
+      ["crt", pair.crtTitle, pair.crtSha256],
+      "Distinct direct CRT changed: " + pair.crtId);
+    assert.notEqual(inDirectLibrary.approved, false);
+  }
+  if (inActiveManifest) {
+    assert.deepEqual([inActiveManifest[0], inActiveManifest[3]],
+      [pair.crtTitle, pair.crtSha256],
+      "Distinct active CRT changed: " + pair.crtId);
+  }
   assert(!Object.hasOwn(aliases, pair.prgId),
     "A distinct C64 title must not silently redirect to another game: " + pair.prgId);
 }
