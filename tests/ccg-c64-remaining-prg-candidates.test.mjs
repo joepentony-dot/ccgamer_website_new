@@ -110,8 +110,14 @@ import { spawnSync } from "node:child_process";
 const triageCheck=spawnSync(process.execPath,["scripts/ccg-c64-candidate-machine-triage.mjs","--verify"],{encoding:"utf8"});
 assert.equal(triageCheck.status,0,triageCheck.stderr||triageCheck.stdout);
 const triage=read("docs/ccg-crt-review/candidate-machine-triage-progress-20261016.json");
-assert.equal(triage.nextCursor,300);
-assert.equal(triage.entries.length,300);
+assert.equal(triage.sourceCandidateCount,bulk.candidates.length);
+assert.equal(triage.nextCursor,bulk.candidates.length,
+  "Every discovered CRT/PRG candidate must have machine triage");
+assert.equal(triage.entries.length,bulk.candidates.length);
+assert.equal(triage.entries.length,653);
+assert.equal(triage.entries.filter(x=>x.knownDistinctTargetIds.length).length,
+  excluded.distinctTitleFamilyPairs.length,
+  "Independent negative controls must survive bulk triage");
 assert.equal(triage.independentEditionReviews,0);
 assert.equal(triage.newSafeRemovals,0);
 assert(triage.entries.every(x=>x.retirementAllowed===false&&x.editionProof==="ABSENT"));
