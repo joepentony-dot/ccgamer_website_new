@@ -45,7 +45,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-mode.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261016_publisher_year_filters_v1">
+  <link rel="stylesheet" href="/resources/css/ccg-c64-emulator.css?ccg_rev=20261016_mobile_eight_way_dpad_v1">
 </head>
 <body class="ccg-c64-lab-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-c64-topbar">
@@ -135,12 +135,16 @@
       </div>
 
       <div class="ccg-c64-touch-controls" aria-label="Touch joystick Port 2">
-        <div class="ccg-c64-touch-dpad" aria-label="Touch direction pad">
+        <div class="ccg-c64-touch-dpad" aria-label="Eight-way touch joystick; slide to change direction">
+          <button type="button" class="ccg-c64-touch-diagonal" data-joy-mask="5" aria-label="Joystick up-left">↖</button>
           <button type="button" data-joy-mask="1" aria-label="Joystick up">▲</button>
+          <button type="button" class="ccg-c64-touch-diagonal" data-joy-mask="9" aria-label="Joystick up-right">↗</button>
           <button type="button" data-joy-mask="4" aria-label="Joystick left">◀</button>
           <span aria-hidden="true"></span>
           <button type="button" data-joy-mask="8" aria-label="Joystick right">▶</button>
+          <button type="button" class="ccg-c64-touch-diagonal" data-joy-mask="6" aria-label="Joystick down-left">↙</button>
           <button type="button" data-joy-mask="2" aria-label="Joystick down">▼</button>
+          <button type="button" class="ccg-c64-touch-diagonal" data-joy-mask="10" aria-label="Joystick down-right">↘</button>
         </div>
         <div class="ccg-c64-touch-actions" role="group" aria-label="Joystick actions">
           <button type="button" class="ccg-c64-touch-fire" data-joy-mask="16">FIRE</button>
@@ -469,6 +473,6 @@
   </div>
 
   <script src="/js/ccg-c64/install-app.js?ccg_rev=20261009_c64app_v2" defer></script>
-  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261016_publisher_year_filters_v1"></script>
+  <script type="module" src="/js/ccg-c64/coi-bootstrap.js?ccg_rev=20261016_mobile_eight_way_dpad_v1"></script>
 </body>
 </html>
