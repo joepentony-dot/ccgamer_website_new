@@ -353,6 +353,40 @@ async function main() {
     });
     sessionId = session.sessionId;
 
+    // Desktop regression: check the actual Fourthwall link with real pointer hit-testing.
+    for (const width of [1440, 1920]) {
+      await openHome(sessionId, width);
+      await openMoreWithRealClick(sessionId, width);
+      await assertLinkOwnsItsHitTarget(sessionId, "Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp");
+      const merchLink = await execute(sessionId, `
+        const links = Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href="https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"]'));
+        const link = links[0];
+        return link ? { count: links.length, label: link.textContent.trim(), target: link.target, rel: link.rel } : null;
+      `);
+      if (!merchLink || merchLink.count !== 1 || merchLink.label !== "Merch Shop" || merchLink.target !== "_blank" || !merchLink.rel.includes("noopener")) {
+        throw new Error(`Desktop Merch Shop destination is missing or unsafe at ${width}px: ${JSON.stringify(merchLink)}`);
+      }
+    }
+
+    await openHome(sessionId, 1440);
+    const merchPanel = await execute(sessionId, `
+      const panel = document.querySelector('.home-merch-promo');
+      const hero = document.querySelector('.home-hero--streamlined');
+      const archive = document.querySelector('.home-section--archive-dashboard');
+      const rect = panel?.getBoundingClientRect();
+      const style = panel ? getComputedStyle(panel) : null;
+      return {
+        count: document.querySelectorAll('.home-merch-promo').length,
+        afterHero: !!(panel && hero && (hero.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING)),
+        beforeArchive: !!(panel && archive && (panel.compareDocumentPosition(archive) & Node.DOCUMENT_POSITION_FOLLOWING)),
+        visible: !!(rect && rect.width > 1 && rect.height > 1 && style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0),
+        destination: panel?.querySelector('a[href]')?.getAttribute('href') || ''
+      };
+    `);
+    if (merchPanel.count !== 1 || !merchPanel.afterHero || !merchPanel.beforeArchive || !merchPanel.visible || merchPanel.destination !== "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp") {
+      throw new Error(`Homepage Merch Shop panel is missing or hidden: ${JSON.stringify(merchPanel)}`);
+    }
+
     for (const width of [1440, 1920]) {
       await clickMoreDestination(sessionId, width, "CCG Games", "/games/ccg-games/", "/games/ccg-games/");
       await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");
@@ -407,6 +441,8 @@ async function main() {
     console.log("- Desktop CCG Games, Install CCG App, About Me and Contact copies stay out of the visible row while More keeps its slot");
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
     console.log("- CCG Games, Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
+    console.log("- Official Merch Shop is visible and interactable in desktop More at 1440px and 1920px");
+    console.log("- Homepage merchandise promotion is visible after the hero and before the discovery dashboard");
     console.log("- Emulation remains visible on the Install CCG App destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
