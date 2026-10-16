@@ -42,7 +42,7 @@ for(const row of ledger.added) {
 // Independent, source-specific C64 publisher/year corroboration. Records not
 // present in this subset remain research candidates, not source-verified.
 const verified = ledger.independentlyVerified;
-assert(verified && /^20\\d{2}-\\d{2}-\\d{2}$/.test(verified.reviewedOn));
+assert(verified && /^20\d{2}-\d{2}-\d{2}$/.test(verified.reviewedOn));
 assert(Array.isArray(verified.entries) && verified.entries.length === 4);
 const reviewedKeys = new Set();
 for (const record of verified.entries) {
