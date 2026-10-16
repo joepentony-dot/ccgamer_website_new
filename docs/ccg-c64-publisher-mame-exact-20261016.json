@@ -35,8 +35,8 @@
     "mameSoftwareRecords": 1672,
     "fullVisibleUnmatched": 7044,
     "exactMatchedTitles": 34,
-    "sourceOnlyCandidates": 9,
-    "requiresReview": 25
+    "sourceOnlyCandidates": 5,
+    "requiresReview": 29
   },
   "candidates": [
     {
@@ -48,34 +48,6 @@
           "cloneOf": null,
           "title": "Bridge",
           "publisher": "Handic Software",
-          "yearCandidate": 1983
-        }
-      ],
-      "status": "unverified-manual-review-required"
-    },
-    {
-      "key": "escape",
-      "sourceRecords": [
-        {
-          "sourceFile": "c64_cass.xml",
-          "softwareId": "escape",
-          "cloneOf": null,
-          "title": "Escape",
-          "publisher": "Ocean",
-          "yearCandidate": 1986
-        }
-      ],
-      "status": "unverified-manual-review-required"
-    },
-    {
-      "key": "frogger",
-      "sourceRecords": [
-        {
-          "sourceFile": "c64_cart.xml",
-          "softwareId": "frogger",
-          "cloneOf": null,
-          "title": "Frogger",
-          "publisher": "Parker Brothers",
           "yearCandidate": 1983
         }
       ],
@@ -124,20 +96,6 @@
       "status": "unverified-manual-review-required"
     },
     {
-      "key": "super trux",
-      "sourceRecords": [
-        {
-          "sourceFile": "c64_cass.xml",
-          "softwareId": "suprtrux",
-          "cloneOf": null,
-          "title": "Super Trux",
-          "publisher": "Encore",
-          "yearCandidate": 1990
-        }
-      ],
-      "status": "unverified-manual-review-required"
-    },
-    {
       "key": "tenpins",
       "sourceRecords": [
         {
@@ -146,20 +104,6 @@
           "cloneOf": null,
           "title": "Tenpins",
           "publisher": "Entertainment Software",
-          "yearCandidate": 1989
-        }
-      ],
-      "status": "unverified-manual-review-required"
-    },
-    {
-      "key": "time traveller",
-      "sourceRecords": [
-        {
-          "sourceFile": "c64_cass.xml",
-          "softwareId": "timetrav",
-          "cloneOf": null,
-          "title": "Time Traveller",
-          "publisher": "Mindscape Inc.",
           "yearCandidate": 1989
         }
       ],
@@ -252,6 +196,20 @@
       "reason": "multiple-prg-digests"
     },
     {
+      "key": "escape",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "escape",
+          "cloneOf": null,
+          "title": "Escape",
+          "publisher": "Ocean",
+          "yearCandidate": 1986
+        }
+      ],
+      "reason": "edition-conflict-independently-sourced"
+    },
+    {
       "key": "flak",
       "sourceRecords": [
         {
@@ -264,6 +222,20 @@
         }
       ],
       "reason": "multiple-prg-digests"
+    },
+    {
+      "key": "frogger",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "frogger",
+          "cloneOf": null,
+          "title": "Frogger",
+          "publisher": "Parker Brothers",
+          "yearCandidate": 1983
+        }
+      ],
+      "reason": "edition-conflict-independently-sourced"
     },
     {
       "key": "h a t e hostile all terrain encounter",
@@ -458,6 +430,20 @@
       "reason": "multiple-mame-entries"
     },
     {
+      "key": "super trux",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "suprtrux",
+          "cloneOf": null,
+          "title": "Super Trux",
+          "publisher": "Encore",
+          "yearCandidate": 1990
+        }
+      ],
+      "reason": "edition-conflict-independently-sourced"
+    },
+    {
       "key": "super zaxxon",
       "sourceRecords": [
         {
@@ -506,6 +492,20 @@
         }
       ],
       "reason": "generic-title"
+    },
+    {
+      "key": "time traveller",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "timetrav",
+          "cloneOf": null,
+          "title": "Time Traveller",
+          "publisher": "Mindscape Inc.",
+          "yearCandidate": 1989
+        }
+      ],
+      "reason": "edition-conflict-independently-sourced"
     },
     {
       "key": "wizardry",

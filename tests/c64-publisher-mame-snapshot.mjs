@@ -34,6 +34,20 @@ for(const group of [rows.candidates,rows.requiresReview])for(const rec of group)
   assert(!credited.has(rec.key),"MAME candidate already promoted without edition review: "+rec.key);
  } else assert(typeof rec.reason==="string");
 }
+// Exact MAME titles that independently conflict with the actual C64 release history
+// must be quarantined, not silently promoted to publisher metadata.
+const editionConflicts = ["escape", "frogger", "super trux", "time traveller"];
+for (const key of editionConflicts) {
+  const held = ledger.quarantined.find(entry => entry.key === key);
+  assert(held && held.status.startsWith("unverified-"), "Missing publisher quarantine: " + key);
+  assert(Array.isArray(held.evidence) && held.evidence.length >= 1,
+    "Unreferenced C64 edition conflict: " + key);
+  assert(held.rejectedCandidate?.mameRevision === rows.mameSourceCommit);
+  assert(rows.requiresReview.some(entry => entry.key === key &&
+    entry.reason === "edition-conflict-independently-sourced"));
+  assert(!rows.candidates.some(entry => entry.key === key));
+  assert(!credited.has(key), "Ambiguous publisher credit promoted: " + key);
+}
 console.log("PASS: "+rows.counts.mameSoftwareRecords+" pinned MAME records considered; "+
  rows.candidates.length+" unverified source-only proposals and "+rows.requiresReview.length+
  " abstentions retained; no publisher/media modification.");
