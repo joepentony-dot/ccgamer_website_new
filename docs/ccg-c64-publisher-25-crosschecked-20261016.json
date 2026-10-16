@@ -6,7 +6,7 @@
   "scope": "New catalogue rows only; original game media, stable IDs, filters and source credits unchanged",
   "publicationCaveat": "C64 publisher and historical release years are indexed by exact title, not attested as the specific hosted executable's distributor or reissue edition; PRG/CRT SHA hashes are independent and no equality is claimed.",
   "source": "https://www.lemon64.com/game/ (individual C64 game pages cross-checked against earlier research and packed playable title identities)",
-  "newCredits": 25,
+  "newCredits": 24,
   "rows": [
     {
       "key": "airwolf 2",
@@ -71,21 +71,6 @@
           "mediaType": "crt",
           "catalogue": "active-crt",
           "sha256": "856ed926a7716308947cdfd454154228f5c246f007c75600048ef1b88fd16606"
-        }
-      ]
-    },
-    {
-      "key": "catacombs",
-      "publisher": "Anirog Software",
-      "year": 1984,
-      "sourceUrl": "https://www.lemon64.com/game/catacombs",
-      "publisherRole": "original publisher (not copyright/developer/budget re-releaser)",
-      "runtimeMedia": [
-        {
-          "title": "Catacombs",
-          "mediaType": "prg",
-          "catalogue": "archive",
-          "sha256": "145be8256d97d43b6094c0de89939cfe8e2ef9fa7f09e831e5c2540a533fef6d"
         }
       ]
     },
@@ -448,6 +433,14 @@
     {
       "key": "pit the",
       "reason": "Short generic title remains quarantined"
+    },
+    {
+      "key": "catacombs",
+      "title": "Catacombs",
+      "source": "https://www.lemon64.com/game/catacombs",
+      "mediaSha256": "145be8256d97d43b6094c0de89939cfe8e2ef9fa7f09e831e5c2540a533fef6d",
+      "reason": "Codex review identified archive-01578 embedded PRG header CATACOMBS V1.0 / BY CLEVE BLAKEMORE. Cited Anirog C64 game Catacombs, The is different executable/title (archive-01580). Do not transfer Anirog publisher/year to Catacombs."
     }
-  ]
+  ],
+  "screenedCredits": 25
 }
