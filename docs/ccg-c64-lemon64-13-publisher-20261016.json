@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "auditDate": "2026-10-16",
+  "baseCommit": "ec6107797dc63e7dc51925e1a528e1974d69ab8e",
+  "source": "Lemon64 Commodore 64 title-specific PHP game listings",
+  "screened": 133,
+  "matchesFound": 17,
+  "excludedAmbiguous": 4,
+  "publisherAdded": 13,
+  "sourceEditScope": "publisher-only emulator catalogue records; no binary, game.json, ID or JS edits",
+  "rows": [
+    {
+      "key": "u r reg",
+      "originalTitle": "U-R-Reg",
+      "publisher": "Binary Zone PD",
+      "sourceYear": null,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=U",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "ultima iv quest of the avatar",
+      "originalTitle": "Ultima IV: Quest of the Avatar",
+      "publisher": "Origin Systems",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=U",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "ultimate tron ii",
+      "originalTitle": "Ultimate Tron II",
+      "publisher": "64'er",
+      "sourceYear": 1990,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=U",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "ultimate wizard",
+      "originalTitle": "Ultimate Wizard",
+      "publisher": "Electronic Arts",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=U",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "vager 3",
+      "originalTitle": "Vager 3",
+      "publisher": "64'er",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=V",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "valley of cesis",
+      "originalTitle": "Valley of Cesis",
+      "publisher": "The Guild Adventure Software",
+      "sourceYear": 1982,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=V",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "vault of terror",
+      "originalTitle": "Vault of Terror",
+      "publisher": "Ahoy!",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=V",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "vaults of zurich the",
+      "originalTitle": "Vaults of Zurich, The",
+      "publisher": "Artworx Software",
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=V",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "wabbit",
+      "originalTitle": "Wabbit",
+      "publisher": "Commodore Disk User",
+      "sourceYear": 1989,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=W",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "wanaka",
+      "originalTitle": "Wanaka",
+      "publisher": "COMPUTE!'s Gazette",
+      "sourceYear": 1994,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=W",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "war in middle earth",
+      "originalTitle": "War in Middle Earth",
+      "publisher": "Melbourne House",
+      "sourceYear": 1989,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=W",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "x fighter",
+      "originalTitle": "X Fighter",
+      "publisher": "Champion Software",
+      "sourceYear": 1992,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=X",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    },
+    {
+      "key": "yuppies revenge",
+      "originalTitle": "Yuppie's Revenge",
+      "publisher": "Ariolasoft",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=Y",
+      "sourceType": "C64 game listing",
+      "identityConfidence": "distinctive exact C64 title; hosted binary edition not independently attested"
+    }
+  ],
+  "quarantine": [
+    {
+      "title": "WarGames",
+      "reason": "Distinct C64 and C128 game releases; need hosted edition verification"
+    },
+    {
+      "title": "Warlord",
+      "reason": "Regional/generic same-name risk"
+    },
+    {
+      "title": "Vampir",
+      "reason": "German release/name edition requires media validation"
+    },
+    {
+      "title": "Valley, The",
+      "reason": "Multiple similarly named text adventure titles; need media validation"
+    }
+  ]
+}
