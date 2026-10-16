@@ -28,7 +28,7 @@
   },
   "researchLedger": {
     "file": "emulator/c64/publisher-research-sources.json",
-    "blob": "2d868783c9260bd53e03c2f08e5e93f454887b8c"
+    "blob": "3feea56a54f3a5aeb3eab1b19dd208c9f054b634"
   },
   "method": "Only exact normalized-title MAME C64 entries joined to currently publisher-unlisted visible game identities. Quarantine collisions, clones, ambiguous generic titles and multi-record matches; remaining candidates are NOT independently version-verified.",
   "counts": {

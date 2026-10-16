@@ -2,6 +2,7 @@
 // Read-only guard: pinned MAME exact-title proposals are not C64 edition proof.
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 const root=process.cwd();
 const read=p=>JSON.parse(fs.readFileSync(path.join(root,p),"utf8"));
@@ -9,6 +10,16 @@ const rows=read("docs/ccg-c64-publisher-mame-exact-20261016.json");
 const visible=read("docs/ccg-c64-publisher-visible-20261016.json");
 const ledger=read("emulator/c64/publisher-research-sources.json");
 const meta=read("emulator/c64/catalogue-metadata.json");
+const gitBlob = p => {
+  const data = fs.readFileSync(path.join(root, p));
+  return createHash("sha1").update("blob " + data.length + "\0").update(data).digest("hex");
+};
+assert.equal(rows.researchLedger.file,"emulator/c64/publisher-research-sources.json");
+assert.equal(rows.researchLedger.blob,gitBlob(rows.researchLedger.file),
+  "MAME snapshot pins stale publisher research ledger: refresh only with source audit");
+assert.equal(rows.sourceLedger.file,"docs/ccg-c64-publisher-visible-20261016.json");
+assert.equal(rows.sourceLedger.blob,gitBlob(rows.sourceLedger.file),
+  "MAME snapshot pins stale displayed-coverage audit");
 assert.equal(rows.version,1);
 assert.equal(rows.mameSourceCommit,"41a80b9dbaedbd4d0f1c2db6771d778a34547e59");
 assert.equal(rows.status,"READ-ONLY CANDIDATE SOURCES — not edition-verified and never auto-publish");
