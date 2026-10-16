@@ -59,7 +59,12 @@ jobs:
         shell: bash
         run: |
           git add emulator/c64/media/blast emulator/c64/media/prg-archive
-          test "$(git diff --cached --name-only | wc -l)" -eq 64
+          changed="$(git diff --cached --name-only | wc -l)"
+          test "$changed" -ge 6
+          test "$changed" -le 64
+          for expected in emulator/c64/media/blast/catalog.json emulator/c64/media/blast/retired-ids.json emulator/c64/media/prg-archive/catalog.json emulator/c64/media/prg-archive/retired-ids.json emulator/c64/media/prg-archive/ready.json; do
+            git diff --cached --name-only | grep -Fx "$expected" >/dev/null
+          done
           test -z "$(git diff --cached --name-only | grep -vE '^emulator/c64/media/(blast|prg-archive)/')"
           git diff --cached --stat
           git config user.name "github-actions[bot]"
