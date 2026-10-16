@@ -3067,112 +3067,6 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   }
 }
 
-/* Owner-approved FIND A GAME green beacon — 15 October 2026.
-   Colour-only, scoped to the existing emulator library section.
-   All layout, hidden states, touch targets and the LOAD mechanism remain owned
-   by the original emulator CSS/JS. This is not an overlay or image. */
-.ccg-c64-panel--library {
-  --ccg-find-green: #4dff91;
-  --ccg-find-border: #20d86e;
-  border-color: var(--ccg-find-border);
-  background: linear-gradient(150deg, #071b12 0%, #092c1b 52%, #052015 100%);
-  box-shadow: inset 0 0 0 1px rgba(56, 234, 122, 0.12),
-    0 0 20px rgba(28, 219, 95, 0.12);
-}
-.ccg-c64-panel--library .ccg-c64-panel-title {
-  border-bottom-color: rgba(55, 226, 120, 0.46);
-}
-.ccg-c64-panel--library .ccg-c64-panel-title > span,
-.ccg-c64-panel--library .ccg-c64-panel-title > strong {
-  color: var(--ccg-find-green);
-}
-.ccg-c64-panel--library .ccg-c64-panel-title > em {
-  color: #93ebae;
-}
-.ccg-c64-panel--library .ccg-c64-catalogue-open {
-  border-color: #41ee86;
-  background: linear-gradient(145deg, #0b9d51, #086b3b);
-  color: #f1fff6;
-  box-shadow: inset 0 0 0 1px rgba(169, 255, 199, 0.14);
-}
-.ccg-c64-panel--library .ccg-c64-catalogue-open:hover:not(:disabled),
-.ccg-c64-panel--library .ccg-c64-catalogue-open:focus-visible {
-  border-color: #acffd0;
-  background: linear-gradient(145deg, #14b866, #078346);
-  box-shadow: 0 0 15px rgba(40, 244, 124, 0.26);
-}
-.ccg-c64-panel--library .ccg-c64-catalogue-open:focus-visible,
-.ccg-c64-panel--library .ccg-c64-library-load:focus-visible,
-.ccg-c64-panel--library .ccg-c64-library-option:focus-visible {
-  outline: 2px solid #b9ffce;
-  outline-offset: 2px;
-}
-.ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type="search"] {
-  border-color: #3bd379;
-  background: #061a12;
-  color: #f3fff7;
-  caret-color: #8effb7;
-}
-.ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type="search"]::placeholder {
-  color: #b1dabe;
-  opacity: 1;
-}
-.ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type="search"]:focus-visible {
-  border-color: #6effa5;
-  outline-color: #65ff9d;
-  box-shadow: 0 0 0 3px rgba(67, 229, 119, 0.17);
-}
-.ccg-c64-panel--library .ccg-c64-library-result-count,
-.ccg-c64-panel--library .ccg-c64-library-note {
-  color: #b0e8c1;
-}
-.ccg-c64-panel--library .ccg-c64-library-load {
-  border-color: #43ec86;
-  background: linear-gradient(155deg, #0c9f50, #086c38);
-  color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(180, 255, 200, 0.12);
-}
-.ccg-c64-panel--library .ccg-c64-library-load:hover:not(:disabled),
-.ccg-c64-panel--library .ccg-c64-library-load:focus-visible {
-  border-color: #b5ffd0;
-  background: linear-gradient(155deg, #17ba63, #087e43);
-  box-shadow: 0 0 13px rgba(49, 230, 113, 0.24);
-}
-.ccg-c64-panel--library .ccg-c64-library-load:disabled {
-  opacity: 0.65;
-  cursor: wait;
-}
-.ccg-c64-panel--library .ccg-c64-library-suggestions {
-  border-color: #35cb75;
-  background: #071e15;
-}
-.ccg-c64-panel--library .ccg-c64-library-option {
-  color: #f0fff5;
-}
-.ccg-c64-panel--library .ccg-c64-library-option + .ccg-c64-library-option {
-  border-top-color: rgba(75, 215, 128, 0.2);
-}
-.ccg-c64-panel--library .ccg-c64-library-option span,
-.ccg-c64-panel--library .ccg-c64-library-match-count {
-  color: #a7eac0;
-}
-.ccg-c64-panel--library .ccg-c64-library-option:hover:not(:disabled),
-.ccg-c64-panel--library .ccg-c64-library-option.is-active,
-.ccg-c64-panel--library .ccg-c64-library-option:focus-visible {
-  border-color: #6be99b;
-  background: rgba(14, 122, 64, 0.36);
-}
-.ccg-c64-panel--library .ccg-c64-library-row select,
-.ccg-c64-panel--library .ccg-c64-library-row button {
-  border-color: #39ac6e;
-  background: #0b3020;
-  color: #e8fff0;
-}
-.ccg-c64-panel--library .ccg-c64-library-row button:hover:not(:disabled),
-.ccg-c64-panel--library .ccg-c64-library-row select:hover {
-  border-color: #7affae;
-}
-
 /* Emulator help / troubleshooting: confined to the page section below
    gameplay and discovery, with no changes to C64 input or engine styles. */
 .ccg-c64-faq {
@@ -3340,4 +3234,110 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   .ccg-c64-faq-answer { padding: 0.1rem 0.75rem 0.85rem 0.75rem; }
   .ccg-c64-faq-answer p { font-size: 0.8rem; line-height: 1.65; }
   .ccg-c64-faq-footer { font-size: 0.78rem; }
+}
+
+/* Owner-approved FIND A GAME green beacon — 15 October 2026.
+   Colour-only, scoped to the existing emulator library section.
+   All layout, hidden states, touch targets and the LOAD mechanism remain owned
+   by the original emulator CSS/JS. This is not an overlay or image. */
+.ccg-c64-panel--library {
+  --ccg-find-green: #4dff91;
+  --ccg-find-border: #20d86e;
+  border-color: var(--ccg-find-border);
+  background: linear-gradient(150deg, #071b12 0%, #092c1b 52%, #052015 100%);
+  box-shadow: inset 0 0 0 1px rgba(56, 234, 122, 0.12),
+    0 0 20px rgba(28, 219, 95, 0.12);
+}
+.ccg-c64-panel--library .ccg-c64-panel-title {
+  border-bottom-color: rgba(55, 226, 120, 0.46);
+}
+.ccg-c64-panel--library .ccg-c64-panel-title > span,
+.ccg-c64-panel--library .ccg-c64-panel-title > strong {
+  color: var(--ccg-find-green);
+}
+.ccg-c64-panel--library .ccg-c64-panel-title > em {
+  color: #93ebae;
+}
+.ccg-c64-panel--library .ccg-c64-catalogue-open {
+  border-color: #41ee86;
+  background: linear-gradient(145deg, #0b9d51, #086b3b);
+  color: #f1fff6;
+  box-shadow: inset 0 0 0 1px rgba(169, 255, 199, 0.14);
+}
+.ccg-c64-panel--library .ccg-c64-catalogue-open:hover:not(:disabled),
+.ccg-c64-panel--library .ccg-c64-catalogue-open:focus-visible {
+  border-color: #acffd0;
+  background: linear-gradient(145deg, #14b866, #078346);
+  box-shadow: 0 0 15px rgba(40, 244, 124, 0.26);
+}
+.ccg-c64-panel--library .ccg-c64-catalogue-open:focus-visible,
+.ccg-c64-panel--library .ccg-c64-library-load:focus-visible,
+.ccg-c64-panel--library .ccg-c64-library-option:focus-visible {
+  outline: 2px solid #b9ffce;
+  outline-offset: 2px;
+}
+.ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type="search"] {
+  border-color: #3bd379;
+  background: #061a12;
+  color: #f3fff7;
+  caret-color: #8effb7;
+}
+.ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type="search"]::placeholder {
+  color: #b1dabe;
+  opacity: 1;
+}
+.ccg-c64-panel--library .ccg-c64-library-search-wrap > input[type="search"]:focus-visible {
+  border-color: #6effa5;
+  outline-color: #65ff9d;
+  box-shadow: 0 0 0 3px rgba(67, 229, 119, 0.17);
+}
+.ccg-c64-panel--library .ccg-c64-library-result-count,
+.ccg-c64-panel--library .ccg-c64-library-note {
+  color: #b0e8c1;
+}
+.ccg-c64-panel--library .ccg-c64-library-load {
+  border-color: #43ec86;
+  background: linear-gradient(155deg, #0c9f50, #086c38);
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(180, 255, 200, 0.12);
+}
+.ccg-c64-panel--library .ccg-c64-library-load:hover:not(:disabled),
+.ccg-c64-panel--library .ccg-c64-library-load:focus-visible {
+  border-color: #b5ffd0;
+  background: linear-gradient(155deg, #17ba63, #087e43);
+  box-shadow: 0 0 13px rgba(49, 230, 113, 0.24);
+}
+.ccg-c64-panel--library .ccg-c64-library-load:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.ccg-c64-panel--library .ccg-c64-library-suggestions {
+  border-color: #35cb75;
+  background: #071e15;
+}
+.ccg-c64-panel--library .ccg-c64-library-option {
+  color: #f0fff5;
+}
+.ccg-c64-panel--library .ccg-c64-library-option + .ccg-c64-library-option {
+  border-top-color: rgba(75, 215, 128, 0.2);
+}
+.ccg-c64-panel--library .ccg-c64-library-option span,
+.ccg-c64-panel--library .ccg-c64-library-match-count {
+  color: #a7eac0;
+}
+.ccg-c64-panel--library .ccg-c64-library-option:hover:not(:disabled),
+.ccg-c64-panel--library .ccg-c64-library-option.is-active,
+.ccg-c64-panel--library .ccg-c64-library-option:focus-visible {
+  border-color: #6be99b;
+  background: rgba(14, 122, 64, 0.36);
+}
+.ccg-c64-panel--library .ccg-c64-library-row select,
+.ccg-c64-panel--library .ccg-c64-library-row button {
+  border-color: #39ac6e;
+  background: #0b3020;
+  color: #e8fff0;
+}
+.ccg-c64-panel--library .ccg-c64-library-row button:hover:not(:disabled),
+.ccg-c64-panel--library .ccg-c64-library-row select:hover {
+  border-color: #7affae;
 }
