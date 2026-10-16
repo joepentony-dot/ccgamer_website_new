@@ -54,6 +54,18 @@ async function probeFloorFiveSoftlockGuards(page){
     const generators=(host.generators||[]).filter(g=>g.alive),
       stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
     if(generators.length!==3||stalkers.length!==1)return{error:"Three generators and exactly one Death Stalker required",generators:generators.length,stalkers:stalkers.length};
+    const sigilStatus=()=>({
+      id:host.sigilRoomId??null,roomCount:world.rooms?.length||0,
+      optionalRooms:(world.rooms||[]).filter(room=>room.optional).length,
+      sigilRoomExists:host.sigilRoomId!=null&&Boolean(world.rooms?.[host.sigilRoomId]),
+      sigilRoomFlags:(world.rooms||[]).filter(room=>room.sigilRoom).map(room=>({id:room.id,optional:room.optional})),
+      sigilGates:(host.doors||[]).filter(door=>door.sigilGate).map(door=>({id:door.id,roomId:door.roomId,locked:door.locked,open:door.open})),
+      sigilDefenderIds:host.sigilDefenderIds||[],
+      sigilWarden:host.sigilWarden?.id||null,
+      defendersAlive:SYS.sigilDefendersAlive(host).length,
+      objective:host.objective?.type||null
+    });
+    const sigilBefore=sigilStatus();
     const count=host.stalker,stalker=stalkers[0],initialScore=score,killsBefore=run.stats.generators||0;
     p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;
     count.spawnTimer=0;updateStalker(16);
@@ -67,7 +79,8 @@ async function probeFloorFiveSoftlockGuards(page){
       kills:(run.stats.generators||0)-killsBefore,score:score-initialScore,
       count:Boolean(count.awake&&!count.permanentlyBanished),stalker:Boolean(stalker.alive),
       stalkerCount:(host.enemies||[]).filter(e=>e.deathStalker&&e.voidStalker).length};
-    const room=world.rooms?.[host.sigilRoomId];if(!room)return{error:"Sigil chamber missing",bothAlive,twoComplete,twoExit,after};
+    const sigilAfter=sigilStatus();
+    const room=world.rooms?.[host.sigilRoomId];if(!room)return{error:"Sigil chamber missing",sigilBefore,sigilAfter,bothAlive,twoComplete,twoExit,after};
     let cell=null;
     for(let y=room.y+1;y<room.y+room.h&&!cell;y++)for(let x=room.x+1;x<room.x+room.w;x++)
       if(world.map[y]?.[x]===0&&W.playerWalkable(world.map,x,y,host)&&!host.enemies.some(e=>e.alive&&e.x===x&&e.y===y)){cell={x,y};break}
@@ -84,7 +97,7 @@ async function probeFloorFiveSoftlockGuards(page){
     recovered.sigilsAfterRetry=host.items.filter(i=>i.active&&i.kind==="exitSigil").length;
     return{bothAlive,twoComplete,twoExit,after,lockdown,defenders:defenders.length,recovered,mode};
   });
-  assert.ok(!state.error,`Generated Floor 5 scenario: ${state.error||""}`);
+  assert.ok(!state.error,`Generated Floor 5 scenario: ${state.error||""} ${state.error?JSON.stringify({sigilBefore:state.sigilBefore,sigilAfter:state.sigilAfter,after:state.after}):""}`);
   assert.equal(state.bothAlive,true,"Count and Death Stalker must coexist");
   assert.equal(state.twoComplete,false,"2/3 generators cannot complete objective");
   assert.equal(state.twoExit,false);
