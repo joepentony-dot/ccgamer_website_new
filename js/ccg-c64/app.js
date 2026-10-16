@@ -2568,14 +2568,14 @@ async function initialiseOnlineLibrary() {
             !Array.isArray(aliasData.mappings) &&
             Object.hasOwn(aliasData.mappings, linkedGameId)) {
           const replacementId = aliasData.mappings[linkedGameId];
-          if (/^owner-crt-more-[a-z0-9-]+$/.test(replacementId)) {
+          if (/^[a-z0-9][a-z0-9-]{0,100}$/.test(replacementId)) {
             // A retired BLAST PRG can map to a second approved CRT edition.
             // The visible library retains the earlier selected CRT, so an
             // alias must resolve through its exact verified source identity
             // rather than fail when that alternative is hidden by deduplication.
             const replacement = allHostedEntries.find(entry =>
               entry.id === replacementId && entry.format === "crt" &&
-              entry.approved !== false && entry.preferOverOtherFormats === true);
+              entry.approved === true && entry.preferOverOtherFormats === true);
             if (replacement) {
               linkedGame = onlineLibraryEntries.find(entry =>
                 entry.id === replacementId && entry.format === "crt") ||
