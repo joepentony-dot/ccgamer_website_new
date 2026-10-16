@@ -120,9 +120,8 @@ for (const record of inheritedBatch.entries) {
   assert.equal(meta.get(key)?.year, year);
   assert.equal(meta.get(parent)?.year, year);
   if (type === "article") {
-    assert(key === parent.replace(/^the /,"") ||
-      key === parent.replace(/^the /,"") + " the" ||
-      "the " + key === parent || key === parent.replace(/ the$/,""),
+    assert(parent.startsWith("the ") &&
+      (key === parent.slice(4) || key === parent.slice(4) + " the"),
       "Not an exact definite-article variant: " + key);
     const sourceRows = packedRecords.filter(row =>
       catalogGameIdentity(row[1]) === parent);
@@ -130,8 +129,9 @@ for (const record of inheritedBatch.entries) {
       "Article variant base game lost unique PRG identity: " + parent);
   } else {
     assert.equal(type, "part");
-    assert(new RegExp("^" + parent.replace(/[.*+?^${}()|[\\]\\]/g, "\\const q=ledger.quarantined.find(x=>x.key==="armageddon");") +
-      " (?:part|side|disk|disc|tape) (?:[1-9]|a|b)$").test(key),
+    assert(key.startsWith(parent + " ") &&
+      /^(?:part|side|disk|disc|tape) (?:[1-9]|a|b)$/.test(
+        key.slice(parent.length + 1)),
       "Not a checked explicit side/part identity: " + key);
   }
 }
