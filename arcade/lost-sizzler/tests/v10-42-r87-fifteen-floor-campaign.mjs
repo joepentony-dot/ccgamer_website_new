@@ -289,6 +289,43 @@ const distantThief=thiefRouteCase({distant:true});
 assert.equal(distantThief.initial,true,"Distant thief remains eligible for global simulation");
 assert.equal(distantThief.attacks,0);
 
+// P0 thief collision: actual CCGAI.passable must honour the special bridge
+// even when the underlying floor map reports ordinary open terrain.
+const thiefPassableStart=thiefAiSource.indexOf("  function passable(e,host,map,x,y,world,allowPlayerGoal=false){");
+const thiefPassableEnd=thiefAiSource.indexOf("  function stageUnenteredEnemies(",thiefPassableStart);
+assert.ok(thiefPassableStart>=0&&thiefPassableEnd>thiefPassableStart,
+  "Current authoritative AI passability owner must exist");
+const thiefPassableSource=thiefAiSource.slice(thiefPassableStart,thiefPassableEnd);
+const bridgePathMap=Array.from({length:9},()=>Array(9).fill(0));
+const bridgePathHost={weightBridge:{collapsed:true,rebuilt:false,
+  pitTiles:[{x:4,y:4}],bridgeTiles:[{x:5,y:4}]}};
+const thiefActor={id:"bridge-thief-f5",bridgeThief:true,x:3,y:4,alive:true};
+const unrelatedActor={id:"ordinary",bridgeThief:false,x:3,y:4,alive:true};
+const pathContext=vm.createContext({
+  W:{walkable:(map,x,y)=>map[y]?.[x]===0,roomAt:()=>0},
+  occupied:()=>false,occupiedByPlayer:()=>false,
+  window:{CCGSystems:{inSanctuary:()=>false}},
+  roomEntered:()=>true,clearOfUnenteredDoor:()=>true,stalkerDoor:()=>null
+});
+vm.runInContext(thiefPassableSource+";this.pitPassable=passable;",pathContext,
+  {filename:"ai.js::bridge-thief-special-collision",timeout:1000});
+const canThief=(actor,x,y)=>pathContext.pitPassable(
+  actor,bridgePathHost,bridgePathMap,x,y,{},false);
+assert.equal(canThief(thiefActor,4,4),false,
+  "The Dungeon Thief may never flee into a permanently impassable bridge pit");
+assert.equal(canThief(thiefActor,5,4),false,
+  "The Dungeon Thief may not cross a collapsed span before the switch is shot");
+assert.equal(canThief(thiefActor,3,5),true,
+  "Ordinary accessible floor remains available for the thief's escape");
+assert.equal(canThief(unrelatedActor,4,4),true,
+  "The thief's bridge-specific AI guard must not change unrelated enemy collision");
+bridgePathHost.weightBridge.collapsed=false;
+bridgePathHost.weightBridge.rebuilt=true;
+assert.equal(canThief(thiefActor,4,4),false,
+  "Rebuilding cannot make the permanent pit safe");
+assert.equal(canThief(thiefActor,5,4),true,
+  "Rebuilding must release the span for the thief's existing flee path");
+
 const radarThiefStart=renderSource.indexOf("function radarBridgeThief(hostState){");
 const radarThiefEnd=renderSource.indexOf("function renderRadarPanel(p){",radarThiefStart);
 assert.ok(radarThiefStart>=0&&radarThiefEnd>radarThiefStart,"Real minimap thief selector must exist");
