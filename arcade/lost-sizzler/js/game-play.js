@@ -489,6 +489,18 @@ function ensureBridgeSwitchAmmo(p,b){
   if(needsAmmo)host.items.push({id:`bridge-emergency-ammo-${Date.now()}`,...second,kind:"ammo",active:true,title:"BRIDGE EMERGENCY AMMO",r114BridgeEmergency:true});
   showToast("BRIDGE FAILSAFE SUPPLIES",noFirearm&&needsAmmo?"A firearm cache and ammunition have appeared beside the bridge switch. Pick them up, then shoot the mechanism.":noFirearm?"A firearm cache has appeared beside the bridge switch so the room cannot trap you.":"An emergency ammo pack has appeared beside the bridge mechanism. Pick it up, then shoot the switch.","cyan",9500);host.revision++;return true
 }
+function restoreWeightBridgeAfterRespawn(){
+  // Death teleports the player to the floor entrance. If the bridge collapsed
+  // before its far-side projectile switch was fired, that switch is no longer
+  // reachable from the entrance and the death cache/stolen Flask can be lost.
+  // Repair only that stranded state, preserving the thief and stolen-item ledger.
+  const b=host?.weightBridge;
+  if(!b?.collapsed||b.rebuilt)return false;
+  b.collapsed=false;b.rebuilt=true;b.stabilized=true;b.crossingPlayer=null;
+  const bridgeSwitch=(host.switches||[]).find(s=>s.id===b.switchId&&s.weightBridgeSwitch);
+  if(bridgeSwitch){bridgeSwitch.active=false;bridgeSwitch.toggled=true}
+  host.revision++;return true
+}
 function weightBridgeBlocks(p,x,y){
   const b=host.weightBridge;if(!b)return false;
   if(weightBridgeCell(b.pitTiles,x,y)){S.sfx("wall");return true}
@@ -930,11 +942,12 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     const priorCacheLost=(host.deathCaches||[]).some(c=>c?.active);if(priorCacheLost)host.deathCaches=[];const cache=PGR.createDeathCache(p,run,cacheX,cacheY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;cache.score=penalty.scoreLost||0;cache.xp=penalty.xpLost||0;cache.progressionRecovery=penalty.progressionRecovery?JSON.parse(JSON.stringify(penalty.progressionRecovery)):null;cache.active=cache.active||cache.score>0||cache.xp>0||Boolean(cache.progressionRecovery);run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;host.deathCaches=[];PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED — GAME OVER","This is the second death that left your XP reserve at zero. Your final XP warning was already used, so the run is over.","red",12000);endRun("Game over: XP reached zero for the second time after the final warning");return}
     releaseSealedDeathRoom(W.roomAt(world,deathX,deathY));
+    const bridgeRepaired=restoreWeightBridgeAfterRespawn();
     if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
     const playerId=String(p.id||p.name||"P1");
     mode="respawning";p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;p.invuln=Math.max(2200,Number(p.invuln)||0);p.controlLocked=true;p.controlsLocked=true;if(p===p1){fire1=0;fireBuffer1=0;input.delete("Space");input.delete("KeyF");input.delete("Numpad0")}else if(p===p2){fire2=0;fireBuffer2=0;input.delete("Enter")}p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;
     const explore=Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),cacheText=cache.active?` Your death box holds ${Number(cache.score||0).toLocaleString()} score, ${Number(cache.xp||0).toLocaleString()} XP and dropped loot. Recover it before another death or the whole cache is destroyed.`:" You had nothing to cache.",xpText=penalty.xpLost?` ${penalty.xpLost} XP moved to the death box.${penalty.levelLost?` Level ${penalty.levelBefore} fell to ${penalty.levelAfter}; ${penalty.lostSkill||"the latest upgrade"} is held by that death cache and returns with its XP if recovered in time.`:" Your current level was retained."}`:" No XP was available to lose.",priorText=priorCacheLost?" YOUR PREVIOUS DEATH CACHE WAS DESTROYED — any unrecovered loot, XP and stripped progression in it are permanently lost.":"",zeroText=penalty.zeroWarning?" FINAL XP WARNING: your XP reserve has reached zero once. Recover this death cache or earn more XP. If a later death leaves XP at zero again, the run ends.":"";
-    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${priorText}${zeroText}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
+    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${priorText}${zeroText}${bridgeRepaired?" The Trickster Bridge has rebuilt after your death; your cache and the Dungeon Thief remain accessible.":""}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
     host.revision++;
     try{dispatchEvent(new CustomEvent("ccg:player-death",{detail:{playerId,playerName:String(p.name||"Player"),source:String(source||"enemy"),floor:Number(run.floor||1),deathX:Number(deathX),deathY:Number(deathY),cacheActive:Boolean(cache.active),scoreLost:Number(penalty.scoreLost||0),xpLost:Number(penalty.xpLost||0),levelLost:Boolean(penalty.levelLost),recoverableProgression:Boolean(penalty.progressionRecovery),priorCacheLost:Boolean(priorCacheLost),zeroWarning:Boolean(penalty.zeroWarning),requiresConfirmation:true}}))}catch(_){}
   }sync()
