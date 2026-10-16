@@ -69,6 +69,7 @@ jobs:
           node tests/c64-publisher-research-provenance.mjs --unmatched-json > "$dest/unmatched.json"
           python3 scripts/c64/mame-bulk-publisher-candidates.py \
             --unmatched-json "$dest/unmatched.json" \
+            --quarantine-json emulator/c64/publisher-research-sources.json \
             --mame-xml "$dest/mame/c64_cass.xml" "$dest/mame/c64_cart.xml" \
               "$dest/mame/c64_flop_orig.xml" "$dest/mame/c64_flop_misc.xml" \
               "$dest/mame/c64_quik.xml" \
@@ -87,6 +88,7 @@ jobs:
               "unmatchedInput":report["unmatchedInput"],
               "candidateCount":report["candidateCount"],
               "manualReviewCount":report["reviewCount"],
+              "heldQuarantineKeys":report["quarantinedUnmatchedKeys"],
               "batchCount":len(report["candidateBatches"]),
               "batchSize":report["batchSize"]
           }
