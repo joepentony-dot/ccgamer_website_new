@@ -148,6 +148,31 @@ assert(failed.statuses.warning, "A catalogue failure must be logged instead of s
 // must fall back to all original games (tested above with a 404 response).
 const activated = await execute(true, true);
 assert.equal(moreCrt.recordCount, 2064);
+// Every retired packed ID must have a visible, approved direct CRT fallback
+// after deduplication. This catalogue-wide contract complements the actual
+// deep-link resolution examples below without loading any media or altering
+// the 2,458 preserved bookmarks.
+const directAliasTargets = new Map(direct.entries.map(entry => [entry.id, entry]));
+const visibleApprovedCrts = activated.context.onlineLibraryEntries.filter(entry =>
+  entry.format === "crt" && entry.approved !== false);
+const visibleCrtIds = new Set(visibleApprovedCrts.map(entry => entry.id));
+const visibleCrtTitles = new Set(visibleApprovedCrts.map(entry =>
+  catalogGameIdentity(entry.title)));
+let checkedRetiredBookmarks = 0;
+for (const [source, retired] of [["blast", retiredBlast], ["archive", retiredArchive]]) {
+  for (const [oldId, targetId] of Object.entries(retired.mappings)) {
+    const replacement = directAliasTargets.get(targetId);
+    assert(replacement && replacement.format === "crt" &&
+      replacement.approved === true && replacement.preferOverOtherFormats === true,
+      source + ": retired bookmark lacks approved direct CRT: " + oldId);
+    assert(visibleCrtIds.has(targetId) ||
+      visibleCrtTitles.has(catalogGameIdentity(replacement.title)),
+      source + ": retired bookmark has no visible CRT selection: " + oldId);
+    checkedRetiredBookmarks++;
+  }
+}
+assert.equal(checkedRetiredBookmarks, 2458,
+  "Every original and newly retired BLAST/archive bookmark must be covered");
 assert(activated.context.onlineLibraryEntries.filter(e =>
   e.id.startsWith("owner-crt-more-")).length >= 2040,
   "Expanded owner CRT catalogue must preserve existing selections and expose new individual games");
