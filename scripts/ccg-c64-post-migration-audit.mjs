@@ -50,7 +50,7 @@ function matches(title) {
   const directCrt = directCrtTitles.get(identity);
   return selected ? { id: selected.id, path: root + "cartridge-replacements/" + selected.filename,
     bytes: selected.bytes, sha256: selected.digest, source: "activated" }
-    : directCrt ? { id: directCrt.id, path: directCrt.url?.replace(/^\\//,""),
+    : directCrt ? { id: directCrt.id, path: directCrt.url,
       bytes: directCrt.bytes, sha256: directCrt.sha256, source: "direct" } : null;
 }
 
