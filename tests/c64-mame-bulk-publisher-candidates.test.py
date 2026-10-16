@@ -32,6 +32,28 @@ with tempfile.TemporaryDirectory() as folder:
     assert reasons=={"armageddon":"different-prg-hashes-same-title",
         "duplicate title":"multiple-software-list-records",
         "test":"generic-or-short-title","unknown name":"no-exact-c64-list-match"},reasons
+    # A separately researched ambiguous title must never re-enter a bulk
+    # attribution queue solely because MAME contains an exact title.
+    quarantine=root/"publisher-research-sources.json"
+    quarantine.write_text(json.dumps({"version":1, "quarantined":[
+        {"key":"distinctive test title","status":"unverified-regional-edition"}]}),
+        encoding="utf-8")
+    held=mod.audit(ledger,[xml],250,quarantine)
+    assert held["candidateCount"]==0, held
+    assert held["quarantineSourceKeys"]==1
+    assert held["quarantinedUnmatchedKeys"]==1
+    reasons_held={entry["key"]:entry["reason"]
+                  for entry in held["unmatchedOrAmbiguous"]}
+    assert reasons_held["distinctive test title"]=="publisher-provenance-quarantine"
+    # Duplicate or malformed quarantine identities fail rather than silently
+    # reviving a title with a potentially incorrect regional publisher.
+    quarantine.write_text(json.dumps({"version":1, "quarantined":[
+        {"key":"distinctive test title","status":"unverified-regional-edition"},
+        {"key":"distinctive test title","status":"unverified-regional-edition"}]}))
+    try:
+        mod.audit(ledger,[xml],250,quarantine)
+    except ValueError: pass
+    else: raise AssertionError("Duplicate quarantine entry accepted")
     assert not (root/"catalogue-metadata.json").exists()
     xml.write_text("<softwarelist name='amiga_flop'/>")
     try:
