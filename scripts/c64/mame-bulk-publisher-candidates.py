@@ -20,7 +20,7 @@ def identity(value):
     value = re.sub(r"['\u2018\u2019]", "", value)
     return re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9]+", " ", value).strip().lower())
 
-def audit(unmatched_file, sources, batch_size):
+def audit(unmatched_file, sources, batch_size, quarantine_file=None):
     ledger = json.loads(Path(unmatched_file).read_text(encoding="utf-8"))
     keys = ledger.get("unmatched")
     collisions = ledger.get("packedPRGCollisionTitleKeys")
@@ -30,6 +30,21 @@ def audit(unmatched_file, sources, batch_size):
         or len(set(keys)) != len(keys)
         or not all(isinstance(x, str) and identity(x) == x for x in keys+collisions)):
         raise ValueError("Invalid or noncanonical CCG unmatched/collision ledger")
+    quarantine = {}
+    if quarantine_file is not None:
+        source_ledger = json.loads(Path(quarantine_file).read_text(encoding="utf-8"))
+        held = source_ledger.get("quarantined")
+        if source_ledger.get("version") != 1 or not isinstance(held, list):
+            raise ValueError("Invalid publisher research quarantine ledger")
+        for record in held:
+            if (not isinstance(record, dict)
+                    or not isinstance(record.get("key"), str)
+                    or identity(record["key"]) != record["key"]
+                    or not isinstance(record.get("status"), str)
+                    or not record["status"].startswith("unverified-")
+                    or record["key"] in quarantine):
+                raise ValueError("Invalid or repeated publisher quarantine record")
+            quarantine[record["key"]] = record["status"]
     matches = defaultdict(list)
     for file in sources:
         src = Path(file)
@@ -54,6 +69,10 @@ def audit(unmatched_file, sources, batch_size):
     generic = {"game","demo","preview","test","menu","intro","utility","adventure","arcade"}
     for key in sorted(keys):
         hits = matches.get(key, [])
+        if key in quarantine:
+            review.append({"key":key,"reason":"publisher-provenance-quarantine",
+                           "quarantineStatus":quarantine[key],"hits":hits})
+            continue
         if not hits:
             review.append({"key":key,"reason":"no-exact-c64-list-match"})
             continue
@@ -77,6 +96,8 @@ def audit(unmatched_file, sources, batch_size):
     return {"version":1,"mode":"read-only-mame-c64-bulk-candidates",
             "scope":ledger["auditScope"],"unmatchedInput":len(keys),
             "candidateCount":len(candidates),"reviewCount":len(review),
+            "quarantineSourceKeys":len(quarantine),
+            "quarantinedUnmatchedKeys":sum(k in keys for k in quarantine),
             "batchSize":batch_size,"candidateBatches":
                 [candidates[i:i+batch_size] for i in range(0,len(candidates),batch_size)],
             "unmatchedOrAmbiguous":review}
@@ -84,13 +105,15 @@ def audit(unmatched_file, sources, batch_size):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--unmatched-json",required=True)
+    p.add_argument("--quarantine-json",required=True,
+                   help="Current emulator/c64/publisher-research-sources.json (read-only)")
     p.add_argument("--mame-xml",required=True,nargs="+")
     p.add_argument("--batch-size",type=int,default=250)
     a=p.parse_args()
     if not 1<=a.batch_size<=1000:
         p.error("--batch-size must be between 1 and 1000")
     try:
-        result=audit(a.unmatched_json,a.mame_xml,a.batch_size)
+        result=audit(a.unmatched_json,a.mame_xml,a.batch_size,a.quarantine_json)
     except (OSError,ValueError,ET.ParseError,json.JSONDecodeError) as e:
         p.error(str(e))
     json.dump(result,sys.stdout,indent=2,ensure_ascii=False)
