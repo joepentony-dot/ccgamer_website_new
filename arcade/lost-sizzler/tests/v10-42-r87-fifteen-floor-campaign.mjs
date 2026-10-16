@@ -600,6 +600,47 @@ assert.deepEqual(Array.from(desperate.items,i=>[i.x,i.y]),[[7,4],[7,4]],
   "Legacy player-tile fallback remains available when no free reachable cell exists");
 assert.equal(desperate.hostState.revision,1,"Emergency supply generation refreshes the world once");
 
+// P0 Thief placement: thief's stolen inventory must not be locked behind
+// Bronze, switch or undiscovered secret gates. Source-execute real generated
+// Floor 5 world, host and SYS decoration, not a fabricated free-room map.
+const thiefFnStart=gameplaySource.indexOf("function bridgeThiefCell(p,b){");
+const thiefFnEnd=gameplaySource.indexOf("function bridgeStashedItems(b){",thiefFnStart);
+const puzzleFnStart=gameplaySource.indexOf("function puzzleFloorCells(roomId){");
+const puzzleFnEnd=gameplaySource.indexOf("function spawnPuzzleAmbush(",puzzleFnStart);
+assert.ok(thiefFnStart>=0&&thiefFnEnd>thiefFnStart&&puzzleFnStart>=0&&puzzleFnEnd>puzzleFnStart);
+const realThiefCode=gameplaySource.slice(puzzleFnStart,puzzleFnEnd)+"\n"+gameplaySource.slice(thiefFnStart,thiefFnEnd);
+let accessibleThiefCount=0,optionalGateCases=0;
+for(let seedIndex=0;seedIndex<35;seedIndex++){
+  const seed="ccg-bridge-thief-route-"+(seedIndex*91+3)+"-F5";
+  const w=generatedWorld.generate(seed),h=generatedWorld.createHostState(w),r=generatedProgression.makeRun();
+  w.floor=5;r.floor=5;generatedSystems.decorate(w,h,r);
+  const openable=(h.doors||[]).filter(d=>d.type==="room"&&!d.locked);
+  for(const d of openable){d.open=true;d.opening=false}
+  const player={id:"P1",x:w.start.x,y:w.start.y,health:8},
+    bridge={...(h.weightBridge||{}),roomId:h.weightBridge?.roomId??-100};
+  const ctx=vm.createContext({world:w,host:h,W:generatedWorld,localPlayers:()=>[player],Math});
+  vm.runInContext(realThiefCode+";this.pickThief=bridgeThiefCell;",ctx,{timeout:2000});
+  const cell=ctx.pickThief(player,bridge),roomId=generatedWorld.roomAt(w,cell.x,cell.y);
+  const visited=new Set([player.x+","+player.y]),queue=[{x:player.x,y:player.y}];
+  for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const x=queue[i].x+dx,y=queue[i].y+dy,k=x+","+y;
+    if(visited.has(k)||w.map[y]?.[x]!==0)continue;
+    if(h.blockingDecor?.some(d=>d.x===x&&d.y===y))continue;
+    if(h.generators?.some(g=>g.alive&&g.x===x&&g.y===y))continue;
+    if(bridge.collapsed&&!bridge.rebuilt&&[...(bridge.pitTiles||[]),...(bridge.bridgeTiles||[])].some(q=>q.x===x&&q.y===y))continue;
+    if(!generatedWorld.playerWalkable(w.map,x,y,h))continue;
+    visited.add(k);queue.push({x,y})
+  }
+  assert.ok(visited.has(cell.x+","+cell.y),seed+": thief must be reachable through openable ordinary doors only");
+  assert.ok(roomId!==bridge.roomId,seed+": thief must not remain inside collapsed bridge room");
+  const locked=(h.doors||[]).filter(d=>d.roomId===roomId&&d.locked);
+  assert.equal(locked.length,0,seed+": thief must never require an optional locked gate");
+  if((w.rooms[roomId]||{}).optional)optionalGateCases++;
+  accessibleThiefCount++
+}
+assert.equal(accessibleThiefCount,35,"All 35 generated Floor 5 thief destinations must remain reachable");
+assert.equal(optionalGateCases,0,"No thief should be hidden inside inaccessible optional vaults");
+
 // P0 bridge thief: execute the actual stolen-item recovery owner.
 const bridgeStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");
 const bridgeEnd=localRuntimeSource.indexOf("function damageEnemy(",bridgeStart);

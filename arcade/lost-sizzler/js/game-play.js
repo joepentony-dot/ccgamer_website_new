@@ -419,9 +419,40 @@ function triggerSequenceTorch(p,deliberate=false){
 }
 function weightBridgeCell(list,x,y){return (list||[]).some(q=>q.x===x&&q.y===y)}
 function bridgeThiefCell(p,b){
-  const candidates=(world.rooms||[]).filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom).map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)})).sort((a,b)=>b.dist-a.dist);
-  for(const row of candidates){const cells=puzzleFloorCells(row.room.id);if(cells.length)return cells[Math.floor(Math.random()*cells.length)]}
-  const fallback=(world.rooms||[]).find(r=>r.id!==b.roomId),cells=fallback?puzzleFloorCells(fallback.id):[];return cells[0]||{x:world.start.x,y:world.start.y}
+  // The thief carries the player's stolen inventory. Never hide it inside a
+  // Bronze Key, secret or locked challenge room the player cannot reach.
+  // Ordinary unlocked threshold doors are traversable after opening them.
+  // The collapsed bridge stays blocked until the player shoots its switch.
+  const key=(x,y)=>x+","+y,blockedBridge=b?.collapsed&&!b?.rebuilt
+    ?new Set([...(b.pitTiles||[]),...(b.bridgeTiles||[])].map(q=>key(q.x,q.y))):new Set(),
+    queue=[{x:p.x,y:p.y}],reachable=new Set([key(p.x,p.y)]);
+  const canReach=(x,y)=>{
+    if(world.map[y]?.[x]!==0||blockedBridge.has(key(x,y)))return false;
+    if(host.blockingDecor?.some(d=>d.x===x&&d.y===y))return false;
+    if(host.generators?.some(g=>g.alive&&g.x===x&&g.y===y))return false;
+    const door=typeof W.doorAt==="function"?W.doorAt(host,x,y):
+      (host.doors||[]).find(d=>d.x===x&&d.y===y);
+    if(door)return !door.locked&&(door.open||door.type==="room");
+    return W.playerWalkable(world.map,x,y,host)
+  };
+  for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const x=queue[i].x+dx,y=queue[i].y+dy,k=key(x,y);
+    if(!reachable.has(k)&&canReach(x,y)){reachable.add(k);queue.push({x,y})}
+  }
+  const candidates=(world.rooms||[])
+    .filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom)
+    .map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)}))
+    .sort((a,b)=>b.dist-a.dist);
+  for(const row of candidates){
+    const cells=puzzleFloorCells(row.room.id).filter(q=>reachable.has(key(q.x,q.y)));
+    if(cells.length)return cells[Math.floor(Math.random()*cells.length)]
+  }
+  // If every eligible remote room is sealed, the thief remains within the
+  // player's accessible floor component; never teleport it behind a lock.
+  return queue.find(q=>(q.x!==p.x||q.y!==p.y)&&
+    W.playerWalkable(world.map,q.x,q.y,host)&&
+    !localPlayers().some(player=>player.x===q.x&&player.y===q.y)&&
+    !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y))||{x:p.x,y:p.y}
 }
 function bridgeStashedItems(b){
   const stolen=[],entry=b?.entryPos||null;
