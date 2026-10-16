@@ -68,6 +68,17 @@ for (const record of verified.entries) {
       "Developer or reissue company silently promoted to publisher: " + record.key);
   }
 }
+const pendingReview=read("docs/ccg-c64-publisher-20261016-edition-review.json");
+assert.equal(pendingReview.version,1);
+assert.equal(pendingReview.entries.length,4);
+assert.equal(pendingReview.quarantine.length,1);
+assert.equal(pendingReview.quarantine[0].key,"slap fight");
+assert.equal(pendingReview.quarantine[0].releaseBlocker,true);
+for(const entry of pendingReview.entries) {
+  assert(entry.source.startsWith("https://www.lemon64.com/game/"));
+  assert(meta.has(entry.key));
+  assert(ledger.added.some(row=>row[0]===entry.key));
+}
 const q=ledger.quarantined.find(x=>x.key==="armageddon");
 assert(q&&q.status==="unverified-game-identity","Ambiguous Armageddon must be quarantined");
 assert(!meta.has("armageddon"),"Do not attribute unrelated Armageddon games from a shared name");
