@@ -401,6 +401,82 @@ async function probeFloorFiveTripleThreatPressure(context,origin){
     assert.ok(after.health>0);
     assert.deepEqual(errors,[],"The simultaneous Floor 5 encounter must produce no JS faults");
     console.log("Dungeon R78 live 12s Count/Maw/Stalker at 2/3 generators passed:",JSON.stringify(after));
+    // Follow the same pressured encounter through the actual third-generator
+    // and boss damage owners. No teleport, staged save-restore or artificial
+    // defeat flag is used for these two final kills. The Count and Stalker
+    // stay active; the objective and rewards must settle exactly once.
+    const completion=await page.evaluate(()=>{
+      const fight=host.r114BossFight,maw=(host.enemies||[]).find(e=>e.id===fight.bossId),
+        generator=(host.generators||[]).find(g=>g.alive),
+        stalker=(host.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker);
+      if(!maw?.alive||!generator||!stalker?.alive||!host.stalker?.awake)
+        return{error:"Simultaneous Floor 5 threats missing before final progression"};
+      const generatorCountBefore=Number(run.stats.generators||0),scoreBefore=score;
+      damageGenerator(generator,Math.max(1,Number(generator.hp)||1),p1);
+      updateFloorObjective();
+      const afterGenerator={
+        dead:generator.alive===false,
+        destroyed:Number(run.stats.generators||0)-generatorCountBefore,
+        remaining:(host.generators||[]).filter(g=>g.alive).length,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        mawAlive:Boolean(maw.alive),scoreDelta:score-scoreBefore
+      };
+      const beforeMawScore=score;
+      damageEnemy(maw,Math.max(9999,Number(maw.hp||0)+Number(maw.armor||0)+1000),"physical",p1);
+      updateBossFight(16);
+      updateFloorObjective();
+      const afterMaw={
+        alive:Boolean(maw.alive),cleared:Boolean(fight.cleared),
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        scoreDelta:score-beforeMawScore,
+        lockedDoors:(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===fight.roomId&&d.locked).length,
+        rewardChests:(host.chests||[]).filter(c=>c.id==="r114-boss-chest-f5").length,
+        rewardSideItems:(host.items||[]).filter(i=>i.id==="r114-boss-map-5").length,
+        countAwake:Boolean(host.stalker.awake),stalkerAlive:Boolean(stalker.alive),
+        mode:String(mode||"")
+      };
+      const repeatScore=score,chests=(host.chests||[]).length,items=(host.items||[]).length,
+        kills=Number(run.stats.kills||0),generators=Number(run.stats.generators||0);
+      damageEnemy(maw,9999,"physical",p1);
+      damageGenerator(generator,9999,p1);
+      updateBossFight(16);updateFloorObjective();
+      const repeat={
+        score:score-repeatScore,
+        chests:(host.chests||[]).length-chests,
+        items:(host.items||[]).length-items,
+        kills:Number(run.stats.kills||0)-kills,
+        generators:Number(run.stats.generators||0)-generators,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        countAwake:Boolean(host.stalker.awake),stalkerAlive:Boolean(stalker.alive),
+        mode:String(mode||"")
+      };
+      return{afterGenerator,afterMaw,repeat};
+    });
+    assert.ok(!completion.error,JSON.stringify(completion));
+    assert.equal(completion.afterGenerator.dead,true,"The final generator must die through real damage");
+    assert.equal(completion.afterGenerator.destroyed,1);
+    assert.equal(completion.afterGenerator.remaining,0);
+    assert.equal(completion.afterGenerator.scoreDelta,700,"Third generator must award its usual 700 points");
+    assert.equal(completion.afterGenerator.mawAlive,true);
+    assert.equal(completion.afterGenerator.complete,false,"Living Maw must still prevent completion");
+    assert.equal(completion.afterGenerator.exit,false);
+    assert.equal(completion.afterMaw.alive,false,"The real enemy damage owner must defeat Maw");
+    assert.equal(completion.afterMaw.cleared,true);
+    assert.equal(completion.afterMaw.complete,true,"Three destroyed generators and defeated Maw must complete Floor 5");
+    assert.equal(completion.afterMaw.exit,true,"Final boss reward settlement must release Floor 5 stairs");
+    assert.equal(completion.afterMaw.lockedDoors,0,"The Maw room must reopen after the win");
+    assert.ok(completion.afterMaw.scoreDelta>=2500,"The boss must award its canonical victory bonus");
+    assert.ok(completion.afterMaw.rewardChests<=1&&completion.afterMaw.rewardSideItems<=1,
+      "The Floor 5 boss must never duplicate unique rewards");
+    assert.equal(completion.afterMaw.countAwake,true);
+    assert.equal(completion.afterMaw.stalkerAlive,true);
+    assert.equal(completion.afterMaw.mode,"playing");
+    assert.deepEqual(completion.repeat,{
+      score:0,chests:0,items:0,kills:0,generators:0,
+      complete:true,exit:true,countAwake:true,stalkerAlive:true,mode:"playing"
+    },"Repeated final damage and boss settlement must not re-award progress");
+    assert.deepEqual(errors,[],"Completing the pressured Floor 5 battle must raise no browser errors");
+    console.log("Dungeon R78 post-pressure third generator, Guardian Maw defeat and exact-once progression passed:",JSON.stringify(completion));
   }finally{
     await page.close();
   }
