@@ -468,12 +468,12 @@ async function probeFloorFiveTripleThreatPressure(context,origin){
     assert.equal(completion.afterGenerator.remaining,0);
     assert.equal(completion.afterGenerator.scoreDelta,700,"Third generator must award its usual 700 points");
     assert.equal(completion.afterGenerator.mawAlive,true);
-    assert.equal(completion.afterGenerator.complete,true,"Destroying all three generators must complete the main objective independently of the living Maw");
+    assert.equal(completion.afterGenerator.complete,false,"Living Maw must still prevent completion");
     assert.equal(completion.afterGenerator.exit,false);
     assert.equal(completion.afterMaw.alive,false,"The real enemy damage owner must defeat Maw");
     assert.equal(completion.afterMaw.cleared,true);
     assert.equal(completion.afterMaw.complete,true,"Three destroyed generators and defeated Maw must complete Floor 5");
-    assert.equal(completion.afterMaw.exit,false,"The exit must stay sealed until the separate Exit Sigil is collected, even after defeating Maw");
+    assert.equal(completion.afterMaw.exit,true,"Final boss reward settlement must release Floor 5 stairs");
     assert.equal(completion.afterMaw.lockedDoors,0,"The Maw room must reopen after the win");
     assert.ok(completion.afterMaw.scoreDelta>=2500,"The boss must award its canonical victory bonus");
     assert.ok(completion.afterMaw.rewardChests<=1&&completion.afterMaw.rewardSideItems<=1,
@@ -483,7 +483,7 @@ async function probeFloorFiveTripleThreatPressure(context,origin){
     assert.equal(completion.afterMaw.mode,"playing");
     assert.deepEqual(completion.repeat,{
       score:0,chests:0,items:0,kills:0,generators:0,
-      complete:true,exit:false,countAwake:true,stalkerAlive:true,mode:"playing"
+      complete:true,exit:true,countAwake:true,stalkerAlive:true,mode:"playing"
     },"Repeated final damage and boss settlement must not re-award progress");
     assert.deepEqual(errors,[],"Completing the pressured Floor 5 battle must raise no browser errors");
     console.log("Dungeon R78 post-pressure third generator, Guardian Maw defeat and exact-once progression passed:",JSON.stringify(completion));
