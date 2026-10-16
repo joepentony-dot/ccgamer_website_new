@@ -37,6 +37,24 @@ const allEntries = [
 ];
 const originals = allEntries.filter(item => item.format !== "crt");
 const originalsByTitle = new Set(originals.map(item => normaliseCatalogSearch(item.title)));
+const retiredTitles = new Set();
+// Earlier packed editions may now be physically retired, but only after the
+// guarded repacker verified every original byte slice, every replacement CRT
+// and a stable exact-ID alias. Their binaries remain recoverable in Git history.
+for (const source of ["blast", "prg-archive"]) {
+  const aliases = JSON.parse(fs.readFileSync(
+    "emulator/c64/media/" + source + "/retired-ids.json", "utf8"));
+  assert.equal(aliases.version, 1);
+  assert.equal(aliases.source, source);
+  assert.equal(aliases.recordCount, Object.keys(aliases.mappings).length);
+  for (const chosenId of Object.values(aliases.mappings)) {
+    const replacement = hosted.entries.find(entry =>
+      entry.id === chosenId && entry.format === "crt" &&
+      entry.approved === true && entry.preferOverOtherFormats === true);
+    assert(replacement, "A retired packed PRG lost its verified CRT identity: " + chosenId);
+    retiredTitles.add(normaliseCatalogSearch(replacement.title));
+  }
+}
 const selected = preferSelectedCartridges(allEntries);
 const visibleByTitle = new Map();
 for (const row of selected) {
@@ -64,7 +82,8 @@ for (const [index, item] of manifest.games.entries()) {
     assert.equal(hostedCRT[0].url, item.proposed_path);
     assert.equal(hostedCRT[0].sha256, item.sha256);
     assert.equal(hostedCRT[0].bytes, item.size);
-    assert(originalsByTitle.has(key), "Rollback version must remain on disk: " + name);
+    assert(originalsByTitle.has(key) || retiredTitles.has(key),
+      "Selected CRT requires either an original disk/PRG or a SHA-audited retirement alias: " + name);
     const visible = visibleByTitle.get(key) || [];
     assert.equal(visible.length, 1, "Only chosen CRT should be displayed: " + name);
     assert.equal(visible[0].id, hostedCRT[0].id);
