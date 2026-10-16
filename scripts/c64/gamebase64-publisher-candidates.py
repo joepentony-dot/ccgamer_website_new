@@ -7,6 +7,7 @@ metadata, source CSV or the repository. No fuzzy auto-attribution.
 """
 import argparse
 import csv
+import hashlib
 import json
 import re
 import sys
@@ -51,7 +52,7 @@ def lookup(rows, id_col, name_col, kind):
     return values
 
 
-def audit(game_file, publisher_file, year_file, unmatched_file):
+def audit(game_file, publisher_file, year_file, unmatched_file, *, cursor=0, batch_size=None, quarantine_file=None):
     gf, games = read_csv(game_file)
     pf, publishers = read_csv(publisher_file)
     yf, years = read_csv(year_file)
@@ -81,6 +82,33 @@ def audit(game_file, publisher_file, year_file, unmatched_file):
             or not all(isinstance(x, str) for x in collision)
             or any(key(x) != x for x in unmatched + collision)):
         raise ValueError('Expected canonical, collision-aware CCG unmatched JSON ledger')
+    if not isinstance(cursor, int) or cursor < 0 or cursor > len(unmatched):
+        raise ValueError('Cursor outside current unmatched identity ledger')
+    if batch_size is not None and (not isinstance(batch_size, int) or not 1 <= batch_size <= 1000):
+        raise ValueError('Batch size must be between 1 and 1000')
+    sorted_keys = sorted(unmatched)
+    selected = sorted_keys[cursor:cursor + batch_size if batch_size is not None else None]
+    quarantine = set()
+    if quarantine_file is not None:
+        quarantine_ledger = json.loads(Path(quarantine_file).read_text(encoding='utf-8'))
+        held = quarantine_ledger.get('quarantined')
+        if quarantine_ledger.get('version') != 1 or not isinstance(held, list):
+            raise ValueError('Invalid publisher quarantine ledger')
+        for entry in held:
+            if (not isinstance(entry, dict) or not isinstance(entry.get('key'), str)
+                    or key(entry['key']) != entry['key']
+                    or not str(entry.get('status', '')).startswith('unverified-')
+                    or entry['key'] in quarantine):
+                raise ValueError('Invalid or repeated publisher quarantine key')
+            quarantine.add(entry['key'])
+    source_hashes = {
+        'gamesCSV': hashlib.sha256(Path(game_file).read_bytes()).hexdigest(),
+        'publishersCSV': hashlib.sha256(Path(publisher_file).read_bytes()).hexdigest(),
+        'yearsCSV': hashlib.sha256(Path(year_file).read_bytes()).hexdigest(),
+        'unmatchedJSON': hashlib.sha256(Path(unmatched_file).read_bytes()).hexdigest(),
+    }
+    if quarantine_file is not None:
+        source_hashes['quarantineJSON'] = hashlib.sha256(Path(quarantine_file).read_bytes()).hexdigest()
     excluded = set(collision)
     index = defaultdict(list)
     seen_ids = set()
@@ -95,7 +123,10 @@ def audit(game_file, publisher_file, year_file, unmatched_file):
     generic = {'game', 'demo', 'preview', 'test', 'menu', 'intro', 'utility',
                'part 1', 'part 2', 'side a', 'side b', 'unknown', 'adventure', 'arcade'}
     candidates, review = [], []
-    for identity in sorted(unmatched):
+    for identity in selected:
+        if identity in quarantine:
+            review.append({'key': identity, 'reason': 'publisher-provenance-quarantine'})
+            continue
         hits = index.get(identity, [])
         if not hits:
             review.append({'key': identity, 'reason': 'no-exact-title-match'})
@@ -127,9 +158,16 @@ def audit(game_file, publisher_file, year_file, unmatched_file):
                            'source': {'database': 'GameBase64 v19 (local CSV export)',
                                       'Games.GA_Id': ident, 'Games.GA_Name': source_title,
                                       'Games.GA_Publisher': publisher_id,
-                                      'Games.GA_Year': year_id}})
+                                      'Games.GA_Year': year_id,
+                                      'gamesCSV_SHA256': source_hashes['gamesCSV'],
+                                      'publishersCSV_SHA256': source_hashes['publishersCSV'],
+                                      'yearsCSV_SHA256': source_hashes['yearsCSV']}})
     return {'version': 1, 'mode': 'read-only-research-candidates',
             'scope': ledger['auditScope'], 'unmatchedInput': len(unmatched),
+            'processedInBatch': len(selected), 'cursor': cursor,
+            'nextCursor': cursor + len(selected),
+            'complete': cursor + len(selected) == len(unmatched),
+            'sourceSHA256': source_hashes, 'quarantinedSourceKeys': len(quarantine),
             'candidateCount': len(candidates), 'manualReviewCount': len(review),
             'candidates': candidates, 'unmatchedOrAmbiguous': review}
 
@@ -138,9 +176,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('games', 'publishers', 'years', 'unmatched-json'):
         parser.add_argument('--' + name, required=True)
+    parser.add_argument('--cursor', type=int, default=0, help='0-based offset into sorted unmatched keys')
+    parser.add_argument('--batch-size', type=int, default=None, help='1..1000 unmatched keys per resumable audit')
+    parser.add_argument('--quarantine-json', help='Publisher research quarantine; prevents known ambiguous editions')
     args = parser.parse_args()
     try:
-        result = audit(args.games, args.publishers, args.years, args.unmatched_json)
+        result = audit(args.games, args.publishers, args.years, args.unmatched_json,
+                       cursor=args.cursor, batch_size=args.batch_size,
+                       quarantine_file=args.quarantine_json)
     except (OSError, ValueError, csv.Error, json.JSONDecodeError) as exc:
         parser.error(str(exc))
     json.dump(result, sys.stdout, indent=2, ensure_ascii=False)

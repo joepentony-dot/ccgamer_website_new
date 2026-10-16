@@ -105,4 +105,41 @@ with tempfile.TemporaryDirectory() as directory:
     assert rejected.returncode != 0
     assert 'Conflicting publisher lookup ID' in rejected.stderr
 
+    # Resume from a deterministic offset; no repeat of the first unmatched keys.
+    table('Publishers', ['PU_Id', 'PU_Name'], [
+        ['7', 'Sega'], ['8', 'Ocean Software'], ['9', 'Visions Software Factory'],
+        ['10', '(Unknown)']])
+    ledger.write_text(json.dumps(full))
+    batch = json.loads(subprocess.run(
+        command + ['--cursor', '0', '--batch-size', '3'],
+        capture_output=True, text=True, check=True).stdout)
+    assert batch['processedInBatch'] == 3 and batch['cursor'] == 0
+    assert batch['nextCursor'] == 3 and not batch['complete']
+    assert batch['candidateCount'] == 0 and batch['manualReviewCount'] == 3
+    assert all(len(digest) == 64 for digest in batch['sourceSHA256'].values())
+
+    quarantine = root / 'quarantine.json'
+    quarantine.write_text(json.dumps({'version': 1, 'quarantined': [
+        {'key': 'zaxxon', 'status': 'unverified-release-edition'}]}))
+    tail = json.loads(subprocess.run(
+        command + ['--cursor', '6', '--batch-size', '1',
+                   '--quarantine-json', str(quarantine)],
+        capture_output=True, text=True, check=True).stdout)
+    assert tail['processedInBatch'] == 1 and tail['nextCursor'] == 7
+    assert tail['complete'] and tail['candidateCount'] == 0
+    assert tail['unmatchedOrAmbiguous'] == [
+        {'key': 'zaxxon', 'reason': 'publisher-provenance-quarantine'}]
+    assert 'quarantineJSON' in tail['sourceSHA256']
+
+    rejected = subprocess.run(command + ['--cursor', '99'], capture_output=True, text=True)
+    assert rejected.returncode != 0 and 'Cursor outside' in rejected.stderr
+    rejected = subprocess.run(command + ['--batch-size', '0'], capture_output=True, text=True)
+    assert rejected.returncode != 0 and 'Batch size' in rejected.stderr
+    quarantine.write_text(json.dumps({'version': 1, 'quarantined': [
+        {'key': 'zaxxon', 'status': 'unverified-release-edition'},
+        {'key': 'zaxxon', 'status': 'unverified-release-edition'}]}))
+    rejected = subprocess.run(command + ['--quarantine-json', str(quarantine)],
+                              capture_output=True, text=True)
+    assert rejected.returncode != 0 and 'repeated publisher quarantine' in rejected.stderr
+
 print('PASS: GameBase candidate-only joins, collision quarantine and fail-closed identities')
