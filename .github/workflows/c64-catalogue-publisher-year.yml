@@ -17,6 +17,8 @@ on:
       - 'tests/c64-catalogue-publisher-year.mjs'
       - 'tests/c64-publisher-research-provenance.mjs'
       - 'tests/c64-visible-publisher-coverage.mjs'
+      - 'docs/ccg-c64-publisher-mame-exact-20261016.json'
+      - 'tests/c64-publisher-mame-snapshot.mjs'
       - 'docs/ccg-c64-publisher-visible-20261016.json'
       - 'emulator/c64/media/cartridge-replacements/active.json'
       - 'tests/c64-gamebase-publisher-candidates.test.py'
@@ -65,5 +67,6 @@ jobs:
           node tests/c64-catalogue-publisher-year.mjs
           node tests/c64-publisher-research-provenance.mjs
           node tests/c64-visible-publisher-coverage.mjs
+          node tests/c64-publisher-mame-snapshot.mjs
           python3 tests/c64-gamebase-publisher-candidates.test.py
           python3 tests/c64-mame-bulk-publisher-candidates.test.py

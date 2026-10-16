@@ -1,0 +1,553 @@
+{
+  "version": 1,
+  "auditDate": "2026-10-16",
+  "status": "READ-ONLY CANDIDATE SOURCES — not edition-verified and never auto-publish",
+  "mameSourceCommit": "41a80b9dbaedbd4d0f1c2db6771d778a34547e59",
+  "sourceLicence": "CC0-1.0 (MAME software-list headers)",
+  "sources": [
+    {
+      "filename": "c64_cass.xml",
+      "pinnedUrl": "https://github.com/mamedev/mame/blob/41a80b9dbaedbd4d0f1c2db6771d778a34547e59/hash/c64_cass.xml",
+      "softwareRecords": 1101
+    },
+    {
+      "filename": "c64_cart.xml",
+      "pinnedUrl": "https://github.com/mamedev/mame/blob/41a80b9dbaedbd4d0f1c2db6771d778a34547e59/hash/c64_cart.xml",
+      "softwareRecords": 457
+    },
+    {
+      "filename": "c64_flop_orig.xml",
+      "pinnedUrl": "https://github.com/mamedev/mame/blob/41a80b9dbaedbd4d0f1c2db6771d778a34547e59/hash/c64_flop_orig.xml",
+      "softwareRecords": 114
+    }
+  ],
+  "sourceLedger": {
+    "file": "docs/ccg-c64-publisher-visible-20261016.json",
+    "blob": "a22e46f8cd2d56ce752c8466c7668786c4f1c8b4",
+    "unmatchedPublisherIdentities": 7044
+  },
+  "researchLedger": {
+    "file": "emulator/c64/publisher-research-sources.json",
+    "blob": "2d868783c9260bd53e03c2f08e5e93f454887b8c"
+  },
+  "method": "Only exact normalized-title MAME C64 entries joined to currently publisher-unlisted visible game identities. Quarantine collisions, clones, ambiguous generic titles and multi-record matches; remaining candidates are NOT independently version-verified.",
+  "counts": {
+    "mameSoftwareRecords": 1672,
+    "fullVisibleUnmatched": 7044,
+    "exactMatchedTitles": 34,
+    "sourceOnlyCandidates": 9,
+    "requiresReview": 25
+  },
+  "candidates": [
+    {
+      "key": "bridge",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "bridge",
+          "cloneOf": null,
+          "title": "Bridge",
+          "publisher": "Handic Software",
+          "yearCandidate": 1983
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "escape",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "escape",
+          "cloneOf": null,
+          "title": "Escape",
+          "publisher": "Ocean",
+          "yearCandidate": 1986
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "frogger",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "frogger",
+          "cloneOf": null,
+          "title": "Frogger",
+          "publisher": "Parker Brothers",
+          "yearCandidate": 1983
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "golf master",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "golfmstr",
+          "cloneOf": null,
+          "title": "Golf Master",
+          "publisher": "Rack It",
+          "yearCandidate": 1988
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "panic",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "panic",
+          "cloneOf": null,
+          "title": "Panic",
+          "publisher": "Datamaxx",
+          "yearCandidate": 1983
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "samson",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "samson",
+          "cloneOf": null,
+          "title": "Samson",
+          "publisher": "Roßmöller",
+          "yearCandidate": null
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "super trux",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "suprtrux",
+          "cloneOf": null,
+          "title": "Super Trux",
+          "publisher": "Encore",
+          "yearCandidate": 1990
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "tenpins",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "tenpins",
+          "cloneOf": null,
+          "title": "Tenpins",
+          "publisher": "Entertainment Software",
+          "yearCandidate": 1989
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    },
+    {
+      "key": "time traveller",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "timetrav",
+          "cloneOf": null,
+          "title": "Time Traveller",
+          "publisher": "Mindscape Inc.",
+          "yearCandidate": 1989
+        }
+      ],
+      "status": "unverified-manual-review-required"
+    }
+  ],
+  "requiresReview": [
+    {
+      "key": "3d pinball",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "3dpinbl",
+          "cloneOf": null,
+          "title": "3D Pinball",
+          "publisher": "Mastertronic Plus",
+          "yearCandidate": 1989
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "aquanaut",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "aquanaut",
+          "cloneOf": null,
+          "title": "Aquanaut",
+          "publisher": "Interceptor Software",
+          "yearCandidate": 1984
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "armageddon",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "armagedn",
+          "cloneOf": null,
+          "title": "Armageddon",
+          "publisher": "Ocean",
+          "yearCandidate": 1983
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "avenger",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "avenger",
+          "cloneOf": null,
+          "title": "Avenger",
+          "publisher": "Gremlin Graphics",
+          "yearCandidate": 1986
+        }
+      ],
+      "reason": "multiple-prg-digests"
+    },
+    {
+      "key": "battle ships",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "bships",
+          "cloneOf": null,
+          "title": "Battle Ships",
+          "publisher": "Encore",
+          "yearCandidate": 1988
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "capture",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "capture",
+          "cloneOf": null,
+          "title": "Capture",
+          "publisher": "J. Ranheim",
+          "yearCandidate": 1985
+        }
+      ],
+      "reason": "multiple-prg-digests"
+    },
+    {
+      "key": "flak",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "flak",
+          "cloneOf": null,
+          "title": "Flak",
+          "publisher": "U.S. Gold",
+          "yearCandidate": 1984
+        }
+      ],
+      "reason": "multiple-prg-digests"
+    },
+    {
+      "key": "h a t e hostile all terrain encounter",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "hate",
+          "cloneOf": null,
+          "title": "H.A.T.E: Hostile All Terrain Encounter",
+          "publisher": "Erbe",
+          "yearCandidate": 1989
+        },
+        {
+          "sourceFile": "c64_flop_orig.xml",
+          "softwareId": "hate",
+          "cloneOf": null,
+          "title": "H.A.T.E.: Hostile All-Terrain Encounter",
+          "publisher": "Gremlin Graphics / Vortex Software",
+          "yearCandidate": 1989
+        }
+      ],
+      "reason": "multiple-mame-entries"
+    },
+    {
+      "key": "jonah barringtons squash",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "jbsquash",
+          "cloneOf": null,
+          "title": "Jonah Barrington's Squash",
+          "publisher": "Mastertronic Plus",
+          "yearCandidate": 1989
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "kong",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "kong",
+          "cloneOf": null,
+          "title": "Kong",
+          "publisher": "Anirog",
+          "yearCandidate": 1983
+        }
+      ],
+      "reason": "generic-title"
+    },
+    {
+      "key": "monopole",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "monopole",
+          "cloneOf": null,
+          "title": "Monopole",
+          "publisher": "Rabbit Software",
+          "yearCandidate": 1983
+        }
+      ],
+      "reason": "multiple-prg-digests"
+    },
+    {
+      "key": "parallax",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "parallax",
+          "cloneOf": null,
+          "title": "Parallax",
+          "publisher": "The Hit Squad",
+          "yearCandidate": 1990
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "popeye",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "popeye",
+          "cloneOf": null,
+          "title": "Popeye",
+          "publisher": "Macmillan Software",
+          "yearCandidate": 1986
+        },
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "popeye",
+          "cloneOf": null,
+          "title": "Popeye",
+          "publisher": "Parker Brothers",
+          "yearCandidate": 1983
+        }
+      ],
+      "reason": "multiple-mame-entries"
+    },
+    {
+      "key": "prodigy",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "prodigy",
+          "cloneOf": null,
+          "title": "Prodigy",
+          "publisher": "Firebird Silver",
+          "yearCandidate": 1987
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "sentinel",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "sentinel",
+          "cloneOf": null,
+          "title": "Sentinel",
+          "publisher": "Americana",
+          "yearCandidate": 1986
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "slap fight",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "slapfight",
+          "cloneOf": null,
+          "title": "Slap Fight",
+          "publisher": "Erbe",
+          "yearCandidate": 1987
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "snare",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "snare",
+          "cloneOf": null,
+          "title": "Snare",
+          "publisher": "Thalamus",
+          "yearCandidate": 1989
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "star wars return of the jedi",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "rotj",
+          "cloneOf": null,
+          "title": "Star Wars: Return of the Jedi",
+          "publisher": "The Hit Squad",
+          "yearCandidate": 1991
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "strip poker",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "spoker",
+          "cloneOf": null,
+          "title": "Strip Poker",
+          "publisher": "U.S. Gold",
+          "yearCandidate": 1984
+        },
+        {
+          "sourceFile": "c64_flop_orig.xml",
+          "softwareId": "spoker",
+          "cloneOf": null,
+          "title": "Strip Poker",
+          "publisher": "Artworx",
+          "yearCandidate": 1984
+        }
+      ],
+      "reason": "multiple-mame-entries"
+    },
+    {
+      "key": "super zaxxon",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "szaxxon",
+          "cloneOf": null,
+          "title": "Super Zaxxon",
+          "publisher": "U.S. Gold",
+          "yearCandidate": 1984
+        },
+        {
+          "sourceFile": "c64_cart.xml",
+          "softwareId": "szaxxon",
+          "cloneOf": null,
+          "title": "Super Zaxxon",
+          "publisher": "HesWare",
+          "yearCandidate": 1984
+        }
+      ],
+      "reason": "multiple-mame-entries"
+    },
+    {
+      "key": "talladega",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "taladega",
+          "cloneOf": null,
+          "title": "Talladega",
+          "publisher": "Americana",
+          "yearCandidate": 1985
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "tank",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "tank",
+          "cloneOf": null,
+          "title": "Tank",
+          "publisher": "Ocean",
+          "yearCandidate": 1987
+        }
+      ],
+      "reason": "generic-title"
+    },
+    {
+      "key": "wizardry",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "wizardry",
+          "cloneOf": null,
+          "title": "Wizardry",
+          "publisher": "The Edge",
+          "yearCandidate": 1985
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "world series baseball",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "wsb",
+          "cloneOf": null,
+          "title": "World Series Baseball",
+          "publisher": "The Hit Squad",
+          "yearCandidate": 1989
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    },
+    {
+      "key": "zodiac",
+      "sourceRecords": [
+        {
+          "sourceFile": "c64_cass.xml",
+          "softwareId": "zodiac",
+          "cloneOf": null,
+          "title": "Zodiac",
+          "publisher": "Anirog",
+          "yearCandidate": 1984
+        }
+      ],
+      "reason": "publisher-provenance-quarantine"
+    }
+  ]
+}
