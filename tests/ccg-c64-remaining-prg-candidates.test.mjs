@@ -68,7 +68,7 @@ assert.equal(excluded.version, 1);
 assert.equal(excluded.status, "EXPLICIT NEGATIVE CONTROLS — prevent accidental cross-game title similarity replacement");
 assert.equal(excluded.sourceCandidateLedgerBlob, "a048f2193537af1ebabd10736c31801afb786e1e");
 assert.deepEqual(excluded.distinctTitleFamilyPairs.map(e => e.prgId).sort(),
-  ["archive-00551", "archive-01057"]);
+  ["archive-00235","archive-00551","archive-00891","archive-00983","archive-01057"]);
 for (const pair of excluded.distinctTitleFamilyPairs) {
   assert.equal(pair.classification, "known-different-C64-game-title-family");
   assert.equal(pair.releaseSafeToRetire, false);
