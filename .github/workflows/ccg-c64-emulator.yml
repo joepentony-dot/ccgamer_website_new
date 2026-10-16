@@ -41,6 +41,9 @@ jobs:
       - name: Verify mobile game buttons prevent native text selection and keep search editable
         run: node --test tests/ccg-c64-mobile-button-selection.test.mjs
 
+      - name: Verify eight-way mobile C64 D-pad diagonals and pointer release
+        run: node tests/ccg-c64-eight-way-dpad.test.mjs
+
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
 
