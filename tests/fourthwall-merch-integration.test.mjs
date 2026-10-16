@@ -94,8 +94,8 @@ test("adaptive desktop More always includes the official Merch Shop link", () =>
 
 test("retired shop CSS never hides the current official Fourthwall store", () => {
     const css = read("resources/css/passive-income.css");
-    assert.doesNotMatch(css, /a\\[href\\*=[\"']fourthwall\\.com[\"']\\]/i,
+    assert.doesNotMatch(css, /a\[href\*=["']fourthwall\.com["']\]/i,
         "a broad Fourthwall display:none rule would also hide live homepage and desktop More shop links");
-    assert.match(css, /\\.ccg-footer-legal a\\[href="\\/shop\\.html"\\]/,
+    assert.match(css, /\.ccg-footer-legal a\[href="\/shop\.html"\]/,
         "the retired shop route must remain suppressed only in its former placements");
 });
