@@ -1013,7 +1013,7 @@ function updateStalker(dt){
   if(md(s,target)<=C.stalker.drainDistance){
     // Corrupt saved countdowns or long suspended-frame deltas must never
     // trap the main game update in an unbounded drain loop.
-    const previous=Number(s.drainTimer);
+    const previous=s.drainTimer==null?NaN:Number(s.drainTimer);
     const remaining=Number.isFinite(previous)&&previous>=-1000&&previous<=1000?previous:1000;
     const elapsed=Number.isFinite(dt)?Math.max(0,Math.min(dt,5000)):0;
     const due=remaining-elapsed,ticks=Math.min(5,Math.max(0,Math.ceil((1-due)/1000))),residual=due+ticks*1000;

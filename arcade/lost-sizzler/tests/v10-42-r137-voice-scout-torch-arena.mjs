@@ -98,5 +98,10 @@ count.drainTimer=Number.NEGATIVE_INFINITY;
 vm.runInContext("this.tickCount(16);",countCtx,{timeout:1200});
 assert.equal(countCtx.score,430);
 assert.ok(count.drainTimer>0&&Number.isFinite(count.drainTimer));
+count.drainTimer=null;
+const beforeNull=countCtx.score;
+vm.runInContext("this.tickCount(16);",countCtx,{timeout:1200});
+assert.equal(countCtx.score,beforeNull,"JSON-restored null timer must retain original 1-second grace");
+assert.ok(count.drainTimer>0&&Number.isFinite(count.drainTimer));
 
 console.log("PASS R137 voice watchdog pause, Scout rescue and genuine torch entry (solo dungeon only)");
