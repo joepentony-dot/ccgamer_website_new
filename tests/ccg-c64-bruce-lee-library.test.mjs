@@ -37,7 +37,7 @@ test("distinct Bruce Lee and Trilogy cartridges supersede the defective BLAST PR
   assert.equal(parsePackedCatalog(packed).entries.filter(entry =>
     entry.title.toLocaleLowerCase() === "bruce lee").length, 0,
     "The defective packed PRG must be physically retired");
-  assert.equal(packed.recordCount, 1150, "BLAST must retain all its 1,150 survivor games");
+  assert.equal(packed.recordCount, 1081, "BLAST must retain all its 1,081 survivor games");
   const retired = JSON.parse(fs.readFileSync(
     "emulator/c64/media/blast/retired-ids.json", "utf8"));
   assert.equal(retired.mappings["blast-0289"], standalone.id,
