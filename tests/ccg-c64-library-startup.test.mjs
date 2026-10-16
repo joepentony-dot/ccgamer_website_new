@@ -14,6 +14,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
 const direct = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/library.json"), "utf8"));
 const blast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/catalog.json"), "utf8"));
+const retiredBlast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/retired-ids.json"), "utf8"));
+const retiredArchive = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/prg-archive/retired-ids.json"), "utf8"));
 const moreCrt = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/cartridge-replacements/active.json"), "utf8"));
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
 const end = app.indexOf("async function loadSelectedLibraryEntry()", begin);
@@ -53,10 +55,10 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
         throw new Error("HEAD denied by CDN"); // All old results would disappear.
       }
       if (url === "/emulator/c64/media/blast/retired-ids.json") {
-        return { ok: true, json: async () => ({
-          version: 1, source: "blast", recordCount: 1,
-          mappings: { "blast-0000": "owner-crt-more-10th-frame" },
-        }) };
+        return { ok: true, json: async () => retiredBlast };
+      }
+      if (url === "/emulator/c64/media/prg-archive/retired-ids.json") {
+        return { ok: true, json: async () => retiredArchive };
       }
       if (url === "/emulator/c64/library.json") {
         return { ok: true, json: async () => direct };
@@ -67,7 +69,7 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
           : { ok: false, status: 404 };
       }
       if (url === ARCHIVE_READY_URL) {
-        return { ok: false, status: 404 }; // No optional archive media is published yet.
+        return { ok: false, status: 404 }; // Simulate archive temporarily unavailable; direct CRT fallback must still work.
       }
       if (url === PACK_CATALOG_URL) {
         // Simulate a physically retired historic PRG when checking its alias.
@@ -88,11 +90,13 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
 }
 
 const good = await execute(true);
-assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 222,
-  "Retired single-disk entries remain present as directly available CRT fallbacks");
-assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 161,
-  "Preserve all existing promoted CRTs plus eight directly hosted D64 replacements");
+assert.equal(blast.recordCount, 1150, "All 1,150 surviving BLAST PRGs remain packed and SHA verified");
+assert.equal(direct.entries.length, 1770,
+  "The 947 former entries and 823 archive replacement CRTs must remain registered");
+assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 1709,
+  "Preserve previous promoted CRTs and all 823 new archive replacement CRTs");
+assert.equal(retiredArchive.recordCount, 1528,
+  "All 1528 superseded archive bookmarks must retain CRT mappings");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
@@ -111,9 +115,18 @@ for (const [id, title] of [
     game.url === "/emulator/c64/media/" + id + ".crt" && game.approved,
     "Verified EasyFlash title must remain published at its exact local URL: " + id);
 }
-assert.equal(good.context.onlineLibraryEntries.length, 2010,
-  "All distinct playable titles must remain available, with five duplicate identities shown once");
-assert.equal(good.context.onlineLibraryStatus.textContent, "2,010 READY");
+// Keep the startup count derived from the exact owner-authenticated game data,
+// not frozen at the previous 947-entry direct-catalogue release.
+const registeredKeys = new Set(direct.entries.map(entry =>
+  `${entry.title.trim().toLowerCase()}|${String(entry.format).toLowerCase()}`));
+const packedSurvivors = parsePackedCatalog(blast).entries.filter(entry =>
+  entry.title.trim().toLowerCase() !== "bruce lee" &&
+  !registeredKeys.has(`${entry.title.trim().toLowerCase()}|${entry.format}`));
+const expectedVisible = preferSelectedCartridges([...direct.entries, ...packedSurvivors]).length;
+assert.equal(good.context.onlineLibraryEntries.length, expectedVisible,
+  "Surviving BLAST PRGs and registered CRT replacements must remain visible");
+assert.equal(good.context.onlineLibraryStatus.textContent,
+  expectedVisible.toLocaleString("en-GB") + " READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
 assert.equal(good.fetchRequests.length, 4, "Direct, optional CRT, Blast and archive activation are probed once");
@@ -122,8 +135,9 @@ assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 
 const failed = await execute(false);
-assert.equal(failed.context.onlineLibraryEntries.length, 221,
-  "Direct CRT-first games must survive pack errors while hiding the duplicate Myth disk listing");
+assert.equal(failed.context.onlineLibraryEntries.length,
+  preferSelectedCartridges(direct.entries).length,
+  "All directly registered CRT replacements must remain available when BLAST is offline");
 assert.match(failed.context.onlineLibraryStatus.textContent, /BLAST UNAVAILABLE/);
 assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
@@ -145,6 +159,16 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 }
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
+// One of the 728 retired IDs resolves to a second approved edition of a
+// previously selected CRT. The older canonical H.E.R.O cartridge must remain
+// visible, and its former packed PRG bookmark must still launch that selection.
+assert.equal(retiredBlast.mappings["blast-0759"], "owner-crt-more-hero-d55737f6e620");
+const duplicateCrtLink = await execute(true, false, "blast-0759");
+assert.equal(duplicateCrtLink.statuses.selected, "owner-crt-h-e-r-o",
+  "Retired BLAST bookmark must select the original canonical CRT even when its mapped edition is hidden");
+assert.equal(duplicateCrtLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/blast/retired-ids.json").length, 1);
+
 
 // A previously shared packed PRG ID must still select the approved CRT after
 // physical compaction. The alias is fetched only for an unresolved deep link.
@@ -158,7 +182,25 @@ assert.equal(activated.fetchRequests.filter(x =>
   x.url.endsWith("/retired-ids.json")).length, 0,
   "Normal emulator browsing must not download retirement aliases");
 
-console.log("PASS: 2010 distinct selectable library entries appear without HEAD; owner-authorised CRTs survive catalogue errors, and retry is exposed.");
+// Archive PRG retirement must preserve the original URL identity even when
+// the optional archive is unavailable and the CRT manifest returns 404.
+assert.equal(retiredArchive.mappings["archive-00008"], "owner-crt-more-10th-frame");
+const retiredArchiveLink = await execute(true, false, "archive-00008");
+assert.equal(retiredArchiveLink.statuses.selected, "owner-crt-more-10th-frame",
+  "An archived PRG bookmark must select its directly registered CRT");
+assert.equal(retiredArchiveLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
+
+// When multiple approved CRT editions share a title, legacy links must
+// select the visible original owner-approved CRT rather than disappear.
+assert.equal(retiredArchive.mappings["archive-03844"], "owner-crt-more-hero-d55737f6e620");
+const archivalHeroLink = await execute(true, false, "archive-03844");
+assert.equal(archivalHeroLink.statuses.selected, "owner-crt-h-e-r-o",
+  "An archived H.E.R.O PRG bookmark must select the existing canonical CRT");
+assert.equal(archivalHeroLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
+
+console.log(`PASS: ${expectedVisible} visible BLAST/direct games with archive CRT fallbacks; 1,528 retired archive bookmarks and original CRT priority preserved.`);
 
 // CCG_BATCH_VERIFIED_MEDIA â€” owner-supplied individual disks and every swap side.
 const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"x-out","title":"X-Out"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"},{"id":"world-games","title":"World Games"},{"id":"kennedy-approach","title":"Kennedy Approach"},{"id":"hessian","title":"Hessian"},{"id":"soul-force","title":"Soul Force"},{"id":"lords-of-conquest","title":"Lords of Conquest"},{"id":"times-of-lore","title":"Times of Lore"},{"id":"supremacy","title":"Supremacy: Your Will Be Done"},{"id":"strike-fleet","title":"Strike Fleet"},{"id":"the-legend-of-blacksilver","title":"The Legend of Blacksilver"},{"id":"killed-until-dead","title":"Killed Until Dead"},{"id":"pool-of-radiance","title":"Pool of Radiance"},{"id":"ultima-iii-exodus","title":"Ultima III: Exodus"},{"id":"buck-rogers-countdown-to-doomsday","title":"Buck Rogers: Countdown to Doomsday"},{"id":"briley-witch-chronicles","title":"Briley Witch Chronicles"},{"id":"project-firestart","title":"Project Firestart"},{"id":"legacy-of-the-ancients","title":"Legacy of the Ancients"},{"id":"project-stealth-fighter","title":"Project Stealth Fighter"}];
