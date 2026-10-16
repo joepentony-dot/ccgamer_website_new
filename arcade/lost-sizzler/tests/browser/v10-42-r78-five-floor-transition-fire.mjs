@@ -44,6 +44,70 @@ async function snapshot(page){
   }));
 }
 
+// Controlled browser-level Floor 5 acceptance, not the owner's save or a
+// natural movement/combat playthrough. Exercise actual gameplay owners together.
+async function probeFloorFiveSoftlockGuards(page){
+  const before=await snapshot(page);
+  assert.equal(before.floor,5);
+  const state=await page.evaluate(()=>{
+    if(!host?.stalker||!host?.r114BossFight||!p1||run?.floor!==5)return{error:"Required Floor 5 bosses missing"};
+    const generators=(host.generators||[]).filter(g=>g.alive),
+      stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    if(generators.length!==3||stalkers.length!==1)return{error:"Three generators and exactly one Death Stalker required",generators:generators.length,stalkers:stalkers.length};
+    const count=host.stalker,stalker=stalkers[0],initialScore=score,killsBefore=run.stats.generators||0;
+    p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;
+    count.spawnTimer=0;updateStalker(16);
+    const bothAlive=Boolean(count.awake&&!count.permanentlyBanished&&stalker.alive);
+    for(const g of generators.slice(0,2))damageGenerator(g,Math.max(1,g.hp),p1);
+    const twoComplete=Boolean(host.objective.complete),twoExit=Boolean(host.exitOpen);
+    damageGenerator(generators[2],Math.max(1,generators[2].hp),p1);
+    damageGenerator(generators[2],9999,p1);
+    updateFloorObjective();
+    const after={dead:generators.filter(g=>!g.alive).length,complete:Boolean(host.objective.complete),exit:Boolean(host.exitOpen),
+      kills:(run.stats.generators||0)-killsBefore,score:score-initialScore,
+      count:Boolean(count.awake&&!count.permanentlyBanished),stalker:Boolean(stalker.alive),
+      stalkerCount:(host.enemies||[]).filter(e=>e.deathStalker&&e.voidStalker).length};
+    const room=world.rooms?.[host.sigilRoomId];if(!room)return{error:"Sigil chamber missing",bothAlive,twoComplete,twoExit,after};
+    let cell=null;
+    for(let y=room.y+1;y<room.y+room.h&&!cell;y++)for(let x=room.x+1;x<room.x+room.w;x++)
+      if(world.map[y]?.[x]===0&&W.playerWalkable(world.map,x,y,host)&&!host.enemies.some(e=>e.alive&&e.x===x&&e.y===y)){cell={x,y};break}
+    if(!cell)return{error:"No safe Sigil chamber floor cell",bothAlive,twoComplete,twoExit,after};
+    p1.x=cell.x;p1.y=cell.y;p1.rx=cell.x;p1.ry=cell.y;
+    triggerSigilRoom(p1);
+    const defenders=SYS.sigilDefendersAlive(host),lockdown=host.sigilLockdown;
+    for(const e of defenders)e.alive=false; // interrupted final-hit callback recovery case
+    updateFloorObjective();
+    const recovered={resolved:host.sigilResolved,locked:host.sigilLockdown,
+      sigils:host.items.filter(i=>i.active&&i.kind==="exitSigil").length,
+      gates:(host.doors||[]).filter(d=>d.sigilGate).every(d=>!d.locked),exit:host.exitOpen};
+    updateFloorObjective();
+    recovered.sigilsAfterRetry=host.items.filter(i=>i.active&&i.kind==="exitSigil").length;
+    return{bothAlive,twoComplete,twoExit,after,lockdown,defenders:defenders.length,recovered,mode};
+  });
+  assert.ok(!state.error,`Generated Floor 5 scenario: ${state.error||""}`);
+  assert.equal(state.bothAlive,true,"Count and Death Stalker must coexist");
+  assert.equal(state.twoComplete,false,"2/3 generators cannot complete objective");
+  assert.equal(state.twoExit,false);
+  assert.equal(state.after.dead,3);
+  assert.equal(state.after.complete,true,"Real final generator defeat must complete objective");
+  assert.equal(state.after.kills,3,"No duplicate generator payouts");
+  assert.equal(state.after.score,2100);
+  assert.equal(state.after.exit,false,"Exit Sigil still required");
+  assert.equal(state.after.count,true);
+  assert.equal(state.after.stalker,true);
+  assert.equal(state.after.stalkerCount,1);
+  assert.equal(state.lockdown,true,"Sigil chamber must seal on entry");
+  assert.ok(state.defenders>0);
+  assert.equal(state.recovered.resolved,true,"Interrupted defender callback must not trap player");
+  assert.equal(state.recovered.locked,false);
+  assert.equal(state.recovered.gates,true);
+  assert.equal(state.recovered.sigils,1);
+  assert.equal(state.recovered.sigilsAfterRetry,1);
+  assert.equal(state.recovered.exit,false,"Recovery cannot bypass Exit Sigil pickup");
+  assert.equal(state.mode,"playing");
+  await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
+}
+
 async function proveFire(page,floor){
   const before=await page.evaluate(()=>{
     p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;p1.invuln=0;p1.hitStunMs=0;
@@ -96,6 +160,7 @@ try{
     assert.equal(entered.floor,next,`descent must reach floor ${next}`);
     assert.ok(entered.deepest>=next,`deepest-floor progress must reach ${next}`);
     assert.ok(entered.acceptedFrames>beforeTransition.acceptedFrames,`simulation clock must continue across descent to floor ${next}`);
+    if(next===5)await probeFloorFiveSoftlockGuards(page);
     floors.push(await proveFire(page,next));
   }
 
