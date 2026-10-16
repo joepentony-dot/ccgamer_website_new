@@ -135,6 +135,22 @@ for (const record of inheritedBatch.entries) {
       "Not a checked explicit side/part identity: " + key);
   }
 }
+// Independently identified C64 regional, same-name and original-vs-budget
+// conflicts must not become publisher credits through a bulk title join.
+const quarantinedBatchKeys = [
+  "3d pinball", "aquanaut", "battle ships", "gunslinger",
+  "jonah barringtons squash", "parallax", "prodigy", "sentinel",
+  "snare", "star wars return of the jedi", "talladega",
+  "wizardry", "world series baseball", "zodiac"
+];
+for (const key of quarantinedBatchKeys) {
+  const held = ledger.quarantined.find(x => x.key === key);
+  assert(held && /^unverified-/.test(held.status) &&
+    Array.isArray(held.evidence) && held.evidence.length > 0,
+    "Missing source-specific ambiguity evidence: " + key);
+  assert(!researchKeys.has(key) && !meta.has(key),
+    "Unverified regional/edition conflict promoted to publisher: " + key);
+}
 const q=ledger.quarantined.find(x=>x.key==="armageddon");
 assert(q&&q.status==="unverified-game-identity","Ambiguous Armageddon must be quarantined");
 assert(!meta.has("armageddon"),"Do not attribute unrelated Armageddon games from a shared name");
