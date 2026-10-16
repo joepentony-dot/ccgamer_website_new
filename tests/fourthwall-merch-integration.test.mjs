@@ -21,8 +21,9 @@ test("homepage displays the official Fourthwall shop after the hero and before a
         "moving merch must not displace the community or support sections");
     assert.equal((html.match(/class="home-merch-promo"/g) || []).length, 1,
         "only one merchandise panel should exist");
-    assert.ok(html.includes('<link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css" />'),
-        "merch styling must load directly without an onload-dependent preload");
+    assert.ok(html.includes('rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style"'),
+        "the existing non-blocking stylesheet contract must remain intact");
+    assert.ok(html.includes('<noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css"'));
     const panel = html.slice(html.lastIndexOf("<section", start), html.indexOf("</section>", start) + "</section>".length);
     assert.match(panel, /<section[^>]*class="home-merch-promo"[^>]*>\s*<a class="home-merch-promo__link"/);
     assert.doesNotMatch(panel, /class="home-merch-promo ccg-chapter"/,
