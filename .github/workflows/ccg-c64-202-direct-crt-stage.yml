@@ -17,6 +17,8 @@ on:
       - tests/ccg-c64-library-startup.test.mjs
       - tests/ccg-c64-blast-integrity.test.mjs
       - scripts/ccg-c64-post-migration-audit.mjs
+      - docs/ccg-crt-review/remaining-packed-prg-candidates-20261016.json
+      - tests/ccg-c64-remaining-prg-candidates.test.mjs
 permissions:
   contents: read
 jobs:
@@ -58,6 +60,7 @@ jobs:
           node scripts/ccg-c64-202-baseline-preservation.mjs
           node tests/ccg-c64-library-startup.test.mjs
           node tests/ccg-c64-blast-integrity.test.mjs
+          node tests/ccg-c64-remaining-prg-candidates.test.mjs
           test -z "$(git status --porcelain)"
 
   verify-latest-main-merge-tree:
