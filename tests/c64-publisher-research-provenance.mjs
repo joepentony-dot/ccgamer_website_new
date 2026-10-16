@@ -59,8 +59,11 @@ for (const record of verified.entries) {
     "Source-checked C64 release year changed: " + record.key);
   assert(Array.isArray(record.developerNotPublisher));
   assert(Array.isArray(record.releaserNotOriginalPublisher));
+  assert(record.copyrightNotPublisher === undefined ||
+    Array.isArray(record.copyrightNotPublisher));
   for (const excluded of [...record.developerNotPublisher,
-      ...record.releaserNotOriginalPublisher]) {
+      ...record.releaserNotOriginalPublisher,
+      ...(record.copyrightNotPublisher || [])]) {
     assert(!record.publishers.includes(excluded),
       "Developer or reissue company silently promoted to publisher: " + record.key);
   }
