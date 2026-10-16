@@ -42,7 +42,10 @@ const touchPad = {
   querySelectorAll() {
     return masks.map(mask => ({
       dataset: { joyMask: String(mask) },
-      classList: { toggle(name, on) { if (name === "is-pressed") visual.set(mask, on); } },
+      classList: {
+        toggle(name, on) { if (name === "is-pressed") visual.set(mask, on); },
+        remove(name) { if (name === "is-pressed") visual.set(mask, false); },
+      },
       setAttribute() {},
     }));
   },
