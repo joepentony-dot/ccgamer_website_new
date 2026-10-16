@@ -2,6 +2,7 @@
    Uses no vendor script, iframe, live product request or promotional image.
    Scoped near the top of the homepage before archive discovery. */
 html[data-ccg-page="home"] .home-merch-promo {
+    --home-merch-accent-rgb: 187, 112, 249;
     box-sizing: border-box;
     display: block;
     width: min(1200px, calc(100% - 24px));
@@ -9,12 +10,10 @@ html[data-ccg-page="home"] .home-merch-promo {
     margin: 18px auto 22px;
     padding: 0;
     color: #f0f7ff;
-    background: linear-gradient(105deg,
-        rgba(var(--accent-rgb, 0, 170, 255), 0.14),
-        rgba(7, 13, 32, 0.97) 68%);
-    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.48);
+    background: linear-gradient(112deg, rgba(79, 28, 123, 0.72) 0%, rgba(36, 16, 64, 0.96) 54%, rgba(11, 10, 30, 0.98) 100%);
+    border: 1px solid rgba(var(--home-merch-accent-rgb), 0.72);
     border-radius: 12px;
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.055), 0 10px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.11), 0 0 24px rgba(147, 66, 218, 0.14), 0 12px 28px rgba(0, 0, 0, 0.24);
 }
 html[data-ccg-page="home"] .home-merch-promo__link {
     box-sizing: border-box;
@@ -31,8 +30,8 @@ html[data-ccg-page="home"] .home-merch-promo__link {
 }
 html[data-ccg-page="home"] .home-merch-promo:hover,
 html[data-ccg-page="home"] .home-merch-promo:focus-within {
-    border-color: rgba(var(--accent-rgb, 0, 170, 255), 0.92);
-    background: linear-gradient(105deg, rgba(var(--accent-rgb, 0, 170, 255), 0.24), rgba(7, 13, 32, 0.97) 68%);
+    border-color: rgba(var(--home-merch-accent-rgb), 0.92);
+    background: linear-gradient(112deg, rgba(106, 38, 164, 0.78) 0%, rgba(48, 19, 81, 0.97) 54%, rgba(11, 10, 30, 0.98) 100%);
 }
 html[data-ccg-page="home"] .home-merch-promo__link:focus-visible {
     outline: 3px solid #fff;
@@ -46,8 +45,8 @@ html[data-ccg-page="home"] .home-merch-promo__mark {
     width: 62px;
     height: 62px;
     color: #fff;
-    background: rgba(var(--accent-rgb, 0, 170, 255), 0.15);
-    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.48);
+    background: rgba(var(--home-merch-accent-rgb), 0.26);
+    border: 1px solid rgba(var(--home-merch-accent-rgb), 0.72);
     border-radius: 10px;
     font: 800 1.08rem/1 "Orbitron", system-ui, sans-serif;
     letter-spacing: 0.025em;
@@ -58,7 +57,7 @@ html[data-ccg-page="home"] .home-merch-promo__copy {
 html[data-ccg-page="home"] .home-merch-promo__eyebrow {
     display: block;
     margin: 0 0 5px;
-    color: rgba(218, 239, 255, 0.85);
+    color: #e8ceff;
     font: 800 0.63rem/1.4 var(--ccg-font-mono, "Courier New", monospace);
     letter-spacing: 0.085em;
 }
@@ -69,7 +68,7 @@ html[data-ccg-page="home"] .home-merch-promo__title {
 }
 html[data-ccg-page="home"] .home-merch-promo__description {
     margin: 0;
-    color: rgba(230, 243, 255, 0.82);
+    color: rgba(242, 228, 255, 0.9);
     font-size: clamp(0.76rem, 1vw, 0.9rem);
     line-height: 1.55;
 }
@@ -81,10 +80,10 @@ html[data-ccg-page="home"] .home-merch-promo__action {
     gap: 8px;
     min-height: 44px;
     padding: 10px 15px;
-    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.78);
+    border: 1px solid rgba(var(--home-merch-accent-rgb), 0.78);
     border-radius: 8px;
     color: #fff;
-    background: rgba(var(--accent-rgb, 0, 170, 255), 0.20);
+    background: rgba(var(--home-merch-accent-rgb), 0.37);
     font: 800 0.72rem/1.4 var(--ccg-font-mono, "Courier New", monospace);
     letter-spacing: 0.04em;
     text-align: center;
@@ -93,8 +92,8 @@ html[data-ccg-page="home"] .home-merch-promo__action {
 }
 html[data-ccg-page="home"] .home-merch-promo:hover .home-merch-promo__action,
 html[data-ccg-page="home"] .home-merch-promo:focus-within .home-merch-promo__action {
-    background: rgba(var(--accent-rgb, 0, 170, 255), 0.33);
-    border-color: rgba(var(--accent-rgb, 0, 170, 255), 1);
+    background: rgba(var(--home-merch-accent-rgb), 0.53);
+    border-color: rgba(var(--home-merch-accent-rgb), 1);
     outline-offset: 3px;
 }
 html[data-ccg-page="home"] .home-merch-promo__action span {

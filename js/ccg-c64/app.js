@@ -2512,7 +2512,11 @@ async function initialiseOnlineLibrary() {
 
   // A single visible title index. Preserve the underlying media and previous
   // IDs for old bookmarks, but show only the approved CRT-first winner.
-  onlineLibraryEntries = [...regular, ...packed, ...archived];
+  // Owner-requested removal: hide only the Hammer Challenge II PRG edition.
+  // Keep the original Friday the 13th CRT and all other editions intact.
+  onlineLibraryEntries = [...regular, ...packed, ...archived].filter((entry) =>
+    !(entry.title.trim().toLocaleLowerCase() === "friday the 13th - hammer challenge ii" &&
+      String(entry.format).toLowerCase() === "prg"));
   const allHostedEntries = onlineLibraryEntries;
   onlineLibraryEntries = preferSelectedCartridges(allHostedEntries);
   // Only a game-page button with autoplay=1 starts the matched catalogue entry.
