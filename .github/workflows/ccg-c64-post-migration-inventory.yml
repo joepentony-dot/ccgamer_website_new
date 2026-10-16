@@ -1,0 +1,28 @@
+name: CCG C64 remaining-media read-only inventory
+on:
+  pull_request:
+    paths:
+      - scripts/ccg-c64-post-migration-audit.mjs
+      - .github/workflows/ccg-c64-post-migration-inventory.yml
+      - emulator/c64/library.json
+      - emulator/c64/media/**
+permissions:
+  contents: read
+jobs:
+  verify-and-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check read-only inventory script syntax
+        run: node --check scripts/ccg-c64-post-migration-audit.mjs
+      - name: Audit direct disks and all remaining archive/cartridge identities
+        run: node scripts/ccg-c64-post-migration-audit.mjs
+      - name: Assert nothing in the checkout was modified
+        shell: bash
+        run: test -z "$(git status --porcelain)"
