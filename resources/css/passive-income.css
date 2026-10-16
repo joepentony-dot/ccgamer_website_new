@@ -3,8 +3,8 @@
    Understated support routes and privacy-safe public thanks.
    ============================================================ */
 
-/* Fourthwall and the retired shop route stay out of public promotion. */
-a[href*="fourthwall.com"],
+/* Only retired /shop.html promotional links are hidden. The official
+   Fourthwall merchandise shop must remain visible site-wide. */
 .ccg-footer-legal a[href="/shop.html"],
 .ccg-legal-nav a[href="/shop.html"],
 .ccg-passive-actions a[href="/shop.html"],
