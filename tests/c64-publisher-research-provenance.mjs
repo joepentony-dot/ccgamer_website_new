@@ -20,10 +20,18 @@ assert.equal(ledger.version,1);
 assert(Array.isArray(ledger.added)&&Array.isArray(ledger.quarantined));
 assert(Array.isArray(core.entries)&&Array.isArray(blast.games)&&Array.isArray(archive.games));
 const researchKeys=new Set();
+const sourceRows=new Set();
+let externalSourceCount=0;
+let inheritedMetadataCount=0;
 for(const row of ledger.added) {
   assert(Array.isArray(row)&&row.length===3&&typeof row[0]==="string"&&
     typeof row[1]==="string"&&typeof row[2]==="string","Invalid source record");
-  assert(/^https:\/\/|^meta:/.test(row[1]),"Research lacks a source pointer: "+row[0]);
+  assert(/^(https:\/\/|meta:)/.test(row[1]),"Research lacks a source pointer: "+row[0]);
+  const sourceIdentity=JSON.stringify([row[0],row[1]]);
+  assert(!sourceRows.has(sourceIdentity),"Duplicated publisher research source: "+sourceIdentity);
+  sourceRows.add(sourceIdentity);
+  if(row[1].startsWith("https://")) externalSourceCount++;
+  else inheritedMetadataCount++;
   assert(meta.has(row[0])&&meta.get(row[0]).publishers.length>0,
     "Research credit missing from metadata: "+row[0]);
   assert(meta.get(row[0]).publishers.every(name=>
@@ -84,6 +92,7 @@ console.log(JSON.stringify({
   result:"PASS",auditScope:"direct library + BLAST + packed PRG archive only",
   sourceRecords:playable.length,distinctTitleKeys:identities.size,
   publisherCreditedKeys:credited,unmatchedTitleKeys:unmatched.length,
-  newlyResearchedKeys:researchKeys.size,quarantinedKeys:ledger.quarantined.length,
+  newlyResearchedKeys:researchKeys.size,externalSourceRecords:externalSourceCount,
+  inheritedMetadataRecords:inheritedMetadataCount,quarantinedKeys:ledger.quarantined.length,
   exampleUnmatched:unmatched.slice(0,30)
 }));
