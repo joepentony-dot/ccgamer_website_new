@@ -214,6 +214,45 @@ assert.equal(piratesLink.statuses.selected, "pirates",
 assert.equal(piratesLink.fetchRequests.filter(x =>
   x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
 
+// Verify every one of the 202 new retired packed-PRG deep links through the
+// actual library-startup resolver, with both the optional CRT manifest and
+// packed archive unavailable. Every redirected link must select the visible,
+// approved CRT, including duplicate editions kept under an older canonical ID.
+const retirementManifest = JSON.parse(fs.readFileSync(path.join(root,
+  "docs/ccg-crt-review/direct-crt-202-retirement-manifest.json"), "utf8"));
+assert.equal(retirementManifest.rows.length, 202);
+const directById = new Map(direct.entries.map(entry => [entry.id, entry]));
+let checkedBlastLinks = 0;
+let checkedArchiveLinks = 0;
+for (const [source, retiredId, originalTitle, crtId] of retirementManifest.rows) {
+  const aliases = source === "blast" ? retiredBlast : retiredArchive;
+  assert.equal(aliases.mappings[retiredId], crtId,
+    "New legacy bookmark target drifted: " + retiredId);
+  const originalTarget = directById.get(crtId);
+  assert(originalTarget && originalTarget.format === "crt" &&
+    originalTarget.approved === true && originalTarget.preferOverOtherFormats === true,
+    "Approved original CRT target missing: " + retiredId);
+  assert.equal(catalogGameIdentity(originalTitle),
+    catalogGameIdentity(originalTarget.title),
+    "Retired title differs from its CRT edition: " + retiredId);
+  const result = await execute(true, false, retiredId);
+  const chosen = result.context.onlineLibraryEntries.find(entry =>
+    entry.id === result.statuses.selected);
+  assert(chosen && chosen.format === "crt" && chosen.approved === true &&
+    chosen.preferOverOtherFormats === true &&
+    catalogGameIdentity(chosen.title) === catalogGameIdentity(originalTarget.title),
+    "Retired PRG deep link does not select its visible canonical cartridge: " + retiredId);
+  const sourceUrl = "/emulator/c64/media/" +
+    (source === "blast" ? "blast" : "prg-archive") + "/retired-ids.json";
+  assert.equal(result.fetchRequests.filter(req => req.url === sourceUrl).length, 1,
+    "Retired deep link must fetch its source alias exactly once: " + retiredId);
+  if (source === "blast") checkedBlastLinks++;
+  else checkedArchiveLinks++;
+}
+assert.equal(checkedBlastLinks, 69);
+assert.equal(checkedArchiveLinks, 133);
+console.log("PASS: all 202 new retired packed-PRG deep links resolve to visible approved CRTs with optional catalogues offline.");
+
 console.log(`PASS: ${expectedVisible} visible BLAST/direct games with archive CRT fallbacks; 1,528 retired archive bookmarks and original CRT priority preserved.`);
 
 // CCG_BATCH_VERIFIED_MEDIA â€” owner-supplied individual disks and every swap side.
