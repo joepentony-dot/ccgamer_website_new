@@ -1,0 +1,837 @@
+{
+  "version": 1,
+  "checkedAt": "2026-10-16",
+  "sourceBaseCommit": "b742a5864ca8a9e076117e92ccd01f2f582d2e5b",
+  "sourceDraft": "codex/c64-publisher-gap-research-20261016",
+  "sourceLedger": "emulator/c64/publisher-research-sources.json",
+  "scope": "Only uncredited emulator metadata catalogue identities, no PRG/D64/CRT, game IDs or original fields replaced",
+  "approvedRelations": 52,
+  "articleVariants": 36,
+  "explicitPartSideAliases": 16,
+  "quarantine": [
+    {
+      "key": "pit the",
+      "sourceKey": "the pit",
+      "reasons": [
+        "short/generic title"
+      ]
+    },
+    {
+      "key": "adventures of barsak the dwarf",
+      "sourceKey": "the adventures of barsak the dwarf",
+      "reasons": [
+        "No corresponding playable C64 runtime catalogue identity; exclude metadata credit (Codex P2 review)"
+      ]
+    },
+    {
+      "key": "faces of haarne",
+      "sourceKey": "the faces of haarne",
+      "reasons": [
+        "No corresponding playable C64 runtime catalogue identity; exclude metadata credit (Codex P2 review)"
+      ]
+    },
+    {
+      "key": "ninja master",
+      "sourceKey": "the ninja master",
+      "reasons": [
+        "No corresponding playable C64 runtime catalogue identity; exclude metadata credit (Codex P2 review)"
+      ]
+    },
+    {
+      "key": "pearl of dawn",
+      "sourceKey": "the pearl of dawn",
+      "reasons": [
+        "No corresponding playable C64 runtime catalogue identity; exclude metadata credit (Codex P2 review)"
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "key": "after the war part 1",
+      "publishers": [
+        "Dinamic Software"
+      ],
+      "sourceKey": "after the war",
+      "relationship": "alias:part",
+      "sourceYear": 1989,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:after the war",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "after the war part 2",
+      "publishers": [
+        "Dinamic Software"
+      ],
+      "sourceKey": "after the war",
+      "relationship": "alias:part",
+      "sourceYear": 1989,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:after the war",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "americas cup",
+      "publishers": [
+        "US Gold"
+      ],
+      "sourceKey": "the americas cup",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the americas cup",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "arc of yesod",
+      "publishers": [
+        "Thor Computer Software"
+      ],
+      "sourceKey": "the arc of yesod",
+      "relationship": "alias:article",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the arc of yesod",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "baby of can guru",
+      "publishers": [
+        "Rainbow Arts"
+      ],
+      "sourceKey": "the baby of can guru",
+      "relationship": "alias:article",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the baby of can guru",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "caves the",
+      "publishers": [
+        "Lyric Games"
+      ],
+      "sourceKey": "the caves",
+      "relationship": "alias:article",
+      "sourceYear": 1992,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the caves",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "cracks of fire",
+      "publishers": [
+        "Supersoft"
+      ],
+      "sourceKey": "the cracks of fire",
+      "relationship": "alias:article",
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the cracks of fire",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "cranmore diamond caper",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceKey": "the cranmore diamond caper",
+      "relationship": "alias:article",
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the cranmore diamond caper",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "dam busters",
+      "publishers": [
+        "Green Valley Publishing, Inc."
+      ],
+      "sourceKey": "the dam busters",
+      "relationship": "alias:article",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the dam busters",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "dark dungeons",
+      "publishers": [
+        "Anirog Software"
+      ],
+      "sourceKey": "the dark dungeons",
+      "relationship": "alias:article",
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the dark dungeons",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "enforcer the",
+      "publishers": [
+        "The Power House"
+      ],
+      "sourceKey": "the enforcer",
+      "relationship": "alias:article",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the enforcer",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "evil dead the",
+      "publishers": [
+        "Palace Software"
+      ],
+      "sourceKey": "the evil dead",
+      "relationship": "alias:article",
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the evil dead",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "fall guy the",
+      "publishers": [
+        "Elite Systems Ltd."
+      ],
+      "sourceKey": "the fall guy",
+      "relationship": "alias:article",
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the fall guy",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "fifth quadrant",
+      "publishers": [
+        "Bubble Bus Software"
+      ],
+      "sourceKey": "the fifth quadrant",
+      "relationship": "alias:article",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the fifth quadrant",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "freddy hardest part 1",
+      "publishers": [
+        "Imagine"
+      ],
+      "sourceKey": "freddy hardest",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:freddy hardest",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "freddy hardest part 2",
+      "publishers": [
+        "Imagine"
+      ],
+      "sourceKey": "freddy hardest",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:freddy hardest",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "gladiator the",
+      "publishers": [
+        "Richwood Software"
+      ],
+      "sourceKey": "the gladiator",
+      "relationship": "alias:article",
+      "sourceYear": null,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the gladiator",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "golden baton",
+      "publishers": [
+        "Channel 8 Software"
+      ],
+      "sourceKey": "the golden baton",
+      "relationship": "alias:article",
+      "sourceYear": 1982,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the golden baton",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "helicopter mission",
+      "publishers": [
+        "Markt & Technik"
+      ],
+      "sourceKey": "the helicopter mission",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the helicopter mission",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "hercules slayer of the damned part i",
+      "publishers": [
+        "Gremlin Graphics Software Ltd."
+      ],
+      "sourceKey": "hercules slayer of the damned",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:hercules slayer of the damned",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "hercules slayer of the damned part ii",
+      "publishers": [
+        "Gremlin Graphics Software Ltd."
+      ],
+      "sourceKey": "hercules slayer of the damned",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:hercules slayer of the damned",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "hobbit the",
+      "publishers": [
+        "Melbourne House"
+      ],
+      "sourceKey": "the hobbit",
+      "relationship": "alias:article",
+      "sourceYear": null,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the hobbit",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "inheritance the",
+      "publishers": [
+        "Steam-Powered Computer Company Ltd."
+      ],
+      "sourceKey": "the inheritance",
+      "relationship": "alias:article",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the inheritance",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "jade necklace",
+      "publishers": [
+        "River Software"
+      ],
+      "sourceKey": "the jade necklace",
+      "relationship": "alias:article",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the jade necklace",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "knight games side 2",
+      "publishers": [
+        "English Software"
+      ],
+      "sourceKey": "knight games",
+      "relationship": "alias:part",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:knight games",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "lands of havoc",
+      "publishers": [
+        "Microdeal"
+      ],
+      "sourceKey": "the lands of havoc",
+      "relationship": "alias:article",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the lands of havoc",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "last v8 the",
+      "publishers": [
+        "Mastertronic"
+      ],
+      "sourceKey": "the last v8",
+      "relationship": "alias:article",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the last v8",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "legend of sinbad",
+      "publishers": [
+        "Superior Software Ltd."
+      ],
+      "sourceKey": "the legend of sinbad",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the legend of sinbad",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "milky weigh",
+      "publishers": [
+        "Argus Press Software (APS)"
+      ],
+      "sourceKey": "the milky weigh",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the milky weigh",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "ninja master the",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceKey": "the ninja master",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the ninja master",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "nomad of time",
+      "publishers": [
+        "Mosaic Publishing"
+      ],
+      "sourceKey": "the nomad of time",
+      "relationship": "alias:article",
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the nomad of time",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "nythyhel part 1",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceKey": "nythyhel",
+      "relationship": "alias:part",
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:nythyhel",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "nythyhel part 2",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceKey": "nythyhel",
+      "relationship": "alias:part",
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:nythyhel",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "omega run the",
+      "publishers": [
+        "CRL (Computer Rentals Limited)"
+      ],
+      "sourceKey": "the omega run",
+      "relationship": "alias:article",
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the omega run",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "prodigy the",
+      "publishers": [
+        "Electric Dreams Software"
+      ],
+      "sourceKey": "the prodigy",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the prodigy",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "quest of merravid",
+      "publishers": [
+        "Martech"
+      ],
+      "sourceKey": "the quest of merravid",
+      "relationship": "alias:article",
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the quest of merravid",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "ring of power",
+      "publishers": [
+        "Quicksilva"
+      ],
+      "sourceKey": "the ring of power",
+      "relationship": "alias:article",
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the ring of power",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "savage part 1",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceKey": "savage",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:savage",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "savage part 2",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceKey": "savage",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:savage",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "savage part 3",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceKey": "savage",
+      "relationship": "alias:part",
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:savage",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "scrolls of abadon the",
+      "publishers": [
+        "Access Software, Inc."
+      ],
+      "sourceKey": "the scrolls of abadon",
+      "relationship": "alias:article",
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the scrolls of abadon",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "slugger the",
+      "publishers": [
+        "Mastertronic"
+      ],
+      "sourceKey": "the slugger",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the slugger",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "spy strikes back",
+      "publishers": [
+        "Penguin Software"
+      ],
+      "sourceKey": "the spy strikes back",
+      "relationship": "alias:article",
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the spy strikes back",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "the last ninja side 1",
+      "publishers": [
+        "Activision",
+        "System 3"
+      ],
+      "sourceKey": "the last ninja",
+      "relationship": "alias:part",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the last ninja",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "the last ninja side 2",
+      "publishers": [
+        "Activision",
+        "System 3"
+      ],
+      "sourceKey": "the last ninja",
+      "relationship": "alias:part",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the last ninja",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "the sport of kings",
+      "publishers": [
+        "Mastertronic's Added Dimension"
+      ],
+      "sourceKey": "sport of kings",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:sport of kings",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "time crystal",
+      "publishers": [
+        "Parallel Logic"
+      ],
+      "sourceKey": "the time crystal",
+      "relationship": "alias:article",
+      "sourceYear": 1994,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the time crystal",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "time machine the",
+      "publishers": [
+        "Channel 8 Software"
+      ],
+      "sourceKey": "the time machine",
+      "relationship": "alias:article",
+      "sourceYear": 1982,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the time machine",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "winter games side 1",
+      "publishers": [
+        "Epyx",
+        "US Gold"
+      ],
+      "sourceKey": "winter games",
+      "relationship": "alias:part",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:winter games",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "winter games side 2",
+      "publishers": [
+        "Epyx",
+        "US Gold"
+      ],
+      "sourceKey": "winter games",
+      "relationship": "alias:part",
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:winter games",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "wizards pet the",
+      "publishers": [
+        "Mastertronic"
+      ],
+      "sourceKey": "the wizards pet",
+      "relationship": "alias:article",
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the wizards pet",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    },
+    {
+      "key": "young ones the",
+      "publishers": [
+        "Orpheus"
+      ],
+      "sourceKey": "the young ones",
+      "relationship": "alias:article",
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "provenance": "Inherit verified publisher of an already credited unique C64 catalog identity; no cross-edition publisher inference",
+      "status": "credit-only; C64 media identity/edition not changed",
+      "sourcePointer": "meta:the young ones",
+      "binaryShaEqualityClaimed": false,
+      "mediaEditionStatus": "Original publisher attributed by exact distinctive text relation only; executable SHA equality and same release edition are NOT established."
+    }
+  ],
+  "screenedCandidateRelations": 56,
+  "rejectedAtIndependentReview": 4,
+  "evidenceCorrection": "Legacy 56-candidate batch includes 4 dropped targets absent from actual runtime, and inherited source research text may have claimed equal media hashes incorrectly; this ledger preserves ONLY title text relations and credited source publisher, asserts no media SHA equality and does not certify editions."
+}
