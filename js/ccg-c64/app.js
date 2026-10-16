@@ -1015,11 +1015,8 @@ function releaseAllInput() {
     touchJoyByte = 0xFF;
     touchHeldMask = 0;
     touchHeldButtons.clear();
-    touchDpadPointerId = null;
-    for (const button of touchDpadDirections.values()) {
-      button.classList.remove("is-pressed");
-      button.setAttribute("aria-pressed", "false");
-    }
+    // Keep this release routine independently testable by the keyboard harness.
+    if (typeof resetTouchDpadUi === "function") resetTouchDpadUi();
     machine.joyPort2 = 0xFF;
     machine._updateLightpen?.();
   }
@@ -3365,6 +3362,14 @@ const touchDpadDirections = new Map(
     button => [Number(button.dataset.joyMask), button])
 );
 let touchDpadPointerId = null;
+
+function resetTouchDpadUi() {
+  touchDpadPointerId = null;
+  for (const button of touchDpadDirections.values()) {
+    button.classList.remove("is-pressed");
+    button.setAttribute("aria-pressed", "false");
+  }
+}
 
 function touchDpadMaskAt(clientX, clientY) {
   if (!touchDpad) return 0;
