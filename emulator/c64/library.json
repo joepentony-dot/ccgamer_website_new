@@ -23450,6 +23450,20 @@
       "license": "Public redistribution authorised by CCG website owner on 2026-10-14 (owner declaration)",
       "approved": true,
       "preferOverOtherFormats": true
+    },
+    {
+      "id": "owner-d64-friday-13th-cheeky-commodore-edition",
+      "title": "Friday 13th - Cheeky Commodore Edition",
+      "filename": "friday-13th-cheeky-commodore-edition.d64",
+      "format": "d64",
+      "description": "Cheeky Commodore Gamer's Saturday the 14th enhanced edition, featuring a new splash, introduction and custom characters.",
+      "url": "/emulator/c64/media/friday-13th-cheeky-commodore-edition.d64",
+      "bytes": 174848,
+      "sha256": "ac1dbdc593ecc43d5ebc9d710bb06f4a1aae1910346c4f778a29c8ce811d4d69",
+      "publisher": "Cheeky Commodore Gamer",
+      "year": 2026,
+      "license": "Owner-supplied CCG modified edition; public redistribution authorised by the CCG website owner on 2026-10-16",
+      "approved": true
     }
   ]
 }

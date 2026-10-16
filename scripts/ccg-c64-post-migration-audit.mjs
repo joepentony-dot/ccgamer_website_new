@@ -26,7 +26,7 @@ assert.equal(archive.recordCount, archive.games.length);
 assert.equal(archive.recordCount, 8321);
 assert.equal(blastAliases.recordCount, 728);
 assert.equal(archiveAliases.recordCount, 1528);
-assert.equal(library.entries.length, 1770);
+assert.equal(library.entries.length, 1771);
 const directIds = new Set(library.entries.map(x => x.id));
 assert.equal(directIds.size, library.entries.length, "Duplicate direct game ID");
 
