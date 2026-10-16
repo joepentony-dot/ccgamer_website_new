@@ -600,6 +600,66 @@ assert.deepEqual(Array.from(desperate.items,i=>[i.x,i.y]),[[7,4],[7,4]],
   "Legacy player-tile fallback remains available when no free reachable cell exists");
 assert.equal(desperate.hostState.revision,1,"Emergency supply generation refreshes the world once");
 
+// P0 bridge death escape: a player who dies on the far side after the
+// Trickster Bridge collapses respawns at the floor entrance, unable to fire
+// the far-side rebuild switch. Run the actual repair owner from source so
+// the thief, dropped Flask, death cache and player progress remain recoverable.
+const bridgeRepairStart=gameplaySource.indexOf("function restoreWeightBridgeAfterRespawn(){");
+const bridgeRepairEnd=gameplaySource.indexOf("function weightBridgeBlocks(",bridgeRepairStart);
+const deathDamageStart=gameplaySource.indexOf("function hurtPlayer(");
+const deathDamageEnd=gameplaySource.indexOf("const canonicalPlayerDamage=",deathDamageStart);
+assert.ok(bridgeRepairStart>=0&&bridgeRepairEnd>bridgeRepairStart&&deathDamageStart>=0&&deathDamageEnd>deathDamageStart,
+  "Bridge respawn guard and canonical player-death owner must exist");
+const deathCode=gameplaySource.slice(deathDamageStart,deathDamageEnd);
+assert.ok(deathCode.indexOf("if(penalty.gameOver)")>=0&&
+  deathCode.indexOf("const bridgeRepaired=restoreWeightBridgeAfterRespawn();")>deathCode.indexOf("if(penalty.gameOver)")&&
+  deathCode.indexOf("const bridgeRepaired=restoreWeightBridgeAfterRespawn();")<deathCode.indexOf('mode="respawning"'),
+  "Bridge recovery must occur after the continuing-run check but before teleporting player to floor entrance");
+assert.match(deathCode,/bridgeRepaired\?" The Trickster Bridge has rebuilt after your death/,
+  "Death confirmation must explain how the stranded Flask, thief and death cache remain reachable");
+const bridgeRepairCode=gameplaySource.slice(bridgeRepairStart,bridgeRepairEnd);
+function bridgeDeathCase(state={}){
+  const bridge={id:"weight-bridge",crossed:true,collapsed:true,rebuilt:false,stabilized:false,
+    crossingPlayer:"P1",switchId:"bridge-rebuild",thiefId:"bridge-thief-f5",thiefDefeated:false,
+    stolenItems:[{id:"dropped-flask",carriedItem:{kind:"banishment",qty:1}}],...state};
+  const hostState={weightBridge:bridge,revision:9,
+    switches:[{id:"bridge-rebuild",weightBridgeSwitch:true,active:true,toggled:false},
+      {id:"unrelated-switch",active:true,toggled:false}]};
+  const context=vm.createContext({host:hostState});
+  vm.runInContext(bridgeRepairCode+";this.repairBridge=restoreWeightBridgeAfterRespawn;",context,{timeout:1000});
+  return{context,hostState,bridge,repair:()=>context.repairBridge()};
+}
+const collapsedDeath=bridgeDeathCase();
+assert.equal(collapsedDeath.repair(),true,"Death must repair an unrecoverable collapsed bridge");
+assert.equal(collapsedDeath.bridge.collapsed,false);
+assert.equal(collapsedDeath.bridge.rebuilt,true);
+assert.equal(collapsedDeath.bridge.stabilized,true);
+assert.equal(collapsedDeath.bridge.crossingPlayer,null);
+assert.equal(collapsedDeath.hostState.switches[0].active,false,"Far-side switch cannot demand another shot");
+assert.equal(collapsedDeath.hostState.switches[0].toggled,true);
+assert.equal(collapsedDeath.hostState.switches[1].active,true,"Other floor switches must remain active");
+assert.equal(collapsedDeath.hostState.revision,10);
+assert.equal(collapsedDeath.bridge.thiefId,"bridge-thief-f5","Repair must not despawn the stash thief");
+assert.equal(collapsedDeath.bridge.thiefDefeated,false);
+assert.equal(collapsedDeath.bridge.stolenItems.length,1);
+assert.equal(collapsedDeath.bridge.stolenItems[0].carriedItem.kind,"banishment");
+assert.equal(collapsedDeath.repair(),false,"Repeated death/recovery cannot redeploy or pay twice");
+assert.equal(collapsedDeath.hostState.revision,10);
+const alreadyRebuilt=bridgeDeathCase({collapsed:false,rebuilt:true,stabilized:true});
+assert.equal(alreadyRebuilt.repair(),false,"Normal rebuilt bridge must remain unchanged");
+assert.equal(alreadyRebuilt.hostState.switches[0].active,true);
+const beforeCrossing=bridgeDeathCase({crossed:false,collapsed:false});
+assert.equal(beforeCrossing.repair(),false,"Death before crossing must not complete the puzzle");
+const restoredBridgeDeath=bridgeDeathCase();
+restoredBridgeDeath.context.host=JSON.parse(JSON.stringify(restoredBridgeDeath.hostState));
+assert.equal(restoredBridgeDeath.repair(),true,"JSON-restored collapsed bridge must be recoverable");
+assert.equal(restoredBridgeDeath.context.host.weightBridge.stolenItems[0].carriedItem.kind,"banishment");
+assert.equal(restoredBridgeDeath.context.host.revision,10);
+const missingOldSwitch=bridgeDeathCase({switchId:"legacy-missing-switch"});
+assert.equal(missingOldSwitch.repair(),true,"Older save without its switch must still restore traversability");
+assert.equal(missingOldSwitch.bridge.rebuilt,true);
+assert.equal(missingOldSwitch.hostState.switches[0].active,true,"Unmatched switch must not be altered");
+
 // P0 Thief placement: thief's stolen inventory must not be locked behind
 // Bronze, switch or undiscovered secret gates. Source-execute real generated
 // Floor 5 world, host and SYS decoration, not a fabricated free-room map.
