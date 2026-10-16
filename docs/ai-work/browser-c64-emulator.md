@@ -1,5 +1,12 @@
 # CCG browser C64 emulator
 
+## Publisher release follow-on: 54 independently cross-checked MAME C64 credits — 16 October 2026
+
+- **PR branch `codex/c64-mame-54-publisher-direct-release-20261016`** starts exactly at merged main `683ed39817df81aa6e71f73f366d50fcde688c1d`; the upstream MAME CC0 C64 source XML files were fetched and SHA-pinned. Publisher-only catalogue change: **54 new source-matched game title credits**, while 20 old research-candidate keys were held back (including 13 generic/release-suspect titles), and all 74 originally staged MAME candidates were independently checked against the actual MAME `<software><description>/<publisher>` entries; source URLs, software short names and blob hashes are recorded in `docs/ccg-c64-mame-54-publisher-20261016.json`.
+- Previous #2818 and #2819 were squash-merged with **52 newly credited catalogue keys total** on main; #2819 merge `683ed39817df81aa6e71f73f366d50fcde688c1d` succeeded after all five final-head workflows passed and its checkpoint P1 was resolved. Do not claim deployed until live Pages/emulator publisher filter is verified.
+- This third release edits only `emulator/c64/catalogue-metadata.json`, a source/quarantine ledger and the two required AI continuation checkpoints. No game file, CRT/D64/PRG, service worker, loader, `games/games.json`, external SEO/Dungeon PR or original credited publisher/year is modified. **Unmerged candidate** until exact-head C64 Publisher and Year Catalogue Validation, CCG Browser C64 Qualification, Site Safety, SEO and any documentation-triggered workflows are green, no unaddressed Codex review blockers, branch is current with main and guarded squash merge is completed.
+- The historical draft publisher PR #2816 must be reconciled against all released credits before any future merge. CRT PR #2813 remains blocked by distinct Avenger/untested fallback issues. Further publisher batches should verify source region vs hosted edition, preserve old IDs and do not unilaterally reinterpret reissues.
+
 ## C64 publisher batch releases — 16 October 2026
 
 - **First publisher release MERGED**: PR #2818, squash commit `ec6107797dc63e7dc51925e1a528e1974d69ab8e`, adds 39 unique missing publisher credits to actual `emulator/c64/catalogue-metadata.json`. Four required exact-head CI workflows passed; no game binaries, game IDs, links, `games/games.json`, CSS, JS, emulator control flow, original credited publishers, or main SEO/Dungeon workstreams were changed. Deployed live publisher filter remains to be independently checked.

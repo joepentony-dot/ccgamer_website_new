@@ -1,0 +1,790 @@
+{
+  "version": 1,
+  "date": "2026-10-16",
+  "source": "MAME CC0 Commodore 64 software lists",
+  "branchBaseMain": "683ed39817df81aa6e71f73f366d50fcde688c1d",
+  "sourceBlobs": [
+    {
+      "path": "hash/c64_cass.xml",
+      "sha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "hash/c64_cart.xml",
+      "sha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "hash/c64_quik.xml",
+      "sha": "024de9be501f8b9520338cf6f478e294c7a95d9b",
+      "license": "CC0-1.0"
+    },
+    {
+      "path": "hash/c64_flop_orig.xml",
+      "sha": "1a58bfb98160bccd48661495dd38866e63b34de8",
+      "license": "CC0-1.0"
+    }
+  ],
+  "screenedLegacyMameCandidates": 74,
+  "newPublisherCredits": 54,
+  "excluded": 20,
+  "scope": "actual emulator catalogue metadata; publisher only; all existing publisher/year and all executable game-media files preserved",
+  "entries": [
+    {
+      "key": "a view to a kill",
+      "originalTitle": "A View to a Kill",
+      "appliedPublisher": "Domark",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "aviewtoa",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "alice in videoland",
+      "originalTitle": "Alice in Videoland",
+      "appliedPublisher": "Audiogenic Software",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "alice",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "alpha build",
+      "originalTitle": "Alpha Build",
+      "appliedPublisher": "Fisher-Price",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "alphabld",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "aspar gp master",
+      "originalTitle": "Aspar GP Master",
+      "appliedPublisher": "Dinamic Software",
+      "originalYear": null,
+      "upstreamListedYear": "1989",
+      "softwareShortName": "aspargp",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "bmx simulator 2",
+      "originalTitle": "BMX Simulator 2",
+      "appliedPublisher": "Codemasters",
+      "originalYear": null,
+      "upstreamListedYear": "1989",
+      "softwareShortName": "bmxsim2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "capture 2",
+      "originalTitle": "Capture 2",
+      "appliedPublisher": "J. Ranheim",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "capture2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "castle hassle",
+      "originalTitle": "Castle Hassle",
+      "appliedPublisher": "Roklan",
+      "originalYear": null,
+      "upstreamListedYear": "1983",
+      "softwareShortName": "castlhas",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "caverns of eriban",
+      "originalTitle": "Caverns of Eriban",
+      "appliedPublisher": "Firebird",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "caveriban",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "chinese juggler",
+      "originalTitle": "Chinese Juggler",
+      "appliedPublisher": "Ocean",
+      "originalYear": null,
+      "upstreamListedYear": "1983",
+      "softwareShortName": "chinjgglr",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "computer scrabble",
+      "originalTitle": "Computer Scrabble",
+      "appliedPublisher": "Leisure Genius",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "scrabble",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_flop_orig.xml",
+      "sourceXmlBlobSha": "1a58bfb98160bccd48661495dd38866e63b34de8",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "cosmic causeway trailblazer ii",
+      "originalTitle": "Cosmic Causeway: Trailblazer II",
+      "appliedPublisher": "Gremlin Graphics",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "cosmcaus",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "cosmic cruiser",
+      "originalTitle": "Cosmic Cruiser",
+      "appliedPublisher": "Imagine",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "cosmcruis",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "critical mass durell",
+      "originalTitle": "Critical Mass (Durell)",
+      "appliedPublisher": "Durell",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "critmassd",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "death wish 3",
+      "originalTitle": "Death Wish 3",
+      "appliedPublisher": "Gremlin Graphics",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "dwish3",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "dot gobbler",
+      "originalTitle": "Dot Gobbler",
+      "appliedPublisher": "Mr. Computer",
+      "originalYear": null,
+      "upstreamListedYear": "1983",
+      "softwareShortName": "dgobbler",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "e motion",
+      "originalTitle": "E-motion",
+      "appliedPublisher": "U.S. Gold",
+      "originalYear": null,
+      "upstreamListedYear": "1990",
+      "softwareShortName": "emotion",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "fighter pilot",
+      "originalTitle": "Fighter Pilot",
+      "appliedPublisher": "Digital Integration",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "fightpil",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "flight path 737",
+      "originalTitle": "Flight Path 737",
+      "appliedPublisher": "Anirog",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "flightpa",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "football manager 2",
+      "originalTitle": "Football Manager 2",
+      "appliedPublisher": "Addictive Games",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "fbmngr2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "fruit machine simulator 2",
+      "originalTitle": "Fruit Machine Simulator 2",
+      "appliedPublisher": "Codemasters",
+      "originalYear": null,
+      "upstreamListedYear": "1989",
+      "softwareShortName": "fruitms2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "grandmaster chess",
+      "originalTitle": "Grandmaster Chess",
+      "appliedPublisher": "Audiogenic Software",
+      "originalYear": null,
+      "upstreamListedYear": "1986",
+      "softwareShortName": "grandms",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "harvey smith showjumper",
+      "originalTitle": "Harvey Smith Showjumper",
+      "appliedPublisher": "Software Projects",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "showjump",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "hop along counting",
+      "originalTitle": "Hop Along Counting",
+      "appliedPublisher": "Fisher-Price",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "hopalong",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "i ball ii",
+      "originalTitle": "I Ball II",
+      "appliedPublisher": "Firebird Silver",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "iball2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "indian attack",
+      "originalTitle": "Indian Attack",
+      "appliedPublisher": "Anirog Software",
+      "originalYear": null,
+      "upstreamListedYear": "1983",
+      "softwareShortName": "indianatk",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_quik.xml",
+      "sourceXmlBlobSha": "024de9be501f8b9520338cf6f478e294c7a95d9b",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "international karate",
+      "originalTitle": "International Karate",
+      "appliedPublisher": "System 3",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "ik",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "joe blade 2",
+      "originalTitle": "Joe Blade 2",
+      "appliedPublisher": "Players",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "joeblade2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "los angeles swat",
+      "originalTitle": "Los Angeles SWAT",
+      "appliedPublisher": "Entertainment USA",
+      "originalYear": null,
+      "upstreamListedYear": "1986",
+      "softwareShortName": "laswat",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "magic marbles",
+      "originalTitle": "Magic Marbles",
+      "appliedPublisher": "Ariolasoft",
+      "originalYear": null,
+      "upstreamListedYear": "1986",
+      "softwareShortName": "magmarble",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "mike gunner",
+      "originalTitle": "Mike Gunner",
+      "appliedPublisher": "Dinamic Software",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "mikegunn",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_quik.xml",
+      "sourceXmlBlobSha": "024de9be501f8b9520338cf6f478e294c7a95d9b",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "mystery of the nile",
+      "originalTitle": "Mystery of the Nile",
+      "appliedPublisher": "Firebird",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "mystnile",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "n o m a d",
+      "originalTitle": "N.O.M.A.D",
+      "appliedPublisher": "Ocean",
+      "originalYear": null,
+      "upstreamListedYear": "1986",
+      "softwareShortName": "nomad",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "p o d proof of destruction",
+      "originalTitle": "P.O.D. - Proof of Destruction",
+      "appliedPublisher": "Mastertronic",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "pod",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "popeye 2",
+      "originalTitle": "Popeye 2",
+      "appliedPublisher": "Alternative Software",
+      "originalYear": null,
+      "upstreamListedYear": "1991",
+      "softwareShortName": "popeye2",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "sea speller",
+      "originalTitle": "Sea Speller",
+      "appliedPublisher": "Fisher-Price",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "seaspell",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "skate crazy",
+      "originalTitle": "Skate Crazy",
+      "appliedPublisher": "Gremlin Graphics",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "skatecra",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "sky twice",
+      "originalTitle": "Sky Twice",
+      "appliedPublisher": "American Action",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "skytwice",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "spitfire ace",
+      "originalTitle": "Spitfire Ace",
+      "appliedPublisher": "U.S. Gold",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "sfireace",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "sprite man",
+      "originalTitle": "Sprite Man",
+      "appliedPublisher": "Interceptor Software",
+      "originalYear": null,
+      "upstreamListedYear": "1983",
+      "softwareShortName": "spriteman",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "star eggs",
+      "originalTitle": "Star Eggs",
+      "appliedPublisher": "Mirrorsoft",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "stareggs",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "starbase defence",
+      "originalTitle": "Starbase Defence",
+      "appliedPublisher": "Anirog Computers",
+      "originalYear": null,
+      "upstreamListedYear": "2018",
+      "softwareShortName": "starbdef",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_quik.xml",
+      "sourceXmlBlobSha": "024de9be501f8b9520338cf6f478e294c7a95d9b",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "tai pan",
+      "originalTitle": "Tai-Pan",
+      "appliedPublisher": "Ocean",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "taipan",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "target plus",
+      "originalTitle": "Target Plus",
+      "appliedPublisher": "Dinamic Software",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "targetplus",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_quik.xml",
+      "sourceXmlBlobSha": "024de9be501f8b9520338cf6f478e294c7a95d9b",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "test master",
+      "originalTitle": "Test Master",
+      "appliedPublisher": "E&J Software",
+      "originalYear": null,
+      "upstreamListedYear": "1990",
+      "softwareShortName": "testmstr",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "tetris mirrorsoft",
+      "originalTitle": "Tetris (Mirrorsoft)",
+      "appliedPublisher": "Mirrorsoft",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "tetrism",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "the hobbit",
+      "originalTitle": "The Hobbit",
+      "appliedPublisher": "Melbourne House",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "hobbit",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "thing bounces back",
+      "originalTitle": "Thing Bounces Back",
+      "appliedPublisher": "Gremlin Graphics",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "thingbou",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "tournament tennis",
+      "originalTitle": "Tournament Tennis",
+      "appliedPublisher": "Imagic",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "ttennis",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
+      "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "trantor the last storm trooper",
+      "originalTitle": "Trantor: The Last Storm Trooper",
+      "appliedPublisher": "Go!",
+      "originalYear": null,
+      "upstreamListedYear": "1987",
+      "softwareShortName": "trantor",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "war cars construction set",
+      "originalTitle": "War Cars Construction Set",
+      "appliedPublisher": "Firebird",
+      "originalYear": null,
+      "upstreamListedYear": "1988",
+      "softwareShortName": "warcars",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "wilder westen",
+      "originalTitle": "Wilder Westen",
+      "appliedPublisher": "Europa Computer-Club",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "wildrwest",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "willow pattern",
+      "originalTitle": "Willow Pattern",
+      "appliedPublisher": "Firebird",
+      "originalYear": null,
+      "upstreamListedYear": "1985",
+      "softwareShortName": "willowpa",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "world cup carnival",
+      "originalTitle": "World Cup Carnival",
+      "appliedPublisher": "U.S. Gold",
+      "originalYear": null,
+      "upstreamListedYear": "1986",
+      "softwareShortName": "wcupcarn",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    },
+    {
+      "key": "zaga mission",
+      "originalTitle": "Zaga Mission",
+      "appliedPublisher": "Anirog",
+      "originalYear": null,
+      "upstreamListedYear": "1984",
+      "softwareShortName": "zagamiss",
+      "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
+      "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+    }
+  ],
+  "quarantined": [
+    {
+      "key": "beat it",
+      "publisher": [
+        "Mastertronic"
+      ],
+      "reason": "Short common phrase; possible unrelated same-title release",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "bump set spike",
+      "publisher": [
+        "Entertainment USA"
+      ],
+      "reason": "North American publisher edition not established for hosted media",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "falcon patrol 2",
+      "publisher": [
+        "Virgin"
+      ],
+      "reason": "multi-binary same-title collision",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "howard the duck",
+      "publisher": [
+        "Activision"
+      ],
+      "reason": "multi-binary same-title collision",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "mario bros",
+      "publisher": [
+        "Ocean"
+      ],
+      "reason": "multi-binary same-title collision",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "missile command",
+      "publisher": [
+        "Interceptor Software"
+      ],
+      "reason": "Common title with different publishers and versions",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "moon patrol",
+      "publisher": [
+        "Atarisoft"
+      ],
+      "reason": "multi-binary same-title collision",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml"
+    },
+    {
+      "key": "ms pac man",
+      "publisher": [
+        "Atarisoft"
+      ],
+      "reason": "Cartridge versus licensed/distributor edition unresolved",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml"
+    },
+    {
+      "key": "ping pong",
+      "publisher": [
+        "Erbe"
+      ],
+      "reason": "MAME lists Erbe and separate Imagine-labeled variant; regional edition unresolved",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "red l e d",
+      "publisher": [
+        "Dro Soft"
+      ],
+      "reason": "Dro Soft regional release versus other editions",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "river rescue",
+      "publisher": [
+        "Sparklers"
+      ],
+      "reason": "Publisher may refer to budget reissue rather than original",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "shooting gallery",
+      "publisher": [
+        "Stack Computer Services"
+      ],
+      "reason": "Generic title with alternative editions",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_quik.xml"
+    },
+    {
+      "key": "space action",
+      "publisher": [
+        "Handic Software"
+      ],
+      "reason": "Common title across several releases",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml"
+    },
+    {
+      "key": "space invasion",
+      "publisher": [
+        "Elite Systems"
+      ],
+      "reason": "multi-binary same-title collision",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "space walk",
+      "publisher": [
+        "Mastertronic"
+      ],
+      "reason": "Common title across several releases",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "strip poker ii",
+      "publisher": [
+        "Byte Back"
+      ],
+      "reason": "Multiple editions/companies can share this title",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "super hero",
+      "publisher": [
+        "Codemasters"
+      ],
+      "reason": "Generic title requires binary identification",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "tom and jerry",
+      "publisher": [
+        "Magic Bytes"
+      ],
+      "reason": "Licensed title shared by distinct editions",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "u f o",
+      "publisher": [
+        "Firebird Silver"
+      ],
+      "reason": "generic-short identity",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    },
+    {
+      "key": "w a r",
+      "publisher": [
+        "Martech"
+      ],
+      "reason": "generic-short identity",
+      "candidateSource": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml"
+    }
+  ]
+}
