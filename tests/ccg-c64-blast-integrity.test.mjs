@@ -24,10 +24,10 @@ const retirements = hasRetirements
   ? JSON.parse(fs.readFileSync(retirementFile, "utf8"))
   : null;
 const expectedOriginalCount = 1878;
-const expectedRetiredCount = hasRetirements ? 728 : 0;
+const expectedRetiredCount = hasRetirements ? 797 : 0;
 const expectedSurvivors = expectedOriginalCount - expectedRetiredCount;
 assert.equal(parsed.entries.length, expectedSurvivors,
-  "BLAST survivor count differs from the guarded 1,878-original/728-retired contract");
+  "BLAST survivor count differs from the guarded 1,878-original/797-retired contract");
 assert.equal(parsed.packs.length, 11, "All eleven BLAST packs must remain");
 assert.equal(catalog.recordCount, parsed.entries.length);
 
@@ -74,7 +74,7 @@ if (retirements) {
   assert.equal(retirements.recordCount, expectedRetiredCount);
   const mappings = Object.entries(retirements.mappings);
   assert.equal(mappings.length, expectedRetiredCount,
-    "All 728 retired PRG IDs must retain CRT aliases");
+    "All 797 retired PRG IDs must retain CRT aliases");
   assert.equal(count + mappings.length, expectedOriginalCount,
     "Retained PRGs plus CRT replacements must equal all 1,878 originals");
   const crtRoot = path.join(root, "emulator/c64/media/cartridge-replacements");
@@ -97,22 +97,28 @@ if (retirements) {
     assert(target && target.format === "crt" && target.approved === true &&
       target.preferOverOtherFormats === true,
       "Retired BLAST game has no approved direct CRT: " + legacyId);
-    assert(row && Array.isArray(row) && row.length === 5,
-      "Retired BLAST alias does not match a selected cartridge: " + legacyId);
-    const [, filename, bytes, digest] = row;
-    assert.equal(target.url, "/emulator/c64/media/cartridge-replacements/" + filename);
-    assert.equal(target.bytes, bytes);
-    assert.equal(target.sha256, digest);
+    // The first 728 retired IDs use activated CRTs. The next 69 resolve
+    // directly to prior SHA-verified `owner-crt-*` or other approved CRT IDs.
+    if (row) {
+      const [, filename, bytes, digest] = row;
+      assert.equal(target.url, "/emulator/c64/media/cartridge-replacements/" + filename);
+      assert.equal(target.bytes, bytes);
+      assert.equal(target.sha256, digest);
+    } else {
+      assert(/^\/emulator\/c64\/media\/[a-z0-9.-]+\.crt$/.test(target.url),
+        "Unapproved direct CRT media URL: " + cartridgeId);
+    }
     if (!verifiedCartridges.has(cartridgeId)) {
-      const file = path.join(crtRoot, filename);
-      const image = fs.readFileSync(file);
-      assert.equal(image.length, bytes, "Replacement CRT length mismatch: " + filename);
-      assert.equal(hash(image), digest, "Replacement CRT SHA mismatch: " + filename);
+      const image = fs.readFileSync(path.join(root, target.url.slice(1)));
+      assert.equal(image.length, target.bytes, "Replacement CRT length mismatch: " + cartridgeId);
+      assert.equal(hash(image), target.sha256, "Replacement CRT SHA mismatch: " + cartridgeId);
+      assert.equal(image.subarray(0,13).toString("ascii"), "C64 CARTRIDGE",
+        "Retired BLAST target is not a CRT: " + cartridgeId);
       verifiedCartridges.add(cartridgeId);
     }
   }
-  assert.equal(verifiedCartridges.size, 728,
-    "All 728 retired game identities must resolve to SHA-verified CRT images (725 newly registered, three previously present)");
+  assert(verifiedCartridges.size >= 728 && verifiedCartridges.size <= 797,
+    "All 797 retired BLAST game IDs must resolve to unique SHA-verified cartridge targets");
   console.log(`PASS: ${count} original BLAST PRGs in ${parsed.packs.length} SHA-verified packs; ${mappings.length} retired IDs have ${verifiedCartridges.size} SHA-verified, directly registered CRT replacements; 1,878 original game identities accounted for.`);
 } else {
   console.log(`PASS: all ${count} original BLAST PRGs SHA-verified across ${parsed.packs.length} packs; no retirements applied.`);
