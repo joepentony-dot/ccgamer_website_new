@@ -44,24 +44,28 @@
     {
       "key": "alice in videoland",
       "originalTitle": "Alice in Videoland",
-      "appliedPublisher": "Audiogenic Software",
+      "appliedPublisher": "Audiogenic Software Ltd.",
       "originalYear": null,
       "upstreamListedYear": "1984",
       "softwareShortName": "alice",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
       "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Audiogenic Software",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "alpha build",
       "originalTitle": "Alpha Build",
-      "appliedPublisher": "Fisher-Price",
+      "appliedPublisher": "Fisher-Price Learning Software",
       "originalYear": null,
       "upstreamListedYear": "1984",
       "softwareShortName": "alphabld",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
       "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Fisher-Price",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "aspar gp master",
@@ -99,13 +103,15 @@
     {
       "key": "castle hassle",
       "originalTitle": "Castle Hassle",
-      "appliedPublisher": "Roklan",
+      "appliedPublisher": "Roklan Corp.",
       "originalYear": null,
       "upstreamListedYear": "1983",
       "softwareShortName": "castlhas",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
       "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Roklan",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "caverns of eriban",
@@ -165,13 +171,15 @@
     {
       "key": "critical mass durell",
       "originalTitle": "Critical Mass (Durell)",
-      "appliedPublisher": "Durell",
+      "appliedPublisher": "Durell Software",
       "originalYear": null,
       "upstreamListedYear": "1985",
       "softwareShortName": "critmassd",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
       "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Durell",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "death wish 3",
@@ -187,13 +195,15 @@
     {
       "key": "dot gobbler",
       "originalTitle": "Dot Gobbler",
-      "appliedPublisher": "Mr. Computer",
+      "appliedPublisher": "Mr. Computer Products",
       "originalYear": null,
       "upstreamListedYear": "1983",
       "softwareShortName": "dgobbler",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
       "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Mr. Computer",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "e motion",
@@ -220,13 +230,15 @@
     {
       "key": "flight path 737",
       "originalTitle": "Flight Path 737",
-      "appliedPublisher": "Anirog",
+      "appliedPublisher": "Anirog Software",
       "originalYear": null,
       "upstreamListedYear": "1984",
       "softwareShortName": "flightpa",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
       "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Anirog",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "football manager 2",
@@ -253,13 +265,15 @@
     {
       "key": "grandmaster chess",
       "originalTitle": "Grandmaster Chess",
-      "appliedPublisher": "Audiogenic Software",
+      "appliedPublisher": "Audiogenic Software Ltd.",
       "originalYear": null,
       "upstreamListedYear": "1986",
       "softwareShortName": "grandms",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
       "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Audiogenic Software",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "harvey smith showjumper",
@@ -275,13 +289,15 @@
     {
       "key": "hop along counting",
       "originalTitle": "Hop Along Counting",
-      "appliedPublisher": "Fisher-Price",
+      "appliedPublisher": "Fisher-Price Learning Software",
       "originalYear": null,
       "upstreamListedYear": "1984",
       "softwareShortName": "hopalong",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
       "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Fisher-Price",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "i ball ii",
@@ -319,13 +335,15 @@
     {
       "key": "joe blade 2",
       "originalTitle": "Joe Blade 2",
-      "appliedPublisher": "Players",
+      "appliedPublisher": "Players Software",
       "originalYear": null,
       "upstreamListedYear": "1988",
       "softwareShortName": "joeblade2",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
       "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Players",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "los angeles swat",
@@ -407,13 +425,15 @@
     {
       "key": "sea speller",
       "originalTitle": "Sea Speller",
-      "appliedPublisher": "Fisher-Price",
+      "appliedPublisher": "Fisher-Price Learning Software",
       "originalYear": null,
       "upstreamListedYear": "1984",
       "softwareShortName": "seaspell",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cart.xml",
       "sourceXmlBlobSha": "b60158d58c4dcfdb2e7bb47216c77c98af49f8d1",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Fisher-Price",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "skate crazy",
@@ -473,13 +493,15 @@
     {
       "key": "starbase defence",
       "originalTitle": "Starbase Defence",
-      "appliedPublisher": "Anirog Computers",
+      "appliedPublisher": "Anirog Software",
       "originalYear": null,
       "upstreamListedYear": "2018",
       "softwareShortName": "starbdef",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_quik.xml",
       "sourceXmlBlobSha": "024de9be501f8b9520338cf6f478e294c7a95d9b",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Anirog Computers",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     },
     {
       "key": "tai pan",
@@ -616,13 +638,15 @@
     {
       "key": "zaga mission",
       "originalTitle": "Zaga Mission",
-      "appliedPublisher": "Anirog",
+      "appliedPublisher": "Anirog Software",
       "originalYear": null,
       "upstreamListedYear": "1984",
       "softwareShortName": "zagamiss",
       "source": "https://github.com/mamedev/mame/blob/master/hash/c64_cass.xml",
       "sourceXmlBlobSha": "acd91431ed05bb3fa032bc20877fa4e61b2b0f4c",
-      "status": "exact C64 title/publisher; hosted playable binary edition not certified"
+      "status": "exact C64 title/publisher; hosted playable binary edition not certified",
+      "upstreamPublisher": "Anirog",
+      "canonicalPublisherRationale": "Existing credited C64 catalogue publisher display identity; source MAME name retained in upstreamPublisher to preserve exact provenance. No hosted edition change."
     }
   ],
   "quarantined": [
