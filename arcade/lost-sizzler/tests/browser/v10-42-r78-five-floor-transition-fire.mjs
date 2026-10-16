@@ -53,7 +53,17 @@ async function probeFloorFiveSoftlockGuards(page){
     if(!host?.stalker||!host?.r114BossFight||!p1||run?.floor!==5)return{error:"Required Floor 5 bosses missing"};
     const generators=(host.generators||[]).filter(g=>g.alive),
       stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
-    if(generators.length!==3||stalkers.length!==1)return{error:"Three generators and exactly one Death Stalker required",generators:generators.length,stalkers:stalkers.length};
+    if(generators.length!==3||stalkers.length!==1)return{
+      error:"Three generators and exactly one Death Stalker required",
+      seed:String(run?.seed||""),floor:Number(run?.floor||0),
+      objective:String(host.objective?.type||""),objectiveTarget:Number(host.objective?.target||0),
+      worldRooms:Number(world.rooms?.length||0),
+      generators:generators.length,totalGenerators:(host.generators||[]).length,
+      generatorStates:(host.generators||[]).map(g=>({id:g.id,alive:g.alive,x:g.x,y:g.y,roomId:g.roomId})),
+      stalkers:stalkers.length,stalkerIds:stalkers.map(e=>({id:e.id,alive:e.alive,x:e.x,y:e.y})),
+      deathStalkerId:host.deathStalkerId,voidStalkerIds:host.voidStalkers,
+      otherDeathStalkers:(host.enemies||[]).filter(e=>e?.deathStalker||e?.voidStalker).map(e=>({id:e.id,alive:e.alive,deathStalker:e.deathStalker,voidStalker:e.voidStalker}))
+    };
     const sigilStatus=()=>({
       id:host.sigilRoomId??null,roomCount:world.rooms?.length||0,
       optionalRooms:(world.rooms||[]).filter(room=>room.optional).length,
@@ -100,7 +110,7 @@ async function probeFloorFiveSoftlockGuards(page){
     afterBoss.repeatScore=score-paid;afterBoss.repeatChests=(host.chests||[]).length-chests;
     return{bothAlive,twoComplete,twoExit,after,sigilBefore,sigilAfter,beforeBoss,afterBoss,mode};
   });
-  assert.ok(!state.error,`Generated Floor 5 scenario: ${state.error||""} ${state.error?JSON.stringify({sigilBefore:state.sigilBefore,sigilAfter:state.sigilAfter,after:state.after}):""}`);
+  assert.ok(!state.error,`Generated Floor 5 scenario: ${JSON.stringify(state)}`);
   assert.equal(state.bothAlive,true,"Count and Death Stalker must coexist");
   assert.equal(state.twoComplete,false,"2/3 generators cannot complete objective");
   assert.equal(state.twoExit,false);
