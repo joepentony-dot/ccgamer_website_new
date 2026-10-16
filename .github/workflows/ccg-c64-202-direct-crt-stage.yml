@@ -21,6 +21,9 @@ on:
       - docs/ccg-crt-review/full-catalogue-crt-prg-candidates-20261016.json
       - docs/ccg-crt-review/remaining-packed-prg-candidates-20261016.json
       - tests/ccg-c64-remaining-prg-candidates.test.mjs
+      - docs/ccg-crt-review/proven-distinct-title-families-20261016.json
+      - docs/ccg-crt-review/candidate-machine-triage-progress-20261016.json
+      - scripts/ccg-c64-candidate-machine-triage.mjs
 permissions:
   contents: read
 jobs:
