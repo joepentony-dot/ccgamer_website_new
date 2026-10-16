@@ -1,3 +1,9 @@
+## 16 October 2026 — Lemon64 A–C follow-on research staged; metadata write blocked
+
+- Created branch `codex/c64-publisher-lemon64-16-direct-20261016` from PR #2822 exact head `83b5e70292e0bbb73575ca3f7a515f5211a4313e`. Its provenance ledger `docs/ccg-c64-publisher-lemon64-16-20261016.json` contains 16 individual Lemon64-sourced historical C64 publisher/year candidates with actual owner-approved `library.json` media IDs and SHA256 values, plus two quarantines (Alien Syndrome region, Billiards generic identity). **The 16 are NOT yet written to `catalogue-metadata.json`; do not count as released or visible.** The full-file metadata update was blocked by connector safety checks; preserve ledger and retry only through an approved reviewable development workflow. Do not merge this branch while metadata is absent.
+- Independently reconstructed the Browse All selection from approved library, active CRT, BLAST and optional packed PRG archive with actual same-title/format suppression and CRT-first winner selection. On main before #2822: **10,851 visible, 3,820 credited, 7,031 unlisted**. At #2822 candidate head: **10,851 visible, 3,970 credited, 6,881 unlisted**. The next 16, if safely integrated, would yield 3,986 credited and 6,865 unlisted assuming unchanged manifests. These are source-level calculations, **not live deployment checks**.
+- PR #2822 exact head `83b5e702` passed all five workflows (publisher, browser, SEO, Site Safety, Dungeon itch package), is zero commits behind main, has no unresolved review threads, and has a Codex review receipt at exact head saying no major issues. Guarded squash merge was attempted but blocked by connector safety checks; **#2822 remains unmerged**. CRT PR #2813 and stale publisher PR #2816 remain untouched. No media/IDs or unrelated files changed.
+
 # CCG browser C64 emulator
 
 ## Publisher batch 5 correction — PR #2822; 150 staged playable credits, 16 October 2026
