@@ -5,7 +5,7 @@ import { searchCatalogEntries, catalogGameIdentity } from "./game-catalog.js";
 // priority, validation, or the emulator's load/autoplay path.
 const METADATA_URL = "/emulator/c64/catalogue-metadata.json";
 
-function publisherIdentity(name) {
+export function publisherIdentity(name) {
   const key = String(name || "").normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
   if (/^ocean(software)?(ltd)?$/.test(key)) return "oceansoftware";
@@ -22,7 +22,7 @@ const PREFERRED_LABELS = Object.freeze({
 const LABEL_SORT = new Intl.Collator("en-GB", { sensitivity: "base", numeric: true });
 const UNKNOWN = "__unlisted__";
 
-function parseMetadata(payload) {
+export function parseMetadata(payload) {
   if (!payload || payload.version !== 1 || !Array.isArray(payload.entries) ||
       payload.entries.length > 20000) {
     throw new Error("Invalid C64 catalogue metadata index.");
@@ -40,6 +40,28 @@ function parseMetadata(payload) {
     index.set(row[0], { publishers: row[1], year: row[2] });
   }
   return index;
+}
+
+
+/* Pure predicate shared by the browser and regression tests. Missing fields
+   are never inferred: visitors may explicitly browse "not listed" entries. */
+export function matchesCatalogueFacets(entry, facets = {}, details = null) {
+  if (!entry || !entry.title || !entry.id) return false;
+  const initial = facets.letter || "all";
+  const first = entry.title.trim().charAt(0).toLocaleUpperCase();
+  if (initial !== "all" &&
+      (initial === "#" ? /^[A-Z]$/.test(first) : first !== initial)) return false;
+  const wantedPublisher = facets.publisher || "all";
+  const wantedYear = facets.year || "all";
+  if (wantedPublisher === "all" && wantedYear === "all") return true;
+  const info = details || { publishers: [], year: null };
+  if (wantedPublisher === UNKNOWN && info.publishers.length) return false;
+  if (wantedPublisher !== "all" && wantedPublisher !== UNKNOWN &&
+      !info.publishers.some(name => publisherIdentity(name) === wantedPublisher)) return false;
+  if (wantedYear === UNKNOWN && info.year !== null) return false;
+  if (wantedYear !== "all" && wantedYear !== UNKNOWN &&
+      String(info.year) !== wantedYear) return false;
+  return true;
 }
 
 export function mountCatalogueBrowser({ games, play }) {
@@ -168,23 +190,11 @@ export function mountCatalogueBrowser({ games, play }) {
     const wantedPublisher = publisher.value || "all";
     const wantedYear = year.value || "all";
     const initial = letter.value;
-    const visible = catalogue.filter(entry => {
-      if (!entry || !entry.title || !entry.id) return false;
-      const first = entry.title.trim().charAt(0).toLocaleUpperCase();
-      if (initial !== "all" && (initial === "#" ? /^[A-Z]$/.test(first) : first !== initial)) {
-        return false;
-      }
-      if (wantedPublisher !== "all" || wantedYear !== "all") {
-        const data = details(entry);
-        if (wantedPublisher === UNKNOWN && data.publishers.length) return false;
-        if (wantedPublisher !== "all" && wantedPublisher !== UNKNOWN &&
-            !data.publishers.some(name => publisherIdentity(name) === wantedPublisher)) return false;
-        if (wantedYear === UNKNOWN && data.year !== null) return false;
-        if (wantedYear !== "all" && wantedYear !== UNKNOWN &&
-            String(data.year) !== wantedYear) return false;
-      }
-      return true;
-    });
+    const facets = { publisher: wantedPublisher, year: wantedYear, letter: initial };
+    const visible = catalogue.filter(entry => matchesCatalogueFacets(
+      entry, facets,
+      wantedPublisher === "all" && wantedYear === "all" ? null : details(entry)
+    ));
     const matches = searchCatalogEntries(visible, query);
 
     const pages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE));
