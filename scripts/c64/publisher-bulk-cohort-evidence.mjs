@@ -39,7 +39,7 @@ function build(d,blobs,cursor,batchSize){
  if(stats.selected!==selected.length)throw Error("Cohort incomplete");
  return {version:1,kind:"SOURCE_SHA_PINNED_PUBLISHER_IDENTITY_COHORT_NOT_PUBLISHER_APPROVAL",auditDate:"2026-10-16",scope:v.auditScope,visibleIdentityBaseline:v.counts.visibleGames,publisherLabelledBaseline:v.counts.publisherLabelled,publisherUnmatchedBaseline:v.counts.publisherNotListed,sourceBlobs:blobs,mameRevision:m.mameSourceCommit,cursor,nextCursor:cursor+selected.length,batchSize,stats,policy:["Publisher names and years from MAME are candidate references only, not verified credits for hosted binary editions.","Identical PRG SHA proves identical packed bytes only; it does not establish original publisher or CRT equivalence.","Every identity remains uncredited pending independent C64 edition-specific publisher proof; no media or game catalogue mutation."],rows};
 }
-function gitBlob(file){const b=fs.readFileSync(file);return createHash("sha1").update("blob "+b.length+"\\0").update(b).digest("hex")}
+function gitBlob(file){const b=fs.readFileSync(file);return createHash("sha1").update("blob "+b.length+"\0").update(b).digest("hex")}
 function snapshot(){const d={},blobs={};for(const [key,file] of Object.entries(PATHS)){d[key]=JSON.parse(fs.readFileSync(file,"utf8"));blobs[file]=gitBlob(file)}blobs[".github/workflows/c64-catalogue-publisher-year.yml"]=gitBlob(".github/workflows/c64-catalogue-publisher-year.yml");return {d,blobs}}
 const args=process.argv.slice(2);
 if(args.includes("--verify-dir")){

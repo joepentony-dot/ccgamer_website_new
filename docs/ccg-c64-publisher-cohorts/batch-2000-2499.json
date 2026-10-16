@@ -9,7 +9,7 @@
   "sourceBlobs": {
     "docs/ccg-c64-publisher-mame-exact-20261016.json": "469a5ccfc5002512647d814ae5fa010cba9edbd2",
     "docs/ccg-c64-publisher-visible-20261016.json": "a22e46f8cd2d56ce752c8466c7668786c4f1c8b4",
-    ".github/workflows/c64-catalogue-publisher-year.yml": "d371e68787b4d6e56102d57efdbf63a1877bcd63",
+    ".github/workflows/c64-catalogue-publisher-year.yml": "1ad4854288ca857502f5a8f34a0b3f93be7867aa",
     "emulator/c64/publisher-research-sources.json": "3feea56a54f3a5aeb3eab1b19dd208c9f054b634",
     "emulator/c64/media/blast/catalog.json": "a38edac440c117ef27165484413c041d35aa66c6",
     "emulator/c64/media/cartridge-replacements/active.json": "e3ceb2fbc122cf88f6f892182f46798175031be5",
