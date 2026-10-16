@@ -20,6 +20,8 @@ on:
       - 'docs/ccg-c64-publisher-mame-exact-20261016.json'
       - 'tests/c64-publisher-mame-snapshot.mjs'
       - 'docs/ccg-c64-publisher-visible-20261016.json'
+      - 'docs/ccg-c64-publisher-cohorts/**'
+      - 'scripts/c64/publisher-bulk-cohort-evidence.mjs'
       - 'emulator/c64/media/cartridge-replacements/active.json'
       - 'tests/c64-gamebase-publisher-candidates.test.py'
       - 'scripts/c64/gamebase64-publisher-candidates.py'
@@ -36,6 +38,8 @@ on:
       - 'tests/c64-publisher-research-provenance.mjs'
       - 'tests/c64-visible-publisher-coverage.mjs'
       - 'docs/ccg-c64-publisher-visible-20261016.json'
+      - 'docs/ccg-c64-publisher-cohorts/**'
+      - 'scripts/c64/publisher-bulk-cohort-evidence.mjs'
       - 'emulator/c64/media/cartridge-replacements/active.json'
       - 'tests/c64-gamebase-publisher-candidates.test.py'
       - 'scripts/c64/gamebase64-publisher-candidates.py'
@@ -62,11 +66,13 @@ jobs:
           node --check js/ccg-c64/coi-bootstrap.js
           node --check scripts/c64/rebuild-catalogue-metadata.mjs
           node --check tests/c64-visible-publisher-coverage.mjs
+          node --check scripts/c64/publisher-bulk-cohort-evidence.mjs
       - name: Run C64 catalogue metadata and filter regression tests
         run: |
           node tests/c64-catalogue-publisher-year.mjs
           node tests/c64-publisher-research-provenance.mjs
           node tests/c64-visible-publisher-coverage.mjs
           node tests/c64-publisher-mame-snapshot.mjs
+          node scripts/c64/publisher-bulk-cohort-evidence.mjs --verify-dir
           python3 tests/c64-gamebase-publisher-candidates.test.py
           python3 tests/c64-mame-bulk-publisher-candidates.test.py
