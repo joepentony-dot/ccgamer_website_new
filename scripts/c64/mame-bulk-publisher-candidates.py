@@ -18,7 +18,7 @@ def identity(value):
     value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     value = value.replace("&", " and ").replace("+", " plus ")
     value = re.sub(r"['\u2018\u2019]", "", value)
-    return re.sub(r"\\s+", " ", re.sub(r"[^a-zA-Z0-9]+", " ", value).strip().lower())
+    return re.sub(r"\s+", " ", re.sub(r"[^a-zA-Z0-9]+", " ", value).strip().lower())
 
 def audit(unmatched_file, sources, batch_size):
     ledger = json.loads(Path(unmatched_file).read_text(encoding="utf-8"))
@@ -49,7 +49,7 @@ def audit(unmatched_file, sources, batch_size):
             matches[key].append({"softwareList":list_name,"sourceFile":src.name,
                                  "softwareId":software.get("name"),"cloneOf":software.get("cloneof"),
                                  "title":title,"publisher":pub,
-                                 "yearCandidate":int(year) if re.fullmatch(r"(?:19|20)\\d{2}",year) else None})
+                                 "yearCandidate":int(year) if re.fullmatch(r"(?:19|20)\d{2}",year) else None})
     candidates, review = [], []
     generic = {"game","demo","preview","test","menu","intro","utility","adventure","arcade"}
     for key in sorted(keys):
