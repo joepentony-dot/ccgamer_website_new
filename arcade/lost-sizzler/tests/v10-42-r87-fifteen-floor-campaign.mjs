@@ -612,7 +612,7 @@ const realThiefCode=gameplaySource.slice(puzzleFnStart,puzzleFnEnd)+"\n"+gamepla
 let accessibleThiefCount=0,optionalGateCases=0;
 for(let seedIndex=0;seedIndex<35;seedIndex++){
   const seed="ccg-bridge-thief-route-"+(seedIndex*91+3)+"-F5";
-  const w=generatedWorld.generate(seed),h=generatedWorld.createHostState(w),r=generatedProgression.makeRun();
+  const w=generatedWorld.generate(seed),h=generatedWorld.createHostState(w),r=generatedRuntime.window.CCGProgression.makeRun();
   w.floor=5;r.floor=5;generatedSystems.decorate(w,h,r);
   const openable=(h.doors||[]).filter(d=>d.type==="room"&&!d.locked);
   for(const d of openable){d.open=true;d.opening=false}
