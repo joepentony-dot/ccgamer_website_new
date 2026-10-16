@@ -78,7 +78,16 @@ for(const entry of pendingReview.entries) {
   assert(entry.source.startsWith("https://www.lemon64.com/game/"));
   assert(meta.has(entry.key));
   assert(ledger.added.some(row=>row[0]===entry.key));
+  assert(!reviewedKeys.has(entry.key),
+    "Pending edition review must not be counted as applied: "+entry.key);
+  const existing=meta.get(entry.key);
+  assert(existing.publishers.includes(entry.currentPublisher)&&existing.year===null,
+    "Pending C64 credit changed without source review: "+entry.key);
 }
+assert(meta.get("slap fight")?.publishers.includes("Erbe") &&
+  meta.get("slap fight")?.year===null,
+  "Regional Slap Fight attribution changed without resolving quarantine");
+
 const q=ledger.quarantined.find(x=>x.key==="armageddon");
 assert(q&&q.status==="unverified-game-identity","Ambiguous Armageddon must be quarantined");
 assert(!meta.has("armageddon"),"Do not attribute unrelated Armageddon games from a shared name");
