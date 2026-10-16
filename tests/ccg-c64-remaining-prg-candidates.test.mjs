@@ -56,6 +56,35 @@ for(const e of ledger.cauldronTitleVariants){
   assert(/cauldron|hexenk|draculon|calebaza|citrouille/i.test(e.title));
 }
 assert.equal(ledger.cauldronTitleVariants.length,ledger.counts.cauldronTitleVariants);
+
+// Release-family negative controls: similarly titled but DISTINCT C64 games.
+// These cases must stay playable as original packed PRGs, even if a title
+// discovery audit awards a high similarity score.
+const excluded = read("docs/ccg-crt-review/proven-distinct-title-families-20261016.json");
+const bulk = read("docs/ccg-crt-review/full-catalogue-crt-prg-candidates-20261016.json");
+assert.equal(excluded.version, 1);
+assert.equal(excluded.status, "EXPLICIT NEGATIVE CONTROLS — prevent accidental cross-game title similarity replacement");
+assert.equal(excluded.sourceCandidateLedgerBlob, "a048f2193537af1ebabd10736c31801afb786e1e");
+assert.deepEqual(excluded.distinctTitleFamilyPairs.map(e => e.prgId).sort(),
+  ["archive-00551", "archive-01057"]);
+for (const pair of excluded.distinctTitleFamilyPairs) {
+  assert.equal(pair.classification, "known-different-C64-game-title-family");
+  assert.equal(pair.releaseSafeToRetire, false);
+  assert.equal(pair.mediaEditionVerified, false);
+  assert(pair.sources.length >= 2 && pair.sources.every(url => url.startsWith("https://")));
+  const source = bulk.candidates.find(c => c.prgId === pair.prgId);
+  const target = source?.targets.find(t => t.crtId === pair.crtId);
+  assert.deepEqual([source?.title, source?.prgSha256, target?.title, target?.sha256],
+    [pair.prgTitle, pair.prgSha256, pair.crtTitle, pair.crtSha256],
+    "Distinct release-family evidence changed: " + pair.prgId);
+  const original = byId.get(pair.prgId);
+  assert.equal(original?.[6], pair.prgSha256, "Distinct PRG no longer survives: " + pair.prgId);
+  assert.equal(direct.get(pair.crtId)?.sha256, pair.crtSha256,
+    "Distinct comparison CRT changed: " + pair.crtId);
+  assert(!Object.hasOwn(aliases, pair.prgId),
+    "A distinct C64 title must not silently redirect to another game: " + pair.prgId);
+}
+
 console.log("PASS: verified all "+byId.size+" surviving packed PRGs, "+
   matches.length+" read-only possible CRT duplicates, "+
   ledger.cauldronTitleVariants.length+" quarantined Cauldron variants, "+

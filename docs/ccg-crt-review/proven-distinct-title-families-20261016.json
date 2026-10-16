@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-10-16",
+  "sourceCandidateLedger": "docs/ccg-crt-review/full-catalogue-crt-prg-candidates-20261016.json",
+  "sourceCandidateLedgerBlob": "a048f2193537af1ebabd10736c31801afb786e1e",
+  "status": "EXPLICIT NEGATIVE CONTROLS — prevent accidental cross-game title similarity replacement",
+  "rules": [
+    "Proven separate C64 game families must not be consolidated on title similarity, even if their text scores highly.",
+    "Both original packaged PRGs and approved CRTs remain unchanged; this is no media identity or binary compatibility test.",
+    "No new PRG retirement, game-page alias or autoplay reroute is authorised by these findings."
+  ],
+  "distinctTitleFamilyPairs": [
+    {
+      "prgId": "archive-00551",
+      "prgTitle": "Armageddon",
+      "prgSha256": "7cc3baf0abe5d3b2f62714be13ae4121d62a599995ea555f4b3d688a751285b2",
+      "crtId": "owner-crt-more-armageddonmanthe-f383a5fa7755",
+      "crtTitle": "Armageddon Man, The",
+      "crtSha256": "f383a5fa7755de3093afb4e042b61b4d8c6397f4ffbd92454a5b9556fa17c4c4",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "Armageddon is a 1983 title with distinct C64 releases credited to Ocean and Visions; The Armageddon Man is a separate 1987 Martech geopolitical strategy game. A lexical prefix is not shared game identity.",
+      "sources": [
+        "https://www.lemon64.com/games/list.php?list_company=operasoft&list_year=1983",
+        "https://www.lemon64.com/game/armageddon-man",
+        "https://www.computinghistory.org.uk/det/18034/Armageddon/"
+      ]
+    },
+    {
+      "prgId": "archive-01057",
+      "prgTitle": "Blagger Junior",
+      "prgSha256": "e5270376f6f82f2b72b5756ecde3834b6f8f9bf2290778bdadd42328b8cdaca4",
+      "crtId": "owner-crt-more-blagger",
+      "crtTitle": "Blagger",
+      "crtSha256": "8af1c2640ea7fb19759faacc252c2d3f1d4398425ad0e459cd73e2a91d0a07d3",
+      "classification": "known-different-C64-game-title-family",
+      "mediaEditionVerified": false,
+      "releaseSafeToRetire": false,
+      "researchNote": "Blagger (1983, Alligata) and the name Blagger Junior (also attached to 1985 TC Mine in Lemon64) do not identify the same game. The actual hosted Junior edition is still unverified; do not fold it into the original Blagger CRT.",
+      "sources": [
+        "https://www.lemon64.com/game/blagger",
+        "https://www.lemon64.com/game/tc-mine",
+        "https://www.c64.com/games/gamers_diary.php"
+      ]
+    }
+  ]
+}
