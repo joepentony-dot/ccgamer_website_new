@@ -107,8 +107,13 @@ for (const entry of packedSurvivorMatches) {
     replacement.format === "crt" && replacement.preferOverOtherFormats === true,
     "Unapproved or missing direct CRT for packed PRG: " + entry.id);
   if (directTargets.has(entry.crt)) continue;
-  assert(/^\\/emulator\\/c64\\/media\\/(?:[a-zA-Z0-9._-]+\\.crt|cartridge-replacements\\/[a-z0-9-]+\\.crt)$/.test(replacement.url),
-    "Unsafe direct CRT path for " + entry.crt);
+  const pathParts = String(replacement.url || "").split("/");
+  assert(pathParts[0] === "" && pathParts[1] === "emulator" &&
+    pathParts[2] === "c64" && pathParts[3] === "media" &&
+    (pathParts.length === 5 ||
+      (pathParts.length === 6 && pathParts[4] === "cartridge-replacements")) &&
+    /^[A-Za-z0-9_.-]+[.]crt$/.test(pathParts.at(-1)) &&
+    !pathParts.at(-1).includes(".."), "Unsafe direct CRT path for " + entry.crt);
   const bytes = fs.readFileSync(replacement.url.slice(1));
   assert.equal(bytes.length, replacement.bytes, "Direct CRT size mismatch: " + entry.crt);
   assert.equal(sha(bytes), replacement.sha256, "Direct CRT SHA mismatch: " + entry.crt);
