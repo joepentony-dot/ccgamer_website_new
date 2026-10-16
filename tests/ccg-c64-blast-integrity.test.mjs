@@ -111,8 +111,8 @@ if (retirements) {
       verifiedCartridges.add(cartridgeId);
     }
   }
-  assert.equal(verifiedCartridges.size, 725,
-    "The approved BLAST retirement must retain all 725 unique CRT images");
+  assert.equal(verifiedCartridges.size, 728,
+    "All 728 retired game identities must resolve to SHA-verified CRT images (725 newly registered, three previously present)");
   console.log(`PASS: ${count} original BLAST PRGs in ${parsed.packs.length} SHA-verified packs; ${mappings.length} retired IDs have ${verifiedCartridges.size} SHA-verified, directly registered CRT replacements; 1,878 original game identities accounted for.`);
 } else {
   console.log(`PASS: all ${count} original BLAST PRGs SHA-verified across ${parsed.packs.length} packs; no retirements applied.`);
