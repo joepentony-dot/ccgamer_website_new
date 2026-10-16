@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "reviewedOn": "2026-10-16",
+  "scope": "C64 edition-specific credits; source verification does not prove identity of hosted binary",
+  "status": "source-verified-pending-metadata-and-binary-edition",
+  "entries": [
+    {
+      "key": "falcon patrol 2",
+      "publisher": "Virgin Games",
+      "year": 1984,
+      "source": "https://www.lemon64.com/game/falcon-patrol-2",
+      "currentPublisher": "Virgin",
+      "note": "Bug Byte budget re-release"
+    },
+    {
+      "key": "fighter pilot",
+      "publisher": "Digital Integration",
+      "year": 1984,
+      "source": "https://www.lemon64.com/game/fighter-pilot",
+      "currentPublisher": "Digital Integration",
+      "note": "Byte-Back/Silverbird re-releases; US Jet Combat Simulator different edition"
+    },
+    {
+      "key": "international karate",
+      "publisher": "System 3",
+      "year": 1986,
+      "source": "https://www.lemon64.com/game/international-karate",
+      "currentPublisher": "System 3",
+      "note": "Prism Leisure re-release; World Karate Championship US edition"
+    },
+    {
+      "key": "joe blade 2",
+      "publisher": "Players Software",
+      "year": 1988,
+      "source": "https://www.lemon64.com/game/joe-blade-2",
+      "currentPublisher": "Players",
+      "note": "Publisher abbreviated in MAME metadata"
+    }
+  ],
+  "quarantine": [
+    {
+      "key": "slap fight",
+      "status": "regional-edition-conflict",
+      "source": "https://www.lemon64.com/game/slap-fight",
+      "mameCandidate": "Erbe",
+      "originalEuropeanPublisher": "Imagine",
+      "year": 1987,
+      "otherPublishers": "ERBE Spanish release; The Hit Squad later reissue",
+      "releaseBlocker": true,
+      "note": "Generic emulator title is not linked to a verified edition; do not publish a universal Erbe credit or silently overwrite it with Imagine."
+    }
+  ]
+}
