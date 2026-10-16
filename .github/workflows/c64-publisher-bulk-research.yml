@@ -1,0 +1,106 @@
+name: C64 Publisher Bulk Source Research (unverified candidates)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/c64-publisher-bulk-research.yml'
+      - 'scripts/c64/mame-bulk-publisher-candidates.py'
+      - 'tests/c64-mame-bulk-publisher-candidates.test.py'
+      - 'tests/c64-publisher-research-provenance.mjs'
+      - 'emulator/c64/catalogue-metadata.json'
+      - 'emulator/c64/publisher-research-sources.json'
+      - 'emulator/c64/library.json'
+      - 'emulator/c64/media/blast/catalog.json'
+      - 'emulator/c64/media/prg-archive/catalog.json'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-c64-publisher-candidate-queue:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact PR head, never a mutable merge checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Install Node for CCG catalogue identity audit
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source and offline importer contracts before batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          test -z "$(git status --porcelain)"
+          node tests/c64-publisher-research-provenance.mjs
+          python3 tests/c64-mame-bulk-publisher-candidates.test.py
+      - name: Get immutable MAME source revision and only C64 XML metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          MAME_SHA="$(gh api repos/mamedev/mame/commits/master --jq '.sha')"
+          [[ "$MAME_SHA" =~ ^[0-9a-f]{40}$ ]]
+          echo "MAME_SHA=$MAME_SHA" >> "$GITHUB_ENV"
+          dest="$RUNNER_TEMP/ccg-c64-publisher-research"
+          mkdir -p "$dest/mame"
+          for name in c64_cass c64_cart c64_flop_orig c64_flop_misc c64_quik; do
+            url="https://raw.githubusercontent.com/mamedev/mame/$MAME_SHA/hash/$name.xml"
+            curl --fail --silent --show-error --location --retry 3 \
+              --connect-timeout 10 --max-time 90 \
+              --output "$dest/mame/$name.xml" "$url"
+            test -s "$dest/mame/$name.xml"
+          done
+          echo "MAME C64 source commit: $MAME_SHA"
+      - name: Generate all unmatched IDs and complete 250-title candidate batches
+        shell: bash
+        run: |
+          set -euo pipefail
+          dest="$RUNNER_TEMP/ccg-c64-publisher-research"
+          node tests/c64-publisher-research-provenance.mjs --unmatched-json > "$dest/unmatched.json"
+          python3 scripts/c64/mame-bulk-publisher-candidates.py \
+            --unmatched-json "$dest/unmatched.json" \
+            --mame-xml "$dest/mame/c64_cass.xml" "$dest/mame/c64_cart.xml" \
+              "$dest/mame/c64_flop_orig.xml" "$dest/mame/c64_flop_misc.xml" \
+              "$dest/mame/c64_quik.xml" \
+            --batch-size 250 > "$dest/candidates-unverified.json"
+          python3 - "$dest" "$MAME_SHA" <<'PY'
+          import hashlib, json, pathlib, sys
+          dest=pathlib.Path(sys.argv[1])
+          report=json.loads((dest/"candidates-unverified.json").read_text())
+          sources={}
+          for src in sorted((dest/"mame").glob("*.xml")):
+              sources[src.name]={"sha256":hashlib.sha256(src.read_bytes()).hexdigest(),"bytes":src.stat().st_size}
+          provenance={
+              "status":"UNVERIFIED research only; NO publisher metadata changes",
+              "MAMERepository":"https://github.com/mamedev/mame",
+              "MAMECommit":sys.argv[2], "sourceHashes":sources,
+              "unmatchedInput":report["unmatchedInput"],
+              "candidateCount":report["candidateCount"],
+              "manualReviewCount":report["reviewCount"],
+              "batchCount":len(report["candidateBatches"]),
+              "batchSize":report["batchSize"]
+          }
+          (dest/"source-provenance.json").write_text(json.dumps(provenance,indent=2)+"\\n")
+          print(json.dumps(provenance,indent=2))
+          print("First 30 candidate identities (NOT APPROVED):")
+          print(json.dumps([r["key"] for batch in report["candidateBatches"] for r in batch][:30]))
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Preserve review queue and C64 source provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: c64-publisher-unverified-bulk-research
+          path: |
+            ${{ runner.temp }}/ccg-c64-publisher-research/unmatched.json
+            ${{ runner.temp }}/ccg-c64-publisher-research/candidates-unverified.json
+            ${{ runner.temp }}/ccg-c64-publisher-research/source-provenance.json
+          if-no-files-found: error
+          retention-days: 30
