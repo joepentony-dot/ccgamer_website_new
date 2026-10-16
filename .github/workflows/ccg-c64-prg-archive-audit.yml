@@ -1,0 +1,41 @@
+name: CCG C64 PRG archive read-only CRT replacement audit
+on:
+  push:
+    branches:
+      - codex/c64-prg-archive-audit-20261016
+    paths:
+      - .github/workflows/ccg-c64-prg-archive-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Audit all original 9849 PRGs, pack digests and exact-title CRT candidates without changes
+        shell: bash
+        run: |
+          test "$(git branch --show-current)" = "codex/c64-prg-archive-audit-20261016"
+          test -z "$(git status --porcelain)"
+          node --check scripts/ccg-repack-retired-c64-prgs.mjs
+          node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive | tee /tmp/ccg-prg-archive-audit.json
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import assert from "node:assert/strict";
+            const a=JSON.parse(fs.readFileSync("/tmp/ccg-prg-archive-audit.json","utf8"));
+            assert.equal(a.scope,"prg-archive");
+            assert.equal(a.mode,"read-only audit");
+            assert.equal(a.sourceGames,9849);
+            assert.equal(a.survivors+a.retiredPRGs,9849);
+            assert.equal(a.remainingPacks+a.emptiedPacks.length,48);
+            assert(a.retiredPRGs>0 && a.retiredPRGs<9849);
+            console.log("GUARDED ARCHIVE AUDIT:",JSON.stringify(a));
+          '
+          test -z "$(git status --porcelain)"
