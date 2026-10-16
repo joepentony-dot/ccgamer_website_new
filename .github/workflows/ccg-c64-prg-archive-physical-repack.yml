@@ -1,0 +1,119 @@
+name: CCG C64 guarded archive PRG physical repack
+on:
+  push:
+    branches:
+      - codex/c64-prg-archive-physical-repack-20261016
+    paths:
+      - .github/workflows/ccg-c64-prg-archive-physical-repack.yml
+permissions:
+  contents: write
+jobs:
+  stage-verified-archive-survivors:
+    if: github.ref == 'refs/heads/codex/c64-prg-archive-physical-repack-20261016'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require dedicated clean branch and reject concurrent C64 media changes
+        shell: bash
+        run: |
+          test "$(git branch --show-current)" = "codex/c64-prg-archive-physical-repack-20261016"
+          test -z "$(git status --porcelain)"
+          git fetch origin main
+          base="$(git merge-base HEAD origin/main)"
+          test -n "$base"
+          test -z "$(git diff --name-only "$base" origin/main -- emulator/c64/media/prg-archive emulator/c64/library.json emulator/c64/media/cartridge-replacements/active.json)"
+      - name: Verify 9849 original PRGs and match exact-owner-authorised replacement CRTs
+        shell: bash
+        run: |
+          node --check scripts/ccg-repack-retired-c64-prgs.mjs
+          node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive > /tmp/ccg-archive-original-audit.json
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import assert from "node:assert/strict";
+            const a=JSON.parse(fs.readFileSync("/tmp/ccg-archive-original-audit.json","utf8"));
+            const core=JSON.parse(fs.readFileSync("emulator/c64/library.json","utf8"));
+            assert.equal(a.mode,"read-only audit");
+            assert.equal(a.scope,"prg-archive");
+            assert.equal(a.sourceGames,9849);
+            assert.equal(a.survivors,8321);
+            assert.equal(a.retiredPRGs,1528);
+            assert.equal(a.coreCRTRegistrationsAdded,823);
+            assert.equal(a.originalPackBytes,198614190);
+            assert.equal(a.repackedBytes,150615840);
+            assert.equal(a.freedPackedBytes,47998350);
+            assert.equal(a.remainingPacks,48);
+            assert.equal(a.emptiedPacks.length,0);
+            assert.equal(core.entries.length,947);
+            console.log("SOURCE VERIFIED", JSON.stringify(a));
+          '
+          test -z "$(git status --porcelain)"
+      - name: Compact 1528 exact-CRT superseded PRGs on review branch only
+        run: |
+          node scripts/ccg-repack-retired-c64-prgs.mjs \
+            --scope prg-archive --apply \
+            --branch codex/c64-prg-archive-physical-repack-20261016 \
+            --expected-source 9849 --expected-retired 1528 --expected-core-added 823
+      - name: Revalidate all 8321 surviving original PRGs, 48 pack hashes and 1528 CRT aliases
+        shell: bash
+        run: |
+          node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive > /tmp/ccg-archive-repacked-audit.json
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import assert from "node:assert/strict";
+            import crypto from "node:crypto";
+            const root="emulator/c64/media/prg-archive/";
+            const sha=data=>crypto.createHash("sha256").update(data).digest("hex");
+            const a=JSON.parse(fs.readFileSync("/tmp/ccg-archive-repacked-audit.json","utf8"));
+            const catalogBytes=fs.readFileSync(root+"catalog.json");
+            const catalog=JSON.parse(catalogBytes);
+            const ready=JSON.parse(fs.readFileSync(root+"ready.json","utf8"));
+            const aliases=JSON.parse(fs.readFileSync(root+"retired-ids.json","utf8"));
+            const core=JSON.parse(fs.readFileSync("emulator/c64/library.json","utf8"));
+            assert.equal(a.sourceGames,8321);
+            assert.equal(a.retiredPRGs,0);
+            assert.equal(a.coreCRTRegistrationsAdded,0);
+            assert.equal(catalog.recordCount,8321);
+            assert.equal(catalog.packs.length,48);
+            assert.equal(ready.recordCount,8321);
+            assert.equal(ready.packCount,48);
+            assert.equal(ready.catalogSHA256,sha(catalogBytes));
+            assert.equal(aliases.version,1);
+            assert.equal(aliases.source,"prg-archive");
+            assert.equal(aliases.recordCount,1528);
+            assert.equal(Object.keys(aliases.mappings).length,1528);
+            assert.equal(core.entries.length,1770);
+            const byId=new Map(core.entries.map(e=>[e.id,e]));
+            assert.equal(byId.size,core.entries.length);
+            const surviving=new Set(catalog.games.map(row=>row[0]));
+            assert.equal(surviving.size,8321);
+            const targetIds=new Set();
+            for(const [id,crtId] of Object.entries(aliases.mappings)){
+              assert(!surviving.has(id),"Retired archive PRG still appears: "+id);
+              const e=byId.get(crtId);
+              assert(e&&e.format==="crt"&&e.approved===true&&e.preferOverOtherFormats===true,
+                "No directly registered verified CRT fallback: "+id);
+              targetIds.add(crtId);
+            }
+            assert(targetIds.size>0);
+            assert.equal(a.repackedBytes,150615840);
+            console.log("REPACK VERIFIED: 8321 original game slices SHA checked; 1528 aliases; "+
+              targetIds.size+" CRT targets; 48 pack hashes; activation marker updated.");
+          '
+          git diff --check
+      - name: Commit exact reviewed archive media changes only to this PR branch
+        shell: bash
+        run: |
+          git add emulator/c64/media/prg-archive emulator/c64/library.json
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "C64: retire 1528 superseded archive PRGs and preserve 8321 originals"
+          git push origin HEAD:refs/heads/codex/c64-prg-archive-physical-repack-20261016
