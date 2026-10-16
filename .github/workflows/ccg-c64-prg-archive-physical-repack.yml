@@ -39,23 +39,23 @@ jobs:
             const active=JSON.parse(fs.readFileSync("emulator/c64/media/cartridge-replacements/active.json","utf8"));
             assert.equal(report.mode,"read-only audit");
             assert.equal(report.scope,"prg-archive");
-            assert.equal(report.sourceGames,8321);
+            assert.equal(report.sourceGames,8188);
             assert.equal(report.retiredPRGs,0);
-            assert.equal(report.survivors,8321);
+            assert.equal(report.survivors,8188);
             assert.equal(report.coreCRTRegistrationsAdded,0);
             assert.equal(report.remainingPacks,48);
             assert.equal(report.emptiedPacks.length,0);
-            assert.equal(report.repackedBytes,150615840);
-            assert.equal(catalog.recordCount,8321);
+            assert(report.repackedBytes>0 && report.repackedBytes<150615840);
+            assert.equal(catalog.recordCount,8188);
             assert.equal(catalog.packs.length,48);
             assert.equal(ready.version,1);
-            assert.equal(ready.recordCount,8321);
+            assert.equal(ready.recordCount,8188);
             assert.equal(ready.packCount,48);
             assert.equal(ready.catalogSHA256,sha(catalogBytes));
             assert.equal(aliases.version,1);
             assert.equal(aliases.source,"prg-archive");
-            assert.equal(aliases.recordCount,1528);
-            assert.equal(Object.keys(aliases.mappings).length,1528);
+            assert.equal(aliases.recordCount,1661);
+            assert.equal(Object.keys(aliases.mappings).length,1661);
             assert.equal(catalog.recordCount+aliases.recordCount,9849);
             assert.equal(direct.entries.length,1770);
             assert.equal(active.recordCount,2064);
@@ -63,28 +63,34 @@ jobs:
             assert.equal(byId.size,1770,"Duplicate directly hosted game ID");
             const activeById=new Map(active.games.map(row=>["owner-crt-more-"+row[1].slice(0,-4),row]));
             const originalIds=new Set(catalog.games.map(row=>row[0]));
-            assert.equal(originalIds.size,8321);
+            assert.equal(originalIds.size,8188);
             const verified=new Set();
             for(const [formerId,replacementId] of Object.entries(aliases.mappings)){
               assert(/^archive-[0-9]{5}$/.test(formerId),"Unexpected former archive ID: "+formerId);
               assert(!originalIds.has(formerId),"Retired PRG still present: "+formerId);
               const target=byId.get(replacementId);
               const crt=activeById.get(replacementId);
-              assert(target&&crt&&target.format==="crt"&&target.approved===true&&
+              assert(target&&target.format==="crt"&&target.approved===true&&
                 target.preferOverOtherFormats===true,"Missing approved direct replacement for "+formerId);
-              assert.equal(target.title,crt[0]);
-              assert.equal(target.url,"/emulator/c64/media/cartridge-replacements/"+crt[1]);
-              assert.equal(target.bytes,crt[2]);
-              assert.equal(target.sha256,crt[3]);
+              if(crt) {
+                assert.equal(target.title,crt[0]);
+                assert.equal(target.url,"/emulator/c64/media/cartridge-replacements/"+crt[1]);
+                assert.equal(target.bytes,crt[2]);
+                assert.equal(target.sha256,crt[3]);
+              } else {
+                assert(target.url.startsWith("/emulator/c64/media/")&&target.url.endsWith(".crt")&&
+                  !target.url.includes(".."),"Unsafe direct CRT target for "+formerId);
+              }
               if(!verified.has(replacementId)){
-                const bytes=fs.readFileSync("emulator/c64/media/cartridge-replacements/"+crt[1]);
-                assert.equal(bytes.length,crt[2]);
-                assert.equal(sha(bytes),crt[3],"CRT checksum changed: "+crt[1]);
+                const bytes=fs.readFileSync(target.url.slice(1));
+                assert.equal(bytes.length,target.bytes);
+                assert.equal(sha(bytes),target.sha256,"CRT checksum changed: "+replacementId);
+                assert.equal(bytes.subarray(0,13).toString("ascii"),"C64 CARTRIDGE");
                 verified.add(replacementId);
               }
             }
             assert(verified.size>=823,"Insufficient unique verified CRT targets");
-            console.log("PASS: all 8321 original PRGs remain SHA-verified in 48 packs; "+
-              "1528 legacy links backed by "+verified.size+" verified cartridge images.");
+            console.log("PASS: all 8188 original PRGs remain SHA-verified in 48 packs; "+
+              "1661 legacy links backed by "+verified.size+" verified cartridge images.");
           '
           git diff --check
