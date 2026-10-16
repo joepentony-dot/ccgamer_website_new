@@ -1,0 +1,405 @@
+{
+  "version": 1,
+  "checkedOn": "2026-10-16",
+  "repo": "joepentony-dot/ccgamer_website_new",
+  "baseMain": "9cd170fb0e58e57229ce7e29c73259b5b6bcdeb1",
+  "source": "Lemon64 C64 game listings, individually checked by game title and publisher",
+  "scope": "39 uncredited uniquely keyed titles on baseline main; no hosted C64 game media modified",
+  "change": "publisher-only",
+  "releaseQualifier": "Original release/region/hosted cartridge edition not proved by title listings; inspect binary for collisions",
+  "screenedSourceMatches": 259,
+  "addedPublisherKeys": 39,
+  "previouslyCreditedOrNotVisibleOrAmbiguous": 220,
+  "rows": [
+    {
+      "key": "10 pin bowling",
+      "title": "10-Pin Bowling",
+      "publisher": "Bill Richie Software",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=0",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "100 mile race",
+      "title": "100 Mile Race",
+      "publisher": "Commodore Microcomputer(s) Magazine",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=0",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "a team the",
+      "title": "A-Team, The",
+      "publisher": "Courbois Software",
+      "lemon64ListedYear": 1985,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=A",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "aanval",
+      "title": "Aanval",
+      "publisher": "Bob-Software",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=A",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "abrakadabra",
+      "title": "Abrakadabra",
+      "publisher": "64'er",
+      "lemon64ListedYear": 1991,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=A",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "cabby",
+      "title": "Cabby",
+      "publisher": "COMPUTE!'s Gazette",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=C",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "caccia pericolosa",
+      "title": "Caccia Pericolosa",
+      "publisher": "Amico Bit",
+      "lemon64ListedYear": 1985,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=C",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "dalto",
+      "title": "Dalto",
+      "publisher": "Commodore 64 Club",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=D",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "dances with bunny rabbits",
+      "title": "Dances with Bunny Rabbits",
+      "publisher": "The Adventure Workshop",
+      "lemon64ListedYear": 1992,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=D",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "fadenkreuz",
+      "title": "Fadenkreuz",
+      "publisher": "Game On",
+      "lemon64ListedYear": 1989,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=F",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "fairy tale adventure a",
+      "title": "Fairy Tale Adventure, A",
+      "publisher": "Argus Press Software",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=F",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "h a t e hostile all terrain encounter",
+      "title": "H.A.T.E. - Hostile All Terrain Encounter",
+      "publisher": "Gremlin Graphics",
+      "lemon64ListedYear": 1989,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=H",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "hallax",
+      "title": "Hallax",
+      "publisher": "Binary Zone PD",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=H",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "i c u p s",
+      "title": "I.C.U.P.S.",
+      "publisher": "Thor Computer Software",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=I",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "ice temple the",
+      "title": "Ice Temple, The",
+      "publisher": "Blue Ribbon",
+      "lemon64ListedYear": 1989,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=I",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "jack and the beanstalk",
+      "title": "Jack and the Beanstalk",
+      "publisher": "Thor Computer Software",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=J",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "jack the nipper ii",
+      "title": "Jack the Nipper II",
+      "publisher": "Gremlin Graphics",
+      "lemon64ListedYear": 1987,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=J",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "kablam",
+      "title": "Kablam!",
+      "publisher": "COMPUTE!'s Gazette",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=K",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "kane 2",
+      "title": "Kane 2",
+      "publisher": "Mastertronic",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=K",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "kapriolen de",
+      "title": "Kapriolen, De",
+      "publisher": "Radarsoft",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=K",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "kat trap",
+      "title": "Kat Trap",
+      "publisher": "Streetwise",
+      "lemon64ListedYear": 1987,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=K",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "mad monkey",
+      "title": "Mad Monkey",
+      "publisher": "Input 64",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=M",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "mafia",
+      "title": "Mafia",
+      "publisher": "Igelsoft",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=M",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "magazin das",
+      "title": "Magazin, Das",
+      "publisher": "Ariolasoft",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=M",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "n e i l",
+      "title": "N.E.I.L.",
+      "publisher": "Alternative Software",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=N",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "n y c",
+      "title": "N.Y.C.",
+      "publisher": "Synapse Software",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=N",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "nachtwacht de",
+      "title": "Nachtwacht, De",
+      "publisher": "Microcomputer Club Nederland",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=N",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "national the",
+      "title": "National, The",
+      "publisher": "Cult Games",
+      "lemon64ListedYear": 1991,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=N",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "neagox",
+      "title": "Neagox",
+      "publisher": "Commodore Disk User",
+      "lemon64ListedYear": 1990,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=N",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "official father christmas the",
+      "title": "Official Father Christmas, The",
+      "publisher": "Alternative Software",
+      "lemon64ListedYear": 1989,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=O",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "p p digger",
+      "title": "P.P. Digger",
+      "publisher": "64'er",
+      "lemon64ListedYear": 1993,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=P",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "q bernd",
+      "title": "Q-Bernd",
+      "publisher": "64'er",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=Q",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "q bird",
+      "title": "Q-Bird",
+      "publisher": "COMPUTE!'s Gazette",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=Q",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "quari",
+      "title": "Quari",
+      "publisher": "JetSoft",
+      "lemon64ListedYear": 1984,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=Q",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "r1 d1 unit attack",
+      "title": "R1-D1 Unit Attack",
+      "publisher": "Your Commodore",
+      "lemon64ListedYear": 1986,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=R",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "race against time the",
+      "title": "Race Against Time, The",
+      "publisher": "Codemasters",
+      "lemon64ListedYear": 1988,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=R",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "race the",
+      "title": "Race, The",
+      "publisher": "Players Premier",
+      "lemon64ListedYear": 1990,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=R",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "racing destruction set",
+      "title": "Racing Destruction Set",
+      "publisher": "Electronic Arts",
+      "lemon64ListedYear": 1985,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=R",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    },
+    {
+      "key": "radcliffe in monsterland",
+      "title": "Radcliffe in Monsterland",
+      "publisher": "Bedroom Software",
+      "lemon64ListedYear": 1994,
+      "source": "https://www.lemon64.com/games/list.php?list_letter=R",
+      "status": "listed-C64-title-and-publisher; hosted media edition not binary-confirmed",
+      "originalPublisherCredit": [],
+      "originalYear": null
+    }
+  ]
+}
