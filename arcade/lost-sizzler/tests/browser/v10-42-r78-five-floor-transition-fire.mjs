@@ -292,6 +292,120 @@ async function probeFloorFiveBridgeDeath(page){
     before.acceptedFrames,{timeout:3500,polling:25});
 }
 
+// Browser-level, staged Floor 5 pressure: actual world simulation runs with
+// Guardian Maw, Count Loadula and the Death Stalker alive at 2/3 generators.
+// This is a long-running interaction probe, not the owner's original save.
+async function probeFloorFiveTripleThreatPressure(context,origin){
+  const page=await context.newPage();
+  page.setDefaultTimeout(30000);
+  const errors=[];
+  page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  try{
+    await page.goto(`${origin}/arcade/lost-sizzler/?r78-floor5-triple-pressure=1`,{waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&
+      Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
+    await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
+    await page.click("#solo-btn");
+    await settleFloor(page,1);
+    for(let floor=2;floor<=5;floor++){
+      await page.evaluate(()=>floorComplete("R78 live Floor 5 triple-pressure acceptance"));
+      await page.waitForFunction(()=>mode==="floorcomplete",null,{timeout:10000});
+      await page.evaluate(()=>descendFloor());
+      await settleFloor(page,floor);
+    }
+    const staged=await page.evaluate(()=>{
+      const fight=host?.r114BossFight,room=world?.rooms?.[fight?.roomId],
+        maw=(host?.enemies||[]).find(e=>e.id===fight?.bossId&&e.alive),
+        deathStalker=(host?.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker),
+        count=host?.stalker,gens=(host?.generators||[]).filter(g=>g.alive);
+      if(run?.floor!==5||!room||!maw||!deathStalker||!count||gens.length!==3)
+        return{error:"Generated Floor 5 Maw, Count, Stalker or three generators missing"};
+      const cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+        if(world.map[y]?.[x]!==0||W.roomAt(world,x,y)!==fight.roomId||
+           !W.playerWalkable(world.map,x,y,host)||
+           (host.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||
+           (host.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)||
+           (host.chests||[]).some(c=>c.active&&c.x===x&&c.y===y)||
+           (host.items||[]).some(i=>i.active&&i.x===x&&i.y===y))continue;
+        cells.push({x,y});
+      }
+      const playerCell=cells.find(q=>Math.abs(q.x-maw.x)+Math.abs(q.y-maw.y)>=3&&
+        !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y));
+      const rivals=cells.filter(q=>playerCell&&(q.x!==playerCell.x||q.y!==playerCell.y)&&
+        (q.x!==maw.x||q.y!==maw.y)&&
+        !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y)&&
+        Math.abs(q.x-playerCell.x)+Math.abs(q.y-playerCell.y)>=2);
+      if(!playerCell||rivals.length<2)return{error:"Maw room lacks independent walkable pressure cells"};
+      p1.x=playerCell.x;p1.y=playerCell.y;p1.rx=p1.x;p1.ry=p1.y;
+      p1.maxHealth=5000;p1.health=5000;p1.armor=0;p1.hitStunMs=0;p1.invuln=0;
+      p1.controlLocked=false;p1.controlsLocked=false;
+      deathStalker.x=rivals[0].x;deathStalker.y=rivals[0].y;
+      deathStalker.dossierSeen=true;deathStalker.aiState="chase";
+      deathStalker.moveCooldown=180;deathStalker.attackCooldown=950;
+      count.x=rivals[1].x;count.y=rivals[1].y;
+      count.stunMs=0;count.spawnTimer=0;count.moveCooldown=180;
+      for(const e of host.enemies||[])e.dossierSeen=true;
+      for(const g of gens.slice(0,2))damageGenerator(g,Math.max(1,g.hp),p1);
+      const triggered=triggerBossFight(p1);
+      updateStalker(16);updateFloorObjective();
+      return{
+        triggered,frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+        elapsed:Number(host.floorElapsed||0),
+        floor:Number(run.floor),destroyed:gens.filter(g=>!g.alive).length,
+        remaining:(host.generators||[]).filter(g=>g.alive).length,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        mawAlive:maw.alive,bossTriggered:Boolean(fight.triggered),
+        stalkerAlive:deathStalker.alive,countAwake:Boolean(count.awake),
+        mode:String(mode||"")
+      };
+    });
+    assert.ok(!staged.error,JSON.stringify(staged));
+    assert.equal(staged.triggered,true,"Guardian Maw chamber must begin a genuine boss lockdown");
+    assert.equal(staged.destroyed,2);
+    assert.equal(staged.remaining,1);
+    assert.equal(staged.complete,false);
+    assert.equal(staged.exit,false);
+    assert.equal(staged.mawAlive,true);
+    assert.equal(staged.bossTriggered,true);
+    assert.equal(staged.stalkerAlive,true);
+    assert.equal(staged.countAwake,true);
+    assert.equal(staged.mode,"playing");
+    await page.waitForTimeout(12000);
+    const after=await page.evaluate(()=>{
+      const fight=host.r114BossFight;
+      return{
+        floor:Number(run?.floor||0),mode:String(mode||""),
+        frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+        elapsed:Number(host.floorElapsed||0),
+        remaining:(host.generators||[]).filter(g=>g.alive).length,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        mawAlive:Boolean((host.enemies||[]).find(e=>e.id===fight?.bossId)?.alive),
+        bossTriggered:Boolean(fight?.triggered),
+        stalkerAlive:Boolean((host.enemies||[]).find(e=>e.deathStalker&&e.voidStalker)?.alive),
+        countAwake:Boolean(host.stalker?.awake),health:Number(p1.health||0),
+        enemyShots:(enemyBullets||[]).length
+      };
+    });
+    assert.equal(after.floor,5);
+    assert.equal(after.mode,"playing","Three simultaneous threats cannot freeze or leave live gameplay");
+    assert.ok(after.frames>=staged.frames+45,"The authoritative simulation must keep accepting frames");
+    assert.ok(after.elapsed>=staged.elapsed+7000,"The live floor timer must keep advancing");
+    assert.equal(after.remaining,1,"The third generator cannot vanish without a player hit");
+    assert.equal(after.complete,false,"2/3 generators and a living Maw cannot finish the objective");
+    assert.equal(after.exit,false);
+    assert.equal(after.mawAlive,true);
+    assert.equal(after.bossTriggered,true);
+    assert.equal(after.stalkerAlive,true);
+    assert.equal(after.countAwake,true);
+    assert.ok(after.health>0);
+    assert.deepEqual(errors,[],"The simultaneous Floor 5 encounter must produce no JS faults");
+    console.log("Dungeon R78 live 12s Count/Maw/Stalker at 2/3 generators passed:",JSON.stringify(after));
+  }finally{
+    await page.close();
+  }
+}
+
 async function proveFire(page,floor){
   const before=await page.evaluate(()=>{
     p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;p1.invuln=0;p1.hitStunMs=0;
@@ -362,6 +476,8 @@ try{
 
   console.log("Dungeon R78 real Floor 1→5 transition, puzzle installation and firearm continuity acceptance passed.");
   await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
+  await page.close();
+  await probeFloorFiveTripleThreatPressure(context,origin);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
