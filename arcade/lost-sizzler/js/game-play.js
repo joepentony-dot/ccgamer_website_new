@@ -441,8 +441,18 @@ function spawnBridgeThief(p,b){
 function ensureBridgeSwitchAmmo(p,b){
   const noFirearm=!p?.firearmUnlocked||!p?.weapon,needsAmmo=Number(p?.mana||0)<=0;
   if(!noFirearm&&!needsAmmo)return false;
-  const q=b.switchPos||b.rewardPos||{x:p.x,y:p.y},spots=[{x:q.x+1,y:q.y},{x:q.x-1,y:q.y},{x:q.x,y:q.y+1},{x:q.x,y:q.y-1},{x:p.x,y:p.y}].filter(cell=>W.walkable(world.map,cell.x,cell.y,host));
-  const first=spots[0]||{x:p.x,y:p.y},second=spots[1]||first;
+  // The replacement bridge is not yet active here. Reuse the existing
+  // item-recovery flood fill, which respects sealed doors, the collapsed
+  // bridge, furniture and occupied floor cells, rather than assuming that
+  // a walkable tile beside the switch is reachable from the player.
+  const origin=b.switchPos||b.rewardPos||p;
+  const spots=typeof bridgeThiefRecoveryCells==="function"
+    ?bridgeThiefRecoveryCells(p,{...b,thiefRecoveryOrigin:origin})
+      .filter(cell=>cell.x!==origin.x||cell.y!==origin.y)
+    :[];
+  // A completely blocked area retains the old player-tile rescue fallback;
+  // normal floors supply two distinct, genuinely accessible pickup tiles.
+  const first=spots[0]||{x:p.x,y:p.y},second=spots[1]||spots[0]||{x:p.x,y:p.y};
   if(noFirearm)host.items.push({id:`bridge-emergency-weapon-${Date.now()}`,...first,kind:"weapon",active:true,title:"BRIDGE EMERGENCY FIREARM",r114BridgeEmergency:true});
   if(needsAmmo)host.items.push({id:`bridge-emergency-ammo-${Date.now()}`,...second,kind:"ammo",active:true,title:"BRIDGE EMERGENCY AMMO",r114BridgeEmergency:true});
   showToast("BRIDGE FAILSAFE SUPPLIES",noFirearm&&needsAmmo?"A firearm cache and ammunition have appeared beside the bridge switch. Pick them up, then shoot the mechanism.":noFirearm?"A firearm cache has appeared beside the bridge switch so the room cannot trap you.":"An emergency ammo pack has appeared beside the bridge mechanism. Pick it up, then shoot the switch.","cyan",9500);host.revision++;return true

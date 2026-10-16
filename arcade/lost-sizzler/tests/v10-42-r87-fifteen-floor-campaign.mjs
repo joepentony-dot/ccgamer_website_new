@@ -552,6 +552,54 @@ assert.ok(f5DoorCount>=12);
 
 
 
+// P0 bridge emergency supplies: execute the original live pickup-spawn
+// owner against actual stolen-item flood fill rather than trusting terrain
+// near the far-side switch. The original code spawned items across a sealed
+// gap (3,4) while the hero was stranded on the opposite side (7,4).
+const bridgeSupplyStart=gameplaySource.indexOf("function ensureBridgeSwitchAmmo(p,b){");
+const bridgeSupplyEnd=gameplaySource.indexOf("function weightBridgeBlocks(",bridgeSupplyStart);
+const bridgeCellsStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");
+const bridgeCellsEnd=localRuntimeSource.indexOf("function recoverBridgeThiefStash(",bridgeCellsStart);
+assert.ok(bridgeSupplyStart>=0&&bridgeSupplyEnd>bridgeSupplyStart&&bridgeCellsStart>=0&&bridgeCellsEnd>bridgeCellsStart,
+  "Canonical bridge emergency and accessible recovered-item owners must exist");
+const bridgeSupplyCode=gameplaySource.slice(bridgeSupplyStart,bridgeSupplyEnd);
+const bridgeReachCode=localRuntimeSource.slice(bridgeCellsStart,bridgeCellsEnd);
+function emergencySupplyCase({blockLeft=true,blockNorth=true,blockSouth=true,withLoot=true,fill=false}={}){
+  const map=Array.from({length:9},()=>Array(9).fill(1));
+  for(const [x,y] of [[7,4],[6,4],[7,5],[6,5],[3,4]])map[y][x]=0;
+  if(!blockLeft)map[4][5]=0;
+  if(!blockNorth)map[3][4]=0;
+  if(!blockSouth)map[5][4]=0;
+  if(fill){map[4][6]=1;map[5][6]=1;map[5][7]=1}
+  const player={id:"P1",x:7,y:4,weapon:null,firearmUnlocked:false,mana:0},
+    bridge={switchPos:{x:4,y:4},collapsed:true,rebuilt:false,pitTiles:[{x:5,y:4}],bridgeTiles:[{x:5,y:4}]},
+    hostState={items:withLoot?[{id:"standing-loot",x:6,y:4,active:true,kind:"potion"}]:[],
+      enemies:[],generators:[],chests:[],deathCaches:[],switches:[],shrines:[],shops:[],doors:[],revision:0},
+    ctx=vm.createContext({host:hostState,world:{map},p1:player,Date,localPlayers:()=>[player],
+      W:{walkable:(m,x,y)=>m[y]?.[x]===0,playerWalkable:(m,x,y)=>m[y]?.[x]===0},
+      S:{sfx(){}},showToast(){}});
+  vm.runInContext(bridgeReachCode+";"+bridgeSupplyCode,ctx,{timeout:1200});
+  ctx.ensureBridgeSwitchAmmo(player,bridge);
+  return{hostState,player,bridge,map,items:hostState.items.filter(i=>i.r114BridgeEmergency)};
+}
+const emergency=emergencySupplyCase();
+assert.equal(emergency.items.length,2,"Stranded player must receive both needed emergency supplies");
+assert.deepEqual(emergency.items.map(i=>i.kind),["weapon","ammo"]);
+assert.deepEqual(emergency.items.map(i=>[i.x,i.y]),[[6,5],[7,5]],
+  "Both pickups must be reachable on the player's side and not on standing loot");
+assert.equal(new Set(emergency.items.map(i=>i.x+","+i.y)).size,2,
+  "Two supplies must not obscure each other when two safe tiles exist");
+for(const item of emergency.items)assert.notDeepEqual([item.x,item.y],[3,4],
+  "An inaccessible but open square across the ruined bridge is not valid");
+const noLootEmergency=emergencySupplyCase({withLoot:false});
+assert.deepEqual(noLootEmergency.items.map(i=>[i.x,i.y]),[[6,4],[6,5]],
+  "Nearest reachable spaces take priority when existing loot does not occupy them");
+const desperate=emergencySupplyCase({fill:true});
+assert.equal(desperate.items.length,2,"Do not delete emergency supplies when every neighbouring cell is blocked");
+assert.deepEqual(desperate.items.map(i=>[i.x,i.y]),[[7,4],[7,4]],
+  "Legacy player-tile fallback remains available when no free reachable cell exists");
+assert.equal(desperate.hostState.revision,1,"Emergency supply generation refreshes the world once");
+
 // P0 bridge thief: execute the actual stolen-item recovery owner.
 const bridgeStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");
 const bridgeEnd=localRuntimeSource.indexOf("function damageEnemy(",bridgeStart);
