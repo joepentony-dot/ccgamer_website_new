@@ -5,6 +5,12 @@ on:
       - codex/c64-prg-archive-audit-20261016
     paths:
       - .github/workflows/ccg-c64-prg-archive-audit.yml
+  pull_request:
+    branches:
+      - codex/c64-blast-prg-physical-repack-20261016
+      - main
+    paths:
+      - .github/workflows/ccg-c64-prg-archive-audit.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,7 +28,11 @@ jobs:
       - name: Audit all original 9849 PRGs, pack digests and exact-title CRT candidates without changes
         shell: bash
         run: |
-          test "$(git branch --show-current)" = "codex/c64-prg-archive-audit-20261016"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            test "$GITHUB_HEAD_REF" = "codex/c64-prg-archive-audit-20261016"
+          else
+            test "$(git branch --show-current)" = "codex/c64-prg-archive-audit-20261016"
+          fi
           test -z "$(git status --porcelain)"
           node --check scripts/ccg-repack-retired-c64-prgs.mjs
           node scripts/ccg-repack-retired-c64-prgs.mjs --scope prg-archive | tee /tmp/ccg-prg-archive-audit.json
