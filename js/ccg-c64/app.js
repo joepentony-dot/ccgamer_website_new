@@ -5,7 +5,7 @@ import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault, encodeGameVaultBackup, decodeGameVaultBackup } from "./game-vault.js";
-import { mountCatalogueBrowser } from "./catalogue-browser.js";
+import { mountCatalogueBrowser } from "./catalogue-browser.js?ccg_rev=20261016_publisher_year_filters_v1";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";

@@ -2782,7 +2782,7 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   cursor: pointer;
 }
 .ccg-c64-catalogue-filters {
-  display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 0.8fr);
+  display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
   gap: 0.7rem; padding: 0.85rem 1.25rem;
 }
 .ccg-c64-catalogue-filters label { display: grid; gap: 0.28rem; min-width: 0; color: #c7ccee; font: 800 0.57rem var(--ccg-font-mono, "Courier New", monospace); }
@@ -2881,6 +2881,7 @@ body.ccg-c64-catalogue-open { overflow: hidden; }
   .ccg-c64-catalogue-open { font-size: 0.63rem; }
 }
 @media (max-width: 400px) {
+  .ccg-c64-catalogue-filters label { grid-column: 1 / -1; }
   .ccg-c64-catalogue-results { grid-template-columns: 1fr; }
   .ccg-c64-catalogue-item { min-height: 58px; }
 }
