@@ -90,13 +90,13 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
 }
 
 const good = await execute(true);
-assert.equal(blast.recordCount, 1150, "All 1,150 surviving BLAST PRGs remain packed and SHA verified");
+assert.equal(blast.recordCount, 1081, "All 1,081 surviving BLAST PRGs remain packed and SHA verified");
 assert.equal(direct.entries.length, 1770,
   "The 947 former entries and 823 archive replacement CRTs must remain registered");
 assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 1709,
   "Preserve previous promoted CRTs and all 823 new archive replacement CRTs");
-assert.equal(retiredArchive.recordCount, 1528,
-  "All 1528 superseded archive bookmarks must retain CRT mappings");
+assert.equal(retiredArchive.recordCount, 1661,
+  "All 1,661 superseded archive bookmarks must retain CRT mappings");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
@@ -198,6 +198,20 @@ const archivalHeroLink = await execute(true, false, "archive-03844");
 assert.equal(archivalHeroLink.statuses.selected, "owner-crt-h-e-r-o",
   "An archived H.E.R.O PRG bookmark must select the existing canonical CRT");
 assert.equal(archivalHeroLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
+
+// Newly retired original direct-cartridge games, including non-owner-crt IDs,
+// remain reachable when the optional 2,064-cartridge manifest is offline.
+assert.equal(retiredBlast.mappings["blast-0117"], "owner-crt-aspar-gp-master");
+const asparLink = await execute(true, false, "blast-0117");
+assert.equal(asparLink.statuses.selected, "owner-crt-aspar-gp-master",
+  "Previously published direct CRT must replace retired BLAST title");
+
+assert.equal(retiredArchive.mappings["archive-06514"], "pirates");
+const piratesLink = await execute(true, false, "archive-06514");
+assert.equal(piratesLink.statuses.selected, "pirates",
+  "Retired Pirates PRG bookmark must resolve to its existing direct cartridge");
+assert.equal(piratesLink.fetchRequests.filter(x =>
   x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
 
 console.log(`PASS: ${expectedVisible} visible BLAST/direct games with archive CRT fallbacks; 1,528 retired archive bookmarks and original CRT priority preserved.`);
