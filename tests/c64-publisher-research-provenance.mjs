@@ -91,6 +91,28 @@ assert(slapQuarantine?.status==="unverified-regional-edition" &&
 assert(!meta.has("slap fight") && !researchKeys.has("slap fight"),
   "Generic Slap Fight must not inherit Spanish/European publisher without verified edition");
 
+// Batman: The Caped Crusader (1988) contains two independent episodes;
+// 1989 Batman: The Movie is a different C64 game. The two hosted generic
+// "Batman Part" PRGs have not been independently identified by their bytes.
+for (const [key, mediaId, digest] of [
+  ["batman part 1","blast-0167","6712b9999fbf2c7822287a44861821ee07799aaba71731efa102d6756f842e96"],
+  ["batman part 2","blast-0168","1c5e1dac486fe8d8edce447f4d7eb61009d93ea65fddc66aff869b208e81275c"],
+]) {
+  const held = ledger.quarantined.find(row => row.key === key);
+  assert(held?.status === "unverified-game-identity" &&
+    held.rejectedCandidate?.publisher === "Ocean" &&
+    held.playableMedia?.length === 1,
+    "Batman part identity must remain quarantined: " + key);
+  assert.deepEqual(held.playableMedia[0], {
+    id:mediaId,title:key === "batman part 1" ? "Batman Part 1" : "Batman Part 2",
+    sha256:digest
+  }, "Batman part source media identity or SHA changed: " + key);
+  const actual = blast.games.find(row => row[0] === mediaId);
+  assert(actual && actual[1] === held.playableMedia[0].title && actual[6] === digest,
+    "Batman part packed PRG evidence changed: " + key);
+  assert(!meta.has(key) && !researchKeys.has(key),
+    "Batman part identity must remain quarantined from unsupported publisher/year: " + key);
+}
 // Batch-derived publisher credits may inherit only from an already credited
 // exact C64 parent title; check the pinned packed PRG identity and SHA each run.
 const inheritedBatch = ledger.bulkInheritedBatch;

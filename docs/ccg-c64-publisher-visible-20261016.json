@@ -10,7 +10,7 @@
     "emulator/c64/media/blast/catalog.json": "a38edac440c117ef27165484413c041d35aa66c6",
     "emulator/c64/media/prg-archive/catalog.json": "1c8cdc765e466304fc1f783a29020639dc8c8652",
     "emulator/c64/media/prg-archive/ready.json": "b00bdef7f11d4f28b7716e62662ce747f6121964",
-    "emulator/c64/catalogue-metadata.json": "d4a259ddfc151fc665e479b72307d50f449ce2e4"
+    "emulator/c64/catalogue-metadata.json": "53f166188a2ac197cefb067482751804e7ee0669"
   },
   "counts": {
     "rawSourceRecords": 13305,
@@ -20,8 +20,8 @@
     "postLoaderRecords": 12664,
     "visibleGames": 10851,
     "suppressedSameKeyRecords": 1813,
-    "publisherLabelled": 3809,
-    "publisherNotListed": 7042,
+    "publisherLabelled": 3807,
+    "publisherNotListed": 7044,
     "yearKnown": 3581,
     "packedTitleCollisions": 385
   },
@@ -1059,6 +1059,8 @@
     "bathtime",
     "batman 2 part 1 of 2",
     "batman 2 part 2 of 2",
+    "batman part 1",
+    "batman part 2",
     "batman the caped crusader the joker",
     "batman the caped crusader the penguin",
     "bator lovag a",
