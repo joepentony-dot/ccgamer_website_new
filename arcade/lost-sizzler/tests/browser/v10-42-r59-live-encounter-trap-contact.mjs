@@ -98,7 +98,16 @@ try{
     };
   },{id:fixture.id,target:fixture.target,enemyId:fixture.enemyId,roomId:fixture.roomId});
 
-  assert.deepEqual({x:after.x,y:after.y},fixture.target,"real keyboard movement must finish on the ACTIVE dedicated hazard cell");
+  // The key press must enter the ACTIVE hazard tile, but the next combat
+  // frame may move the player again. The canonical hazard event records the
+  // exact contact coordinate, independently of the later resting position.
+  const contacts=after.events.filter(e=>String(e.hazardId||"")===fixture.id);
+  assert.equal(contacts.length,1,
+    "One live keyboard crossing must produce exactly one canonical hazard contact");
+  assert.deepEqual({x:Number(contacts[0].x),y:Number(contacts[0].y)},fixture.target,
+    "The hazard must actually hit the intended target tile, not an adjacent cell");
+  assert.ok(Math.abs(after.x-fixture.target.x)+Math.abs(after.y-fixture.target.y)<=1,
+    "After the hit, the player must remain on or next to the contacted tile");
   assert.equal(after.health,fixture.before.health-1,"dedicated hazard contact under live enemy pressure must remove exactly one HP");
   assert.equal(after.armor,fixture.before.armor,"dedicated hazard contact under enemy pressure must bypass and preserve armour");
   assert.equal(after.active,true,"dedicated hazard must still be ACTIVE when the post-crossing state is inspected");
