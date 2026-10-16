@@ -24,7 +24,11 @@ def audit(unmatched_file, sources, batch_size, quarantine_file=None):
     ledger = json.loads(Path(unmatched_file).read_text(encoding="utf-8"))
     keys = ledger.get("unmatched")
     collisions = ledger.get("packedPRGCollisionTitleKeys")
-    if (ledger.get("auditScope") != "direct library + BLAST + packed PRG archive only"
+    valid_scopes = {
+        "direct library + BLAST + packed PRG archive only",
+        "direct library + active cartridges + BLAST + packed PRG archive (loader-equivalent view)",
+    }
+    if (ledger.get("auditScope") not in valid_scopes
         or not isinstance(keys, list) or not isinstance(collisions, list)
         or ledger.get("unmatchedTitleKeys") != len(keys)
         or len(set(keys)) != len(keys)

@@ -8,6 +8,9 @@ on:
       - 'scripts/c64/mame-bulk-publisher-candidates.py'
       - 'tests/c64-mame-bulk-publisher-candidates.test.py'
       - 'tests/c64-publisher-research-provenance.mjs'
+      - 'tests/c64-visible-publisher-coverage.mjs'
+      - 'docs/ccg-c64-publisher-visible-20261016.json'
+      - 'emulator/c64/media/cartridge-replacements/active.json'
       - 'emulator/c64/catalogue-metadata.json'
       - 'emulator/c64/publisher-research-sources.json'
       - 'emulator/c64/library.json'
@@ -41,6 +44,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
           test -z "$(git status --porcelain)"
           node tests/c64-publisher-research-provenance.mjs
+          node tests/c64-visible-publisher-coverage.mjs
           python3 tests/c64-mame-bulk-publisher-candidates.test.py
       - name: Get immutable MAME source revision and only C64 XML metadata
         shell: bash
@@ -66,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
           dest="$RUNNER_TEMP/ccg-c64-publisher-research"
-          node tests/c64-publisher-research-provenance.mjs --unmatched-json > "$dest/unmatched.json"
+          node tests/c64-visible-publisher-coverage.mjs --unmatched-json > "$dest/unmatched.json"
           python3 scripts/c64/mame-bulk-publisher-candidates.py \
             --unmatched-json "$dest/unmatched.json" \
             --quarantine-json emulator/c64/publisher-research-sources.json \

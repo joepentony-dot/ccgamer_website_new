@@ -32,6 +32,28 @@ with tempfile.TemporaryDirectory() as folder:
     assert reasons=={"armageddon":"different-prg-hashes-same-title",
         "duplicate title":"multiple-software-list-records",
         "test":"generic-or-short-title","unknown name":"no-exact-c64-list-match"},reasons
+    # The full current emulator display includes the separately hosted active
+    # cartridge catalogue. It must retain exactly the same conservative joins.
+    full_scope=("direct library + active cartridges + BLAST + packed "
+                "PRG archive (loader-equivalent view)")
+    ledger.write_text(json.dumps({"auditScope":full_scope,
+        "unmatched":keys,"unmatchedTitleKeys":len(keys),
+        "packedPRGCollisionTitleKeys":["armageddon"]}),encoding="utf-8")
+    full=mod.audit(ledger,[xml],250)
+    assert full["scope"]==full_scope
+    assert full["candidateCount"]==1
+    assert full["reviewCount"]==4
+    assert {entry["key"]:entry["reason"] for entry in full["unmatchedOrAmbiguous"]}==reasons
+    # An invented scope cannot bypass C64 source-identity safety checks.
+    ledger.write_text(json.dumps({"auditScope":"untrusted-source",
+        "unmatched":keys,"unmatchedTitleKeys":len(keys),
+        "packedPRGCollisionTitleKeys":["armageddon"]}),encoding="utf-8")
+    try: mod.audit(ledger,[xml],250)
+    except ValueError: pass
+    else: raise AssertionError("Invented source scope accepted")
+    ledger.write_text(json.dumps({"auditScope":full_scope,
+        "unmatched":keys,"unmatchedTitleKeys":len(keys),
+        "packedPRGCollisionTitleKeys":["armageddon"]}),encoding="utf-8")
     # A separately researched ambiguous title must never re-enter a bulk
     # attribution queue solely because MAME contains an exact title.
     quarantine=root/"publisher-research-sources.json"
