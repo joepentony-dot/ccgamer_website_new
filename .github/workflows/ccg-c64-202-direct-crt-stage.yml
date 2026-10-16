@@ -1,0 +1,68 @@
+name: CCG C64 guarded 202 direct-CRT PRG staging
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ccg-c64-202-direct-crt-stage.yml
+permissions:
+  contents: write
+jobs:
+  stage-exact-202-only-on-review-branch:
+    if: github.event_name == 'pull_request' && github.head_ref == 'codex/c64-direct-crt-202-prg-retirement-20261016'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reject changes on main to source media and approved direct cartridges
+        shell: bash
+        run: |
+          test "$(git branch --show-current)" = "codex/c64-direct-crt-202-prg-retirement-20261016"
+          test -z "$(git status --porcelain)"
+          git fetch origin main
+          base="$(git merge-base HEAD origin/main)"
+          test -n "$base"
+          test -z "$(git diff --name-only "$base" origin/main -- emulator/c64/library.json emulator/c64/media/blast emulator/c64/media/prg-archive emulator/c64/media/cartridge-replacements)"
+      - name: Audit exact 202 PRGs and verify 136 original direct CRT binaries
+        shell: bash
+        run: |
+          node --check scripts/ccg-retire-202-direct-crt-prgs.mjs
+          node scripts/ccg-retire-202-direct-crt-prgs.mjs > /tmp/ccg-202-source-audit.json
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import assert from "node:assert/strict";
+            const a=JSON.parse(fs.readFileSync("/tmp/ccg-202-source-audit.json","utf8"));
+            assert.equal(a.mode,"--audit");
+            assert.equal(a.blastRetirements,69);
+            assert.equal(a.archiveRetirements,133);
+            assert.equal(a.uniqueCRT,136);
+            assert.equal(a.oldPackedGames,9471);
+            assert.equal(a.newPackedGames,9269);
+            assert.equal(a.retainedDirectGames,1770);
+          '
+      - name: Physically compact ONLY the 202 pinned PRGs on the review branch
+        shell: bash
+        run: node scripts/ccg-retire-202-direct-crt-prgs.mjs --apply
+      - name: Verify every surviving PRG byte, 59 pack hashes and all existing/new aliases
+        shell: bash
+        run: |
+          node scripts/ccg-retire-202-direct-crt-prgs.mjs --verify-post
+          git diff --check
+      - name: Commit exact 64 media/catalogue files to PR branch, never main
+        shell: bash
+        run: |
+          git add emulator/c64/media/blast emulator/c64/media/prg-archive
+          test "$(git diff --cached --name-only | wc -l)" -eq 64
+          test -z "$(git diff --cached --name-only | grep -vE '^emulator/c64/media/(blast|prg-archive)/')"
+          git diff --cached --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "C64: retire 202 direct-CRT-backed PRGs without losing surviving games"
+          git push origin HEAD:refs/heads/codex/c64-direct-crt-202-prg-retirement-20261016
