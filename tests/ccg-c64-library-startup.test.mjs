@@ -14,6 +14,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
 const direct = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/library.json"), "utf8"));
 const blast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/catalog.json"), "utf8"));
+const retiredBlast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/retired-ids.json"), "utf8"));
 const moreCrt = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/cartridge-replacements/active.json"), "utf8"));
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
 const end = app.indexOf("async function loadSelectedLibraryEntry()", begin);
@@ -53,10 +54,7 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
         throw new Error("HEAD denied by CDN"); // All old results would disappear.
       }
       if (url === "/emulator/c64/media/blast/retired-ids.json") {
-        return { ok: true, json: async () => ({
-          version: 1, source: "blast", recordCount: 1,
-          mappings: { "blast-0000": "owner-crt-more-10th-frame" },
-        }) };
+        return { ok: true, json: async () => retiredBlast };
       }
       if (url === "/emulator/c64/library.json") {
         return { ok: true, json: async () => direct };
@@ -145,6 +143,16 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 }
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
+// One of the 728 retired IDs resolves to a second approved edition of a
+// previously selected CRT. The older canonical H.E.R.O cartridge must remain
+// visible, and its former packed PRG bookmark must still launch that selection.
+assert.equal(retiredBlast.mappings["blast-0759"], "owner-crt-more-hero-d55737f6e620");
+const duplicateCrtLink = await execute(true, false, "blast-0759");
+assert.equal(duplicateCrtLink.statuses.selected, "owner-crt-h-e-r-o",
+  "Retired BLAST bookmark must select the original canonical CRT even when its mapped edition is hidden");
+assert.equal(duplicateCrtLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/blast/retired-ids.json").length, 1);
+
 
 // A previously shared packed PRG ID must still select the approved CRT after
 // physical compaction. The alias is fetched only for an unresolved deep link.
