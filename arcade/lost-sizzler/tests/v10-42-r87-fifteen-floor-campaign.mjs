@@ -584,19 +584,19 @@ function emergencySupplyCase({blockLeft=true,blockNorth=true,blockSouth=true,wit
 }
 const emergency=emergencySupplyCase();
 assert.equal(emergency.items.length,2,"Stranded player must receive both needed emergency supplies");
-assert.deepEqual(emergency.items.map(i=>i.kind),["weapon","ammo"]);
-assert.deepEqual(emergency.items.map(i=>[i.x,i.y]),[[6,5],[7,5]],
+assert.deepEqual(Array.from(emergency.items,i=>i.kind),["weapon","ammo"]);
+assert.deepEqual(Array.from(emergency.items,i=>[i.x,i.y]),[[6,5],[7,5]],
   "Both pickups must be reachable on the player's side and not on standing loot");
 assert.equal(new Set(emergency.items.map(i=>i.x+","+i.y)).size,2,
   "Two supplies must not obscure each other when two safe tiles exist");
 for(const item of emergency.items)assert.notDeepEqual([item.x,item.y],[3,4],
   "An inaccessible but open square across the ruined bridge is not valid");
 const noLootEmergency=emergencySupplyCase({withLoot:false});
-assert.deepEqual(noLootEmergency.items.map(i=>[i.x,i.y]),[[6,4],[6,5]],
+assert.deepEqual(Array.from(noLootEmergency.items,i=>[i.x,i.y]),[[6,4],[6,5]],
   "Nearest reachable spaces take priority when existing loot does not occupy them");
 const desperate=emergencySupplyCase({fill:true});
 assert.equal(desperate.items.length,2,"Do not delete emergency supplies when every neighbouring cell is blocked");
-assert.deepEqual(desperate.items.map(i=>[i.x,i.y]),[[7,4],[7,4]],
+assert.deepEqual(Array.from(desperate.items,i=>[i.x,i.y]),[[7,4],[7,4]],
   "Legacy player-tile fallback remains available when no free reachable cell exists");
 assert.equal(desperate.hostState.revision,1,"Emergency supply generation refreshes the world once");
 
