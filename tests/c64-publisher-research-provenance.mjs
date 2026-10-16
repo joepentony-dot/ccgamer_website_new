@@ -70,6 +70,16 @@ for(const [key,games] of identities) {
 }
 unmatched.sort();
 assert(unmatched.includes("armageddon"));
+// Opt-in full ledger for research; default CI remains concise. This is deliberately
+// read-only and derives titles from current media catalogues, never guessed matches.
+if (process.argv.includes("--unmatched-json")) {
+  console.log(JSON.stringify({
+    auditScope:"direct library + BLAST + packed PRG archive only",
+    unmatchedTitleKeys:unmatched.length,
+    unmatched
+  },null,2));
+}
+
 console.log(JSON.stringify({
   result:"PASS",auditScope:"direct library + BLAST + packed PRG archive only",
   sourceRecords:playable.length,distinctTitleKeys:identities.size,
