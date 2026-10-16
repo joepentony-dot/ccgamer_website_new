@@ -1,24 +1,25 @@
 /* C64 emulator homepage discovery banner.
    Isolated from Omega hero, archive tile and thumbnail sizing contracts. */
 html[data-ccg-page="home"] .home-c64-emulator-promo {
+  --home-emulator-accent-rgb: 79, 230, 144;
   display: flex;
   align-items: center;
   gap: clamp(0.65rem, 1.8vw, 1.05rem);
   min-width: 0;
   margin: 0 0 16px;
   padding: clamp(0.78rem, 1.5vw, 1rem);
-  border: 1px solid rgba(var(--accent-rgb), 0.42);
+  border: 1px solid rgba(var(--home-emulator-accent-rgb), 0.71);
   border-radius: 11px;
-  background: linear-gradient(105deg, rgba(var(--accent-rgb), 0.12), rgba(5, 12, 31, 0.94) 65%);
+  background: linear-gradient(109deg, rgba(14, 83, 55, 0.72) 0%, rgba(7, 44, 36, 0.96) 54%, rgba(4, 21, 26, 0.98) 100%);
   color: #eef6ff;
   text-decoration: none;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.045);
+  box-shadow: 0 0 22px rgba(46, 207, 118, 0.13), 0 9px 24px rgba(0, 0, 0, 0.20), inset 0 1px rgba(255, 255, 255, 0.09);
   transition: border-color 150ms ease, background 150ms ease;
 }
 html[data-ccg-page="home"] .home-c64-emulator-promo:hover,
 html[data-ccg-page="home"] .home-c64-emulator-promo:focus-visible {
-  border-color: rgba(var(--accent-rgb), 0.9);
-  background: linear-gradient(105deg, rgba(var(--accent-rgb), 0.2), rgba(5, 12, 31, 0.96) 70%);
+  border-color: rgba(var(--home-emulator-accent-rgb), 0.9);
+  background: linear-gradient(109deg, rgba(18, 107, 67, 0.8) 0%, rgba(9, 54, 42, 0.97) 54%, rgba(4, 21, 26, 0.99) 100%);
   outline-offset: 3px;
 }
 html[data-ccg-page="home"] .home-c64-emulator-promo__icon {
@@ -27,10 +28,10 @@ html[data-ccg-page="home"] .home-c64-emulator-promo__icon {
   flex: 0 0 52px;
   width: 52px;
   height: 52px;
-  border: 1px solid rgba(var(--accent-rgb), 0.42);
+  border: 1px solid rgba(var(--home-emulator-accent-rgb), 0.71);
   border-radius: 10px;
-  background: rgba(var(--accent-rgb), 0.11);
-  color: #d3edff;
+  background: rgba(var(--home-emulator-accent-rgb), 0.22);
+  color: #c6ffda;
 }
 html[data-ccg-page="home"] .home-c64-emulator-promo__icon svg {
   width: 35px;
@@ -48,7 +49,7 @@ html[data-ccg-page="home"] .home-c64-emulator-promo__copy {
   gap: 3px;
 }
 html[data-ccg-page="home"] .home-c64-emulator-promo__eyebrow {
-  color: #b9d7f9;
+  color: #bcffd4;
   font: 800 0.57rem/1.35 var(--ccg-font-mono, "Courier New", monospace);
   letter-spacing: 0.12em;
 }
@@ -58,7 +59,7 @@ html[data-ccg-page="home"] .home-c64-emulator-promo__title {
   overflow-wrap: anywhere;
 }
 html[data-ccg-page="home"] .home-c64-emulator-promo__description {
-  color: rgba(238, 246, 255, 0.78);
+  color: rgba(229, 255, 239, 0.88);
   font-size: clamp(0.68rem, 1vw, 0.82rem);
   line-height: 1.45;
 }
@@ -66,9 +67,9 @@ html[data-ccg-page="home"] .home-c64-emulator-promo__action {
   flex: 0 0 auto;
   align-self: center;
   padding: 0.75rem 0.8rem;
-  border: 1px solid rgba(var(--accent-rgb), 0.5);
+  border: 1px solid rgba(var(--home-emulator-accent-rgb), 0.5);
   border-radius: 8px;
-  background: rgba(var(--accent-rgb), 0.16);
+  background: rgba(var(--home-emulator-accent-rgb), 0.34);
   font: 850 0.66rem var(--ccg-font-mono, "Courier New", monospace);
   letter-spacing: 0.04em;
   white-space: nowrap;
