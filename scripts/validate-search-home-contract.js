@@ -282,21 +282,12 @@ function stripApprovedHomeSupportArt(html, role) {
   return source;
 }
 
-// Avoid allowing arbitrary homepage edits: normalize only this reviewed
-// installed-app nav asset cache key for the byte-for-byte homepage guard.
-function stripApprovedNavFitMerchCacheKey(html) {
-  return String(html).replace(
-    '<script src="/js/ccg-nav-fit.js?v=20261016-merch-pwa-v2" defer data-ccg-static-shell-script="true"></script>',
-    '<script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>'
-  );
-}
-
 function stripApprovedSeoHead(html) {
   return stripApprovedDungeonCarnageCssCacheBust(
     stripApprovedDungeonCarnageHomeCta(
       stripApprovedRetiredWeeklyVaultCta(
         stripApprovedHomeFooterCssDeferral(
-          stripApprovedNavFitMerchCacheKey(stripApprovedHomeSearchStability(String(html)))
+          stripApprovedHomeSearchStability(String(html))
         )
       )
     )
