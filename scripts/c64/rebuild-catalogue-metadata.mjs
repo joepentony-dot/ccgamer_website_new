@@ -50,7 +50,7 @@ for (const [id, [publishers, year]] of c64) {
     year || previous[2], "ccg"];
   if (candidate[1].length || candidate[2]) byKey.set(id, candidate);
 }
-data.entries = [...byKey.values()].sort((a, b) => a[0].localeCompare(b[0], "en"));
+data.entries = [...byKey.values()].sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
 const next = JSON.stringify(data) + "\n";
 const old = fs.readFileSync(jsonPath, "utf8");
 if (checkOnly) {
