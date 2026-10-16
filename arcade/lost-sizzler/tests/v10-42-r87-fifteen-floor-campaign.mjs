@@ -763,6 +763,46 @@ for(const row of placedBridge){
 assert.equal(overlapBridge.bridge.stolenItems.length,0);
 assert.equal(overlapBridge.ctx.score,750);
 
+// Rebuilt Trickster Bridge: ordinary terrain reports pit squares walkable,
+// but the game's weightBridgeBlocks rejects them permanently. Force the thief
+// to die beside the pit with a full bag and check the actual recovery owner.
+const pitOverflow=bridgeCase();
+pitOverflow.bridge.collapsed=false;pitOverflow.bridge.rebuilt=true;
+pitOverflow.bridge.pitTiles=[{x:6,y:5}];
+pitOverflow.bridge.bridgeTiles=[{x:7,y:5}];
+pitOverflow.thief.x=6;pitOverflow.thief.y=5;
+const rebuiltCells=pitOverflow.ctx.bridgeThiefRecoveryCells(pitOverflow.player,pitOverflow.bridge);
+assert.ok(!rebuiltCells.some(q=>q.x===6&&q.y===5),
+  "A permanently impassable pit must never be a stolen-item destination after repair");
+assert.ok(rebuiltCells.some(q=>q.x===7&&q.y===5),
+  "A repaired span remains eligible for reachable overflow loot");
+const pitReturn=pitOverflow.ctx.recoverBridgeThiefStash(pitOverflow.thief,pitOverflow.player);
+assert.equal(pitReturn.pending,0);
+assert.equal(pitReturn.dropped,1);
+const pitPickup=pitOverflow.host.items.find(row=>row.active&&row.bridgeRecovered);
+assert.ok(pitPickup&&!(pitPickup.x===6&&pitPickup.y===5),
+  "The stolen Flask must land on recoverable ground, never inside the permanent pit");
+assert.equal(pitPickup.carriedItem.kind,"banishment");
+assert.equal(pitOverflow.bridge.stolenItems.length,0);
+assert.equal(pitOverflow.ctx.score,750);
+assert.equal(pitOverflow.retry(),null,"Pit-safe overflow cannot be issued a second time");
+
+const collapsedPitOverflow=bridgeCase();
+collapsedPitOverflow.bridge.collapsed=true;collapsedPitOverflow.bridge.rebuilt=false;
+collapsedPitOverflow.bridge.pitTiles=[{x:6,y:5}];
+collapsedPitOverflow.bridge.bridgeTiles=[{x:7,y:5}];
+collapsedPitOverflow.thief.x=6;collapsedPitOverflow.thief.y=5;
+const collapsedCells=collapsedPitOverflow.ctx.bridgeThiefRecoveryCells(
+  collapsedPitOverflow.player,collapsedPitOverflow.bridge);
+assert.ok(!collapsedCells.some(q=>(q.x===6||q.x===7)&&q.y===5),
+  "Before switch repair, neither the pit nor the broken bridge may receive recovered loot");
+const collapsedReturn=collapsedPitOverflow.ctx.recoverBridgeThiefStash(
+  collapsedPitOverflow.thief,collapsedPitOverflow.player);
+assert.equal(collapsedReturn.pending,0);
+assert.ok(collapsedPitOverflow.host.items.filter(row=>row.active&&row.bridgeRecovered)
+  .every(row=>!(row.y===5&&(row.x===6||row.x===7))));
+assert.equal(collapsedPitOverflow.ctx.score,750);
+
 const restoredBridge=bridgeCase({sealed:true,capacity:1});
 restoredBridge.player.inventory=[{kind:"potion",qty:1}];
 restoredBridge.ctx.recoverBridgeThiefStash(restoredBridge.thief,restoredBridge.player);
