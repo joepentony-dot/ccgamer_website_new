@@ -7,6 +7,7 @@ on:
       - .github/workflows/ccg-c64-202-direct-crt-stage.yml
       - docs/ccg-crt-review/direct-crt-202-retirement-manifest.json
       - scripts/ccg-retire-202-direct-crt-prgs.mjs
+      - scripts/ccg-c64-202-baseline-preservation.mjs
       - emulator/c64/library.json
       - emulator/c64/media/blast/**
       - emulator/c64/media/prg-archive/**
@@ -48,4 +49,6 @@ jobs:
           set -euo pipefail
           node --check scripts/ccg-retire-202-direct-crt-prgs.mjs
           node scripts/ccg-retire-202-direct-crt-prgs.mjs --verify-post
+          node --check scripts/ccg-c64-202-baseline-preservation.mjs
+          node scripts/ccg-c64-202-baseline-preservation.mjs
           test -z "$(git status --porcelain)"
