@@ -106,6 +106,16 @@ for (const pair of excluded.distinctTitleFamilyPairs) {
     "A distinct C64 title must not silently redirect to another game: " + pair.prgId);
 }
 
+import { spawnSync } from "node:child_process";
+const triageCheck=spawnSync(process.execPath,["scripts/ccg-c64-candidate-machine-triage.mjs","--verify"],{encoding:"utf8"});
+assert.equal(triageCheck.status,0,triageCheck.stderr||triageCheck.stdout);
+const triage=read("docs/ccg-crt-review/candidate-machine-triage-progress-20261016.json");
+assert.equal(triage.nextCursor,300);
+assert.equal(triage.entries.length,300);
+assert.equal(triage.independentEditionReviews,0);
+assert.equal(triage.newSafeRemovals,0);
+assert(triage.entries.every(x=>x.retirementAllowed===false&&x.editionProof==="ABSENT"));
+
 console.log("PASS: verified all "+byId.size+" surviving packed PRGs, "+
   matches.length+" read-only possible CRT duplicates, "+
   ledger.cauldronTitleVariants.length+" quarantined Cauldron variants, "+
