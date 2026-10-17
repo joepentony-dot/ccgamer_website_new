@@ -45,7 +45,7 @@ function playerName(){if(run?.daily&&window.CCGWeeklyChallenge?.state?.playerNam
 
 function itemHelp(kind){
   return {
-    health:"Restores 3 HP immediately.",ammo:"Restores roughly 30 shots (more with Scavenger).",mana:"Restores ammunition.",potion:"Stored healing item. Base stack is 3; each Magic Sack raises every stack limit by +1, to a maximum +3.",torch:`Stored item. Base stack is 1; Magic Sacks increase stack limits. Q gives ${C.player.torchRadius*2}-tile light for about ${Math.ceil(C.player.torchMs/1000)}s.`,teleport:"Stored spell. Press R or use it from inventory to warp to a safe explored room. Teleport is disabled inside sealed challenge rooms.",mapReveal:"Rare Cartographer's Eye. Use it from TAB to reveal the whole current floor and every known map icon.",magicSack:"Rare permanent run upgrade. Each Sack raises every stackable inventory limit by +1. Maximum: three Sacks.",banishment:`Distil a Banishment Flask from Banishment Essence at a Banishment Alchemist. When a Death Stalker or Count Loadula is within ${C.stalker.banishPromptDistance||8} tiles, a flashing B prompt permanently destroys that nearby threat. Q always remains Torch.`,inventorySlot:`Permanently expands this run's inventory by one slot, up to ${C.player.inventorySlots}. Locked slots are shown in TAB and can be bought at dungeon shops.`,bronze:"Opens one optional bronze door or locked chest.",key:"Main vault key used by the floor objective.",exitSigil:"Mandatory exit key exposed only after every Sigil defender is defeated.",armour:"Absorbs incoming damage before HP.",weapon:"Equips a randomized weapon/upgrade.",rapid:"Temporary faster firing rate.",xpOrb:"Awards 10 XP unless the current floor cap has been reached.",game:"C64 rescue collectible; bank it by clearing/extracting. Any granted ability is announced above your character.",credits:"Gold score coin.",chest:"Contains randomized gear or supplies.",shrine:"One-use blessing, sometimes with a drawback.",deathCache:"Your missing half-score, lost XP and dropped carried loot. Recover it before another death erases it.",artefact:`Banishment Essence harvested from major threats and rare supernatural rewards. Current V10.42 runs store it in the Vessel rather than an inventory slot; legacy physical Artefacts are still accepted by the Alchemist.`
+    health:"Restores 3 HP immediately.",ammo:"Restores roughly 30 shots (more with Scavenger).",mana:"Restores ammunition.",potion:"Stored healing item. Base stack is 3; each Magic Sack raises every stack limit by +1, to a maximum +3.",torch:`Stored item. Base stack is 1; Magic Sacks increase stack limits. Q gives ${C.player.torchRadius*2}-tile light for about ${Math.ceil(C.player.torchMs/1000)}s.`,teleport:"Stored spell. Up to three Warps fit in a single slot (plus one per Magic Sack, maximum six). Press R or use it from inventory to warp to a safe explored room. Teleport is disabled inside sealed challenge rooms.",mapReveal:"Rare Cartographer's Eye. Use it from TAB to reveal the whole current floor and every known map icon.",magicSack:"Rare permanent run upgrade. Each Sack raises every stackable inventory limit by +1. Maximum: three Sacks.",banishment:`Distil a Banishment Flask from Banishment Essence at a Banishment Alchemist. When a Death Stalker or Count Loadula is within ${C.stalker.banishPromptDistance||8} tiles, a flashing B prompt permanently destroys that nearby threat. Q always remains Torch.`,inventorySlot:`Permanently expands this run's inventory by one slot, up to ${C.player.inventorySlots}. Locked slots are shown in TAB and can be bought at dungeon shops.`,bronze:"Opens one optional bronze door or locked chest.",key:"Main vault key used by the floor objective.",exitSigil:"Mandatory exit key exposed only after every Sigil defender is defeated.",armour:"Absorbs incoming damage before HP.",weapon:"Equips a randomized weapon/upgrade.",rapid:"Temporary faster firing rate.",xpOrb:"Awards 10 XP unless the current floor cap has been reached.",game:"C64 rescue collectible; bank it by clearing/extracting. Any granted ability is announced above your character.",credits:"Gold score coin.",chest:"Contains randomized gear or supplies.",shrine:"One-use blessing, sometimes with a drawback.",deathCache:"Your missing half-score, lost XP and dropped carried loot. Recover it before another death erases it.",artefact:`Banishment Essence harvested from major threats and rare supernatural rewards. Current V10.42 runs store it in the Vessel rather than an inventory slot; legacy physical Artefacts are still accepted by the Alchemist.`
   }[kind]||"Dungeon item or objective object."
 }
 function itemIconSVG(kind,label=""){
@@ -84,7 +84,7 @@ function displayToast(entry){
 function showToast(title,text,tone="gold",duration=9000,options={}){
   // Ordinary information is interrupt-driven; an explicitly retained confirmation owns the banner until it has been visible.
   const entry={title:String(title),text:String(text),tone,duration:Math.max(5200,duration||9000),retain:Boolean(options?.retain),ccgDialogueVoiceHandled:Boolean(options?.ccgDialogueVoiceHandled)};
-  if(retainedToast&&toastTimer>0&&!entry.retain){toastQueue.push(entry);return true}
+  if(retainedToast&&toastTimer>0&&!entry.retain){if(options?.dropIfBusy)return false;toastQueue.push(entry);return true}
   toastQueue.length=0;displayToast(entry);return true;
 }
 function updateToast(dt){
@@ -298,18 +298,62 @@ function floorChallengeComplete(spec,explorePct=0){
   if(challenge==="boss")return Boolean(host.r114BossFight?.cleared);
   if(challenge==="rescueArena")return Boolean(host.rescue?.rescued)&&(host.arenas||[]).length>0&&(host.arenas||[]).every(a=>a.cleared);
   if(challenge==="arenaTimed")return (host.arenas||[]).length>0&&(host.arenas||[]).every(a=>a.cleared)&&(host.timedRooms||[]).length>0&&(host.timedRooms||[]).every(t=>t.cleared);
+  if(challenge==="rescueTimed")return Boolean(host.rescue?.rescued)&&(host.timedRooms||[]).some(t=>t.cleared);
+  if(challenge==="surveyTimed")return Number(explorePct)>=50&&(host.timedRooms||[]).some(t=>t.cleared);
   return false
 }
+function floorChallengeRewardCell(){
+  const player=p1,w=world;if(!player||!w?.map||!host||player.health<=0)return null;
+  const occupied=(q,rows,pred)=>Array.isArray(rows)&&rows.some(v=>v&&pred(v)&&v.x===q.x&&v.y===q.y);
+  const live=v=>v.alive===true,active=v=>v.active!==false;
+  const specials=[host.guardian,host.rescue,host.trader,host.startShop];
+  const blocked=q=>occupied(q,[player],()=>true)||
+    occupied(q,host.enemies,live)||occupied(q,host.generators,live)||
+    occupied(q,[host.stalker],v=>v.awake&&!v.permanentlyBanished)||
+    occupied(q,specials,v=>v.alive!==false&&!v.rescued&&v.active!==false)||
+    occupied(q,host.items,active)||occupied(q,host.chests,active)||
+    occupied(q,host.deathCaches,active)||occupied(q,host.switches,active)||
+    occupied(q,host.shrines,active)||occupied(q,host.shops,active)||
+    (w.exit?.x===q.x&&w.exit?.y===q.y);
+  const walk=(x,y)=>W.playerWalkable(w.map,x,y,host)&&
+    !occupied({x,y},host.enemies,live)&&!occupied({x,y},host.chests,active);
+  if(!walk(player.x,player.y))return null;
+  const queue=[{x:player.x,y:player.y,n:0}],seen=new Set([player.x+","+player.y]);
+  // Stay within eight walkable steps; do not reward through walls or doors.
+  for(let i=0;i<queue.length;i++){
+    const cell=queue[i];
+    if(cell.n>0&&!blocked(cell))return{x:cell.x,y:cell.y};
+    if(cell.n>=8)continue;
+    for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const x=cell.x+dx,y=cell.y+dy,key=x+","+y;
+      if(seen.has(key)||!walk(x,y))continue;
+      seen.add(key);queue.push({x,y,n:cell.n+1});
+    }
+  }
+  return null;
+}
 function floorChallengeReward(spec){
-  if(!spec||host.r114FloorChallengeRewarded)return false;
-  const base=p1||{x:world?.start?.x||1,y:world?.start?.y||1},spots=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]].map(([dx,dy])=>({x:Number(base.x)+dx,y:Number(base.y)+dy}));
-  const q=spots.find(pos=>W.walkable(world.map,pos.x,pos.y,host)&&!(host.chests||[]).some(ch=>ch?.active&&ch.x===pos.x&&ch.y===pos.y))||{x:Number(base.x),y:Number(base.y)};
-  const floor=Math.max(1,Number(run?.floor||1)),roomId=W.roomAt(world,q.x,q.y);
-  host.chests.push({id:`r114-floor-challenge-cache-f${floor}`,...q,roomId,locked:false,active:true,depth:12+floor,r114FloorChallengeReward:true});
-  host.r114FloorChallengeRewarded=true;host.revision++;
-  showToast("FLOOR CHALLENGE COMPLETE",`${spec.challengeTitle||"Featured challenge"} complete. A high-tier Floor Challenge Cache has appeared nearby.`,"gold",9000);
+  if(!spec||!host||!run||host.r114FloorChallengeRewarded)return false;
+  const floor=Math.max(1,Number(run.floor||1)),id="r114-floor-challenge-cache-f"+floor;
+  host.chests=host.chests||[];
+  // A saved or already-opened matching cache owns this reward permanently.
+  if(host.chests.some(ch=>ch.id===id)){
+    host.r114FloorChallengeRewarded=true;return false;
+  }
+  const now=Date.now();
+  if(Number(host.r114ChallengeCacheRetryAt||0)>now)return false;
+  host.r114ChallengeCacheRetryAt=now+900;
+  const q=floorChallengeRewardCell();
+  if(!q)return false; // owed until accessible space opens, including after save
+  host.chests.push({id,x:q.x,y:q.y,roomId:W.roomAt(world,q.x,q.y),
+    locked:false,active:true,depth:12+floor,r114FloorChallengeReward:true});
+  host.r114FloorChallengeRewarded=true;
+  host.revision=(Number(host.revision)||0)+1;
+  showToast("FLOOR CHALLENGE COMPLETE",
+    (spec.challengeTitle||"Featured challenge")+" complete. A high-tier Floor Challenge Cache has appeared nearby.",
+    "gold",9000);
   try{S.sfx("open")}catch(_){}
-  return true
+  return true;
 }
 function updateQuests(){
   if(!run||!host)return;const explore=Math.round(PGR.roomCompletion(explored.get(p1?.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),spec=floorChallengeSpec(),challengeDone=floorChallengeComplete(spec,explore),q=[{id:"main",label:objective,v:host.objective?.complete?1:0,t:1}];

@@ -574,7 +574,7 @@ window.CCGSystems=(()=>{
     // Per-floor persistent knowledge/state. These reset only when a new floor is generated.
     host.radarSigilSeen=null;host.radarSigilGateSeen=null;host.defeatedDeathStalkers=[];
 
-    host.arenas=[];if(activeFeatureRooms.length){const room=activeFeatureRooms[Math.floor(activeFeatureRooms.length*.55)];host.arenas.push({id:"arena0",roomId:room.id,triggered:false,cleared:false,wave:0,rewarded:false})}
+    host.arenas=[]; // The cancelled arena cannot spawn or seal doors in the solo campaign.
     host.timedRooms=[];if(activeFeatureRooms.length>3){const room=activeFeatureRooms[Math.floor(activeFeatureRooms.length*.7)];host.timedRooms.push({id:"timed0",roomId:room.id,triggered:false,cleared:false,timeLeft:30000,rewarded:false})}
 
     const obj=PGR.objectiveFor(run);
@@ -724,8 +724,28 @@ window.CCGSystems=(()=>{
   }
 
   function enforceDeathStalkerSingleton(host){
-    if(!host)return null;const stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker),keep=stalkers[0]||null;
+    if(!host)return null;
+    const stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    const previousId=String(host.deathStalkerId||"");
+    const keep=stalkers.find(e=>String(e.id)===previousId)||stalkers[0]||null;
+    const floorIds=new Set(stalkers.map(e=>String(e.id||"")));
+    const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
+    // A previously banished floor Stalker stays banished even if an older
+    // duplicate entry was still marked alive during state reconciliation.
+    const permanentlyDefeated=stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
+      Boolean(previousId&&floorIds.has(previousId)&&defeatedIds.has(previousId));
     if(stalkers.length>1)host.enemies=(host.enemies||[]).filter(e=>!(e?.deathStalker&&e?.voidStalker)||e===keep);
+    if(keep){
+      for(const trial of host.timedRooms||[]){
+        if(trial?.hunterId!=null&&floorIds.has(String(trial.hunterId)))trial.hunterId=keep.id;
+        if(permanentlyDefeated&&String(trial?.hunterId||"")===String(keep.id))trial.stalkerDefeated=true;
+      }
+      if(permanentlyDefeated){
+        keep.alive=false;
+        host.defeatedDeathStalkers=Array.isArray(host.defeatedDeathStalkers)?host.defeatedDeathStalkers:[];
+        if(!host.defeatedDeathStalkers.includes(keep.id))host.defeatedDeathStalkers.push(keep.id);
+      }
+    }
     host.voidStalkers=keep?[keep.id]:[];host.deathStalkerId=keep?.id||null;return keep
   }
 

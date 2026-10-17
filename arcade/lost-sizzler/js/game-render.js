@@ -1577,7 +1577,11 @@ function drawDedicatedHazards(){
       const spin=active?(now/54+cell.group*.7):warning?(Math.sin(now/105+cell.group)*.42):0;
       ctx.save();ctx.translate(cx,cy);ctx.rotate(spin);
       if(blade?.complete&&blade.naturalWidth){
-        const size=active?C.tile*.9:warning?C.tile*.8:C.tile*.72;
+        // Idle blade hardware must recede rather than cover whole rooms with pale glyphs.
+        const size=active?C.tile*.78:warning?C.tile*.68:C.tile*.54;
+        ctx.fillStyle="#141a23";ctx.fillRect(-C.tile*.30,-C.tile*.30,C.tile*.60,C.tile*.60);
+        ctx.strokeStyle=active?P.red:warning?P.gold:"#555e6c";ctx.lineWidth=2;
+        ctx.strokeRect(-C.tile*.28,-C.tile*.28,C.tile*.56,C.tile*.56);
         ctx.shadowColor=active?P.red:warning?P.gold:"rgba(145,154,166,.35)";ctx.shadowBlur=active?14:warning?9:4;
         ctx.drawImage(blade,-size/2,-size/2,size,size)
       }else{
@@ -1694,6 +1698,11 @@ function drawRadarCross(ctx,x,y,colour,size=6){
   ctx.fillRect(x-2,y-size,4,size*2);ctx.fillRect(x-size,y-2,size*2,4);
   ctx.strokeRect(x-2.5,y-size-.5,5,size*2+1);ctx.strokeRect(x-size-.5,y-2.5,size*2+1,5);ctx.restore()
 }
+function radarBridgeThief(hostState){
+  const bridge=hostState?.weightBridge;
+  if(!bridge?.crossed||bridge.thiefDefeated||!bridge.thiefId)return null;
+  return (hostState.enemies||[]).find(e=>e?.bridgeThief&&e.alive&&e.id===bridge.thiefId)||null;
+}
 function renderRadarPanel(p){
   if(!radarCtx||!radarCanvasEl||!world||!p)return;
   /* Keep the radar backing bitmap aligned to the visible canvas. Fixed minimum
@@ -1728,6 +1737,22 @@ function renderRadarPanel(p){
   for(const cache of host.deathCaches||[])if(cache.active&&inside(cache)){const cx=px(cache),cy=py(cache);radarCtx.save();radarCtx.strokeStyle="#ff6076";radarCtx.lineWidth=2;radarCtx.beginPath();radarCtx.moveTo(cx-3,cy-3);radarCtx.lineTo(cx+3,cy+3);radarCtx.moveTo(cx+3,cy-3);radarCtx.lineTo(cx-3,cy+3);radarCtx.stroke();radarCtx.restore()}
   for(const shop of host.shops||[])if(shop.active&&(shop.discovered||revealAll)&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
+  // After the theft, track the live thief even outside this room-sized radar.
+  // Clamping its marker indicates direction without revealing map geometry.
+  const fleeingThief=radarBridgeThief(host);
+  if(fleeingThief){
+    const onMap=inside(fleeingThief),
+      x=ox+(Math.max(minX+.5,Math.min(maxX-1.5,Number(fleeingThief.x)))-minX)*sc,
+      y=oy+(Math.max(minY+.5,Math.min(maxY-1.5,Number(fleeingThief.y)))-minY)*sc;
+    radarCtx.save();radarCtx.fillStyle="#ffb75b";radarCtx.strokeStyle="#fff0c3";
+    radarCtx.lineWidth=1.3;radarCtx.beginPath();radarCtx.arc(x,y,onMap?5:4.5,0,Math.PI*2);
+    radarCtx.fill();radarCtx.stroke();radarCtx.fillStyle="#29120b";
+    radarCtx.font="bold 8px monospace";radarCtx.textAlign="center";
+    radarCtx.textBaseline="middle";radarCtx.fillText("T",x,y+.25);radarCtx.restore();
+    try{window.__CCG_RADAR_DIAGNOSTICS__.thiefMarker={
+      worldX:Number(fleeingThief.x),worldY:Number(fleeingThief.y),shape:"T",onMap,count:1
+    }}catch(_){}
+  }
   radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);
   const playerCx=px(p)+sc/2,playerCy=py(p)+sc/2,playerSize=Math.max(7,Math.min(11,sc*.82));radarCtx.save();radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1.5;radarCtx.shadowColor=P.cyan;radarCtx.shadowBlur=4;radarCtx.fillRect(playerCx-playerSize/2,playerCy-playerSize/2,playerSize,playerSize);radarCtx.strokeRect(playerCx-playerSize/2-.5,playerCy-playerSize/2-.5,playerSize+1,playerSize+1);radarCtx.fillStyle="#091018";radarCtx.fillRect(playerCx-1,playerCy-1,2,2);radarCtx.restore()
 }

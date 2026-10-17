@@ -21,6 +21,105 @@
 - PR #2819 follows current main with 13 C64 source-backed distinct publisher credits and four quarantined ambiguous identities; `emulator/c64/catalogue-metadata.json` + source ledger. Initial head `51683cbddd997265f08472c448a3156cd18b2c1a`; initial publisher, browser and SEO qualification green, site safety pending. Independent Codex review P1 reported missing continuation checkpoints: current revision adds them. **Recheck fresh exact-head CI, reviews, main and deployment before merge.** Do not assert released until merged/deployed.
 - Historical bulk publisher draft PR #2816 and CRT draft PR #2813 remain separate/unmerged, with unresolved edition/provenance issues (including false Avenger CRT mapping and missing gameplay fallback); newer publisher metadata must not be overwritten. Source-specific details and safe next action: `docs/ai-work/browser-c64-emulator.md`.
 
+## Dungeon #2705 — 16 October 2026 P0 bridge thief reachable hideout, latest exact-head qualification pending
+
+- **Latest source `1dba8d9eb6c1db39c924a23158d2795f2108eddf`**: exact real Floor 5 generator survey found thief hidden beyond optional secret/switch/bronze gate **19 of 35** previously selected locations. Corrected `game-play.js::bridgeThiefCell` to select physically reachable ordinary-room locations, accounting for normally openable thresholds, locked doors, live solid generators and post-switch repaired bridge. A first attempt that forbade the collapsed bridge put thief beside player in its own bridge room in **39/40** far-side samples; final route permits bridge tiles *after the switch is fired* while keeping pit cells impassable. Executing real world+host+decorate+thief source on 40 seeded Floor 5 maps found **40/40** remote physically reachable destinations after repair. Existing R87 test expanded with 35 seeds × start/post-switch scenarios (70 assertions); no new test file. `bcc229aa` originally fixed optional locks, `9eadacad` repaired a fixture name; final `1dba8d9` corrects the required remote hideout. This is a synthetic source-level route survey, **not real keyboard-driven bridge traversal/shot/thief battle**. New 11-workflow exact-head Node/Chromium/Windows qualification dispatched and not yet complete; old `ff46ef1` was fully green 11/11 but cannot qualify new head.
+- Existing sole draft PR **#2705**, zero behind main `9cd170fb0e58e57229ce7e29c73259b5b6bcdeb1` at this checkpoint, no independent approval/merge/deployment. Continue player-flask/thief inventory overflow/save restoration, original Floor 5 Count+Guardian Maw+Death Stalker Windows incident, installed build acceptance and missing 16 original MP3s. Preserve emulator/SEO/CRT concurrent work and existing hourly Dungeon schedule.
+
+## Dungeon #2705 — 16 October 2026 guarded generator spawn collision fix and P0 qualifications
+
+- Candidate source commit `57da221bd0889add8eb42cc8b36c003df7d5c21a` fixes actual `game-play.js::updateGenerators` choosing a neighbouring enemy spawn atop the hero, active loot, living Guardian or Death Cache. Reproduced via original-source V8 execution: old reinforcement appeared at player (6,5); revised function chose free (5,4). Full blocked area yields 0 enemies / 0 phantom count, and freeing one tile permits one. Existing R87 campaign Node test expanded; source/test parsed, **fresh exact-head full Node/six Chromium/Windows CI pending**, not a merged game or original owner Floor 5 save reproduction.
+- Prior candidate `4f4cce3a73646c060a56cefbaa512d8574100c94` also bounds Count Loadula's potentially unbounded score/XP drain catch-up on corrupted or extreme saved timer; retains the one-second null/restored grace. Normal, negative-billion, null, Infinity and 600,000ms direct-source V8 cases passed; existing R137 test extended.
+- Existing R139 controlled Floor 5 browser probe commit `3491008c81cb0d1b4608602f6461c284463ac39e` extends original R78 test with simultaneous Count/Death Stalker, actual generator owner 2/3→3/3, Sigil-room lockdown and interrupted-defender recovery; still synthetic actor/kill control, **not full normal-input traversal, Count/Guardian combat, save/Continue or the original Windows incident**. Latest safe merge-parent `8ba57072d944e84c9b287e55c4ccdfe34668ca73` preserved 39 Dungeon files and new website main with 0 path overlap, main `9cd170fb0e58e57229ce7e29c73259b5b6bcdeb1` at checkpoint.
+- Continue within sole draft PR #2705; **0 behind main at 16 October checkpoint**, 11-workflow exact-head requalification running for latest gameplay. Independently review, recover owner original Floor 5 save/seed if obtainable, test genuine Windows Count Loadula + Guardian Maw + Death Stalker combat, Flask and third generator, save/Continue, thief inventory/Flask, audio source; owner acceptance and merge approval required. No release, deployment, main update or claim original P0 solved.
+
+## Dungeon #2705 Floor 5 generated door-owner route — 15 October 2026
+
+- Source-level tested 38 seeds with 395 actual ordinary-door animations, then 20 seeds using real HP-based damage of 60 generators. Extended existing R87 campaign Node test with 12 seeded complete routes, locked-door veto, exact 2/3→3/3 objective, JSON restore, no bronze keys, exit still Sigil-gated; direct test section passed V8. This is not original owner natural browser input/save acceptance; no generator defect reproduced and no gameplay source change.
+- Preserve one Dungeon draft; full Node/six Chromium/Windows/independent review and original owner P0 reproduction remain outstanding.
+
+## Dungeon #2705 Floor Challenge Cache collision safeguard — 15 October 2026
+
+- Existing `game-core.js` reward owner now reserves a featured challenge chest until an accessible unoccupied tile is free, persists retry through save, and never repeats an opened cache. Existing R87 tests extended; focused V8 and syntax only, no complete Node/Chromium/Windows or original owner save repro.
+- Preserve single unmerged cumulative Dungeon PR and current main website; no new PR or paid CI.
+
+## Dungeon #2705 reconciled P0 qualification — 15 October 2026
+
+- Tested source `d06e4b55e28d03c3bcca5935b2fd3f22b7a06626`, existing cumulative branch only. Standard merge e5c8390f3 preserves concurrent remote dc045e667 and all incoming gameplay/diagnostic work. Fixed recursive hazard double-defeat in the existing death owner; corrected a Warden fixture context reference without weakening its assertion. Extended existing tests for actual hazard/dossier ownership, panel-owned Space versus rejected gameplay input, and cleared Maw-room release at 2/3 generators with Count/Stalker alive and no Flask.
+- Fifteen focused Node files passed; R58 passed with LF-normalised reads. Full combined local Chromium endurance passed at 22:16 BST: 96 desktop rounds, 20 mobile FIRE attacks over 320,068 ms, rating/inventory/pause recovery; separate save/Continue/critical combat checks passed. Controlled Floor 5 browser scenario passed through final generator and same-floor death/respawn with both defeated enemies remaining dead and no frame faults. Historical round-91 cause and original owner deadlock/freeze are not proven resolved. Details/commands/negative controls: [R137 workstream](ai-work/dungeon-carnage-r137-owner-blockers.md).
+- Main b65f2889e is 23 commits ahead of candidate ancestry; no main integration, protected-site change, paid CI, merge, deploy or Windows/owner acceptance. Full canonical/six-shard qualification and independent review remain open. Stop at this checkpoint; no automatic graphics/map/equipment phase.
+
+## Dungeon #2705 Warden sight-safe Ward Break — 15 October 2026
+
+- Reproduced wasted one-time Banishment Flask when a Death Stalker or Count Loadula was in Manhattan range but behind an intact locked door/solid wall. Existing Warden owner now uses real combat line-of-sight and inventory stays unchanged when blocked. Extended existing Warden source-level regression with real AI loading and saved gate, opened gate and visible-target controls. Six focused old/new scenarios passed, no full Node/Chromium/Windows qualification or owner acceptance.
+- Keep one cumulative draft and no unqualified merge/deployment; soundtrack source still blocked.
+
+## Dungeon #2705 post-combat boss-room door recovery — 15 October 2026
+
+- Guarded correction to `game-play.js` restores stranded room doors when a restored/interrupted boss fight is already cleared and its boss dead. Uses existing door opening owner and preserves live Memory/Sigil lockdown; source-executed red/green grouped, restored, living-boss and idempotent tests added to R87. Does not establish the original paired Guardian Maw/Death Stalker freeze or Count Loadula 2/3-generator softlock, and full Node/Chromium/Windows/owner acceptance is outstanding.
+- Keep sole Dungeon PR #2705 draft/unmerged; avoid new PRs, paid CI, protected site edits and soundtrack substitutions.
+
+## Dungeon #2705 R114 boss reward ownership — 15 October 2026
+
+- Reproduced the actual R114 boss completion chest on a live generator. Improved the existing reward owner to select distinct accessible unoccupied chest and Floor 5/10 side-item cells, reserve if blocked, retry after save/unblock, and preserve exactly-once score. Existing R87 campaign test extended; focused source/VM assertions passed only, no full Node/Chromium/Windows/owner repro or merge.
+- Count Loadula generator and paired Guardian Maw/Death Stalker lockups remain release blockers. Single cumulative draft, protect main website and original soundtrack access block.
+
+## Dungeon #2705 atomic Warden charge settlement — 15 October 2026
+
+- Reproduced the active Warden override's failure to verify charge removal/refund when `breakWard` refuses or throws. Guarded candidate snapshots serializable inventory and only pays one charge after a genuine Ward Break; existing Warden Essence test extended for removal failure, unexpected item, exception, changed target, retry and normal exact-once flow. Focused pre-fail/post-pass V8 source tests only; full Node/Chromium/Windows not qualified.
+- Current-head separate topology check sampled 72 generator floors with ordinary room doors open and optional locks intact; all three generators reachable in these samples. Original Count Loadula 2/3 softlock remains unproven against owner's save, so no generator layout change. One Dungeon draft only, no merge/deploy/paid CI; owner music remains blocked.
+
+## Dungeon #2705 Floor 4 torch forced-motion re-entry guard — 15 October 2026
+
+- Reproduced stale `entryByPlayer` on knockback/teleport, which prevents legitimate re-entry to the same torch. Added a passive occupancy refresh before movement and after boulder/encounter systems; only deliberate `triggerSequenceTorch(p,true)` can activate. Extended existing R87 campaign source test for forced off/on, no auto-trigger, repeat rejection, JSON restore, 4-pad exact-once reward. Focused V8 pass only; full Node/six Chromium/Windows/owner acceptance remains outstanding.
+- Single cumulative draft #2705, no merger or release; preserve main website and original music block.
+
+## Dungeon #2705 rebuilt-bridge thief radar guard — 15 October 2026
+
+- Independent source negative control: the bridge switch sets `weightBridge.collapsed=false` while the thief remains alive, but the new radar selector required `collapsed=true` and therefore hid the thief after the player rebuilt the bridge. A one-condition correction keeps tracking the unique post-theft living actor through rebuild, while still hiding pre-theft and defeated actors. Existing R87 regression extended; no new test file, inventory or AI change.
+- Isolated extracted-source before/after tests passed; exact-head full Node/Chromium/Windows, owner Flask HUD/bridge acceptance and independent review still required. Draft #2705 only, no merge, public HTML or paid CI.
+
+## Dungeon #2705 thief cross-room AI/minimap — 15 October 2026
+
+- Existing `CCGAI` now treats bridge thief as a global fleeing target rather than a sleeping/attacking ambusher, using a bounded connected route, normal unlocked-door opening and collision rules; the HUD radar tracks its true actor position only after theft, with an off-screen directional T and removal on defeat. Extended existing R87 live-source two-room AI/radar regression (not new test file). The owner Flask HUD, original bridge encounter and actual Windows/Chromium acceptance remain unresolved.
+- Retain one cumulative draft PR, current-head Node and all six Chromium shards/reviews/install gates, and original music licensing block. Do not merge or deploy without independent qualification.
+
+## Dungeon #2705 thief stolen-item recovery checkpoint — 15 October 2026
+
+- Guarded correction to `game-local-runtime.js` plus the existing playing update loop: if inventory and reachable floor are both full, stolen gear remains serialized as pending until capacity/path opens, then recovers exactly once; no duplicate kill bonus. Existing R87 test extended with direct runtime-source fixtures, including JSON restore. Original owner thief AI/minimap/Flask HUD acceptance still open; no full CI/Windows testing or merge.
+- Remain on sole cumulative #2705 draft; coordinate website SEO/emulator PRs separately and do not integrate over protected main indexes without conflict review.
+
+## Dungeon #2705 Sigil escape Flask reservation — 15 October 2026
+
+- Corrected the owner-visible false free-Flask success announcement in the Sigil escape sequence when capacity or one-charge ownership prevented insertion. Added serializable pending entitlement and exact-once retry through the existing procedural update owner; extended existing R122 Flask regression with full bag, JSON save/restore, already-carried, immediate and failure/retry cases. Owner's separate Alchemist and Windows Flask incident remain unresolved.
+- Draft remains unqualified and unmerged; no paid CI, public website or original-media modifications. See master audit and R137 workstream.
+
+## Dungeon #2705 P0 Timed Chamber occupancy — 15 October 2026
+
+- Source-verified original first-entry Stalker teleport could land on a player/Guardian/active objective/cache. Fixed destination selection to use existing puzzle walkability and active-object exclusions, keeping the Stalker at its existing position if all chamber cells are taken. Extended existing R87 campaign test; pre-fail/post-pass isolated VM evidence. Windows/browser/owner encounter reproduction outstanding.
+- Draft #2705 stays unmerged and current-head CI-unqualified; no paid runs or unrelated page/media edits. Master audit and R137 workstream record limits.
+
+## Dungeon #2705 Death Stalker singleton correction — 15 October 2026
+
+- Corrected `systems.js` singleton reconciliation to preserve permanent defeat across duplicate/stale Stalker records and retarget timed-chamber IDs. Extended existing R87 regression; old source failed controlled duplicate-banished scenario, corrected source passed; original owner crash and full runtime qualification remain outstanding.
+- Current head must be independently Node/Chromium/Windows-qualified and reviewed before any merge. No website changes, paid CI or release.
+
+## Dungeon #2705 Solo endurance diagnostics — 15 October 2026
+
+- Existing Chromium endurance test updated to use synchronous per-defeat dossier/run/recap deltas, strict repeated-dead-actor no-duplication and capture-phase key arrival diagnostics. Isolated negative/positive JS harness passed; actual Chromium and user-reported encounter save have not been tested. No gameplay engine change or production deployment.
+- Draft #2705 remains the sole Dungeon implementation PR; full exact-head Node/six Chromium, Windows installer, independent review and owner acceptance blocked. See R137 workstream and owner master audit.
+
+## Dungeon #2705 P0 Timed Chamber correction — 15 October 2026
+
+- Guarded candidate fix in `game-play.js::triggerTimed`: an already-cleared chamber may no longer restart its trial and relocate the surviving Death Stalker. The actual original and corrected function were executed with five controlled lifecycle scenarios: two previously failed; all five candidate scenarios passed. Source-derived R87 regression added. Original simultaneous guardian/Stalker freeze and owner seed remain unverified.
+- This draft is NOT current-head CI-qualified, merged, deployed or owner-accepted. No paid CI dispatched. See `docs/ai-work/dungeon-carnage-r137-owner-blockers.md` and the master request audit for exact boundaries; preserve the protected website and soundtrack.
+
+## Dungeon #2705 bounded P0 checkpoint — 15 October 2026, 15:04 BST
+
+- Existing cumulative draft only: `fix/dungeon-r137-release-blockers-voice-scout-20261013`, refreshed remote head `ac4c3e34a214b2599f6ddc020c1d4024a7f3d402`. Verified source/test commit `9752a2cf0441353c4ab8240a66d532f12eb98cee` repairs Warden Cache occupied/unreachable placement and preserves deferred Seal eligibility; extends the existing Warden contract and corrects the R87 generator fixture's canonical `alive` field without changing its assertions.
+- Twelve focused Node regression files passed, including real solo guardian/Stalker damage, both Warden rewards, deferred cache/domain/opening, R87 campaign, Sigil recovery, Flask and Lighthouse protocol; original exact-head source fails the new generator-overlap assertion. No browser/Windows/full-suite CI, independent review, merge, deployment or owner acceptance claimed. CI-skipping commit markers honour the no-paid-CI instruction; no workflow dispatched.
+- Refreshed main `0f9a2a028dca833b7f2942f03e45a093826cbc40`: candidate still 13 main commits behind. No main integration or public HTML/registration change. Broader paired-enemy respawn/freeze, 2/3 generator lock, thief/Flask and reported Solo endurance failures remain blockers. Stop this phase here; exact tests and next task are in [R137 workstream](ai-work/dungeon-carnage-r137-owner-blockers.md) and [master audit](ai-work/dungeon-carnage-master-request-audit.md).
+
 ## 15 October 2026 — Mobile Merch Shop menu visibility repair
 - The site owner could not locate the merchandise link on mobile; only the low homepage feature existed. On current-main-derived branch `fix/fourthwall-mobile-drawer-link-20261015`, the existing JS-built mobile drawer **Explore more** section now starts with a clickable **Merch Shop** destination to the existing Fourthwall GBP store. Scoped CSS gives 44px touch target and focus; desktop/static header remains unchanged. Existing Site Safety merch test guards the new drawer link. Service worker cache advances v147 → v148 for changed shared CSS/JS. See `docs/ai-work/fourthwall-merchandising-20261015.md`. Check exact-head CI and new main before merge; post-merge Pages/live/mobile test still required.
 
