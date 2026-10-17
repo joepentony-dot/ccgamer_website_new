@@ -1,8 +1,8 @@
 {
   "version": 1,
   "checkedOn": "2026-10-16",
-  "baseCommit": "83b5e70292e0bbb73575ca3f7a515f5211a4313e",
-  "releaseStatus": "RESEARCH STAGED ONLY — metadata not yet updated, not merged or deployed",
+  "baseCommit": "1d3a9732e0f96e39d9e5dc69f9bb947b1bb16ca1",
+  "releaseStatus": "16 individually sourced publisher metadata keys staged in current PR #2828 against audited playable cohort; not merged or deployed; 2 title/edition ambiguities quarantined.",
   "screened": 18,
   "accepted": 16,
   "quarantined": 2,
