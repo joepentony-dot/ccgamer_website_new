@@ -85,20 +85,24 @@ function updateStaticPages(metadata) {
     const expectedOwned = buildExpectedStaticEntries(metadata);
     const expectedOwnedSet = new Set(expectedOwned);
 
-    // Keep all existing valid entries exactly where they are. Remove only stale
-    // year/platform entries owned by this workflow, then append missing owned
-    // entries in their stable expected order.
-    const next = current.filter((entry) => !isOwnedArchiveEntry(entry) || expectedOwnedSet.has(entry));
-    const missingOwned = expectedOwned.filter((entry) => !next.includes(entry));
-    next.push(...missingOwned);
+    // Preserve every foreign owner's exact relative order. Rebuild just the
+    // year/platform-owned block in the source metadata order: otherwise adding
+    // one newly indexable year after old platform entries fails the stable
+    // ordering contract on both first and subsequent publishing passes.
+    const next = [...foreignBefore, ...expectedOwned];
+    const missingOwned = expectedOwned.filter((entry) => !current.includes(entry));
 
     const foreignAfter = next.filter((entry) => !isOwnedArchiveEntry(entry));
     if (JSON.stringify(foreignAfter) !== JSON.stringify(foreignBefore)) {
         fail("A non-year/platform static-page entry was removed or reordered.");
     }
 
-    if (next.includes("games/years/2023/index.html")) {
-        fail("The noindex 2023 route must not be registered as an indexable static page.");
+    // Derive exclusions from authoritative archive metadata, not a frozen year.
+    const excludedYears = (metadata.years || []).filter(group => group.indexable !== true);
+    for (const group of excludedYears) {
+        if (next.includes(`games/years/${group.year}/index.html`)) {
+            fail(`Noindex year ${group.year} must not be in the static registry.`);
+        }
     }
 
     const duplicates = next.filter((entry, index, all) => all.indexOf(entry) !== index);
@@ -243,7 +247,6 @@ function buildReport(metadata, registryResult) {
 | Archive hubs registered | **2** |
 | Platform routes registered | **${(metadata.platforms || []).length}** |
 | Total archive entries managed in static registry | **${registryResult.archiveCount}** |
-| New archive entries appended this run | **${registryResult.appendedCount}** |
 | Existing non-archive registry entries preserved in order | **${registryResult.foreignCount}** |
 
 ## Discovery integration
@@ -256,7 +259,7 @@ function buildReport(metadata, registryResult) {
 ## Sitemap policy
 
 - Registered both archive hubs, both platform routes and the ${indexableYears.length} indexable year routes.
-- Kept \`/games/years/2023/\` out of the static registry and sitemap while it remains \`noindex,follow\`.
+- Registered only current metadata-indexable years; excluded any years still marked \`noindex,follow\`.
 - Preserved every existing valid registry entry in place and appended only missing year/platform entries.
 
 ## Permanent safeguards
@@ -265,14 +268,14 @@ function buildReport(metadata, registryResult) {
 - Phase 4C reapplies discovery links after generated pages are rebuilt.
 - Validation checks registry membership, sitemap membership, route cross-links and foreign-entry order.
 - Existing publisher, developer, composer, download, retro, genre, collection and core registry entries are not rewritten by the Phase 4C integration script.
-- Existing valid year/platform entries are not removed and re-appended, preventing registry-order ping-pong with other archive workflows.
+- The year/platform-owned block is rebuilt in the same metadata order on every pass, while foreign registry entries remain byte-equivalent and in their existing relative order.
 
 ## Explicit exclusions
 
 - No changes to \`games/games.json\`.
 - No homepage or intro-loader changes.
 - No new public route families.
-- No sitemap inclusion for the noindex 2023 route.
+- No sitemap inclusion for any route marked noindex by current year metadata.
 
 ## Rollback
 
