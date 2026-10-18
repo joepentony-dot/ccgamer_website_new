@@ -119,3 +119,9 @@ test("audited game-page spelling variations link only to real emulator entries",
     assert.match(tag, /href="\/emulator\/c64\/\?game=[a-z0-9-]+&amp;autoplay=1"/);
   }
 });
+
+test("Uridium and Uridium+ remain distinct; IK+ retains its exact edition", () => {
+  assert.match(linked("uridium"), /game=owner-crt-more-uridium-14770873b1ee&amp;autoplay=1/);
+  assert.match(linked("ik-c64"), /game=owner-crt-more-ik&amp;autoplay=1/);
+  assert.match(generator, /replace\(\/\\\+\/g, " plus "\)/);
+});

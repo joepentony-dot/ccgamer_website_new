@@ -17,7 +17,7 @@ const library = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/library
 const records = Array.isArray(library.entries) ? library.entries : [];
 
 // Mirror the emulator's catalogue title normalisation (no substring guesses).
-const normalise = value => String(value || "").normalize("NFKD")
+const normalise = value => String(value || "").replace(/\+/g, " plus ").normalize("NFKD")
   .replace(/[\u0300-\u036f]/g, "").replace(/&/g, " and ")
   .replace(/['\u2018\u2019\u0060]/g, "").replace(/[^a-zA-Z0-9]+/g, " ")
   .trim().replace(/\s+/g, " ").toLowerCase();
