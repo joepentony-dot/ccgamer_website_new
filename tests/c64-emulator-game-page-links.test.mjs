@@ -125,3 +125,22 @@ test("Uridium and Uridium+ remain distinct; IK+ retains its exact edition", () =
   assert.match(linked("ik-c64"), /game=owner-crt-more-ik&amp;autoplay=1/);
   assert.match(generator, /replace\(\/\\\+\/g, " plus "\)/);
 });
+
+// Maintain one exact, playable media target for every reviewed title conflict.
+test("reviewed duplicate CRTs and historical title spellings use pinned visible media IDs", () => {
+  assert.match(linked("the-faces-of-haarne"), /game=owner-crt-more-facesofhaarne-3f498ebd2059&amp;autoplay=1/);
+  assert.match(linked("the-sentinel"), /game=owner-crt-more-sentinel-the&amp;autoplay=1/);
+  assert.match(linked("the-snowman"), /game=archive-07817&amp;autoplay=1/);
+  assert.match(linked("the-train-escape-to-normandy"), /game=owner-crt-more-the-train&amp;autoplay=1/);
+  assert.match(linked("badlands"), /game=owner-crt-badlands&amp;autoplay=1/);
+  assert.match(linked("congo-bongo"), /game=owner-crt-congo-bongo&amp;autoplay=1/);
+  assert.match(linked("gateway-to-apshai"), /game=owner-crt-gateway-to-apshai&amp;autoplay=1/);
+  assert.match(linked("ghostbusters"), /game=owner-crt-ghostbusters&amp;autoplay=1/);
+  assert.match(linked("hero"), /game=owner-crt-h-e-r-o&amp;autoplay=1/);
+  assert.match(linked("kung-fu-master"), /game=owner-crt-kung-fu-master&amp;autoplay=1/);
+  assert.match(linked("tapper"), /game=owner-crt-tapper&amp;autoplay=1/);
+  // Both different Popeye page editions remain deliberately unlinked.
+  for (const slug of ["popeye-c64", "popeye-c64-popeye-donpriestley"]) {
+    assert.doesNotMatch(read("games/" + slug + "/index.html"), /data-ccg-play-in-emulator="true"/);
+  }
+});

@@ -181,6 +181,23 @@ const verifiedPageTitleAliases = new Map([
   ["the-wombles",["Wombles, The","owner-crt-more-womblesthe-eeeeb83dbe3e"]],
   ["the-transformers",["Transformers","owner-crt-more-transformers"]],
   ["the-trap-door",["Trap Door, The","owner-crt-more-trapdoorthe-f9e40ebe1021"]],
+  ["the-faces-of-haarne",["Faces of Haarne","owner-crt-more-facesofhaarne-3f498ebd2059"]],
+  ["the-sentinel",["Sentinel, The","owner-crt-more-sentinel-the"]],
+  ["the-snowman",["Snowman, The","archive-07817"]],
+  ["the-train-escape-to-normandy",["The Train","owner-crt-more-the-train"]],
+]);
+
+// Owner-reviewed exact-title duplicate CRTs: the pinned ID is the first
+// approved, preferred cartridge in the live emulator catalogue. Never apply
+// this exception to duplicate site titles (e.g. two distinct Popeye editions).
+const verifiedDuplicateMediaSelections = new Map([
+  ["badlands","owner-crt-badlands"],
+  ["congo-bongo","owner-crt-congo-bongo"],
+  ["gateway-to-apshai","owner-crt-gateway-to-apshai"],
+  ["ghostbusters","owner-crt-ghostbusters"],
+  ["hero","owner-crt-h-e-r-o"],
+  ["kung-fu-master","owner-crt-kung-fu-master"],
+  ["tapper","owner-crt-tapper"],
 ]);
 
 function emulatorMatch(game) {
@@ -204,7 +221,15 @@ function emulatorMatch(game) {
   const exact = preferred.filter(e => e.id === game.slug);
   if (exact.length === 1) return exact[0];
   const direct = preferred.filter(e => validMedia.includes(e));
-  return direct.length === 1 ? direct[0] : null;
+  if (direct.length === 1) return direct[0];
+  // A fixed exception only succeeds if the pinned approved CRT is still
+  // preferred and is the first of its exact-title variants in the runtime list.
+  const verifiedId = verifiedDuplicateMediaSelections.get(game.slug);
+  if (verifiedId && preferred[0]?.id === verifiedId &&
+      preferred[0]?.format === "crt" && validMedia.includes(preferred[0])) {
+    return preferred[0];
+  }
+  return null;
 }
 
 const playAnchor = id => [
