@@ -1,3 +1,8 @@
+## 18 October 2026 — 31 C64 game-page emulator links staged, not yet deployed
+- Owner priority: make existing C64 game pages launch already published/emulator-approved media, with exact stable IDs; never fabricate missing games, link Amiga pages or infer media identity from an ambiguous title.
+- Branch `fix/c64-game-page-emulator-links-20261018` based on main `feffea035ccf5b64993822b6b039397392211989` stages **31 previously unlinked C64 game routes** with the existing page action/button design and a permanent `scripts/link-c64-emulator-games.js` fixed slug-to-media-title/id map. Match is used only when literal exact title is absent, and only if the pinned approved, currently registered catalogue ID still exists; existing media and links retain priority. Tests cover all 31 routes, link format and no duplicate emulator button. No game binaries, `games/games.json`, general site header/Omega CSS/JS, SEO generators or Dungeon changes.
+- 31 eligible page titles were checked against actual main CRT/BLAST/ready archive metadata and static game HTML. This does **not** assert every C64 page is now linkable; remaining pages need an exact approved version/media identity or separate acquisition/verification. Only branch staging is complete. Exact-head publishing/C64 browser/SEO/Site Safety/performance validation, current-main integration, independent review and a guarded squash merge remain required, followed by live Pages smoke tests. Do not claim live buttons before verification.
+
 # CCG browser C64 emulator
 
 ## Publisher batch 5 correction — PR #2822; 150 staged playable credits, 16 October 2026

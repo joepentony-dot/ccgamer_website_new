@@ -79,3 +79,49 @@ test("credits and emulator CTA styling remain unchanged", () => {
   assert.match(css, /\.ccg-btn--emulator-play:focus-visible/);
   assert.match(css, /@media \(max-width: 560px\)/);
 });
+
+test("audited game-page spelling variations link only to real emulator entries", () => {
+  const auditedSlugs = [
+      "bcs-quest-for-tires",
+      "bc2-grogs-revenge",
+      "beach-head-2",
+      "boulder-dash",
+      "the-captive",
+      "ghetto-blaster",
+      "the-great-escape",
+      "halls-of-the-things",
+      "the-hitchhikers-guide-to-the-galaxy",
+      "jack-the-nipper-2-in-coconut-capers",
+      "the-last-ninja",
+      "leader-board",
+      "the-lords-of-midnight",
+      "the-movie-monster-game",
+      "the-official-father-christmas",
+      "pitfall-2-lost-caverns",
+      "the-prince",
+      "the-sacred-armour-of-antiriad",
+      "the-staff-of-karnath",
+      "summer-games-2",
+      "the-sword-of-fargoal",
+      "thunder-blade",
+      "through-the-trap-door",
+      "up-n-down",
+      "water-polo",
+      "the-way-of-the-exploding-fist",
+      "the-willow-pattern-adventure",
+      "wonder-boy",
+      "the-wombles",
+      "the-transformers",
+      "the-trap-door"
+  ];
+  for (const slug of auditedSlugs) {
+    const tag = linked(slug);
+    assert.match(tag, /href="\/emulator\/c64\/\?game=[a-z0-9-]+&amp;autoplay=1"/);
+  }
+});
+
+test("Uridium and Uridium+ remain distinct; IK+ retains its exact edition", () => {
+  assert.match(linked("uridium"), /game=owner-crt-more-uridium-14770873b1ee&amp;autoplay=1/);
+  assert.match(linked("ik-c64"), /game=owner-crt-more-ik&amp;autoplay=1/);
+  assert.match(generator, /replace\(\/\\\+\/g, " plus "\)/);
+});
