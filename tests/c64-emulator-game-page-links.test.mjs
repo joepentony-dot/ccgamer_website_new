@@ -155,3 +155,8 @@ test("six additional full-title game pages link only to pinned emulator releases
   assert.match(linked("sid-meiers-pirates"), /game=pirates&amp;autoplay=1/);
   assert.match(linked("teenage-mutant-hero-turtles"), /game=archive-08639&amp;autoplay=1/);
 });
+
+test("Muncher and Rats definite-article page titles use pinned existing archive IDs", () => {
+  assert.match(linked("the-muncher"), /game=archive-05825&amp;autoplay=1/);
+  assert.match(linked("the-rats"), /game=archive-06978&amp;autoplay=1/);
+});

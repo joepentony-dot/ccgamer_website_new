@@ -181,6 +181,8 @@ const verifiedPageTitleAliases = new Map([
   ["the-wombles",["Wombles, The","owner-crt-more-womblesthe-eeeeb83dbe3e"]],
   ["the-transformers",["Transformers","owner-crt-more-transformers"]],
   ["the-trap-door",["Trap Door, The","owner-crt-more-trapdoorthe-f9e40ebe1021"]],
+  ["the-muncher",["Muncher","archive-05825"]],
+  ["the-rats",["Rats","archive-06978"]],
   ["the-faces-of-haarne",["Faces of Haarne","owner-crt-more-facesofhaarne-3f498ebd2059"]],
   ["the-sentinel",["Sentinel, The","owner-crt-more-sentinel-the"]],
   ["the-snowman",["Snowman, The","archive-07817"]],
