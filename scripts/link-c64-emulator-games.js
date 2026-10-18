@@ -146,9 +146,49 @@ for (const entry of [...validMedia, ...additionalCRT, ...packed, ...activatedArc
   const key = normalise(entry.title);
   mediaByTitle.set(key, [...(mediaByTitle.get(key) || []), entry]);
 }
+// Individually reviewed C64 page-title spellings versus existing approved
+// emulator catalogue titles. Never use fuzzy matching for autoplay/editions.
+// The source game titles, original media and existing stable IDs stay intact.
+const verifiedPageTitleAliases = new Map([
+  ["bcs-quest-for-tires", "BC's Quest For Tires"],
+  ["bc2-grogs-revenge", "BC II - Grog's Revenge"],
+  ["beach-head-2", "Beach-head 2"],
+  ["boulder-dash", "Boulderdash"],
+  ["the-captive", "Captive, The"],
+  ["ghetto-blaster", "Ghettoblaster"],
+  ["the-great-escape", "Great Escape, The"],
+  ["halls-of-the-things", "Halls of the Things, The"],
+  ["the-hitchhikers-guide-to-the-galaxy", "Hitchhiker's Guide to the Galaxy, The"],
+  ["jack-the-nipper-2-in-coconut-capers", "Jack the Nipper 2 - In Coconut Capers"],
+  ["the-last-ninja", "Last Ninja, The"],
+  ["leader-board", "Leaderboard"],
+  ["the-lords-of-midnight", "Lords of Midnight"],
+  ["the-movie-monster-game", "Movie Monster Game, The"],
+  ["the-official-father-christmas", "Official Father Christmas, The"],
+  ["pitfall-2-lost-caverns", "Pitfall 2 - Lost Caverns"],
+  ["the-prince", "Prince, The"],
+  ["the-sacred-armour-of-antiriad", "Sacred Armour of Antiriad, The"],
+  ["the-staff-of-karnath", "Staff of Karnath, The"],
+  ["summer-games-2", "Summer Games 2"],
+  ["the-sword-of-fargoal", "Sword of Fargoal, The"],
+  ["thunder-blade", "Thunderblade"],
+  ["through-the-trap-door", "Through the Trapdoor"],
+  ["up-n-down", "Up 'n Down"],
+  ["water-polo", "Waterpolo"],
+  ["the-way-of-the-exploding-fist", "Way of the Exploding Fist, The"],
+  ["the-willow-pattern-adventure", "Willow Pattern Adventure, The"],
+  ["wonder-boy", "Wonderboy"],
+  ["the-wombles", "Wombles, The"],
+  ["the-transformers", "Transformers"],
+  ["the-trap-door", "Trap Door, The"],
+]);
+
 function emulatorMatch(game) {
   const title = normalise(game.title);
-  const matches = mediaByTitle.get(title) || [];
+  const literalMatches = mediaByTitle.get(title) || [];
+  const auditedAlias = verifiedPageTitleAliases.get(game.slug);
+  const matches = literalMatches.length ? literalMatches :
+    (auditedAlias ? mediaByTitle.get(normalise(auditedAlias)) || [] : []);
   if (!title || !matches.length) return null;
   // Duplicate archive titles require an exact slug identity; never guess.
   if (gameCounts.get(title) !== 1) {
