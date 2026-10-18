@@ -150,37 +150,37 @@ for (const entry of [...validMedia, ...additionalCRT, ...packed, ...activatedArc
 // emulator catalogue titles. Never use fuzzy matching for autoplay/editions.
 // The source game titles, original media and existing stable IDs stay intact.
 const verifiedPageTitleAliases = new Map([
-  ["bcs-quest-for-tires", "BC's Quest For Tires"],
-  ["bc2-grogs-revenge", "BC II - Grog's Revenge"],
-  ["beach-head-2", "Beach-head 2"],
-  ["boulder-dash", "Boulderdash"],
-  ["the-captive", "Captive, The"],
-  ["ghetto-blaster", "Ghettoblaster"],
-  ["the-great-escape", "Great Escape, The"],
-  ["halls-of-the-things", "Halls of the Things, The"],
-  ["the-hitchhikers-guide-to-the-galaxy", "Hitchhiker's Guide to the Galaxy, The"],
-  ["jack-the-nipper-2-in-coconut-capers", "Jack the Nipper 2 - In Coconut Capers"],
-  ["the-last-ninja", "Last Ninja, The"],
-  ["leader-board", "Leaderboard"],
-  ["the-lords-of-midnight", "Lords of Midnight"],
-  ["the-movie-monster-game", "Movie Monster Game, The"],
-  ["the-official-father-christmas", "Official Father Christmas, The"],
-  ["pitfall-2-lost-caverns", "Pitfall 2 - Lost Caverns"],
-  ["the-prince", "Prince, The"],
-  ["the-sacred-armour-of-antiriad", "Sacred Armour of Antiriad, The"],
-  ["the-staff-of-karnath", "Staff of Karnath, The"],
-  ["summer-games-2", "Summer Games 2"],
-  ["the-sword-of-fargoal", "Sword of Fargoal, The"],
-  ["thunder-blade", "Thunderblade"],
-  ["through-the-trap-door", "Through the Trapdoor"],
-  ["up-n-down", "Up 'n Down"],
-  ["water-polo", "Waterpolo"],
-  ["the-way-of-the-exploding-fist", "Way of the Exploding Fist, The"],
-  ["the-willow-pattern-adventure", "Willow Pattern Adventure, The"],
-  ["wonder-boy", "Wonderboy"],
-  ["the-wombles", "Wombles, The"],
-  ["the-transformers", "Transformers"],
-  ["the-trap-door", "Trap Door, The"],
+  ["bcs-quest-for-tires",["BC's Quest For Tires","owner-crt-more-bcsquestfortires-e801a4272e1d"]],
+  ["bc2-grogs-revenge",["BC II - Grog's Revenge","owner-crt-more-bc-ii-grogs-revenge"]],
+  ["beach-head-2",["Beach-head 2","blast-0180"]],
+  ["boulder-dash",["Boulderdash","blast-0260"]],
+  ["the-captive",["Captive, The","owner-crt-more-captive-the"]],
+  ["ghetto-blaster",["Ghettoblaster","owner-crt-more-ghettoblaster"]],
+  ["the-great-escape",["Great Escape, The","owner-crt-more-great-escape-the"]],
+  ["halls-of-the-things",["Halls of the Things, The","owner-crt-more-halls-of-the-things-the"]],
+  ["the-hitchhikers-guide-to-the-galaxy",["Hitchhiker's Guide to the Galaxy, The","archive-04070"]],
+  ["jack-the-nipper-2-in-coconut-capers",["Jack the Nipper 2 - In Coconut Capers","archive-04412"]],
+  ["the-last-ninja",["Last Ninja, The","owner-crt-more-last-ninja-the"]],
+  ["leader-board",["Leaderboard","owner-crt-more-leaderboard"]],
+  ["the-lords-of-midnight",["Lords of Midnight","owner-crt-more-lords-of-midnight"]],
+  ["the-movie-monster-game",["Movie Monster Game, The","archive-05771"]],
+  ["the-official-father-christmas",["Official Father Christmas, The","owner-crt-more-officialfatherchristmasthe-b87bc59b307d"]],
+  ["pitfall-2-lost-caverns",["Pitfall 2 - Lost Caverns","archive-06519"]],
+  ["the-prince",["Prince, The","owner-crt-more-princethe-2cf0124d5000"]],
+  ["the-sacred-armour-of-antiriad",["Sacred Armour of Antiriad, The","owner-crt-more-sacred-armour-of-antiriad-the"]],
+  ["the-staff-of-karnath",["Staff of Karnath, The","owner-crt-more-staff-of-karnath-the"]],
+  ["summer-games-2",["Summer Games 2","blast-1566"]],
+  ["the-sword-of-fargoal",["Sword of Fargoal, The","owner-crt-more-sword-of-fargoal-the"]],
+  ["thunder-blade",["Thunderblade","owner-crt-more-thunderblade"]],
+  ["through-the-trap-door",["Through the Trapdoor","owner-crt-more-through-the-trapdoor"]],
+  ["up-n-down",["Up 'n Down","archive-09161"]],
+  ["water-polo",["Waterpolo","owner-crt-more-waterpolo"]],
+  ["the-way-of-the-exploding-fist",["Way of the Exploding Fist, The","owner-crt-more-way-of-the-exploding-fist-the"]],
+  ["the-willow-pattern-adventure",["Willow Pattern Adventure, The","owner-crt-more-willow-pattern-adventure-the"]],
+  ["wonder-boy",["Wonderboy","owner-crt-more-wonderboy-8ec329e8ba3d"]],
+  ["the-wombles",["Wombles, The","owner-crt-more-womblesthe-eeeeb83dbe3e"]],
+  ["the-transformers",["Transformers","owner-crt-more-transformers"]],
+  ["the-trap-door",["Trap Door, The","owner-crt-more-trapdoorthe-f9e40ebe1021"]],
 ]);
 
 function emulatorMatch(game) {
@@ -188,7 +188,8 @@ function emulatorMatch(game) {
   const literalMatches = mediaByTitle.get(title) || [];
   const auditedAlias = verifiedPageTitleAliases.get(game.slug);
   const matches = literalMatches.length ? literalMatches :
-    (auditedAlias ? mediaByTitle.get(normalise(auditedAlias)) || [] : []);
+    (auditedAlias ? (mediaByTitle.get(normalise(auditedAlias[0])) || [])
+      .filter(entry => entry.id === auditedAlias[1]) : []);
   if (!title || !matches.length) return null;
   // Duplicate archive titles require an exact slug identity; never guess.
   if (gameCounts.get(title) !== 1) {
