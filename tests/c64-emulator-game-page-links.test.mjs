@@ -144,3 +144,14 @@ test("reviewed duplicate CRTs and historical title spellings use pinned visible 
     assert.doesNotMatch(read("games/" + slug + "/index.html"), /data-ccg-play-in-emulator="true"/);
   }
 });
+
+// Explicit short-title, sequel-subtitle and regional-name relations never affect
+// unrelated catalogue searches or original game IDs.
+test("six additional full-title game pages link only to pinned emulator releases", () => {
+  assert.match(linked("archon-the-light-and-the-dark"), /game=owner-crt-more-archon&amp;autoplay=1/);
+  assert.match(linked("the-activision-decathlon"), /game=owner-crt-decathlon&amp;autoplay=1/);
+  assert.match(linked("creatures-2-torture-trouble"), /game=creatures-2&amp;autoplay=1/);
+  assert.match(linked("last-ninja-2-back-with-a-vengeance"), /game=last-ninja-2&amp;autoplay=1/);
+  assert.match(linked("sid-meiers-pirates"), /game=pirates&amp;autoplay=1/);
+  assert.match(linked("teenage-mutant-hero-turtles"), /game=archive-08639&amp;autoplay=1/);
+});

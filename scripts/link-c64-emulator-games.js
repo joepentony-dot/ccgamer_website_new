@@ -185,6 +185,12 @@ const verifiedPageTitleAliases = new Map([
   ["the-sentinel",["Sentinel, The","owner-crt-more-sentinel-the"]],
   ["the-snowman",["Snowman, The","archive-07817"]],
   ["the-train-escape-to-normandy",["The Train","owner-crt-more-the-train"]],
+  ["archon-the-light-and-the-dark",["Archon","owner-crt-more-archon"]],
+  ["the-activision-decathlon",["Decathlon","owner-crt-decathlon"]],
+  ["creatures-2-torture-trouble",["Creatures 2","creatures-2"]],
+  ["last-ninja-2-back-with-a-vengeance",["Last Ninja 2","last-ninja-2"]],
+  ["sid-meiers-pirates",["Pirates!","pirates"]],
+  ["teenage-mutant-hero-turtles",["Teenage Mutant Ninja Turtles, The","archive-08639"]],
 ]);
 
 // Owner-reviewed exact-title duplicate CRTs: the pinned ID is the first
