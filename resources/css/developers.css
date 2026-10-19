@@ -150,6 +150,59 @@
     margin: 42px 0;
 }
 
+/* Keep the complete developer catalogue available in native HTML while
+   prioritising search and the featured credits on first paint. */
+.ccg-developer-directory-disclosure {
+    margin: 28px 0 42px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(5, 8, 18, 0.65);
+}
+
+.ccg-developer-directory-disclosure__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 64px;
+    padding: 16px 20px;
+    cursor: pointer;
+    font-family: "Orbitron", sans-serif;
+    font-size: clamp(0.92rem, 2.1vw, 1.18rem);
+    font-weight: 700;
+    line-height: 1.4;
+    list-style: none;
+}
+
+.ccg-developer-directory-disclosure__summary::-webkit-details-marker {
+    display: none;
+}
+
+.ccg-developer-directory-disclosure__summary::after {
+    content: "+";
+    font-family: sans-serif;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.ccg-developer-directory-disclosure[open] > .ccg-developer-directory-disclosure__summary::after {
+    content: "−";
+}
+
+.ccg-developer-directory-disclosure__summary:hover {
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.ccg-developer-directory-disclosure__summary:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: -4px;
+}
+
+.ccg-developer-directory-disclosure > .ccg-developers-section {
+    margin: 0;
+    padding: 18px 20px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
 .ccg-developers-section__heading {
     margin-bottom: 18px;
 }
