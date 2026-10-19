@@ -227,3 +227,22 @@ test("Zzap archive quick links target distinct preserved archive sections", () =
     assert.match(css, /\.zzap-archive__jump-nav a:focus-visible/,
         "keyboard navigation gets an obvious focus indication");
 });
+
+test("Music Hub composer letter toggles keep the focused button and preserve search expansion", () => {
+    const source = read("js/music-composer-pages.js");
+    const page = read("music/index.html");
+    const accordionStart = source.indexOf('accordion.querySelectorAll(".composer-accordion__header")');
+    const accordionEnd = source.indexOf('searchInput.addEventListener("input", draw)', accordionStart);
+    assert.ok(accordionStart >= 0 && accordionEnd > accordionStart,
+        "composer accordion uses existing letter buttons and live search");
+    const clickHandler = source.slice(accordionStart, accordionEnd);
+    assert.match(clickHandler, /button\.setAttribute\("aria-expanded", willOpen \? "true" : "false"\)/);
+    assert.match(clickHandler, /body\.hidden = !willOpen;/);
+    assert.match(clickHandler, /group\.classList\.toggle\("is-open", willOpen\)/);
+    assert.doesNotMatch(clickHandler, /draw\(\)/,
+        "clicking an accordion letter must not replace its focused button");
+    assert.match(source, /const shouldOpen = hasQuery \|\| openSet\.has\(letter\);/,
+        "search must keep matching letter groups expanded");
+    assert.match(page, /id="composer-discovery-accordion"/);
+    assert.match(page, /class="composer-accordion__header" type="button" aria-expanded=/);
+});
