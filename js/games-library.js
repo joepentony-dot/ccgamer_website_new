@@ -786,8 +786,9 @@ function setupSearch() {
         if (raw) {
             clearAccordionState();
             setSpineActive(null);
-            setYearFilterSpan("all", { silent: true });
         }
+        // Search narrows the current year and system selection; it must not
+        // silently reset a visitor's release-year filter.
         applyActiveFilters({ preserveScroll: true });
     });
 
