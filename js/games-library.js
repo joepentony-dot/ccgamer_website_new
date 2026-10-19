@@ -794,10 +794,11 @@ function setupSearch() {
 
     if (clearBtn) {
         clearBtn.addEventListener("click", () => {
+            // Use the same filtering path as typing or the native search clear.
+            // Keep the selected platform/year and return keyboard focus to search.
             input.value = "";
-            CCG_ACTIVE_QUERY_RAW = "";
-            CCG_ACTIVE_QUERY = "";
-            applyActiveFilters({ preserveScroll: true });
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.focus({ preventScroll: true });
         });
     }
 }
