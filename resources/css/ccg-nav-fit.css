@@ -522,6 +522,33 @@
     }
 }
 
+/* FIRST-PAINT PLAY C64 RESERVATION — CLS GUARD
+   The deferred nav-fit controller inserts Play C64 just before More.
+   Reserve exactly the same horizontal width inside More until that link
+   exists, so the centered group and More button do not change position.
+   The real link replaces this inert spacer within a single JS frame. */
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav .ccg-nav__more {
+        gap: 6px;
+    }
+    .ccg-header .ccg-nav:not(.ccg-nav--ux-compact) .ccg-nav__more::before {
+        content: "";
+        display: block;
+        width: 92px;
+        min-width: 92px;
+        flex: 0 0 92px;
+        height: 38px;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav-fit__play {
+        box-sizing: border-box;
+        width: 92px;
+        min-width: 92px;
+        flex: 0 0 92px;
+    }
+}
+
 /* Progressive desktop navigation reduction. These rules only apply after
    the existing fitting controller has installed the direct Play C64 link. */
 @media (min-width: 1200px) {
