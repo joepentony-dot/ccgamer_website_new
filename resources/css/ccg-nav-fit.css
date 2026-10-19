@@ -505,3 +505,45 @@
         min-height: 34px !important;
     }
 }
+
+/* Streamlined desktop first frame: top-level Home / Games / More. */
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav .ccg-nav__list--primary,
+    .ccg-header .ccg-nav .ccg-nav__list--secondary {
+        min-width: 0 !important;
+    }
+    .ccg-header .ccg-nav .ccg-nav__list--secondary {
+        display: none !important;
+    }
+    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/genres/"]),
+    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/publishers/"]),
+    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/collections/"]),
+    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/music/"]) {
+        display: none !important;
+    }
+    .ccg-header .ccg-nav {
+        --ccg-nav-control-size: clamp(0.74rem, 0.78vw, 0.87rem);
+    }
+    .ccg-header .ccg-nav .ccg-nav__link,
+    .ccg-header .ccg-nav .ccg-nav__more-toggle {
+        min-height: 44px !important;
+        padding: 8px 12px !important;
+    }
+    .ccg-header .ccg-nav__more-menu {
+        min-width: min(300px, 90vw);
+        max-width: min(520px, 92vw);
+        max-height: min(70vh, 560px);
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link {
+        min-width: 0;
+    }
+}
+@media (min-width: 1200px) and (max-width: 1360px) {
+    .ccg-header .ccg-nav__more-menu {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: min(330px, 92vw);
+    }
+}
