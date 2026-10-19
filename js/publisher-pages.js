@@ -163,6 +163,29 @@
         tools.appendChild(nav);
     }
 
+    /* Hide the 206-card directory from the initial visual scan without
+       removing a single crawlable link. If JS is disabled the static
+       directory remains fully visible exactly as the publisher generator
+       authored it. Search expands the native disclosure automatically. */
+    function ensurePublisherDirectoryDisclosure(archiveSection, archiveCards) {
+        if (!archiveSection || !archiveCards.length || !archiveSection.parentElement) return null;
+        const existing = archiveSection.closest("[data-publisher-directory-disclosure]");
+        if (existing) return existing;
+
+        const details = document.createElement("details");
+        details.className = "ccg-publisher-directory-disclosure";
+        details.dataset.publisherDirectoryDisclosure = "true";
+
+        const summary = document.createElement("summary");
+        summary.className = "ccg-publisher-directory-disclosure__summary";
+        summary.textContent = "Browse all " + archiveCards.length + " publishers A–Z";
+        details.appendChild(summary);
+
+        archiveSection.parentNode.insertBefore(details, archiveSection);
+        details.appendChild(archiveSection);
+        return details;
+    }
+
     function createSearchResultCard(card) {
         const clone = card.cloneNode(true);
         clone.hidden = false;
@@ -198,7 +221,18 @@
            belongs on individual publisher game pages, where it is useful. */
         document.querySelector(".ccg-publishers-tools .ccg-publishers-filter")?.remove();
         updateSystemQuery("all");
-        ensurePublisherAlphabetNav(archiveCards, document.querySelector(".ccg-publishers-tools"));
+
+        const directory = ensurePublisherDirectoryDisclosure(archiveSection, archiveCards);
+        /* The alphabet is relevant to the complete directory, not to the
+           initial search box or the featured publisher cards. */
+        ensurePublisherAlphabetNav(archiveCards, directory);
+        const alphabetNav = directory?.querySelector("[data-publisher-alphabet]");
+        if (alphabetNav && archiveSection) directory.insertBefore(alphabetNav, archiveSection);
+
+        let manuallyExpanded = false;
+        directory?.addEventListener("toggle", () => {
+            if (!normalize(search?.value)) manuallyExpanded = directory.open;
+        });
 
         function clearSearchResults() {
             grid.querySelectorAll("[data-publisher-search-result]").forEach((card) => card.remove());
@@ -278,11 +312,18 @@
 
         function applyFilters() {
             const query = normalize(search?.value);
+            /* Search results must never be hidden inside a closed
+               disclosure. Clearing the query restores the user's
+               manually chosen open/closed state. */
+            if (directory) directory.open = Boolean(query) || manuallyExpanded;
             clearSearchResults();
             const visible = query ? renderSearchResults(query) : renderDirectory();
 
             updateSearchPriority(query);
             if (count) count.textContent = String(visible);
+            if (count?.parentElement?.lastChild?.nodeType === 3) {
+                count.parentElement.lastChild.nodeValue = query ? " publishers found" : " publishers available";
+            }
             if (empty) empty.hidden = visible !== 0;
         }
 
