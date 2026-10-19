@@ -3578,6 +3578,11 @@ html[data-ccg-page="home"] .home-section--archive-dashboard .home-featured-video
 }
 
 
+/* CCG UX review: balance the two priority routes at wide desktop widths. */
+@media (min-width: 981px) {
+    .home-archive-launchpad > .home-archive-route { grid-column: span 2; }
+}
+
 /* Homepage discovery: show the two main paths first while retaining crawlable archive links. */
 .home-archive-launchpad > .home-archive-more { grid-column: 1 / -1; min-width: 0; }
 .home-archive-more__toggle { cursor: pointer; padding: 15px 18px; border: 1px solid rgba(var(--accent-rgb), .35); border-radius: 12px; background: rgba(0,0,0,.65); color: var(--ccg-text-light, #fff); font-weight: 700; }
