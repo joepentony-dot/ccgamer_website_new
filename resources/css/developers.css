@@ -370,3 +370,29 @@
         width: 100%;
     }
 }
+
+/* Compact full-directory disclosure: all developer links remain in HTML. */
+.ccg-developers-directory {
+    display: block;
+    padding: 0;
+}
+
+.ccg-developers-directory > summary {
+    cursor: pointer;
+    list-style-position: inside;
+    padding: 20px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(5, 8, 18, 0.78);
+    font-family: "Orbitron", sans-serif;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+}
+
+.ccg-developers-directory > summary:hover,
+.ccg-developers-directory > summary:focus-visible {
+    border-color: currentColor;
+}
+
+.ccg-developers-directory > section {
+    margin-top: 22px;
+}
