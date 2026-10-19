@@ -303,6 +303,9 @@ async function assertInstallDestinationNavigation(sessionId, width) {
       return {
         pathname: window.location.pathname,
         emulationVisible: visible(find('/emulation.html')),
+        emulationInMore: menuHrefs.includes('/emulation.html'),
+        musicInMore: menuHrefs.includes('/music/'),
+        publishersInMore: menuHrefs.includes('/games/publishers/'),
         ccgGamesVisibleInRow: visible(find('/games/ccg-games/')),
         installVisibleInRow: visible(find('/install-app.html')),
         ccgGamesInMore: menuHrefs.includes('/games/ccg-games/'),
@@ -313,7 +316,7 @@ async function assertInstallDestinationNavigation(sessionId, width) {
     })();
   `);
 
-  if (state.pathname !== "/install-app.html" || !state.emulationVisible || state.ccgGamesVisibleInRow || state.installVisibleInRow || !state.ccgGamesInMore || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
+  if (state.pathname !== "/install-app.html" || state.emulationVisible || !state.emulationInMore || !state.musicInMore || !state.publishersInMore || state.ccgGamesVisibleInRow || state.installVisibleInRow || !state.ccgGamesInMore || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
     throw new Error(`Install destination navigation contract failed at ${width}px: ${JSON.stringify(state)}`);
   }
 }
@@ -395,6 +398,7 @@ async function main() {
       await clickMoreDestination(sessionId, width, "CCG Games", "/games/ccg-games/", "/games/ccg-games/");
       await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");
       await clickMoreDestination(sessionId, width, "Contact", "/contact.html", "/contact.html");
+      await clickMoreDestination(sessionId, width, "Emulation", "/emulation.html", "/emulation.html");
       await clickMoreDestination(sessionId, width, "Install CCG App", "/install-app.html", "/install-app.html");
       await assertInstallDestinationNavigation(sessionId, width);
     }
@@ -447,7 +451,7 @@ async function main() {
     console.log("- CCG Games, Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
     console.log("- Official Merch Shop is visible and interactable in desktop More at 1440px and 1920px");
     console.log("- Homepage merchandise promotion is visible after the hero and before the discovery dashboard");
-    console.log("- Emulation remains visible on the Install CCG App destination at both widths");
+    console.log("- Emulation, Music and Publishers are reachable from More on the Install destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
   } finally {
