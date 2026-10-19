@@ -222,7 +222,7 @@ test("Zzap archive quick links target distinct preserved archive sections", () =
         "year videos use a visible heading");
     assert.match(html, /id="zzap-index-title" class="zzap-archive__section-title"/,
         "award search uses a visible heading");
-    assert.match(css, /\.zzap-archive__destination\s*\{\s*scroll-margin-top:\s*92px;/,
+    assert.match(css, /\.zzap-archive__destination\s*\{\s*scroll-margin-top:\s*calc\(var\(--ccg-header-height, 92px\) \+ 16px\);/,
         "anchor targets account for fixed navigation height");
     assert.match(css, /\.zzap-archive__jump-nav a:focus-visible/,
         "keyboard navigation gets an obvious focus indication");
