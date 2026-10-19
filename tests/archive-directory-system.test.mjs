@@ -311,6 +311,25 @@ test("Games Archive clear control preserves keyboard workflow and active filters
         "the restored input focus is visually indicated");
 });
 
+test("Games Archive empty results explain active search and filters without clearing them", () => {
+    const source = read("js/games-library.js");
+    const page = read("games/index.html");
+    const start = source.indexOf("function setEmptyState(isEmpty)");
+    const end = source.indexOf("function updateSingleResultLayout(", start);
+    assert.ok(start >= 0 && end > start, "empty-state controller is present");
+    const handler = source.slice(start, end);
+    assert.match(handler, /CCG_ACTIVE_QUERY_RAW\.trim\(\)/);
+    assert.match(handler, /getSystemFilterLabel\(CCG_ACTIVE_SYSTEM_FILTER\)/);
+    assert.match(handler, /getYearFocusLabel\(\)/);
+    assert.match(handler, /if \(query && filters\.length\)/);
+    assert.match(handler, /else if \(query\)/);
+    assert.match(handler, /else if \(filters\.length\)/);
+    assert.match(handler, /message\.textContent =/);
+    assert.doesNotMatch(handler, /setYearFilterSpan|setSystemFilter|input\.value\s*=/,
+        "display-only empty state must not reset the user's filters");
+    assert.match(page, /id="gamesEmptyState"/);
+});
+
 test("Music Hub composer search stays above A–Z without obscuring letter groups", () => {
     const css = read("resources/css/ccg-archive-directory.css");
     const markup = read("music/index.html");
