@@ -17,7 +17,10 @@
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
     const PINNED_MORE_LABELS = new Set(["ccg games", "install ccg app", "about", "about me", "contact"]);
+    const STREAMLINED_MORE_LABELS = new Set(["browse by genre", "publishers", "collections", "music hub", "find me a game", "zzap!64 reviews & awards", "quiz", "emulation"]);
     const BASE_MORE_LINKS = [
+        ["Play C64 Online", "/emulator/c64/"],
+        ["Videos", "/videos/"],
         ["Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
         ["CCG Games", "/games/ccg-games/"],
         ["Install CCG App", "/install-app.html"],
@@ -244,7 +247,8 @@
     }
 
     function isPinnedMoreItem(item) {
-        return PINNED_MORE_LABELS.has(normalizeLabel(item?.querySelector(".ccg-nav__link")?.textContent));
+        const label = normalizeLabel(item?.querySelector(".ccg-nav__link")?.textContent);
+        return PINNED_MORE_LABELS.has(label) || STREAMLINED_MORE_LABELS.has(label);
     }
 
     function restoreItems(items) {
