@@ -497,12 +497,17 @@ function composerSortLetter(name) {
             return;
           }
           const letter = group.getAttribute("data-letter") || "";
-          if (openSet.has(letter)) {
-            openSet.delete(letter);
-          } else {
+          const body = group.querySelector(".composer-accordion__body");
+          if (!body) return;
+          const willOpen = button.getAttribute("aria-expanded") !== "true";
+          if (willOpen) {
             openSet.add(letter);
+          } else {
+            openSet.delete(letter);
           }
-          draw();
+          group.classList.toggle("is-open", willOpen);
+          button.setAttribute("aria-expanded", willOpen ? "true" : "false");
+          body.hidden = !willOpen;
         });
       });
     };
