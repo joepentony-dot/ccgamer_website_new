@@ -169,6 +169,9 @@ jobs:
       - name: Run archive directory system regression guard
         run: node --test tests/archive-directory-system.test.mjs
 
+      - name: Verify developer directory disclosure and filter retention
+        run: node --test tests/developer-directory-ux.test.mjs
+
       - name: Verify fuzzy C64 and Amiga website searches
         run: node --test tests/ccg-website-fuzzy-search.test.mjs
 
