@@ -50,10 +50,24 @@
         const empty = document.getElementById("developerEmptyState");
         const cards = Array.from(grid.querySelectorAll("[data-developer-card]"));
         const buttons = Array.from(document.querySelectorAll("[data-developer-system]"));
+        const directory = grid.closest("[data-developer-directory-disclosure]");
+        const featuredSection = document.getElementById("represented-developers-title")?.closest(".ccg-developers-section");
         let system = readInitialSystem(["all", "c64", "amiga"]);
+        let manuallyExpanded = Boolean(directory?.open);
+
+        directory?.querySelector("summary")?.addEventListener("click", (event) => {
+            if (normalize(search?.value) || system !== "all") {
+                event.preventDefault();
+                return;
+            }
+            manuallyExpanded = !directory.open;
+        });
 
         function applyFilters() {
             const query = normalize(search?.value);
+            const hasFilter = Boolean(query) || system !== "all";
+            if (directory) directory.open = hasFilter || manuallyExpanded;
+            if (featuredSection) featuredSection.hidden = hasFilter;
             let visible = 0;
 
             cards.forEach((card) => {
@@ -71,7 +85,12 @@
                 if (show) visible += 1;
             });
 
-            if (count) count.textContent = String(visible);
+            if (count) {
+                count.textContent = String(visible);
+                if (count.parentElement?.lastChild?.nodeType === 3) {
+                    count.parentElement.lastChild.nodeValue = hasFilter ? " developers shown" : " developers available";
+                }
+            }
             if (empty) empty.hidden = visible !== 0;
             setPressed(buttons, system, "data-developer-system");
         }
