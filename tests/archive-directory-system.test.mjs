@@ -2,6 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { collectRoles } = require("../scripts/mark-rerelease-publishers.js");
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -88,6 +92,38 @@ test("category and music runtimes opt into the shared directory shell", () => {
     assert.match(music, /music-record/);
     assert.match(composerRuntime, /ccg-archive-directory\.css/);
     assert.match(composerRuntime, /enableArchiveDirectory/);
+});
+
+test("publisher regeneration preserves every referenced re-release role badge", () => {
+    const workflow = read(".github/workflows/publisher-archives.yml");
+    const generatorStep = workflow.indexOf("run: node scripts/generate-publisher-pages.js");
+    const logoStep = workflow.indexOf("run: node scripts/apply-publisher-logos.js");
+    const roleStep = workflow.indexOf("run: node scripts/mark-rerelease-publishers.js");
+    const seoStep = workflow.indexOf("run: node scripts/audit-publisher-seo-evidence-tolerant.js");
+    assert.ok(generatorStep >= 0 && logoStep > generatorStep && roleStep > logoStep && seoStep > roleStep,
+        "regeneration must restore publisher re-release badges after logos and before final audits");
+    assert.match(workflow, /node --check scripts\/mark-rerelease-publishers\.js/);
+
+    const publisherIndex = read("games/publishers/index.html");
+    const roles = collectRoles(JSON.parse(read("games/games.json")));
+    assert.ok(roles.size > 0, "source catalogue includes re-release-only publisher credits");
+    let verified = 0;
+    for (const slug of roles) {
+        const href = 'href="/games/publishers/' + slug + '/"';
+        const start = publisherIndex.indexOf(href);
+        if (start < 0) continue;
+        const end = publisherIndex.indexOf("</a>", start);
+        assert.ok(end > start, "re-release publisher card has closing anchor: " + slug);
+        assert.match(publisherIndex.slice(start, end), /ccg-publisher-role-badge/,
+            "re-release role retained on publisher card: " + slug);
+        const page = "games/publishers/" + slug + "/index.html";
+        if (fs.existsSync(path.join(ROOT, page))) {
+            assert.match(read(page), /ccg-publisher-role-badge/,
+                "re-release role retained on publisher archive page: " + slug);
+        }
+        verified += 1;
+    }
+    assert.ok(verified > 0, "found publisher routes to validate re-release labels");
 });
 
 test("public code cache includes the shared directory stylesheet", () => {
