@@ -115,7 +115,7 @@ function extractHomeHighlightsSection(html) {
   return match ? match[0] : "";
 }
 
-function hasApprovedHomeDiscoveryDashboard(section) {
+function hasApprovedHomeDiscoveryDashboard(section, requireExpandable = false) {
   const source = String(section || "");
   if (!source.includes("<!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->")
       && !source.includes("home-section--archive-dashboard")) {
@@ -123,8 +123,8 @@ function hasApprovedHomeDiscoveryDashboard(section) {
   }
 
   if (!source.includes('class="home-archive-launchpad"')) return false;
-  if (!/<details\s+class="home-archive-extras">\s*<summary\s+class="home-archive-extras__summary">/.test(source)) return false;
-  if (!source.includes('class="home-archive-extras__grid"')) return false;
+  if (requireExpandable && !/<details\s+class="home-archive-extras">\s*<summary\s+class="home-archive-extras__summary">/.test(source)) return false;
+  if (requireExpandable && !source.includes('class="home-archive-extras__grid"')) return false;
   if (!source.includes('id="home-highlights-title">Find Your Way Around CCG</')) return false;
 
   const routeMatches = [...source.matchAll(/<a\b[^>]*class=["'][^"']*\bhome-archive-route\b[^"']*["'][^>]*href=["']([^"']+)["'][^>]*>|<a\b[^>]*href=["']([^"']+)["'][^>]*class=["'][^"']*\bhome-archive-route\b[^"']*["'][^>]*>/gi)];
@@ -149,7 +149,7 @@ function stripApprovedHomeDiscoveryTransformation(html, role) {
   if (!section) return source;
 
   if (role === "current") {
-    if (!hasApprovedHomeDiscoveryDashboard(section)) {
+    if (!hasApprovedHomeDiscoveryDashboard(section, true)) {
       fail("The Home highlights section changed without matching the approved archive dashboard contract.");
     }
   } else if (!isLegacyHomeHighlightsSection(section) && !hasApprovedHomeDiscoveryDashboard(section)) {
