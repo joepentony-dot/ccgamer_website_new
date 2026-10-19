@@ -241,6 +241,9 @@ async function assertLinkOwnsItsHitTarget(sessionId, label, href) {
       const link = Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href]'))
         .find((candidate) => candidate.textContent.trim() === ${JSON.stringify(label)} && candidate.getAttribute('href') === ${JSON.stringify(href)});
       if (!link) return { found: false };
+      // More can scroll when the archive index is long. Move the target into
+      // the visible menu before performing the same real pointer hit-test.
+      link.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       const rect = link.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
       const y = rect.top + rect.height / 2;
