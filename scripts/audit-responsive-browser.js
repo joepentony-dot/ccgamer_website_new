@@ -371,7 +371,7 @@ async function auditPublisherDirectory(sessionId, viewport) {
     if (gridStart < 0 || gridEnd <= gridStart) {
         throw new Error("Generated publisher index lacks an intact static directory.");
     }
-    const expectedDirectoryCount = (indexHtml.slice(gridStart, gridEnd).match(/\\bdata-publisher-card\\b/g) || []).length;
+    const expectedDirectoryCount = (indexHtml.slice(gridStart, gridEnd).match(/\bdata-publisher-card\b/g) || []).length;
     const expectedFeaturedCount = (indexHtml.match(/<article class="ccg-publisher-card ccg-publisher-card--featured" data-publisher-card/g) || []).length;
     if (!expectedPublisherCount || !expectedDirectoryCount || expectedDirectoryCount + expectedFeaturedCount !== expectedPublisherCount) {
         throw new Error(`Generated publisher archive count mismatch: total=${expectedPublisherCount}, featured=${expectedFeaturedCount}, remaining=${expectedDirectoryCount}`);
