@@ -1208,6 +1208,27 @@ function setEmptyState(isEmpty) {
     const empty = document.getElementById("gamesEmptyState");
     if (!empty) return;
     empty.hidden = !isEmpty;
+    if (!isEmpty) return;
+
+    const message = empty.querySelector("p");
+    if (!message) return;
+
+    const query = CCG_ACTIVE_QUERY_RAW.trim();
+    const system = getSystemFilterLabel(CCG_ACTIVE_SYSTEM_FILTER);
+    const year = getYearFocusLabel();
+    const filters = [];
+    if (CCG_ACTIVE_SYSTEM_FILTER !== "all") filters.push(system);
+    if (year) filters.push(year);
+
+    if (query && filters.length) {
+        message.textContent = `No games match “${query}” with ${filters.join(" · ")} selected. Try another search, or change the platform or year filter.`;
+    } else if (query) {
+        message.textContent = `No games match “${query}”. Try another game title or search term.`;
+    } else if (filters.length) {
+        message.textContent = `No games match the selected filters (${filters.join(" · ")}). Try another platform or year, or choose All years.`;
+    } else {
+        message.textContent = "No games are available to display right now.";
+    }
 }
 
 function updateSingleResultLayout(filteredCount) {
