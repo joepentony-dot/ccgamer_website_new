@@ -2255,11 +2255,22 @@ if (IS_ADMIN_PATH) {
         const buildDrawer = () => {
             if (!drawer) return;
 
+            const otherPrimary = [];
             if (drawerPrimary) {
-                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Primary</div>";
+                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Quick links</div>";
                 primaryList?.querySelectorAll("a").forEach(link => {
-                    drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                    const pathname = new URL(link.href, window.location.href).pathname;
+                    if (pathname === "/home.html" || pathname === "/games/") {
+                        drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                    } else {
+                        otherPrimary.push(link);
+                    }
                 });
+                const playOnline = document.createElement("a");
+                playOnline.href = "/emulator/c64/";
+                playOnline.className = "ccg-nav__link ccg-nav__link--mobile";
+                playOnline.textContent = "Play C64";
+                drawerPrimary.appendChild(playOnline);
             }
 
             if (drawerSecondary) {
@@ -2277,6 +2288,9 @@ if (IS_ADMIN_PATH) {
                 merchLink.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
                 drawerSecondary.appendChild(merchLink);
 
+                otherPrimary.forEach(link => {
+                    drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                });
                 secondaryList?.querySelectorAll("a").forEach(link => {
                     drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
                 });
