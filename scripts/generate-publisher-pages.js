@@ -463,16 +463,19 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 </div>
             </section>` : ""}
 
+            <details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>
+                <summary class="ccg-publisher-directory-disclosure__summary">Browse the other ${remainingGroups.length} publishers A–Z</summary>
             <section class="ccg-publishers-section" aria-labelledby="all-publishers-title">
                 <div class="ccg-publishers-section__heading">
                     <p class="ccg-publishers-section__kicker">Full directory</p>
-                    <h2 id="all-publishers-title">All Publishers</h2>
+                    <h2 id="all-publishers-title">Other Publishers</h2>
                 </div>
                 <div class="ccg-publisher-grid" id="publisherGrid">
                     ${publisherCards}
                 </div>
                 <p class="ccg-publishers-empty" id="publisherEmptyState" hidden>No publishers match that search.</p>
             </section>
+            </details>
         </main>
 
         ${renderFooter()}
