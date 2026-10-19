@@ -59,6 +59,9 @@ test("publisher index shows focused search first and keeps complete directory av
     assert.ok(unique.size >= 200, "all unique publisher routes remain available without JavaScript");
     assert.match(html, /id="publisherSearchInput"/);
     assert.match(html, /id="publisherGrid"/);
+    assert.match(html, /id="publisherVisibleCount">\d+<\/strong> publishers available/, "default static count describes total available, not expanded cards");
+    assert.match(read("scripts/generate-publisher-pages.js"), /id="publisherVisibleCount">\$\{groups\.length\}<\/strong> publishers available/,
+        "authoritative publisher generator preserves honest no-JS count text");
 
     assert.match(js, /archiveSection\?\.closest\("\[data-publisher-directory-disclosure\]"\)/);
     assert.match(html, /<details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>/);
