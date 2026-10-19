@@ -16,7 +16,7 @@
     const CSS_PATH = "/resources/css/ccg-nav-fit.css";
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
-    const PINNED_MORE_LABELS = new Set(["ccg games", "install ccg app", "about", "about me", "contact"]);
+    const PINNED_MORE_LABELS = new Set(["browse by genre", "publishers", "collections", "music hub", "ccg games", "install ccg app", "about", "about me", "contact"]);
     const BASE_MORE_LINKS = [
         ["Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
         ["CCG Games", "/games/ccg-games/"],
@@ -297,6 +297,22 @@
         document.dispatchEvent(new CustomEvent("ccg:navigation-fitted", { detail: { nav } }));
     }
 
+    /* A single direct Play C64 action uses the existing header styling;
+       secondary archive destinations remain in the existing More menu. */
+    function ensurePlayOnlineLink(nav) {
+        const bar = nav?.querySelector(".ccg-nav__bar");
+        const more = bar?.querySelector(".ccg-nav__more");
+        if (!bar || !more) return;
+        let link = bar.querySelector("[data-ccg-play-online-link]");
+        if (link) return;
+        link = document.createElement("a");
+        link.href = "/emulator/c64/";
+        link.className = "ccg-nav__link ccg-nav-fit__play";
+        link.setAttribute("data-ccg-play-online-link", "true");
+        link.textContent = "Play C64";
+        bar.insertBefore(link, more);
+    }
+
     function fitNavigation() {
         if (fitting) return;
         const header = document.querySelector("[data-ccg-header]");
@@ -307,6 +323,8 @@
         if (!header || !nav || !more || !toggle || !menu) return;
 
         const desktop = isDesktop();
+        if (desktop) ensurePlayOnlineLink(nav);
+        nav.classList.toggle("ccg-nav--ux-compact", desktop);
         const restoreOpen = desktop
             && toggle.getAttribute("aria-expanded") === "true"
             && !menu.hidden;
