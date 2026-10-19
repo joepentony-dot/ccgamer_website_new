@@ -54,6 +54,23 @@ test('legacy helpers and PWA installation cannot rewrite public navigation', () 
   assert.match(navCore, /MutationObserver/);
 });
 
+test('streamlined navigation preserves all specialist routes and music mobile parity', () => {
+  assert.match(navFit, /const UX_PINNED_MORE_LABELS = new Set/);
+  for (const label of ['browse by genre', 'publishers', 'collections', 'music hub', 'find me a game', 'zzap!64 reviews & awards', 'quiz', 'emulation']) {
+    assert.ok(navFit.includes('"' + label + '"'), 'More retains specialist destination: ' + label);
+  }
+  assert.match(navFit, /link\.href = "\/emulator\/c64\/"/);
+  assert.match(navFit, /data-ccg-play-online-link/);
+  assert.match(navFitCss, /FIRST-PAINT PLAY C64 RESERVATION/);
+  assert.match(navFitCss, /width: 92px/);
+  assert.match(navFitCss, /\.ccg-nav__more-menu[\s\S]*max-height: min\(70vh, 620px\)/);
+  assert.match(musicNavigation, /Quick links/);
+  assert.match(musicNavigation, /play\.href = "\/emulator\/c64\/"/);
+  assert.match(musicNavigation, /otherPrimary\.forEach/);
+  assert.match(musicNavigation, /secondaryList\.querySelectorAll\("a"\)/);
+  assert.match(musicNavigation, /merch\.target = "_blank"/);
+});
+
 test('desktop More is functional and deliberately owns CCG Games, Install, About Me and Contact', () => {
   assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["ccg games", "install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);
