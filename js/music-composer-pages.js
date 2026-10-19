@@ -461,11 +461,14 @@ function composerSortLetter(name) {
       // The shared Music Hub handler owns letter clicks. Read its persisted
       // group state before rebuilding filtered search results.
       const existingGroups = Array.from(accordion.querySelectorAll(".composer-accordion__group"));
-      if (existingGroups.length) {
-        openSet = new Set(existingGroups
-          .filter((group) => group.dataset.ccgUserOpen === "true")
-          .map((group) => group.getAttribute("data-letter") || ""));
-      }
+      existingGroups.forEach((group) => {
+        const letter = group.getAttribute("data-letter") || "";
+        if (group.dataset.ccgUserOpen === "true") {
+          openSet.add(letter);
+        } else {
+          openSet.delete(letter);
+        }
+      });
       const query = normaliseName(searchInput.value);
       const hasQuery = query.length > 0;
 
