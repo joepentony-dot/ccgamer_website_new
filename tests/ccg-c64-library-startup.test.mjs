@@ -91,13 +91,21 @@ async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId 
 
 const good = await execute(true);
 assert.equal(blast.recordCount, 1150, "All 1,150 surviving BLAST PRGs remain packed and SHA verified");
-assert.equal(direct.entries.length, 1771,
-  "Existing 1,770 approved games and the new Cheeky Commodore Edition must remain registered");
+assert.equal(direct.entries.length, 1772,
+  "Existing 1,771 approved games and the new Gary Lineker disk must remain registered");
 assert(direct.entries.some(e => e.id === "owner-crt-more-friday-the-13th" && e.format === "crt"),
   "Original Friday the 13th cartridge must remain listed");
 assert(direct.entries.some(e => e.id === "owner-d64-friday-13th-cheeky-commodore-edition" &&
   e.format === "d64" && e.title === "Friday 13th - Cheeky Commodore Edition"),
   "New Cheeky Commodore disk edition must be listed separately");
+const garyLineker = direct.entries.find(e => e.id === "owner-d64-gary-linekers-superstar-soccer");
+assert(garyLineker && garyLineker.title === "Gary Lineker\'s Superstar Soccer" &&
+  garyLineker.format === "d64" &&
+  garyLineker.url === "/emulator/c64/media/gary-linekers-superstar-soccer.d64" &&
+  garyLineker.bytes === 174848 &&
+  garyLineker.sha256 === "4728a449bda1182f75f4c985f054d5846ab80c46de9d29c52910ddcb8ccbd8e3" &&
+  garyLineker.approved === true,
+  "Gary Lineker\'s Superstar Soccer must retain its approved D64 path and exact digest");
 assert(app.includes('"friday the 13th - hammer challenge ii"'),
   "Withdrawn Hammer Challenge II PRG must be excluded from the displayed archive");
 assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 1709,
