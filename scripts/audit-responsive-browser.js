@@ -32,6 +32,7 @@ const PAGES = [
     "/games/game.html?id=1942",
     "/games/genres/index.html",
     "/games/publishers/index.html",
+    "/games/developers/index.html",
     "/videos/index.html",
     "/zzap64/index.html",
     "/about.html",
