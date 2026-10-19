@@ -65,7 +65,15 @@ test("publisher index shows focused search first and keeps complete directory av
 
     assert.match(js, /archiveSection\?\.closest\("\[data-publisher-directory-disclosure\]"\)/);
     assert.match(html, /<details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>/);
-    assert.match(html, /<summary class="ccg-publisher-directory-disclosure__summary">Browse the other 194 publishers A–Z<\/summary>/);
+    const directoryStart = html.indexOf('id="publisherGrid"');
+    const directoryEnd = html.indexOf('id="publisherEmptyState"', directoryStart);
+    assert.ok(directoryStart >= 0 && directoryEnd > directoryStart, "directory cards have a defined generated section");
+    const remainingCount = (html.slice(directoryStart, directoryEnd).match(/\bdata-publisher-card\b/g) || []).length;
+    const featuredCount = (html.match(/<article class="ccg-publisher-card ccg-publisher-card--featured" data-publisher-card/g) || []).length;
+    assert.ok(remainingCount > 0, "remaining publisher directory is populated");
+    assert.equal(remainingCount + featuredCount, unique.size, "featured and remaining static cards cover every unique publisher");
+    assert.ok(html.includes(`<summary class="ccg-publisher-directory-disclosure__summary">Browse the other ${remainingCount} publishers A–Z</summary>`),
+        "summary must derive its count from the currently generated nonfeatured cards");
     assert.match(html, /<h2 id="all-publishers-title">Other Publishers<\/h2>/);
     assert.match(read("scripts/generate-publisher-pages.js"), /Browse the other \$\{remainingGroups\.length\} publishers A–Z/);
     assert.match(js, /ensurePublisherAlphabetNav\(archiveCards, directory\)/);
