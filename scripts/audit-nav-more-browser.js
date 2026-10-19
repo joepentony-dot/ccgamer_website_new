@@ -303,6 +303,7 @@ async function assertInstallDestinationNavigation(sessionId, width) {
       return {
         pathname: window.location.pathname,
         emulationVisible: visible(find('/emulation.html')),
+        emulationInMore: menuHrefs.includes('/emulation.html'),
         ccgGamesVisibleInRow: visible(find('/games/ccg-games/')),
         installVisibleInRow: visible(find('/install-app.html')),
         ccgGamesInMore: menuHrefs.includes('/games/ccg-games/'),
@@ -313,7 +314,7 @@ async function assertInstallDestinationNavigation(sessionId, width) {
     })();
   `);
 
-  if (state.pathname !== "/install-app.html" || !state.emulationVisible || state.ccgGamesVisibleInRow || state.installVisibleInRow || !state.ccgGamesInMore || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
+  if (state.pathname !== "/install-app.html" || state.emulationVisible || !state.emulationInMore || state.ccgGamesVisibleInRow || state.installVisibleInRow || !state.ccgGamesInMore || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
     throw new Error(`Install destination navigation contract failed at ${width}px: ${JSON.stringify(state)}`);
   }
 }
