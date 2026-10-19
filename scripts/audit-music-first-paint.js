@@ -236,8 +236,12 @@ function assertFrames(frames, width) {
 async function auditTransition(sessionId, width) {
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
   await webdriver("POST", `/session/${sessionId}/url`, { url: `${BASE_URL}/home.html?music-first-paint=${Date.now()}` });
-  await waitUntil(sessionId, "document.querySelector('[data-ccg-nav-primary] a[href=\"/music/\"]')", `Music navigation link at ${width}px`);
-  await clickElement(sessionId, '[data-ccg-nav-primary] a[href="/music/"]');
+  // Specialist routes are intentionally behind the desktop More menu. Exercise
+  // the actual keyboard/pointer-accessible control instead of a hidden source link.
+  await waitUntil(sessionId, "document.querySelector('[data-ccg-more-toggle]') && !document.querySelector('[data-ccg-more-toggle]').disabled", `available More menu at ${width}px`);
+  await clickElement(sessionId, '[data-ccg-more-toggle]');
+  await waitUntil(sessionId, "document.querySelector('[data-ccg-more-toggle]').getAttribute('aria-expanded') === 'true' && !!document.querySelector('[data-ccg-more-menu] a[href=\\\"/music/\\\"]')", `expanded Music destination at ${width}px`);
+  await clickElement(sessionId, '[data-ccg-more-menu] a[href="/music/"]');
   await waitUntil(sessionId, "window.location.pathname === '/music/'", `Music destination at ${width}px`);
   await new Promise((resolve) => setTimeout(resolve, 1800));
   const frames = await execute(sessionId, "return window.__ccgMusicFirstPaintFrames || [];");

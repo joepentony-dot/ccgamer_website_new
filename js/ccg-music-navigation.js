@@ -180,18 +180,45 @@
         const secondaryList = header.querySelector("[data-ccg-nav-secondary]");
         if (!primaryTarget || !secondaryTarget || !primaryList || !secondaryList) return;
 
-        primaryTarget.innerHTML = '<div class="ccg-nav-drawer__label">Primary</div>';
+        const cloneLink = (source) => {
+            const clone = source.cloneNode(true);
+            clone.classList.add("ccg-nav__link--mobile");
+            return clone;
+        };
+        primaryTarget.innerHTML = '<div class="ccg-nav-drawer__label">Quick links</div>';
         secondaryTarget.innerHTML = '<div class="ccg-nav-drawer__label">Explore more</div>';
 
+        // Music pages have their own drawer owner; match the canonical mobile
+        // discovery route while preserving all original specialist links.
+        const otherPrimary = [];
         primaryList.querySelectorAll("a").forEach((link) => {
-            const clone = link.cloneNode(true);
-            clone.classList.add("ccg-nav__link--mobile");
-            primaryTarget.appendChild(clone);
+            const pathname = new URL(link.href, window.location.href).pathname;
+            if (pathname === "/home.html" || pathname === "/games/") {
+                primaryTarget.appendChild(cloneLink(link));
+            } else {
+                otherPrimary.push(link);
+            }
         });
+
+        const play = document.createElement("a");
+        play.href = "/emulator/c64/";
+        play.className = "ccg-nav__link ccg-nav__link--mobile";
+        play.textContent = "Play C64";
+        primaryTarget.appendChild(play);
+
+        const merch = document.createElement("a");
+        merch.href = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
+        merch.className = "ccg-nav__link ccg-nav__link--mobile ccg-nav__link--merch";
+        merch.textContent = "Merch Shop";
+        merch.target = "_blank";
+        merch.rel = "noopener noreferrer";
+        merch.setAttribute("data-ccg-revenue-link", "fourthwall-merch");
+        merch.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
+        secondaryTarget.appendChild(merch);
+
+        otherPrimary.forEach((link) => secondaryTarget.appendChild(cloneLink(link)));
         secondaryList.querySelectorAll("a").forEach((link) => {
-            const clone = link.cloneNode(true);
-            clone.classList.add("ccg-nav__link--mobile");
-            secondaryTarget.appendChild(clone);
+            secondaryTarget.appendChild(cloneLink(link));
         });
     }
 
