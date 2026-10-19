@@ -515,6 +515,9 @@
     .ccg-header .ccg-nav .ccg-nav__list--secondary {
         display: none !important;
     }
+    /* Keep the first two canonical links visible at every hydration frame.
+       The adaptive fitter moves the remaining links into More. */
+    .ccg-header [data-ccg-nav-primary] > li:nth-child(n + 3),
     .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/genres/"]),
     .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/publishers/"]),
     .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/collections/"]),
