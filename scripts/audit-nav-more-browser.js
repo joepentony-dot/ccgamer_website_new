@@ -297,6 +297,18 @@ async function clickMoreDestination(sessionId, width, label, href, expectedPath)
 }
 
 async function assertInstallDestinationNavigation(sessionId, width) {
+  // WebDriver's eager page-load mode can report /install-app.html before its
+  // deferred nav-fit callback has repopulated More with hidden primary routes.
+  // Require the settled real menu, not the initial secondary-only fallback.
+  await waitUntil(sessionId, `(function () {
+    const nav = document.querySelector('[data-ccg-header] .ccg-nav');
+    const hrefs = Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href]'))
+      .map((link) => link.getAttribute('href'));
+    return nav && nav.classList.contains('ccg-nav--ux-compact')
+      && hrefs.includes('/music/')
+      && hrefs.includes('/games/publishers/')
+      && hrefs.includes('/emulation.html');
+  })()`, `settled install destination More menu at ${width}px`, 12000);
   const state = await execute(sessionId, `
     return (function () {
       const secondaryItems = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li'));
