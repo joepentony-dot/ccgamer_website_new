@@ -123,6 +123,8 @@ function hasApprovedHomeDiscoveryDashboard(section) {
   }
 
   if (!source.includes('class="home-archive-launchpad"')) return false;
+  if (!/<details\s+class="home-archive-extras">\s*<summary\s+class="home-archive-extras__summary">/.test(source)) return false;
+  if (!source.includes('class="home-archive-extras__grid"')) return false;
   if (!source.includes('id="home-highlights-title">Find Your Way Around CCG</')) return false;
 
   const routeMatches = [...source.matchAll(/<a\b[^>]*class=["'][^"']*\bhome-archive-route\b[^"']*["'][^>]*href=["']([^"']+)["'][^>]*>|<a\b[^>]*href=["']([^"']+)["'][^>]*class=["'][^"']*\bhome-archive-route\b[^"']*["'][^>]*>/gi)];
@@ -211,10 +213,11 @@ function stripApprovedFourthwallMerch(html, role) {
     fail("Homepage Fourthwall merchandise panel differs from the approved design or destination.");
   }
   if (role === "current") {
-    const hero = source.indexOf('class="home-hero home-hero--streamlined"');
     const archive = source.indexOf("<!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->");
-    if (hero < 0 || archive < 0 || !(matches[0].index > hero && matches[0].index < archive)) {
-      fail("The visible merch panel must appear after the homepage hero and before archive discovery.");
+    const community = source.indexOf('class="home-community-latest ccg-chapter"');
+    const support = source.indexOf('class="home-support-art home-cta-upgrade"');
+    if (archive < 0 || community < archive || support < community || !(matches[0].index > community && matches[0].index < support)) {
+      fail("The merchandise panel must follow community content and precede optional support.");
     }
   }
   source = source.replace(styleMatches[0][0], " ");
