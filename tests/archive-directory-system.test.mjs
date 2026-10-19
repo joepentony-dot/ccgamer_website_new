@@ -283,3 +283,30 @@ test("Games Archive combines title search with the selected release year", () =>
     assert.match(page, /id="gamesSearchInput"/);
     assert.match(page, /id="gamesYearSelect"/);
 });
+
+test("Games Archive clear control preserves keyboard workflow and active filters", () => {
+    const source = read("js/games-library.js");
+    const page = read("games/index.html");
+    const styles = read("resources/css/games.css");
+    const start = source.indexOf("function setupSearch()");
+    const end = source.indexOf("function setupSystemFilter()", start);
+    assert.ok(start >= 0 && end > start, "archive search binding is present");
+    const binding = source.slice(start, end);
+    const clearStart = binding.indexOf('if (clearBtn) {');
+    assert.ok(clearStart >= 0, "clear control is bound");
+    const clearHandler = binding.slice(clearStart);
+    assert.match(clearHandler, /input\.value = "";/,
+        "clear button empties the current query");
+    assert.match(clearHandler, /input\.dispatchEvent\(new Event\("input", \{ bubbles: true \}\)\);/,
+        "clearing must reuse the existing input filtering pipeline");
+    assert.match(clearHandler, /input\.focus\(\{ preventScroll: true \}\);/,
+        "keyboard focus returns to the search input without jumping the page");
+    assert.doesNotMatch(clearHandler, /CCG_ACTIVE_QUERY(?:_RAW)?\s*=/,
+        "clear must not manage a separate query state");
+    assert.doesNotMatch(clearHandler, /setYearFilterSpan\("all"/,
+        "clear must preserve the visitor's chosen release year");
+    assert.match(page, /id="gamesSearchInput"/);
+    assert.match(page, /id="gamesSearchClear" type="button" aria-label="Clear game search"/);
+    assert.match(styles, /\.games-search input\[type="search"\]:focus-visible/,
+        "the restored input focus is visually indicated");
+});
