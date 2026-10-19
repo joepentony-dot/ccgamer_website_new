@@ -164,6 +164,39 @@
     line-height: 1.58;
 }
 
+/* Collapse optional browsing cards while retaining crawlable route anchors. */
+.ccg-page--games-index .games-omega-discovery__more {
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.28);
+}
+.ccg-page--games-index .games-omega-discovery__summary {
+    display: block;
+    position: relative;
+    min-height: 48px;
+    padding: 14px 46px 14px 16px;
+    cursor: pointer;
+    color: #fff;
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: clamp(0.76rem, 1.05vw, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.ccg-page--games-index .games-omega-discovery__summary::-webkit-details-marker { display: none; }
+.ccg-page--games-index .games-omega-discovery__summary::after {
+    content: "+";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(var(--accent-rgb), 0.94);
+    font-size: 1.3rem;
+}
+.ccg-page--games-index .games-omega-discovery__more[open] .games-omega-discovery__summary::after { content: "−"; }
+.ccg-page--games-index .games-omega-discovery__summary:hover { background: rgba(var(--accent-rgb), 0.08); }
+.ccg-page--games-index .games-omega-discovery__summary:focus-visible { outline: 2px solid rgba(var(--accent-rgb), 0.94); outline-offset: 3px; }
+.ccg-page--games-index .games-omega-discovery__more[open] .games-omega-discovery__grid { padding: 0 12px 12px; }
+
 .ccg-page--games-index .games-omega-discovery__grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
