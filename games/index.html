@@ -334,56 +334,54 @@
             </div>
             <!-- CCG GAMES INDEX OMEGA SEARCH HEADING END -->
             <div class="games-tools__controls" role="group" aria-label="Find and filter games">
-            <div class="games-search">
-                <label class="visually-hidden" for="gamesSearchInput">Search the games library</label>
-                <input type="search" id="gamesSearchInput" placeholder="Search games…" aria-describedby="gamesSearchHelp" />
-                <button id="gamesSearchClear" type="button" aria-label="Clear game search">×</button>
-            </div>
-            <p id="gamesSearchHelp" class="visually-hidden">Search by game title, composer, publisher, genre, or year.</p>
-
-            <div class="games-filter" data-games-filter>
-                <div class="games-filter__controls" role="group" aria-label="Filter games by system">
-                    <button class="games-filter__btn is-active" type="button" data-system-filter="all" aria-pressed="true">
-                        All Games
-                    </button>
-                    <button class="games-filter__btn" type="button" data-system-filter="c64" aria-pressed="false">
-                        Commodore 64
-                    </button>
-                    <button class="games-filter__btn" type="button" data-system-filter="amiga" aria-pressed="false">
-                        Amiga
-                    </button>
+                <div class="games-search">
+                    <label class="visually-hidden" for="gamesSearchInput">Search the games library</label>
+                    <input type="search" id="gamesSearchInput" placeholder="Search games…" aria-describedby="gamesSearchHelp" />
+                    <button id="gamesSearchClear" type="button" aria-label="Clear game search">×</button>
                 </div>
-                <div class="games-filter__range" data-games-year-filter>
-                    <div class="games-filter__range-header">
-                        <label class="games-filter__range-label" for="gamesYearSelect">Year</label>
+                <p id="gamesSearchHelp" class="visually-hidden">Search by game title, composer, publisher, genre, or year.</p>
+
+                <div class="games-filter" data-games-filter>
+                    <div class="games-filter__controls" role="group" aria-label="Filter games by system">
+                        <button class="games-filter__btn is-active" type="button" data-system-filter="all" aria-pressed="true">
+                            All Games
+                        </button>
+                        <button class="games-filter__btn" type="button" data-system-filter="c64" aria-pressed="false">
+                            Commodore 64
+                        </button>
+                        <button class="games-filter__btn" type="button" data-system-filter="amiga" aria-pressed="false">
+                            Amiga
+                        </button>
                     </div>
-                    <select id="gamesYearSelect" class="games-filter__year-select" aria-label="Filter games by release year">
-                        <option value="all">All years</option>
-                    </select>
+                    <div class="games-filter__range" data-games-year-filter>
+                        <div class="games-filter__range-header">
+                            <label class="games-filter__range-label" for="gamesYearSelect">Year</label>
+                        </div>
+                        <select id="gamesYearSelect" class="games-filter__year-select" aria-label="Filter games by release year">
+                            <option value="all">All years</option>
+                        </select>
+                    </div>
+                    <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
                 </div>
-                <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
-            </div>
-            </div>
-
             </div>
 
             <details class="games-tools__optional">
                 <summary class="games-tools__optional-title">Browse A–Z and other game sections</summary>
                 <div class="games-tools__optional-content">
-            <div class="games-alpha">
-                <div id="gamesAlphaStrip"></div>
-            </div>
+                <div class="games-alpha">
+                    <div id="gamesAlphaStrip"></div>
+                </div>
 
-            <nav class="games-archive-shortcuts" aria-label="More ways to browse the C64 and Amiga games archive">
-                <span class="games-archive-shortcuts__label">More ways to browse</span>
-                <a href="/games/genres/">Genres</a>
-                <a href="/games/publishers/">Publishers</a>
-                <a href="/games/collections/">Collections</a>
-                <a href="/games/years/">Release Years</a>
-                <a href="/games/platforms/">C64 / Amiga</a>
-                <a href="/games/developers/">Developers</a>
-                <a href="/games/downloads/">Manuals A–Z</a>
-            </nav>
+                <nav class="games-archive-shortcuts" aria-label="More ways to browse the C64 and Amiga games archive">
+                    <span class="games-archive-shortcuts__label">More ways to browse</span>
+                    <a href="/games/genres/">Genres</a>
+                    <a href="/games/publishers/">Publishers</a>
+                    <a href="/games/collections/">Collections</a>
+                    <a href="/games/years/">Release Years</a>
+                    <a href="/games/platforms/">C64 / Amiga</a>
+                    <a href="/games/developers/">Developers</a>
+                    <a href="/games/downloads/">Manuals A–Z</a>
+                </nav>
                 </div>
             </details>
         </section>
