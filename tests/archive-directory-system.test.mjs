@@ -329,3 +329,23 @@ test("Games Archive empty results explain active search and filters without clea
         "display-only empty state must not reset the user's filters");
     assert.match(page, /id="gamesEmptyState"/);
 });
+
+test("Music Hub composer search stays above A–Z without obscuring letter groups", () => {
+    const css = read("resources/css/ccg-archive-directory.css");
+    const markup = read("music/index.html");
+    const generator = read("scripts/generate-composer-pages.js");
+    const selector = 'body[data-ccg-directory="music-index"] .composer-discovery__search-wrap';
+    const searchStyleStart = css.indexOf(selector + " {");
+    const searchStyleEnd = css.indexOf("}", searchStyleStart);
+    assert.ok(searchStyleStart >= 0 && searchStyleEnd > searchStyleStart, "music search style exists");
+    const rule = css.slice(searchStyleStart, searchStyleEnd);
+    assert.match(rule, /position:\s*static\s*;/, "composer search remains above first letter in normal flow");
+    assert.doesNotMatch(rule, /(?:top|z-index):/, "no desktop sticky offset or layer over the accordion");
+    assert.doesNotMatch(css.slice(searchStyleEnd), /composer-discovery__search-wrap\s*\{\s*top:/,
+        "mobile rules do not reintroduce sticky offsets");
+    const inputPos = markup.indexOf('id="composer-discovery-search"');
+    const accordionPos = markup.indexOf('id="composer-discovery-accordion"');
+    assert.ok(inputPos >= 0 && accordionPos > inputPos, "input precedes the alphabet directory in static HTML");
+    assert.match(generator, /composer-discovery__search-wrap[\s\S]*?composer-discovery-accordion/,
+        "regeneration retains the same search-then-accordion order");
+});
