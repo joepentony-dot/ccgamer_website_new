@@ -211,7 +211,7 @@ function discoverySection() {
             <div class="games-omega-discovery__header">
                 <span class="games-omega-discovery__eyebrow">Explore the Commodore archive</span>
                 <h2 id="gamesOmegaDiscoveryTitle">Find C64 &amp; Amiga Games Your Way</h2>
-                <p>Jump straight into the part of the archive you want: browse by genre, publisher, release year, platform or curated collection, or search the complete game library below.</p>
+                <p>Use the search and filters above, or browse by genre, publisher, release year, platform or curated collection.</p>
             </div>
             <details class="games-omega-discovery__more">
                 <summary class="games-omega-discovery__summary">Browse genres, publishers, years and more</summary>
