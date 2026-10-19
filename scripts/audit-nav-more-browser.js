@@ -257,12 +257,15 @@ async function assertMoreLinkOrder(sessionId, width) {
     '/about.html',
     '/contact.html'
   ];
-  const prefix = hrefs.slice(0, archive.length);
-  const suffix = hrefs.slice(-support.length);
+  /* Both /folder/ and /folder/index.html are supported existing routes.
+     Compare destinations canonically without changing their actual hrefs. */
+  const normalizeRoute = (href) => href.replace(/\/index\.html(?=$|[?#])/, '/');
+  const prefix = hrefs.slice(0, archive.length).map(normalizeRoute);
+  const suffix = hrefs.slice(-support.length).map(normalizeRoute);
   if (JSON.stringify(prefix) !== JSON.stringify(archive) || JSON.stringify(suffix) !== JSON.stringify(support)) {
     throw new Error(`Desktop More order or route preservation failed at ${width}px: ${JSON.stringify(hrefs)}`);
   }
-  if (new Set(hrefs).size !== hrefs.length) {
+  if (new Set(hrefs.map(normalizeRoute)).size !== hrefs.length) {
     throw new Error(`Desktop More duplicates a destination at ${width}px: ${JSON.stringify(hrefs)}`);
   }
 }
