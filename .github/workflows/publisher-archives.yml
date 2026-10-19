@@ -7,6 +7,7 @@ on:
     paths:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/mark-rerelease-publishers.js"
       - "scripts/normalize-public-header-shell.js"
       - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
@@ -34,6 +35,7 @@ on:
     paths:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/mark-rerelease-publishers.js"
       - "scripts/normalize-public-header-shell.js"
       - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
@@ -87,6 +89,7 @@ jobs:
         run: |
           node --check js/ccg-nav.js
           node --check scripts/generate-publisher-pages.js
+          node --check scripts/mark-rerelease-publishers.js
           node --check scripts/normalize-public-header-shell.js
           node --check scripts/materialize-publisher-histories.js
           node --check scripts/materialize-publisher-histories-tolerant.js
@@ -115,6 +118,9 @@ jobs:
 
       - name: Apply publisher logos
         run: node scripts/apply-publisher-logos.js
+
+      - name: Preserve re-release publisher roles
+        run: node scripts/mark-rerelease-publishers.js
 
       - name: Verify publisher logo output
         run: node scripts/validate-publisher-logo-output.js
