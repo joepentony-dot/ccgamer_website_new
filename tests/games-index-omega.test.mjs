@@ -55,6 +55,11 @@ test('games archive exposes useful static discovery routes', () => {
   expected.forEach((href) => assert.match(games, new RegExp(`href="${href.replaceAll('/', '\\/')}"`)));
   assert.match(games, /Find C64 &amp; Amiga Games Your Way/);
   assert.match(games, /Use the search and filters above/);
+  const activeStyle = fs.readFileSync('resources/css/games-hero-fix.css', 'utf8');
+  assert.match(activeStyle, /gamesSearchInput:not\(:placeholder-shown\)\) \.games-omega-discovery,/,
+    'an active search hides optional discovery so matching games stay directly below filters');
+  assert.match(activeStyle, /games-omega-discovery \+ \.ccg-omega-divider/,
+    'the divider after optional discovery is also hidden during an active search');
   assert.match(generator, /Use the search and filters above/);
   assert.match(games, /Search &amp; Filter C64 and Amiga Games/);
   assert.match(games, /data-games-archive-shortcuts="true"/);
