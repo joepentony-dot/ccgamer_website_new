@@ -385,6 +385,31 @@ async function auditDiscoveryPriority(sessionId, page, viewport) {
         }
     }
 }
+    if (page === "/games/index.html") {
+        const response = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+            script: `
+                const input = document.getElementById("gamesSearchInput");
+                const browse = document.querySelector(".games-omega-discovery");
+                const divider = browse?.nextElementSibling;
+                if (!input || !browse || !divider?.classList.contains("ccg-omega-divider")) return { exists: false };
+                input.value = "1942";
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                const hiddenDuringSearch = getComputedStyle(browse).display === "none"
+                    && getComputedStyle(divider).display === "none";
+                input.value = "";
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                return { exists: true, hiddenDuringSearch: hiddenDuringSearch,
+                    restoredAfterClear: getComputedStyle(browse).display !== "none"
+                        && getComputedStyle(divider).display !== "none" };
+            `,
+            args: []
+        });
+        const state = response.value;
+        if (!state?.exists || !state.hiddenDuringSearch || !state.restoredAfterClear) {
+            throw new Error(`Games Archive @ ${viewport.label}: active-search discovery placement failed: ${JSON.stringify(state)}`);
+        }
+    }
+
 
 async function auditPublisherDirectory(sessionId, viewport) {
     const execute = async (script) => {
