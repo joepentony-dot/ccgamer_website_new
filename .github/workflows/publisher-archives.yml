@@ -93,6 +93,7 @@ jobs:
           node --check scripts/normalize-public-header-shell.js
           node --check scripts/materialize-publisher-histories.js
           node --check scripts/materialize-publisher-histories-tolerant.js
+          node --check scripts/link-publisher-strength-genres.js
           node --check scripts/audit-publisher-seo-evidence.js
           node --check scripts/audit-publisher-seo-evidence-tolerant.js
           node --check scripts/apply-publisher-evidence-overrides.js
@@ -127,6 +128,9 @@ jobs:
 
       - name: Embed available publisher histories without inventing missing biographies
         run: node scripts/materialize-publisher-histories-tolerant.js
+
+      - name: Restore canonical genre links in publisher history strengths
+        run: node scripts/link-publisher-strength-genres.js
 
       - name: Restore publisher runtime parity
         run: node scripts/ensure-publisher-history-runtime.js
