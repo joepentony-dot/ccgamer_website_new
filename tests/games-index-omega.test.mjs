@@ -57,6 +57,25 @@ test('games archive exposes useful static discovery routes', () => {
   assert.match(games, /Search &amp; Filter C64 and Amiga Games/);
   assert.match(games, /data-games-archive-shortcuts="true"/);
   assert.match(games, /data-games-downloads-shortcut="true"/);
+  assert.match(games, /<details class="games-omega-discovery__more">/);
+  assert.match(games, /<summary class="games-omega-discovery__summary">/);
+  assert.ok(games.indexOf('games-omega-discovery__summary') < games.indexOf('gamesSearchInput'), 'search follows the compact route disclosure');
+  assert.match(generator, /games-omega-discovery__summary/);
+});
+
+test('archive generator repairs missing discovery routes despite an intact summary marker', () => {
+  const sectionPattern = /<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->[\s\S]*?<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->/;
+  const originalSection = games.match(sectionPattern)?.[0];
+  assert.ok(originalSection, 'generated discovery section is present');
+  const broken = games.replace(
+    /<a class="games-omega-discovery__card" href="\/games\/genres\/"[^>]*>[\s\S]*?<\/a>/,
+    ''
+  );
+  assert.notEqual(broken, games, 'the test actually removes a discovery card');
+  assert.match(broken, /games-omega-discovery__summary/, 'the misleading summary marker remains');
+  const rebuilt = buildGamesIndex(broken);
+  assert.equal(rebuilt.match(sectionPattern)?.[0], originalSection, 'the generator restores the exact complete section');
+  assert.equal(buildGamesIndex(rebuilt), rebuilt, 'repair remains deterministic on the second rebuild');
 });
 
 test('Omega games archive presentation is responsive and scoped', () => {
