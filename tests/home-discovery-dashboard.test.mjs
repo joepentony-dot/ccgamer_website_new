@@ -61,8 +61,9 @@ test("secondary homepage destinations are available through native expandable de
     const css = read("resources/css/home.css");
     assert.match(html, /<details class="home-archive-extras">\s*<summary class="home-archive-extras__summary">/);
     assert.match(html, /<div class="home-archive-extras__grid">/);
-    assert.ok(html.indexOf('href="/games/discover/"') < html.indexOf('<details class="home-archive-extras">'));
-    assert.ok(html.indexOf('href="/games/genres/"') > html.indexOf('<details class="home-archive-extras">'));
+    const launchpad = html.slice(html.indexOf('<nav class="home-archive-launchpad"'), html.indexOf('</nav>', html.indexOf('<nav class="home-archive-launchpad"')));
+    assert.ok(launchpad.indexOf('href="/games/discover/"') < launchpad.indexOf('<details class="home-archive-extras">'));
+    assert.ok(launchpad.indexOf('href="/games/genres/"') > launchpad.indexOf('<details class="home-archive-extras">'));
     assert.match(css, /\.home-archive-extras__summary:focus-visible/);
     assert.match(css, /\.home-archive-extras__grid/);
 });
