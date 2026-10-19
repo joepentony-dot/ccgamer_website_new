@@ -228,21 +228,29 @@ test("Zzap archive quick links target distinct preserved archive sections", () =
         "keyboard navigation gets an obvious focus indication");
 });
 
-test("Music Hub composer letter toggles keep the focused button and preserve search expansion", () => {
-    const source = read("js/music-composer-pages.js");
+test("Music Hub composer letters have one delegated controller and preserve keyboard focus", () => {
+    const pages = read("js/music-composer-pages.js");
+    const utils = read("js/music-composer-utils.js");
     const page = read("music/index.html");
-    const accordionStart = source.indexOf('accordion.querySelectorAll(".composer-accordion__header")');
-    const accordionEnd = source.indexOf('searchInput.addEventListener("input", draw)', accordionStart);
-    assert.ok(accordionStart >= 0 && accordionEnd > accordionStart,
-        "composer accordion uses existing letter buttons and live search");
-    const clickHandler = source.slice(accordionStart, accordionEnd);
-    assert.match(clickHandler, /button\.setAttribute\("aria-expanded", willOpen \? "true" : "false"\)/);
-    assert.match(clickHandler, /body\.hidden = !willOpen;/);
-    assert.match(clickHandler, /group\.classList\.toggle\("is-open", willOpen\)/);
-    assert.doesNotMatch(clickHandler, /draw\(\)/,
-        "clicking an accordion letter must not replace its focused button");
-    assert.match(source, /const shouldOpen = hasQuery \|\| openSet\.has\(letter\);/,
-        "search must keep matching letter groups expanded");
+    const start = pages.indexOf("function renderHubAccordion(");
+    const end = pages.indexOf("async function renderHubCards(", start);
+    assert.ok(start >= 0 && end > start, "composer accordion renderer exists");
+    const renderer = pages.slice(start, end);
+
+    assert.match(utils, /accordion\.addEventListener\("click", \(event\) => \{/,
+        "the existing composer utility delegates letter clicks to the accordion");
+    assert.match(utils, /setMusicHubAccordionState\(group, nextOpen, true\)/,
+        "the shared controller persists user-selected open state");
+    assert.doesNotMatch(renderer, /\.addEventListener\("click"/,
+        "the composer renderer must not register a second, conflicting click handler");
+    assert.match(renderer, /window\.CCGMusicHubOmega\?\.refreshAccordion\?\.\(\)/,
+        "the shared controller must be rebound after filter redraws when needed");
+    assert.match(renderer, /group\.dataset\.ccgUserOpen === "true"/,
+        "previously selected groups must be read before a search redraw");
+    assert.match(renderer, /data-ccg-user-open="/,
+        "user open state must survive redraw in rendered group markup");
+    assert.match(renderer, /const shouldOpen = hasQuery \|\| openSet\.has\(letter\)/,
+        "matching search letter groups stay expanded");
     assert.match(page, /id="composer-discovery-accordion"/);
     assert.match(page, /class="composer-accordion__header" type="button" aria-expanded=/);
 });
