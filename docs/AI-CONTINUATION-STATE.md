@@ -1,3 +1,9 @@
+
+## 19 October 2026 — PR #2846 merged, PR #2847 regression repair and cache reconciliation
+- The desktop More ordering PR #2846 was guarded squash-merged to main at `b45be2ffc226ee81db4f4faecfca32574278f648` after all 16 exact-head workflows and independent clean review. Source state and production live acceptance remain distinct.
+- Publisher UX PR #2847 passed 18 of 19 workflows at prior head `33be552286ab4a68006039c58b3d9864fb2a97c3`. `CCG UI Regression Fixes` failed because an old test still expected homepage text "Zzap!64 Awards", "Browse Genres" and class `home-cta-upgrade--streamlined`; the merged homepage actually has the longer Zzap label, "Genres" category, and `home-cta-upgrade` with support artwork. Updated the assertion to preserve the real current destinations and support structure, rather than exempting the whole test.
+- Publisher PR's public code cache advanced from v167 to **v168** to avoid overwriting the already-merged menu release. Fresh-main reconciliation and a full new CI/review cycle are required before merging; do not reuse old 18/19 results.
+- All six prior publisher review threads were resolved with code and current-head review before this test correction; solicit another independent review of the newer exact head.
 ## 19 October 2026 — Publisher archive re-release badge non-regression gate
 - UX PR #2847 additionally modifies `.github/workflows/publisher-archives.yml` to restore exclusive re-release role badges after the generator and logo steps, and validates the generated index plus publisher pages against catalogue-derived roles. This guards 39 existing badge markers from being lost on the automatic refresh triggered by editing the publisher generator. All new branch-head tests/review and subsequent merge gates outstanding; no publisher source values changed.
 
