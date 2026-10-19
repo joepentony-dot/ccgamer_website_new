@@ -83,7 +83,7 @@
 }
 
 .zzap-archive__destination {
-    scroll-margin-top: 92px;
+    scroll-margin-top: calc(var(--ccg-header-height, 92px) + 16px);
 }
 
 .zzap-archive__section-title {
