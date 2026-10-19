@@ -33,6 +33,11 @@ test("developer archive keeps every route in static accessible HTML", () => {
 test("developer directory expands when filtering and restores user-selected state", () => {
     const js = read("js/developer-pages.js");
     const css = read("resources/css/developers.css");
+    const browserAudit = read("scripts/audit-responsive-browser.js");
+    assert.match(browserAudit, /"\/games\/developers\/index\.html"/);
+    assert.match(browserAudit, /auditDeveloperDirectory\(sessionId, viewport\)/);
+    assert.match(browserAudit, /Developer search failed at/);
+    assert.match(browserAudit, /Developer platform filter restoration failed at/);
     assert.match(js, /grid\.closest\("\[data-developer-directory-disclosure\]"\)/);
     assert.match(js, /let manuallyExpanded = Boolean\(directory\?\.open\)/);
     assert.match(js, /manuallyExpanded = !directory\.open/);
