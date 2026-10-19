@@ -227,3 +227,36 @@ test("Zzap archive quick links target distinct preserved archive sections", () =
     assert.match(css, /\.zzap-archive__jump-nav a:focus-visible/,
         "keyboard navigation gets an obvious focus indication");
 });
+
+test("Music Hub composer letters have one delegated controller and preserve keyboard focus", () => {
+    const pages = read("js/music-composer-pages.js");
+    const utils = read("js/music-composer-utils.js");
+    const page = read("music/index.html");
+    const start = pages.indexOf("function renderHubAccordion(");
+    const end = pages.indexOf("async function renderHubCards(", start);
+    assert.ok(start >= 0 && end > start, "composer accordion renderer exists");
+    const renderer = pages.slice(start, end);
+
+    assert.match(utils, /accordion\.addEventListener\("click", \(event\) => \{/,
+        "the existing composer utility delegates letter clicks to the accordion");
+    assert.match(utils, /setMusicHubAccordionState\(group, nextOpen, true\)/,
+        "the shared controller persists user-selected open state");
+    assert.doesNotMatch(renderer, /\.addEventListener\("click"/,
+        "the composer renderer must not register a second, conflicting click handler");
+    assert.match(renderer, /window\.CCGMusicHubOmega\?\.refreshAccordion\?\.\(\)/,
+        "the shared controller must be rebound after filter redraws when needed");
+    assert.match(renderer, /group\.dataset\.ccgUserOpen === "true"/,
+        "previously selected groups must be read before a search redraw");
+    assert.match(renderer, /openSet\.add\(letter\)/,
+        "a visible, manually expanded letter remains open");
+    assert.match(renderer, /openSet\.delete\(letter\)/,
+        "a visible, manually collapsed letter remains closed");
+    assert.doesNotMatch(renderer, /openSet = new Set\(existingGroups/,
+        "search filtering must not discard user choices for temporarily hidden letters");
+    assert.match(renderer, /data-ccg-user-open="/,
+        "user open state must survive redraw in rendered group markup");
+    assert.match(renderer, /const shouldOpen = hasQuery \|\| openSet\.has\(letter\)/,
+        "matching search letter groups stay expanded");
+    assert.match(page, /id="composer-discovery-accordion"/);
+    assert.match(page, /class="composer-accordion__header" type="button" aria-expanded=/);
+});
