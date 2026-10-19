@@ -127,6 +127,6 @@ test('archive renderer exposes original-magazine links and conservative verified
   assert.match(browser, /Choose a letter or search/);
   assert.match(browser, /IntersectionObserver/);
   assert.match(page, /More Zzap!64 Reviews for CCG Games/);
-  assert.match(page, /deliberately not repeated here/);
+  assert.match(page, /Award winners appear only in the awards index above/i);
   assert.match(page, /zzap64-review-browser\.js/);
 });
