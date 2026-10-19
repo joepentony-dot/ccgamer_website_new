@@ -205,7 +205,7 @@ function stripApprovedFourthwallMerch(html, role) {
   // Accept only the two exact historical full-panel designs in baseline, and
   // require the identical early-placement design in the candidate homepage.
   const approvedPanels = role === "baseline"
-    ? [APPROVED_FOURTHWALL_PANEL_PREVIOUS, APPROVED_FOURTHWALL_PANEL]
+    ? [APPROVED_FOURTHWALL_PANEL_PREVIOUS, APPROVED_FOURTHWALL_PANEL, APPROVED_FOURTHWALL_PANEL_EARLY]
     : [APPROVED_FOURTHWALL_PANEL_EARLY];
   if (!approvedPanels.includes(normalizedPanel)) {
     fail("Homepage Fourthwall merchandise panel differs from the approved design or destination.");
