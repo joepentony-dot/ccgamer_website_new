@@ -260,3 +260,26 @@ test("Music Hub composer letters have one delegated controller and preserve keyb
     assert.match(page, /id="composer-discovery-accordion"/);
     assert.match(page, /class="composer-accordion__header" type="button" aria-expanded=/);
 });
+
+test("Games Archive combines title search with the selected release year", () => {
+    const source = read("js/games-library.js");
+    const page = read("games/index.html");
+    const start = source.indexOf("function setupSearch()");
+    const end = source.indexOf("function setupSystemFilter()", start);
+    assert.ok(start >= 0 && end > start, "game search binding exists");
+    const searchBinding = source.slice(start, end);
+    assert.match(searchBinding, /CCG_ACTIVE_QUERY = normalizeSearchText\(raw\)/,
+        "search terms must still be normalised");
+    assert.match(searchBinding, /applyActiveFilters\(\{ preserveScroll: true \}\)/,
+        "typing and clearing search both rebuild the filtered index");
+    assert.doesNotMatch(searchBinding, /setYearFilterSpan\("all"/,
+        "search input must not silently reset a selected release year");
+    assert.match(source, /function getFilteredGames\(\)[\s\S]*?matchesYearRange\(game\.year\)/,
+        "year filtering must remain part of the title-search eligibility check");
+    assert.match(source, /function getFilteredGames\(\)[\s\S]*?matchesSearchQuery\(game, queryData\)/,
+        "normal title matching must still operate inside the filtered archive");
+    assert.match(source, /yearSelect\.addEventListener\("change"/,
+        "the visitor must remain able to change or reset the year explicitly");
+    assert.match(page, /id="gamesSearchInput"/);
+    assert.match(page, /id="gamesYearSelect"/);
+});
