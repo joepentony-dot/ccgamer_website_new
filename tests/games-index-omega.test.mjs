@@ -54,6 +54,8 @@ test('games archive exposes useful static discovery routes', () => {
   ];
   expected.forEach((href) => assert.match(games, new RegExp(`href="${href.replaceAll('/', '\\/')}"`)));
   assert.match(games, /Find C64 &amp; Amiga Games Your Way/);
+  assert.match(games, /Use the search and filters above/);
+  assert.match(generator, /Use the search and filters above/);
   assert.match(games, /Search &amp; Filter C64 and Amiga Games/);
   assert.match(games, /data-games-archive-shortcuts="true"/);
   assert.match(games, /data-games-downloads-shortcut="true"/);
