@@ -32,6 +32,7 @@ const PAGES = [
     "/games/game.html?id=1942",
     "/games/genres/index.html",
     "/games/publishers/index.html",
+    "/games/developers/index.html",
     "/videos/index.html",
     "/zzap64/index.html",
     "/about.html",
@@ -431,6 +432,90 @@ async function auditPublisherDirectory(sessionId, viewport) {
     }
 }
 
+async function auditDeveloperDirectory(sessionId, viewport) {
+    const execute = async (script) => {
+        const payload = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+            script,
+            args: []
+        });
+        return payload.value;
+    };
+
+    const initial = await execute(`
+        const details = document.querySelector('[data-developer-directory-disclosure]');
+        const grid = document.querySelector('#developerGrid');
+        const entries = grid ? grid.querySelectorAll('a.ccg-developer-card[href]') : [];
+        return {
+            closed: Boolean(details && !details.open),
+            summary: details?.firstElementChild?.tagName,
+            entries: entries.length,
+            advertised: Number(document.querySelector('#developerVisibleCount')?.textContent || 0),
+            featured: Boolean(document.getElementById('represented-developers-title'))
+        };
+    `);
+    if (!initial.closed || initial.summary !== "SUMMARY"
+        || initial.entries < 1 || initial.entries !== initial.advertised || !initial.featured) {
+        throw new Error(`Developer static disclosure failed at ${viewport.label}: ${JSON.stringify(initial)}`);
+    }
+
+    const matching = await execute(`
+        const input = document.querySelector('#developerSearchInput');
+        input.value = 'lucas';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        const details = document.querySelector('[data-developer-directory-disclosure]');
+        const cards = [...document.querySelectorAll('#developerGrid [data-developer-card]')].filter(el => !el.hidden);
+        const featured = document.getElementById('represented-developers-title')?.closest('.ccg-developers-section');
+        return {
+            open: details?.open,
+            matches: cards.length,
+            lucas: cards.some(card => card.dataset.developerName.includes('lucas')),
+            featuredHidden: featured?.hidden
+        };
+    `);
+    if (!matching.open || matching.matches < 1 || !matching.lucas || !matching.featuredHidden) {
+        throw new Error(`Developer search failed at ${viewport.label}: ${JSON.stringify(matching)}`);
+    }
+
+    const cleared = await execute(`
+        const input = document.querySelector('#developerSearchInput');
+        input.value = '';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        const details = document.querySelector('[data-developer-directory-disclosure]');
+        const grid = document.querySelector('#developerGrid');
+        const featured = document.getElementById('represented-developers-title')?.closest('.ccg-developers-section');
+        return {
+            closed: !details?.open,
+            restored: [...grid.querySelectorAll('[data-developer-card]')].filter(el => !el.hidden).length,
+            featuredVisible: !featured?.hidden
+        };
+    `);
+    if (!cleared.closed || cleared.restored !== initial.entries || !cleared.featuredVisible) {
+        throw new Error(`Developer clear-search restoration failed at ${viewport.label}: ${JSON.stringify(cleared)}`);
+    }
+
+    const filtered = await execute(`
+        document.querySelector('[data-developer-system="amiga"]').click();
+        const details = document.querySelector('[data-developer-directory-disclosure]');
+        const cards = [...document.querySelectorAll('#developerGrid [data-developer-card]')].filter(el => !el.hidden);
+        const valid = cards.every(el => Number(el.dataset.amigaCount || 0) > 0);
+        const featured = document.getElementById('represented-developers-title')?.closest('.ccg-developers-section');
+        const result = {
+            open: details?.open,
+            matches: cards.length,
+            valid,
+            featuredHidden: featured?.hidden
+        };
+        document.querySelector('[data-developer-system="all"]').click();
+        result.restoredClosed = !details.open;
+        result.restoredFeatured = !featured.hidden;
+        return result;
+    `);
+    if (!filtered.open || filtered.matches < 1 || !filtered.valid || !filtered.featuredHidden
+        || !filtered.restoredClosed || !filtered.restoredFeatured) {
+        throw new Error(`Developer platform filter restoration failed at ${viewport.label}: ${JSON.stringify(filtered)}`);
+    }
+}
+
 function validateResult(result, page, viewport) {
     const failures = [];
     const maxHeaderHeight = Math.min(300, Math.round(viewport.height * 0.34));
@@ -531,6 +616,9 @@ async function main() {
                     validateResult(result, page, viewport);
                     if (page === "/games/publishers/index.html") {
                         await auditPublisherDirectory(sessionId, viewport);
+                    }
+                    if (page === "/games/developers/index.html") {
+                        await auditDeveloperDirectory(sessionId, viewport);
                     }
                     widestHeader = Math.max(widestHeader, result.headerHeight || 0);
                     const navState = result.hasSharedHeader
