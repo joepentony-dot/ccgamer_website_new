@@ -174,3 +174,27 @@ test("public code cache includes the shared directory stylesheet", () => {
     assert.match(sw, /CODE_CACHE_VERSION = "20\d{2}-\d{2}-\d{2}-public-code-v[0-9]+"/);
     assert.match(sw, /\/resources\/css\/ccg-archive-directory\.css/);
 });
+
+test("developer index keeps complete static A-Z directory and opens bookmarked system results", () => {
+    const html = read("games/developers/index.html");
+    const generator = read("scripts/generate-developer-pages.js");
+    const js = read("js/developer-pages.js");
+    const css = read("resources/css/developers.css");
+
+    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
+    assert.match(generator, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
+    const summary = html.match(/<summary>Browse all (\d+) developers A–Z<\/summary>/);
+    assert.ok(summary, "developer disclosure includes a real available count");
+    const directoryStart = html.indexOf('<div class="ccg-developer-grid" id="developerGrid">');
+    const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
+    assert.ok(directoryStart >= 0 && directoryEnd > directoryStart, "directory links exist in static HTML");
+    const hrefs = Array.from(html.slice(directoryStart, directoryEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
+    assert.equal(hrefs.length, Number(summary[1]), "all counted developer links are present without JavaScript");
+    assert.equal(new Set(hrefs).size, hrefs.length, "developer routes are not duplicated inside directory");
+    assert.match(js, /if \(directory && system !== "all"\) directory\.open = true;/,
+        "supported bookmarked system filters must open the disclosure on page load");
+    assert.match(js, /Boolean\(normalize\(search\.value\)\) \|\| system !== "all" \|\| initialDirectoryOpen/,
+        "clearing a name search must not close active platform-filter results");
+    assert.match(css, /\.ccg-developers-directory > summary:focus-visible/,
+        "native directory disclosure keeps visible keyboard focus");
+});
