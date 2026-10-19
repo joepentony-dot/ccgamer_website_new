@@ -198,3 +198,32 @@ test("developer index keeps complete static A-Z directory and opens bookmarked s
     assert.match(css, /\.ccg-developers-directory > summary:focus-visible/,
         "native directory disclosure keeps visible keyboard focus");
 });
+
+test("Zzap archive quick links target distinct preserved archive sections", () => {
+    const html = read("zzap64/index.html");
+    const css = read("resources/css/zzap64-awards.css");
+    const targets = [
+        ["zzap-award-videos", "zzap-video-years-title", "zzapYearCards"],
+        ["zzap-award-search", "zzap-index-title", "zzapAwardsGrid"],
+        ["zzap-additional-reviews", "zzap-all-reviews-title", "zzapReviewGrid"]
+    ];
+
+    assert.match(html, /<nav class="zzap-archive__jump-nav" aria-label="Jump to Zzap!64 archive section">/,
+        "jump destinations must be announced as navigation");
+    for (const [id, headingId, originalGrid] of targets) {
+        assert.equal((html.match(new RegExp('href="#' + id + '"', 'g')) || []).length, 1,
+            "one clear quick-nav entry exists for " + id);
+        assert.equal((html.match(new RegExp('id="' + id + '"', 'g')) || []).length, 1,
+            "one stable scroll target exists for " + id);
+        assert.ok(html.includes('id="' + headingId + '"'), "existing heading contract survives: " + headingId);
+        assert.ok(html.includes('id="' + originalGrid + '"'), "existing runtime grid survives: " + originalGrid);
+    }
+    assert.match(html, /id="zzap-video-years-title" class="zzap-archive__section-title"/,
+        "year videos use a visible heading");
+    assert.match(html, /id="zzap-index-title" class="zzap-archive__section-title"/,
+        "award search uses a visible heading");
+    assert.match(css, /\.zzap-archive__destination\s*\{\s*scroll-margin-top:\s*92px;/,
+        "anchor targets account for fixed navigation height");
+    assert.match(css, /\.zzap-archive__jump-nav a:focus-visible/,
+        "keyboard navigation gets an obvious focus indication");
+});
