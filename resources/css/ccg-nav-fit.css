@@ -505,3 +505,23 @@
         min-height: 34px !important;
     }
 }
+
+/* Progressive desktop navigation reduction. These rules only apply after
+   the existing fitting controller has installed the direct Play C64 link. */
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav__list--primary,
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav__list--secondary {
+        min-width: 0;
+    }
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav-fit__play {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        align-self: center;
+        flex: 0 0 auto;
+        min-height: 38px !important;
+        padding: 6px 9px !important;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+}
