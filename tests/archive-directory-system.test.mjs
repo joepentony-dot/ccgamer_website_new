@@ -247,6 +247,12 @@ test("Music Hub composer letters have one delegated controller and preserve keyb
         "the shared controller must be rebound after filter redraws when needed");
     assert.match(renderer, /group\.dataset\.ccgUserOpen === "true"/,
         "previously selected groups must be read before a search redraw");
+    assert.match(renderer, /openSet\.add\(letter\)/,
+        "a visible, manually expanded letter remains open");
+    assert.match(renderer, /openSet\.delete\(letter\)/,
+        "a visible, manually collapsed letter remains closed");
+    assert.doesNotMatch(renderer, /openSet = new Set\(existingGroups/,
+        "search filtering must not discard user choices for temporarily hidden letters");
     assert.match(renderer, /data-ccg-user-open="/,
         "user open state must survive redraw in rendered group markup");
     assert.match(renderer, /const shouldOpen = hasQuery \|\| openSet\.has\(letter\)/,
