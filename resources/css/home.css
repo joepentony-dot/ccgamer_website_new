@@ -3577,3 +3577,11 @@ html[data-ccg-page="home"] .home-section--archive-dashboard .home-featured-video
     }
 }
 
+
+/* Homepage discovery: show the two main paths first while retaining crawlable archive links. */
+.home-archive-launchpad > .home-archive-more { grid-column: 1 / -1; min-width: 0; }
+.home-archive-more__toggle { cursor: pointer; padding: 15px 18px; border: 1px solid rgba(var(--accent-rgb), .35); border-radius: 12px; background: rgba(0,0,0,.65); color: var(--ccg-text-light, #fff); font-weight: 700; }
+.home-archive-more__toggle:focus-visible { outline: 2px solid rgba(var(--accent-rgb), .9); outline-offset: 3px; }
+.home-archive-more__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 14px; }
+.home-archive-more__grid > .home-archive-route { min-width: 0; }
+@media (max-width: 620px) { .home-archive-more__grid { grid-template-columns: 1fr; } }
