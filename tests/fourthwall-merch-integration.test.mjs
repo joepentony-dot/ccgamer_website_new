@@ -7,7 +7,7 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
 const SHOP = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
 
-test("homepage displays the official Fourthwall shop after the hero and before archive discovery", () => {
+test("homepage presents the official Fourthwall shop after core game and community discovery", () => {
     const html = read("home.html");
     const start = html.indexOf('class="home-merch-promo"');
     const hero = html.indexOf('class="home-hero home-hero--streamlined"');
@@ -15,10 +15,8 @@ test("homepage displays the official Fourthwall shop after the hero and before a
     const community = html.indexOf('class="home-community-latest ccg-chapter"');
     const support = html.indexOf('class="home-support-art home-cta-upgrade"');
 
-    assert.ok(hero >= 0 && start > hero && archive > start,
-        "merch must appear soon after the homepage hero, before archive discovery");
-    assert.ok(community > archive && support > community,
-        "moving merch must not displace the community or support sections");
+    assert.ok(hero >= 0 && archive > hero && community > archive && start > community && support > start,
+        "merch should remain available after games and community, before optional support");
     assert.equal((html.match(/class="home-merch-promo"/g) || []).length, 1,
         "only one merchandise panel should exist");
     assert.ok(html.includes('rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style"'),
