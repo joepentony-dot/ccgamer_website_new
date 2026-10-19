@@ -16,7 +16,7 @@
     const CSS_PATH = "/resources/css/ccg-nav-fit.css";
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
-    const PINNED_MORE_LABELS = new Set(["browse by genre", "publishers", "collections", "music hub", "ccg games", "install ccg app", "about", "about me", "contact"]);
+    const PINNED_MORE_LABELS = new Set(["browse by genre", "publishers", "collections", "music hub", "ccg games", "find me a game", "zzap!64 reviews & awards", "quiz", "emulation", "install ccg app", "about", "about me", "contact"]);
     const BASE_MORE_LINKS = [
         ["Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
         ["CCG Games", "/games/ccg-games/"],
