@@ -235,6 +235,38 @@ async function openMoreWithRealClick(sessionId, width) {
   }
 }
 
+async function assertMoreLinkOrder(sessionId, width) {
+  const hrefs = await execute(sessionId, `
+    return Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href]'))
+      .map((link) => link.getAttribute('href'));
+  `);
+  const archive = [
+    '/games/genres/',
+    '/games/publishers/',
+    '/games/collections/',
+    '/games/discover/',
+    '/music/',
+    '/zzap64/',
+    '/quiz/quiz.html',
+    '/emulation.html'
+  ];
+  const support = [
+    'https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp',
+    '/install-app.html',
+    '/games/ccg-games/',
+    '/about.html',
+    '/contact.html'
+  ];
+  const prefix = hrefs.slice(0, archive.length);
+  const suffix = hrefs.slice(-support.length);
+  if (JSON.stringify(prefix) !== JSON.stringify(archive) || JSON.stringify(suffix) !== JSON.stringify(support)) {
+    throw new Error(`Desktop More order or route preservation failed at ${width}px: ${JSON.stringify(hrefs)}`);
+  }
+  if (new Set(hrefs).size !== hrefs.length) {
+    throw new Error(`Desktop More duplicates a destination at ${width}px: ${JSON.stringify(hrefs)}`);
+  }
+}
+
 async function assertLinkOwnsItsHitTarget(sessionId, label, href) {
   const probe = await execute(sessionId, `
     return (function () {
@@ -375,6 +407,7 @@ async function main() {
     for (const width of [1440, 1920]) {
       await openHome(sessionId, width);
       await openMoreWithRealClick(sessionId, width);
+      await assertMoreLinkOrder(sessionId, width);
       await assertLinkOwnsItsHitTarget(sessionId, "Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp");
       const merchLink = await execute(sessionId, `
         const links = Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href="https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"]'));
@@ -465,6 +498,7 @@ async function main() {
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
     console.log("- CCG Games, Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
     console.log("- Official Merch Shop is visible and interactable in desktop More at 1440px and 1920px");
+    console.log("- Desktop More lists archive routes first and ends with Merch Shop, Install, CCG Games, About Me and Contact in that order");
     console.log("- Homepage merchandise promotion is visible after the hero and before the discovery dashboard");
     console.log("- Emulation, Music and Publishers are reachable from More on the Install destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
