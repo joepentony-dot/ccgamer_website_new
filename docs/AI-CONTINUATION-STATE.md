@@ -1,3 +1,8 @@
+## 19 October 2026 — Stage 4 Games Archive follow-up, corrected-test and publishing reconciliation
+- Stage 3 #2843 merged into main as `91fc618939ac474b184629addba858e458499902` after 19 passing workflows. Automated generated publication #2845 moved main to `ccd7c58113c67742f621a5c15a393359ac60ee63` without changing Games Archive code or HTML.
+- Stage 4 PR #2844 on `codex/omega-games-interface-compact-20261019` simplifies search/system/year controls and collapses the optional A–Z button strip and repeated browse links. Initial independent review identified malformed regex escapes in tests; corrected at `031f5c86e462efb5eebb1bfad6652505e00f2733`. Full latest-head CI, review, fresh-main merge, and deployed browser acceptance are not yet complete.
+- Maintain workstream `docs/ai-work/games-interface-ux-20261019.md` for source/output integrity and full release gates.
+
 ## 19 October 2026 — Main Games Archive search/filter decluttering (Stage 4, stacked/unmerged)
 - Following homepage #2839 and sitewide navigation #2840 (merged), Stage 3 archive browse tile disclosure #2843 remains separately gated. Stage 4 branch `codex/omega-games-interface-compact-20261019` is stacked specifically on #2843, not to be merged out of sequence.
 - Unified the Games Archive title search, All/C64/Amiga system tabs, release-year select and live browsing status into a single compact panel; left real game accordion/results immediately below the controls. Moved existing A–Z button grid and seven duplicate browse shortcut links into one closed native disclosure. Preserved all existing hrefs, game rows, IDs/data attributes and catalogue data, and did not change `js/games-library.js`.
