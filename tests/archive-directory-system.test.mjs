@@ -90,6 +90,15 @@ test("publisher index shows focused search first and keeps complete directory av
     assert.doesNotMatch(css, /#publisherGrid\s*\{[^}]*display:\s*none/s, "the static directory is not hidden with CSS");
 });
 
+test("publisher rendered audit follows generated directory totals, not fixed catalogue numbers", () => {
+    const audit = read("scripts/audit-responsive-browser.js");
+    assert.match(audit, /initial\.fullLinkCount !== expectedPublisherCount/);
+    assert.match(audit, /initial\.otherDirectoryCount !== expectedDirectoryCount/);
+    assert.match(audit, /restored\.originalCards !== expectedDirectoryCount/);
+    assert.match(audit, /indexHtml\.slice\(gridStart, gridEnd\)\.match/);
+    assert.doesNotMatch(audit, /(?:fullLinkCount|otherDirectoryCount|originalCards)\s*<\s*(?:190|206)/);
+});
+
 test("category and music runtimes opt into the shared directory shell", () => {
     const category = read("js/ccg-category-omega.js");
     const music = read("js/ccg-music-navigation.js");
