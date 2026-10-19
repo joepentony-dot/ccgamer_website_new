@@ -371,8 +371,8 @@ async function main() {
     await openHome(sessionId, 1440);
     const merchPanel = await execute(sessionId, `
       const panel = document.querySelector('.home-merch-promo');
-      const hero = document.querySelector('.home-hero--streamlined');
-      const archive = document.querySelector('.home-section--archive-dashboard');
+      const community = document.querySelector('.home-community-latest');
+      const support = document.querySelector('.home-support-art');
       const rect = panel?.getBoundingClientRect();
       const style = panel ? getComputedStyle(panel) : null;
       const link = panel?.querySelector('a[href]');
@@ -380,14 +380,14 @@ async function main() {
       const linkStyle = link ? getComputedStyle(link) : null;
       return {
         count: document.querySelectorAll('.home-merch-promo').length,
-        afterHero: !!(panel && hero && (hero.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING)),
-        beforeArchive: !!(panel && archive && (panel.compareDocumentPosition(archive) & Node.DOCUMENT_POSITION_FOLLOWING)),
+        afterCommunity: !!(panel && community && (community.compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING)),
+        beforeSupport: !!(panel && support && (panel.compareDocumentPosition(support) & Node.DOCUMENT_POSITION_FOLLOWING)),
         visible: !!(rect && rect.width > 1 && rect.height > 1 && style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0),
         linkVisible: !!(linkRect && linkRect.width > 1 && linkRect.height > 1 && linkStyle.display !== 'none' && linkStyle.visibility !== 'hidden' && Number(linkStyle.opacity || 1) > 0 && linkStyle.pointerEvents !== 'none'),
         destination: link?.getAttribute('href') || ''
       };
     `);
-    if (merchPanel.count !== 1 || !merchPanel.afterHero || !merchPanel.beforeArchive || !merchPanel.visible || !merchPanel.linkVisible || merchPanel.destination !== "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp") {
+    if (merchPanel.count !== 1 || !merchPanel.afterCommunity || !merchPanel.beforeSupport || !merchPanel.visible || !merchPanel.linkVisible || merchPanel.destination !== "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp") {
       throw new Error(`Homepage Merch Shop panel is missing or hidden: ${JSON.stringify(merchPanel)}`);
     }
 
