@@ -126,6 +126,26 @@ test("publisher regeneration preserves every referenced re-release role badge", 
     assert.ok(verified > 0, "found publisher routes to validate re-release labels");
 });
 
+test("publisher archive generator and refresh workflow preserve social image dimensions and genre enrichment", () => {
+    const generator = read("scripts/generate-publisher-pages.js");
+    const workflow = read(".github/workflows/publisher-archives.yml");
+    const index = read("games/publishers/index.html");
+    const example = read("games/publishers/ocean-software/index.html");
+
+    for (const item of [generator, index, example]) {
+        assert.match(item, /<meta property="og:image:height" content="630">/);
+        assert.match(item, /<meta property="og:image:width" content="1200">/);
+    }
+    const history = workflow.indexOf("run: node scripts/materialize-publisher-histories-tolerant.js");
+    const link = workflow.indexOf("run: node scripts/link-publisher-strength-genres.js");
+    const audit = workflow.indexOf("run: node scripts/audit-publisher-seo-evidence-tolerant.js");
+    assert.ok(history >= 0 && link > history && audit > link,
+        "publisher genre-strength links must be restored between history materialisation and output validation");
+    assert.match(workflow, /node --check scripts\/link-publisher-strength-genres\.js/);
+    assert.match(example, /ccg-publisher-history__genre-link/,
+        "canonical genre strength links present on historical publisher archive");
+});
+
 test("public code cache includes the shared directory stylesheet", () => {
     const sw = read("service-worker.js");
 
