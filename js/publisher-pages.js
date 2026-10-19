@@ -163,29 +163,6 @@
         tools.appendChild(nav);
     }
 
-    /* Hide the 206-card directory from the initial visual scan without
-       removing a single crawlable link. If JS is disabled the static
-       directory remains fully visible exactly as the publisher generator
-       authored it. Search expands the native disclosure automatically. */
-    function ensurePublisherDirectoryDisclosure(archiveSection, archiveCards) {
-        if (!archiveSection || !archiveCards.length || !archiveSection.parentElement) return null;
-        const existing = archiveSection.closest("[data-publisher-directory-disclosure]");
-        if (existing) return existing;
-
-        const details = document.createElement("details");
-        details.className = "ccg-publisher-directory-disclosure";
-        details.dataset.publisherDirectoryDisclosure = "true";
-
-        const summary = document.createElement("summary");
-        summary.className = "ccg-publisher-directory-disclosure__summary";
-        summary.textContent = "Browse all " + archiveCards.length + " publishers A–Z";
-        details.appendChild(summary);
-
-        archiveSection.parentNode.insertBefore(details, archiveSection);
-        details.appendChild(archiveSection);
-        return details;
-    }
-
     function createSearchResultCard(card) {
         const clone = card.cloneNode(true);
         clone.hidden = false;
@@ -214,7 +191,7 @@
         const archiveSection = grid.closest(".ccg-publishers-section");
         const archiveHeading = archiveSection?.querySelector("#all-publishers-title");
         const archiveKicker = archiveSection?.querySelector(".ccg-publishers-section__kicker");
-        const defaultArchiveHeading = archiveHeading?.textContent || "All Publishers";
+        const defaultArchiveHeading = archiveHeading?.textContent || "Other Publishers";
         const defaultArchiveKicker = archiveKicker?.textContent || "Full directory";
 
         /* The publisher index only needs one search box. Platform filtering
@@ -222,7 +199,7 @@
         document.querySelector(".ccg-publishers-tools .ccg-publishers-filter")?.remove();
         updateSystemQuery("all");
 
-        const directory = ensurePublisherDirectoryDisclosure(archiveSection, archiveCards);
+        const directory = archiveSection?.closest("[data-publisher-directory-disclosure]");
         /* The alphabet is relevant to the complete directory, not to the
            initial search box or the featured publisher cards. */
         ensurePublisherAlphabetNav(archiveCards, directory);
@@ -230,8 +207,17 @@
         if (alphabetNav && archiveSection) directory.insertBefore(alphabetNav, archiveSection);
 
         let manuallyExpanded = false;
+        directory?.querySelector("summary")?.addEventListener("click", (event) => {
+            /* Never hide active search results when the user clicks the
+               summary. The results must remain accessible until cleared. */
+            if (normalize(search?.value)) event.preventDefault();
+        });
         directory?.addEventListener("toggle", () => {
-            if (!normalize(search?.value)) manuallyExpanded = directory.open;
+            if (normalize(search?.value)) {
+                if (!directory.open) directory.open = true;
+                return;
+            }
+            manuallyExpanded = directory.open;
         });
 
         function clearSearchResults() {
