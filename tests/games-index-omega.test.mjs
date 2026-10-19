@@ -63,6 +63,23 @@ test('games archive exposes useful static discovery routes', () => {
   assert.match(generator, /games-omega-discovery__summary/);
 });
 
+test('main games archive uses one focused search/filter surface with optional browsing controls', () => {
+  const toolsSection = games.match(/<!-- SEARCH -->[\s\S]*?<!-- ACCORDION -->/)?.[0];
+  assert.ok(toolsSection, 'search and filter area is present');
+  assert.match(toolsSection, /<div class="games-tools__controls" role="group" aria-label="Find and filter games">/);
+  assert.match(toolsSection, /<details class="games-tools__optional">/);
+  assert.match(toolsSection, /<summary class="games-tools__optional-title">Browse A–Z and other game sections<\/summary>/);
+  assert.ok(toolsSection.indexOf('id="gamesSearchInput"') < toolsSection.indexOf('games-tools__optional'), 'search remains visible ahead of optional browsing');
+  for (const id of ['gamesSearchInput', 'gamesSearchClear', 'gamesYearSelect', 'gamesBrowseHint', 'gamesAlphaStrip']) {
+    assert.equal((games.match(new RegExp('id="' + id + '"', 'g')) || []).length, 1, 'preserve one runtime hook: ' + id);
+  }
+  for (const filter of ['all', 'c64', 'amiga']) {
+    assert.match(toolsSection, new RegExp('data-system-filter="' + filter + '"'), 'system choice exists: ' + filter);
+  }
+  assert.match(css, /\.ccg-page--games-index \.games-tools__controls/);
+  assert.match(css, /\.ccg-page--games-index \.games-tools__optional-title:focus-visible/);
+});
+
 test('archive generator repairs missing discovery routes despite an intact summary marker', () => {
   const sectionPattern = /<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->[\s\S]*?<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->/;
   const originalSection = games.match(sectionPattern)?.[0];
