@@ -236,8 +236,13 @@ function assertFrames(frames, width) {
 async function auditTransition(sessionId, width) {
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
   await webdriver("POST", `/session/${sessionId}/url`, { url: `${BASE_URL}/home.html?music-first-paint=${Date.now()}` });
-  await waitUntil(sessionId, "document.querySelector('[data-ccg-nav-primary] a[href=\"/music/\"]')", `Music navigation link at ${width}px`);
-  await clickElement(sessionId, '[data-ccg-nav-primary] a[href="/music/"]');
+  await waitUntil(sessionId, "document.querySelector('[data-ccg-more-toggle]')", `More navigation at ${width}px`);
+  await clickElement(sessionId, '[data-ccg-more-toggle]');
+  await waitUntil(sessionId, `(function () {
+    const link = document.querySelector('[data-ccg-more-menu] a[href="/music/"]');
+    return link && link.getBoundingClientRect().width > 1 && getComputedStyle(link).visibility !== 'hidden';
+  })()`, `Music link in More at ${width}px`);
+  await clickElement(sessionId, '[data-ccg-more-menu] a[href="/music/"]');
   await waitUntil(sessionId, "window.location.pathname === '/music/'", `Music destination at ${width}px`);
   await new Promise((resolve) => setTimeout(resolve, 1800));
   const frames = await execute(sessionId, "return window.__ccgMusicFirstPaintFrames || [];");
