@@ -3577,3 +3577,53 @@ html[data-ccg-page="home"] .home-section--archive-dashboard .home-featured-video
     }
 }
 
+
+/* CCG UX pass — reduce first-screen archive choices without removing routes. */
+html[data-ccg-page="home"] .home-archive-launchpad {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+html[data-ccg-page="home"] .home-archive-extras {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+html[data-ccg-page="home"] .home-archive-extras__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 12px 16px;
+    cursor: pointer;
+    border: 1px solid rgba(var(--accent-rgb), 0.34);
+    border-radius: 10px;
+    background: rgba(4, 10, 20, 0.90);
+    color: #e2faff;
+    font: 700 0.79rem "Orbitron", system-ui, sans-serif;
+    letter-spacing: 0.03em;
+}
+html[data-ccg-page="home"] .home-archive-extras__summary::-webkit-details-marker { display: none; }
+html[data-ccg-page="home"] .home-archive-extras__summary::marker { content: ""; }
+html[data-ccg-page="home"] .home-archive-extras__summary:hover,
+html[data-ccg-page="home"] .home-archive-extras__summary:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.7);
+    outline-offset: 3px;
+}
+html[data-ccg-page="home"] .home-archive-extras[open] .home-archive-extras__summary span {
+    rotate: 180deg;
+}
+html[data-ccg-page="home"] .home-archive-extras__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+}
+@media (max-width: 980px) {
+    html[data-ccg-page="home"] .home-archive-extras__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 520px) {
+    html[data-ccg-page="home"] .home-archive-extras__grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
