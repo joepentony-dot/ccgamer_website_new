@@ -71,6 +71,26 @@ test('streamlined navigation preserves all specialist routes and music mobile pa
   assert.match(musicNavigation, /merch\.target = "_blank"/);
 });
 
+test('desktop More ranks archive destinations ahead of support and contact links', () => {
+  const archiveMatch = navFit.match(/const MORE_ARCHIVE_ORDER = \[([\s\S]*?)\];/);
+  const footerMatch = navFit.match(/const BASE_MORE_LINKS = \[([\s\S]*?)\];/);
+  assert.ok(archiveMatch && footerMatch, 'More menu has explicit archive and footer ordering');
+  const archive = Array.from(archiveMatch[1].matchAll(/"([^"]+)"/g), (match) => match[1]);
+  assert.deepEqual(archive, [
+    'browse by genre', 'publishers', 'collections', 'find me a game',
+    'music hub', 'zzap!64 reviews & awards', 'quiz', 'emulation'
+  ]);
+  const footer = Array.from(footerMatch[1].matchAll(/\["([^"]+)",\s*"([^"]+)"\]/g), (match) => match[1]);
+  assert.deepEqual(footer, ['Merch Shop', 'Install CCG App', 'CCG Games', 'About Me', 'Contact']);
+  assert.match(navFit, /hiddenItems\s*\.map\(\(item, index\)/, 'source links are independently ordered');
+  assert.match(navFit, /const supportingHrefs = new Set/, 'footer copies are deduplicated');
+  assert.match(navFit, /if \(seen\.has\(absolute\) \|\| supportingHrefs\.has\(absolute\)\) return;/);
+  assert.ok(
+    navFit.indexOf('sortedItems.forEach') < navFit.indexOf('BASE_MORE_LINKS.forEach(([label, href]) => appendMoreLink'),
+    'archive destinations are inserted before supporting links'
+  );
+});
+
 test('desktop More is functional and deliberately owns CCG Games, Install, About Me and Contact', () => {
   assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["ccg games", "install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);

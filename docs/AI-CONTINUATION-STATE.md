@@ -1,3 +1,7 @@
+## 19 October 2026 — Desktop More navigation relevance ordering (unmerged)
+- Screenshot of live `/games/` showed supporting destinations above Genres/Publishers/Collections. A new isolated follow-up branch `codex/omega-more-menu-relevance-order-20261019` ranks the eight archive More destinations first and places the last five as Merch Shop, Install CCG App, CCG Games, About Me, Contact.
+- No canonical mobile drawer, core navigation lists, stylesheet, catalogue or intro changes. Source owner `js/ccg-nav-fit.js`; exact desktop browser and static order guards added; SW public cache v167. Qualification/review/merge and deployed acceptance remain outstanding. Workstream `docs/ai-work/navigation-ux-20261019.md`.
+
 ## 19 October 2026 — Stage 4 Games Archive follow-up, corrected-test and publishing reconciliation
 - Stage 3 #2843 merged into main as `91fc618939ac474b184629addba858e458499902` after 19 passing workflows. Automated generated publication #2845 moved main to `ccd7c58113c67742f621a5c15a393359ac60ee63` without changing Games Archive code or HTML.
 - Stage 4 PR #2844 on `codex/omega-games-interface-compact-20261019` simplifies search/system/year controls and collapses the optional A–Z button strip and repeated browse links. Initial independent review identified malformed regex escapes in tests; corrected at `031f5c86e462efb5eebb1bfad6652505e00f2733`. Full latest-head CI, review, fresh-main merge, and deployed browser acceptance are not yet complete.
