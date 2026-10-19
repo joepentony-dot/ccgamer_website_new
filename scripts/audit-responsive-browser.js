@@ -384,7 +384,6 @@ async function auditDiscoveryPriority(sessionId, page, viewport) {
             throw new Error(`${page} @ ${viewport.label}: priority sections overlap: ${JSON.stringify(sections[i - 1])} / ${JSON.stringify(sections[i])}`);
         }
     }
-}
     if (page === "/games/index.html") {
         const response = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
             script: `
@@ -409,7 +408,7 @@ async function auditDiscoveryPriority(sessionId, page, viewport) {
             throw new Error(`Games Archive @ ${viewport.label}: active-search discovery placement failed: ${JSON.stringify(state)}`);
         }
     }
-
+}
 
 async function auditPublisherDirectory(sessionId, viewport) {
     const execute = async (script) => {
