@@ -56,15 +56,16 @@ test("publisher index shows focused search first and keeps complete directory av
     assert.match(html, /id="publisherSearchInput"/);
     assert.match(html, /id="publisherGrid"/);
 
-    assert.match(js, /function ensurePublisherDirectoryDisclosure\(archiveSection, archiveCards\)/);
-    assert.match(js, /document\.createElement\("details"\)/);
-    assert.match(js, /document\.createElement\("summary"\)/);
-    assert.match(js, /archiveSection\.parentNode\.insertBefore\(details, archiveSection\)/);
-    assert.match(js, /details\.appendChild\(archiveSection\)/);
+    assert.match(js, /archiveSection\?\.closest\("\[data-publisher-directory-disclosure\]"\)/);
+    assert.match(html, /<details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>/);
+    assert.match(html, /<summary class="ccg-publisher-directory-disclosure__summary">Browse the other 194 publishers A–Z<\/summary>/);
+    assert.match(html, /<h2 id="all-publishers-title">Other Publishers<\/h2>/);
+    assert.match(read("scripts/generate-publisher-pages.js"), /Browse the other \$\{remainingGroups\.length\} publishers A–Z/);
     assert.match(js, /ensurePublisherAlphabetNav\(archiveCards, directory\)/);
     assert.match(js, /directory\.insertBefore\(alphabetNav, archiveSection\)/);
     assert.match(js, /if \(directory\) directory\.open = Boolean\(query\) \|\| manuallyExpanded/);
     assert.match(js, /directory\?\.addEventListener\("toggle"/);
+    assert.match(js, /if \(normalize\(search\?\.value\)\) event\.preventDefault\(\)/);
     assert.match(js, /query \? renderSearchResults\(query\) : renderDirectory\(\)/);
     assert.match(js, /" publishers found"/);
     assert.match(js, /" publishers available"/);
