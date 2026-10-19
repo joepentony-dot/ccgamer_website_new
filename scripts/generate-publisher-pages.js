@@ -158,6 +158,8 @@ function renderHead({ title, description, canonicalUrl, robots = "index,follow",
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Cheeky Commodore Gamer">
     <meta property="og:title" content="${htmlEscape(title)}">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:width" content="1200">
     <meta property="og:description" content="${htmlEscape(description)}">
     <meta property="og:url" content="${htmlEscape(canonicalUrl)}">
     <meta property="og:image" content="${SITE_ORIGIN}/resources/images/og/c64_neon.png">
