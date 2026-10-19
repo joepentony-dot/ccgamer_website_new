@@ -142,6 +142,8 @@ test("publisher archive generator and refresh workflow preserve social image dim
     assert.ok(history >= 0 && link > history && audit > link,
         "publisher genre-strength links must be restored between history materialisation and output validation");
     assert.match(workflow, /node --check scripts\/link-publisher-strength-genres\.js/);
+    assert.equal((workflow.match(/^      - "scripts\/link-publisher-strength-genres\.js"$/gm) || []).length, 2,
+        "genre-strength linker changes must trigger publisher refresh on push and pull request");
     assert.match(example, /ccg-publisher-history__genre-link/,
         "canonical genre strength links present on historical publisher archive");
 });
