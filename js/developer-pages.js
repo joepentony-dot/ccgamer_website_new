@@ -87,8 +87,9 @@
 
         const directory = document.getElementById("developerDirectory");
         const initialDirectoryOpen = Boolean(directory?.open);
+        if (directory && system !== "all") directory.open = true;
         search?.addEventListener("input", () => {
-            if (directory) directory.open = Boolean(normalize(search.value)) || initialDirectoryOpen;
+            if (directory) directory.open = Boolean(normalize(search.value)) || system !== "all" || initialDirectoryOpen;
         });
         buttons.forEach((button) => {
             button.addEventListener("click", () => {
