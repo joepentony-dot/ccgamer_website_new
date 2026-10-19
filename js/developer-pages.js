@@ -85,6 +85,18 @@
             });
         });
 
+        const directory = document.getElementById("developerDirectory");
+        const initialDirectoryOpen = Boolean(directory?.open);
+        search?.addEventListener("input", () => {
+            if (directory) directory.open = Boolean(normalize(search.value)) || initialDirectoryOpen;
+        });
+        buttons.forEach((button) => {
+            button.addEventListener("click", () => {
+                if (directory && system !== "all") directory.open = true;
+                else if (directory && !normalize(search?.value)) directory.open = initialDirectoryOpen;
+            });
+        });
+
         applyFilters();
     }
 
