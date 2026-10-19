@@ -100,10 +100,12 @@ rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Ami
 [
     "home-hero__actions--streamlined",
     "Browse Games",
-    "Zzap!64 Awards",
+    "Zzap!64 Reviews &amp; Awards",
     "Find Me a Game",
-    "Browse Genres",
-    "home-cta-upgrade--streamlined",
+    'href="/games/genres/"',
+    'class="home-archive-route__title">Genres</strong>',
+    "home-cta-upgrade",
+    "home-support-art__canvas",
     "home-visitor-callout--compact",
     "ccg-footer--home-compact"
 ].forEach((token) => requireText(homePage, token, "Streamlined home page"));
@@ -113,6 +115,17 @@ rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Ami
     "home-bottom-cta",
     "The Full A–Z Index"
 ].forEach((token) => rejectText(homePage, token, "Streamlined home page"));
+
+/* Homepage stage #2839 deliberately replaced old hero button labels
+   and the former upgraded CTA modifier. Keep the actual route/structure
+   contracts, not copy that no longer appears in the approved layout. */
+[
+    'href="/zzap64/"',
+    'href="/games/publishers/"',
+    'href="/games/collections/"',
+    "home-archive-route__title",
+    "home-support-art__image"
+].forEach((token) => requireText(homePage, token, "Homepage discovery and support"));
 
 [
     'id="zzapLoading"',
