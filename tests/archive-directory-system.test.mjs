@@ -174,3 +174,43 @@ test("public code cache includes the shared directory stylesheet", () => {
     assert.match(sw, /CODE_CACHE_VERSION = "20\d{2}-\d{2}-\d{2}-public-code-v[0-9]+"/);
     assert.match(sw, /\/resources\/css\/ccg-archive-directory\.css/);
 });
+
+test("developer index reduces default clutter without dropping a credited route", () => {
+    const html = read("games/developers/index.html");
+    const generator = read("scripts/generate-developer-pages.js");
+    const runtime = read("js/developer-pages.js");
+    const css = read("resources/css/developers.css");
+
+    const links = [...html.matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    const totalMatch = html.match(/id="developerVisibleCount">(\d+)<\/strong> developers available/);
+    assert.ok(totalMatch, "default static count describes available credits, not expanded cards");
+    const expected = Number(totalMatch[1]);
+    assert.equal(links.length, expected, "every developer appears exactly once as a static card");
+    assert.equal(new Set(links).size, expected, "the featured set and directory never duplicate a route");
+
+    const featured = [...html.matchAll(/<a class="ccg-developer-card ccg-developer-card--featured"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    const directoryStart = html.indexOf('id="developerGrid"');
+    const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
+    assert.ok(directoryStart > 0 && directoryEnd > directoryStart, "other credits have a static crawlable directory");
+    const other = [...html.slice(directoryStart, directoryEnd).matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    assert.ok(featured.length > 0 && other.length > 0);
+    assert.equal(featured.length + other.length, expected);
+    assert.ok(html.includes(`Browse the other ${other.length} developers A–Z</summary>`));
+    assert.match(html, /<details class="ccg-developer-directory-disclosure" data-developer-directory-disclosure>/);
+    assert.match(html, /<h2 id="all-developers-title">Other Developers<\/h2>/);
+    assert.match(html, /id="developerSearchInput"/);
+    assert.match(generator, /new Set\(represented\.map\(\(group\) => group\.slug\)\)/);
+    assert.match(generator, /groups\.filter\(\(group\) => !representedSlugs\.has\(group\.slug\)\)/);
+    assert.match(generator, /Browse the other \$\{remainingGroups\.length\} developers A–Z/);
+    assert.match(runtime, /data-developer-search-result/);
+    assert.match(runtime, /allCards\.filter\(\(card\) => matches\(card, query\)\)/);
+    assert.match(runtime, /directory\.open = hasSearch \|\| system !== "all" \|\| manuallyExpanded/);
+    assert.match(runtime, /event\.preventDefault\(\)/);
+    assert.match(css, /\.ccg-developer-directory-disclosure__summary:focus-visible/);
+    assert.match(css, /\.ccg-developer-directory-disclosure\[open\]/);
+    assert.doesNotMatch(css, /#developerGrid\s*\{[^}]*display:\s*none/s);
+});
+
