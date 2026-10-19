@@ -102,17 +102,20 @@
        same geometry as the fitted header. They remain available in the
        mobile drawer because this rule is desktop-only.
     */
-    /* All secondary destinations now live under More on desktop; preserve
-       the canonical link nodes for mobile drawer cloning and SEO access. */
-    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/genres/"]),
-    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/publishers/"]),
-    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/games/collections/"]),
-    .ccg-header [data-ccg-nav-primary] > li:has(> a[href="/music/"]),
-    .ccg-header [data-ccg-nav-secondary] > li {
+    /* Preserve the existing permanent More routes as an explicit contract. */
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/games/ccg-games/"]),
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/install-app.html"]),
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]),
+    /* The first two canonical primary items are Home and Browse Games.
+       Hide every later item even during intermediate nav hydration, before
+       the deferred fitting controller can settle the final More menu. */
+    .ccg-header .ccg-nav [data-ccg-nav-primary] > li:nth-child(n+3),
+    .ccg-header .ccg-nav [data-ccg-nav-secondary] > li {
         display: none !important;
     }
 
-    /* Avoid reserving space for hidden secondary navigation at first paint. */
+        /* Avoid reserving space for hidden secondary navigation at first paint. */
     .ccg-header .ccg-nav .ccg-nav__list--primary,
     .ccg-header .ccg-nav .ccg-nav__list--secondary {
         min-width: 0;
