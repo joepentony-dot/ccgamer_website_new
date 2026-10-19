@@ -63,6 +63,21 @@ test('games archive exposes useful static discovery routes', () => {
   assert.match(generator, /games-omega-discovery__summary/);
 });
 
+test('archive generator repairs missing discovery routes despite an intact summary marker', () => {
+  const sectionPattern = /<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->[\s\S]*?<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->/;
+  const originalSection = games.match(sectionPattern)?.[0];
+  assert.ok(originalSection, 'generated discovery section is present');
+  const broken = games.replace(
+    /<a class="games-omega-discovery__card" href="\/games\/genres\/"[^>]*>[\s\S]*?<\/a>/,
+    ''
+  );
+  assert.notEqual(broken, games, 'the test actually removes a discovery card');
+  assert.match(broken, /games-omega-discovery__summary/, 'the misleading summary marker remains');
+  const rebuilt = buildGamesIndex(broken);
+  assert.equal(rebuilt.match(sectionPattern)?.[0], originalSection, 'the generator restores the exact complete section');
+  assert.equal(buildGamesIndex(rebuilt), rebuilt, 'repair remains deterministic on the second rebuild');
+});
+
 test('Omega games archive presentation is responsive and scoped', () => {
   assert.match(games, /ccg-games-index-omega\.css/);
   assert.match(css, /\.ccg-page--games-index \.games-hero/);
