@@ -191,14 +191,34 @@
         const archiveSection = grid.closest(".ccg-publishers-section");
         const archiveHeading = archiveSection?.querySelector("#all-publishers-title");
         const archiveKicker = archiveSection?.querySelector(".ccg-publishers-section__kicker");
-        const defaultArchiveHeading = archiveHeading?.textContent || "All Publishers";
+        const defaultArchiveHeading = archiveHeading?.textContent || "Other Publishers";
         const defaultArchiveKicker = archiveKicker?.textContent || "Full directory";
 
         /* The publisher index only needs one search box. Platform filtering
            belongs on individual publisher game pages, where it is useful. */
         document.querySelector(".ccg-publishers-tools .ccg-publishers-filter")?.remove();
         updateSystemQuery("all");
-        ensurePublisherAlphabetNav(archiveCards, document.querySelector(".ccg-publishers-tools"));
+
+        const directory = archiveSection?.closest("[data-publisher-directory-disclosure]");
+        /* The alphabet is relevant to the complete directory, not to the
+           initial search box or the featured publisher cards. */
+        ensurePublisherAlphabetNav(archiveCards, directory);
+        const alphabetNav = directory?.querySelector("[data-publisher-alphabet]");
+        if (alphabetNav && archiveSection) directory.insertBefore(alphabetNav, archiveSection);
+
+        let manuallyExpanded = false;
+        directory?.querySelector("summary")?.addEventListener("click", (event) => {
+            /* Never hide active search results when the user clicks the
+               summary. The results must remain accessible until cleared. */
+            if (normalize(search?.value)) event.preventDefault();
+        });
+        directory?.addEventListener("toggle", () => {
+            if (normalize(search?.value)) {
+                if (!directory.open) directory.open = true;
+                return;
+            }
+            manuallyExpanded = directory.open;
+        });
 
         function clearSearchResults() {
             grid.querySelectorAll("[data-publisher-search-result]").forEach((card) => card.remove());
@@ -278,11 +298,18 @@
 
         function applyFilters() {
             const query = normalize(search?.value);
+            /* Search results must never be hidden inside a closed
+               disclosure. Clearing the query restores the user's
+               manually chosen open/closed state. */
+            if (directory) directory.open = Boolean(query) || manuallyExpanded;
             clearSearchResults();
             const visible = query ? renderSearchResults(query) : renderDirectory();
 
             updateSearchPriority(query);
             if (count) count.textContent = String(visible);
+            if (count?.parentElement?.lastChild?.nodeType === 3) {
+                count.parentElement.lastChild.nodeValue = query ? " publishers found" : " publishers available";
+            }
             if (empty) empty.hidden = visible !== 0;
         }
 

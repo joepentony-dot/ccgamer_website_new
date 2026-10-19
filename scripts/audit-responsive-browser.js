@@ -353,6 +353,84 @@ async function executeDiagnostics(sessionId) {
     return payload.value;
 }
 
+async function auditPublisherDirectory(sessionId, viewport) {
+    const execute = async (script) => {
+        const payload = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+            script,
+            args: []
+        });
+        return payload.value;
+    };
+    // Ground browser expectations in the generated static publisher HTML.
+    // Catalogue growth or pruning must not make the rendered audit stale.
+    const indexHtml = fs.readFileSync(path.join(ROOT, "games", "publishers", "index.html"), "utf8");
+    const publisherLinks = Array.from(indexHtml.matchAll(/class="ccg-publisher-card__link" href="([^"]+)"/g), (match) => match[1]);
+    const expectedPublisherCount = new Set(publisherLinks).size;
+    const gridStart = indexHtml.indexOf('id="publisherGrid"');
+    const gridEnd = indexHtml.indexOf('id="publisherEmptyState"', gridStart);
+    if (gridStart < 0 || gridEnd <= gridStart) {
+        throw new Error("Generated publisher index lacks an intact static directory.");
+    }
+    const expectedDirectoryCount = (indexHtml.slice(gridStart, gridEnd).match(/\bdata-publisher-card\b/g) || []).length;
+    const expectedFeaturedCount = (indexHtml.match(/<article class="ccg-publisher-card ccg-publisher-card--featured" data-publisher-card/g) || []).length;
+    if (!expectedPublisherCount || !expectedDirectoryCount || expectedDirectoryCount + expectedFeaturedCount !== expectedPublisherCount) {
+        throw new Error(`Generated publisher archive count mismatch: total=${expectedPublisherCount}, featured=${expectedFeaturedCount}, remaining=${expectedDirectoryCount}`);
+    }
+
+    const initial = await execute(`
+        const disclosure = document.querySelector('[data-publisher-directory-disclosure]');
+        const grid = document.querySelector('#publisherGrid');
+        const nav = disclosure?.querySelector('[data-publisher-alphabet]');
+        return {
+            disclosure: Boolean(disclosure),
+            closed: disclosure ? !disclosure.open : false,
+            hasNativeSummary: disclosure?.firstElementChild?.tagName === 'SUMMARY',
+            fullLinkCount: document.querySelectorAll('a.ccg-publisher-card__link[href]').length,
+            otherDirectoryCount: grid?.querySelectorAll('a.ccg-publisher-card__link[href]').length || 0,
+            alphabetInside: Boolean(nav && disclosure.contains(nav)),
+            search: Boolean(document.querySelector('#publisherSearchInput')),
+            featuredOutside: Boolean(document.querySelector('.ccg-publishers-section--featured') && !disclosure?.contains(document.querySelector('.ccg-publishers-section--featured')))
+        };
+    `);
+    if (!initial.disclosure || !initial.closed || !initial.hasNativeSummary
+        || initial.fullLinkCount !== expectedPublisherCount || initial.otherDirectoryCount !== expectedDirectoryCount || !initial.alphabetInside || !initial.search || !initial.featuredOutside) {
+        throw new Error(`Publisher disclosure baseline failed at ${viewport.label}: ${JSON.stringify(initial)}`);
+    }
+
+    const matching = await execute(`
+        const search = document.querySelector('#publisherSearchInput');
+        search.value = 'ocean';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+        const disclosure = document.querySelector('[data-publisher-directory-disclosure]');
+        return {
+            open: disclosure.open,
+            matches: disclosure.querySelectorAll('[data-publisher-search-result]').length,
+            oceanLink: Boolean(disclosure.querySelector('[data-publisher-search-result] a[href="/games/publishers/ocean-software/"]')),
+            featuredHidden: document.querySelector('.ccg-publishers-section--featured')?.hidden
+        };
+    `);
+    if (!matching.open || matching.matches < 1 || !matching.oceanLink || !matching.featuredHidden) {
+        throw new Error(`Publisher typed-search disclosure failed at ${viewport.label}: ${JSON.stringify(matching)}`);
+    }
+
+    const restored = await execute(`
+        const search = document.querySelector('#publisherSearchInput');
+        search.value = '';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+        const disclosure = document.querySelector('[data-publisher-directory-disclosure]');
+        return {
+            closed: !disclosure.open,
+            resultClones: disclosure.querySelectorAll('[data-publisher-search-result]').length,
+            originalCards: Array.from(disclosure.querySelectorAll('#publisherGrid > [data-publisher-card]'))
+                .filter((card) => !card.hidden).length,
+            featuredVisible: !document.querySelector('.ccg-publishers-section--featured')?.hidden
+        };
+    `);
+    if (!restored.closed || restored.resultClones !== 0 || restored.originalCards !== expectedDirectoryCount || !restored.featuredVisible) {
+        throw new Error(`Publisher clear-search restoration failed at ${viewport.label}: ${JSON.stringify(restored)}`);
+    }
+}
+
 function validateResult(result, page, viewport) {
     const failures = [];
     const maxHeaderHeight = Math.min(300, Math.round(viewport.height * 0.34));
@@ -451,6 +529,9 @@ async function main() {
                     await navigate(sessionId, url);
                     const result = await executeDiagnostics(sessionId);
                     validateResult(result, page, viewport);
+                    if (page === "/games/publishers/index.html") {
+                        await auditPublisherDirectory(sessionId, viewport);
+                    }
                     widestHeader = Math.max(widestHeader, result.headerHeight || 0);
                     const navState = result.hasSharedHeader
                         ? ` | nav ${result.navVisible ? "desktop" : "menu"}`

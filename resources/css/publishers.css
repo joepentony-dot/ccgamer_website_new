@@ -435,3 +435,56 @@ html[data-ccg-page="publisher-index"] #publisherGrid > .ccg-publisher-card--has-
         transition: none;
     }
 }
+
+/* Publisher Index: make 206 cards optional until the visitor chooses
+   All Publishers or searches. The static no-JS publisher HTML is intact. */
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure {
+    margin-block: clamp(12px, 2vw, 24px);
+    border: 1px solid rgba(var(--accent-rgb), 0.32);
+    border-radius: 13px;
+    background: rgba(3, 8, 20, 0.7);
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure__summary {
+    display: block;
+    position: relative;
+    padding: 16px 46px 16px 18px;
+    min-height: 52px;
+    cursor: pointer;
+    color: #fff;
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: clamp(0.82rem, 1.08vw, 1rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure__summary::-webkit-details-marker {
+    display: none;
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure__summary::after {
+    content: "+";
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    color: rgba(var(--accent-rgb), 0.96);
+    font-size: 1.4rem;
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure[open] > .ccg-publisher-directory-disclosure__summary::after {
+    content: "−";
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure__summary:hover {
+    background: rgba(var(--accent-rgb), 0.075);
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure__summary:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb), 0.96);
+    outline-offset: 3px;
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure > .ccg-directory-jump {
+    margin: 0 12px 10px;
+}
+html[data-ccg-page="publisher-index"] .ccg-publisher-directory-disclosure > .ccg-publishers-section {
+    margin: 0;
+    padding: 8px clamp(10px, 2vw, 18px) clamp(12px, 2vw, 20px);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}

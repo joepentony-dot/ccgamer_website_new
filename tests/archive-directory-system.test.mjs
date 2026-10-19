@@ -2,6 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { collectRoles } = require("../scripts/mark-rerelease-publishers.js");
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -44,6 +48,57 @@ test("publisher runtime adds dense directory shell and alphabet wayfinding", () 
     assert.match(js, /clone\.removeAttribute\("id"\)/);
 });
 
+test("publisher index shows focused search first and keeps complete directory available", () => {
+    const js = read("js/publisher-pages.js");
+    const css = read("resources/css/publishers.css");
+    const html = read("games/publishers/index.html");
+
+    const publisherLinks = Array.from(html.matchAll(/class="ccg-publisher-card__link" href="([^"]+)"/g), (match) => match[1]);
+    const unique = new Set(publisherLinks);
+    assert.ok(publisherLinks.length >= 200, "the complete publisher listing remains in static HTML");
+    assert.ok(unique.size >= 200, "all unique publisher routes remain available without JavaScript");
+    assert.match(html, /id="publisherSearchInput"/);
+    assert.match(html, /id="publisherGrid"/);
+    assert.match(html, /id="publisherVisibleCount">\d+<\/strong> publishers available/, "default static count describes total available, not expanded cards");
+    assert.match(read("scripts/generate-publisher-pages.js"), /id="publisherVisibleCount">\$\{groups\.length\}<\/strong> publishers available/,
+        "authoritative publisher generator preserves honest no-JS count text");
+
+    assert.match(js, /archiveSection\?\.closest\("\[data-publisher-directory-disclosure\]"\)/);
+    assert.match(html, /<details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>/);
+    const directoryStart = html.indexOf('id="publisherGrid"');
+    const directoryEnd = html.indexOf('id="publisherEmptyState"', directoryStart);
+    assert.ok(directoryStart >= 0 && directoryEnd > directoryStart, "directory cards have a defined generated section");
+    const remainingCount = (html.slice(directoryStart, directoryEnd).match(/\bdata-publisher-card\b/g) || []).length;
+    const featuredCount = (html.match(/<article class="ccg-publisher-card ccg-publisher-card--featured" data-publisher-card/g) || []).length;
+    assert.ok(remainingCount > 0, "remaining publisher directory is populated");
+    assert.equal(remainingCount + featuredCount, unique.size, "featured and remaining static cards cover every unique publisher");
+    assert.ok(html.includes(`<summary class="ccg-publisher-directory-disclosure__summary">Browse the other ${remainingCount} publishers A–Z</summary>`),
+        "summary must derive its count from the currently generated nonfeatured cards");
+    assert.match(html, /<h2 id="all-publishers-title">Other Publishers<\/h2>/);
+    assert.match(read("scripts/generate-publisher-pages.js"), /Browse the other \$\{remainingGroups\.length\} publishers A–Z/);
+    assert.match(js, /ensurePublisherAlphabetNav\(archiveCards, directory\)/);
+    assert.match(js, /directory\.insertBefore\(alphabetNav, archiveSection\)/);
+    assert.match(js, /if \(directory\) directory\.open = Boolean\(query\) \|\| manuallyExpanded/);
+    assert.match(js, /directory\?\.addEventListener\("toggle"/);
+    assert.match(js, /if \(normalize\(search\?\.value\)\) event\.preventDefault\(\)/);
+    assert.match(js, /query \? renderSearchResults\(query\) : renderDirectory\(\)/);
+    assert.match(js, /" publishers found"/);
+    assert.match(js, /" publishers available"/);
+
+    assert.match(css, /\.ccg-publisher-directory-disclosure__summary:focus-visible/);
+    assert.match(css, /\.ccg-publisher-directory-disclosure\[open\]/);
+    assert.doesNotMatch(css, /#publisherGrid\s*\{[^}]*display:\s*none/s, "the static directory is not hidden with CSS");
+});
+
+test("publisher rendered audit follows generated directory totals, not fixed catalogue numbers", () => {
+    const audit = read("scripts/audit-responsive-browser.js");
+    assert.match(audit, /initial\.fullLinkCount !== expectedPublisherCount/);
+    assert.match(audit, /initial\.otherDirectoryCount !== expectedDirectoryCount/);
+    assert.match(audit, /restored\.originalCards !== expectedDirectoryCount/);
+    assert.match(audit, /indexHtml\.slice\(gridStart, gridEnd\)\.match/);
+    assert.doesNotMatch(audit, /(?:fullLinkCount|otherDirectoryCount|originalCards)\s*<\s*(?:190|206)/);
+});
+
 test("category and music runtimes opt into the shared directory shell", () => {
     const category = read("js/ccg-category-omega.js");
     const music = read("js/ccg-music-navigation.js");
@@ -57,6 +112,60 @@ test("category and music runtimes opt into the shared directory shell", () => {
     assert.match(music, /music-record/);
     assert.match(composerRuntime, /ccg-archive-directory\.css/);
     assert.match(composerRuntime, /enableArchiveDirectory/);
+});
+
+test("publisher regeneration preserves every referenced re-release role badge", () => {
+    const workflow = read(".github/workflows/publisher-archives.yml");
+    const generatorStep = workflow.indexOf("run: node scripts/generate-publisher-pages.js");
+    const logoStep = workflow.indexOf("run: node scripts/apply-publisher-logos.js");
+    const roleStep = workflow.indexOf("run: node scripts/mark-rerelease-publishers.js");
+    const seoStep = workflow.indexOf("run: node scripts/audit-publisher-seo-evidence-tolerant.js");
+    assert.ok(generatorStep >= 0 && logoStep > generatorStep && roleStep > logoStep && seoStep > roleStep,
+        "regeneration must restore publisher re-release badges after logos and before final audits");
+    assert.match(workflow, /node --check scripts\/mark-rerelease-publishers\.js/);
+
+    const publisherIndex = read("games/publishers/index.html");
+    const roles = collectRoles(JSON.parse(read("games/games.json")));
+    assert.ok(roles.size > 0, "source catalogue includes re-release-only publisher credits");
+    let verified = 0;
+    for (const slug of roles) {
+        const href = 'href="/games/publishers/' + slug + '/"';
+        const start = publisherIndex.indexOf(href);
+        if (start < 0) continue;
+        const end = publisherIndex.indexOf("</a>", start);
+        assert.ok(end > start, "re-release publisher card has closing anchor: " + slug);
+        assert.match(publisherIndex.slice(start, end), /ccg-publisher-role-badge/,
+            "re-release role retained on publisher card: " + slug);
+        const page = "games/publishers/" + slug + "/index.html";
+        if (fs.existsSync(path.join(ROOT, page))) {
+            assert.match(read(page), /ccg-publisher-role-badge/,
+                "re-release role retained on publisher archive page: " + slug);
+        }
+        verified += 1;
+    }
+    assert.ok(verified > 0, "found publisher routes to validate re-release labels");
+});
+
+test("publisher archive generator and refresh workflow preserve social image dimensions and genre enrichment", () => {
+    const generator = read("scripts/generate-publisher-pages.js");
+    const workflow = read(".github/workflows/publisher-archives.yml");
+    const index = read("games/publishers/index.html");
+    const example = read("games/publishers/ocean-software/index.html");
+
+    for (const item of [generator, index, example]) {
+        assert.match(item, /<meta property="og:image:height" content="630">/);
+        assert.match(item, /<meta property="og:image:width" content="1200">/);
+    }
+    const history = workflow.indexOf("run: node scripts/materialize-publisher-histories-tolerant.js");
+    const link = workflow.indexOf("run: node scripts/link-publisher-strength-genres.js");
+    const audit = workflow.indexOf("run: node scripts/audit-publisher-seo-evidence-tolerant.js");
+    assert.ok(history >= 0 && link > history && audit > link,
+        "publisher genre-strength links must be restored between history materialisation and output validation");
+    assert.match(workflow, /node --check scripts\/link-publisher-strength-genres\.js/);
+    assert.equal((workflow.match(/^      - "scripts\/link-publisher-strength-genres\.js"$/gm) || []).length, 2,
+        "genre-strength linker changes must trigger publisher refresh on push and pull request");
+    assert.match(example, /ccg-publisher-history__genre-link/,
+        "canonical genre strength links present on historical publisher archive");
 });
 
 test("public code cache includes the shared directory stylesheet", () => {
