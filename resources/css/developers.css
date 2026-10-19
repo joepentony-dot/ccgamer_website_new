@@ -146,6 +146,56 @@
     opacity: 0.78;
 }
 
+/* The full A-Z directory stays collapsed before JavaScript runs, so
+   search discovery never causes a late layout jump on mobile or desktop. */
+.ccg-developer-directory-disclosure {
+    margin: 36px 0 42px;
+}
+
+.ccg-developer-directory-disclosure__summary {
+    display: block;
+    cursor: pointer;
+    padding: 18px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(5, 8, 18, 0.85);
+    color: inherit;
+    font-family: "Orbitron", sans-serif;
+    font-size: clamp(0.9rem, 1.5vw, 1.08rem);
+    font-weight: 700;
+    line-height: 1.45;
+    list-style: none;
+}
+
+.ccg-developer-directory-disclosure__summary::-webkit-details-marker {
+    display: none;
+}
+
+.ccg-developer-directory-disclosure__summary::after {
+    content: "+";
+    float: right;
+    padding-left: 14px;
+}
+
+.ccg-developer-directory-disclosure[open] > .ccg-developer-directory-disclosure__summary::after {
+    content: "−";
+}
+
+.ccg-developer-directory-disclosure__summary:hover,
+.ccg-developer-directory-disclosure__summary:focus-visible,
+.ccg-developer-directory-disclosure[open] > .ccg-developer-directory-disclosure__summary {
+    border-color: currentColor;
+    background: rgba(20, 30, 55, 0.95);
+}
+
+.ccg-developer-directory-disclosure__summary:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+.ccg-developer-directory-disclosure > .ccg-developers-section {
+    margin: 24px 0 0;
+}
+
 .ccg-developers-section {
     margin: 42px 0;
 }

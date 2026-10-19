@@ -48,30 +48,85 @@
         const search = document.getElementById("developerSearchInput");
         const count = document.getElementById("developerVisibleCount");
         const empty = document.getElementById("developerEmptyState");
-        const cards = Array.from(grid.querySelectorAll("[data-developer-card]"));
+        const directory = grid.closest("[data-developer-directory-disclosure]");
+        const summary = directory?.querySelector("summary");
+        const originalSummary = summary?.textContent || "";
+        const heading = document.getElementById("all-developers-title");
+        const originalHeading = heading?.textContent || "Other Developers";
+        const featuredSection = document.querySelector('[aria-labelledby="represented-developers-title"]');
+        const featuredCards = Array.from(featuredSection?.querySelectorAll("[data-developer-card]") || []);
+        const directoryCards = Array.from(grid.querySelectorAll("[data-developer-card]"));
+        const allCards = [...featuredCards, ...directoryCards];
         const buttons = Array.from(document.querySelectorAll("[data-developer-system]"));
         let system = readInitialSystem(["all", "c64", "amiga"]);
+        let manuallyExpanded = false;
+
+        function matches(card, query) {
+            const name = normalize(card.dataset.developerName);
+            const c64Count = Number(card.dataset.c64Count || 0);
+            const amigaCount = Number(card.dataset.amigaCount || 0);
+            return (!query || name.includes(query)) && (
+                system === "all" ||
+                (system === "c64" && c64Count > 0) ||
+                (system === "amiga" && amigaCount > 0)
+            );
+        }
+
+        summary?.addEventListener("click", (event) => {
+            // Active results must not disappear inside a closed disclosure.
+            if (normalize(search?.value) || system !== "all") {
+                event.preventDefault();
+                return;
+            }
+            manuallyExpanded = !directory.open;
+        });
 
         function applyFilters() {
             const query = normalize(search?.value);
+            const hasSearch = Boolean(query);
             let visible = 0;
 
-            cards.forEach((card) => {
-                const name = normalize(card.dataset.developerName);
-                const nameMatches = !query || name.includes(query);
-                const c64Count = Number(card.dataset.c64Count || 0);
-                const amigaCount = Number(card.dataset.amigaCount || 0);
-                const systemMatches =
-                    system === "all" ||
-                    (system === "c64" && c64Count > 0) ||
-                    (system === "amiga" && amigaCount > 0);
-                const show = nameMatches && systemMatches;
+            grid.querySelectorAll("[data-developer-search-result]").forEach((card) => card.remove());
 
-                card.hidden = !show;
-                if (show) visible += 1;
-            });
+            if (hasSearch) {
+                // Show one alphabetic result per credit, including featured developers.
+                if (featuredSection) featuredSection.hidden = true;
+                directoryCards.forEach((card) => { card.hidden = true; });
 
+                const matchesAll = allCards.filter((card) => matches(card, query))
+                    .sort((a, b) => normalize(a.dataset.developerName).localeCompare(
+                        normalize(b.dataset.developerName), "en", { sensitivity: "base" }
+                    ));
+                const results = document.createDocumentFragment();
+                matchesAll.forEach((card) => {
+                    const copy = card.cloneNode(true);
+                    copy.hidden = false;
+                    copy.dataset.developerSearchResult = "true";
+                    results.appendChild(copy);
+                });
+                grid.prepend(results);
+                visible = matchesAll.length;
+            } else {
+                if (featuredSection) featuredSection.hidden = false;
+                featuredCards.forEach((card) => {
+                    const show = matches(card, "");
+                    card.hidden = !show;
+                    if (show) visible += 1;
+                });
+                directoryCards.forEach((card) => {
+                    const show = matches(card, "");
+                    card.hidden = !show;
+                    if (show) visible += 1;
+                });
+            }
+
+            if (directory) directory.open = hasSearch || system !== "all" || manuallyExpanded;
+            if (summary) summary.textContent = hasSearch ? "Search Results" : originalSummary;
+            if (heading) heading.textContent = hasSearch ? "Matching Developers" : originalHeading;
             if (count) count.textContent = String(visible);
+            if (count?.parentElement?.lastChild?.nodeType === 3) {
+                count.parentElement.lastChild.nodeValue = hasSearch ? " developers found" : " developers available";
+            }
             if (empty) empty.hidden = visible !== 0;
             setPressed(buttons, system, "data-developer-system");
         }
