@@ -80,6 +80,11 @@ function archiveContentIsCurrent(html, games) {
     return syncArchiveData(html, games) === html;
 }
 
+function discoverySectionIsCurrent(html) {
+    const section = html.match(/<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->[\s\S]*?<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->/i);
+    return Boolean(section && normalizeWhitespace(section[0]) === normalizeWhitespace(discoverySection().trim()));
+}
+
 function isCurrentGamesIndex(html, games = loadGames()) {
     const signatures = [
         `<title>${escapeHtml(TITLE)}</title>`,
@@ -98,7 +103,9 @@ function isCurrentGamesIndex(html, games = loadGames()) {
         'Search &amp; Filter C64 and Amiga Games',
         'aria-label="More ways to browse the C64 and Amiga games archive"'
     ];
-    return signatures.every((signature) => html.includes(signature)) && archiveContentIsCurrent(html, games);
+    return signatures.every((signature) => html.includes(signature))
+        && discoverySectionIsCurrent(html)
+        && archiveContentIsCurrent(html, games);
 }
 
 function replaceTitle(html) {
