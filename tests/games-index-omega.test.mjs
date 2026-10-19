@@ -57,6 +57,10 @@ test('games archive exposes useful static discovery routes', () => {
   assert.match(games, /Search &amp; Filter C64 and Amiga Games/);
   assert.match(games, /data-games-archive-shortcuts="true"/);
   assert.match(games, /data-games-downloads-shortcut="true"/);
+  assert.match(games, /<details class="games-omega-discovery__more">/);
+  assert.match(games, /<summary class="games-omega-discovery__summary">/);
+  assert.ok(games.indexOf('games-omega-discovery__summary') < games.indexOf('gamesSearchInput'), 'search follows the compact route disclosure');
+  assert.match(generator, /games-omega-discovery__summary/);
 });
 
 test('Omega games archive presentation is responsive and scoped', () => {
