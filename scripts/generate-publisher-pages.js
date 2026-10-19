@@ -452,7 +452,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="amiga" aria-pressed="false">Amiga</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="both" aria-pressed="false">Both</button>
                 </div>
-                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">${groups.length}</strong> publishers shown</p>
+                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">${groups.length}</strong> publishers available</p>
             </section>
 
             ${featuredGroups.length ? `<section class="ccg-publishers-section ccg-publishers-section--featured" aria-labelledby="featured-publishers-title">
