@@ -534,3 +534,28 @@
     .ccg-page--games-index .games-tools__controls .games-filter__btn { flex-basis: 100px; }
     .ccg-page--games-index .games-tools__controls .games-filter__status { grid-column: 1; }
 }
+
+/* Results stay visible: make each alphabet directory row shorter and quieter
+   without changing the JS accordion, game cards or mobile three-column layout. */
+@media (min-width: 721px) {
+    .ccg-page--games-index .games-accordion__section {
+        margin-bottom: 7px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+    .ccg-page--games-index .games-accordion__header {
+        grid-template-columns: minmax(68px, 0.4fr) minmax(160px, 1fr) 30px;
+        min-height: 62px;
+        gap: 12px;
+        padding: 8px 16px;
+    }
+    .ccg-page--games-index .games-accordion__letter-mark {
+        width: 40px;
+        height: 40px;
+        font-size: 1.12rem;
+    }
+    .ccg-page--games-index .games-accordion__action { display: none; }
+}
+.ccg-page--games-index .games-accordion__header:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb), 0.86);
+    outline-offset: 2px;
+}
