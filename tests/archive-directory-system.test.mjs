@@ -44,6 +44,36 @@ test("publisher runtime adds dense directory shell and alphabet wayfinding", () 
     assert.match(js, /clone\.removeAttribute\("id"\)/);
 });
 
+test("publisher index shows focused search first and keeps complete directory available", () => {
+    const js = read("js/publisher-pages.js");
+    const css = read("resources/css/publishers.css");
+    const html = read("games/publishers/index.html");
+
+    const publisherLinks = Array.from(html.matchAll(/class="ccg-publisher-card__link" href="([^"]+)"/g), (match) => match[1]);
+    const unique = new Set(publisherLinks);
+    assert.ok(publisherLinks.length >= 200, "the complete publisher listing remains in static HTML");
+    assert.ok(unique.size >= 200, "all unique publisher routes remain available without JavaScript");
+    assert.match(html, /id="publisherSearchInput"/);
+    assert.match(html, /id="publisherGrid"/);
+
+    assert.match(js, /function ensurePublisherDirectoryDisclosure\(archiveSection, archiveCards\)/);
+    assert.match(js, /document\.createElement\("details"\)/);
+    assert.match(js, /document\.createElement\("summary"\)/);
+    assert.match(js, /archiveSection\.parentNode\.insertBefore\(details, archiveSection\)/);
+    assert.match(js, /details\.appendChild\(archiveSection\)/);
+    assert.match(js, /ensurePublisherAlphabetNav\(archiveCards, directory\)/);
+    assert.match(js, /directory\.insertBefore\(alphabetNav, archiveSection\)/);
+    assert.match(js, /if \(directory\) directory\.open = Boolean\(query\) \|\| manuallyExpanded/);
+    assert.match(js, /directory\?\.addEventListener\("toggle"/);
+    assert.match(js, /query \? renderSearchResults\(query\) : renderDirectory\(\)/);
+    assert.match(js, /" publishers found"/);
+    assert.match(js, /" publishers available"/);
+
+    assert.match(css, /\.ccg-publisher-directory-disclosure__summary:focus-visible/);
+    assert.match(css, /\.ccg-publisher-directory-disclosure\[open\]/);
+    assert.doesNotMatch(css, /#publisherGrid\s*\{[^}]*display:\s*none/s, "the static directory is not hidden with CSS");
+});
+
 test("category and music runtimes opt into the shared directory shell", () => {
     const category = read("js/ccg-category-omega.js");
     const music = read("js/ccg-music-navigation.js");
