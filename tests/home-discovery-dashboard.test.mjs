@@ -55,3 +55,14 @@ test("featured gameplay video buttons deterministically start the embed", () => 
     assert.match(js, /playVideo\(player\)/);
     assert.doesNotMatch(js, /if \(hasVideo && iframe && isMobileDevice\)/);
 });
+
+test("secondary homepage destinations are available through native expandable details", () => {
+    const html = read("home.html");
+    const css = read("resources/css/home.css");
+    assert.match(html, /<details class="home-archive-extras">\s*<summary class="home-archive-extras__summary">/);
+    assert.match(html, /<div class="home-archive-extras__grid">/);
+    assert.ok(html.indexOf('href="/games/discover/"') < html.indexOf('<details class="home-archive-extras">'));
+    assert.ok(html.indexOf('href="/games/genres/"') > html.indexOf('<details class="home-archive-extras">'));
+    assert.match(css, /\.home-archive-extras__summary:focus-visible/);
+    assert.match(css, /\.home-archive-extras__grid/);
+});
