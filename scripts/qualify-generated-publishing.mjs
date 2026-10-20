@@ -64,11 +64,17 @@ function gh(args) {
 function api(endpoint) {
   return JSON.parse(gh(["api", endpoint]));
 }
-function checkFresh(repo, number, sha) {
+function checkFresh(repo, number, sha, expectedMainSha) {
   const pull = api("repos/" + repo + "/pulls/" + number);
   const main = api("repos/" + repo + "/git/ref/heads/main").object.sha;
-  if (!currentPullIsSafe(pull, sha, main)) {
-    throw new Error("PR head or main changed, or PR was closed. Leave generated PR open for fresh qualification.");
+  if (main !== expectedMainSha || !currentPullIsSafe(pull, sha, expectedMainSha)) {
+    throw new Error("PR head or pinned main changed, or PR was closed. Leave generated PR open for fresh qualification.");
+  }
+  // Head must contain the qualified main commit. A changed base or stale
+  // output branch must be reconciled and its checks rerun before release.
+  const ancestry = api("repos/" + repo + "/compare/" + expectedMainSha + "..." + sha);
+  if (ancestry.behind_by !== 0 || ancestry.merge_base_commit?.sha !== expectedMainSha) {
+    throw new Error("Generated head is behind pinned main. Leave PR open and reconcile/requalify.");
   }
   return pull;
 }
@@ -93,7 +99,8 @@ export async function qualifyAndMerge(url, branch) {
   if (!/^[a-f0-9]{40}$/.test(sha || "") || initial.head?.ref !== branch) {
     throw new Error("Generated PR head does not match expected output branch.");
   }
-  checkFresh(repo, number, sha);
+  const expectedMainSha = api("repos/" + repo + "/git/ref/heads/main").object.sha;
+  checkFresh(repo, number, sha, expectedMainSha);
   const baseline = new Map();
   for (const name of REQUIRED_VALIDATION_WORKFLOWS) {
     baseline.set(name, Math.max(0, ...latestRuns(repo, name, branch).map(r => r.id)));
@@ -115,7 +122,7 @@ export async function qualifyAndMerge(url, branch) {
   const passed = new Set();
   let approved = false;
   while (Date.now() < deadline) {
-    checkFresh(repo, number, sha);
+    checkFresh(repo, number, sha, expectedMainSha);
     for (const name of REQUIRED_VALIDATION_WORKFLOWS) {
       if (passed.has(name)) continue;
       const run = latestRuns(repo, name, branch).find(r =>
@@ -145,7 +152,7 @@ export async function qualifyAndMerge(url, branch) {
       ". Generated PR remains open; do not bypass the gate.");
   }
 
-  checkFresh(repo, number, sha);
+  checkFresh(repo, number, sha, expectedMainSha);
   if (!codeReviewPassed(prComments(repo, number), sha)) {
     throw new Error("Independent review no longer matches the generated head.");
   }
