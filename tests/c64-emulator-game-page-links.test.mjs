@@ -155,3 +155,8 @@ test("six additional full-title game pages link only to pinned emulator releases
   assert.match(linked("sid-meiers-pirates"), /game=pirates&amp;autoplay=1/);
   assert.match(linked("teenage-mutant-hero-turtles"), /game=archive-08639&amp;autoplay=1/);
 });
+
+test("two verified original C64 game-page release names resolve to exact hosted emulator IDs", () => {
+  assert.match(linked("he-man-and-the-masters-of-the-universe-the-ilearth-stone"), /game=archive-03945&amp;autoplay=1/);
+  assert.match(linked("summer-games"), /game=blast-1565&amp;autoplay=1/);
+});

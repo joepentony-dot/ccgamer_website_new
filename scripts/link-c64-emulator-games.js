@@ -181,6 +181,8 @@ const verifiedPageTitleAliases = new Map([
   ["the-wombles",["Wombles, The","owner-crt-more-womblesthe-eeeeb83dbe3e"]],
   ["the-transformers",["Transformers","owner-crt-more-transformers"]],
   ["the-trap-door",["Trap Door, The","owner-crt-more-trapdoorthe-f9e40ebe1021"]],
+  ["he-man-and-the-masters-of-the-universe-the-ilearth-stone",["He-Man and Masters of the Universe - The Ilearth Stone","archive-03945"]],
+  ["summer-games",["Summer Games 1","blast-1565"]],
   ["the-faces-of-haarne",["Faces of Haarne","owner-crt-more-facesofhaarne-3f498ebd2059"]],
   ["the-sentinel",["Sentinel, The","owner-crt-more-sentinel-the"]],
   ["the-snowman",["Snowman, The","archive-07817"]],
