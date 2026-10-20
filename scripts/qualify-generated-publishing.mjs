@@ -64,6 +64,12 @@ function gh(args) {
 function api(endpoint) {
   return JSON.parse(gh(["api", endpoint]));
 }
+function git(args) {
+  return execFileSync("git", args, {
+    encoding: "utf8", stdio: ["ignore", "pipe", "inherit"],
+    timeout: 120000, maxBuffer: 20 * 1024 * 1024
+  }).trim();
+}
 function checkFresh(repo, number, sha, expectedMainSha) {
   const pull = api("repos/" + repo + "/pulls/" + number);
   const main = api("repos/" + repo + "/git/ref/heads/main").object.sha;
@@ -156,30 +162,38 @@ export async function qualifyAndMerge(url, branch) {
   if (!codeReviewPassed(prComments(repo, number), sha)) {
     throw new Error("Independent review no longer matches the generated head.");
   }
-  // Explicit expected-head SHA and squash method. GitHub rejects a moved head.
-  const result = JSON.parse(gh(["api", "-X", "PUT",
-    "repos/" + repo + "/pulls/" + number + "/merge",
-    "-f", "sha=" + sha, "-f", "merge_method=squash"]));
-  if (result.merged !== true || !/^[a-f0-9]{40}$/.test(result.sha || "")) {
-    throw new Error("GitHub did not confirm guarded squash merge.");
+  // Form a true merge commit with the reviewed output head as a parent.
+  // Its first parent is the pinned main commit; a normal, non-force push
+  // is an atomic fast-forward-only update and will fail if main moved.
+  // GitHub REST pull/merge guards the PR head only, not the qualified base.
+  const tree = git(["rev-parse", sha + "^{tree}"]);
+  const mergeSha = git(["-c", "user.name=github-actions[bot]",
+    "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+    "commit-tree", tree, "-p", expectedMainSha, "-p", sha,
+    "-m", "Merge validated generated game archive output (#" + number + ")"]);
+  if (!/^[a-f0-9]{40}$/.test(mergeSha)) {
+    throw new Error("Could not create the exact-parent publishing merge commit.");
   }
-  console.log("[publishing-guard] Merged exact head " + sha +
-    " into main as " + result.sha);
-  // Preserve the old publisher's --delete-branch housekeeping, but delete
-  // only the exact, already-merged generated ref. A moved ref is retained.
-  // Cleanup failure must never suppress the confirmed deployment handoff.
+  // Reject any raced main update: the merge commit has expectedMainSha as
+  // its first parent, and cannot fast-forward a different newer main head.
+  git(["push", "origin", mergeSha + ":refs/heads/main"]);
+  const published = api("repos/" + repo + "/git/ref/heads/main").object.sha;
+  if (published !== mergeSha) {
+    throw new Error("Atomic push did not produce the expected published commit; stop deployment.");
+  }
+  console.log("[publishing-guard] Published exact verified head " + sha +
+    " via atomic, no-force merge " + mergeSha);
+  // Generated branch housekeeping uses an atomic explicit SHA lease, not
+  // a GET followed by unguarded DELETE. A changed branch is retained.
+  // Branch cleanup failure must not suppress the already-confirmed release.
   try {
-    const ref = api("repos/" + repo + "/git/ref/heads/" + branch);
-    if (ref.object?.sha === sha) {
-      gh(["api", "-X", "DELETE", "repos/" + repo + "/git/refs/heads/" + branch]);
-      console.log("[publishing-guard] Deleted merged generated ref " + branch);
-    } else {
-      console.warn("::warning::[publishing-guard] Generated ref changed; retaining it.");
-    }
+    git(["push", "--force-with-lease=refs/heads/" + branch + ":" + sha,
+      "origin", ":refs/heads/" + branch]);
+    console.log("[publishing-guard] Deleted merged generated ref " + branch);
   } catch (error) {
-    console.warn("::warning::[publishing-guard] Merged successfully; branch cleanup was skipped: " + error.message);
+    console.warn("::warning::[publishing-guard] Published successfully; lease-protected branch cleanup was skipped: " + error.message);
   }
-  return result;
+  return {merged:true, sha:mergeSha};
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
