@@ -58,6 +58,17 @@ test("generated output requires an open exact-head PR with fresh main", () => {
   assert.equal(currentPullIsSafe(p, SHA, "d".repeat(40)), false);
 });
 
+test("qualified generated output must preserve pinned main and its ancestry", () => {
+  const source = fs.readFileSync("scripts/qualify-generated-publishing.mjs", "utf8");
+  assert.match(source, /const expectedMainSha = api\(/);
+  assert.match(source, /main !== expectedMainSha/);
+  assert.match(source, /currentPullIsSafe\(pull, sha, expectedMainSha\)/);
+  assert.match(source, /compare\/" \+ expectedMainSha \+ "\.\.\." \+ sha/);
+  assert.match(source, /ancestry\.behind_by !== 0/);
+  assert.match(source, /ancestry\.merge_base_commit\?\.sha !== expectedMainSha/);
+  assert.match(source, /checkFresh\(repo, number, sha, expectedMainSha\)/);
+});
+
 test("authoritative publishing executes the guard before dispatching deployment", () => {
   const workflow = fs.readFileSync(".github/workflows/games-publishing.yml", "utf8");
   assert.match(workflow, /node --test tests\/generated-publishing-guard\.test\.mjs/);
