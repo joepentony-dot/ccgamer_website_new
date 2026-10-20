@@ -80,14 +80,20 @@ test("publishing-integrity CI executes guard tests on guard-only pull requests",
   assert.match(workflow, /run: node --test tests\/generated-publishing-guard\.test\.mjs/);
 });
 
-test("successful merge deletes only its unchanged generated ref", () => {
+test("guarded publication uses fast-forward-only main update and atomic cleanup lease", () => {
   const source = fs.readFileSync("scripts/qualify-generated-publishing.mjs", "utf8");
-  const mergeConfirmed = source.indexOf('if (result.merged !== true');
-  const refLease = source.indexOf('ref.object?.sha === sha');
-  const deleteRef = source.indexOf('"DELETE"');
-  assert.ok(mergeConfirmed > 0 && refLease > mergeConfirmed && deleteRef > refLease);
-  assert.match(source, /git\/refs\/heads\/"/);
-  assert.match(source, /branch cleanup was skipped/);
+  const ancestry = source.indexOf("checkFresh(repo, number, sha, expectedMainSha);", source.indexOf("const deadline"));
+  const commit = source.indexOf('"commit-tree"');
+  const publish = source.indexOf('mergeSha + ":refs/heads/main"');
+  const confirmation = source.indexOf('published !== mergeSha');
+  const cleanup = source.indexOf('"--force-with-lease=refs/heads/" + branch + ":" + sha');
+  assert.ok(ancestry >= 0 && commit > ancestry && publish > commit &&
+    confirmation > publish && cleanup > confirmation);
+  assert.match(source, /"commit-tree", tree, "-p", expectedMainSha, "-p", sha/);
+  assert.match(source, /git\(\["push", "origin", mergeSha \+ ":refs\/heads\/main"\]\)/);
+  assert.doesNotMatch(source, /gh\(\["api", "-X", "PUT"/);
+  assert.doesNotMatch(source, /"DELETE", "repos\//);
+  assert.match(source, /lease-protected branch cleanup was skipped/);
 });
 
 test("authoritative publishing executes the guard before dispatching deployment", () => {
