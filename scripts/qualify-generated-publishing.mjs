@@ -165,6 +165,20 @@ export async function qualifyAndMerge(url, branch) {
   }
   console.log("[publishing-guard] Merged exact head " + sha +
     " into main as " + result.sha);
+  // Preserve the old publisher's --delete-branch housekeeping, but delete
+  // only the exact, already-merged generated ref. A moved ref is retained.
+  // Cleanup failure must never suppress the confirmed deployment handoff.
+  try {
+    const ref = api("repos/" + repo + "/git/ref/heads/" + branch);
+    if (ref.object?.sha === sha) {
+      gh(["api", "-X", "DELETE", "repos/" + repo + "/git/refs/heads/" + branch]);
+      console.log("[publishing-guard] Deleted merged generated ref " + branch);
+    } else {
+      console.warn("::warning::[publishing-guard] Generated ref changed; retaining it.");
+    }
+  } catch (error) {
+    console.warn("::warning::[publishing-guard] Merged successfully; branch cleanup was skipped: " + error.message);
+  }
   return result;
 }
 
