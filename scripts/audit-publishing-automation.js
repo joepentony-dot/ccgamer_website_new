@@ -50,7 +50,13 @@ requireText(gamesPublishing, '"games/games.json"', "Reliable Games Publishing do
 requireText(gamesPublishing, "node scripts/rebuild-games.js", "Reliable Games Publishing does not run the authoritative rebuild command.");
 requireText(gamesPublishing, "sitemap.xml", "Reliable Games Publishing does not stage the root sitemap index.");
 requireText(gamesPublishing, "sitemap-*.xml", "Reliable Games Publishing does not stage child sitemaps.");
-requireText(gamesPublishing, "gh pr merge", "Reliable Games Publishing does not merge its generated-output PR.");
+requireText(gamesPublishing, "node scripts/qualify-generated-publishing.mjs", "Reliable Games Publishing bypasses the generated-output independent qualification gate.");
+const gamePublishMergeGuard = read("scripts/qualify-generated-publishing.mjs");
+requireText(gamePublishMergeGuard, "REQUIRED_VALIDATION_WORKFLOWS", "Generated-output guard does not dispatch independent checks.");
+requireText(gamePublishMergeGuard, "codeReviewPassed", "Generated-output guard does not enforce exact-head independent review.");
+requireText(gamePublishMergeGuard, "currentPullIsSafe", "Generated-output guard lacks fresh-main and head safeguards.");
+requireText(gamePublishMergeGuard, "executedRunPassed", "Generated-output guard may accept zero-job or unsuccessful checks.");
+requireText(gamePublishMergeGuard, "\"merge_method=squash\"", "Generated-output guard no longer uses a guarded squash merge.");
 requirePattern(gamesPublishing, /permissions:\s*[\s\S]*?actions:\s*write\b/, "Reliable Games Publishing cannot dispatch the authoritative Pages deployment.");
 requireText(gamesPublishing, "gh workflow run deploy-github-pages-omega-stable.yml", "Reliable Games Publishing does not dispatch Omega Pages after merging generated output.");
 requireText(gamesPublishing, "--ref main", "Reliable Games Publishing does not dispatch Omega Pages from the merged main branch.");
