@@ -69,6 +69,17 @@ test("qualified generated output must preserve pinned main and its ancestry", ()
   assert.match(source, /checkFresh\(repo, number, sha, expectedMainSha\)/);
 });
 
+test("publishing-integrity CI executes guard tests on guard-only pull requests", () => {
+  const workflow = fs.readFileSync(".github/workflows/publishing-automation-integrity.yml", "utf8");
+  const prStart = workflow.indexOf("  pull_request:");
+  const prEnd = workflow.indexOf("  workflow_dispatch:", prStart);
+  assert.ok(prStart > 0 && prEnd > prStart);
+  const prFilter = workflow.slice(prStart, prEnd);
+  assert.match(prFilter, /scripts\/qualify-generated-publishing\.mjs/);
+  assert.match(prFilter, /tests\/generated-publishing-guard\.test\.mjs/);
+  assert.match(workflow, /run: node --test tests\/generated-publishing-guard\.test\.mjs/);
+});
+
 test("authoritative publishing executes the guard before dispatching deployment", () => {
   const workflow = fs.readFileSync(".github/workflows/games-publishing.yml", "utf8");
   assert.match(workflow, /node --test tests\/generated-publishing-guard\.test\.mjs/);
