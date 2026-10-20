@@ -80,6 +80,16 @@ test("publishing-integrity CI executes guard tests on guard-only pull requests",
   assert.match(workflow, /run: node --test tests\/generated-publishing-guard\.test\.mjs/);
 });
 
+test("successful merge deletes only its unchanged generated ref", () => {
+  const source = fs.readFileSync("scripts/qualify-generated-publishing.mjs", "utf8");
+  const mergeConfirmed = source.indexOf('if (result.merged !== true');
+  const refLease = source.indexOf('ref.object?.sha === sha');
+  const deleteRef = source.indexOf('"DELETE"');
+  assert.ok(mergeConfirmed > 0 && refLease > mergeConfirmed && deleteRef > refLease);
+  assert.match(source, /git\/refs\/heads\/"/);
+  assert.match(source, /branch cleanup was skipped/);
+});
+
 test("authoritative publishing executes the guard before dispatching deployment", () => {
   const workflow = fs.readFileSync(".github/workflows/games-publishing.yml", "utf8");
   assert.match(workflow, /node --test tests\/generated-publishing-guard\.test\.mjs/);
