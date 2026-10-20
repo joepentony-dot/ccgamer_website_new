@@ -35,6 +35,8 @@ on:
       - "sitemap.xml"
       - "sitemap-*.xml"
       - "scripts/audit-publishing-automation.js"
+      - "scripts/qualify-generated-publishing.mjs"
+      - "tests/generated-publishing-guard.test.mjs"
       - "scripts/audit-sitemap-indexability.js"
       - "scripts/generate-sitemaps.js"
       - "scripts/validate-sitemaps.js"
