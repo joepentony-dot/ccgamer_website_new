@@ -1,6 +1,6 @@
 /* Homepage Fourthwall merchandise promotion.
    Uses no vendor script, iframe, live product request or promotional image.
-   Scoped near the top of the homepage before archive discovery. */
+   Scoped below the homepage archive discovery section. */
 html[data-ccg-page="home"] .home-merch-promo {
     --home-merch-accent-rgb: 187, 112, 249;
     box-sizing: border-box;

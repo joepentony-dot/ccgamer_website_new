@@ -54,12 +54,19 @@ test('games archive exposes useful static discovery routes', () => {
   ];
   expected.forEach((href) => assert.match(games, new RegExp(`href="${href.replaceAll('/', '\\/')}"`)));
   assert.match(games, /Find C64 &amp; Amiga Games Your Way/);
+  assert.match(games, /Use the search and filters above/);
+  const activeStyle = fs.readFileSync('resources/css/games-hero-fix.css', 'utf8');
+  assert.match(activeStyle, /gamesSearchInput:not\(:placeholder-shown\)\) \.games-omega-discovery,/,
+    'an active search hides optional discovery so matching games stay directly below filters');
+  assert.match(activeStyle, /games-omega-discovery \+ \.ccg-omega-divider/,
+    'the divider after optional discovery is also hidden during an active search');
+  assert.match(generator, /Use the search and filters above/);
   assert.match(games, /Search &amp; Filter C64 and Amiga Games/);
   assert.match(games, /data-games-archive-shortcuts="true"/);
   assert.match(games, /data-games-downloads-shortcut="true"/);
   assert.match(games, /<details class="games-omega-discovery__more">/);
   assert.match(games, /<summary class="games-omega-discovery__summary">/);
-  assert.ok(games.indexOf('games-omega-discovery__summary') < games.indexOf('gamesSearchInput'), 'search follows the compact route disclosure');
+  assert.ok(games.indexOf('gamesSearchInput') < games.indexOf('games-omega-discovery__summary'), 'search precedes the optional archive route disclosure');
   assert.match(generator, /games-omega-discovery__summary/);
 });
 

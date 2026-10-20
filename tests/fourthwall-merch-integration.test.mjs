@@ -7,7 +7,7 @@ const ROOT = path.resolve(import.meta.dirname, "..");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
 const SHOP = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
 
-test("homepage displays the official Fourthwall shop after the hero and before archive discovery", () => {
+test("homepage displays the official Fourthwall shop after primary game discovery and before community", () => {
     const html = read("home.html");
     const start = html.indexOf('class="home-merch-promo"');
     const hero = html.indexOf('class="home-hero home-hero--streamlined"');
@@ -15,10 +15,10 @@ test("homepage displays the official Fourthwall shop after the hero and before a
     const community = html.indexOf('class="home-community-latest ccg-chapter"');
     const support = html.indexOf('class="home-support-art home-cta-upgrade"');
 
-    assert.ok(hero >= 0 && start > hero && archive > start,
-        "merch must appear soon after the homepage hero, before archive discovery");
-    assert.ok(community > archive && support > community,
-        "moving merch must not displace the community or support sections");
+    assert.ok(hero >= 0 && archive > hero && start > archive,
+        "game discovery must appear before the optional merchandise promotion");
+    assert.ok(community > start && support > community,
+        "merchandise stays above the community and optional support without moving those sections");
     assert.equal((html.match(/class="home-merch-promo"/g) || []).length, 1,
         "only one merchandise panel should exist");
     assert.ok(html.includes('rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style"'),
@@ -27,7 +27,7 @@ test("homepage displays the official Fourthwall shop after the hero and before a
     const panel = html.slice(html.lastIndexOf("<section", start), html.indexOf("</section>", start) + "</section>".length);
     assert.match(panel, /<section[^>]*class="home-merch-promo"[^>]*>\s*<a class="home-merch-promo__link"/);
     assert.doesNotMatch(panel, /class="home-merch-promo ccg-chapter"/,
-        "the early merch panel must not depend on chapter reveal animations");
+        "merchandise remains accessible without chapter reveal animations");
     assert.ok(panel.includes('href="' + SHOP + '"'));
     assert.ok(panel.indexOf("home-merch-promo__title") > panel.indexOf("home-merch-promo__link"));
     assert.ok(panel.indexOf("home-merch-promo__action") < panel.lastIndexOf("</a>"));

@@ -203,7 +203,7 @@ function stripApprovedFourthwallMerch(html, role) {
   }
   const normalizedPanel = matches[0][0].replace(/\s+/g, " ").trim();
   // Accept only the two exact historical full-panel designs in baseline, and
-  // require the identical early-placement design in the candidate homepage.
+  // require the identical approved panel design at its current location.
   const approvedPanels = role === "baseline"
     ? [APPROVED_FOURTHWALL_PANEL_PREVIOUS, APPROVED_FOURTHWALL_PANEL, APPROVED_FOURTHWALL_PANEL_EARLY]
     : [APPROVED_FOURTHWALL_PANEL_EARLY];
@@ -213,8 +213,10 @@ function stripApprovedFourthwallMerch(html, role) {
   if (role === "current") {
     const hero = source.indexOf('class="home-hero home-hero--streamlined"');
     const archive = source.indexOf("<!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->");
-    if (hero < 0 || archive < 0 || !(matches[0].index > hero && matches[0].index < archive)) {
-      fail("The visible merch panel must appear after the homepage hero and before archive discovery.");
+    const community = source.indexOf('class="home-community-latest ccg-chapter"');
+    if (hero < 0 || archive < 0 || community < 0
+        || !(matches[0].index > hero && matches[0].index > archive && matches[0].index < community)) {
+      fail("The visible merch panel must follow archive discovery and precede the community section.");
     }
   }
   source = source.replace(styleMatches[0][0], " ");

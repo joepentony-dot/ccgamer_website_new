@@ -349,3 +349,41 @@ test("Music Hub composer search stays above A–Z without obscuring letter group
     assert.match(generator, /composer-discovery__search-wrap[\s\S]*?composer-discovery-accordion/,
         "regeneration retains the same search-then-accordion order");
 });
+
+
+test("homepage prioritises playable archive discovery before optional merchandise", () => {
+    const html = read("home.html");
+    const hero = html.indexOf('<section class="home-hero home-hero--streamlined"');
+    const discovery = html.indexOf('class="home-section home-section--highlights');
+    const emulator = html.indexOf('class="home-c64-emulator-promo"');
+    const merch = html.indexOf('<section class="home-merch-promo"');
+    const community = html.indexOf('<section class="home-community-latest');
+    assert.ok(hero >= 0 && hero < discovery && discovery < emulator && emulator < merch && merch < community,
+        "hero and core archive links come before the merchandise CTA, community follows merchandise");
+    assert.equal(html.match(/class="home-merch-promo"/g)?.length, 1, "merchandise CTA exists exactly once");
+    assert.equal(html.match(/class="home-c64-emulator-promo"/g)?.length, 1, "emulator CTA stays unique");
+    assert.match(html.slice(merch, community), /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/);
+    assert.match(read("resources/css/home-fourthwall-merch.css"), /Scoped below the homepage archive discovery/);
+});
+
+test("Games Archive search comes before optional browse destinations and results remain reachable", () => {
+    const html = read("games/index.html");
+    const hero = html.indexOf('class="games-hero"');
+    const search = html.indexOf('class="games-tools ccg-chapter"');
+    const browse = html.indexOf('class="games-omega-discovery ccg-chapter"');
+    const library = html.indexOf('class="games-library ccg-chapter"');
+    assert.ok(hero >= 0 && hero < search && search < browse && browse < library,
+        "search and filters appear immediately after the hero, before optional browsing and results");
+    assert.equal(html.match(/id="gamesSearchInput"/g)?.length, 1);
+    assert.equal(html.match(/id="gamesYearSelect"/g)?.length, 1);
+    assert.equal(html.match(/id="gamesAccordion"/g)?.length, 1);
+    assert.match(html.slice(search, browse), /data-system-filter="c64"/);
+    assert.match(html.slice(search, browse), /data-system-filter="amiga"/);
+    assert.match(html.slice(browse, library), /<details class="games-omega-discovery__more">/);
+    for (const route of ["/games/genres/", "/games/publishers/", "/games/collections/", "/games/years/", "/games/developers/"]) {
+        assert.ok(html.slice(browse, library).includes('href="' + route + '"'),
+            "all browse destinations retained: " + route);
+    }
+    assert.match(html.slice(library), /id="gamesStaticFallback"/,
+        "crawlable game links remain below the rendered library");
+});
