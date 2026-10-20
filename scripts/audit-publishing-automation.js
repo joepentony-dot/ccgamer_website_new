@@ -56,7 +56,9 @@ requireText(gamePublishMergeGuard, "REQUIRED_VALIDATION_WORKFLOWS", "Generated-o
 requireText(gamePublishMergeGuard, "codeReviewPassed", "Generated-output guard does not enforce exact-head independent review.");
 requireText(gamePublishMergeGuard, "currentPullIsSafe", "Generated-output guard lacks fresh-main and head safeguards.");
 requireText(gamePublishMergeGuard, "executedRunPassed", "Generated-output guard may accept zero-job or unsuccessful checks.");
-requireText(gamePublishMergeGuard, "\"merge_method=squash\"", "Generated-output guard no longer uses a guarded squash merge.");
+requireText(gamePublishMergeGuard, "\"commit-tree\"", "Generated-output guard does not create the pinned-parent merge commit.");
+requireText(gamePublishMergeGuard, "refs/heads/main", "Generated-output guard does not atomically push a checked commit to main.");
+requireText(gamePublishMergeGuard, "--force-with-lease=refs/heads/", "Generated-output guard no longer uses an atomic lease for branch cleanup.");
 requirePattern(gamesPublishing, /permissions:\s*[\s\S]*?actions:\s*write\b/, "Reliable Games Publishing cannot dispatch the authoritative Pages deployment.");
 requireText(gamesPublishing, "gh workflow run deploy-github-pages-omega-stable.yml", "Reliable Games Publishing does not dispatch Omega Pages after merging generated output.");
 requireText(gamesPublishing, "--ref main", "Reliable Games Publishing does not dispatch Omega Pages from the merged main branch.");
