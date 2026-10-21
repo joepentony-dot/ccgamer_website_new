@@ -1094,9 +1094,14 @@ function releaseHeldMatrixBinding(event, heldKey) {
   if (!binding) return false;
 
   heldMatrixKeys.delete(heldKey);
-  // If the same C64 key is also held on the touchscreen, leave it pressed.
-  if (![...touchFunctionKeyHolds.values()].some(held =>
-      held.col === binding.col && held.row === binding.row)) {
+  // Multiple physical host keys (notably Tab/F9 RUN/STOP) and on-screen
+  // keys may point to the SAME C64 CIA matrix position. Releasing one host
+  // key must not release the shared C64 key until every holder is gone.
+  const stillHeldPhysically = [...heldMatrixKeys.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnTouchscreen = [...touchFunctionKeyHolds.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  if (!stillHeldPhysically && !stillHeldOnTouchscreen) {
     machine.cia1.setKey(binding.col, binding.row, false);
   }
   if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
