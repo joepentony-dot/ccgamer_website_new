@@ -1164,7 +1164,12 @@ function handleC64Key(event, pressed) {
       !event.getModifierState?.("AltGraph") &&
       ["KeyJ", "KeyW"].includes(event.code)) {
     event.preventDefault();
-    if (pressed && !event.repeat) {
+    if (!pressed) {
+      // J/W may have been pressed as an ordinary C64 key or keyboard-joystick
+      // direction BEFORE Alt went down. Never swallow their release edges.
+      if (keyboardJoystickKeys.delete(event.code)) applyJoystickInput();
+      releaseHeldMatrixBinding(event, event.code || `key:${event.key}`);
+    } else if (!event.repeat) {
       if (event.code === "KeyJ") swapJoystickPort();
       else toggleWarpLoad();
     }
