@@ -25,14 +25,15 @@ test("homepage displays the temporary CCG merchandise relaunch notice after prim
         "the existing non-blocking stylesheet contract must remain intact");
     assert.ok(html.includes('<noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css"'));
     const panel = html.slice(html.lastIndexOf("<section", start), html.indexOf("</section>", start) + "</section>".length);
-    assert.match(panel, /<section[^>]*class="home-merch-promo"[^>]*>\s*<div class="home-merch-promo__link"/);
+    assert.match(panel, /<section[^>]*class="home-merch-promo"[^>]*>\s*<a class="home-merch-promo__link"/);
     assert.doesNotMatch(panel, /class="home-merch-promo ccg-chapter"/,
         "merchandise remains accessible without chapter reveal animations");
     assert.match(panel, /New CCG Merch Coming Soon/);
     assert.match(panel, /better products and better prices/);
     assert.match(panel, />\s*COMING SOON\s*</);
-    assert.doesNotMatch(panel, /<a\b|href=|target=|data-ccg-revenue-link=/i,
-        "the temporary notice must not send visitors to an empty storefront");
+    assert.match(panel, /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/);
+    assert.match(panel, /target="_blank" rel="noopener noreferrer"/);
+    assert.match(panel, /data-ccg-revenue-link="fourthwall-merch"/);
     assert.ok(panel.includes('id="home-merch-title"'));
     assert.doesNotMatch(panel, /<iframe|<script|<img|fetch\(/i);
 });
@@ -40,7 +41,7 @@ test("merch promotion leaves canonical homepage navigation untouched", () => {
     const html = read("home.html");
     const core = read("js/ccg-nav-core.js");
     assert.doesNotMatch(core, /fourthwall\.com/);
-    assert.equal(html.split(SHOP).length - 1, 0, "the temporary homepage notice should not link to the storefront");
+    assert.equal(html.split(SHOP).length - 1, 1, "the coming-soon panel should link once to the Fourthwall storefront");
     assert.ok(html.includes('<li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>'));
 });
 
