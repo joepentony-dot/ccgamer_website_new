@@ -47,6 +47,7 @@ const measure = [
  'var box=s=>{var r=e(s).getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,width:r.width,height:r.height};};',
  'var show=s=>{var v=e(s);return v && getComputedStyle(v).display!=="none" && v.getBoundingClientRect().height>1;};',
  'return { vw:document.documentElement.clientWidth, sw:document.documentElement.scrollWidth,',
+ 'layout:getComputedStyle(e(".ccg-c64-workspace")).display,',
  'touch:matchMedia("(pointer: coarse)").matches, stage:box(".ccg-c64-screen-stage"),',
  'bezel:box(".ccg-c64-screen-bezel"), console:box(".ccg-c64-console"),',
  'deck:box(".ccg-c64-control-stack"), vault:box(".ccg-c64-panel--vault"),', 
@@ -95,11 +96,27 @@ try {
   await sleep(1900);
 
   for(const [width,height,touch] of [[320,680,true],[360,780,true],[390,844,true],
-    [844,390,true],[1440,900,false],[1620,900,false]]){
+    [760,900,true],[844,390,true],[959,900,false],[960,900,false],
+    [1000,900,false],[1100,900,false],[1101,900,false],[1280,900,false],
+    [1440,900,false],[1620,900,false],
+    [960,900,true],[1000,900,true],[1100,900,true],[1000,600,true]]){
     await emulate(session,width,height,touch);
     const r=await evaluate(session,measure);
     assert(r.vw>0 && r.sw-r.vw<5,
       "C64 document horizontal overflow at "+width+"x"+height+": "+(r.sw-r.vw));
+    // The later min-width:960 desktop rules used to undo max-width:1100's
+    // block layout, squeezing the picture beside a fixed 500px control deck.
+    if(width<=1100){
+      assert.equal(r.layout,"block","Constrained workspace must stack at "+width);
+      assert(r.deck.top>=r.console.bottom-2,
+        "Controls must follow the console at "+width+"x"+height);
+      assert(Math.abs(r.deck.left-r.console.left)<=2 &&
+        Math.abs(r.deck.width-r.console.width)<=2,
+        "Stacked console and controls must share the full row at "+width);
+    }else{
+      assert.equal(r.layout,"grid","Wide desktop must retain its grid at "+width);
+      assert(r.deck.left>=r.console.right-2,"Desktop Omega columns changed");
+    }
     if(touch){
       assert(r.libraryInConsole, "Mobile game library must sit directly below the C64 display");
       assert(r.touch && r.joy && r.keys && r.romTransfer,
@@ -113,10 +130,11 @@ try {
     }else{
       assert(!r.libraryInConsole, "Desktop library must remain in its original control deck");
       assert(!r.joy&&!r.keys&&!r.libraryInConsole,"Desktop layout unexpectedly gained mobile buttons");
-      assert(r.deck.left>=r.console.right-2,"Desktop Omega columns changed");
       // The former CSS grid-column:auto bug squeezed Game Vault to ~1/6
       // of this deck and stretched the page into a huge blank column.
-      assert(r.vault.width >= r.deck.width - 6,
+      // Below 960px the existing three-column deck gives the vault two columns.
+      const minimumVaultWidth = width>=960 ? r.deck.width : r.deck.width*0.65;
+      assert(r.vault.width >= minimumVaultWidth - 6,
         "Save / Resume collapsed into a narrow desktop grid column at " +
         width + "x" + height + " (vault=" + r.vault.width + " deck=" + r.deck.width + ")");
       assert(Math.abs(r.vault.left - r.deck.left) <= 5,
@@ -127,6 +145,25 @@ try {
         "Advanced media tools must follow the Save / Resume panel rather than overlap it");
     }
     console.log("PASS C64 viewport "+width+"x"+height+(touch?" touch":" desktop"));
+  }
+
+  for(const width of [960,1000,1100,1101,1440]){
+    await emulate(session,width,900,false);
+    await evaluate(session,'document.querySelector("[data-size-toggle]").click();return true;');
+    await sleep(250);
+    const expanded=await evaluate(session,measure);
+    assert.equal(expanded.layout,"block","Expanded display must use its own row at "+width);
+    assert(expanded.deck.top>=expanded.console.bottom-2,
+      "Expanded display must remain above controls at "+width);
+    assert(expanded.bezel.width<=expanded.stage.width+3 &&
+      expanded.bezel.height<=expanded.stage.height+3,
+      "Expanded display must fit its stage at "+width);
+    await evaluate(session,'document.querySelector("[data-size-toggle]").click();return true;');
+    await sleep(250);
+    const normal=await evaluate(session,measure);
+    assert.equal(normal.layout,width<=1100?"block":"grid",
+      "Normal display must restore the responsive layout at "+width);
+    console.log("PASS C64 expanded/normal display at "+width);
   }
 
 

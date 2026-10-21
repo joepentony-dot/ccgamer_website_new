@@ -13,7 +13,7 @@
 //   Backspace/Delete → INST/DEL    F9 → RUN/STOP    F10 → Commodore
 //   F11 → CLR/HOME    F12 → RESTORE (NMI, handled in main.js, NOT in matrix)
 export const KEY_MAP = {
-  // No Tab: the C64 has none, so Tab stays the browser's, moving focus.
+  // While the emulator is running, host Tab is C64 RUN/STOP (F9 also works).
   'Backspace':     [0, 0], 'Delete':       [0, 0],
   'Enter':         [0, 1], 'ArrowRight':   [0, 2],
   'F7':            [0, 3], 'F1':           [0, 4],
@@ -42,7 +42,7 @@ export const KEY_MAP = {
   'Digit2':        [7, 3], 'Space':        [7, 4],
   'F10':           [7, 5], // F10 = Commodore
   'KeyQ':          [7, 6],
-  'F9':            [7, 7], // F9 = RUN/STOP
+  'F9':            [7, 7], 'Tab': [7, 7], // RUN/STOP
   // Note: Escape is intentionally NOT mapped — plain ESC stays free for
   //   browser fullscreen exit. RUN/STOP is on F9 instead.
   // Note: F12 = RESTORE → NMI, handled directly in main.js (it isn't a

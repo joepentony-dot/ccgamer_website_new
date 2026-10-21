@@ -240,12 +240,15 @@
 
     function buildGameIndex(games) {
         const byTitle = new Map();
+        const preparedGames = new Map();
         const byToken = new Map();
         const list = Array.isArray(games) ? games : [];
 
         list.forEach((game) => {
             const seenTokens = new Set();
-            gameCandidates(game).forEach((key) => {
+            const candidates = gameCandidates(game);
+            preparedGames.set(game, candidates.map(prepareTitle));
+            candidates.forEach((key) => {
                 const bucket = byTitle.get(key) || [];
                 if (!bucket.includes(game)) bucket.push(game);
                 byTitle.set(key, bucket);
@@ -260,7 +263,7 @@
             });
         });
 
-        return { games: list, byTitle, byToken };
+        return { games: list, byTitle, byToken, preparedGames };
     }
 
     function tokenSet(value) {
@@ -338,6 +341,41 @@
         return best;
     }
 
+
+    // An index is a snapshot of the catalogue. Normalise each variant once,
+    // keeping the same canonical/compact/token pipeline as scoreGame.
+    function prepareTitle(value) {
+        const canonical = canonicalTitle(value);
+        return { canonical, compact: compact(canonical), tokens: tokenSet(canonical) };
+    }
+
+    function scoreIndexedGame(request, entry, game, index) {
+        const requestedSystem = systemKey(entry?.system);
+        const candidateSystem = systemKey(game?.system || game?.platform);
+        const adjustment = requestedSystem && candidateSystem === requestedSystem ? 24
+            : requestedSystem && candidateSystem && candidateSystem !== requestedSystem ? -55 : 0;
+        const candidates = index.preparedGames?.get(game) || gameCandidates(game).map(prepareTitle);
+        let best = -Infinity;
+        for (const candidate of candidates) {
+            let score;
+            if (request.canonical === candidate.canonical) score = 120;
+            else if (request.compact === candidate.compact) score = 116;
+            else if (request.canonical.length >= 8 && candidate.canonical.length >= 8
+                && (request.canonical.includes(candidate.canonical) || candidate.canonical.includes(request.canonical))) score = 94;
+            else {
+                let shared = 0;
+                request.tokens.forEach(token => { if (candidate.tokens.has(token)) shared += 1; });
+                const tokens = shared / Math.max(request.tokens.size, candidate.tokens.size, 1);
+                // Even perfect edit similarity cannot qualify this variant.
+                // Preserve rounding and system adjustment at the existing 92 gate.
+                if (Math.round(tokens * 66 + 34) + adjustment < 92) continue;
+                score = Math.round(tokens * 66 + similarity(request.canonical, candidate.canonical) * 34);
+            }
+            best = Math.max(best, score + adjustment);
+        }
+        return best;
+    }
+
     function findGame(entry, indexOrGames) {
         const index = indexOrGames?.byTitle
             ? indexOrGames
@@ -366,8 +404,9 @@
         }
         const fuzzyPool = tokenCandidates.size ? Array.from(tokenCandidates) : index.games;
 
+        const request = prepareTitle(entry?.title);
         const ranked = fuzzyPool
-            .map((game) => ({ game, score: scoreGame(entry, game) }))
+            .map((game) => ({ game, score: scoreIndexedGame(request, entry, game, index) }))
             .filter((item) => item.score >= 92)
             .sort((a, b) => b.score - a.score || String(a.game?.title || "").localeCompare(String(b.game?.title || ""), "en-GB"));
 

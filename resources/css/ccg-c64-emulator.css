@@ -1634,7 +1634,6 @@ body.ccg-c64-lab-body.is-rom-setup-open { overflow: hidden; }
   }
 
   .ccg-c64-workspace {
-    display: grid;
     width: min(1880px, calc(100% - 0.8rem));
     grid-template-columns: minmax(0, 1.5fr) minmax(500px, 1fr);
     gap: 0.5rem;
