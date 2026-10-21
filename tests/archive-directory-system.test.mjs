@@ -362,7 +362,11 @@ test("homepage prioritises playable archive discovery before optional merchandis
         "hero and core archive links come before the merchandise CTA, community follows merchandise");
     assert.equal(html.match(/class="home-merch-promo"/g)?.length, 1, "merchandise CTA exists exactly once");
     assert.equal(html.match(/class="home-c64-emulator-promo"/g)?.length, 1, "emulator CTA stays unique");
-    assert.match(html.slice(merch, community), /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/);
+    const merchPanel = html.slice(merch, community);
+    assert.match(merchPanel, /New CCG Merch Coming Soon/);
+    assert.match(merchPanel, />\s*COMING SOON\s*</);
+    assert.doesNotMatch(merchPanel, /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/,
+        "temporary homepage notice should not link visitors to the archived catalogue");
     assert.match(read("resources/css/home-fourthwall-merch.css"), /Scoped below the homepage archive discovery/);
 });
 
