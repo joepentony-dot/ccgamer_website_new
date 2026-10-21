@@ -116,3 +116,37 @@ test("desktop shortcut handler protects native input and AltGr", async () => {
   assert.match(handler, /else if \(!event\.repeat\)/);
   assert.match(handler, /event\.preventDefault\(\)/);
 });
+
+test("held F9 and Tab aliases retain RUN/STOP until both are released", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { runInNewContext } = await import("node:vm");
+  const appSource = readFileSync(new URL("../js/ccg-c64/app.js", import.meta.url), "utf8");
+  const start = appSource.indexOf("function releaseHeldMatrixBinding(event, heldKey)");
+  const end = appSource.indexOf("function usesNativeKeyboard(target)", start);
+  assert.ok(start >= 0 && end > start, "release helper must be present");
+
+  const cia = new CIA(1);
+  const context = {
+    machine: { cia1: cia },
+    heldMatrixKeys: new Map(),
+    touchFunctionKeyHolds: new Map(),
+    inputStatus: null,
+  };
+  runInNewContext(appSource.slice(start, end), context);
+  const [col, row] = KEY_MAP.F9;
+  context.heldMatrixKeys.set("Tab", { col, row });
+  context.heldMatrixKeys.set("F9", { col, row });
+  cia.setKey(col, row, true);
+
+  assert.equal(context.releaseHeldMatrixBinding({ shiftKey: false }, "Tab"), true);
+  assert.equal(cia.isKeyDown(col, row), true, "F9 must keep RUN/STOP held after Tab releases");
+  assert.equal(context.releaseHeldMatrixBinding({ shiftKey: false }, "F9"), true);
+  assert.equal(cia.isKeyDown(col, row), false, "RUN/STOP must release after the last host key");
+
+  // Existing touch-held keys are independent of physical host key release.
+  context.touchFunctionKeyHolds.set("touch-stop", { col, row });
+  context.heldMatrixKeys.set("F9", { col, row });
+  cia.setKey(col, row, true);
+  context.releaseHeldMatrixBinding({ shiftKey: false }, "F9");
+  assert.equal(cia.isKeyDown(col, row), true, "touch-held RUN/STOP must remain pressed");
+});
