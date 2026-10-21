@@ -1148,6 +1148,11 @@ function handleC64Key(event, pressed) {
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
     nativeActivation)) return;
 
+  // Plain Tab is C64 RUN/STOP, but preserve Shift+Tab and Ctrl+Tab browser
+  // navigation so keyboard-only users can leave the emulator.
+  if (event.code === "Tab" &&
+      (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) return;
+
   // VICE-style emulator shortcuts (key-down edge only). Keep native text
   // inputs, setup dialogs, AltGr characters and system combinations intact.
   // Key-up must also be consumed, so the browser doesn't shift focus.
