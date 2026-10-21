@@ -106,6 +106,7 @@ test("desktop shortcut handler protects native input and AltGr", async () => {
   assert.match(handler, /usesTextInput\(document\.activeElement\)/);
   assert.match(handler, /event\.code === "Tab" &&/);
   assert.match(handler, /event\.shiftKey \|\| event\.ctrlKey \|\| event\.altKey \|\| event\.metaKey/);
+  assert.match(handler, /!pressed && releaseHeldMatrixBinding\(event, "Tab"\)/);
   assert.match(handler, /event\.getModifierState\?\.\("AltGraph"\)/);
   assert.match(handler, /\["KeyJ", "KeyW"\]\.includes\(event\.code\)/);
   assert.match(handler, /event\.code === "KeyJ"\) swapJoystickPort\(\)/);
