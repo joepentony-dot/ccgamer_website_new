@@ -51,7 +51,9 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/games/discover/`,
         `${SITE_ORIGIN}/games/ccg-games/`,
         `${SITE_ORIGIN}/games/commodore-quest/`,
-        `${SITE_ORIGIN}/videos/`
+        `${SITE_ORIGIN}/videos/`,
+        // New independently verified documentary watch route, added to the static sitemap.
+        `${SITE_ORIGIN}/retro-specials/retro-games-real-prizes-porsche-swords-25000/`
     ])]
 ]);
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
