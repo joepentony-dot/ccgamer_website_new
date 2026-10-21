@@ -1094,9 +1094,17 @@ function releaseHeldMatrixBinding(event, heldKey) {
   if (!binding) return false;
 
   heldMatrixKeys.delete(heldKey);
-  // If the same C64 key is also held on the touchscreen, leave it pressed.
-  if (![...touchFunctionKeyHolds.values()].some(held =>
-      held.col === binding.col && held.row === binding.row)) {
+  // Multiple physical host keys (notably Tab/F9 RUN/STOP) and on-screen
+  // keys may point to the SAME C64 CIA matrix position. Releasing one host
+  // key must not release the shared C64 key until every holder is gone.
+  const stillHeldPhysically = [...heldMatrixKeys.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnTouchscreen = [...touchFunctionKeyHolds.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnMobileKeyboard = [...mobileVirtualHeld.values()].some(held =>
+    (held.col === binding.col && held.row === binding.row) ||
+    (binding.col === 1 && binding.row === 7 && held.shift));
+  if (!stillHeldPhysically && !stillHeldOnTouchscreen && !stillHeldOnMobileKeyboard) {
     machine.cia1.setKey(binding.col, binding.row, false);
   }
   if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
@@ -1147,6 +1155,34 @@ function handleC64Key(event, pressed) {
   if (pressed && (setup?.hidden === false ||
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
     nativeActivation)) return;
+
+  // Plain Tab is C64 RUN/STOP. Keep modified Tab combinations available
+  // for browser navigation, but ALWAYS release a previously-held plain Tab
+  // even if the user presses a modifier before the Tab key-up arrives.
+  if (event.code === "Tab" &&
+      (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
+    if (!pressed && releaseHeldMatrixBinding(event, "Tab")) event.preventDefault();
+    return;
+  }
+
+  // VICE-style emulator shortcuts (key-down edge only). Keep native text
+  // inputs, setup dialogs, AltGr characters and system combinations intact.
+  // Key-up must also be consumed, so the browser doesn't shift focus.
+  if (event.altKey && !event.ctrlKey && !event.metaKey &&
+      !event.getModifierState?.("AltGraph") &&
+      ["KeyJ", "KeyW"].includes(event.code)) {
+    event.preventDefault();
+    if (!pressed) {
+      // J/W may have been pressed as an ordinary C64 key or keyboard-joystick
+      // direction BEFORE Alt went down. Never swallow their release edges.
+      if (keyboardJoystickKeys.delete(event.code)) applyJoystickInput();
+      releaseHeldMatrixBinding(event, event.code || `key:${event.key}`);
+    } else if (!event.repeat) {
+      if (event.code === "KeyJ") swapJoystickPort();
+      else toggleWarpLoad();
+    }
+    return;
+  }
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
