@@ -557,5 +557,139 @@
       "guru-meditation-amiga",
       "sid-chip-story"
     ]
+  },
+  {
+    "id": "retro-games-real-prizes-porsche-swords-25000",
+    "slug": "retro-games-real-prizes-porsche-swords-25000",
+    "type": "retro-specials",
+    "title": "Retro Games That Offered a Porsche, Swords & £25,000! | C64, Spectrum & Amiga",
+    "youtubeId": "A-dBoNnuNzg",
+    "thumbnail": "https://img.youtube.com/vi/A-dBoNnuNzg/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 22,
+    "summary": "Real 1980s retro gaming competitions: a Porsche 924, £25,000 cash, Wilkinson swords, Egyptian holidays, a helicopter flight and the players who won.",
+    "description": "Back in the 1980s, buying a computer game could mean a chance to win a Porsche 924, £25,000 in cash, an engraved Wilkinson Sword, a holiday to Egypt or even a helicopter flight. This Cheeky Commodore Gamer documentary investigates the extraordinary real-world prizes offered with Commodore 64, ZX Spectrum and Amiga games, using original competition adverts, magazines, surviving prizes and accounts of the winners.\n\nFrom Hareraiser and its golden hare to Domark’s Eureka! £25,000 challenge, Quo Vadis, Spirit of the Stones and The Staff of Karnath, discover how ambitious treasure hunts became a selling point for 8-bit games. The investigation also covers Psytron, Kokotoni Wilf, Moon Cresta, William Wobbler, Lancelot, Murder on the Atlantic, Explora / Chrono Quest and Eye of Horus.\n\nHear the gruesome Friday the 13th cassette sound-effects competition, learn why Gladiator gave away real Wilkinson swords, and revisit the famous bugs of Jet Set Willy and the young Doomdark’s Revenge winner who telephoned Beyond Software from his headmaster’s office. The closing montage includes Splat!, the Ket Trilogy, Pimania’s golden sundial and Gyron’s Porsche competition.\n\nSome winners have been identified and their prizes photographed; other competition results remain unconfirmed. Watch the story, jump to individual chapters or follow the verified CCG game-page links for more background.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Retro Games That Offered a Porsche, Swords & £25,000! | C64, ZX Spectrum & Amiga | Cheeky Commodore Gamer",
+      "description": "Discover real 1980s C64, ZX Spectrum and Amiga game competitions offering a Porsche 924, £25,000, Wilkinson swords, holidays and a helicopter flight."
+    },
+    "created_at": "2026-10-21T00:00:00.000Z",
+    "tags": [
+      "C64",
+      "Commodore 64",
+      "Amiga",
+      "ZX Spectrum",
+      "retro-history",
+      "retro gaming competitions",
+      "gaming prizes",
+      "Porsche 924"
+    ],
+    "platforms": [
+      "C64",
+      "ZX Spectrum",
+      "Amiga"
+    ],
+    "featuredGameSlugs": [
+      "the-staff-of-karnath",
+      "friday-the-13th",
+      "jet-set-willy"
+    ],
+    "relatedSlugs": [
+      "c64-vs-zx-spectrum",
+      "zzap64-gold-medals-sizzlers-1985",
+      "favourite-arcade-games-c64-amiga-ports",
+      "50-essential-commodore-64-games"
+    ],
+    "chapters": [
+      {
+        "time": "00:00",
+        "title": "🎬 Introduction – When Retro Games Offered Real Prizes! Masquerade"
+      },
+      {
+        "time": "01:37",
+        "title": "💰 Hareraiser – The Infamous Treasure Hunt"
+      },
+      {
+        "time": "04:16",
+        "title": "🏆 Quo Vadis – The Big Money Competition"
+      },
+      {
+        "time": "06:24",
+        "title": "💷 Eureka! – The £25,000 Challenge"
+      },
+      {
+        "time": "08:41",
+        "title": "🔮 Spirit of the Stones – A Mystical Prize"
+      },
+      {
+        "time": "11:19",
+        "title": "🪄 The Staff of Karnath – Ultimate's Competition"
+      },
+      {
+        "time": "13:09",
+        "title": "🧠 Psytron – The Ultimate Computer Challenge"
+      },
+      {
+        "time": "14:50",
+        "title": "🪽 Kokotoni Wilf – Win a Prize from Elite!"
+      },
+      {
+        "time": "16:28",
+        "title": "🚀 Moon Cresta – Arcade Competition Prizes"
+      },
+      {
+        "time": "18:26",
+        "title": "🎭 William Wobbler – A Very Unusual Competition"
+      },
+      {
+        "time": "20:25",
+        "title": "🏆 Lancelot – The Legendary Treasure"
+      },
+      {
+        "time": "22:38",
+        "title": "🚢 Murder on the Atlantic – Solve the Mystery, Win $10,000!"
+      },
+      {
+        "time": "24:43",
+        "title": "⏳ Explora / Chrono Quest – Win a Holiday to Egypt!"
+      },
+      {
+        "time": "26:56",
+        "title": "🏺 Eye of Horus – Egypt or Blackpool?"
+      },
+      {
+        "time": "28:40",
+        "title": "🩸 Friday the 13th – Fake Blood & Colour Monitors!"
+      },
+      {
+        "time": "29:26",
+        "title": "❓ Friday the 13th - Audio Competition"
+      },
+      {
+        "time": "33:18",
+        "title": "⏩ Skip the Quiz – Continue the Documentary"
+      },
+      {
+        "time": "34:26",
+        "title": "⚔️ Gladiator – Win a Real Wilkinson Sword!"
+      },
+      {
+        "time": "37:32",
+        "title": "🚁 Jet Set Willy – Champagne, Helicopters & Bugs!"
+      },
+      {
+        "time": "38:36",
+        "title": "🏰 Doomdark's Revenge – The Schoolboy Who Won!"
+      },
+      {
+        "time": "41:05",
+        "title": "🎁 Closing Montage – Four More Incredible Prizes"
+      },
+      {
+        "time": "42:48",
+        "title": "👋 Final Thoughts – Did You Ever Win a Gaming Prize?"
+      }
+    ]
   }
 ]

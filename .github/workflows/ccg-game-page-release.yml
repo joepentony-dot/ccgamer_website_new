@@ -1,0 +1,47 @@
+name: CCG Game Page Release Safeguards
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/deploy-github-pages-omega-stable.yml'
+      - '.github/workflows/ccg-game-page-release.yml'
+      - 'scripts/ccg_game_page_release_audit.py'
+      - 'scripts/link-c64-emulator-games.js'
+      - 'scripts/normalize-public-header-shell*.js'
+      - 'tests/test_ccg_game_page_release_audit.py'
+      - 'tests/game-page-release-deployment.test.mjs'
+      - 'tests/qualify-pages-staging.mjs'
+      - 'games/*/index.html'
+      - 'games/games.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  staged-game-page-parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify fail-closed release regressions
+        run: |
+          python3 -m unittest discover -v -s tests -p test_ccg_game_page_release_audit.py
+          node --test tests/game-page-release-deployment.test.mjs
+      - name: Qualify exact Pages staging without publishing
+        run: node tests/qualify-pages-staging.mjs --run
+      - name: Confirm source and protected files were not mutated
+        run: git diff --exit-code
+      - name: Retain read-only game-page parity reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-game-page-release-qualification
+          path: ${{ runner.temp }}/ccg-game-page-release/
+          if-no-files-found: warn
