@@ -184,9 +184,13 @@ function stripApprovedHomeFooterCssDeferral(html) {
 // Owner-approved temporary CCG merchandise relaunch notice.
 // This does not permit unrelated homepage edits.
 const APPROVED_FOURTHWALL_PANEL_PREVIOUS = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <a class=\"home-merch-promo__action\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </a> </section>";
+const APPROVED_FOURTHWALL_PANEL_LIVE = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <a class=\"home-merch-promo__link\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <span class=\"home-merch-promo__action\" aria-hidden=\"true\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </span> </a> </section>";
 const APPROVED_FOURTHWALL_PANEL = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <div class=\"home-merch-promo__link\" role=\"status\" aria-label=\"New Cheeky Commodore Gamer merchandise range coming soon\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">NEW CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">New CCG Merch Coming Soon</h2> <p class=\"home-merch-promo__description\">The previous range has been retired while a new line of original CCG merchandise is designed, with better products and better prices. Watch this space.</p> </div> <span class=\"home-merch-promo__action\" aria-hidden=\"true\"> COMING SOON </span> </div> </section>";
 // The repositioned version keeps the exact reviewed panel content, but is
 // visible early and does not rely on the chapter reveal animation.
+const APPROVED_FOURTHWALL_PANEL_LIVE_EARLY = APPROVED_FOURTHWALL_PANEL_LIVE.replace(
+  'class="home-merch-promo ccg-chapter"', 'class="home-merch-promo"'
+);
 const APPROVED_FOURTHWALL_PANEL_EARLY = APPROVED_FOURTHWALL_PANEL.replace(
   'class="home-merch-promo ccg-chapter"', 'class="home-merch-promo"'
 );
@@ -205,7 +209,7 @@ function stripApprovedFourthwallMerch(html, role) {
   // Accept only the two exact historical full-panel designs in baseline, and
   // require the identical approved panel design at its current location.
   const approvedPanels = role === "baseline"
-    ? [APPROVED_FOURTHWALL_PANEL_PREVIOUS, APPROVED_FOURTHWALL_PANEL, APPROVED_FOURTHWALL_PANEL_EARLY]
+    ? [APPROVED_FOURTHWALL_PANEL_PREVIOUS, APPROVED_FOURTHWALL_PANEL_LIVE, APPROVED_FOURTHWALL_PANEL_LIVE_EARLY, APPROVED_FOURTHWALL_PANEL, APPROVED_FOURTHWALL_PANEL_EARLY]
     : [APPROVED_FOURTHWALL_PANEL_EARLY];
   if (!approvedPanels.includes(normalizedPanel)) {
     fail("Homepage Fourthwall merchandise panel differs from the approved design or destination.");
@@ -221,7 +225,7 @@ function stripApprovedFourthwallMerch(html, role) {
   }
   source = source.replace(styleMatches[0][0], " ");
   source = source.replace(matches[0][0], " ");
-  source = source.replace(/<!-- CCG merchandise: lightweight external checkout, no third-party script or embed\. -->/g, "");
+  source = source.replace(/<!-- CCG merchandise: (?:lightweight external checkout, no third-party script or embed|temporary relaunch notice while the new range is being designed)\. -->/g, "");
   return source;
 }
 
