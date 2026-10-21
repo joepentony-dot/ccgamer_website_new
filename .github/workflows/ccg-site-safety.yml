@@ -218,6 +218,9 @@ jobs:
       - name: Run Zzap award data audit
         run: node scripts/audit-zzap64-awards.js
 
+      - name: Preserve all Zzap matcher results and fuzzy score boundaries
+        run: node --test tests/zzap64-matcher-regression.test.mjs
+
       - name: Run Zzap progressive loading audit
         run: node scripts/audit-zzap64-performance.js
 

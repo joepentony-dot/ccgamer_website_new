@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CIA, KEY_MAP } from "../js/ccg-c64/core/cia.js";
+import { CIA, KEY_MAP, CHAR_MAP } from "../js/ccg-c64/core/cia.js";
 
 const keys = ["F1", "F3", "F5", "F7"];
 
@@ -149,4 +149,65 @@ test("held F9 and Tab aliases retain RUN/STOP until both are released", async ()
   cia.setKey(col, row, true);
   context.releaseHeldMatrixBinding({ shiftKey: false }, "F9");
   assert.equal(cia.isKeyDown(col, row), true, "touch-held RUN/STOP must remain pressed");
+});
+
+test("actual handler releases modified Tab and pre-held J/W, guards shortcuts and native editing", async () => {
+  const { readFileSync } = await import('node:fs');
+  const { runInNewContext } = await import('node:vm');
+  const app = readFileSync(new URL('../js/ccg-c64/app.js', import.meta.url), 'utf8');
+  const cia = new CIA(1);
+  const context = {
+    machine: { cia1: cia }, running: true, setup: { hidden: true },
+    document: { activeElement: null }, KEY_MAP, CHAR_MAP, inputStatus: null,
+    heldMatrixKeys: new Map(), touchFunctionKeyHolds: new Map(),
+    keyboardJoystickKeys: new Set(), keyboardJoystickEnabled: true,
+    KEYBOARD_JOYSTICK_MASKS: { KeyW: 1 }, pollGamepad() {},
+    applyJoystickInput() { context.joy = context.keyboardJoystickKeys.has('KeyW'); },
+    swapJoystickPort() { context.swaps = (context.swaps || 0) + 1; },
+    toggleWarpLoad() { context.warps = (context.warps || 0) + 1; },
+  };
+  runInNewContext(app.slice(app.indexOf('function physicalMatrixBinding(event)'), app.indexOf('function pollGamepad()')), context);
+  const send = (code, pressed, modifiers = {}) => {
+    const event = { code, key: code.startsWith('Key') ? code.slice(3).toLowerCase() : code,
+      preventDefault() { this.prevented = true; }, ...modifiers };
+    context.handleC64Key(event, pressed);
+    return event;
+  };
+  for (const modifier of ['shiftKey', 'ctrlKey', 'altKey', 'metaKey']) {
+    send('Tab', true);
+    assert(cia.isKeyDown(7, 7));
+    send('Tab', false, { [modifier]: true });
+    assert(!cia.isKeyDown(7, 7), modifier + ' must not strand RUN/STOP');
+    assert(!context.heldMatrixKeys.has('Tab'));
+    assert(!send('Tab', true, { [modifier]: true }).prevented);
+  }
+  for (const code of ['KeyJ', 'KeyW']) {
+    send(code, true);
+    assert(cia.isKeyDown(...KEY_MAP[code]));
+    send(code, false, { altKey: true });
+    assert(!cia.isKeyDown(...KEY_MAP[code]));
+    assert(!context.keyboardJoystickKeys.has(code));
+  }
+  assert.equal(context.joy, false);
+  for (const code of ['KeyJ', 'KeyW']) {
+    send(code, true, { altKey: true });
+    send(code, true, { altKey: true, repeat: true });
+    send(code, false, { altKey: true });
+    assert(!cia.isKeyDown(...KEY_MAP[code]));
+  }
+  assert.equal(context.swaps, 1);
+  assert.equal(context.warps, 1);
+  send('KeyJ', true, { altKey: true, ctrlKey: true, getModifierState: () => true });
+  send('KeyJ', false, { altKey: true, ctrlKey: true, getModifierState: () => true });
+  assert.equal(context.swaps, 1, 'AltGr must never invoke shortcuts');
+  context.document.activeElement = { closest() { return { tagName: 'INPUT', type: 'text' }; } };
+  assert(!send('Tab', true).prevented);
+  assert(!send('KeyW', true, { altKey: true }).prevented);
+  assert(!cia.isKeyDown(7, 7));
+  assert.equal(context.warps, 1);
+  context.document.activeElement = null;
+  context.setup.hidden = false;
+  assert(!send('Tab', true).prevented);
+  assert(!send('KeyJ', true, { altKey: true }).prevented);
+  assert.equal(context.swaps, 1);
 });
