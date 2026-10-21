@@ -130,6 +130,7 @@ test("held F9 and Tab aliases retain RUN/STOP until both are released", async ()
     machine: { cia1: cia },
     heldMatrixKeys: new Map(),
     touchFunctionKeyHolds: new Map(),
+    mobileVirtualHeld: new Map(),
     inputStatus: null,
   };
   runInNewContext(appSource.slice(start, end), context);
@@ -149,6 +150,22 @@ test("held F9 and Tab aliases retain RUN/STOP until both are released", async ()
   cia.setKey(col, row, true);
   context.releaseHeldMatrixBinding({ shiftKey: false }, "F9");
   assert.equal(cia.isKeyDown(col, row), true, "touch-held RUN/STOP must remain pressed");
+
+  context.touchFunctionKeyHolds.clear();
+  context.mobileVirtualHeld.set('mobile-stop', { col, row });
+  context.heldMatrixKeys.set('Tab', { col, row });
+  cia.setKey(col, row, true);
+  context.releaseHeldMatrixBinding({ shiftKey: false }, 'Tab');
+  assert.equal(cia.isKeyDown(col, row), true, 'mobile virtual RUN/STOP must survive physical Tab release');
+  context.heldMatrixKeys.set('F9', { col, row });
+  context.releaseHeldMatrixBinding({ shiftKey: false }, 'F9');
+  assert.equal(cia.isKeyDown(col, row), true, 'mobile virtual RUN/STOP must survive physical F9 release');
+  // Run the real virtual release synchroniser, which owns the final release.
+  runInNewContext(appSource.slice(appSource.indexOf('function syncMobileMatrixBit(col, row)'),
+    appSource.indexOf('function releaseMobileVirtualKeys()')), context);
+  context.mobileVirtualHeld.clear();
+  context.syncMobileMatrixBit(col, row);
+  assert.equal(cia.isKeyDown(col, row), false, 'last virtual holder release must clear RUN/STOP');
 });
 
 test("actual handler releases modified Tab and pre-held J/W, guards shortcuts and native editing", async () => {
@@ -160,6 +177,7 @@ test("actual handler releases modified Tab and pre-held J/W, guards shortcuts an
     machine: { cia1: cia }, running: true, setup: { hidden: true },
     document: { activeElement: null }, KEY_MAP, CHAR_MAP, inputStatus: null,
     heldMatrixKeys: new Map(), touchFunctionKeyHolds: new Map(),
+    mobileVirtualHeld: new Map(),
     keyboardJoystickKeys: new Set(), keyboardJoystickEnabled: true,
     KEYBOARD_JOYSTICK_MASKS: { KeyW: 1 }, pollGamepad() {},
     applyJoystickInput() { context.joy = context.keyboardJoystickKeys.has('KeyW'); },

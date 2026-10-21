@@ -1101,7 +1101,10 @@ function releaseHeldMatrixBinding(event, heldKey) {
     held.col === binding.col && held.row === binding.row);
   const stillHeldOnTouchscreen = [...touchFunctionKeyHolds.values()].some(held =>
     held.col === binding.col && held.row === binding.row);
-  if (!stillHeldPhysically && !stillHeldOnTouchscreen) {
+  const stillHeldOnMobileKeyboard = [...mobileVirtualHeld.values()].some(held =>
+    (held.col === binding.col && held.row === binding.row) ||
+    (binding.col === 1 && binding.row === 7 && held.shift));
+  if (!stillHeldPhysically && !stillHeldOnTouchscreen && !stillHeldOnMobileKeyboard) {
     machine.cia1.setKey(binding.col, binding.row, false);
   }
   if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
