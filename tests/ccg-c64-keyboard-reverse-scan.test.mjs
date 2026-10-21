@@ -111,6 +111,8 @@ test("desktop shortcut handler protects native input and AltGr", async () => {
   assert.match(handler, /\["KeyJ", "KeyW"\]\.includes\(event\.code\)/);
   assert.match(handler, /event\.code === "KeyJ"\) swapJoystickPort\(\)/);
   assert.match(handler, /else toggleWarpLoad\(\)/);
-  assert.match(handler, /if \(pressed && !event\.repeat\)/);
+  assert.match(handler, /keyboardJoystickKeys\.delete\(event\.code\)/);
+  assert.match(handler, /releaseHeldMatrixBinding\(event, event\.code \|\|/);
+  assert.match(handler, /else if \(!event\.repeat\)/);
   assert.match(handler, /event\.preventDefault\(\)/);
 });
