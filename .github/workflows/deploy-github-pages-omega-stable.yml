@@ -104,7 +104,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/prepare-seo-game-routes.js --output-root _site
+          # The canonical 666 game pages were already generated, media-linked,
+          # editorially upgraded and verified by Reliable Games Publishing.
+          # NEVER regenerate these HTML files from games/game.html during Pages
+          # staging: doing so loses approved emulator CTAs, researched SEO,
+          # magazine reviews, rating badges and deferred video metadata.
+          # Keep the existing publisher-owned HTML from the rsync staging step.
+          test -f _site/games/chuckie-egg/index.html
           node scripts/prepare-seo-genre-links.js --root _site
           node scripts/generate-retro-pages.js --root _site
 
@@ -126,6 +132,19 @@ jobs:
           set -euo pipefail
           node scripts/normalize-public-header-shell.js --root _site
           node scripts/normalize-public-header-shell.js --root _site --check
+
+      - name: Fail closed on C64 emulator links and game-page SEO parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Compare every canonical game page AFTER the header normalizer and
+          # BEFORE uploading the GitHub Pages artifact. This is read-only.
+          # Also verify source/staged media against the approved C64 catalogue.
+          python3 scripts/ccg_game_page_release_audit.py \
+            --source . \
+            --staged _site \
+            --report-dir "$RUNNER_TEMP/ccg-game-page-release" \
+            --media-check
 
       - name: Verify staged public features
         shell: bash
@@ -429,6 +448,21 @@ jobs:
 
           echo "The deployment completed, but the canonical first-paint shell or another expected public feature was not visible after three minutes." >&2
           exit 1
+
+      - name: Verify served approved emulator CTAs on GitHub Pages
+        shell: bash
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          for slug in chuckie-egg friday-the-13th samurai-warrior-the-battles-of-usagi-yojimbo; do
+            body="$(curl --fail --silent --show-error --location --max-time 30 \
+              "${PAGE_URL%/}/games/${slug}/?deployment=${GITHUB_SHA}")"
+            if ! grep -Fq 'data-ccg-play-in-emulator="true"' <<< "$body"; then
+              echo "PUBLIC RELEASE FAILED: ${slug} lost its approved emulator button." >&2
+              exit 1
+            fi
+          done
 
       - name: Dispatch custom-domain navigation verification
         if: github.event_name == 'workflow_dispatch'
