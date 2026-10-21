@@ -1148,6 +1148,20 @@ function handleC64Key(event, pressed) {
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
     nativeActivation)) return;
 
+  // VICE-style emulator shortcuts (key-down edge only). Keep native text
+  // inputs, setup dialogs, AltGr characters and system combinations intact.
+  // Key-up must also be consumed, so the browser doesn't shift focus.
+  if (event.altKey && !event.ctrlKey && !event.metaKey &&
+      !event.getModifierState?.("AltGraph") &&
+      ["KeyJ", "KeyW"].includes(event.code)) {
+    event.preventDefault();
+    if (pressed && !event.repeat) {
+      if (event.code === "KeyJ") swapJoystickPort();
+      else toggleWarpLoad();
+    }
+    return;
+  }
+
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
 
