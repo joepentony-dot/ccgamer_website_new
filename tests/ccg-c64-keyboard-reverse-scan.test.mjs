@@ -71,3 +71,43 @@ test("multiple simultaneously held keys on one active row pull multiple columns 
   cia.setKey(2, 4, false);
   assert.equal(cia.read(0), 0xFF);
 });
+
+test("Tab and F9 share the original RUN/STOP key on both CIA scan directions", () => {
+  assert.deepEqual(KEY_MAP.Tab, KEY_MAP.F9);
+  assert.deepEqual(KEY_MAP.Tab, [7, 7]);
+
+  const cia = new CIA(1);
+  cia.write(0x02, 0xFF); // Port A selects columns
+  cia.write(0x03, 0);
+  cia.write(0, 0x7F); // Select column 7
+  cia.setKey(...KEY_MAP.Tab, true);
+  assert.equal(cia.read(1) & 0x80, 0, "Tab must register as C64 RUN/STOP");
+  cia.setKey(...KEY_MAP.Tab, false);
+  assert.notEqual(cia.read(1) & 0x80, 0, "RUN/STOP must release on Tab key-up");
+
+  cia.write(0x02, 0);
+  cia.write(0x03, 0xFF); // Port B selects rows
+  cia.write(1, 0x7F); // Select row 7
+  cia.setKey(...KEY_MAP.F9, true);
+  assert.equal(cia.read(0) & 0x80, 0, "F9 must remain mapped to RUN/STOP");
+  cia.setKey(...KEY_MAP.F9, false);
+  assert.notEqual(cia.read(0) & 0x80, 0, "F9 RUN/STOP must release");
+});
+
+test("desktop shortcut handler protects native input and AltGr", async () => {
+  const { readFileSync } = await import("node:fs");
+  const appSource = readFileSync(new URL("../js/ccg-c64/app.js", import.meta.url), "utf8");
+  const start = appSource.indexOf("function handleC64Key(event, pressed)");
+  const end = appSource.indexOf("function pollGamepad()", start);
+  assert.ok(start >= 0 && end > start, "keyboard handler must exist");
+  const handler = appSource.slice(start, end);
+
+  assert.match(handler, /usesTextInput\(event\.target\)/);
+  assert.match(handler, /usesTextInput\(document\.activeElement\)/);
+  assert.match(handler, /event\.getModifierState\?\.\("AltGraph"\)/);
+  assert.match(handler, /\["KeyJ", "KeyW"\]\.includes\(event\.code\)/);
+  assert.match(handler, /event\.code === "KeyJ"\) swapJoystickPort\(\)/);
+  assert.match(handler, /else toggleWarpLoad\(\)/);
+  assert.match(handler, /if \(pressed && !event\.repeat\)/);
+  assert.match(handler, /event\.preventDefault\(\)/);
+});
