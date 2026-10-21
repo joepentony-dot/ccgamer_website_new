@@ -40,7 +40,7 @@ test("merch promotion leaves canonical homepage navigation untouched", () => {
     const html = read("home.html");
     const core = read("js/ccg-nav-core.js");
     assert.doesNotMatch(core, /fourthwall\.com/);
-    assert.equal(html.split(SHOP).length - 1, 1, "only the full-panel link should point to Fourthwall");
+    assert.equal(html.split(SHOP).length - 1, 0, "the temporary homepage notice should not link to the storefront");
     assert.ok(html.includes('<li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>'));
 });
 
