@@ -1,4 +1,7 @@
-## 21 October 2026 — Responsive workspace repair (cloud candidate, not released)
+## 21 October 2026 — Emulator-button delivery through existing Pages workflow
+- Main `00dcc736c` includes released #2868 keyboard and #2870 layout. Owner-supplied Pages/SEO repair preserves publisher-completed game HTML instead of regenerating it during deployment; local copy audit retains all 446 verified C64 CTAs across 666 games with zero regressions. No emulator code/media/catalogue/layout changes or reintroduction of incomplete Summer Games. Existing #2866 link aliases remain a separate unmerged branch. Fresh deployment staging/browser/CI and approved review are pending; see `docs/ai-work/game-page-pages-release-20261021.md` for full evidence and safeguards.
+
+## 21 October 2026 — Responsive workspace repair (historical cloud candidate)
 
 - Fresh branch `fix/c64-responsive-workspace-20261021` starts at `origin/main` `47b8a3597f474e68a575e7d7d2879389ddb6b259`, which includes keyboard PR #2868 (`2865135e0`). Public GitHub open-PR inspection found #2867, #2866, #2853, #2852, #2828, #2816, #2813, #2778 and #2705; no competing workspace CSS repair. #2866 owns separate game-page links and #2867 a separate performance benchmark document.
 - Real Chromium 154 at 1000×900 reproduced a 479.19px console beside a fixed 500px control column. Removed only the redundant later `display: grid` in the `min-width:960px` workspace declaration: the original base grid still applies above 1100px and the existing `max-width:1100px` block layout now wins throughout its intended range. Public code cache v177 → v178. No emulator JavaScript, protected intro, media, catalogue or `games/games.json` changes.
