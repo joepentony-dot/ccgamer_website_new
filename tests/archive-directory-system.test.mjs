@@ -365,8 +365,8 @@ test("homepage prioritises playable archive discovery before optional merchandis
     const merchPanel = html.slice(merch, community);
     assert.match(merchPanel, /New CCG Merch Coming Soon/);
     assert.match(merchPanel, />\s*COMING SOON\s*</);
-    assert.doesNotMatch(merchPanel, /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/,
-        "temporary homepage notice should not link visitors to the archived catalogue");
+    assert.match(merchPanel, /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/,
+        "coming-soon panel should preserve the official Fourthwall destination");
     assert.match(read("resources/css/home-fourthwall-merch.css"), /Scoped below the homepage archive discovery/);
 });
 
