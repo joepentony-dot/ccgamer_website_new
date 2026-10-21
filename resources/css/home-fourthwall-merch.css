@@ -26,7 +26,7 @@ html[data-ccg-page="home"] .home-merch-promo__link {
     padding: clamp(14px, 2vw, 22px);
     color: inherit;
     text-decoration: none;
-    cursor: default;
+    cursor: pointer;
 }
 html[data-ccg-page="home"] .home-merch-promo:hover,
 html[data-ccg-page="home"] .home-merch-promo:focus-within {
