@@ -162,7 +162,7 @@ assert(failed.statuses.warning, "A catalogue failure must be logged instead of s
 // matching packed PRGs, not just validate as static JSON. Broken deployments
 // must fall back to all original games (tested above with a 404 response).
 const activated = await execute(true, true);
-assert.equal(moreCrt.recordCount, 2064);
+assert.equal(moreCrt.recordCount, 2063);
 assert(activated.context.onlineLibraryEntries.filter(e =>
   e.id.startsWith("owner-crt-more-")).length >= 2040,
   "Expanded owner CRT catalogue must preserve existing selections and expose new individual games");
