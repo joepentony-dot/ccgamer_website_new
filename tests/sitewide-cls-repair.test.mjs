@@ -70,7 +70,12 @@ test('secret Easter Egg overlay never takes ownership of the document scroll roo
   assert(start >= 0 && end > start, 'secret modal scroll ownership block must remain discoverable');
   const block = source.slice(start, end);
   assert.doesNotMatch(block, /document\.(?:body|documentElement)\.style\.overflow(?![A-Za-z_$])/);
+  const earlyNavigation = fs.readFileSync('js/ccg-nav-core.js', 'utf8');
+  assert.doesNotMatch(earlyNavigation, /:not\(\.ccg-secret-modal-open\)/,
+    'opening the secret modal must not change document scroll ownership');
   assert.match(block, /const scrollY\s*=\s*window\.scrollY/, 'record the actual scroll position');
+  assert.match(source, /if \(toggle\.dataset\.ccgNavToggleBound === "true"\) return;/,
+    'the mobile menu must not bind multiple click handlers');
   assert.match(block, /\bscrollY,\s*bodyMinHeight:/s, 'retain the saved scroll position in the modal lock');
 });
 

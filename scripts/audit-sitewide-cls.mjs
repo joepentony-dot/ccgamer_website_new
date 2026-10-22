@@ -114,6 +114,22 @@ try {
         null,
         { timeout: 3000 }
       );
+      const mobileMenuEvents = await page.evaluate(() => {
+        const button = document.querySelector('[data-ccg-nav-toggle]');
+        const navHeader = button?.closest('[data-ccg-header]');
+        const history = [];
+        const snapshot = (phase) => history.push({
+          phase,
+          expanded: button?.getAttribute('aria-expanded'),
+          open: navHeader?.classList.contains('ccg-header--nav-open'),
+          hidden: navHeader?.querySelector('[data-ccg-nav-drawer]')?.getAttribute('aria-hidden')
+        });
+        snapshot('before');
+        button?.addEventListener('click', () => { snapshot('target-click'); queueMicrotask(() => snapshot('click-microtask')); }, { once: true });
+        document.addEventListener('click', () => snapshot('document-click'), { once: true });
+        window.__ccgNavOpenAuditEvents = history;
+        return history;
+      });
       await navToggle.click();
       await page.waitForTimeout(180);
       const navState = await page.evaluate(() => {
@@ -136,7 +152,7 @@ try {
           panelRect: panel?.getBoundingClientRect().toJSON?.() || null
         };
       });
-      assert.equal(navState.expanded, 'true', `Mobile Menu toggle did not expand: ${JSON.stringify(navState)}`);
+      assert.equal(navState.expanded, 'true', `Mobile Menu toggle did not expand: ${JSON.stringify({ ...navState, events: mobileMenuEvents })}`);
       assert.equal(navState.drawerHidden, 'false', `Mobile navigation drawer stayed aria-hidden: ${JSON.stringify(navState)}`);
       assert(navState.headerClass.includes('ccg-header--nav-open'), `Mobile navigation header state did not open: ${JSON.stringify(navState)}`);
       await page.locator('.ccg-nav-drawer__panel').waitFor({ state: 'visible', timeout: 3000 });

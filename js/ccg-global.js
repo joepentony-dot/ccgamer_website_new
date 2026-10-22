@@ -2248,6 +2248,11 @@ if (IS_ADMIN_PATH) {
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
+        // The shared runtime can be requested twice by differing page shells.
+        // Never bind two toggles to the same button: the second would close
+        // the drawer immediately after the first opens it.
+        if (toggle.dataset.ccgNavToggleBound === "true") return;
+
         const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 1199;
 
         const cloneLink = (link, extraClasses = []) => {

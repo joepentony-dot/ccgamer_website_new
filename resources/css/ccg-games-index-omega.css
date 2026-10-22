@@ -46,7 +46,9 @@
     height: clamp(260px, 34vw, 520px);
     border-radius: 50%;
     background: radial-gradient(circle, rgba(var(--accent-rgb), 0.22), transparent 68%);
-    filter: blur(34px);
+    /* The radial gradient already provides the soft edge. A full-size
+       CSS blur re-rasterises this large layer during initial wheel input. */
+    filter: none;
     opacity: 0.86;
 }
 
