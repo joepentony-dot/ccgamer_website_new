@@ -23,12 +23,16 @@ on:
     paths:
       - "games/index.html"
       - "games/games.json"
+      - "games/games-search.json"
+      - "js/games-library.js"
       - "js/ccg-nav-fit.js"
       - "resources/css/ccg-nav-fit.css"
       - "resources/css/ccg-games-index-omega.css"
       - "scripts/upgrade-games-index.js"
       - "scripts/rebuild-games.js"
+      - "scripts/build-games.js"
       - "tests/games-index-omega.test.mjs"
+      - "tests/games-library-compact-data.test.mjs"
       - ".github/workflows/games-index-omega-validation.yml"
       - ".github/workflows/games-publishing.yml"
 
