@@ -3164,10 +3164,6 @@ body.ccg-is-mobile .home-hero__bg {
     text-transform: uppercase;
 }
 
-.ccg-secret-modal-open {
-    overflow: hidden;
-}
-
 @media (max-width: 720px) {
     .ccg-secret-list {
         columns: 1;
@@ -4451,7 +4447,6 @@ body.ccg-crt::before {
 }
 
 body.ccg-secret-modal-open {
-    overflow: hidden;
     overscroll-behavior: none;
     touch-action: auto;
 }
