@@ -155,3 +155,22 @@ test("six additional full-title game pages link only to pinned emulator releases
   assert.match(linked("sid-meiers-pirates"), /game=pirates&amp;autoplay=1/);
   assert.match(linked("teenage-mutant-hero-turtles"), /game=archive-08639&amp;autoplay=1/);
 });
+
+test("1988 Domark Star Wars page selects verified edition, never older cartridge", () => {
+  const page = c64Games.find(g => g.slug === "star-wars");
+  assert.equal(page?.year, 1988);
+  assert.ok(page?.credits?.publisher?.includes("Domark"));
+  const domark = direct.find(e => e.id === "owner-crt-more-starwars-1e41e83051d1");
+  assert.equal(domark?.approved, true);
+  assert.equal(domark?.format, "crt");
+  assert.equal(domark?.sha256,
+    "1e41e83051d1646a236f886ffb89294584f0f64496824b43e1479f9477bdc3e3");
+  const parker = direct.find(e => e.id === "owner-crt-star-wars");
+  assert.equal(parker?.bytes, 16464, "Preserve earlier Star Wars cartridge");
+  const bytes = fs.readFileSync("emulator/c64/media/cartridge-replacements/starwars-1e41e83051d1.crt");
+  assert.equal(bytes.length, 65728);
+  assert.ok(bytes.includes(Buffer.from("PUBLISHED BY DOMARK LIMITED")));
+  assert.ok(bytes.includes(Buffer.from("VEKTOR GRAFIX")));
+  assert.match(linked("star-wars"), /game=owner-crt-more-starwars-1e41e83051d1&amp;autoplay=1/);
+  assert.match(generator, /verifiedEditionSpecificMediaSelections/);
+});
