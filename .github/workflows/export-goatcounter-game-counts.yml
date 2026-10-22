@@ -1,0 +1,25 @@
+name: Export All CCG Game Views from GoatCounter
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "scripts/export-goatcounter-game-counts.py"
+      - ".github/workflows/export-goatcounter-game-counts.yml"
+permissions:
+  contents: read
+jobs:
+  export:
+    name: Retrieve all canonical game counters
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read full CCG game-page counts from public GoatCounter API
+        run: python3 scripts/export-goatcounter-game-counts.py --output goatcounter-game-views.csv
+      - name: Attach complete CSV for download
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-all-game-view-counts
+          path: goatcounter-game-views.csv
+          retention-days: 30
+          if-no-files-found: error
