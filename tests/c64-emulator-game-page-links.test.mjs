@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
+import { preferSelectedCartridges, selectVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
 
 const read = file => fs.readFileSync(file, "utf8");
 const games = JSON.parse(read("games/games.json"));
@@ -177,6 +178,55 @@ test("both original Turrican pages link to the existing owner-approved three-gam
   }
   assert.match(generator, /\["turrican",\["Turrican Trilogy","turrican-trilogy"\]\]/);
   assert.match(generator, /\["turrican-2-the-final-fight",\["Turrican Trilogy","turrican-trilogy"\]\]/);
+});
+
+test("Star Wars Domark deep link loads exact verified CRT, not the older visible winner", () => {
+  const parker = { id: "owner-crt-star-wars", title: "Star Wars", format: "crt",
+    approved: true, preferOverOtherFormats: true, bytes: 16464, sha256: "0".repeat(64) };
+  const domark = { id: "owner-crt-more-starwars-1e41e83051d1", title: "Star Wars",
+    format: "crt", approved: true, preferOverOtherFormats: true, bytes: 65728,
+    sha256: "1e41e83051d1646a236f886ffb89294584f0f64496824b43e1479f9477bdc3e3",
+    url: "/emulator/c64/media/cartridge-replacements/starwars-1e41e83051d1.crt" };
+  const elsewhere = { id: "elsewhere", title: "Different Game", format: "crt", approved: true };
+  const all = [parker, domark, elsewhere];
+  const visible = preferSelectedCartridges(all);
+  assert.equal(visible.find(e => e.title === "Star Wars")?.id, parker.id,
+    "Ordinary browsing still selects the earlier cartridge");
+  assert.equal(selectVerifiedExactCrtEdition(visible, all, "elsewhere"), visible,
+    "An unrelated deep link cannot modify catalogue priority");
+  const targeted = selectVerifiedExactCrtEdition(visible, all, domark.id);
+  assert.equal(targeted.length, visible.length, "Do not expose duplicate Star Wars rows");
+  assert.equal(targeted.find(e => e.title === "Star Wars")?.id, domark.id,
+    "Explicit, verified Domark deep link must actually select the requested media");
+  assert.equal(visible.find(e => e.title === "Star Wars")?.id, parker.id,
+    "Original visible catalogue is unchanged");
+  assert.equal(selectVerifiedExactCrtEdition(visible, [parker,
+    { ...domark, sha256: "f".repeat(64) }, elsewhere], domark.id), visible,
+    "Incorrect digest must fail closed rather than choosing a different Star Wars");
+  assert.equal(selectVerifiedExactCrtEdition(visible, [parker,
+    { ...domark, bytes: 16464 }, elsewhere], domark.id), visible,
+    "Wrong edition size must fail closed");
+  assert.equal(selectVerifiedExactCrtEdition(visible, [parker,
+    { ...domark, approved: false }, elsewhere], domark.id), visible,
+    "Unapproved edition must never load");
+  assert.equal(selectVerifiedExactCrtEdition(visible, [parker,
+    { ...domark, url: "https://outside.example/star-wars.crt" }, elsewhere], domark.id),
+    visible, "Unapproved host must never load");
+  assert.match(c64App, /onlineLibraryEntries = selectVerifiedExactCrtEdition\(/,
+    "Emulator runtime must apply exact-edition selection before autoplay");
+  assert.match(linked("star-wars"),
+    /game=owner-crt-more-starwars-1e41e83051d1&amp;autoplay=1/);
+  assert.match(generator, /game\.slug === "star-wars"/);
+  const record = direct.find(e => e.id === domark.id);
+  assert.equal(record?.approved, true);
+  assert.equal(record?.format, "crt");
+  assert.equal(record?.bytes, 65728);
+  assert.equal(record?.sha256, domark.sha256);
+  assert.equal(record?.url, domark.url);
+  const bytes = fs.readFileSync("emulator/c64/media/cartridge-replacements/starwars-1e41e83051d1.crt");
+  assert.equal(bytes.length, 65728);
+  assert.ok(bytes.includes(Buffer.from("PUBLISHED BY DOMARK LIMITED")));
+  assert.ok(bytes.includes(Buffer.from("VEKTOR GRAFIX")));
 });
 
 test("Kobyashi Naru spelling maps only to approved Kobayashi Naru cartridge", () => {
