@@ -132,12 +132,15 @@ test("public counter runtime counts one shared session event and each canonical 
   assert.match(runtime, /document\.documentElement\.getAttribute\("data-ccg-page"\) !== "single-game"/);
   assert.match(runtime, /result\.count/);
   assert.match(runtime, /encodeURIComponent\(path\)\s*\+\s*"\.json"/);
-  assert.match(runtime, /fetchPublicCount\(SESSION_EVENT,\s*homeCount\)/);
+  assert.match(runtime, /fetchPublicCount\(HISTORICAL_TOTAL_PATH,\s*homeCount\)/);
+  assert.match(runtime, /fetchPublicCount\(SESSION_EVENT,\s*hourlyCount\)/);
+  assert.match(runtime, /HISTORICAL_TOTAL_PATH\s*=\s*"TOTAL"/);
+  assert.match(runtime, /hourlyCount\.id = "ccg-hourly-visitor-count"/);
   assert.match(runtime, /fetchPublicCount\(path,\s*count\)/);
   assert.match(runtime, /footer\.appendChild\(badge\)/);
   assert.doesNotMatch(global, /GOATCOUNTER_API_TOKEN|api\/v0\/stats\/total|Authorization:/);
   assert.match(home, /id="ccg-visit-count"/);
-  assert.match(runtime, /homeLabel\.textContent = "Archive visits"/);
+  assert.match(runtime, /homeLabel\.textContent = "Total archive visits"/);
   assert.match(css, /\.ccg-page--single-game \.ccg-footer--game > \.ccg-game-views/);
 });
 
