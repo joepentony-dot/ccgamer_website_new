@@ -15,6 +15,7 @@
 
   var COUNTER_BASE = "https://cheekycommodoregamer.goatcounter.com/counter/";
   var SESSION_EVENT = "ccg-archive-session";
+  var HISTORICAL_TOTAL_PATH = "TOTAL";
   var SESSION_KEY = "ccg-archive-hourly-visit-v1";
   var SESSION_WINDOW_MS = 60 * 60 * 1000;
   var STARTED = false;
@@ -152,9 +153,35 @@
         homeLabel.textContent = "Archive visits";
         homeLabel.title = "Approximate visitor sessions across the archive, at most one per browser per rolling hour. Not distinct lifetime people.";
       }
-      // This event began with the new counter. Historical pageviews cannot be
-      // retrospectively translated into unique visitors.
-      fetchPublicCount(SESSION_EVENT, homeCount);
+      // The original historical site total remains accessible through GoatCounter.
+      // Do not label this as lifetime unique people: TOTAL is the site's
+      // cumulative recorded activity (including events).
+      if (homeLabel) {
+        homeLabel.textContent = "Total archive visits";
+        homeLabel.title = "GoatCounter's historic site-wide visit total, including recorded events. Not unique individual people.";
+      }
+      fetchPublicCount(HISTORICAL_TOTAL_PATH, homeCount);
+
+      // Separate, truthfully labelled metric: one visit per browser per
+      // rolling hour since this custom event was introduced. The historical
+      // TOTAL cannot be reclassified retrospectively into hourly visitors.
+      var counterWrap = homeCount.closest(".ccg-footer__counter-wrap");
+      if (counterWrap && !document.getElementById("ccg-hourly-visitor-count")) {
+        var hourly = document.createElement("div");
+        hourly.className = "ccg-footer__hourly-visitors";
+        hourly.title = "Cumulative one-visit-per-browser-per-rolling-hour sessions since this metric began. Not lifetime unique people.";
+        var hourlyLabel = document.createElement("span");
+        hourlyLabel.className = "ccg-footer__hourly-label";
+        hourlyLabel.textContent = "1-hour visitor sessions";
+        var hourlyCount = document.createElement("span");
+        hourlyCount.className = "ccg-footer__hourly-number";
+        hourlyCount.id = "ccg-hourly-visitor-count";
+        hourlyCount.textContent = "—";
+        hourly.appendChild(hourlyLabel);
+        hourly.appendChild(hourlyCount);
+        counterWrap.appendChild(hourly);
+        fetchPublicCount(SESSION_EVENT, hourlyCount);
+      }
     }
 
     addGameCounter();
