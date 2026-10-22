@@ -3169,3 +3169,26 @@ function setupFooterSignatureRotator() {
     });
 
 })();
+
+/* ================================================================
+   GOATCOUNTER DISPLAY FAILSAFE — SHARED PUBLIC RUNTIME
+   The public GitHub Pages branch build can publish source HTML instead
+   of the staged copy. Every CCG public game and the home page already
+   include ccg-global.js, so load the display runtime from this shared
+   entrypoint even if the staged HTML tag was omitted.
+   This does not send any pageviews or duplicate tracking scripts.
+================================================================ */
+(function ccgEnsureVisitorMetrics() {
+    "use strict";
+    if (typeof document === "undefined") return;
+    const path = String(window.location.pathname || "/");
+    if (/^\/(?:admin|auth)(?:\/|$)/i.test(path)) return;
+    if (document.documentElement.getAttribute("data-ccg-page") === "intro") return;
+    if (document.querySelector('script[data-ccg-visitor-metrics]')) return;
+
+    const script = document.createElement("script");
+    script.src = "/js/ccg-visitor-metrics.js?v=20261022-counter-display-fix";
+    script.async = true;
+    script.setAttribute("data-ccg-visitor-metrics", "shared-loader");
+    (document.head || document.documentElement).appendChild(script);
+})();

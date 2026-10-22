@@ -221,3 +221,61 @@ test("hourly archive event is once per browser per rolling hour across pages", (
     assert.equal(hit.no_session, true);
   }
 });
+
+
+test("shared-loader on branch-published HTML recovers visible counters", () => {
+  const shared = fs.readFileSync(path.join(root, "js/ccg-global.js"), "utf8");
+  const home = fs.readFileSync(path.join(root, "home.html"), "utf8");
+  const game = fs.readFileSync(path.join(root, "games/chuckie-egg/index.html"), "utf8");
+  assert.ok(home.includes('src="js/ccg-global.js"'), "home loads the shared fallback");
+  assert.ok(game.includes('src="/js/ccg-global.js"'), "canonical game loads the shared fallback");
+  assert.match(shared, /function ccgEnsureVisitorMetrics/);
+  const idx = shared.lastIndexOf("(function ccgEnsureVisitorMetrics()");
+  assert.ok(idx > 0);
+
+  function loadedOn(pathname, presentTrackerTag) {
+    const inserted = [];
+    const document = {
+      documentElement: { getAttribute() { return null; } },
+      querySelector(selector) {
+        return selector === 'script[data-ccg-visitor-metrics]' && presentTrackerTag ? {} : null;
+      },
+      createElement(name) {
+        assert.equal(name, "script");
+        return { setAttribute() {} };
+      },
+      head: { appendChild(node) { inserted.push(node); } }
+    };
+    vm.runInNewContext(shared.slice(idx), { document, window: { location: { pathname } } });
+    return inserted;
+  }
+
+  for (const pathname of ["/home.html", "/games/chuckie-egg/", "/games/bruce-lee/"]) {
+    const result = loadedOn(pathname, false);
+    assert.equal(result.length, 1, pathname + ": one shared metrics script");
+    assert.match(result[0].src, /\/js\/ccg-visitor-metrics\.js\?v=/);
+  }
+  assert.equal(loadedOn("/home.html", true).length, 0, "staged script not duplicated");
+  assert.equal(loadedOn("/admin/content-publisher.html", false).length, 0, "admin bypassed");
+});
+
+
+test("every committed canonical game page inherits the shared display loader", () => {
+  const gamesDir = path.join(root, "games");
+  const pages = [];
+  for (const item of fs.readdirSync(gamesDir, { withFileTypes: true })) {
+    if (!item.isDirectory()) continue;
+    const index = path.join(gamesDir, item.name, "index.html");
+    if (!fs.existsSync(index)) continue;
+    const html = fs.readFileSync(index, "utf8");
+    if (!/<html\b[^>]*\bdata-ccg-page\s*=\s*(["'])single-game\1/i.test(html)) continue;
+    pages.push(index);
+    assert.match(html, /<script\s+src="(?:\/|\.\.\/)js\/ccg-global\.js"/i,
+      "Missing shared counter loader on " + path.relative(root, index));
+    assert.match(html, /<footer\b[^>]*class="[^"]*\bccg-footer--game\b/i,
+      "Missing footer for view count on " + path.relative(root, index));
+    assert.match(html, /<link rel="canonical"\b|<link rel="canonical"/i,
+      "Missing canonical for view count on " + path.relative(root, index));
+  }
+  assert.ok(pages.length >= 600, "Expected entire 666-game CCG archive to be covered");
+});
