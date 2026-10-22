@@ -99,7 +99,7 @@ html[data-ccg-page] {
     overscroll-behavior-y: auto !important;
     scroll-behavior: auto !important;
 }
-html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
     position: static !important;
     height: auto !important;
     min-height: 100% !important;
@@ -111,7 +111,7 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
 }
 @supports (overflow: clip) {
     html[data-ccg-page],
-    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
         overflow-x: clip !important;
     }
 }

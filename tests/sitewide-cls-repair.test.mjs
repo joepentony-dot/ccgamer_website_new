@@ -19,6 +19,8 @@ test('staging makes the final cascade active, ordered and idempotent even with p
   }
   assert.equal(staged.split(`href="${href}"`).length - 1, 1);
   assert.equal(normalizer.normaliseHtml(staged).html, staged);
+  const enriched = staged.replace('</head>', '<script type="application/ld+json">{"@type":"WebPage"}</script>\n</head>');
+  assert.equal(normalizer.normaliseHtml(enriched).html, enriched, 'Later inert SEO enrichment must not cause stylesheet relocation');
   // The existing parity audit additionally checks every canonical source page.
   for (const id of ['game-graph', 'game-canonical', 'gameHeroTitle']) assert(staged.includes(id));
   assert(staged.includes('data-ccg-engagement-breadcrumbs="true"'));
@@ -54,4 +56,15 @@ test('Home owns real mode status, Archive Pulse and artwork in its initial HTML'
     assert(home.includes(`src="/${game.thumbnail}" width="96" height="72"`));
     assert(home.includes(game.title));
   }
+});
+
+test('approved CLS additions cannot exempt unrelated homepage content or executable changes', () => {
+  const { isApprovedHomeClsChange } = require('../scripts/home-cls-contract.js');
+  const { execFileSync } = require('node:child_process');
+  const baseline = execFileSync('git', ['show', 'origin/main:home.html'], { encoding: 'utf8' });
+  const home = fs.readFileSync('home.html', 'utf8');
+  assert(isApprovedHomeClsChange(baseline, home));
+  assert(!isApprovedHomeClsChange(baseline, home.replace('Find Your Way Around CCG', 'Unreviewed redesign')));
+  assert(!isApprovedHomeClsChange(baseline, home.replace('Fresh Game Pick', 'Unreviewed pick')));
+  assert(!isApprovedHomeClsChange(baseline, home.replace('data-ccg-first-paint-mode="true">', 'data-ccg-first-paint-mode="true">alert(1);')));
 });

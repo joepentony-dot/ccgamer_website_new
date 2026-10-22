@@ -275,6 +275,15 @@
     }
 
     applyPreparedVisit();
+    const staticPulse = document.querySelector('[data-ccg-static-pulse="true"]');
+    if (staticPulse && staticPulse.dataset.ccgEveryVisitRandomized !== "true") {
+        const displayed = TARGET_GAME_TYPES.map(type => {
+            const card = staticPulse.querySelector(`[data-ccg-archive-pulse="${type}"]`);
+            return { slug: card ? new URL(card.href, location.href).pathname.split("/")[2] : "" };
+        });
+        const feature = staticPulse.querySelector('[data-ccg-archive-pulse="zzap-feature"]');
+        writePrevious(displayed, { slug: feature ? new URL(feature.href, location.href).pathname.split("/")[2] : "" });
+    }
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => void init(), { once: true });

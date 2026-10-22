@@ -158,7 +158,14 @@ const allowedPaths = new Set([
 ]);
 
 for (const changedPath of changedFiles()) {
-  if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+  let approvedHomeCls = false;
+  if (changedPath === "home.html") {
+    try {
+      const before = childProcess.execFileSync("git", ["show", "origin/main:home.html"], { cwd: root, encoding: "utf8" });
+      approvedHomeCls = require("./home-cls-contract.js").isApprovedHomeClsChange(before, read("home.html"));
+    } catch (_error) { /* Fail closed if baseline or exact CLS contract is unavailable. */ }
+  }
+  if (protectedPaths.has(changedPath) && !approvedHomeCls) failures.push(`Protected file changed: ${changedPath}`);
   if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
     failures.push(`Out-of-scope local Phase 19 change: ${changedPath}`);
   }

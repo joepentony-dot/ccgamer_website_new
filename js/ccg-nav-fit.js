@@ -359,7 +359,12 @@
         const desktop = isDesktop();
         const items = allNavItems(nav);
         const signature = `${window.innerWidth}|${desktop}|${document.fonts?.status}|${items.map(item => item.querySelector(".ccg-nav__link")?.outerHTML || "").join("\n")}`;
-        if (lastFittedNav === nav && lastFitSignature === signature) return;
+        if (lastFittedNav === nav && lastFitSignature === signature) {
+            // Height-only resizes still change popover clearance and its 70vh
+            // maximum. Keep the same links, but keep the open menu on screen.
+            if (!menu.hidden && isPopoverOpen(menu)) positionPopover(toggle, menu);
+            return;
+        }
         lastFittedNav = nav;
         lastFitSignature = signature;
         if (desktop) ensurePlayOnlineLink(nav);

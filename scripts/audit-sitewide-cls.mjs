@@ -24,6 +24,7 @@ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN || '/usr/bin/chromium', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
 const results = [];
+const unavailableExternalNetwork = process.env.CCG_OFFLINE_EXTERNALS === '1';
 try {
   const pages = ['/home.html', '/games/ace-of-aces/', '/games/20-tons/'];
   const widths = [390, 412, 518, 768, 960, 1199, 1280, 1440];
@@ -31,6 +32,15 @@ try {
     const context = await browser.newContext({ viewport: { width, height: 900 }, serviceWorkers: 'allow' });
     await context.addInitScript(mode => localStorage.setItem('ccg-mode', mode), mode);
     const page = await context.newPage();
+    if (unavailableExternalNetwork) {
+      // Local restricted executors cannot reach these origins. This explicit
+      // diagnostic mode is never enabled in CI and is recorded in the report.
+      await context.route('**/*', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort('blockedbyclient'));
+    }
+    const pending = new Set();
+    page.on('request', request => pending.add(request.url()));
+    page.on('requestfinished', request => pending.delete(request.url()));
+    page.on('requestfailed', request => pending.delete(request.url()));
     const session = await context.newCDPSession(page);
     await session.send('Network.enable');
     await session.send('Network.emulateNetworkConditions', { offline: false, latency: 40, downloadThroughput: 1500000, uploadThroughput: 750000 });
@@ -45,10 +55,15 @@ try {
     });
     const failures = [];
     page.on('requestfailed', request => failures.push({ url: request.url(), error: request.failure()?.errorText }));
+    let previousPulseGames = [];
     for (const cache of ['cold', 'warm']) {
-      await page.goto(base + url, { waitUntil: 'domcontentloaded' });
+      try { await page.goto(base + url, { waitUntil: 'domcontentloaded' }); }
+      catch (error) {
+        fs.writeFileSync(path.join(reportDir, 'navigation-failure.json'), JSON.stringify({ url, mode, width, cache, pending: [...pending], message: error.message }, null, 2));
+        throw error;
+      }
       await page.waitForTimeout(6000);
-      const evidence = await page.evaluate(() => ({ ...window.__cls, finalGeometry: Object.fromEntries(['header', 'main'].map(selector => [selector, document.querySelector(selector)?.getBoundingClientRect().toJSON()])), mode: document.documentElement.dataset.ccgMode, styles: [...document.styleSheets].map(sheet => sheet.href), resources: performance.getEntriesByType('resource').map(entry => entry.toJSON()), mainVisible: getComputedStyle(document.querySelector('main')).visibility === 'visible' }));
+      const evidence = await page.evaluate(() => ({ ...window.__cls, finalGeometry: Object.fromEntries(['header', 'main'].map(selector => [selector, document.querySelector(selector)?.getBoundingClientRect().toJSON()])), mode: document.documentElement.dataset.ccgMode, pulseGames: [...document.querySelectorAll('.ccg-archive-pulse__card[data-ccg-archive-pulse="game-of-the-day"], .ccg-archive-pulse__card[data-ccg-archive-pulse="archive-pick"]')].map(card => card.getAttribute('href')), styles: [...document.styleSheets].map(sheet => sheet.href), resources: performance.getEntriesByType('resource').map(entry => entry.toJSON()), mainVisible: getComputedStyle(document.querySelector('main')).visibility === 'visible' }));
       // Core Web Vitals uses the largest session window, not a lifetime sum.
       let start = 0, previous = 0, sessionValue = 0, cls = 0;
       for (const entry of evidence.shifts) {
@@ -57,7 +72,7 @@ try {
       }
       const slug = url.includes('home') ? 'home' : url.split('/')[2];
       await page.screenshot({ path: path.join(reportDir, `${slug}-${mode}-${width}-${cache}.png`) });
-      const row = { url, mode, width, cache, cls, totalShift: evidence.shifts.reduce((sum, entry) => sum + entry.value, 0), failures: [...failures], ...evidence };
+      const row = { url, mode, width, cache, unavailableExternalNetwork, cls, totalShift: evidence.shifts.reduce((sum, entry) => sum + entry.value, 0), failures: [...failures], ...evidence };
       results.push(row);
       fs.writeFileSync(path.join(reportDir, 'measurements.json'), JSON.stringify(results, null, 2));
       console.log(`${url} ${mode} ${width} ${cache}: CLS ${cls.toFixed(5)}`);
@@ -65,6 +80,11 @@ try {
       assert.equal(evidence.mode, mode, 'Saved display mode must survive navigation');
       assert(cls <= 0.10, `CLS ${cls} exceeds 0.10: ${url} ${mode} ${width} ${cache}`);
       assert.equal(evidence.errors.length, 0, JSON.stringify(evidence.errors));
+      if (url === '/home.html') {
+        assert.equal(evidence.pulseGames.length, 2);
+        if (cache === 'warm') assert(evidence.pulseGames.every(href => !previousPulseGames.includes(href)), 'The next visit must rotate both Archive Pulse picks without a late visible update');
+        previousPulseGames = evidence.pulseGames;
+      }
     }
     // Exercise the real controls after recording loading metrics.
     if (width >= 1200) {
@@ -76,8 +96,17 @@ try {
       await page.evaluate(() => dispatchEvent(new Event('resize')));
       await page.waitForTimeout(100);
       assert(await handle.evaluate(node => node.isConnected), 'An unchanged refit must preserve focused menu links');
+      await page.setViewportSize({ width, height: 400 });
+      await page.waitForFunction(() => {
+        const box = document.querySelector("[data-ccg-more-menu]").getBoundingClientRect();
+        return box.y >= 0 && box.bottom <= innerHeight;
+      }, null, { timeout: 2000 });
+      const menuBox = await page.locator('[data-ccg-more-menu]').boundingBox();
+      assert(menuBox && menuBox.y >= 0 && menuBox.y + menuBox.height <= 400, 'Height-only resize must reposition the open More menu inside the viewport');
+      assert(await handle.evaluate(node => node.isConnected), 'Height-only resize must retain menu links');
       await page.keyboard.press('Escape');
       assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
+      await page.setViewportSize({ width, height: 900 });
     } else if (width < 960) {
       await page.locator('[data-ccg-nav-toggle]').click();
       await page.locator('.ccg-nav-drawer__panel').waitFor({ state: 'visible' });

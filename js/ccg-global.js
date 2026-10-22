@@ -1886,7 +1886,8 @@ if (IS_ADMIN_PATH) {
 
         const scrollX = window.scrollX || document.documentElement.scrollLeft || 0;
         const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-        const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+        const stableGutter = window.getComputedStyle(document.documentElement).scrollbarGutter.includes("stable");
+        const scrollbarGap = stableGutter ? 0 : Math.max(0, window.innerWidth - document.documentElement.clientWidth);
         const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
 
         const lockedDocumentHeight = Math.max(
@@ -1898,17 +1899,21 @@ if (IS_ADMIN_PATH) {
         secretState.scrollLock = {
             scrollX,
             scrollY,
-            bodyOverflow: document.body.style.overflow,
+            bodyOverflowX: document.body.style.overflowX,
+            bodyOverflowY: document.body.style.overflowY,
             bodyMinHeight: document.body.style.minHeight,
             bodyPaddingRight: document.body.style.paddingRight,
             bodyOverscrollBehavior: document.body.style.overscrollBehavior,
-            htmlOverflow: document.documentElement.style.overflow,
+            htmlOverflowX: document.documentElement.style.overflowX,
+            htmlOverflowY: document.documentElement.style.overflowY,
+            htmlOverflowAnchor: document.documentElement.style.overflowAnchor,
             htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
         };
 
         // Preserve the pre-lock document height before root overflow changes can
         // trigger a responsive reflow and clamp the current mobile scroll offset.
         document.body.style.minHeight = `${lockedDocumentHeight}px`;
+        document.documentElement.style.overflowAnchor = "none";
         document.documentElement.style.overflow = "hidden";
         document.documentElement.style.overscrollBehavior = "none";
         document.body.style.overflow = "hidden";
@@ -1922,14 +1927,21 @@ if (IS_ADMIN_PATH) {
         const lock = secretState.scrollLock;
         if (!lock) return;
 
-        document.documentElement.style.overflow = lock.htmlOverflow;
+        document.documentElement.style.overflowX = lock.htmlOverflowX;
+        document.documentElement.style.overflowY = lock.htmlOverflowY;
         document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
-        document.body.style.overflow = lock.bodyOverflow;
+        document.body.style.overflowX = lock.bodyOverflowX;
+        document.body.style.overflowY = lock.bodyOverflowY;
         document.body.style.minHeight = lock.bodyMinHeight;
         document.body.style.paddingRight = lock.bodyPaddingRight;
         document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
         window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+        requestAnimationFrame(() => {
+            if (secretState.scrollLock) return;
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            document.documentElement.style.overflowAnchor = lock.htmlOverflowAnchor;
+        });
     }
 
     function openSecretModal(openEvent) {
@@ -1961,10 +1973,13 @@ if (IS_ADMIN_PATH) {
 
         requestAnimationFrame(() => {
             if (!modal) return;
+            lockSecretModalScroll();
+            document.body.classList.add("ccg-secret-modal-open");
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
-            document.body.classList.add("ccg-secret-modal-open");
-            lockSecretModalScroll();
+            const lock = secretState.scrollLock;
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            if (content) content.scrollTop = 0;
 
             requestAnimationFrame(() => {
                 if (content) content.scrollTop = 0;
@@ -2246,6 +2261,10 @@ if (IS_ADMIN_PATH) {
         };
 
         const buildMoreMenu = () => {
+            // The adaptive controller owns the complete desktop menu, including
+            // primary archive destinations. Do not replace its nodes during a
+            // later global bootstrap with only the secondary-list fallback.
+            if (window.CCG_NAV_FIT_READY) return;
             moreMenu.innerHTML = "";
             secondaryList?.querySelectorAll("a").forEach(link => {
                 const clone = cloneLink(link, ["ccg-nav__link--overflow"]);
@@ -2376,7 +2395,7 @@ if (IS_ADMIN_PATH) {
         const syncMobileNavState = () => {
             if (!isMobileViewport()) {
                 closeNav();
-                closeMore();
+                if (!window.CCG_NAV_FIT_READY) closeMore();
                 syncNavContainerVisibility();
                 return;
             }

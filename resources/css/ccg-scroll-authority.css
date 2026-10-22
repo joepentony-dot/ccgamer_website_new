@@ -27,11 +27,12 @@ html[data-ccg-page] {
     }
 }
 
-html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
     position: static !important;
     height: auto !important;
     min-height: 100% !important;
     max-height: none !important;
+    overflow-x: clip !important;
     overflow-y: visible !important;
     overflow-x: clip !important;
     overscroll-behavior-y: auto !important;
@@ -39,7 +40,7 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
 }
 
 @supports not (overflow: clip) {
-    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
         overflow-x: hidden !important;
     }
 }
@@ -55,6 +56,7 @@ html[data-ccg-page] > body.ccg-body :where(
     height: auto !important;
     min-height: 0;
     max-height: none !important;
+    overflow-x: clip !important;
     overflow-y: visible !important;
     overscroll-behavior-y: auto !important;
     scroll-behavior: auto !important;
@@ -62,7 +64,13 @@ html[data-ccg-page] > body.ccg-body :where(
 
 /* Keep intentional viewport locks authoritative while menus/modals are open. */
 html[data-ccg-page]:has(> body.ccg-body.ccg-body--nav-open),
-html[data-ccg-page]:has(> body.ccg-body.ccg-body--locked) {
+html[data-ccg-page]:has(> body.ccg-body.ccg-body--locked),
+html[data-ccg-page]:has(> body.ccg-body.ccg-secret-modal-open) {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
+html[data-ccg-page] > body.ccg-body.ccg-secret-modal-open {
     overflow: hidden !important;
     overscroll-behavior: none !important;
 }

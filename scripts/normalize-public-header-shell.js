@@ -33,6 +33,7 @@ const PUBLIC_HEADER_FIRST_PAINT_STYLES = Object.freeze([
   "/resources/css/ccg-sitewide-layout-optimization.css",
   "/resources/css/ccg-nav-labelled-bridge.css"
 ]);
+const MODE_BODY_BOOTSTRAP = '<script data-ccg-first-paint-mode="true">(function(){var mode=document.documentElement.getAttribute("data-ccg-mode");if(mode==="c64"||mode==="amiga"){document.body.setAttribute("data-ccg-mode",mode);document.body.setAttribute("data-mode",mode);}})();</script>';
 const PUBLIC_HEADER_EXCLUDED_TOP_LEVEL = new Set(["arcade"]);
 const PUBLIC_HEADER_EXCLUDED_FILES = new Set(["index.html", "app-launch.html", "offline.html"]);
 
@@ -274,6 +275,20 @@ function ensurePublicHeaderFoundationStyles(html) {
 
 function ensurePublicHeaderFirstPaintStyles(html) {
   if (!hasPublicHeader(html)) return html;
+  const links = [...html.matchAll(/<link\b[^>]*>/gi)].map(match => ({
+    tag: match[0], index: match.index,
+    href: core.normaliseAssetPath(match[0].match(/href=["']([^"']+)/i)?.[1])
+  }));
+  const owned = links.filter(link => PUBLIC_HEADER_FIRST_PAINT_STYLES.includes(link.href));
+  const lastOtherStyle = Math.max(-1, ...links.filter(link =>
+    !PUBLIC_HEADER_FIRST_PAINT_STYLES.includes(link.href) && (/rel=["']stylesheet["']/.test(link.tag) || (/rel=["']preload["']/.test(link.tag) && /as=["']style["']/.test(link.tag)))
+  ).map(link => link.index));
+  if (owned.length === PUBLIC_HEADER_FIRST_PAINT_STYLES.length
+      && owned.every((link, index) => link.href === PUBLIC_HEADER_FIRST_PAINT_STYLES[index]
+        && /rel="stylesheet"/.test(link.tag) && /data-ccg-public-header-first-paint-style="true"/.test(link.tag))
+      && owned[0].index > lastOtherStyle) return html;
+  // Scripts/JSON-LD may be enriched later without changing CSS precedence.
+  // Preserve their placement when the final stylesheet order is already exact.
   // A preloaded/noscript copy is not an active first-paint dependency. Rebuild
   // this existing final stack in a deterministic order in disposable staging.
   let output = html;
@@ -371,6 +386,9 @@ function normaliseHtml(html, options = {}) {
   const result = core.normaliseHtml(output);
   let finalHtml = result.html;
   if (result.applicable && hasPublicHeader(finalHtml)) {
+    if (["home", "single-game"].includes(pageType(finalHtml)) && !finalHtml.includes('data-ccg-first-paint-mode="true"')) {
+      finalHtml = insertAfterBodyOpen(finalHtml, MODE_BODY_BOOTSTRAP);
+    }
     if (["home", "single-game"].includes(pageType(finalHtml)) && !hasModeIdentityBar(finalHtml)) {
       finalHtml = insertAfterPublicHeader(finalHtml, buildModeIdentityMarkup());
     }
@@ -513,6 +531,7 @@ function main() {
 module.exports = {
   ...core,
   MUSIC_GLOBAL_FIRST_PAINT_STYLES,
+  MODE_BODY_BOOTSTRAP,
   PUBLIC_HEADER_FOUNDATION_STYLES,
   PUBLIC_HEADER_FIRST_PAINT_STYLES,
   PUBLIC_HEADER_EXCLUDED_TOP_LEVEL,
