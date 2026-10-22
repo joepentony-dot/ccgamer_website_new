@@ -28,6 +28,18 @@ test('staging makes the final cascade active, ordered and idempotent even with p
   assert.equal(fs.readFileSync('games/ace-of-aces/index.html', 'utf8'), source);
 });
 
+test('music hub scrolling cannot invalidate the entire page on native wheel input', () => {
+  const music = fs.readFileSync('js/music-composer-pages.js', 'utf8');
+  const start = music.indexOf('function initMusicScrollPerfPause()');
+  const end = music.indexOf('function initBackToTop()', start);
+  assert(start >= 0 && end > start, 'music scrolling contract must remain discoverable');
+  const block = music.slice(start, end);
+  assert.doesNotMatch(block, /root\.classList\.(add|remove)\(/,
+    'music hub must never mutate root classes inside the wheel performance helper');
+  assert.doesNotMatch(block, /addEventListener\(["'](?:scroll|touchmove)["']/,
+    'do not reinstall unnecessary document-wide music scroll listeners');
+});
+
 test('hidden floating navigation does not expand the document scroll height', () => {
   const css = fs.readFileSync('resources/css/ccg-master.css', 'utf8');
   const rule = css.match(/\.ccg-floating-nav\s*\{([^}]*)\}/);
@@ -93,8 +105,12 @@ test('secret Easter Egg overlay never takes ownership of the document scroll roo
   assert.doesNotMatch(earlyNavigation, /:not\(\.ccg-secret-modal-open\)/,
     'opening the secret modal must not change document scroll ownership');
   assert.match(block, /const scrollY\s*=\s*window\.scrollY/, 'record the actual scroll position');
-  assert.match(source, /if \(toggle\.dataset\.ccgNavToggleBound === "true"\) return;/,
-    'the mobile menu must not bind multiple click handlers');
+  assert.match(source, /navBoundButtons\.has\(toggle\)/,
+    'the mobile menu must not bind duplicate handlers to the same live node');
+  assert.match(source, /navBoundButtons\.add\(toggle\)/,
+    'the mobile menu must track bound DOM nodes rather than cloneable flags');
+  assert.match(source, /if \(target && !navBoundButtons\.has\(target\)\)/,
+    'a replaced mobile menu button must be rebound before the click reaches it');
   assert.match(block, /\bscrollY,\s*bodyMinHeight:/s, 'retain the saved scroll position in the modal lock');
 });
 

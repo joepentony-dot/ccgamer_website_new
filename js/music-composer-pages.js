@@ -1004,23 +1004,12 @@ function composerSortLetter(name) {
       return;
     }
 
+    // Music hub and composer archives have hundreds of interactive links.
+    // The old scroll listener toggled ccg-perf-paused on <html>, forcing
+    // full-page style recalculation on the first native wheel step.
+    // These music pages have no animated universe background to pause.
+    // Keep their visual effects and native scrolling, with no root mutation.
     root.dataset.ccgMusicScrollPerf = "ready";
-    const pauseClass = "ccg-perf-paused";
-    const resumeDelay = 160;
-    let resumeTimer = 0;
-
-    const onScroll = () => {
-      root.classList.add(pauseClass);
-      if (resumeTimer) {
-        window.clearTimeout(resumeTimer);
-      }
-      resumeTimer = window.setTimeout(() => {
-        root.classList.remove(pauseClass);
-      }, resumeDelay);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("touchmove", onScroll, { passive: true });
   }
 
   function initBackToTop() {

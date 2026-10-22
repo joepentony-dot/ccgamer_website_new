@@ -2242,6 +2242,13 @@ if (IS_ADMIN_PATH) {
     /* ======================================================
        NAV TOGGLE (MOBILE)
     ====================================================== */
+    // A header shell can be replaced after the first page bootstrap. The
+    // dataset marker survives cloneNode(true), but its event listeners do not.
+    // Track actual nodes, shared across repeated script evaluations.
+    const navBoundButtons = window.__ccgNavBoundButtons instanceof WeakSet
+        ? window.__ccgNavBoundButtons
+        : (window.__ccgNavBoundButtons = new WeakSet());
+
     function setupNavToggle() {
         const header = document.querySelector("[data-ccg-header]");
         if (!header) return;
@@ -2266,7 +2273,7 @@ if (IS_ADMIN_PATH) {
         // The shared runtime can be requested twice by differing page shells.
         // Never bind two toggles to the same button: the second would close
         // the drawer immediately after the first opens it.
-        if (toggle.dataset.ccgNavToggleBound === "true") return;
+        if (navBoundButtons.has(toggle)) return;
 
         const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 1199;
 
@@ -2431,6 +2438,21 @@ if (IS_ADMIN_PATH) {
             }
         });
         toggle.dataset.ccgNavToggleBound = "true";
+        navBoundButtons.add(toggle);
+
+        if (!window.__ccgNavLiveButtonRecoveryBound) {
+            window.__ccgNavLiveButtonRecoveryBound = true;
+            document.addEventListener("click", event => {
+                const target = event.target instanceof Element
+                    ? event.target.closest("[data-ccg-nav-toggle]")
+                    : null;
+                if (target && !navBoundButtons.has(target)) {
+                    // Capture happens before the button's own click listeners.
+                    // Rebind its cloned live node now so this click opens Menu.
+                    setupNavToggle();
+                }
+            }, { capture: true });
+        }
 
         if (!header.dataset.ccgMoreToggleBound) {
             header.addEventListener("click", event => {
