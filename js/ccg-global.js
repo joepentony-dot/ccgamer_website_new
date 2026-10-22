@@ -2384,6 +2384,7 @@ if (IS_ADMIN_PATH) {
                 openNav();
             }
         });
+        toggle.dataset.ccgNavToggleBound = "true";
 
         if (!header.dataset.ccgMoreToggleBound) {
             header.addEventListener("click", event => {
