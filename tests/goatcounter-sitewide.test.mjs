@@ -221,3 +221,40 @@ test("hourly archive event is once per browser per rolling hour across pages", (
     assert.equal(hit.no_session, true);
   }
 });
+
+
+test("shared-loader on branch-published HTML recovers visible counters", () => {
+  const shared = fs.readFileSync(path.join(root, "js/ccg-global.js"), "utf8");
+  const home = fs.readFileSync(path.join(root, "home.html"), "utf8");
+  const game = fs.readFileSync(path.join(root, "games/chuckie-egg/index.html"), "utf8");
+  assert.ok(home.includes('src="js/ccg-global.js"'), "home loads the shared fallback");
+  assert.ok(game.includes('src="/js/ccg-global.js"'), "canonical game loads the shared fallback");
+  assert.match(shared, /function ccgEnsureVisitorMetrics/);
+  const idx = shared.lastIndexOf("(function ccgEnsureVisitorMetrics()");
+  assert.ok(idx > 0);
+
+  function loadedOn(pathname, presentTrackerTag) {
+    const inserted = [];
+    const document = {
+      documentElement: { getAttribute() { return null; } },
+      querySelector(selector) {
+        return selector === 'script[data-ccg-visitor-metrics]' && presentTrackerTag ? {} : null;
+      },
+      createElement(name) {
+        assert.equal(name, "script");
+        return { setAttribute() {} };
+      },
+      head: { appendChild(node) { inserted.push(node); } }
+    };
+    vm.runInNewContext(shared.slice(idx), { document, window: { location: { pathname } } });
+    return inserted;
+  }
+
+  for (const pathname of ["/home.html", "/games/chuckie-egg/", "/games/bruce-lee/"]) {
+    const result = loadedOn(pathname, false);
+    assert.equal(result.length, 1, pathname + ": one shared metrics script");
+    assert.match(result[0].src, /\/js\/ccg-visitor-metrics\.js\?v=/);
+  }
+  assert.equal(loadedOn("/home.html", true).length, 0, "staged script not duplicated");
+  assert.equal(loadedOn("/admin/content-publisher.html", false).length, 0, "admin bypassed");
+});
