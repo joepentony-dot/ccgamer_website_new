@@ -104,6 +104,11 @@ html[data-ccg-page="home"] body[data-ccg-visual-lock="true"] * {
 .ccg-bg {
     position: fixed;
     inset: 0;
+    /* The universe is a viewport layer. Percentage insets otherwise follow
+       a layout-containing ancestor's growing document, moving its -50%
+       starfield ghost whenever asynchronous content changes page height. */
+    height: 100vh;
+    height: 100dvh;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;

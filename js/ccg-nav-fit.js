@@ -40,6 +40,9 @@
     let fitFrame = 0;
     let fitTimer = 0;
     let fitting = false;
+    let lastFitSignature = "";
+    let lastFittedNav = null;
+    const menuSignatures = new WeakMap();
 
     function ensureCss() {
         if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
@@ -288,6 +291,9 @@
     }
 
     function populateMore(menu, hiddenItems) {
+        const signature = hiddenItems.map(item => item.querySelector(".ccg-nav__link")?.outerHTML || "").join("\n");
+        if (menuSignatures.get(menu) === signature && menu.children.length) return;
+        menuSignatures.set(menu, signature);
         menu.textContent = "";
         const seen = new Set();
         const supportingHrefs = new Set(BASE_MORE_LINKS.map(([, href]) => new URL(href, window.location.href).href));
@@ -351,6 +357,11 @@
         if (!header || !nav || !more || !toggle || !menu) return;
 
         const desktop = isDesktop();
+        const items = allNavItems(nav);
+        const signature = `${window.innerWidth}|${desktop}|${document.fonts?.status}|${items.map(item => item.querySelector(".ccg-nav__link")?.outerHTML || "").join("\n")}`;
+        if (lastFittedNav === nav && lastFitSignature === signature) return;
+        lastFittedNav = nav;
+        lastFitSignature = signature;
         if (desktop) ensurePlayOnlineLink(nav);
         nav.classList.toggle("ccg-nav--ux-compact", desktop);
         const restoreOpen = desktop
@@ -358,10 +369,8 @@
             && !menu.hidden;
 
         fitting = true;
-        const items = allNavItems(nav);
         restoreItems(items);
         nav.classList.remove("ccg-nav--fit-compact", "ccg-nav--fit-tight", "ccg-nav--has-overflow");
-        menu.textContent = "";
         closeMore(toggle, menu);
 
         if (!desktop) {
@@ -456,13 +465,13 @@
         scheduleFit();
 
         if (document.fonts?.ready) {
-            document.fonts.ready.then(() => scheduleFit()).catch(() => {});
+            document.fonts.ready.then(() => { lastFitSignature = ""; scheduleFit(); }).catch(() => {});
         }
         window.addEventListener("load", () => scheduleFit(), { once: true, passive: true });
         window.addEventListener("resize", () => scheduleFit(30), { passive: true });
         window.addEventListener("orientationchange", () => scheduleFit(60), { passive: true });
         window.addEventListener("pageshow", () => scheduleFit(20), { passive: true });
-        document.addEventListener("ccg:navigation-ready", () => scheduleFit());
+        document.addEventListener("ccg:navigation-ready", () => { lastFitSignature = ""; scheduleFit(); });
         desktopMedia?.addEventListener?.("change", () => scheduleFit());
 
         const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");

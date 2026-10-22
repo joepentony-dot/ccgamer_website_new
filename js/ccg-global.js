@@ -698,8 +698,10 @@ if (IS_ADMIN_PATH) {
 
     let headerHeightFrame = 0;
     let lastHeaderHeight = -1;
+    let observedHeaderHeight = null;
 
-    function setHeaderHeightVar() {
+    function setHeaderHeightVar(measuredHeight) {
+        if (typeof measuredHeight === "number") observedHeaderHeight = measuredHeight;
         if (headerHeightFrame) return;
         headerHeightFrame = requestAnimationFrame(() => {
             headerHeightFrame = 0;
@@ -711,7 +713,7 @@ if (IS_ADMIN_PATH) {
              * reached the next animation frame. The previous synchronous read
              * here forced layout immediately after mobile/header writes.
              */
-            const h = Math.max(0, Math.round(header.getBoundingClientRect().height));
+            const h = Math.max(0, Math.round(observedHeaderHeight ?? header.getBoundingClientRect().height));
             if (h === lastHeaderHeight) return;
             lastHeaderHeight = h;
             document.documentElement.style.setProperty("--ccg-header-height", `${h}px`);
@@ -2937,7 +2939,14 @@ function setupFooterSignatureRotator() {
         };
 
         window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll, { passive: true });
+        window.addEventListener("resize", () => {
+            // A resize is not a visit to the bottom of the page. Avoid forcing
+            // layout of all deferred sections before the first real scroll.
+            if (hasScrolled && !ticking) {
+                ticking = true;
+                window.requestAnimationFrame(updateVisibility);
+            }
+        }, { passive: true });
     }
 
     function setupOmegaMobileKeyboardGuard() {
@@ -3164,6 +3173,13 @@ function setupFooterSignatureRotator() {
         /* -------------------------------
            Keep header height var accurate
         ------------------------------- */
+        const observedHeader = document.querySelector("[data-ccg-header]");
+        if (observedHeader && typeof ResizeObserver === "function") {
+            new ResizeObserver((entries) => {
+                const size = entries[0]?.borderBoxSize?.[0]?.blockSize;
+                if (typeof size === "number") setHeaderHeightVar(size);
+            }).observe(observedHeader);
+        }
         setHeaderHeightVar();
         window.addEventListener("load", setHeaderHeightVar, { passive: true });
     });

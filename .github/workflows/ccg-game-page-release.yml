@@ -13,6 +13,11 @@ on:
       - 'tests/qualify-pages-staging.mjs'
       - 'games/*/index.html'
       - 'games/games.json'
+      - 'home.html'
+      - 'js/ccg-*.js'
+      - 'resources/css/ccg-*.css'
+      - 'scripts/audit-sitewide-cls.mjs'
+      - 'tests/sitewide-cls-repair.test.mjs'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +29,7 @@ env:
 jobs:
   staged-game-page-parity:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,9 +38,25 @@ jobs:
       - name: Verify fail-closed release regressions
         run: |
           python3 -m unittest discover -v -s tests -p test_ccg_game_page_release_audit.py
-          node --test tests/game-page-release-deployment.test.mjs
+          node --test tests/game-page-release-deployment.test.mjs tests/sitewide-cls-repair.test.mjs
       - name: Qualify exact Pages staging without publishing
         run: node tests/qualify-pages-staging.mjs --run
+      - name: Install pinned browser measurement driver
+        run: npm install --prefix "$RUNNER_TEMP/ccg-cls-driver" --no-save playwright-core@1.64.1
+      - name: Measure staged CLS and exercise page functionality
+        env:
+          CCG_BROWSER_MODULE: ${{ runner.temp }}/ccg-cls-driver/node_modules/playwright-core
+          CCG_CLS_REPORT_DIR: ${{ runner.temp }}/ccg-cls-measured
+        run: |
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium)"
+          node scripts/audit-sitewide-cls.mjs
+      - name: Retain Chromium loading and visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-cls-measured
+          path: ${{ runner.temp }}/ccg-cls-measured/
+          if-no-files-found: warn
       - name: Confirm source and protected files were not mutated
         run: git diff --exit-code
       - name: Retain read-only game-page parity reports
