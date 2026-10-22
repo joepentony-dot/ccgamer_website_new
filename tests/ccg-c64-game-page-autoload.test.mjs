@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import test from "node:test";
+import { selectVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
 
 const app = fs.readFileSync("js/ccg-c64/app.js", "utf8");
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
@@ -49,6 +50,7 @@ async function initialiseFor(query, options = {}) {
     updateSelectedLibraryGame() {},
     catalogueBrowser: { refresh() { refreshes++; } },
     preferSelectedCartridges: x => x,
+    selectVerifiedExactCrtEdition,
     stageNote: { textContent: "" },
     fetch: async url => url === "/emulator/c64/library.json"
       ? { ok: true, json: async () => ({ entries: [game] }) }
