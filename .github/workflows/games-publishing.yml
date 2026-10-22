@@ -51,6 +51,9 @@ on:
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
+      - "scripts/ensure-goatcounter-coverage.js"
+      - "tests/goatcounter-sitewide.test.mjs"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "scripts/validate-game-performance-contract.mjs"
       - "scripts/apply-game-review-seo.js"
       - "scripts/generate-legacy-seo-redirects.js"
@@ -149,6 +152,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "24"
+
+      - name: Guard site-wide GoatCounter and new-game publishing
+        run: node --test tests/goatcounter-sitewide.test.mjs
 
       - name: Verify future C64 game emulator auto-link and one-click launch contract
         run: node --test tests/c64-new-game-auto-emulator-link.test.mjs tests/ccg-c64-game-page-autoload.test.mjs

@@ -48,6 +48,7 @@ After a direct main commit, the existing workflows handle the rest:
 6. The Video Library and video sitemaps are regenerated.
 7. Sitemap/SEO/protected-file validation runs.
 8. The publisher polls the matching workflow runs and then checks the final live URL.
+9. The site-wide GoatCounter publishing safeguard runs on the final `_site` artifact after the protected game-page parity audit. It adds tracking only where missing, checks every complete HTML page (including newly generated game pages), and stops deployment if any page cannot be safely instrumented. The new-game `games/game.html` template already contains the approved tracker; no analytics checkbox or manual game-entry step is needed. No visitor API credential belongs in a generated game page.
 
 ## Lighthouse performance contract for new games
 

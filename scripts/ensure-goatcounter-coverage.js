@@ -1,0 +1,140 @@
+#!/usr/bin/env node
+"use strict";
+
+/*
+ * CCG site-wide GoatCounter publishing safeguard.
+ *
+ * Run after all static pages have been staged/generated, before uploading the
+ * GitHub Pages artifact. This changes only the requested --root tree; it does
+ * not rewrite source templates, approved game reviews, or the intro loader.
+ *
+ * node scripts/ensure-goatcounter-coverage.js --root _site
+ * node scripts/ensure-goatcounter-coverage.js --root _site --check
+ */
+const fs = require("node:fs");
+const path = require("node:path");
+
+const ENDPOINT = "https://cheekycommodoregamer.goatcounter.com/count";
+const SCRIPT_SOURCE = "https://gc.zgo.at/count.js";
+const SCRIPT_TAGS = /<script\b[^>]*>[\s\S]*?<\/script\s*>/gi;
+const SKIP_DIRS = new Set([".git", ".github", "node_modules", "_site"]);
+
+function publicPath(root, file) {
+  const relative = path.relative(root, file).split(path.sep).join("/");
+  let route = "/" + relative;
+  if (route.endsWith("/index.html")) route = route.slice(0, -10) || "/";
+  return encodeURI(route);
+}
+
+function trackingSnippet(route) {
+  // A fixed path avoids sending private query parameters from admin/preview URLs.
+  const settings = JSON.stringify({ path: route }).replace(/'/g, "&#39;");
+  return "\n<!-- GoatCounter pageview tracking: deployment-managed -->\n" +
+    '<script data-goatcounter="' + ENDPOINT + '"' +
+    " data-goatcounter-settings='" + settings + "'" +
+    ' async src="' + SCRIPT_SOURCE + '"></script>\n';
+}
+
+function evaluateHtml(html, route) {
+  if (!/<html(?:\s|>)/i.test(html)) return { html, status: "fragment" };
+
+  const scripts = [...html.matchAll(SCRIPT_TAGS)];
+  const related = scripts.filter((match) => {
+    const open = match[0].match(/^<script\b[^>]*>/i);
+    return open && (/\bdata-goatcounter(?:\s|=)/i.test(open[0]) ||
+      /(?:https?:)?\/\/gc\.zgo\.at\/count(?:\.v\d+)?\.js/i.test(open[0]));
+  });
+
+  for (const match of related) {
+    const open = match[0].match(/^<script\b[^>]*>/i)[0];
+    const endpoint = /\bdata-goatcounter\s*=\s*(["'])https:\/\/cheekycommodoregamer\.goatcounter\.com\/count\1/i.test(open);
+    const src = /\bsrc\s*=\s*(["'])https:\/\/gc\.zgo\.at\/count\.js\1/i.test(open);
+    if (!endpoint || !src) {
+      throw new Error("Unexpected GoatCounter script/endpoint on " + route +
+        "; refusing to alter another tracking integration");
+    }
+  }
+
+  if (related.length === 1) return { html, status: "present" };
+
+  if (related.length > 1) {
+    let result = html;
+    for (let i = related.length - 1; i >= 1; i--) {
+      const match = related[i];
+      result = result.slice(0, match.index) +
+        result.slice(match.index + match[0].length);
+    }
+    return { html: result, status: "deduplicated" };
+  }
+
+  const marker = /<\/body\s*>/i.test(html) ? /<\/body\s*>/i :
+    /<\/head\s*>/i.test(html) ? /<\/head\s*>/i :
+    /<\/html\s*>/i.test(html) ? /<\/html\s*>/i : null;
+  if (!marker) {
+    throw new Error("HTML page has no closing body/head/html: " + route);
+  }
+  return {
+    html: html.replace(marker, trackingSnippet(route) + "$&"),
+    status: "added"
+  };
+}
+
+function htmlFiles(root) {
+  const files = [];
+  function visit(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (!SKIP_DIRS.has(entry.name)) visit(full);
+      } else if (entry.isFile() && /\.html$/i.test(entry.name)) {
+        files.push(full);
+      }
+    }
+  }
+  visit(root);
+  return files;
+}
+
+function run(argv) {
+  const rootFlag = argv.indexOf("--root");
+  if (rootFlag < 0 || !argv[rootFlag + 1]) {
+    throw new Error("Usage: node scripts/ensure-goatcounter-coverage.js --root PATH [--check]");
+  }
+  const root = path.resolve(argv[rootFlag + 1]);
+  if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
+    throw new Error("Missing site output directory: " + root);
+  }
+  const check = argv.includes("--check");
+  const counts = { checked: 0, present: 0, added: 0, deduplicated: 0, fragment: 0 };
+  const gaps = [];
+  for (const file of htmlFiles(root)) {
+    const route = publicPath(root, file);
+    const before = fs.readFileSync(file, "utf8");
+    const result = evaluateHtml(before, route);
+    counts.checked++;
+    counts[result.status]++;
+    if (result.html !== before) {
+      gaps.push(route);
+      if (!check) fs.writeFileSync(file, result.html, "utf8");
+    }
+  }
+
+  console.log("[goatcounter] " + (check ? "CHECK" : "APPLY") + " " + JSON.stringify(counts));
+  if (check && gaps.length) {
+    console.error("[goatcounter] Missing/duplicate tracking on " + gaps.length +
+      " HTML pages. Examples: " + gaps.slice(0, 12).join(", "));
+    process.exitCode = 1;
+  }
+  return { counts, gaps };
+}
+
+if (require.main === module) {
+  try {
+    run(process.argv.slice(2));
+  } catch (error) {
+    console.error("[goatcounter] " + error.message);
+    process.exitCode = 1;
+  }
+}
+
+module.exports = { publicPath, trackingSnippet, evaluateHtml, htmlFiles, run };

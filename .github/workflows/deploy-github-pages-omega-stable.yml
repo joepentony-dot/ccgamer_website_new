@@ -288,6 +288,17 @@ jobs:
             exit 1
           fi
 
+      - name: Guarantee GoatCounter on every staged HTML page
+        shell: bash
+        run: |
+          set -euo pipefail
+          # AFTER the game-page SEO/emulator parity audit: add tracking only to
+          # pages missing it, avoiding edits to approved source game HTML.
+          # This covers new admin-published games, hubs, quizzes and all other
+          # public HTML without requiring per-template manual wiring.
+          node scripts/ensure-goatcounter-coverage.js --root _site
+          node scripts/ensure-goatcounter-coverage.js --root _site --check
+
       - name: Check published-site size
         shell: bash
         run: |
