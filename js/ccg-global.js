@@ -1913,13 +1913,11 @@ if (IS_ADMIN_PATH) {
             scrollX,
             scrollY,
             bodyMinHeight: body?.style.minHeight || "",
-            rootOverflowAnchor: root.style.overflowAnchor,
         };
 
         // Keep the pre-open page geometry stable without changing the document
         // overflow owner. This prevents bottom-of-page scroll clamping when a
         // fixed modal and focus state alter viewport rounding by a few pixels.
-        root.style.overflowAnchor = "none";
         if (body) body.style.minHeight = `${lockedDocumentHeight}px`;
     }
 
@@ -1932,7 +1930,6 @@ if (IS_ADMIN_PATH) {
         requestAnimationFrame(() => {
             if (secretState.scrollLock) return;
             if (document.body) document.body.style.minHeight = lock.bodyMinHeight;
-            document.documentElement.style.overflowAnchor = lock.rootOverflowAnchor;
             window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             requestAnimationFrame(() => {
                 if (secretState.scrollLock) return;

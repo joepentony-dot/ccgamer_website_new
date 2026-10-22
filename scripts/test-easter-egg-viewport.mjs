@@ -144,6 +144,7 @@ async function settleAtPageBottom(page) {
   let previous = null;
   let stableSamples = 0;
   let latest = null;
+  const sampleHistory = [];
 
   while (Date.now() < deadline) {
     await page.evaluate(() => {
@@ -165,6 +166,9 @@ async function settleAtPageBottom(page) {
         distanceFromTheoreticalMax: theoreticalMax - window.scrollY,
       };
     });
+
+    sampleHistory.push(latest);
+    if (sampleHistory.length > 18) sampleHistory.shift();
 
     // The physically reachable scrollY is authoritative here. Chromium mobile
     // emulation can report scrollHeight - innerHeight several CSS pixels below
@@ -188,7 +192,7 @@ async function settleAtPageBottom(page) {
   }
 
   throw new Error(
-    `Page bottom did not settle before viewport validation: ${JSON.stringify(latest)}`
+    `Page bottom did not settle before viewport validation: ${JSON.stringify({ latest, sampleHistory })}`
   );
 }
 

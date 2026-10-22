@@ -707,6 +707,10 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     assertGenericWheelTarget(target, `${labelPrefix} ${page.label}`);
 
     await movePointer(sessionId, target.x, target.y);
+    // The audit first jumps into the middle of the page programmatically.
+    // Let that artificial repositioning and its raster work finish before
+    // arming the real-wheel latency probe (as the Home audit already does).
+    await new Promise((resolve) => setTimeout(resolve, 450));
     await execute(sessionId, String.raw`
 window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
