@@ -1864,6 +1864,18 @@ if (IS_ADMIN_PATH) {
             }, { capture: true, passive: false });
         });
 
+        // The overlay owns background-scroll blocking. Keeping document overflow
+        // untouched avoids mobile browsers clamping the page's existing scrollY.
+        ["wheel", "touchmove"].forEach(eventName => {
+            modal.addEventListener(eventName, event => {
+                const content = event.target instanceof Element
+                    ? event.target.closest(".ccg-secret-modal__content")
+                    : null;
+                if (content) return;
+                event.preventDefault();
+            }, { passive: false });
+        });
+
         modal.addEventListener("pointerdown", event => {
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
@@ -1884,63 +1896,21 @@ if (IS_ADMIN_PATH) {
     function lockSecretModalScroll() {
         if (secretState.scrollLock) return;
 
-        const scrollX = window.scrollX || document.documentElement.scrollLeft || 0;
-        const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-        const stableGutter = window.getComputedStyle(document.documentElement).scrollbarGutter.includes("stable");
-        const scrollbarGap = stableGutter ? 0 : Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-        const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
-
-        const lockedDocumentHeight = Math.max(
-            document.documentElement.scrollHeight,
-            document.body.scrollHeight,
-            window.innerHeight
-        );
-
         secretState.scrollLock = {
-            scrollX,
-            scrollY,
-            bodyOverflowX: document.body.style.overflowX,
-            bodyOverflowY: document.body.style.overflowY,
-            bodyMinHeight: document.body.style.minHeight,
-            bodyPaddingRight: document.body.style.paddingRight,
-            bodyOverscrollBehavior: document.body.style.overscrollBehavior,
-            htmlOverflowX: document.documentElement.style.overflowX,
-            htmlOverflowY: document.documentElement.style.overflowY,
-            htmlOverflowAnchor: document.documentElement.style.overflowAnchor,
-            htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
+            scrollX: window.scrollX || document.documentElement.scrollLeft || 0,
+            scrollY: window.scrollY || document.documentElement.scrollTop || 0,
         };
-
-        // Preserve the pre-lock document height before root overflow changes can
-        // trigger a responsive reflow and clamp the current mobile scroll offset.
-        document.body.style.minHeight = `${lockedDocumentHeight}px`;
-        document.documentElement.style.overflowAnchor = "none";
-        document.documentElement.style.overflow = "hidden";
-        document.documentElement.style.overscrollBehavior = "none";
-        document.body.style.overflow = "hidden";
-        document.body.style.overscrollBehavior = "none";
-        if (scrollbarGap > 0) {
-            document.body.style.paddingRight = `${computedPaddingRight + scrollbarGap}px`;
-        }
     }
 
     function unlockSecretModalScroll() {
         const lock = secretState.scrollLock;
         if (!lock) return;
 
-        document.documentElement.style.overflowX = lock.htmlOverflowX;
-        document.documentElement.style.overflowY = lock.htmlOverflowY;
-        document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
-        document.body.style.overflowX = lock.bodyOverflowX;
-        document.body.style.overflowY = lock.bodyOverflowY;
-        document.body.style.minHeight = lock.bodyMinHeight;
-        document.body.style.paddingRight = lock.bodyPaddingRight;
-        document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
         window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
         requestAnimationFrame(() => {
             if (secretState.scrollLock) return;
             window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
-            document.documentElement.style.overflowAnchor = lock.htmlOverflowAnchor;
         });
     }
 
