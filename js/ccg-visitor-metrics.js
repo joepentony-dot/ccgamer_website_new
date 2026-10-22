@@ -133,9 +133,26 @@
   // GoatCounter pageview tracker, but never add a second existing tracker.
   function ensureGoatCounterTracker() {
     if (typeof document.createElement !== "function" || !document.head) return;
-    if (window.goatcounter || document.querySelector(
-      'script[data-goatcounter], script[src*="gc.zgo.at/count.js"]')) return;
     var game = getGamePath();
+    var existing = document.querySelector("script[data-goatcounter]");
+    if (existing) {
+      // Source HTML sometimes ships the tracker without the staging
+      // pipeline's raw-view override. Apply it if the async script has
+      // not yet initialised; staged HTML already has this setting.
+      if (game && !window.goatcounter && typeof existing.getAttribute === "function") {
+        var raw = existing.getAttribute("data-goatcounter-settings");
+        var settingsFromTag;
+        try { settingsFromTag = raw ? JSON.parse(raw) : {}; }
+        catch (_) { settingsFromTag = null; }
+        if (settingsFromTag && (!settingsFromTag.path || settingsFromTag.path === game)) {
+          settingsFromTag.path = game;
+          settingsFromTag.no_session = true;
+          existing.setAttribute("data-goatcounter-settings", JSON.stringify(settingsFromTag));
+        }
+      }
+      return;
+    }
+    if (window.goatcounter || document.querySelector('script[src*="gc.zgo.at/count.js"]')) return;
     var settings = { path: game || window.location.pathname || "/" };
     if (game) settings.no_session = true; // Count every game-page load.
     var script = document.createElement("script");
@@ -158,7 +175,7 @@
     var badge = document.createElement("div");
     badge.className = "ccg-game-views";
     badge.setAttribute("aria-label", "Total recorded views of this game page");
-    badge.title = "Page loads for this game, including repeated visits and refreshes. Browser blocking can prevent tracking.";
+    badge.title = "Recovered historical recorded visits and newer game page loads. GoatCounter may delay updates; browser blocking can prevent tracking.";
 
     var label = document.createElement("span");
     label.className = "ccg-game-views__label";
@@ -214,7 +231,7 @@
       var homeLabel = document.querySelector(".ccg-footer-home__status");
       if (homeLabel) {
         homeLabel.textContent = "Archive visits";
-        homeLabel.title = "Approximate visitor sessions across the archive, at most one per browser per rolling hour. Not distinct lifetime people.";
+        homeLabel.title = "Recovered historical homepage page hits through 22 October 2026, plus later archive visits counted at most once per browser per rolling hour. Not unique lifetime people.";
       }
       // This event began with the new counter. Historical pageviews cannot be
       // retrospectively translated into unique visitors.
