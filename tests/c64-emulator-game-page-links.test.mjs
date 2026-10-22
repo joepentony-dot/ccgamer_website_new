@@ -174,3 +174,20 @@ test("1988 Domark Star Wars page selects verified edition, never older cartridge
   assert.match(linked("star-wars"), /game=owner-crt-more-starwars-1e41e83051d1&amp;autoplay=1/);
   assert.match(generator, /verifiedEditionSpecificMediaSelections/);
 });
+
+test("Kobyashi Naru spelling maps only to approved Kobayashi Naru cartridge", () => {
+  const game = c64Games.find(g => g.slug === "kobyashi-naru");
+  assert.equal(game?.year, 1987);
+  assert.ok(game?.credits?.publisher?.includes("Mastertronic"));
+  const entry = direct.find(e => e.id === "owner-crt-more-kobayashi-naru");
+  assert.equal(entry?.approved, true);
+  assert.equal(entry?.title, "Kobayashi Naru");
+  assert.equal(entry?.sha256,
+    "c6ab2cc7e7bb6a9bd97e79f14737140a1a65839857e5b669e26bc82570b04f43");
+  const rom = fs.readFileSync("emulator/c64/media/cartridge-replacements/kobayashi-naru.crt");
+  assert.equal(rom.length, 82144);
+  assert.ok(rom.includes(Buffer.from("KOBAYASHI NARU")));
+  assert.match(linked("kobyashi-naru"),
+    /game=owner-crt-more-kobayashi-naru&amp;autoplay=1/);
+  assert.match(generator, /\["kobyashi-naru",\["Kobayashi Naru","owner-crt-more-kobayashi-naru"\]\]/);
+});
