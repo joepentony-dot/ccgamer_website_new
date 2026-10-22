@@ -79,6 +79,45 @@ function evaluateHtml(html, route) {
   };
 }
 
+// Canonical game views are raw page loads, not GoatCounter's default
+// once-per-path/eight-hour visits. Instrument only the deployed copy of
+// canonical game routes, after the publisher-owned source parity audit.
+function enforceGameRawViews(html, route) {
+  const canonical = /^\/games\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(route);
+  const gameDocument = /<html\b[^>]*\bdata-ccg-page\s*=\s*(["'])single-game\1/i.test(html);
+  if (!canonical || !gameDocument) return html;
+
+  const matches = [...html.matchAll(SCRIPT_TAGS)].filter((m) => {
+    const open = m[0].match(/^<script\b[^>]*>/i);
+    return open && /\bdata-goatcounter\s*=/i.test(open[0]);
+  });
+  if (matches.length !== 1) throw new Error("Expected one game tracker at " + route);
+
+  const match = matches[0];
+  const open = match[0].match(/^<script\b[^>]*>/i)[0];
+  const pattern = /\bdata-goatcounter-settings\s*=\s*(["'])(.*?)\1/i;
+  const previous = open.match(pattern);
+  let settings = {};
+  if (previous) {
+    try { settings = JSON.parse(previous[2]); }
+    catch (_) { throw new Error("Invalid GoatCounter game settings on " + route); }
+    if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
+      throw new Error("Unexpected GoatCounter game settings on " + route);
+    }
+  }
+  if (settings.path && settings.path !== route) {
+    throw new Error("Mismatched canonical game analytics path on " + route);
+  }
+  settings.path = route;
+  settings.no_session = true;
+  const attribute = "data-goatcounter-settings='" + JSON.stringify(settings) + "'";
+  const nextOpen = previous ? open.replace(pattern, attribute) :
+    open.replace(/>$/, " " + attribute + ">");
+  if (open === nextOpen) return html;
+  const start = match.index;
+  return html.slice(0, start) + nextOpen + html.slice(start + open.length);
+}
+
 function ensureMetricsRuntime(html, route) {
   if (!/<html(?:\s|>)/i.test(html)) return html;
 
@@ -95,7 +134,7 @@ function ensureMetricsRuntime(html, route) {
     /<\/html\s*>/i.test(html) ? /<\/html\s*>/i : null;
   if (!marker) throw new Error("No closing HTML tag for metrics on " + route);
 
-  return html.replace(marker, "\n" + scriptTag + "\nfunction htmlFiles(root) {");
+  return html.replace(marker, "\n" + scriptTag + "\nreturn html.replace(marker, "\n" + scriptTag + "\nfunction htmlFiles(root) {");");
 }
 
 function htmlFiles(root) {
@@ -130,7 +169,8 @@ function run(argv) {
     const route = publicPath(root, file);
     const before = fs.readFileSync(file, "utf8");
     const result = evaluateHtml(before, route);
-    const withMetrics = ensureMetricsRuntime(result.html, route);
+    const withGameViews = enforceGameRawViews(result.html, route);
+    const withMetrics = ensureMetricsRuntime(withGameViews, route);
     counts.checked++;
     counts[result.status]++;
     if (withMetrics !== before) {
@@ -157,4 +197,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { publicPath, trackingSnippet, evaluateHtml, ensureMetricsRuntime, htmlFiles, run };
+module.exports = { publicPath, trackingSnippet, evaluateHtml, enforceGameRawViews, ensureMetricsRuntime, htmlFiles, run };
