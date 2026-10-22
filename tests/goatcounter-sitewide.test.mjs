@@ -131,6 +131,7 @@ test("public counter runtime counts one shared session event and each canonical 
   assert.match(runtime, /fetchPublicCount\(SESSION_EVENT,\s*homeCount\)/);
   assert.match(runtime, /fetchPublicCount\(path,\s*count\)/);
   assert.doesNotMatch(global, /GOATCOUNTER_API_TOKEN|api\/v0\/stats\/total|Authorization:/);
-  assert.match(home, /Archive visits/);
+  assert.match(home, /id="ccg-visit-count"/);
+  assert.match(runtime, /homeLabel\.textContent = "Archive visits"/);
   assert.match(css, /\.ccg-page--single-game \.ccg-game-views/);
 });
