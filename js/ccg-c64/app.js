@@ -2588,13 +2588,19 @@ async function initialiseOnlineLibrary() {
   };
   const retiredTitle = Object.hasOwn(retiredDirectAliases, linkedGameId)
     ? retiredDirectAliases[linkedGameId] : "";
+  // The historical Domark edition is identity-pinned, never title-fallback.
+  // If the exact SHA-audited CRT disappears or changes, do not boot the
+  // older Star Wars image in its place.
+  const pinnedDomarkLink = linkedGameId === "owner-crt-more-starwars-1e41e83051d1";
   let linkedGame = validLinkedId
-    ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
-       (linkedOriginal && onlineLibraryEntries.find(entry =>
-         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
-       (retiredTitle && onlineLibraryEntries.find(entry =>
-         entry.format === "crt" &&
-         catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle))))
+    ? (pinnedDomarkLink
+        ? onlineLibraryEntries.find(entry => entry.id === linkedGameId) || null
+        : (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
+           (linkedOriginal && onlineLibraryEntries.find(entry =>
+             catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
+           (retiredTitle && onlineLibraryEntries.find(entry =>
+             entry.format === "crt" &&
+             catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle)))))
     : null;
   // Packed PRG IDs are stable bookmarks. After retiring an exact-title PRG,
   // request the small SHA-audited retirement map ONLY for an unresolved legacy
