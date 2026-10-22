@@ -445,5 +445,16 @@ const rows = results.map(result => {
 const report = `# Easter Egg Viewport Positioning Validation\n\n## Verdict\n\n**${evidence.verdict}**\n\nThe three-click command menu, a shared framed result and the direct BSOD overlay were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.\n\n| Case | Viewport | Result | Menu height | Result frame height |\n|---|---:|---:|---:|---:|\n${rows}\n\n## Required behaviour\n\n- Menu panel, close button, framed result, direct result and exit button remain inside the visible viewport.\n- Long menus scroll internally with the close control remaining visible.\n- Every reopen begins at the top of the command list.\n- Opening and closing does not move the underlying page.\n- Wheel input on the modal backdrop cannot scroll the underlying page.\n- The body is no longer changed to fixed positioning or touch-action none.\n- Keyboard focus moves to the active close/exit control.\n\n## Failed checks\n\n${failedChecks.length ? failedChecks.map(item => `- ${item}`).join('\n') : '- None'}\n`;
 
 fs.writeFileSync(path.resolve(args.report), report);
-console.log(JSON.stringify({ verdict: evidence.verdict, testedCases: results.length, failedChecks }, null, 2));
+console.log(JSON.stringify({
+  verdict: evidence.verdict,
+  testedCases: results.length,
+  failedChecks,
+  failedScrollEvidence: results.filter(result => !result.passed).map(result => ({
+    case: result.name,
+    before: result.scrollBeforeOpen,
+    whileOpen: result.menuState?.scrollY,
+    afterClose: result.scrollAfterClose,
+    bottomState: result.bottomState,
+  })),
+}, null, 2));
 if (failedChecks.length) process.exit(1);
