@@ -192,6 +192,7 @@ const verifiedPageTitleAliases = new Map([
   ["sid-meiers-pirates",["Pirates!","pirates"]],
   ["teenage-mutant-hero-turtles",["Teenage Mutant Ninja Turtles, The","archive-08639"]],
   ["kobyashi-naru",["Kobayashi Naru","owner-crt-more-kobayashi-naru"]],
+  ["cops-n-robbers",["Cops & Robbers","owner-crt-more-cops-and-robbers"]],
 ]);
 
 // Owner-reviewed exact-title duplicate CRTs: the pinned ID is the first
