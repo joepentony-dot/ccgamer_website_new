@@ -194,6 +194,14 @@ test('music waits for adaptive navigation CSS before exposing its injected heade
   assert.match(musicNavigation, /await Promise\.all\(STYLES\.map\(waitForStyle\)\);[\s\S]*const header = ensureHeader\(\);/);
 });
 
+test('composer directory isolates collapsed groups without hiding searchable archive links', () => {
+  assert.match(musicComposerCss, /@supports \(content-visibility: auto\)/);
+  assert.match(musicComposerCss, /\.composer-accordion__group:not\(\.is-open\)\s*\{[\s\S]*content-visibility:\s*auto;/);
+  assert.match(musicComposerCss, /\.composer-accordion__group\.is-open\s*\{[\s\S]*content-visibility:\s*visible;/);
+  assert.match(musicComposerCss, /contain-intrinsic-size:\s*auto 52px;/);
+  assert.match(musicComposerCss, /contain-intrinsic-size:\s*none;/);
+});
+
 test('music composer pages share the native wheel performance contract', () => {
   assert.match(musicComposerCss, /CCG MUSIC WHEEL PERFORMANCE CONTRACT/);
   assert.match(musicComposerCss, /data-ccg-page="music-composer"/);
