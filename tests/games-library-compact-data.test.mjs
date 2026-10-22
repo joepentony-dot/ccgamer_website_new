@@ -41,7 +41,13 @@ test("Browse Games keeps first-scroll startup progressive", () => {
   assert.match(librarySource, /requestIdleCallback\(\(\) => \{[\s\S]*stillQuietFor < QUIET_WINDOW_MS/);
   assert.match(librarySource, /#gamesSearchInput[\s\S]*\[data-system-filter\][\s\S]*#gamesYearSelect/);
   assert.match(librarySource, /handleIntent[\s\S]*start\(\)/);
+  assert.match(librarySource, /document\.documentElement\.classList\.remove\("ccg-games-enhancement-pending"\)/);
   assert.match(librarySource, /window\.CCG_GAMES_LIBRARY_READY = true/);
+
+  const gamesHtml = fs.readFileSync("games/index.html", "utf8");
+  const gamesCss = fs.readFileSync("resources/css/ccg-games-index-omega.css", "utf8");
+  assert.match(gamesHtml, /classList\.add\('ccg-games-enhancement-pending'\)/);
+  assert.match(gamesCss, /ccg-games-enhancement-pending[\s\S]*nth-child\(n\+49\)/);
 });
 
 test("Browse Games prefers compact data and fails safely to games.json", () => {
