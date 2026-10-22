@@ -1,4 +1,5 @@
 import test from "node:test";
+import vm from "node:vm";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
@@ -42,6 +43,7 @@ test("adds tracking to untracked root, game, music and admin pages, with route-o
     assert.ok(html.includes(source), route);
     const canonical = goatcounter.publicPath(site, path.join(site, route));
     assert.ok(html.includes(JSON.stringify({ path: canonical })), route);
+    assert.equal((html.match(/src="\/js\/ccg-visitor-metrics\.js"/g) || []).length, 1, route);
   }
   assert.equal(runScript(site, true).status, 0);
   assert.equal(runScript(site).status, 0, "idempotent second application");
@@ -102,4 +104,120 @@ test("admin game publication and GitHub Pages deployment enforce GoatCounter", (
   assert.match(deploy, /ensure-goatcounter-coverage\.js --root _site/);
   assert.match(deploy, /ensure-goatcounter-coverage\.js --root _site --check/);
   assert.match(publishing, /tests\/goatcounter-sitewide\.test\.mjs/);
+});
+
+
+test("sitewide metrics runtime is injected once and never alters page SEO", () => {
+  const body = '<title>Test</title><link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/chuckie-egg/">';
+  const html = '<!doctype html><html><head>' + body + '</head><body><main>Review</main></body></html>';
+  const once = goatcounter.ensureMetricsRuntime(html, "/games/chuckie-egg/");
+  assert.equal((once.match(/src="\/js\/ccg-visitor-metrics\.js"/g) || []).length, 1);
+  assert.equal(goatcounter.ensureMetricsRuntime(once, "/games/chuckie-egg/"), once);
+  assert.ok(once.includes(body));
+  assert.ok(once.includes("<main>Review</main>"));
+});
+
+test("public counter runtime counts one shared session event and each canonical game separately", () => {
+  const runtime = fs.readFileSync(path.join(root, "js/ccg-visitor-metrics.js"), "utf8");
+  const global = fs.readFileSync(path.join(root, "js/ccg-global.js"), "utf8");
+  const home = fs.readFileSync(path.join(root, "home.html"), "utf8");
+  const css = fs.readFileSync(path.join(root, "resources/css/game-pages.css"), "utf8");
+
+  assert.match(runtime, /SESSION_EVENT\s*=\s*"ccg-archive-session"/);
+  assert.match(runtime, /event:\s*true/);
+  assert.match(runtime, /SESSION_WINDOW_MS = 60 \* 60 \* 1000/);
+  assert.match(runtime, /window\.localStorage\.setItem\(SESSION_KEY/);
+  assert.match(runtime, /no_session:\s*true/);
+  assert.doesNotMatch(runtime, /Bearer|api\/v0/);
+  assert.match(runtime, /document\.documentElement\.getAttribute\("data-ccg-page"\) !== "single-game"/);
+  assert.match(runtime, /result\.count/);
+  assert.match(runtime, /encodeURIComponent\(path\)\s*\+\s*"\.json"/);
+  assert.match(runtime, /fetchPublicCount\(SESSION_EVENT,\s*homeCount\)/);
+  assert.match(runtime, /fetchPublicCount\(path,\s*count\)/);
+  assert.match(runtime, /footer\.appendChild\(badge\)/);
+  assert.doesNotMatch(global, /GOATCOUNTER_API_TOKEN|api\/v0\/stats\/total|Authorization:/);
+  assert.match(home, /id="ccg-visit-count"/);
+  assert.match(runtime, /homeLabel\.textContent = "Archive visits"/);
+  assert.match(css, /\.ccg-page--single-game \.ccg-footer--game > \.ccg-game-views/);
+});
+
+
+test("canonical game pages count each load regardless of global session deduplication", (t) => {
+  const site = fs.mkdtempSync(path.join(os.tmpdir(), "ccg-raw-game-"));
+  t.after(() => fs.rmSync(site, { recursive: true, force: true }));
+  const game = path.join(site, "games/chuckie-egg/index.html");
+  const home = path.join(site, "home.html");
+  fs.mkdirSync(path.dirname(game), { recursive: true });
+  const approved = '<script data-goatcounter="' + endpoint + '" async src="' + source + '"></script>';
+  fs.writeFileSync(game, '<!doctype html><html data-ccg-page="single-game"><head><title>Chuckie Egg</title></head><body><p>Review</p>' + approved + "</body></html>");
+  fs.writeFileSync(home, page(approved));
+
+  assert.equal(runScript(site).status, 0);
+  const gameOutput = fs.readFileSync(game, "utf8");
+  const homeOutput = fs.readFileSync(home, "utf8");
+  assert.match(gameOutput, /data-goatcounter-settings='{"path":"\/games\/chuckie-egg\/","no_session":true}'/);
+  assert.doesNotMatch(homeOutput, /no_session/);
+  assert.match(gameOutput, /<p>Review<\/p>/);
+  assert.equal((gameOutput.match(/data-goatcounter=/g) || []).length, 1);
+  assert.equal(runScript(site, true).status, 0);
+  assert.equal(runScript(site).status, 0);
+  assert.equal(fs.readFileSync(game, "utf8"), gameOutput);
+  assert.equal(fs.readFileSync(home, "utf8"), homeOutput);
+});
+
+test("game overrides preserve approved path settings and reject incorrect canonical paths", () => {
+  const tag = '<script data-goatcounter="' + endpoint +
+    '" data-goatcounter-settings=' + "'" + '{"path":"/games/chuckie-egg/"}' + "'" +
+    ' async src="' + source + '"></script>';
+  const html = '<html data-ccg-page="single-game"><body>' + tag + "</body></html>";
+  const modified = goatcounter.enforceGameRawViews(html, "/games/chuckie-egg/");
+  assert.match(modified, /no_session":true/);
+  assert.equal(goatcounter.enforceGameRawViews(modified, "/games/chuckie-egg/"), modified);
+  assert.throws(() => goatcounter.enforceGameRawViews(html, "/games/other/"), /Mismatched canonical/);
+  const genreHtml = html.replace('data-ccg-page="single-game"', 'data-ccg-page="genre"');
+  assert.equal(goatcounter.enforceGameRawViews(genreHtml, "/games/genres/"), genreHtml);
+});
+
+test("hourly archive event is once per browser per rolling hour across pages", () => {
+  const sourceCode = fs.readFileSync(path.join(root, "js/ccg-visitor-metrics.js"), "utf8");
+  const storage = new Map();
+  const hits = [];
+  let now = 1_000_000_000;
+  function visit(route) {
+    const window = {
+      location: { pathname: route },
+      localStorage: {
+        getItem(key) { return storage.get(key) ?? null; },
+        setItem(key, value) { storage.set(key, value); }
+      },
+      goatcounter: { count(event) { hits.push(event); } },
+      setInterval(callback) { this._tick = callback; return 1; },
+      clearInterval() {}
+    };
+    const document = {
+      readyState: "complete",
+      documentElement: { getAttribute() { return null; } },
+      querySelector() { return null; },
+      getElementById() { return null; }
+    };
+    vm.runInNewContext(sourceCode, {
+      window, document, Date: { now() { return now; } }, URL,
+      location: { origin: "https://www.cheekycommodoregamer.co.uk" }
+    });
+    window._tick();
+  }
+  visit("/home.html");
+  now += 30 * 60 * 1000;
+  visit("/games/chuckie-egg/");
+  now += 29 * 60 * 1000;
+  visit("/games/bruce-lee/");
+  assert.equal(hits.length, 1);
+  now += 60 * 1000;
+  visit("/music/");
+  assert.equal(hits.length, 2);
+  for (const hit of hits) {
+    assert.equal(hit.path, "ccg-archive-session");
+    assert.equal(hit.event, true);
+    assert.equal(hit.no_session, true);
+  }
 });
