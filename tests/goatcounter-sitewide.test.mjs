@@ -174,7 +174,8 @@ test("game overrides preserve approved path settings and reject incorrect canoni
   assert.match(modified, /no_session":true/);
   assert.equal(goatcounter.enforceGameRawViews(modified, "/games/chuckie-egg/"), modified);
   assert.throws(() => goatcounter.enforceGameRawViews(html, "/games/other/"), /Mismatched canonical/);
-  assert.equal(goatcounter.enforceGameRawViews(html, "/games/genres/"), html);
+  const genreHtml = html.replace('data-ccg-page="single-game"', 'data-ccg-page="genre"');
+  assert.equal(goatcounter.enforceGameRawViews(genreHtml, "/games/genres/"), genreHtml);
 });
 
 test("hourly archive event is once per browser per rolling hour across pages", () => {
