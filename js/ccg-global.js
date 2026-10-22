@@ -3176,7 +3176,8 @@ function setupFooterSignatureRotator() {
    of the staged copy. Every CCG public game and the home page already
    include ccg-global.js, so load the display runtime from this shared
    entrypoint even if the staged HTML tag was omitted.
-   This does not send any pageviews or duplicate tracking scripts.
+   The runtime also restores pageview tracking if the deployed HTML lacks it;
+   existing trackers are not duplicated.
 ================================================================ */
 (function ccgEnsureVisitorMetrics() {
     "use strict";
@@ -3187,7 +3188,7 @@ function setupFooterSignatureRotator() {
     if (document.querySelector('script[data-ccg-visitor-metrics]')) return;
 
     const script = document.createElement("script");
-    script.src = "/js/ccg-visitor-metrics.js?v=20261022-counter-display-fix";
+    script.src = "/js/ccg-visitor-metrics.js?v=20261022-historical-recovery-v1";
     script.async = true;
     script.setAttribute("data-ccg-visitor-metrics", "shared-loader");
     (document.head || document.documentElement).appendChild(script);

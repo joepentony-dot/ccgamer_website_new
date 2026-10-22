@@ -279,3 +279,76 @@ test("every committed canonical game page inherits the shared display loader", (
   }
   assert.ok(pages.length >= 600, "Expected entire 666-game CCG archive to be covered");
 });
+
+
+test("export recovery preserves archived totals and legacy game links without duplicate counted hits", async () => {
+  const source = fs.readFileSync(path.join(root, "js/ccg-visitor-metrics.js"), "utf8");
+  assert.match(source, /HISTORICAL_HOME_HITS = 2361/);
+  assert.match(source, /HISTORICAL_ARCHIVE_EVENTS = 1/);
+  assert.match(source, /"master-of-magic":80/);
+  assert.match(source, /"ninja-rabbits":73/);
+  assert.match(source, /"ace-of-aces":14/);
+  assert.match(source, /Math\.max\(oldSnapshot, oldLive\)/);
+  assert.match(source, /ensureGoatCounterTracker\(\)/);
+
+  function render(pathname, counters, fail = false) {
+    const home = {textContent:"—",attrs:{},
+      setAttribute(k,v) {this.attrs[k]=v;}};
+    let footer, gameCounter;
+    const scripts=[];
+    const document={
+      readyState:"complete",
+      documentElement:{getAttribute(k){return k==="data-ccg-page"?
+        (pathname.startsWith("/games/")?"single-game":"home"):null;}},
+      head:{appendChild(script){scripts.push(script);}},
+      querySelector(selector) {
+        if(selector.startsWith('link[rel="canonical"]'))return {
+          href:"https://www.cheekycommodoregamer.co.uk"+pathname};
+        if(selector===".ccg-footer-home__status")return {textContent:"",title:""};
+        if(selector===".ccg-footer--game")return footer;
+        return null;
+      },
+      createElement() {
+        return {children:[],attrs:{},textContent:"",
+          appendChild(node){this.children.push(node);},
+          setAttribute(k,v){this.attrs[k]=v;}};
+      },
+      getElementById(id) {
+        if(id==="ccg-visit-count"&&!pathname.startsWith("/games/"))return home;
+        if(id==="ccg-game-view-count")return gameCounter||null;
+        return null;
+      }
+    };
+    footer={appendChild(badge){gameCounter=badge.children[1];}};
+    const window={
+      location:{pathname},
+      fetch(url) {
+        if(fail)return Promise.reject(new Error("blocked"));
+        const requested=decodeURIComponent(url.split("/counter/")[1].replace(/\.json$/,""));
+        if(!(requested in counters))return Promise.resolve({status:404,ok:false});
+        return Promise.resolve({status:200,ok:true,json:async()=>({count:String(counters[requested])})});
+      },
+      setInterval(){return 1;},clearInterval(){}
+    };
+    vm.runInNewContext(source,{window,document,URL,location:{
+      origin:"https://www.cheekycommodoregamer.co.uk"}});
+    return {counter:gameCounter||home,scripts};
+  }
+  const homepage=render("/home.html",{"ccg-archive-session":7});
+  const master=render("/games/master-of-magic/",{"/games/master-of-magic":80,"/games/master-of-magic/":3});
+  const ace=render("/games/ace-of-aces/",{"/games/ace-of-aces":46,"/games/ace-of-aces/":2});
+  const blocked=render("/games/ninja-rabbits/",{},true);
+  const newGame=render("/games/smash-t-v/",{"/games/smash-t-v/":4});
+  await new Promise(resolve=>setTimeout(resolve,0));
+  assert.equal(homepage.counter.textContent,"2,367");
+  assert.equal(master.counter.textContent,"83");
+  assert.equal(ace.counter.textContent,"62"); // 46 old + 14 legacy URLs + 2 new
+  assert.equal(blocked.counter.textContent,"73");
+  assert.equal(newGame.counter.textContent,"4");
+  for(const result of [homepage,master,ace,blocked,newGame]){
+    assert.equal(result.counter.attrs["data-ccg-counter-loaded"],"true");
+    assert.equal(result.scripts.length,1,"One recovered GoatCounter tracker per page");
+  }
+  assert.match(master.scripts[0].attrs["data-goatcounter-settings"],/"no_session":true/);
+  assert.doesNotMatch(homepage.scripts[0].attrs["data-goatcounter-settings"],/"no_session"/);
+});
