@@ -538,8 +538,8 @@ max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bo
 
 /* Lock background scroll while modal is open */
 body.ccg-secret-modal-open {
-overflow: hidden;
-touch-action: none;
+overscroll-behavior: none;
+touch-action: auto;
 }
 
 /* Subtle visual cue indicating scrollable content */
@@ -573,6 +573,8 @@ rgba(0,0,0,0.6)
     max-width: none;
     max-height: none;
     overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
     align-items: center;
     justify-content: center;
     padding:
@@ -628,7 +630,6 @@ rgba(0,0,0,0.6)
 }
 
 body.ccg-secret-modal-open {
-    overflow: hidden;
     overscroll-behavior: none;
     touch-action: auto;
 }
