@@ -149,7 +149,7 @@ test("canonical game pages count each load regardless of global session deduplic
   const home = path.join(site, "home.html");
   fs.mkdirSync(path.dirname(game), { recursive: true });
   const approved = '<script data-goatcounter="' + endpoint + '" async src="' + source + '"></script>';
-  fs.writeFileSync(game, '<!doctype html><html data-ccg-page="single-game"><head><title>Chuckie Egg</title></head><body><p>Review</p>' + approved + "</body></html>");
+  fs.writeFileSync(game, '<!doctype html><html data-ccg-page="single-game"><head><title>Chuckie Egg</title></head><body><p>Review</p><footer class="ccg-footer ccg-footer--game"></footer>' + approved + "</body></html>");
   fs.writeFileSync(home, page(approved));
 
   assert.equal(runScript(site).status, 0);
@@ -283,7 +283,7 @@ test("every committed canonical game page inherits the shared display loader", (
 
 test("export recovery preserves archived totals and legacy game links without duplicate counted hits", async () => {
   const source = fs.readFileSync(path.join(root, "js/ccg-visitor-metrics.js"), "utf8");
-  assert.match(source, /HISTORICAL_HOME_HITS = 2361/);
+  assert.match(source, /HISTORICAL_ARCHIVE_HITS = 14793/);
   assert.match(source, /HISTORICAL_ARCHIVE_EVENTS = 1/);
   assert.match(source, /"master-of-magic":80/);
   assert.match(source, /"ninja-rabbits":73/);
@@ -341,7 +341,7 @@ test("export recovery preserves archived totals and legacy game links without du
   const blocked=render("/games/ninja-rabbits/",{},true);
   const newGame=render("/games/smash-t-v/",{"/games/smash-t-v":4});
   await new Promise(resolve=>setTimeout(resolve,0));
-  assert.equal(homepage.counter.textContent,"2,367");
+  assert.equal(homepage.counter.textContent,"14,799");
   assert.equal(master.counter.textContent,"83");
   assert.equal(ace.counter.textContent,"62"); // 48 direct + 14 distinct legacy URLs
   assert.equal(blocked.counter.textContent,"73");
@@ -352,4 +352,57 @@ test("export recovery preserves archived totals and legacy game links without du
   }
   assert.match(master.scripts[0].attrs["data-goatcounter-settings"],/"no_session":true/);
   assert.doesNotMatch(homepage.scripts[0].attrs["data-goatcounter-settings"],/"no_session"/);
+});
+
+
+test("every canonical game can ship an immediately visible, numeric HTML counter", (t) => {
+  const totals = goatcounter.historicalGameTotals();
+  assert.ok(Object.keys(totals).length >= 700, "Expect all recovered public game routes");
+  assert.equal(totals["master-of-magic"], 80);
+  assert.equal(totals["ninja-rabbits"], 73);
+  assert.equal(totals["ace-of-aces"], 60);
+  const html = '<!doctype html><html data-ccg-page="single-game"><body>' +
+    '<footer class="ccg-footer ccg-footer--game"><div class="ccg-footer-inner--game">Credits</div></footer></body></html>';
+  for (const [slug, count] of [
+    ["master-of-magic", 80], ["ace-of-aces", 60], ["smash-t-v", 0]
+  ]) {
+    const route = "/games/" + slug + "/";
+    const rendered = goatcounter.ensureGameViewMarkup(html, route, totals);
+    assert.match(rendered, /class="ccg-game-views"/);
+    assert.match(rendered, /id="ccg-game-view-count"/);
+    assert.match(rendered, new RegExp(">\\s*" + count.toLocaleString("en-GB") + "\\s*</span>"));
+    assert.equal(goatcounter.ensureGameViewMarkup(rendered, route, totals), rendered,
+      "Repeated deployment must not duplicate a counter");
+  }
+  assert.equal(goatcounter.ensureGameViewMarkup(html.replace('single-game','genre'),
+    "/games/genres/", totals),html.replace('single-game','genre'));
+  assert.throws(() => goatcounter.ensureGameViewMarkup(
+    '<html data-ccg-page="single-game"><body></body></html>',
+    "/games/master-of-magic/", totals), /Missing canonical game footer/);
+
+  const folder=fs.mkdtempSync(path.join(os.tmpdir(),"ccg-game-counter-"));
+  t.after(()=>fs.rmSync(folder,{recursive:true,force:true}));
+  const file=path.join(folder,"games","master-of-magic","index.html");
+  fs.mkdirSync(path.dirname(file),{recursive:true});
+  fs.writeFileSync(file,html);
+  assert.equal(runScript(folder).status,0);
+  const staged=fs.readFileSync(file,"utf8");
+  assert.match(staged,/id="ccg-game-view-count"/);
+  assert.match(staged,/>\s*80\s*<\/span>/);
+  assert.equal(runScript(folder,true).status,0);
+  assert.equal(runScript(folder).status,0);
+  assert.equal(fs.readFileSync(file,"utf8"),staged);
+});
+
+test("home uses full 14,793 archive baseline and public-game counter has shared CSS fallback", () => {
+  const runtime=fs.readFileSync(path.join(root,"js/ccg-visitor-metrics.js"),"utf8");
+  const style=fs.readFileSync(path.join(root,"resources/css/ccg-footer.css"),"utf8");
+  const loader=fs.readFileSync(path.join(root,"js/ccg-global.js"),"utf8");
+  assert.match(runtime,/HISTORICAL_ARCHIVE_HITS = 14793/);
+  assert.doesNotMatch(runtime,/HISTORICAL_HOME_HITS/);
+  assert.match(runtime,/Math\.max\(0, count - HISTORICAL_ARCHIVE_EVENTS\)/);
+  assert.match(runtime,/if \(committedCount\)/);
+  assert.match(runtime,/fetchPublicCount\(path, committedCount\)/);
+  assert.match(style,/html\[data-ccg-page="single-game"\] \.ccg-footer--game > \.ccg-game-views/);
+  assert.match(loader,/full-archive-visible-counters-v2/);
 });
