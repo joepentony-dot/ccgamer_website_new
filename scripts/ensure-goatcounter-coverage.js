@@ -79,6 +79,25 @@ function evaluateHtml(html, route) {
   };
 }
 
+function ensureMetricsRuntime(html, route) {
+  if (!/<html(?:\s|>)/i.test(html)) return html;
+
+  const scriptTag = '<script defer src="/js/ccg-visitor-metrics.js" data-ccg-visitor-metrics></script>';
+  const scripts = [...html.matchAll(SCRIPT_TAGS)].filter((match) => {
+    const open = match[0].match(/^<script\b[^>]*>/i);
+    return open && /\bsrc\s*=\s*(["'])\/js\/ccg-visitor-metrics\.js\1/i.test(open[0]);
+  });
+  if (scripts.length > 1) throw new Error("Duplicate CCG metrics scripts on " + route);
+  if (scripts.length === 1) return html;
+
+  const marker = /<\/body\s*>/i.test(html) ? /<\/body\s*>/i :
+    /<\/head\s*>/i.test(html) ? /<\/head\s*>/i :
+    /<\/html\s*>/i.test(html) ? /<\/html\s*>/i : null;
+  if (!marker) throw new Error("No closing HTML tag for metrics on " + route);
+
+  return html.replace(marker, "\n" + scriptTag + "\nfunction htmlFiles(root) {");
+}
+
 function htmlFiles(root) {
   const files = [];
   function visit(dir) {
@@ -111,11 +130,12 @@ function run(argv) {
     const route = publicPath(root, file);
     const before = fs.readFileSync(file, "utf8");
     const result = evaluateHtml(before, route);
+    const withMetrics = ensureMetricsRuntime(result.html, route);
     counts.checked++;
     counts[result.status]++;
-    if (result.html !== before) {
+    if (withMetrics !== before) {
       gaps.push(route);
-      if (!check) fs.writeFileSync(file, result.html, "utf8");
+      if (!check) fs.writeFileSync(file, withMetrics, "utf8");
     }
   }
 
@@ -137,4 +157,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { publicPath, trackingSnippet, evaluateHtml, htmlFiles, run };
+module.exports = { publicPath, trackingSnippet, evaluateHtml, ensureMetricsRuntime, htmlFiles, run };
