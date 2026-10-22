@@ -172,9 +172,11 @@ async function initGamesLibrary() {
         if (staticFallback && CCG_ALL_GAMES.length > 120) {
             staticFallback.hidden = true;
         }
+        document.documentElement.classList.remove("ccg-games-enhancement-pending");
         window.CCG_GAMES_LIBRARY_READY = true;
 
     } catch (err) {
+        document.documentElement.classList.remove("ccg-games-enhancement-pending");
         console.error("[CCG] Games index load failed:", err);
     }
 }
