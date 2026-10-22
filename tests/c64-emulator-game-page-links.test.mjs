@@ -178,3 +178,39 @@ test("both original Turrican pages link to the existing owner-approved three-gam
   assert.match(generator, /\["turrican",\["Turrican Trilogy","turrican-trilogy"\]\]/);
   assert.match(generator, /\["turrican-2-the-final-fight",\["Turrican Trilogy","turrican-trilogy"\]\]/);
 });
+
+test("Kobyashi Naru spelling maps only to approved Kobayashi Naru cartridge", () => {
+  const game = c64Games.find(g => g.slug === "kobyashi-naru");
+  assert.equal(game?.year, 1987);
+  assert.ok(game?.credits?.publisher?.includes("Mastertronic"));
+  const entry = direct.find(e => e.id === "owner-crt-more-kobayashi-naru");
+  assert.equal(entry?.approved, true);
+  assert.equal(entry?.title, "Kobayashi Naru");
+  assert.equal(entry?.sha256,
+    "c6ab2cc7e7bb6a9bd97e79f14737140a1a65839857e5b669e26bc82570b04f43");
+  const rom = fs.readFileSync("emulator/c64/media/cartridge-replacements/kobayashi-naru.crt");
+  assert.equal(rom.length, 82144);
+  assert.ok(rom.includes(Buffer.from("KOBAYASHI NARU")));
+  assert.match(linked("kobyashi-naru"),
+    /game=owner-crt-more-kobayashi-naru&amp;autoplay=1/);
+  assert.match(generator, /\["kobyashi-naru",\["Kobayashi Naru","owner-crt-more-kobayashi-naru"\]\]/);
+});
+
+test("Atlantis Cops N Robbers and Cops & Robbers identify the same approved ROM", () => {
+  const game = c64Games.find(g => g.slug === "cops-n-robbers");
+  assert.equal(game?.year, 1985);
+  assert.ok(game?.credits?.publisher?.includes("Atlantis Software"));
+  const entry = direct.find(e => e.id === "owner-crt-more-cops-and-robbers");
+  assert.equal(entry?.approved, true);
+  assert.equal(entry?.title, "Cops & Robbers");
+  assert.equal(entry?.sha256,
+    "13db85aa258433eef3d9766f39de703486043c25eb915bef8548ddd3c8a7a512");
+  const rom = fs.readFileSync("emulator/c64/media/cartridge-replacements/cops-and-robbers.crt");
+  assert.equal(rom.length, 82144);
+  assert.ok(rom.includes(Buffer.from("COPS AND ROBBERS")));
+  assert.ok(rom.includes(Buffer.from("ATLANTIS SOFTWARE LTD")));
+  assert.match(linked("cops-n-robbers"),
+    /game=owner-crt-more-cops-and-robbers&amp;autoplay=1/);
+  assert.match(generator,
+    /\["cops-n-robbers",\["Cops & Robbers","owner-crt-more-cops-and-robbers"\]\]/);
+});
