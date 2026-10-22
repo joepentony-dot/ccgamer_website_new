@@ -134,7 +134,7 @@ function ensureMetricsRuntime(html, route) {
     /<\/html\s*>/i.test(html) ? /<\/html\s*>/i : null;
   if (!marker) throw new Error("No closing HTML tag for metrics on " + route);
 
-  return html.replace(marker, "\n" + scriptTag + "\nreturn html.replace(marker, "\n" + scriptTag + "\nfunction htmlFiles(root) {");");
+  return html.replace(marker, "\n" + scriptTag + "\n$&");
 }
 
 function htmlFiles(root) {
