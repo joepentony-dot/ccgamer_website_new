@@ -27,7 +27,7 @@ html[data-ccg-page] {
     }
 }
 
-html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
+html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
     position: static !important;
     height: auto !important;
     min-height: 100% !important;
@@ -40,7 +40,7 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
 }
 
 @supports not (overflow: clip) {
-    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
+    html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
         overflow-x: hidden !important;
     }
 }
@@ -62,15 +62,12 @@ html[data-ccg-page] > body.ccg-body :where(
     scroll-behavior: auto !important;
 }
 
-/* Keep intentional viewport locks authoritative while menus/modals are open. */
+/* Keep navigation viewport locks authoritative. The Easter Egg secret modal
+   is a fixed viewport overlay and owns background input itself; changing the
+   document scroll root here can clamp scrollY by a few pixels on short/mobile
+   viewports when the scrollbar geometry changes. */
 html[data-ccg-page]:has(> body.ccg-body.ccg-body--nav-open),
-html[data-ccg-page]:has(> body.ccg-body.ccg-body--locked),
-html[data-ccg-page]:has(> body.ccg-body.ccg-secret-modal-open) {
-    overflow: hidden !important;
-    overscroll-behavior: none !important;
-}
-
-html[data-ccg-page] > body.ccg-body.ccg-secret-modal-open {
+html[data-ccg-page]:has(> body.ccg-body.ccg-body--locked) {
     overflow: hidden !important;
     overscroll-behavior: none !important;
 }
