@@ -208,12 +208,6 @@ const verifiedDuplicateMediaSelections = new Map([
   ["tapper","owner-crt-tapper"],
 ]);
 
-// Exact historical editions stay pinned to their verified approved ROM.
-// If the intended edition disappears, never fall back to a different game.
-const verifiedEditionSpecificMediaSelections = new Map([
-  ["star-wars", "owner-crt-more-starwars-1e41e83051d1"], // Domark 1988
-]);
-
 function emulatorMatch(game) {
   const title = normalise(game.title);
   const literalMatches = mediaByTitle.get(title) || [];
@@ -229,12 +223,6 @@ function emulatorMatch(game) {
   }
   const best = Math.min(...matches.map(e => priority[e.format] ?? 99));
   const preferred = matches.filter(e => (priority[e.format] ?? 99) === best);
-  const editionId = verifiedEditionSpecificMediaSelections.get(game.slug);
-  if (editionId) {
-    const edition = preferred.filter(e =>
-      e.id === editionId && e.format === "crt" && validMedia.includes(e));
-    return edition.length === 1 ? edition[0] : null;
-  }
   // Direct approved files precede extra CRT, Blast and optional packed PRGs.
   // A tie at the same priority needs an exact ID or is deliberately unlinked.
   if (preferred.length === 1) return preferred[0];
