@@ -128,6 +128,11 @@
 
     var homeCount = document.getElementById("ccg-visit-count");
     if (homeCount) {
+      var homeLabel = document.querySelector(".ccg-footer-home__status");
+      if (homeLabel) {
+        homeLabel.textContent = "Archive visits";
+        homeLabel.title = "Recognised website sessions, once per eight hours when GoatCounter Sessions is enabled. Not distinct lifetime people.";
+      }
       // Starts when this shared archive session event is first deployed. Existing
       // historical page-view totals cannot be converted to unique people.
       fetchPublicCount(SESSION_EVENT, homeCount);
