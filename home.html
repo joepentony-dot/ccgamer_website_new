@@ -98,9 +98,29 @@
   <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-shell-style="true">
   <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
   <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
+  <link rel="stylesheet" href="/resources/css/ccg-archive-pulse-thumbnails.css">
+  <link rel="stylesheet" href="/resources/css/ccg-performance-foundations.css">
+  <link rel="preload" as="script" href="/js/ccg-archive-pulse-randomizer.js">
+  <!-- Settled shared layout is a first-paint dependency. -->
+  <link rel="stylesheet" href="/resources/css/ccg-nav-viewport-overlay.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-inner-page-density.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-scroll-authority.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-global-search.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-mode-identity.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mode.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mobile-fix.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-ui-regression-fixes.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-engagement-engine.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-identity.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mobile-alignment.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-responsive-safety.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-responsive-page-polish.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-sitewide-layout-optimization.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-nav-labelled-bridge.css" data-ccg-public-header-first-paint-style="true">
 </head>
 
 <body class="ccg-body page-home" data-ccg-mode="c64" data-mode="c64" id="top">
+<script data-ccg-first-paint-mode="true">(function(){var mode=document.documentElement.getAttribute("data-ccg-mode");if(mode==="c64"||mode==="amiga"){document.body.setAttribute("data-ccg-mode",mode);document.body.setAttribute("data-mode",mode);}})();</script>
 
     <div class="ccg-bg" aria-hidden="true">
         <div class="ccg-bg-starfield" aria-hidden="true"></div>
@@ -272,6 +292,23 @@
 
     <div class="ccg-header-neon-strip"></div>
 </header>
+<aside id="ccgModeIdentityBar" class="ccg-mode-identity" role="status" aria-live="polite" aria-label="Current Commodore display mode" data-mode="c64" data-ccg-static-mode-identity="true">
+  <div class="ccg-mode-identity__inner">
+    <div class="ccg-mode-identity__name">
+      <span class="ccg-mode-identity__icon" aria-hidden="true">
+        <span class="ccg-mode-identity__c64-mark"><i></i><i></i><i></i><i></i></span>
+        <span class="ccg-mode-identity__amiga-mark"><i></i></span>
+      </span>
+      <span class="ccg-mode-identity__eyebrow">COMMODORE 64 MODE</span>
+      <span class="ccg-mode-identity__primary">READY.</span>
+    </div>
+    <div class="ccg-mode-identity__details">
+      <span class="ccg-mode-identity__secondary">64K RAM SYSTEM</span>
+      <span class="ccg-mode-identity__separator">•</span>
+      <span class="ccg-mode-identity__tertiary">C64 ARCHIVE ONLINE</span>
+    </div>
+  </div>
+</aside>
 
         <main class="ccg-main ccg-main--home">
 
@@ -298,7 +335,11 @@
             </div>
 
             <!-- PRIMARY ACTION + OPTIONAL RANDOM DISCOVERY -->
-            <section class="home-hero home-hero--streamlined" data-hero-mode="c64">
+            <section class="ccg-archive-pulse" data-ccg-archive-pulse="true" data-ccg-static-pulse="true" aria-labelledby="ccg-archive-pulse-title"><div class="ccg-archive-pulse__header"><div><p class="ccg-archive-pulse__kicker">Archive Pulse</p><h2 class="ccg-archive-pulse__title" id="ccg-archive-pulse-title">Something Different Every Visit</h2></div><a class="ccg-archive-pulse__all" href="/games/">Browse all games →</a></div><div class="ccg-archive-pulse__grid"><a class="ccg-archive-pulse__card ccg-archive-pulse__card--has-thumb" href="/games/ace-of-aces/" data-ccg-archive-pulse="game-of-the-day"><img class="ccg-archive-pulse__thumb" src="/resources/images/thumbnails/all/ace_of_aces.jpg" width="96" height="72" loading="lazy" decoding="async" alt=""><span class="ccg-archive-pulse__label">Fresh Game Pick</span><span class="ccg-archive-pulse__name">Ace Of Aces</span><span class="ccg-archive-pulse__meta">1986 · Accolade · strategy</span></a>
+<a class="ccg-archive-pulse__card ccg-archive-pulse__card--has-thumb" href="/games/20-tons/" data-ccg-archive-pulse="archive-pick"><img class="ccg-archive-pulse__thumb" src="/resources/images/thumbnails/all/20_tons_new.png" width="96" height="72" loading="lazy" decoding="async" alt=""><span class="ccg-archive-pulse__label">Archive Pick</span><span class="ccg-archive-pulse__name">20 Tons</span><span class="ccg-archive-pulse__meta">1985 · 64 Tape Computing · arcade</span></a>
+<a class="ccg-archive-pulse__card" href="/retro-specials/zzap64-20-lowest-scoring-commodore-64-games/" data-ccg-archive-pulse="zzap-feature"><span class="ccg-archive-pulse__label">Zzap!64 Feature</span><span class="ccg-archive-pulse__name">Was Zzap!64 Too Harsh? The 20 Lowest-Scoring Commodore 64 Games</span><span class="ccg-archive-pulse__meta">The 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, counting down from 10% to a miserable 3%.</span></a></div></section>
+<script src="/js/ccg-archive-pulse-randomizer.js"></script>
+<section class="home-hero home-hero--streamlined" data-hero-mode="c64">
                 <div class="home-hero__frame">
                     <div class="home-hero__bg home-hero__bg--c64" aria-hidden="true"></div>
                     <div class="home-hero__bg home-hero__bg--amiga" aria-hidden="true"></div>
