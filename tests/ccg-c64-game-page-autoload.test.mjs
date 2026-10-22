@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import test from "node:test";
-import { preferSelectedCartridges, selectVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
+import { preferSelectedCartridges, selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
 
 const app = fs.readFileSync("js/ccg-c64/app.js", "utf8");
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
@@ -51,6 +51,7 @@ async function initialiseFor(query, options = {}) {
     catalogueBrowser: { refresh() { refreshes++; } },
     preferSelectedCartridges,
     selectVerifiedExactCrtEdition,
+    findVerifiedExactCrtEdition,
     stageNote: { textContent: "" },
     fetch: async url => url === "/emulator/c64/library.json"
       ? { ok: true, json: async () => ({ entries: options.entries || [game] }) }
@@ -110,6 +111,16 @@ test("real autoload selection preserves Domark 1988 edition rather than an older
     { entries: [parker] });
   assert.equal(absent.selected.length, 0);
   assert.equal(absent.starts.length, 0);
+  const changedSoleEdition = await initialiseFor("?game=" + domark.id + "&autoplay=1",
+    { entries: [{ ...domark, sha256: "f".repeat(64) }] });
+  assert.equal(changedSoleEdition.selected.length, 0,
+    "The only visible Star Wars entry must not bypass the reviewed digest");
+  assert.equal(changedSoleEdition.starts.length, 0);
+  const changedFirstEdition = await initialiseFor("?game=" + domark.id + "&autoplay=1",
+    { entries: [{ ...domark, sha256: "f".repeat(64) }, parker] });
+  assert.equal(changedFirstEdition.selected.length, 0,
+    "An invalid Domark edition already in first position must not autostart");
+  assert.equal(changedFirstEdition.starts.length, 0);
 });
 
 
