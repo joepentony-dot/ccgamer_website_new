@@ -2801,3 +2801,25 @@
         display: none !important;
     }
 }
+
+/* GoatCounter game visits: small, unobtrusive hero statistic. */
+.ccg-page--single-game .ccg-game-views {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 9px;
+    max-width: 100%;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(114, 215, 255, 0.35);
+    background: rgba(16, 21, 34, 0.55);
+    color: #d9e9f4;
+    font-size: 0.76rem;
+    line-height: 1.45;
+    font-weight: 500;
+}
+.ccg-page--single-game .ccg-game-views__count {
+    color: #72d7ff;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
