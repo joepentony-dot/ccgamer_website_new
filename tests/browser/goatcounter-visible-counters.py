@@ -69,7 +69,7 @@ def check_page(browser, path: str, is_game: bool):
                 const el = document.getElementById('ccg-hourly-visitor-count');
                 return el && el.getAttribute('data-ccg-counter-loaded') === 'true';
             }""", timeout=20000)
-            assert re.fullmatch(r"[0-9][0-9\\s,.'’]*", hourly.inner_text().strip()), hourly.inner_text()
+            assert re.fullmatch(r"[0-9][0-9\s,.'’]*", hourly.inner_text().strip()), hourly.inner_text()
             print("PASS: hourly visitor sessions=", hourly.inner_text())
 
         # Verify that the *real* read-only GoatCounter endpoint supplied a
@@ -79,7 +79,7 @@ def check_page(browser, path: str, is_game: bool):
             return el && el.getAttribute('data-ccg-counter-loaded') === 'true';
         }""", timeout=20000)
         counter_text = counter.inner_text()
-        assert re.fullmatch(r"[0-9][0-9\\s,.'’]*", counter_text.strip()), counter_text
+        assert re.fullmatch(r"[0-9][0-9\s,.'’]*", counter_text.strip()), counter_text
         print(f"PASS: {path} rendered real GoatCounter count={counter_text!r}")
         assert not any("SyntaxError" in error for error in errors), errors
     finally:
