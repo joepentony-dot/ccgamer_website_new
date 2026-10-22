@@ -388,7 +388,7 @@ test("every canonical game can ship an immediately visible, numeric HTML counter
   assert.equal(runScript(folder).status,0);
   const staged=fs.readFileSync(file,"utf8");
   assert.match(staged,/id="ccg-game-view-count"/);
-  assert.match(staged,/>\\s*80\\s*<\\/span>/);
+  assert.match(staged,/>\s*80\s*<\/span>/);
   assert.equal(runScript(folder,true).status,0);
   assert.equal(runScript(folder).status,0);
   assert.equal(fs.readFileSync(file,"utf8"),staged);
