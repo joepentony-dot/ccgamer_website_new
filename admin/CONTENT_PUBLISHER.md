@@ -50,6 +50,17 @@ After a direct main commit, the existing workflows handle the rest:
 8. The publisher polls the matching workflow runs and then checks the final live URL.
 9. The site-wide GoatCounter publishing safeguard runs on the final `_site` artifact after the protected game-page parity audit. It adds tracking only where missing, checks every complete HTML page (including newly generated game pages), and stops deployment if any page cannot be safely instrumented. The new-game `games/game.html` template already contains the approved tracker; no analytics checkbox or manual game-entry step is needed. No visitor API credential belongs in a generated game page.
 
+## Site visitor and game view counters
+
+The final GitHub Pages staging owner runs `node scripts/ensure-goatcounter-coverage.js --root _site` followed by `--check`. This enforces one approved GoatCounter tracker and one copy of `/js/ccg-visitor-metrics.js` on every complete HTML document, including every new game emitted by Reliable Games Publishing. The admin editor does not require any additional field or manual step.
+
+- **Archive visits** on `/home.html` represent cumulative *sitewide sessions* from the `ccg-archive-session` GoatCounter event, sent once per public page load and deduplicated by GoatCounter per eight-hour session when **Sessions** is enabled. These are **not lifetime unique humans**. The new event counter starts from its deployment; the previous aggregated pageview total cannot be reclassified retrospectively.
+- **Game views** on `/games/<slug>/` use the existing canonical game's public GoatCounter path count, shown as a small read-only hero statistic. It tracks a game's recognised visits, not raw page loads when Sessions is enabled.
+- Both displays use GoatCounter's public, token-free `/counter/...`.json endpoint, which may be cached by GoatCounter for up to four hours. Missing stats, blocked calls or a disabled public counter show `—` instead of invented values.
+- Site owner must enable **Settings → Site settings → Allow adding visitor counts on your website** and **Settings → Data collection → Sessions** in GoatCounter. This permission cannot be modified by the website deployment. The dashboard itself should remain private.
+- **Security:** no API bearer tokens may appear in public HTML/JS. Any token previously exposed in Git history must be revoked in the GoatCounter account and cannot be secured merely by changing the source file.
+- The staging safeguard applies to the deployed copy *after* approved game-page SEO/emulator parity checks; it does not rewrite the source game files or protected intro stack. The reader-facing game-count styling stays in `resources/css/game-pages.css`.
+
 ## Lighthouse performance contract for new games
 
 New games are subject to the permanent repository contract in `docs/LIGHTHOUSE-PERFORMANCE-PROTOCOL.md`.
