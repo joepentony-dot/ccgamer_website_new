@@ -44,6 +44,35 @@ test('responsive fallback preserves existing relative styles and never reorders 
   assert.deepEqual(events, []);
 });
 
+test('secret Easter Egg overlay never takes ownership of the document scroll root', () => {
+  for (const path of [
+    'resources/css/ccg-master.css',
+    'resources/css/ccg-overlays.css',
+    'resources/css/ccg-responsive-safety.css',
+    'resources/css/ccg-scroll-authority.css'
+  ]) {
+    const css = fs.readFileSync(path, 'utf8');
+    assert.doesNotMatch(
+      css,
+      /body\.ccg-secret-modal-open\s*\{[^}]*\boverflow\s*:\s*hidden/si,
+      `${path}: secret modal must not hide document overflow`
+    );
+    assert.doesNotMatch(
+      css,
+      /:not\(\.ccg-secret-modal-open\)/,
+      `${path}: secret modal must not disable the normal document scroll owner`
+    );
+  }
+
+  const source = fs.readFileSync('js/ccg-global.js', 'utf8');
+  const start = source.indexOf('function lockSecretModalScroll()');
+  const end = source.indexOf('function openSecretModal(', start);
+  assert(start >= 0 && end > start, 'secret modal scroll ownership block must remain discoverable');
+  const block = source.slice(start, end);
+  assert.doesNotMatch(block, /document\.(?:body|documentElement)\.style\.overflow/);
+  assert.match(block, /scrollY:\s*window\.scrollY/);
+});
+
 test('Home owns real mode status, Archive Pulse and artwork in its initial HTML', () => {
   const home = fs.readFileSync('home.html', 'utf8');
   const hero = home.indexOf('<section class="home-hero');
