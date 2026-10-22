@@ -114,7 +114,7 @@ try {
         null,
         { timeout: 3000 }
       );
-      const mobileMenuEvents = await page.evaluate(() => {
+      await page.evaluate(() => {
         const button = document.querySelector('[data-ccg-nav-toggle]');
         const navHeader = button?.closest('[data-ccg-header]');
         const history = [];
@@ -132,6 +132,7 @@ try {
       });
       await navToggle.click();
       await page.waitForTimeout(180);
+      const mobileMenuEvents = await page.evaluate(() => window.__ccgNavOpenAuditEvents || []);
       const navState = await page.evaluate(() => {
         const header = document.querySelector('[data-ccg-header]');
         const toggle = document.querySelector('[data-ccg-nav-toggle]');

@@ -532,12 +532,13 @@ if (IS_ADMIN_PATH) {
         // Pausing animations by changing the HTML class would invalidate all
         // descendant styles on the first scroll. Restrict that mutation to the
         // animated background layer; other pages retain their existing policy.
-        const pauseTarget = root.dataset.ccgPage === "games-index"
+        const pauseTarget = (root.dataset.ccgPage === "games-index" || root.dataset.ccgPage === "home")
             ? document.querySelector(".ccg-bg") || root
             : root;
         const PAUSE_CLASS = "ccg-perf-paused";
         const resumeDelay = 160;
         let resumeTimer = null;
+        let pauseFrame = 0;
 
         const setPaused = (paused) => {
             if (paused) {
@@ -549,14 +550,21 @@ if (IS_ADMIN_PATH) {
         };
 
         const onScroll = () => {
-            if (!pauseTarget.classList.contains(PAUSE_CLASS)) {
-                setPaused(true);
+            // Native scroll listeners must return before decorative class
+            // mutations and their style recalculation. Coalesce to one frame.
+            if (!pauseTarget.classList.contains(PAUSE_CLASS) && !pauseFrame) {
+                pauseFrame = requestAnimationFrame(() => {
+                    pauseFrame = 0;
+                    setPaused(true);
+                });
             }
             if (resumeTimer) {
                 window.clearTimeout(resumeTimer);
             }
             resumeTimer = window.setTimeout(() => {
-                setPaused(false);
+                if (pauseFrame) cancelAnimationFrame(pauseFrame);
+                pauseFrame = 0;
+                if (pauseTarget.classList.contains(PAUSE_CLASS)) setPaused(false);
             }, resumeDelay);
         };
 

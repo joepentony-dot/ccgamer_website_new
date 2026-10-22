@@ -203,6 +203,8 @@ html[data-ccg-page="collection-single"]
 
 /* Browse Games has a large static archive, so never invalidate the HTML
    root's descendant styles simply to pause the small fixed background. */
+html[data-ccg-page="home"] .ccg-bg.ccg-perf-paused .ccg-bg-starfield,
+html[data-ccg-page="home"] .ccg-bg.ccg-perf-paused .ccg-bg-starfield::after,
 html[data-ccg-page="games-index"] .ccg-bg.ccg-perf-paused .ccg-bg-starfield,
 html[data-ccg-page="games-index"] .ccg-bg.ccg-perf-paused .ccg-bg-starfield::after,
 html[data-ccg-page="games-index"] .ccg-bg.ccg-perf-paused .ccg-bg-particles__spark {
