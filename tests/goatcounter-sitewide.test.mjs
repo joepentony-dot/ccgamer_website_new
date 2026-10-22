@@ -42,6 +42,7 @@ test("adds tracking to untracked root, game, music and admin pages, with route-o
     assert.ok(html.includes(source), route);
     const canonical = goatcounter.publicPath(site, path.join(site, route));
     assert.ok(html.includes(JSON.stringify({ path: canonical })), route);
+    assert.equal((html.match(/src="\/js\/ccg-visitor-metrics\.js"/g) || []).length, 1, route);
   }
   assert.equal(runScript(site, true).status, 0);
   assert.equal(runScript(site).status, 0, "idempotent second application");
@@ -102,4 +103,34 @@ test("admin game publication and GitHub Pages deployment enforce GoatCounter", (
   assert.match(deploy, /ensure-goatcounter-coverage\.js --root _site/);
   assert.match(deploy, /ensure-goatcounter-coverage\.js --root _site --check/);
   assert.match(publishing, /tests\/goatcounter-sitewide\.test\.mjs/);
+});
+
+
+test("sitewide metrics runtime is injected once and never alters page SEO", () => {
+  const body = '<title>Test</title><link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/chuckie-egg/">';
+  const html = '<!doctype html><html><head>' + body + '</head><body><main>Review</main></body></html>';
+  const once = goatcounter.ensureMetricsRuntime(html, "/games/chuckie-egg/");
+  assert.equal((once.match(/src="\/js\/ccg-visitor-metrics\.js"/g) || []).length, 1);
+  assert.equal(goatcounter.ensureMetricsRuntime(once, "/games/chuckie-egg/"), once);
+  assert.ok(once.includes(body));
+  assert.ok(once.includes("<main>Review</main>"));
+});
+
+test("public counter runtime counts one shared session event and each canonical game separately", () => {
+  const runtime = fs.readFileSync(path.join(root, "js/ccg-visitor-metrics.js"), "utf8");
+  const global = fs.readFileSync(path.join(root, "js/ccg-global.js"), "utf8");
+  const home = fs.readFileSync(path.join(root, "home.html"), "utf8");
+  const css = fs.readFileSync(path.join(root, "resources/css/game-pages.css"), "utf8");
+
+  assert.match(runtime, /SESSION_EVENT\s*=\s*"ccg-archive-session"/);
+  assert.match(runtime, /event:\s*true/);
+  assert.doesNotMatch(runtime, /no_session:\s*true|localStorage|sessionStorage|Bearer|api\/v0/);
+  assert.match(runtime, /document\.documentElement\.getAttribute\("data-ccg-page"\) !== "single-game"/);
+  assert.match(runtime, /result\.count/);
+  assert.match(runtime, /encodeURIComponent\(path\)\s*\+\s*"\.json"/);
+  assert.match(runtime, /fetchPublicCount\(SESSION_EVENT,\s*homeCount\)/);
+  assert.match(runtime, /fetchPublicCount\(path,\s*count\)/);
+  assert.doesNotMatch(global, /GOATCOUNTER_API_TOKEN|api\/v0\/stats\/total|Authorization:/);
+  assert.match(home, /Archive visits/);
+  assert.match(css, /\.ccg-page--single-game \.ccg-game-views/);
 });
