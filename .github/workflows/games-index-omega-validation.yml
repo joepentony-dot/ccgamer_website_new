@@ -6,12 +6,16 @@ on:
     paths:
       - "games/index.html"
       - "games/games.json"
+      - "games/games-search.json"
+      - "js/games-library.js"
       - "js/ccg-nav-fit.js"
       - "resources/css/ccg-nav-fit.css"
       - "resources/css/ccg-games-index-omega.css"
       - "scripts/upgrade-games-index.js"
       - "scripts/rebuild-games.js"
+      - "scripts/build-games.js"
       - "tests/games-index-omega.test.mjs"
+      - "tests/games-library-compact-data.test.mjs"
       - ".github/workflows/games-index-omega-validation.yml"
       - ".github/workflows/games-publishing.yml"
   push:
@@ -45,8 +49,10 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check js/ccg-nav-fit.js
+          node --check js/games-library.js
           node --check scripts/upgrade-games-index.js
           node --check scripts/rebuild-games.js
+          node --check scripts/build-games.js
 
       - name: Generate Games Index Omega in validation workspace
         run: node scripts/upgrade-games-index.js
@@ -55,7 +61,7 @@ jobs:
         run: node scripts/upgrade-games-index.js --check
 
       - name: Run Games Index and nav regressions
-        run: node --test tests/games-index-omega.test.mjs
+        run: node --test tests/games-index-omega.test.mjs tests/games-library-compact-data.test.mjs
 
       - name: Confirm generator scope
         shell: bash
