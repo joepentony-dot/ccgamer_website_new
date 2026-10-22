@@ -528,13 +528,12 @@ if (IS_ADMIN_PATH) {
     ====================================================== */
     function setupScrollPerfPause() {
         const root = document.documentElement;
-        // The archive's static catalogue has hundreds of searchable links.
-        // Pausing animations by changing the HTML class would invalidate all
-        // descendant styles on the first scroll. Restrict that mutation to the
-        // animated background layer; other pages retain their existing policy.
-        const pauseTarget = (root.dataset.ccgPage === "games-index" || root.dataset.ccgPage === "home")
-            ? document.querySelector(".ccg-bg") || root
-            : root;
+        // A document-root class invalidates all descendant styles during
+        // native scrolling, particularly on large music/game archives.
+        // Where a decorative universe exists, pause only that small layer.
+        // Music hubs with no decorative universe need no scroll-pause work.
+        const pauseTarget = document.querySelector(".ccg-bg");
+        if (!pauseTarget) return;
         const PAUSE_CLASS = "ccg-perf-paused";
         const resumeDelay = 160;
         let resumeTimer = null;

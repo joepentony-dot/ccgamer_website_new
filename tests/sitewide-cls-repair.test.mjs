@@ -76,10 +76,10 @@ test('secret Easter Egg overlay never takes ownership of the document scroll roo
   }
 
   const source = fs.readFileSync('js/ccg-global.js', 'utf8');
-  assert.match(source, /root\.dataset\.ccgPage === "games-index"/,
-    'games archive scrolling must use a scoped decorative pause target');
-  assert.match(source, /root\.dataset\.ccgPage === "home"/,
-    'homepage scrolling must not invalidate the entire document');
+  assert.match(source, /const pauseTarget = document\.querySelector\("\.ccg-bg"\)/,
+    'pause only decorative background; avoid full-page style invalidation');
+  assert.match(source, /if \(!pauseTarget\) return;/,
+    'archive pages without a universe must not run an unnecessary scroll mutation');
   assert.match(source, /pauseFrame = requestAnimationFrame/,
     'defer decorative pause until after the native scroll event');
   assert.match(source, /pauseTarget\.classList\.add\(PAUSE_CLASS\)/,
