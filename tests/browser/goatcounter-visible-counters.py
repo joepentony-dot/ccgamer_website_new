@@ -58,10 +58,18 @@ def check_page(browser, path: str, is_game: bool):
         else:
             counter = page.locator("#ccg-visit-count")
             page.wait_for_function(
-                "() => document.querySelector('.ccg-footer-home__status')?.textContent === 'Archive visits'",
+                "() => document.querySelector('.ccg-footer-home__status')?.textContent === 'Total archive visits'",
                 timeout=15000,
             )
             counter_text = counter.inner_text()
+            hourly = page.locator("#ccg-hourly-visitor-count")
+            hourly.wait_for(state="attached", timeout=15000)
+            page.wait_for_function("""() => {
+                const el = document.getElementById('ccg-hourly-visitor-count');
+                return el && el.getAttribute('data-ccg-counter-loaded') === 'true';
+            }""", timeout=20000)
+            assert hourly.inner_text().strip().replace(',', '').isdigit(), hourly.inner_text()
+            print("PASS: hourly visitor sessions=", hourly.inner_text())
 
         # Verify that the *real* read-only GoatCounter endpoint supplied a
         # numeric count. A dash indicates the original user-reported bug.
