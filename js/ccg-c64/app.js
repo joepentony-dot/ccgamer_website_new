@@ -13,7 +13,7 @@ import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
-  preferSelectedCartridges, catalogGameIdentity,
+  preferSelectedCartridges, catalogGameIdentity, selectVerifiedExactCrtEdition,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -2569,6 +2569,10 @@ async function initialiseOnlineLibrary() {
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
   const linkedOriginal = validLinkedId
     ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+  // Preserve the verified Domark cartridge on its game-page deep link even
+  // when an older same-title CRT wins the normal one-row catalogue view.
+  onlineLibraryEntries = selectVerifiedExactCrtEdition(
+    onlineLibraryEntries, allHostedEntries, linkedGameId);
   // Preserve bookmarks to directly hosted D64s retired after the matching
   // owner-selected CRT was installed. These IDs no longer occur in the
   // direct library, so they need an explicit, reviewed identity mapping.
