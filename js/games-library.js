@@ -51,9 +51,56 @@ function isMobileLikeViewport() {
     return Boolean(CCG_COARSE_QUERY?.matches || window.innerWidth <= 820);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    initGamesLibrary();
-});
+function scheduleGamesLibraryInit() {
+    let started = false;
+    let timer = 0;
+    let idleHandle = 0;
+
+    const cleanup = () => {
+        if (timer) window.clearTimeout(timer);
+        timer = 0;
+        if (idleHandle && typeof window.cancelIdleCallback === "function") {
+            window.cancelIdleCallback(idleHandle);
+        }
+        idleHandle = 0;
+        document.removeEventListener("focusin", handleIntent, true);
+        document.removeEventListener("pointerdown", handleIntent, true);
+        document.removeEventListener("keydown", handleIntent, true);
+    };
+
+    const start = () => {
+        if (started) return;
+        started = true;
+        cleanup();
+        void initGamesLibrary();
+    };
+
+    const handleIntent = (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target?.closest?.("#gamesSearchInput, #gamesSearchClear, [data-system-filter], #gamesYearSelect, [data-games-year-filter], #gamesAlphaStrip")) {
+            return;
+        }
+        start();
+    };
+
+    document.addEventListener("focusin", handleIntent, true);
+    document.addEventListener("pointerdown", handleIntent, true);
+    document.addEventListener("keydown", handleIntent, true);
+
+    // The complete 666-link static archive is already usable in source HTML.
+    // Keep the first scroll/input window free, then enhance the archive when the
+    // main thread has idle time. Direct use of a search/filter starts it at once.
+    timer = window.setTimeout(() => {
+        timer = 0;
+        if (typeof window.requestIdleCallback === "function") {
+            idleHandle = window.requestIdleCallback(start, { timeout: 3000 });
+        } else {
+            timer = window.setTimeout(start, 0);
+        }
+    }, 2200);
+}
+
+document.addEventListener("DOMContentLoaded", scheduleGamesLibraryInit);
 
 async function initGamesLibrary() {
     if (CCG_LIBRARY_INITIALIZED) return;
@@ -77,6 +124,7 @@ async function initGamesLibrary() {
         if (staticFallback && CCG_ALL_GAMES.length > 120) {
             staticFallback.hidden = true;
         }
+        window.CCG_GAMES_LIBRARY_READY = true;
 
     } catch (err) {
         console.error("[CCG] Games index load failed:", err);
