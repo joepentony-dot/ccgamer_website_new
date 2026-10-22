@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
-import { preferSelectedCartridges, selectVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
+import { preferSelectedCartridges, selectVerifiedExactCrtEdition, findVerifiedExactCrtEdition } from "../js/ccg-c64/game-catalog.js";
 
 const read = file => fs.readFileSync(file, "utf8");
 const games = JSON.parse(read("games/games.json"));
@@ -194,6 +194,8 @@ test("Star Wars Domark deep link loads exact verified CRT, not the older visible
     "Ordinary browsing still selects the earlier cartridge");
   assert.equal(selectVerifiedExactCrtEdition(visible, all, "elsewhere"), visible,
     "An unrelated deep link cannot modify catalogue priority");
+  assert.equal(findVerifiedExactCrtEdition(all, domark.id), domark);
+  assert.equal(findVerifiedExactCrtEdition([parker, { ...domark, sha256: "f".repeat(64) }], domark.id), null);
   const targeted = selectVerifiedExactCrtEdition(visible, all, domark.id);
   assert.equal(targeted.length, visible.length, "Do not expose duplicate Star Wars rows");
   assert.equal(targeted.find(e => e.title === "Star Wars")?.id, domark.id,
