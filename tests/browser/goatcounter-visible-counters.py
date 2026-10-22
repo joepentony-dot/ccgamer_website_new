@@ -63,10 +63,16 @@ def check_page(browser, path: str, is_game: bool):
             )
             counter_text = counter.inner_text()
 
-        print(f"PASS: {path} rendered counter, initial display={counter_text!r}")
+        # Verify that the *real* read-only GoatCounter endpoint supplied a
+        # numeric count. A dash indicates the original user-reported bug.
+        page.wait_for_function("""() => {
+            const el = document.querySelector('#ccg-game-view-count, #ccg-visit-count');
+            return el && el.getAttribute('data-ccg-counter-loaded') === 'true';
+        }""", timeout=20000)
+        counter_text = counter.inner_text()
+        assert counter_text.strip().replace(',', '').isdigit(), counter_text
+        print(f"PASS: {path} rendered real GoatCounter count={counter_text!r}")
         assert not any("SyntaxError" in error for error in errors), errors
-        # A public counter response may still be 404/0 until the first event
-        # is persisted; browser instrumentation itself must be present.
     finally:
         context.close()
 
