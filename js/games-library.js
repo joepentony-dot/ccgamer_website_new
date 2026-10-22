@@ -55,6 +55,9 @@ function scheduleGamesLibraryInit() {
     let started = false;
     let timer = 0;
     let idleHandle = 0;
+    let lastActivityAt = performance.now();
+    const MIN_START_DELAY_MS = 1800;
+    const QUIET_WINDOW_MS = 1400;
 
     const cleanup = () => {
         if (timer) window.clearTimeout(timer);
@@ -66,6 +69,9 @@ function scheduleGamesLibraryInit() {
         document.removeEventListener("focusin", handleIntent, true);
         document.removeEventListener("pointerdown", handleIntent, true);
         document.removeEventListener("keydown", handleIntent, true);
+        window.removeEventListener("scroll", handleActivity);
+        window.removeEventListener("wheel", handleActivity);
+        window.removeEventListener("touchmove", handleActivity);
     };
 
     const start = () => {
@@ -83,21 +89,63 @@ function scheduleGamesLibraryInit() {
         start();
     };
 
+    const scheduleQuietCheck = () => {
+        if (started || timer || idleHandle) return;
+        const elapsed = performance.now() - lastActivityAt;
+        const wait = Math.max(120, QUIET_WINDOW_MS - elapsed);
+        timer = window.setTimeout(() => {
+            timer = 0;
+            if (started) return;
+            const quietFor = performance.now() - lastActivityAt;
+            if (quietFor < QUIET_WINDOW_MS) {
+                scheduleQuietCheck();
+                return;
+            }
+            if (typeof window.requestIdleCallback === "function") {
+                idleHandle = window.requestIdleCallback(() => {
+                    idleHandle = 0;
+                    const stillQuietFor = performance.now() - lastActivityAt;
+                    if (stillQuietFor < QUIET_WINDOW_MS) {
+                        scheduleQuietCheck();
+                        return;
+                    }
+                    start();
+                }, { timeout: 1200 });
+            } else {
+                start();
+            }
+        }, wait);
+    };
+
+    const handleActivity = () => {
+        if (started) return;
+        lastActivityAt = performance.now();
+        if (timer) {
+            window.clearTimeout(timer);
+            timer = 0;
+        }
+        if (idleHandle && typeof window.cancelIdleCallback === "function") {
+            window.cancelIdleCallback(idleHandle);
+            idleHandle = 0;
+        }
+        scheduleQuietCheck();
+    };
+
     document.addEventListener("focusin", handleIntent, true);
     document.addEventListener("pointerdown", handleIntent, true);
     document.addEventListener("keydown", handleIntent, true);
+    window.addEventListener("scroll", handleActivity, { passive: true });
+    window.addEventListener("wheel", handleActivity, { passive: true });
+    window.addEventListener("touchmove", handleActivity, { passive: true });
 
-    // The complete 666-link static archive is already usable in source HTML.
-    // Keep the first scroll/input window free, then enhance the archive when the
-    // main thread has idle time. Direct use of a search/filter starts it at once.
+    // The complete 666-link static archive is immediately usable. Give the
+    // first interaction window to native scrolling, then build the enhanced
+    // archive only after the page has remained quiet. Search/filter intent
+    // still starts enhancement immediately.
     timer = window.setTimeout(() => {
         timer = 0;
-        if (typeof window.requestIdleCallback === "function") {
-            idleHandle = window.requestIdleCallback(start, { timeout: 3000 });
-        } else {
-            timer = window.setTimeout(start, 0);
-        }
-    }, 2200);
+        scheduleQuietCheck();
+    }, MIN_START_DELAY_MS);
 }
 
 document.addEventListener("DOMContentLoaded", scheduleGamesLibraryInit);
