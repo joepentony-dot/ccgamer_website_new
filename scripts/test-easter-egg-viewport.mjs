@@ -167,12 +167,13 @@ async function settleAtPageBottom(page) {
     // The physically reachable scrollY is authoritative here. Chromium mobile
     // emulation can report scrollHeight - innerHeight several CSS pixels below
     // the actual reachable bottom because the layout and visual viewports do
-    // not have identical rounding. Require repeated physical stability while
-    // allowing only a small amount of late layout-height drift; the real modal
-    // containment, scroll-lock and restoration assertions still run afterwards.
+    // not have identical rounding. The page itself must nevertheless stop
+    // changing to the same tolerance used by the modal scroll-preservation
+    // assertion, otherwise a late page-height change can be misattributed to
+    // opening the overlay.
     const stable = previous
-      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 12
-      && Math.abs(latest.scrollY - previous.scrollY) <= 4;
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 2
+      && Math.abs(latest.scrollY - previous.scrollY) <= 2;
 
     if (stable) {
       stableSamples += 1;
