@@ -136,14 +136,21 @@ function extractFallbackGamesFromHtml() {
 async function fetchGamesDataset(root) {
     const candidates = [
         {
-            label: "games.json",
-            url: `${root}games/games.json`,
-            mapper: (data) => Array.isArray(data) ? data.map(normalizeGame) : [],
-        },
-        {
             label: "games-search.json",
             url: `${root}games/games-search.json`,
             mapper: (data) => Array.isArray(data) ? data.map(mapSearchEntryToGame) : [],
+            validate: (games) => games.length > 0 && games.every(game =>
+                String(game?.slug || "").trim() &&
+                String(game?.title || "").trim() &&
+                String(game?.system || "").trim() &&
+                String(game?.thumbnail || "").trim()
+            ),
+        },
+        {
+            label: "games.json",
+            url: `${root}games/games.json`,
+            mapper: (data) => Array.isArray(data) ? data.map(normalizeGame) : [],
+            validate: (games) => games.length > 0,
         },
     ];
 
@@ -159,12 +166,12 @@ async function fetchGamesDataset(root) {
 
             const data = await res.json();
             const mapped = candidate.mapper(data).filter(Boolean);
-            if (mapped.length > 0) {
+            if (candidate.validate(mapped)) {
                 console.info(`[CCG] Games library loaded via ${candidate.label}: ${mapped.length} entries`);
                 return mapped;
             }
 
-            failures.push(`${candidate.label} returned 0 entries`);
+            failures.push(`${candidate.label} was incomplete or returned 0 entries`);
         } catch (error) {
             failures.push(`${candidate.label} ${error.message}`);
         }
