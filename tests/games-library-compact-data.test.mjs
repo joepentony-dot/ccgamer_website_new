@@ -30,6 +30,14 @@ test("generated compact browse data stays complete and reproducible", () => {
   );
 });
 
+test("Browse Games keeps first-scroll startup progressive", () => {
+  assert.match(librarySource, /document\.addEventListener\("DOMContentLoaded", scheduleGamesLibraryInit\)/);
+  assert.doesNotMatch(librarySource, /document\.addEventListener\("DOMContentLoaded",\s*\(\) => \{\s*initGamesLibrary\(\);/);
+  assert.match(librarySource, /window\.setTimeout\(\(\) => \{[\s\S]*requestIdleCallback\(start, \{ timeout: 3000 \}\)[\s\S]*\}, 2200\)/);
+  assert.match(librarySource, /#gamesSearchInput[\s\S]*\[data-system-filter\][\s\S]*#gamesYearSelect/);
+  assert.match(librarySource, /window\.CCG_GAMES_LIBRARY_READY = true/);
+});
+
 test("Browse Games prefers compact data and fails safely to games.json", () => {
   const compactIndex = librarySource.indexOf('label: "games-search.json"');
   const masterIndex = librarySource.indexOf('label: "games.json"');
