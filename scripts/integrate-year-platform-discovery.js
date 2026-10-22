@@ -260,7 +260,7 @@ function buildReport(metadata, registryResult) {
 
 - Registered both archive hubs, both platform routes and the ${indexableYears.length} indexable year routes.
 - Registered only current metadata-indexable years; excluded any years still marked \`noindex,follow\`.
-- Preserved every existing valid registry entry in place and appended only missing year/platform entries.
+- Rebuilt the year/platform-owned registry block in metadata order, preserving all foreign-owner entries and their relative order.
 
 ## Permanent safeguards
 
