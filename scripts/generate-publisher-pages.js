@@ -452,7 +452,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="amiga" aria-pressed="false">Amiga</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="both" aria-pressed="false">Both</button>
                 </div>
-                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">${groups.length}</strong> publishers shown</p>
+                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">${groups.length}</strong> publishers available</p>
             </section>
 
             ${featuredGroups.length ? `<section class="ccg-publishers-section ccg-publishers-section--featured" aria-labelledby="featured-publishers-title">
@@ -465,16 +465,19 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 </div>
             </section>` : ""}
 
+            <details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>
+                <summary class="ccg-publisher-directory-disclosure__summary">Browse the other ${remainingGroups.length} publishers A–Z</summary>
             <section class="ccg-publishers-section" aria-labelledby="all-publishers-title">
                 <div class="ccg-publishers-section__heading">
                     <p class="ccg-publishers-section__kicker">Full directory</p>
-                    <h2 id="all-publishers-title">All Publishers</h2>
+                    <h2 id="all-publishers-title">Other Publishers</h2>
                 </div>
                 <div class="ccg-publisher-grid" id="publisherGrid">
                     ${publisherCards}
                 </div>
                 <p class="ccg-publishers-empty" id="publisherEmptyState" hidden>No publishers match that search.</p>
             </section>
+            </details>
         </main>
 
         ${renderFooter()}
