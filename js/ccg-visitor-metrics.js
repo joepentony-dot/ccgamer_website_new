@@ -46,12 +46,13 @@
     var url = COUNTER_BASE + encodeURIComponent(path) + ".json";
     fetch(url, { credentials: "omit", mode: "cors" })
       .then(function (response) {
-        if (!response.ok) throw new Error("GoatCounter public counter unavailable");
+        // GoatCounter returns JSON with count "0" and HTTP 404 for new paths.
+        if (!response.ok && response.status !== 404) throw new Error("GoatCounter public counter unavailable");
         return response.json();
       })
       .then(function (result) {
         if (!result || typeof result.count !== "string" ||
-          !/^\d[\d,.\s]*$/.test(result.count)) {
+          !/^\d[\d,.\s\u2019\u0027]*$/.test(result.count)) {
           throw new Error("Invalid GoatCounter public count");
         }
         node.textContent = result.count;
