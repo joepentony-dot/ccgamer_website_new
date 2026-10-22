@@ -1,13 +1,40 @@
 {
   "version": 1,
   "counts": {
-    "total": 703,
+    "total": 704,
     "gameVideos": 666,
-    "retroVideos": 37,
+    "retroVideos": 38,
     "c64GameVideos": 563,
     "amigaGameVideos": 103
   },
   "items": [
+    {
+      "id": "A-dBoNnuNzg",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Retro Games That Offered a Porsche, Swords & £25,000! | C64, Spectrum & Amiga",
+      "description": "Real 1980s retro gaming competitions: a Porsche 924, £25,000 cash, Wilkinson swords, Egyptian holidays, a helicopter flight and the players who won.",
+      "url": "/retro-specials/retro-games-real-prizes-porsche-swords-25000/",
+      "thumbnail": "https://i.ytimg.com/vi/A-dBoNnuNzg/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
+    {
+      "id": "7Cn_7PWy3_w",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Wasteland Commodore 64 – The RPG That Inspired Fallout!",
+      "description": "Wasteland is a 1988 Commodore 64 post-apocalyptic role-playing adventure developed by Interplay Productions and published by Electronic Arts. Set in 2087 after nuclear war, it follows the D…",
+      "url": "/games/wasteland/",
+      "thumbnail": "https://i.ytimg.com/vi/7Cn_7PWy3_w/mqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1988,
+      "publisher": "Electronic Arts"
+    },
     {
       "id": "iSBLT9C9xh4",
       "kind": "game",
@@ -9170,19 +9197,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "7Cn_7PWy3_w",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Wasteland",
-      "description": "Wasteland is a 1988 Commodore 64 post-apocalyptic role-playing adventure developed by Interplay Productions and published by Electronic Arts. Set in 2087 after nuclear war, it follows the D…",
-      "url": "/games/wasteland/",
-      "thumbnail": "https://i.ytimg.com/vi/7Cn_7PWy3_w/mqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1988,
-      "publisher": "Electronic Arts"
     }
   ]
 }

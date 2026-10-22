@@ -11,6 +11,10 @@ on:
       - "games/game.html"
       - "games/games.json"
       - "emulator/c64/library.json"
+      - "emulator/c64/media/cartridge-replacements/active.json"
+      - "emulator/c64/media/blast/catalog.json"
+      - "emulator/c64/media/prg-archive/catalog.json"
+      - "emulator/c64/media/prg-archive/ready.json"
       - "scripts/link-c64-emulator-games.js"
       - "js/ccg-community-ratings.js"
       - "js/ccg-community-comments.js"
@@ -21,6 +25,7 @@ on:
       - "data/uta-game-matches.json"
       - "data/uta-manual-review.json"
       - "tests/single-game-community-uta.test.mjs"
+      - "tests/c64-new-game-auto-emulator-link.test.mjs"
       - "games/genres/**"
       - "games/collections/**"
       - "resources/images/thumbnails/all/**"
@@ -46,6 +51,9 @@ on:
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
+      - "scripts/ensure-goatcounter-coverage.js"
+      - "tests/goatcounter-sitewide.test.mjs"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "scripts/validate-game-performance-contract.mjs"
       - "scripts/apply-game-review-seo.js"
       - "scripts/generate-legacy-seo-redirects.js"
@@ -145,6 +153,12 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Guard site-wide GoatCounter and new-game publishing
+        run: node --test tests/goatcounter-sitewide.test.mjs
+
+      - name: Verify future C64 game emulator auto-link and one-click launch contract
+        run: node --test tests/c64-new-game-auto-emulator-link.test.mjs tests/ccg-c64-game-page-autoload.test.mjs
+
       - name: Validate Content Publisher recovery controls
         run: |
           node --check admin/js/content-publisher-status-reconciler.js
@@ -155,6 +169,9 @@ jobs:
           node --check scripts/validate-new-game-enrichment.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs
+
+      - name: Validate fail-closed generated publishing merge guard
+        run: node --test tests/generated-publishing-guard.test.mjs
 
       - name: Validate game description fallback
         run: node --test tests/game-description-enrichment-fallback.test.mjs
@@ -353,24 +370,8 @@ jobs:
 
           echo "Generated-output PR: $PR_URL"
 
-          MERGED=false
-          for attempt in 1 2 3; do
-            if gh pr merge "$PR_URL" \
-              --repo "$GITHUB_REPOSITORY" \
-              --squash \
-              --delete-branch; then
-              MERGED=true
-              break
-            fi
-
-            echo "::warning::Generated-output PR merge attempt ${attempt} failed; retrying without altering the validated branch."
-            sleep $((attempt * 5))
-          done
-
-          if [ "$MERGED" != "true" ]; then
-            echo "::error::Unable to merge the generated-output PR after 3 attempts. The validated PR remains open for recovery."
-            exit 1
-          fi
+          echo "Requiring independent executed validation and a no-findings Codex review before merge."
+          node scripts/qualify-generated-publishing.mjs "$PR_URL" "$OUTPUT_BRANCH"
 
           echo "Dispatching the authoritative Omega Pages deployment for the newly merged generated output."
           gh workflow run deploy-github-pages-omega-stable.yml \

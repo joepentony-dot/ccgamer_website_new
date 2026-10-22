@@ -44,6 +44,64 @@
     opacity: .84;
 }
 
+/* Section navigation keeps awards, videos and other reviews one click away. */
+.zzap-archive__jump-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+    margin-top: 20px;
+}
+
+.zzap-archive__jump-label {
+    font-size: .85rem;
+    font-weight: 700;
+    opacity: .82;
+}
+
+.zzap-archive__jump-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 9px 13px;
+    border: 1px solid rgba(255,255,255,.23);
+    background: rgba(0,0,0,.28);
+    color: inherit;
+    font: 700 .79rem/1.35 "Orbitron",sans-serif;
+    text-decoration: none;
+}
+
+.zzap-archive__jump-nav a:hover,
+.zzap-archive__jump-nav a:focus-visible {
+    border-color: rgba(var(--accent-rgb,0,221,255),.92);
+    background: rgba(var(--accent-rgb,0,221,255),.1);
+}
+
+.zzap-archive__jump-nav a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+.zzap-archive__destination {
+    scroll-margin-top: calc(var(--ccg-header-height, 92px) + 16px);
+}
+
+.zzap-archive__section-title {
+    margin: 0 0 10px;
+    font: 700 clamp(1.25rem,3vw,1.85rem)/1.3 "Orbitron",sans-serif;
+}
+
+@media (max-width: 560px) {
+    .zzap-archive__jump-nav {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .zzap-archive__jump-nav a {
+        width: 100%;
+    }
+}
+
 .zzap-archive__stats {
     display: flex;
     flex-wrap: wrap;

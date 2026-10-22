@@ -377,9 +377,8 @@ body[data-ccg-directory="music-index"] .composer-discovery {
 }
 
 body[data-ccg-directory="music-index"] .composer-discovery__search-wrap {
-    position: sticky;
-    top: calc(var(--ccg-directory-header-offset) + 6px);
-    z-index: 70;
+    /* Keep search in document flow, before A–Z: sticky offsets overlay A/B. */
+    position: static;
     margin-bottom: 0.42rem;
     padding: 0.36rem 0.42rem;
     background: rgba(3, 9, 19, 0.98);
@@ -442,9 +441,6 @@ body[data-ccg-directory="music-record"] .ccg-composer-intro {
         display: none;
     }
 
-    body[data-ccg-directory="music-index"] .composer-discovery__search-wrap {
-        top: calc(var(--ccg-directory-header-offset) + 3px);
-    }
 }
 
 @media (max-width: 470px) {

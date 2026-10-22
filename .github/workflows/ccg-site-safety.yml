@@ -82,6 +82,7 @@ jobs:
           node --check js/ccg-music-config.js
           node --check js/ccg-legacy-url-consolidation.js
           node --check js/ccg-global-search.js
+          node --check js/games-library.js
           node --check js/ccg-global.js
           node --check js/ccg-search-ranking.js
           node --check js/ccg-recently-viewed.js
@@ -159,11 +160,17 @@ jobs:
       - name: Run Home render-blocking CSS regression guard
         run: node --test tests/home-render-blocking-css.test.mjs
 
+      - name: Validate Fourthwall merchandise homepage integration
+        run: node --test tests/fourthwall-merch-integration.test.mjs
+
       - name: Run mobile-lite startup regression guard
         run: node tests/ccg-mobile-lite-startup.mjs
 
       - name: Run archive directory system regression guard
         run: node --test tests/archive-directory-system.test.mjs
+
+      - name: Verify fuzzy C64 and Amiga website searches
+        run: node --test tests/ccg-website-fuzzy-search.test.mjs
 
       - name: Run smart emulation hub regression guard
         run: node --test tests/emulation-smart-hub.test.mjs
@@ -210,6 +217,9 @@ jobs:
 
       - name: Run Zzap award data audit
         run: node scripts/audit-zzap64-awards.js
+
+      - name: Preserve all Zzap matcher results and fuzzy score boundaries
+        run: node --test tests/zzap64-matcher-regression.test.mjs
 
       - name: Run Zzap progressive loading audit
         run: node scripts/audit-zzap64-performance.js

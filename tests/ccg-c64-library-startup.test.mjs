@@ -8,22 +8,28 @@ import vm from "node:vm";
 import { fileURLToPath } from "node:url";
 import { parsePackedCatalog, PACK_CATALOG_URL, ARCHIVE_READY_URL,
   ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
-  preferSelectedCartridges } from "../js/ccg-c64/game-catalog.js";
+  preferSelectedCartridges, catalogGameIdentity } from "../js/ccg-c64/game-catalog.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const app = fs.readFileSync(path.join(root, "js/ccg-c64/app.js"), "utf8");
 const direct = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/library.json"), "utf8"));
 const blast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/catalog.json"), "utf8"));
+const retiredBlast = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/blast/retired-ids.json"), "utf8"));
+const retiredArchive = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/prg-archive/retired-ids.json"), "utf8"));
 const moreCrt = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/media/cartridge-replacements/active.json"), "utf8"));
 const begin = app.indexOf("async function initialiseOnlineLibrary() {");
 const end = app.indexOf("async function loadSelectedLibraryEntry()", begin);
 assert(begin >= 0 && end > begin, "Library startup must be identifiable");
 const code = app.slice(begin, end) + "\nglobalThis.startLibrary = initialiseOnlineLibrary;";
 
-async function execute(catalogueAvailable, activateExtraCrt = false) {
+async function execute(catalogueAvailable, activateExtraCrt = false, deepLinkId = "") {
   const statuses = {};
   const fetchRequests = [];
   const context = vm.createContext({
+    window: { location: { search: deepLinkId ? "?game=" + encodeURIComponent(deepLinkId) : "" } },
+    URLSearchParams,
+    stageNote: { textContent: "" },
+    selectOnlineLibraryEntry(id) { statuses.selected = id; },
     onlineLibraryGrid: {},
     onlineLibraryStatus: { textContent: "" },
     onlineLibrarySearch: { value: "" },
@@ -39,6 +45,7 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
     parseAdditionalCrtCatalog,
     parsePackedCatalog,
     preferSelectedCartridges,
+    catalogGameIdentity,
     refreshOnlineLibrarySuggestions() { statuses.refreshed = true; },
     updateSelectedLibraryGame() { statuses.selectionUpdated = true; },
     console: { warn(...message) { statuses.warning = message; } },
@@ -46,6 +53,12 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
       fetchRequests.push({ url, opts });
       if (opts?.method === "HEAD") {
         throw new Error("HEAD denied by CDN"); // All old results would disappear.
+      }
+      if (url === "/emulator/c64/media/blast/retired-ids.json") {
+        return { ok: true, json: async () => retiredBlast };
+      }
+      if (url === "/emulator/c64/media/prg-archive/retired-ids.json") {
+        return { ok: true, json: async () => retiredArchive };
       }
       if (url === "/emulator/c64/library.json") {
         return { ok: true, json: async () => direct };
@@ -56,11 +69,16 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
           : { ok: false, status: 404 };
       }
       if (url === ARCHIVE_READY_URL) {
-        return { ok: false, status: 404 }; // No optional archive media is published yet.
+        return { ok: false, status: 404 }; // Simulate archive temporarily unavailable; direct CRT fallback must still work.
       }
       if (url === PACK_CATALOG_URL) {
+        // Simulate a physically retired historic PRG when checking its alias.
+        const retiredFixture = deepLinkId === "blast-0000"
+          ? { ...blast, recordCount: blast.recordCount - 1,
+              games: blast.games.filter(row => row[0] !== "blast-0000") }
+          : blast;
         return catalogueAvailable
-          ? { ok: true, json: async () => blast }
+          ? { ok: true, json: async () => retiredFixture }
           : { ok: false, status: 503 };
       }
       throw new Error("Unexpected URL: " + url);
@@ -72,11 +90,28 @@ async function execute(catalogueAvailable, activateExtraCrt = false) {
 }
 
 const good = await execute(true);
-assert.equal(blast.recordCount, 1878);
-assert.equal(direct.entries.length, 222,
-  "Retain 70 original directly hosted games plus 152 owner-approved CRT replacements");
-assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 153,
-  "152 new CRT-first entries and existing Pirates! preference must survive");
+assert.equal(blast.recordCount, 1150, "All 1,150 surviving BLAST PRGs remain packed and SHA verified");
+assert.equal(direct.entries.length, 1772,
+  "Existing 1,771 approved games and the new Gary Lineker disk must remain registered");
+assert(direct.entries.some(e => e.id === "owner-crt-more-friday-the-13th" && e.format === "crt"),
+  "Original Friday the 13th cartridge must remain listed");
+assert(direct.entries.some(e => e.id === "owner-d64-friday-13th-cheeky-commodore-edition" &&
+  e.format === "d64" && e.title === "Friday 13th - Cheeky Commodore Edition"),
+  "New Cheeky Commodore disk edition must be listed separately");
+const garyLineker = direct.entries.find(e => e.id === "owner-d64-gary-linekers-superstar-soccer");
+assert(garyLineker && garyLineker.title === "Gary Lineker\'s Superstar Soccer" &&
+  garyLineker.format === "d64" &&
+  garyLineker.url === "/emulator/c64/media/gary-linekers-superstar-soccer.d64" &&
+  garyLineker.bytes === 174848 &&
+  garyLineker.sha256 === "4728a449bda1182f75f4c985f054d5846ab80c46de9d29c52910ddcb8ccbd8e3" &&
+  garyLineker.approved === true,
+  "Gary Lineker\'s Superstar Soccer must retain its approved D64 path and exact digest");
+assert(app.includes('"friday the 13th - hammer challenge ii"'),
+  "Withdrawn Hammer Challenge II PRG must be excluded from the displayed archive");
+assert.equal(direct.entries.filter(item => item.preferOverOtherFormats === true).length, 1709,
+  "Preserve previous promoted CRTs and all 823 new archive replacement CRTs");
+assert.equal(retiredArchive.recordCount, 1528,
+  "All 1528 superseded archive bookmarks must retain CRT mappings");
 const musketeer = direct.entries.find(entry => entry.id === "musketeer");
 assert(musketeer && musketeer.title === "Musketeer" && musketeer.format === "d64" &&
   musketeer.url === "/emulator/c64/media/musketeer.d64" &&
@@ -95,9 +130,18 @@ for (const [id, title] of [
     game.url === "/emulator/c64/media/" + id + ".crt" && game.approved,
     "Verified EasyFlash title must remain published at its exact local URL: " + id);
 }
-assert.equal(good.context.onlineLibraryEntries.length, 2015,
-  "All approved titles except the withdrawn Bruce Lee PRG must appear even if HEAD is unavailable");
-assert.equal(good.context.onlineLibraryStatus.textContent, "2,015 READY");
+// Keep the startup count derived from the exact owner-authenticated game data,
+// not frozen at the previous 947-entry direct-catalogue release.
+const registeredKeys = new Set(direct.entries.map(entry =>
+  `${entry.title.trim().toLowerCase()}|${String(entry.format).toLowerCase()}`));
+const packedSurvivors = parsePackedCatalog(blast).entries.filter(entry =>
+  entry.title.trim().toLowerCase() !== "bruce lee" &&
+  !registeredKeys.has(`${entry.title.trim().toLowerCase()}|${entry.format}`));
+const expectedVisible = preferSelectedCartridges([...direct.entries, ...packedSurvivors]).length;
+assert.equal(good.context.onlineLibraryEntries.length, expectedVisible,
+  "Surviving BLAST PRGs and registered CRT replacements must remain visible");
+assert.equal(good.context.onlineLibraryStatus.textContent,
+  expectedVisible.toLocaleString("en-GB") + " READY");
 assert.equal(good.context.onlineLibraryRetryButton.hidden, true);
 assert.equal(good.context.onlineLibraryPanel.hidden, false);
 assert.equal(good.fetchRequests.length, 4, "Direct, optional CRT, Blast and archive activation are probed once");
@@ -106,20 +150,22 @@ assert(good.fetchRequests.every(r => r.opts.method !== "HEAD"));
 assert.equal(good.statuses.refreshed, true);
 
 const failed = await execute(false);
-assert.equal(failed.context.onlineLibraryEntries.length, 221,
-  "Direct CRT-first games must survive pack errors while hiding the duplicate Myth disk listing");
+assert.equal(failed.context.onlineLibraryEntries.length,
+  preferSelectedCartridges(direct.entries).length,
+  "All directly registered CRT replacements must remain available when BLAST is offline");
 assert.match(failed.context.onlineLibraryStatus.textContent, /BLAST UNAVAILABLE/);
 assert.match(failed.context.onlineLibraryCount.textContent, /retry/i);
 assert.equal(failed.context.onlineLibraryRetryButton.hidden, false);
 assert(failed.statuses.warning, "A catalogue failure must be logged instead of swallowed");
 
-// The separate 1,530-file cartridge manifest must actually suppress exact
+// The expanded 2,064-file cartridge manifest must suppress exact
 // matching packed PRGs, not just validate as static JSON. Broken deployments
 // must fall back to all original games (tested above with a 404 response).
 const activated = await execute(true, true);
-assert.equal(moreCrt.recordCount, 1530);
-assert.equal(activated.context.onlineLibraryEntries.filter(e =>
-  e.id.startsWith("owner-crt-more-")).length, 1530);
+assert.equal(moreCrt.recordCount, 2063);
+assert(activated.context.onlineLibraryEntries.filter(e =>
+  e.id.startsWith("owner-crt-more-")).length >= 2040,
+  "Expanded owner CRT catalogue must preserve existing selections and expose new individual games");
 for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
   const entries = activated.context.onlineLibraryEntries.filter(e => e.title === title);
   assert.equal(entries.length, 1, "Only the chosen CRT may remain visible for " + title);
@@ -128,11 +174,91 @@ for (const title of ["10th Frame", "1943 - The Battle of Midway", "Zzzz"]) {
 }
 assert.equal(activated.fetchRequests.filter(x =>
   x.url === ADDITIONAL_CRT_CATALOG_URL).length, 1);
+// One of the 728 retired IDs resolves to a second approved edition of a
+// previously selected CRT. The older canonical H.E.R.O cartridge must remain
+// visible, and its former packed PRG bookmark must still launch that selection.
+assert.equal(retiredBlast.mappings["blast-0759"], "owner-crt-more-hero-d55737f6e620");
+const duplicateCrtLink = await execute(true, false, "blast-0759");
+assert.equal(duplicateCrtLink.statuses.selected, "owner-crt-h-e-r-o",
+  "Retired BLAST bookmark must select the original canonical CRT even when its mapped edition is hidden");
+assert.equal(duplicateCrtLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/blast/retired-ids.json").length, 1);
 
-console.log("PASS: 2015 selectable library entries appear without HEAD, owner-authorised CRTs survive catalogue errors, and retry is exposed.");
+
+// A previously shared packed PRG ID must still select the approved CRT after
+// physical compaction. The alias is fetched only for an unresolved deep link.
+const oldBookmark = await execute(true, true, "blast-0000");
+assert.equal(oldBookmark.statuses.selected, "owner-crt-more-10th-frame",
+  "Retired packed PRG bookmark must select its replacement CRT");
+assert.equal(oldBookmark.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/blast/retired-ids.json").length, 1,
+  "Only retired packed game bookmarks may fetch the alias map");
+assert.equal(activated.fetchRequests.filter(x =>
+  x.url.endsWith("/retired-ids.json")).length, 0,
+  "Normal emulator browsing must not download retirement aliases");
+
+// Archive PRG retirement must preserve the original URL identity even when
+// the optional archive is unavailable and the CRT manifest returns 404.
+assert.equal(retiredArchive.mappings["archive-00008"], "owner-crt-more-10th-frame");
+const retiredArchiveLink = await execute(true, false, "archive-00008");
+assert.equal(retiredArchiveLink.statuses.selected, "owner-crt-more-10th-frame",
+  "An archived PRG bookmark must select its directly registered CRT");
+assert.equal(retiredArchiveLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
+
+// When multiple approved CRT editions share a title, legacy links must
+// select the visible original owner-approved CRT rather than disappear.
+assert.equal(retiredArchive.mappings["archive-03844"], "owner-crt-more-hero-d55737f6e620");
+const archivalHeroLink = await execute(true, false, "archive-03844");
+assert.equal(archivalHeroLink.statuses.selected, "owner-crt-h-e-r-o",
+  "An archived H.E.R.O PRG bookmark must select the existing canonical CRT");
+assert.equal(archivalHeroLink.fetchRequests.filter(x =>
+  x.url === "/emulator/c64/media/prg-archive/retired-ids.json").length, 1);
+
+console.log(`PASS: ${expectedVisible} visible BLAST/direct games with archive CRT fallbacks; 1,528 retired archive bookmarks and original CRT priority preserved.`);
 
 // CCG_BATCH_VERIFIED_MEDIA â€” owner-supplied individual disks and every swap side.
-const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"rodland","title":"Rodland"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"slicks","title":"Slicks"},{"id":"x-out","title":"X-Out"},{"id":"racing-destruction-set","title":"Racing Destruction Set"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"},{"id":"katakis","title":"Katakis"},{"id":"world-games","title":"World Games"},{"id":"kennedy-approach","title":"Kennedy Approach"},{"id":"hessian","title":"Hessian"},{"id":"soul-force","title":"Soul Force"},{"id":"lords-of-conquest","title":"Lords of Conquest"},{"id":"times-of-lore","title":"Times of Lore"},{"id":"supremacy","title":"Supremacy: Your Will Be Done"},{"id":"strike-fleet","title":"Strike Fleet"},{"id":"the-legend-of-blacksilver","title":"The Legend of Blacksilver"},{"id":"killed-until-dead","title":"Killed Until Dead"},{"id":"pool-of-radiance","title":"Pool of Radiance"},{"id":"ultima-iii-exodus","title":"Ultima III: Exodus"},{"id":"buck-rogers-countdown-to-doomsday","title":"Buck Rogers: Countdown to Doomsday"},{"id":"briley-witch-chronicles","title":"Briley Witch Chronicles"},{"id":"project-firestart","title":"Project Firestart"},{"id":"legacy-of-the-ancients","title":"Legacy of the Ancients"},{"id":"project-stealth-fighter","title":"Project Stealth Fighter"}];
+const verifiedBatchGames = [{"id":"knight-n-grail-preview","title":"Knight \u0027n\u0027 Grail (Preview)"},{"id":"the-castles-of-dr-creep","title":"The Castles of Dr. Creep"},{"id":"myth-history-in-the-making","title":"Myth: History in the Making"},{"id":"rick-dangerous-2","title":"Rick Dangerous 2"},{"id":"x-out","title":"X-Out"},{"id":"tass-times-in-tonetown","title":"Tass Times in Tonetown"},{"id":"boulder-dash-construction-kit","title":"Boulder Dash Construction Kit"},{"id":"the-bards-tale","title":"The Bard\u0027s Tale"},{"id":"oil-imperium","title":"Oil Imperium"},{"id":"silent-service","title":"Silent Service"},{"id":"ultimate-wizard","title":"Ultimate Wizard"},{"id":"the-bards-tale-iii","title":"The Bard\u0027s Tale III: Thief of Fate"},{"id":"puzzle-bobble","title":"Puzzle Bobble"},{"id":"champions-of-krynn","title":"Champions of Krynn"},{"id":"california-games","title":"California Games"},{"id":"world-games","title":"World Games"},{"id":"kennedy-approach","title":"Kennedy Approach"},{"id":"hessian","title":"Hessian"},{"id":"soul-force","title":"Soul Force"},{"id":"lords-of-conquest","title":"Lords of Conquest"},{"id":"times-of-lore","title":"Times of Lore"},{"id":"supremacy","title":"Supremacy: Your Will Be Done"},{"id":"strike-fleet","title":"Strike Fleet"},{"id":"the-legend-of-blacksilver","title":"The Legend of Blacksilver"},{"id":"killed-until-dead","title":"Killed Until Dead"},{"id":"pool-of-radiance","title":"Pool of Radiance"},{"id":"ultima-iii-exodus","title":"Ultima III: Exodus"},{"id":"buck-rogers-countdown-to-doomsday","title":"Buck Rogers: Countdown to Doomsday"},{"id":"briley-witch-chronicles","title":"Briley Witch Chronicles"},{"id":"project-firestart","title":"Project Firestart"},{"id":"legacy-of-the-ancients","title":"Legacy of the Ancients"},{"id":"project-stealth-fighter","title":"Project Stealth Fighter"}];
+// Slicks was deliberately retired as a direct D64: its SHA-verified CRT
+// must remain directly selectable even when the optional manifest is offline.
+const retiredSlicks = direct.entries.find(item =>
+  item.id === "owner-crt-more-slicks" && item.title === "Slicks");
+const chosenSlicks = moreCrt.games.find(row => row[0] === "Slicks");
+assert(retiredSlicks && chosenSlicks &&
+  retiredSlicks.format === "crt" && retiredSlicks.approved === true &&
+  retiredSlicks.url === "/emulator/c64/media/cartridge-replacements/" + chosenSlicks[1] &&
+  retiredSlicks.bytes === chosenSlicks[2] &&
+  retiredSlicks.sha256 === chosenSlicks[3] &&
+  !direct.entries.some(item => item.id === "slicks" || item.url === "/emulator/c64/media/slicks.d64"),
+  "Retired Slicks disk must be replaced by the exact published CRT");
+assert(!fs.existsSync(path.join(root, "emulator/c64/media/slicks.d64")),
+  "Superseded Slicks disk must not remain in the published tree");
+// Direct D64 binaries retired in favor of existing identical-title CRT
+// releases. The core library retains exact-SHA fallbacks even when the
+// optional CRT catalogue is unavailable.
+for (const [title, formerId, formerFile] of [
+  ["Uridium", "uridium", "uridium.d64"],
+  ["Rodland", "rodland", "rodland.d64"],
+  ["Racing Destruction Set", "racing-destruction-set", "racing-destruction-set.d64"],
+  ["Katakis", "katakis", "katakis.d64"],
+  ["Bomberland", "bomberland", "bomberland.d64"],
+]) {
+  const row = moreCrt.games.find(x => x[0] === title);
+  assert(row, "Replacement CRT missing from published manifest: " + title);
+  const [name, file, size, sha] = row;
+  const replacement = direct.entries.find(e =>
+    e.id === "owner-crt-more-" + file.slice(0, -4));
+  assert(replacement && replacement.title === name && replacement.format === "crt" &&
+    replacement.approved === true && replacement.preferOverOtherFormats === true &&
+    replacement.url === "/emulator/c64/media/cartridge-replacements/" + file &&
+    replacement.bytes === size && replacement.sha256 === sha,
+    "Direct CRT fallback does not match approved ROM: " + title);
+  assert(!direct.entries.some(e => e.id === formerId || e.url ===
+    "/emulator/c64/media/" + formerFile),
+    "Obsolete disk remains in direct catalogue: " + title);
+  assert(!fs.existsSync(path.join(root, "emulator/c64/media", formerFile)),
+    "Obsolete D64 file remains on disk: " + formerFile);
+}
 const { createHash: batchHash } = await import("node:crypto");
 for (const expected of verifiedBatchGames) {
   const game = direct.entries.find(item => item.id === expected.id);
@@ -151,8 +277,8 @@ for (const expected of verifiedBatchGames) {
   }
 }
 
-// CCG_BATCH3_VERIFIED_MEDIA: 15 additional owner-supplied titles and all their disk sides.
-const batch3Expected = [{"title":"Last Ninja 2","id":"last-ninja-2","sourceMedia":[{"url":"/emulator/c64/media/last-ninja-2-disk-1.d64","sha256":"38d2a7f244992ff36f7001c940037dab45a550d9b1e7bcc3834f4eec40e85ba1","filename":"last-ninja-2-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/last-ninja-2-disk-2.d64","sha256":"07dbea9b5fe9bf3b3a87a3d8dc51c0633176f9e28d601df55b24624cca0e7962","filename":"last-ninja-2-disk-2.d64","bytes":174848}]},{"title":"Red Storm Rising","id":"red-storm-rising","sourceMedia":[{"url":"/emulator/c64/media/red-storm-rising.crt","sha256":"0bce16722539abf7d4637d474229f15121c8054adcd5d1d2a4c7e730e4c6193f","filename":"red-storm-rising.crt","bytes":664912}]},{"title":"Ghosts \u0027n Goblins Arcade","id":"ghosts-n-goblins-arcade","sourceMedia":[{"url":"/emulator/c64/media/ghosts-n-goblins-arcade.crt","sha256":"4d3f65c2c945d5a0e21ec764199be64e6999d7fb1428674800d1be6751d4ae08","filename":"ghosts-n-goblins-arcade.crt","bytes":229888}]},{"title":"Wasteland","id":"wasteland","sourceMedia":[{"url":"/emulator/c64/media/wasteland.crt","sha256":"b72b8425de8bd0d4707e2d04d0573bfa51db0c0c9cef33740137f7caf69458e5","filename":"wasteland.crt","bytes":1050688}]},{"title":"Ultima IV: Quest of the Avatar","id":"ultima-iv-quest-of-the-avatar","sourceMedia":[{"url":"/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-1.d64","sha256":"7efd0e7c3d06342722c63eb036adae7b2e3cf92de8214c2a85cd9ae855f25118","filename":"ultima-iv-quest-of-the-avatar-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-2.d64","sha256":"01148f5348737607b39590136aa739ef136599625871eb8e28e7d4cf660dac27","filename":"ultima-iv-quest-of-the-avatar-disk-2.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-3.d64","sha256":"7943b483c80d75d898e7ff4d30735d88eaa0c39ed106241ab2aa6efcd148aaab","filename":"ultima-iv-quest-of-the-avatar-disk-3.d64","bytes":174848}]},{"title":"Bomberland","id":"bomberland","sourceMedia":[{"url":"/emulator/c64/media/bomberland.d64","sha256":"e3ed1709d9b106732bb1e78b6bf9d14a0d9267355b3ecf178a7fb8f9719fe60a","filename":"bomberland.d64","bytes":174848}]},{"title":"Zak McKracken and the Alien Mindbenders","id":"zak-mckracken-and-the-alien-mindbenders","sourceMedia":[{"url":"/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-1.d64","sha256":"f16f95e8a34de5241f484aaf5e28b43289cb6b2cb7cad645d8da51d6551c3c28","filename":"zak-mckracken-and-the-alien-mindbenders-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-2.d64","sha256":"34f51b28200c134ef4e1435ad77771c02d39fff8da358e2f26111f852ab5ee88","filename":"zak-mckracken-and-the-alien-mindbenders-disk-2.d64","bytes":174848},{"url":"/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-3.d64","sha256":"ad93cc9bc3dddf01f651b584f120e0957df4ad0339ce2898e8999c6a0ee8a76f","filename":"zak-mckracken-and-the-alien-mindbenders-disk-3.d64","bytes":174848}]},{"title":"Maniac Mansion","id":"maniac-mansion","sourceMedia":[{"url":"/emulator/c64/media/maniac-mansion-disk-1.d64","sha256":"aa6898d3a053ee5b2cc1823f68b64aad7c20d7e813d24b50f76c742a48333a01","filename":"maniac-mansion-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/maniac-mansion-disk-2.d64","sha256":"5372c01e38b4cc0c0e809634c605312f418b10706e6a67e1c8b556c2863a31d6","filename":"maniac-mansion-disk-2.d64","bytes":174848}]},{"title":"Sonic the Hedgehog","id":"sonic-the-hedgehog","sourceMedia":[{"url":"/emulator/c64/media/sonic-the-hedgehog-disk-1.d64","sha256":"8bf81014da548e78094317450e2600afc9a4ede7bd274f5f5752ea310467bb3e","filename":"sonic-the-hedgehog-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/sonic-the-hedgehog-disk-2.d64","sha256":"36913ea98f419cd615e4e14f78bbf09550a58b867c06fb67fd055517970c04b1","filename":"sonic-the-hedgehog-disk-2.d64","bytes":174848}]},{"title":"Neuromancer","id":"neuromancer","sourceMedia":[{"url":"/emulator/c64/media/neuromancer.d81","sha256":"a728126a3045bc6da1a06a70638b15c96826bfc455bcc565956ac6054141336d","filename":"neuromancer.d81","bytes":819200}]},{"title":"Laser Squad","id":"laser-squad","sourceMedia":[{"url":"/emulator/c64/media/laser-squad.d64","sha256":"47e2bfb6efee7a2d544e1f08494c7c6ab3031ceed4162042285cb1609c6318e5","filename":"laser-squad.d64","bytes":174848}]},{"title":"World Class Leaderboard","id":"world-class-leaderboard","sourceMedia":[{"url":"/emulator/c64/media/world-class-leaderboard-disk-1.d64","sha256":"32b6e5cc33b3b507f3abc0601fab0e6e7639ea944d178cba57ce64146fb2ff83","filename":"world-class-leaderboard-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/world-class-leaderboard-disk-2.d64","sha256":"e7e324ee253e3d6a702ad9244a5769b9f051e99c2b19cfbd152b011b8b76e689","filename":"world-class-leaderboard-disk-2.d64","bytes":174848}]},{"title":"Metal Warrior 4: Agents of Metal","id":"metal-warrior-4-agents-of-metal","sourceMedia":[{"url":"/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-1.d64","sha256":"354c0dac95db8bb4cf0362566347f100b48946123771755a50cfa98b75c8b2c5","filename":"metal-warrior-4-agents-of-metal-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-2.d64","sha256":"9b1e59f7b2b837172996d778098d6491ce1225c8d0eaac92b0f953f4182699a3","filename":"metal-warrior-4-agents-of-metal-disk-2.d64","bytes":174848}]},{"title":"Commando Arcade Special Edition","id":"commando-arcade-special-edition","sourceMedia":[{"url":"/emulator/c64/media/commando-arcade-special-edition.crt","sha256":"a6dd99b55a02680ad95336fcfcd3fd709f0ff610816eb739bb1da2a4c866126e","filename":"commando-arcade-special-edition.crt","bytes":221680}]},{"title":"Ultima V: Warriors of Destiny","id":"ultima-v-warriors-of-destiny","sourceMedia":[{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-1.d64","sha256":"5ef48720e1b8da8cbb0b5e3ec2e5a9cf660ad81037165b8272dba4be8612ef67","filename":"ultima-v-warriors-of-destiny-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-2.d64","sha256":"c4374489e2acc16350f6c4d577556aa288b401227d7bd64cf8b890492758343e","filename":"ultima-v-warriors-of-destiny-disk-2.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-3.d64","sha256":"d9ce23afe61edd428d627cd0fed849d1cf4e2f4ca7a608c816734e03f1b2d8b3","filename":"ultima-v-warriors-of-destiny-disk-3.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-4.d64","sha256":"1095d4b75b618dce08c52ab7b53f169728aaa5709b810289ab6f829c4daa670d","filename":"ultima-v-warriors-of-destiny-disk-4.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-5.d64","sha256":"c9f0fa1cba6cfb7e13a3801944568c468259f3bcbc4dedaa4d0c8148eb3025aa","filename":"ultima-v-warriors-of-destiny-disk-5.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-6.d64","sha256":"e5494da28fc2a3b02774a4afd65893cc2e7cb27681b99424e629cdaa285d9d8c","filename":"ultima-v-warriors-of-destiny-disk-6.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-7.d64","sha256":"d23ecddeffc77f0af2ada2607bc25246288932584a8f1ff101058bf2cdc04677","filename":"ultima-v-warriors-of-destiny-disk-7.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-8.d64","sha256":"15db166172c261d0dfc6c7e9837d499191effb67f628ca525cb033e3b0b4eed3","filename":"ultima-v-warriors-of-destiny-disk-8.d64","bytes":174848}]}];
+// CCG_BATCH3_VERIFIED_MEDIA: preserve all remaining original batch-3 disks and sides.
+const batch3Expected = [{"title":"Last Ninja 2","id":"last-ninja-2","sourceMedia":[{"url":"/emulator/c64/media/last-ninja-2-disk-1.d64","sha256":"38d2a7f244992ff36f7001c940037dab45a550d9b1e7bcc3834f4eec40e85ba1","filename":"last-ninja-2-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/last-ninja-2-disk-2.d64","sha256":"07dbea9b5fe9bf3b3a87a3d8dc51c0633176f9e28d601df55b24624cca0e7962","filename":"last-ninja-2-disk-2.d64","bytes":174848}]},{"title":"Red Storm Rising","id":"red-storm-rising","sourceMedia":[{"url":"/emulator/c64/media/red-storm-rising.crt","sha256":"0bce16722539abf7d4637d474229f15121c8054adcd5d1d2a4c7e730e4c6193f","filename":"red-storm-rising.crt","bytes":664912}]},{"title":"Ghosts 'n Goblins Arcade","id":"ghosts-n-goblins-arcade","sourceMedia":[{"url":"/emulator/c64/media/ghosts-n-goblins-arcade.crt","sha256":"4d3f65c2c945d5a0e21ec764199be64e6999d7fb1428674800d1be6751d4ae08","filename":"ghosts-n-goblins-arcade.crt","bytes":229888}]},{"title":"Wasteland","id":"wasteland","sourceMedia":[{"url":"/emulator/c64/media/wasteland.crt","sha256":"b72b8425de8bd0d4707e2d04d0573bfa51db0c0c9cef33740137f7caf69458e5","filename":"wasteland.crt","bytes":1050688}]},{"title":"Ultima IV: Quest of the Avatar","id":"ultima-iv-quest-of-the-avatar","sourceMedia":[{"url":"/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-1.d64","sha256":"7efd0e7c3d06342722c63eb036adae7b2e3cf92de8214c2a85cd9ae855f25118","filename":"ultima-iv-quest-of-the-avatar-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-2.d64","sha256":"01148f5348737607b39590136aa739ef136599625871eb8e28e7d4cf660dac27","filename":"ultima-iv-quest-of-the-avatar-disk-2.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-iv-quest-of-the-avatar-disk-3.d64","sha256":"7943b483c80d75d898e7ff4d30735d88eaa0c39ed106241ab2aa6efcd148aaab","filename":"ultima-iv-quest-of-the-avatar-disk-3.d64","bytes":174848}]},{"title":"Zak McKracken and the Alien Mindbenders","id":"zak-mckracken-and-the-alien-mindbenders","sourceMedia":[{"url":"/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-1.d64","sha256":"f16f95e8a34de5241f484aaf5e28b43289cb6b2cb7cad645d8da51d6551c3c28","filename":"zak-mckracken-and-the-alien-mindbenders-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-2.d64","sha256":"34f51b28200c134ef4e1435ad77771c02d39fff8da358e2f26111f852ab5ee88","filename":"zak-mckracken-and-the-alien-mindbenders-disk-2.d64","bytes":174848},{"url":"/emulator/c64/media/zak-mckracken-and-the-alien-mindbenders-disk-3.d64","sha256":"ad93cc9bc3dddf01f651b584f120e0957df4ad0339ce2898e8999c6a0ee8a76f","filename":"zak-mckracken-and-the-alien-mindbenders-disk-3.d64","bytes":174848}]},{"title":"Maniac Mansion","id":"maniac-mansion","sourceMedia":[{"url":"/emulator/c64/media/maniac-mansion-disk-1.d64","sha256":"aa6898d3a053ee5b2cc1823f68b64aad7c20d7e813d24b50f76c742a48333a01","filename":"maniac-mansion-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/maniac-mansion-disk-2.d64","sha256":"5372c01e38b4cc0c0e809634c605312f418b10706e6a67e1c8b556c2863a31d6","filename":"maniac-mansion-disk-2.d64","bytes":174848}]},{"title":"Sonic the Hedgehog","id":"sonic-the-hedgehog","sourceMedia":[{"url":"/emulator/c64/media/sonic-the-hedgehog-disk-1.d64","sha256":"8bf81014da548e78094317450e2600afc9a4ede7bd274f5f5752ea310467bb3e","filename":"sonic-the-hedgehog-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/sonic-the-hedgehog-disk-2.d64","sha256":"36913ea98f419cd615e4e14f78bbf09550a58b867c06fb67fd055517970c04b1","filename":"sonic-the-hedgehog-disk-2.d64","bytes":174848}]},{"title":"Neuromancer","id":"neuromancer","sourceMedia":[{"url":"/emulator/c64/media/neuromancer.d81","sha256":"a728126a3045bc6da1a06a70638b15c96826bfc455bcc565956ac6054141336d","filename":"neuromancer.d81","bytes":819200}]},{"title":"Laser Squad","id":"laser-squad","sourceMedia":[{"url":"/emulator/c64/media/laser-squad.d64","sha256":"47e2bfb6efee7a2d544e1f08494c7c6ab3031ceed4162042285cb1609c6318e5","filename":"laser-squad.d64","bytes":174848}]},{"title":"World Class Leaderboard","id":"world-class-leaderboard","sourceMedia":[{"url":"/emulator/c64/media/world-class-leaderboard-disk-1.d64","sha256":"32b6e5cc33b3b507f3abc0601fab0e6e7639ea944d178cba57ce64146fb2ff83","filename":"world-class-leaderboard-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/world-class-leaderboard-disk-2.d64","sha256":"e7e324ee253e3d6a702ad9244a5769b9f051e99c2b19cfbd152b011b8b76e689","filename":"world-class-leaderboard-disk-2.d64","bytes":174848}]},{"title":"Metal Warrior 4: Agents of Metal","id":"metal-warrior-4-agents-of-metal","sourceMedia":[{"url":"/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-1.d64","sha256":"354c0dac95db8bb4cf0362566347f100b48946123771755a50cfa98b75c8b2c5","filename":"metal-warrior-4-agents-of-metal-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/metal-warrior-4-agents-of-metal-disk-2.d64","sha256":"9b1e59f7b2b837172996d778098d6491ce1225c8d0eaac92b0f953f4182699a3","filename":"metal-warrior-4-agents-of-metal-disk-2.d64","bytes":174848}]},{"title":"Commando Arcade Special Edition","id":"commando-arcade-special-edition","sourceMedia":[{"url":"/emulator/c64/media/commando-arcade-special-edition.crt","sha256":"a6dd99b55a02680ad95336fcfcd3fd709f0ff610816eb739bb1da2a4c866126e","filename":"commando-arcade-special-edition.crt","bytes":221680}]},{"title":"Ultima V: Warriors of Destiny","id":"ultima-v-warriors-of-destiny","sourceMedia":[{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-1.d64","sha256":"5ef48720e1b8da8cbb0b5e3ec2e5a9cf660ad81037165b8272dba4be8612ef67","filename":"ultima-v-warriors-of-destiny-disk-1.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-2.d64","sha256":"c4374489e2acc16350f6c4d577556aa288b401227d7bd64cf8b890492758343e","filename":"ultima-v-warriors-of-destiny-disk-2.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-3.d64","sha256":"d9ce23afe61edd428d627cd0fed849d1cf4e2f4ca7a608c816734e03f1b2d8b3","filename":"ultima-v-warriors-of-destiny-disk-3.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-4.d64","sha256":"1095d4b75b618dce08c52ab7b53f169728aaa5709b810289ab6f829c4daa670d","filename":"ultima-v-warriors-of-destiny-disk-4.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-5.d64","sha256":"c9f0fa1cba6cfb7e13a3801944568c468259f3bcbc4dedaa4d0c8148eb3025aa","filename":"ultima-v-warriors-of-destiny-disk-5.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-6.d64","sha256":"e5494da28fc2a3b02774a4afd65893cc2e7cb27681b99424e629cdaa285d9d8c","filename":"ultima-v-warriors-of-destiny-disk-6.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-7.d64","sha256":"d23ecddeffc77f0af2ada2607bc25246288932584a8f1ff101058bf2cdc04677","filename":"ultima-v-warriors-of-destiny-disk-7.d64","bytes":174848},{"url":"/emulator/c64/media/ultima-v-warriors-of-destiny-disk-8.d64","sha256":"15db166172c261d0dfc6c7e9837d499191effb67f628ca525cb033e3b0b4eed3","filename":"ultima-v-warriors-of-destiny-disk-8.d64","bytes":174848}]}];
 const { createHash: batch3Hash } = await import('node:crypto');
 for (const expected of batch3Expected) {
   const entry = direct.entries.find(item => item.id === expected.id);

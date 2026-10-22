@@ -1,0 +1,2351 @@
+{
+  "version": 1,
+  "date": "2026-10-16",
+  "context": "Exact article-positioned source identity of already credited C64 game title; no hosted-game equivalence assertion.",
+  "sourceBase": "b9c81eb099ff7292f73ca961eec6624ff6b6878a",
+  "sourceBranch": "codex/c64-publisher-verified-lemon64-25-20261016",
+  "additionCount": 129,
+  "selectionRule": "actual active CRT/BLAST/packed archive game titles ending ', The', key length >=14 and >=3 words, already-credited 'The ...' metadata root, at most two source publisher labels; publisher copied verbatim, year deliberately null; quarantine short or edition-sensitive identities",
+  "mediaEqualityClaimed": false,
+  "sourceMayBeReferenceOnly": true,
+  "publisherIsHistoricalTitleAttributionNotHostedEditionProof": true,
+  "rows": [
+    {
+      "key": "1991 world cup knockout the",
+      "sourceKey": "the 1991 world cup knockout",
+      "publishers": [
+        "ET Software"
+      ],
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "1991 World Cup Knockout, The",
+          "catalogue": "archive",
+          "sha256": "e25cf12cf0a93e9457c1d259665908796ec9daf1caa5c9c9f7929e2f64a38ef9"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "adventures of barsak the dwarf the",
+      "sourceKey": "the adventures of barsak the dwarf",
+      "publishers": [
+        "Gilsoft"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Adventures of Barsak the Dwarf, The",
+          "catalogue": "archive",
+          "sha256": "8f3a7ef662b4c1ad786550b0228f005bc64b185f9ff63071876eaf5b9841bbaf"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "adventures of bond basildon bond the",
+      "sourceKey": "the adventures of bond basildon bond",
+      "publishers": [
+        "Probe Software"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Adventures of Bond... Basildon Bond, The",
+          "catalogue": "archive",
+          "sha256": "1757c16cee6dd5289df1b146676d63731e09893e9bb0870010dfb3fb10b4de8f"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "amazing spider man the",
+      "sourceKey": "the amazing spider man",
+      "publishers": [
+        "MicroProse Software"
+      ],
+      "sourceYear": 1990,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Amazing Spider-Man, The",
+          "catalogue": "active-crt",
+          "sha256": "cc2c4513e2b5f2d9906b4a2f8036daaa76f7a43293a4d265669467c355eebcc1"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "americas cup the",
+      "sourceKey": "the americas cup",
+      "publishers": [
+        "US Gold"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "America's Cup, The",
+          "catalogue": "active-crt",
+          "sha256": "718d447751e330399752c2e9b64bdecf67c722ea9745b512b9f1bb43926b32df"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "arc of yesod the",
+      "sourceKey": "the arc of yesod",
+      "publishers": [
+        "Thor Computer Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Arc of Yesod, The",
+          "catalogue": "active-crt",
+          "sha256": "8e1c619bd41eff797f2f582d6bb23dafec1b0741df739999610f0656ed32415d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "attack of the phantom karate devils the",
+      "sourceKey": "the attack of the phantom karate devils",
+      "publishers": [
+        "Phantom Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Attack of the Phantom Karate Devils, The",
+          "catalogue": "archive",
+          "sha256": "e5f024df1f4a605b96248649b6a33754c25c4466ddfa4ddeef4daeefa48f20e2"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "baby of can guru the",
+      "sourceKey": "the baby of can guru",
+      "publishers": [
+        "Rainbow Arts"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Baby of Can Guru, The",
+          "catalogue": "archive",
+          "sha256": "073f5cfa83bd5f623603add085ac3347e6f753933913dd37952282ed96379793"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "battle of midway the",
+      "sourceKey": "the battle of midway",
+      "publishers": [
+        "Personal Software Services"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Battle of Midway, The",
+          "catalogue": "archive",
+          "sha256": "bad16a586f3c35b5fd8e61066a4f47fba3a69a9ee1d5c5491dbd96dde9583b1e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "big sleaze the",
+      "sourceKey": "the big sleaze",
+      "publishers": [
+        "Piranha"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Big Sleaze, The",
+          "catalogue": "archive",
+          "sha256": "bab11bd5ebc57043b7c614cabde412d2687ab784d610d2d764fa5f99aa1dcd6e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "black pearl the",
+      "sourceKey": "the black pearl",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Black Pearl, The",
+          "catalogue": "archive",
+          "sha256": "9b6dc52701f0446c86631e452c813e2fe9a9a4e43e9af760d3ad424692836be9"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "cairo connection the",
+      "sourceKey": "the cairo connection",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Cairo Connection, The",
+          "catalogue": "archive",
+          "sha256": "681fd848dae7e3def08117b7896381e659845775695b77d368f11c760f634b03"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "castle of kraizar the",
+      "sourceKey": "the castle of kraizar",
+      "publishers": [
+        "Mnemonic Productions"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Castle of Kraizar, The",
+          "catalogue": "archive",
+          "sha256": "ec539e81b285a0830eaf294cd7cb9191ff804fdddeec801ab6561688f83975bf"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "causes of chaos the",
+      "sourceKey": "the causes of chaos",
+      "publishers": [
+        "CRL Group PLC"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Causes of Chaos, The",
+          "catalogue": "active-crt",
+          "sha256": "851d8d2ea1fef3939b6f156bd80ac4449d364dd172332f8cd7705c43ab59a2a9"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "cave of evil the",
+      "sourceKey": "the cave of evil",
+      "publishers": [
+        "ST Software"
+      ],
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Cave of Evil, The",
+          "catalogue": "archive",
+          "sha256": "5971cc6b268f7171d6e0e300110a6576406abe14d024dab34f68db98f0e5772f"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "caverns of eriban the",
+      "sourceKey": "the caverns of eriban",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Caverns of Eriban, The",
+          "catalogue": "active-crt",
+          "sha256": "e526d301e17c97141b9d735a0eb6c324235c79e156571b7595944161f2be3c1a"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "caves of oberon the",
+      "sourceKey": "the caves of oberon",
+      "publishers": [
+        "RadarSoft"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Caves of Oberon, The",
+          "catalogue": "active-crt",
+          "sha256": "1bd2023e783da6ba92f8416bb99c5d2e23449ee6edc83a379aa04f3cc5e14d6a"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "chinese juggler the",
+      "sourceKey": "the chinese juggler",
+      "publishers": [
+        "Ocean Software Ltd."
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Chinese Juggler, The",
+          "catalogue": "active-crt",
+          "sha256": "2fedc1c4058169db14d6aa62356e00363e66cd037366b4aeec8d270c54a70365"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "chrome brothers the",
+      "sourceKey": "the chrome brothers",
+      "publishers": [
+        "Future Publishing"
+      ],
+      "sourceYear": 1994,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Chrome Brothers, The",
+          "catalogue": "archive",
+          "sha256": "10a669b75c1e2f896828265089582005d7c2333e3afeeb6abe615f7126ae73c5"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "citadel of yah mon the",
+      "sourceKey": "the citadel of yah mon",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Citadel of Yah-Mon, The",
+          "catalogue": "archive",
+          "sha256": "7f269b7a10ca733ef6b54864055f48a698feb3118e472537b7ba90d8fa3deb8d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "claws of despair the",
+      "sourceKey": "the claws of despair",
+      "publishers": [
+        "Players Software"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Claws of Despair, The",
+          "catalogue": "archive",
+          "sha256": "b273db7131374a24d0e6549f65ff9c5bd0479e197a0526ae131f04d110d397ce"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "clone wars the",
+      "sourceKey": "the clone wars",
+      "publishers": [
+        "CP Verlag/Magic Disk 64"
+      ],
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Clone Wars, The",
+          "catalogue": "archive",
+          "sha256": "bafbf6dd391a0f3682cfcbf925e4dfc902d5c539ab347021fcaff9544bd10e47"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "comet game the",
+      "sourceKey": "the comet game",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Comet Game, The",
+          "catalogue": "archive",
+          "sha256": "9c23af3c4dc814c834a58b3646fda880f929051e68ee0e5856c1e318bf6445e5"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "comic game the",
+      "sourceKey": "the comic game",
+      "publishers": [
+        "Duck Soft"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Comic Game, The",
+          "catalogue": "archive",
+          "sha256": "27ecda596bb47377f15b06ed2b41844b04f645656a247e45af7aed01aaa79756"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "cornwall enigma the",
+      "sourceKey": "the cornwall enigma",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": 1992,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Cornwall Enigma, The",
+          "catalogue": "archive",
+          "sha256": "567318d8879d25997d0443f3b8b9128c0eaacaa0db85963c22c4f03108ff36af"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "cosmic tunnels the",
+      "sourceKey": "the cosmic tunnels",
+      "publishers": [
+        "Datamost, Inc."
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Cosmic Tunnels, The",
+          "catalogue": "active-crt",
+          "sha256": "46b1d3135f453c08f2309afd44c5a1231800e4ae0bfa70c7e232cbd008211772"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "cracks of fire the",
+      "sourceKey": "the cracks of fire",
+      "publishers": [
+        "Supersoft"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Cracks of Fire, The",
+          "catalogue": "archive",
+          "sha256": "f2aa9a7f9f67a53deb07fc64eda8d033fe94df8ec76d1c619e2ef74832357be5"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "cranmore diamond caper the",
+      "sourceKey": "the cranmore diamond caper",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Cranmore Diamond Caper, The",
+          "catalogue": "archive",
+          "sha256": "44e82dd9cf36d882ac7f5efa383599c35c2a0730a42e0faa420d355c19c7283d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "crooked canyon caper the",
+      "sourceKey": "the crooked canyon caper",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Crooked Canyon Caper, The",
+          "catalogue": "archive",
+          "sha256": "70c407e82534b618cd896c3a14647981edb20720de1a41b10077fdd048694a84"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "crystals of carus the",
+      "sourceKey": "the crystals of carus",
+      "publishers": [
+        "Interceptor Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Crystals of Carus, The",
+          "catalogue": "active-crt",
+          "sha256": "612c8b8db7a31bee67a2cb131b99dd9e9fecb1156b2826e53ab6aa01762de56c"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "curse of sherwood the",
+      "sourceKey": "the curse of sherwood",
+      "publishers": [
+        "Mastertronic"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Curse of Sherwood, The",
+          "catalogue": "active-crt",
+          "sha256": "b69fd882a940315416129a163e3dcf95dd78d19dd6c4bc81b7191927b6598bb2"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "dark dungeons the",
+      "sourceKey": "the dark dungeons",
+      "publishers": [
+        "Anirog Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Dark Dungeons, The",
+          "catalogue": "archive",
+          "sha256": "2a59079fcfcf3fbf7bea5dca68e6e2fc92dd2a8fd034afa984b4ba34ac3d8d5f"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "detective game the",
+      "sourceKey": "the detective game",
+      "publishers": [
+        "Argus Press Software"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Detective Game, The",
+          "catalogue": "active-crt",
+          "sha256": "d035712be86a7f9fc61f0dd3099094d9b250c6c1e9f8480045e167cf7aba56fc"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "election game the",
+      "sourceKey": "the election game",
+      "publishers": [
+        "Orion Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Election Game, The",
+          "catalogue": "archive",
+          "sha256": "434c6313aeaaebb29a8a2e8360ce1b67fd91bffb6c58ec40dd2709fd12c4e534"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "empire strikes back the",
+      "sourceKey": "the empire strikes back",
+      "publishers": [
+        "Domark"
+      ],
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Empire Strikes Back, The",
+          "catalogue": "active-crt",
+          "sha256": "2f925f28e8900968674c7a7e5ddd47117a9ea7a70a13f09bb6693b6d8dc65112"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "escaping habit the",
+      "sourceKey": "the escaping habit",
+      "publishers": [
+        "River Software"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Escaping Habit, The",
+          "catalogue": "archive",
+          "sha256": "87c3cda78b2f7b0987769de0f037212092f74ab5727bfd9b5e79584233d53115"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "evil ridge the",
+      "sourceKey": "the evil ridge",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Evil Ridge, The",
+          "catalogue": "archive",
+          "sha256": "7db608601223f558e567d760bd463d316589b034094bdf1a2332d6ccba1726ba"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "faces of haarne the",
+      "sourceKey": "the faces of haarne",
+      "publishers": [
+        "Software Projects"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Faces of Haarne, The",
+          "catalogue": "archive",
+          "sha256": "8230cb231ae42d2cf18dcbeb21ce7f41ae6102ffbc36bdb258bf6adf416accbc"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "farmers daughter the",
+      "sourceKey": "the farmers daughter",
+      "publishers": [
+        "Nocturnal Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Farmer's Daughter, The",
+          "catalogue": "archive",
+          "sha256": "e9064e72d0c5dc0e492729d0dbbe98f7f7991009ab37f754170dc4badc62b408"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "fifth axis the",
+      "sourceKey": "the fifth axis",
+      "publishers": [
+        "Loriciels Ltd."
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Fifth Axis, The",
+          "catalogue": "active-crt",
+          "sha256": "93c4431f8ead822b8883fe1bd302bdf5f3ad4efb07efceefd732505aeb89971d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "fifth quadrant the",
+      "sourceKey": "the fifth quadrant",
+      "publishers": [
+        "Bubble Bus Software"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Fifth Quadrant, The",
+          "catalogue": "archive",
+          "sha256": "2d9d9346549ab9f73211ac4fa08fdc766ed109b92d82979b8e7887ae3648f289"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "first australian hero the",
+      "sourceKey": "the first australian hero",
+      "publishers": [
+        "Bluefire Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "First Australian Hero, The",
+          "catalogue": "archive",
+          "sha256": "823d51b4f7cd076997e421c9b90ef488c4be947e10adcd5d072a23bd53736105"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "first starfighter the",
+      "sourceKey": "the first starfighter",
+      "publishers": [
+        "Orpheus"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "First Starfighter, The",
+          "catalogue": "active-crt",
+          "sha256": "d432c964a5973515421071269de0e5b380514b558efd7a906dd8e14f9e59b3dd"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "flight of the unicorn the",
+      "sourceKey": "the flight of the unicorn",
+      "publishers": [
+        "Flight 19 Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Flight of the Unicorn, The",
+          "catalogue": "archive",
+          "sha256": "f1bfc19638ddca638f7ae4f70a1ea4c7fe7479a9e90413f7de1aebd91f5d9483"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "fountain of youth the",
+      "sourceKey": "the fountain of youth",
+      "publishers": [
+        "Flying Fox Software"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Fountain of Youth, The",
+          "catalogue": "archive",
+          "sha256": "e88f58786ab942be17119faf4596bded85630cb1ddaa560501323cad6ede7bb0"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "golden baton the",
+      "sourceKey": "the golden baton",
+      "publishers": [
+        "Channel 8 Software"
+      ],
+      "sourceYear": 1982,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Golden Baton, The",
+          "catalogue": "active-crt",
+          "sha256": "84b0662d4f7798e88e70d30110f3f29e736c964a0873f3a3b762dfd677b214ed"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "great american cross country road race the",
+      "sourceKey": "the great american cross country road race",
+      "publishers": [
+        "Activision, Inc."
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Great American Cross Country Road Race, The",
+          "catalogue": "active-crt",
+          "sha256": "aa93906da251ad96c0da44489ffb3a92adbee85de1e0bbfe45dea9c1ea7cf01e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "great burger riot the",
+      "sourceKey": "the great burger riot",
+      "publishers": [
+        "Nationsoft Ltd."
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Great Burger Riot, The",
+          "catalogue": "archive",
+          "sha256": "81c8bb0813b4a8b49070dd009b6e764de4d13ca6c0da90b273fdde5223a750ea"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "great escape the",
+      "sourceKey": "the great escape",
+      "publishers": [
+        "Ocean"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Great Escape, The",
+          "catalogue": "active-crt",
+          "sha256": "0efb5f566b8dec64efd944381cd1bb54380e2051493328e5aa4c2a2872a231ea"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "guns of fort defiance the",
+      "sourceKey": "the guns of fort defiance",
+      "publishers": [
+        "Avalon Hill Microcomputer Games, Inc."
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Guns of Fort Defiance, The",
+          "catalogue": "archive",
+          "sha256": "a4aef98fee58e0d2861310117520c1d1040e32f6375fa3a6c9f11b46cecd3c05"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "halls of the dwarven kings the",
+      "sourceKey": "the halls of the dwarven kings",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Halls of the Dwarven Kings, The",
+          "catalogue": "archive",
+          "sha256": "491cb9e3e4227fbf7426e4010a1d1da966cbcc6042d456c5c6e6096cac7060cf"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "halls of the things the",
+      "sourceKey": "the halls of the things",
+      "publishers": [
+        "Design Design Software"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Halls of the Things, The",
+          "catalogue": "active-crt",
+          "sha256": "803984a429bf5b9af5c50a19f43c70d7178c4d8f144d46db2156e955b7b68de2"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "happiest days of your life the",
+      "sourceKey": "the happiest days of your life",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Happiest Days of Your Life, The",
+          "catalogue": "active-crt",
+          "sha256": "e20b7174e8c4b7536a424471d42e20176ae3913bef2fa73aa0a0083252827a3c"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "heroes of karn the",
+      "sourceKey": "the heroes of karn",
+      "publishers": [
+        "Interceptor Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Heroes of Karn, The",
+          "catalogue": "active-crt",
+          "sha256": "c718dcb60a2d63e19e4f8a6d9e705987d52140fbee69664820815fb6f8933708"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "hidden treasure of inca the",
+      "sourceKey": "the hidden treasure of inca",
+      "publishers": [
+        "Damec Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Hidden Treasure of Inca, The",
+          "catalogue": "archive",
+          "sha256": "8f69946ea4803faff511ed4fd9ef5f587880df9bcea876efbf6ba072e144af3d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "hitchhikers guide to the galaxy the",
+      "sourceKey": "the hitchhikers guide to the galaxy",
+      "publishers": [
+        "Infocom"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Hitchhiker's Guide to the Galaxy, The",
+          "catalogue": "archive",
+          "sha256": "e222cf243d0a38df4259e3599dee8ba76a485e4fea4b35c4445427ecef75d445"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "house jack built the",
+      "sourceKey": "the house jack built",
+      "publishers": [
+        "Thor Computer Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "House Jack Built, The",
+          "catalogue": "active-crt",
+          "sha256": "63ec0ce348bbf0ebd2326b29b0109a88e86c579cd69905a2c75c1151d921b05b"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "human race the",
+      "sourceKey": "the human race",
+      "publishers": [
+        "Mastertronic"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Human Race, The",
+          "catalogue": "active-crt",
+          "sha256": "f2c64b51c38cac59bb546df454e7efcbf12d1956544a12d6f2bfad5c9e6e918e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "hunt for red october the",
+      "sourceKey": "the hunt for red october",
+      "publishers": [
+        "Grandslam Entertainment Ltd."
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Hunt for Red October, The",
+          "catalogue": "archive",
+          "sha256": "5a4b23c34e22988d2b20d035d4ccc5bc4947a44ca4cd11b4b2c5c577f5effaee"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "island of dr destructo the",
+      "sourceKey": "the island of dr destructo",
+      "publishers": [
+        "Bulldog Software"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Island of Dr. Destructo, The",
+          "catalogue": "active-crt",
+          "sha256": "37ea9d3b748dd39dbdb578f79f44efcd633e4808a6178dc5b1f9e968ae0d1e91"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "lands of havoc the",
+      "sourceKey": "the lands of havoc",
+      "publishers": [
+        "Microdeal"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Lands of Havoc, The",
+          "catalogue": "archive",
+          "sha256": "0ee8686779d20638105ee0bbedf6235f7886c27b9de7925549a75bdaee32bb5f"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "last fight the",
+      "sourceKey": "the last fight",
+      "publishers": [
+        "Andromeda Software"
+      ],
+      "sourceYear": 1989,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Last Fight, The",
+          "catalogue": "archive",
+          "sha256": "a1f8a8bbd0706cbc0d8eb7062eb0fff8e88c01d4b5d95c20cc6a1c3bf6a84e57"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "last planet the",
+      "sourceKey": "the last planet",
+      "publishers": [
+        "Real Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Last Planet, The",
+          "catalogue": "archive",
+          "sha256": "f1fd8535010b36481d9cb6768c2fe8fec7d38f67e9c7b5158c531baace850e09"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "last survivor the",
+      "sourceKey": "the last survivor",
+      "publishers": [
+        "CRR Corp"
+      ],
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Last Survivor, The",
+          "catalogue": "archive",
+          "sha256": "f4429530574d55a2e13350d2003da0c78921d1f378bd5dcf5dde2c6ec82bf3ed"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "last warrior the",
+      "sourceKey": "the last warrior",
+      "publishers": [
+        "The Softgang"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Last Warrior, The",
+          "catalogue": "archive",
+          "sha256": "e8c527768feb2105e00095fc54f447485cfedefb645f40924acc42c261c20c37"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "legend of sinbad the",
+      "sourceKey": "the legend of sinbad",
+      "publishers": [
+        "Superior Software Ltd."
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Legend of Sinbad, The",
+          "catalogue": "active-crt",
+          "sha256": "6c7f50440268e94b594455766ddbf37447410cd9895aff1a4442cd57ce81077e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "legend of the apache gold the",
+      "sourceKey": "the legend of the apache gold",
+      "publishers": [
+        "Incentive Software"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Legend of the Apache Gold, The",
+          "catalogue": "archive",
+          "sha256": "7d9f3069bdbf495e21e42c1701709163fab7abe5513f742b8155f004e8e01514"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "legend of the knucker hole the",
+      "sourceKey": "the legend of the knucker hole",
+      "publishers": [
+        "English Software"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Legend of the Knucker-Hole, The",
+          "catalogue": "active-crt",
+          "sha256": "d8d9f8dc2e1441cf973aaf270bea8c73fc04da5b3a07258fd8fd0bf1d5e14bee"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "living daylights the",
+      "sourceKey": "the living daylights",
+      "publishers": [
+        "Domark"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Living Daylights, The",
+          "catalogue": "active-crt",
+          "sha256": "6a946fff65c5c83fb7d6e2eafcb4875a55a94c80f426419b55741a0223c33c65"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "lone ranger the",
+      "sourceKey": "the lone ranger",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Lone Ranger, The",
+          "catalogue": "archive",
+          "sha256": "46fd04df8f57f7513f295634de7dbe40094b28b973b0595dfa454c523760ad67"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "lost world the",
+      "sourceKey": "the lost world",
+      "publishers": [
+        "Atlas Adventure Software"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Lost World, The",
+          "catalogue": "archive",
+          "sha256": "a5f541c89e150a0c1a2ffe215d89a3d3b385867796c512239f60f20d6191247e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "magic journey the",
+      "sourceKey": "the magic journey",
+      "publishers": [
+        "Slide Editions"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Magic Journey, The",
+          "catalogue": "archive",
+          "sha256": "d1475aada450e4f679d6245f1efb3629ab06282ba330b587d8f4c79ce2a0d258"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "magicians ball the",
+      "sourceKey": "the magicians ball",
+      "publishers": [
+        "Global Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Magician's Ball, The",
+          "catalogue": "active-crt",
+          "sha256": "73e303f9a760a7bb431dbae0942c792bcf6e0e7068e16f87a52e3456ddfe3f54"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "man from n 10 the",
+      "sourceKey": "the man from n 10",
+      "publishers": [
+        "Quantum Leap"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Man from N-10, The",
+          "catalogue": "archive",
+          "sha256": "71483fad8d83ce0be8bd2573887b6dc40eb158948c9f12c16a0f30ca2fa3b794"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "master hacker the",
+      "sourceKey": "the master hacker",
+      "publishers": [
+        "CompuCom"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Master Hacker, The",
+          "catalogue": "archive",
+          "sha256": "1458f3976a8e80982fa12db549f2481d480272c128b0e7f4a4d2ce6d04585117"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "master of magic the",
+      "sourceKey": "the master of magic",
+      "publishers": [
+        "Mastertronic's Added Dimension"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Master of Magic, The",
+          "catalogue": "active-crt",
+          "sha256": "fbb596f1795fbc3f9875878a3b94192ec701556b0597634a8af02895ceca1849"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "matrix crown the",
+      "sourceKey": "the matrix crown",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceYear": 1995,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Matrix Crown, The",
+          "catalogue": "archive",
+          "sha256": "b5d27f42a0824ec735b3c45827d884a8565655f8b1fbad501d3360d839159697"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "medicine man the",
+      "sourceKey": "the medicine man",
+      "publishers": [
+        "Magic Carpet Software"
+      ],
+      "sourceYear": 1982,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Medicine Man, The",
+          "catalogue": "archive",
+          "sha256": "67df680827f0da62d1a94e23439875e20c5dfa898bc47fb786420eab25b7b767"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "milky weigh the",
+      "sourceKey": "the milky weigh",
+      "publishers": [
+        "Argus Press Software (APS)"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Milky Weigh, The",
+          "catalogue": "active-crt",
+          "sha256": "2c2380bce48a0019293d1498e1451e596b4868c3b597cf9e7b67b4a58611eb1d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "mountain palace the",
+      "sourceKey": "the mountain palace",
+      "publishers": [
+        "Duckworth Home Computing"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Mountain Palace, The",
+          "catalogue": "archive",
+          "sha256": "fef513456186eb67162df3c5742071243efa45bb22ebb31a4e97db2632ea5182"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "movie monster game the",
+      "sourceKey": "the movie monster game",
+      "publishers": [
+        "Epyx",
+        "US Gold"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Movie Monster Game, The",
+          "catalogue": "archive",
+          "sha256": "df1294aaec3b06763b0c22c94877f380fad1c3d5d17508833be1190471ecfcb6"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "mummys tomb the",
+      "sourceKey": "the mummys tomb",
+      "publishers": [
+        "Cymbal Software, Inc."
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Mummy's Tomb, The",
+          "catalogue": "archive",
+          "sha256": "8a9ca2e744c53d2fb5f8a4cfc23d794dfddd78ee9c34068f622a0f7a6bc19428"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "murder at osbourne castle the",
+      "sourceKey": "the murder at osbourne castle",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Murder at Osbourne Castle, The",
+          "catalogue": "archive",
+          "sha256": "edc5e08cab1fc3c9a2a06a8fa8628bfa6874425b20a20ab44c074e0ae92e79c5"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "mystery of munroe manor the",
+      "sourceKey": "the mystery of munroe manor",
+      "publishers": [
+        "Severn Software"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Mystery of Munroe Manor, The",
+          "catalogue": "active-crt",
+          "sha256": "0aba39f7d398bdcee760a8ef854424cb8f6891a1b303bd7bda177e2640640f6e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "mystery of the nile the",
+      "sourceKey": "the mystery of the nile",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Mystery of the Nile, The",
+          "catalogue": "active-crt",
+          "sha256": "4d6b59f8197721856cd2ee5b052b7fd5b1def3d2ddb4f198afa50dea9378f086"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "necris dome the",
+      "sourceKey": "the necris dome",
+      "publishers": [
+        "Codemasters"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Necris-Dome, The",
+          "catalogue": "active-crt",
+          "sha256": "f438c2426a4fc861626142f1ff855db56b74909c794329a5de07be22511b1463"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "nectar of the gods the",
+      "sourceKey": "the nectar of the gods",
+      "publishers": [
+        "The Guild Adventure Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Nectar of the Gods, The",
+          "catalogue": "archive",
+          "sha256": "8ca41304d7dfd1e8c1082a14e5c13afb0b647c81d20b05be6d8b068d20223efe"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "ninja strikes back the",
+      "sourceKey": "the ninja strikes back",
+      "publishers": [
+        "Champion Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Ninja Strikes Back, The",
+          "catalogue": "archive",
+          "sha256": "4f1ec00ec67589d2c8863b531b8251d83020345a8d02423ffbb51a48d5bf24fc"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "nite express the",
+      "sourceKey": "the nite express",
+      "publishers": [
+        "Technics"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Nite-Express, The",
+          "catalogue": "archive",
+          "sha256": "5677cbd6979fe0949f8cc42c43275f529d97c35f02070f809583217eccc666e0"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "oasis of shalimar the",
+      "sourceKey": "the oasis of shalimar",
+      "publishers": [
+        "Mountain Valley Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Oasis of Shalimar, The",
+          "catalogue": "archive",
+          "sha256": "b54d1eba8fce60dd2bf77e77d412b84c5f558b5c5222f51b3b36071f9a85f8d4"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "oracles cave the",
+      "sourceKey": "the oracles cave",
+      "publishers": [
+        "Dorcas Software"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Oracle's Cave, The",
+          "catalogue": "active-crt",
+          "sha256": "7734e594e0b30aed164c7e2b674a1ed3b546875bcc18f3e982867b3893b7c6cd"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "orb of light the",
+      "sourceKey": "the orb of light",
+      "publishers": [
+        "Wilson Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Orb of Light, The",
+          "catalogue": "archive",
+          "sha256": "675a2fee87d4370d7ad14ed27f98b4cc1ea55e41151194e541cac4045679dee3"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "orion quest the",
+      "sourceKey": "the orion quest",
+      "publishers": [
+        "Argus Press Software (APS)/Mind Games"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Orion Quest, The",
+          "catalogue": "archive",
+          "sha256": "860a6661f4c73ab71b9a11fe4c70d8dd97456f961e0a00b29547d41ef33dcfb8"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "planet miners the",
+      "sourceKey": "the planet miners",
+      "publishers": [
+        "Avalon Hill Microcomputer Games, Inc."
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Planet Miners, The",
+          "catalogue": "archive",
+          "sha256": "8ece8f457edf2588c3465b7b0a852af071680427839bba55ef600b7014ffdf0e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "quest for the golden eggcup the",
+      "sourceKey": "the quest for the golden eggcup",
+      "publishers": [
+        "Mastertronic"
+      ],
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Quest for the Golden Eggcup, The",
+          "catalogue": "active-crt",
+          "sha256": "bc226e133493359b2946ab392710d19406851c96f53c9ffe33e708d799b86839"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "quest for the holy grail the",
+      "sourceKey": "the quest for the holy grail",
+      "publishers": [
+        "Dream Software Ltd."
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Quest for the Holy Grail, The",
+          "catalogue": "active-crt",
+          "sha256": "9a607750621ac365f9cc873feb974273340c29568ce97f324d4116f7268b4adc"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "quest of kron the",
+      "sourceKey": "the quest of kron",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Quest of Kron, The",
+          "catalogue": "archive",
+          "sha256": "784afd18b4cdb60ff6148409df19c4143e7952b66bff283e73e0ab74a39edfdb"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "real stunt experts the",
+      "sourceKey": "the real stunt experts",
+      "publishers": [
+        "Alternative Software"
+      ],
+      "sourceYear": 1989,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Real Stunt Experts, The",
+          "catalogue": "active-crt",
+          "sha256": "27a9b29ad9ef7b90396f0a3357dd7a3b868cb55d9dd6f22c299d7a9dede915cb"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "realm of zaroc the",
+      "sourceKey": "the realm of zaroc",
+      "publishers": [
+        "Petri Hassinen & Jouni Väisänen"
+      ],
+      "sourceYear": 1990,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Realm of Zaroc, The",
+          "catalogue": "archive",
+          "sha256": "98b68acc430147b606c4a4a81d7c1ad1b81fea54fbd03d69872ea2a19b4d3653"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "ring of power the",
+      "sourceKey": "the ring of power",
+      "publishers": [
+        "Quicksilva"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Ring of Power, The",
+          "catalogue": "archive",
+          "sha256": "1a29c35859b5ec87a5b6296a4fc1c871f9125a486ab43e1de66f1eb4061a50e9"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "rocky horror show the",
+      "sourceKey": "the rocky horror show",
+      "publishers": [
+        "CRL"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Rocky Horror Show, The",
+          "catalogue": "active-crt",
+          "sha256": "589d2fd7f5a553fc0406c89caa28ef3ae87681dfa5f9dce56ef5ab4d9e457fe9"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "sacred armour of antiriad the",
+      "sourceKey": "the sacred armour of antiriad",
+      "publishers": [
+        "Palace Software"
+      ],
+      "sourceYear": 1986,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Sacred Armour of Antiriad, The",
+          "catalogue": "active-crt",
+          "sha256": "a6c1e0fc1fd00c59bd30a911fb2e6bdb41c12b8dc49c92cd39129101641830db"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "sea phantom the",
+      "sourceKey": "the sea phantom",
+      "publishers": [
+        "Free Spirit Software"
+      ],
+      "sourceYear": 1988,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Sea Phantom, The",
+          "catalogue": "archive",
+          "sha256": "a61833769b031aacccdf2f859960d0fad8c21b1f26835528e13208215dabb8ae"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "secret of bastow manor the",
+      "sourceKey": "the secret of bastow manor",
+      "publishers": [
+        "Computer Classics Pty. Ltd."
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Secret of Bastow Manor, The",
+          "catalogue": "archive",
+          "sha256": "305be944ef30871c7c21859dd1fccbd63037c5a2b58fca5a4e177d5ed62fe04e"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "secret of st brides the",
+      "sourceKey": "the secret of st brides",
+      "publishers": [
+        "Audiogenic Software Ltd./St. Bride's School"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Secret of St. Bride's, The",
+          "catalogue": "archive",
+          "sha256": "cd5c47e3ee83281989f4aadd3b8ec5f5a2ca2da1258e9d354f67e814f5fd6c53"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "sorcerer of claymorgue castle the",
+      "sourceKey": "the sorcerer of claymorgue castle",
+      "publishers": [
+        "Adventure International"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Sorcerer of Claymorgue Castle, The",
+          "catalogue": "active-crt",
+          "sha256": "0a7c7912432b30a880d5a4f215c79fcb499eea11991cc35a0ac8d0beab124824"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "space vegetable corps the",
+      "sourceKey": "the space vegetable corps",
+      "publishers": [
+        "MicroValue"
+      ],
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Space Vegetable Corps, The",
+          "catalogue": "archive",
+          "sha256": "f69564423756d8f5798d4b8f746742d7b00545b0279c2911f93d0e7faf6849f8"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "spanish treasure the",
+      "sourceKey": "the spanish treasure",
+      "publishers": [
+        "Logyk Software"
+      ],
+      "sourceYear": 1993,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Spanish Treasure, The",
+          "catalogue": "archive",
+          "sha256": "6cf42becfc5fe8ce36f012cab2573ecae1e55793917e4cdfa855410340d4b272"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "spy strikes back the",
+      "sourceKey": "the spy strikes back",
+      "publishers": [
+        "Penguin Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Spy Strikes Back!, The",
+          "catalogue": "active-crt",
+          "sha256": "a2c51365c5ced8268ef502f7561f596dd6f2cccb492ede1a8e5e4443f440de68"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "spy who loved me the",
+      "sourceKey": "the spy who loved me",
+      "publishers": [
+        "Domark"
+      ],
+      "sourceYear": 1990,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Spy Who Loved Me, The",
+          "catalogue": "active-crt",
+          "sha256": "666f274e7da6fb12dd22b84672f0e6b453eda948bdaf9f72dc534b76c824058d"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "staff of karnath the",
+      "sourceKey": "the staff of karnath",
+      "publishers": [
+        "Ultimate"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Staff of Karnath, The",
+          "catalogue": "active-crt",
+          "sha256": "f9fee6370fd883a89298d93ab7a33a35d4f36c8408c847325ec9154b717f33bb"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "starlight zone the",
+      "sourceKey": "the starlight zone",
+      "publishers": [
+        "Wicked Software"
+      ],
+      "sourceYear": 1987,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Starlight Zone, The",
+          "catalogue": "archive",
+          "sha256": "e2ebf097f279588a59b5acd8365fe98423c63e407a6d88b31f7db834ae70fccd"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "sword and the rose the",
+      "sourceKey": "the sword and the rose",
+      "publishers": [
+        "Codemasters"
+      ],
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Sword and the Rose, The",
+          "catalogue": "archive",
+          "sha256": "11278290db906fa4e4b142df9d927b1d27011a3311e1957a73a0cc43c64651dc"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "sword of fargoal the",
+      "sourceKey": "the sword of fargoal",
+      "publishers": [
+        "Epyx"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Sword of Fargoal, The",
+          "catalogue": "active-crt",
+          "sha256": "7a790e26a8a050d1f0eba624ea1db430bb68c720f83ba7a5f99304ce4bf385fa"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "sword of zedek the",
+      "sourceKey": "the sword of zedek",
+      "publishers": [
+        "Krell Software Corp."
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Sword of Zedek, The",
+          "catalogue": "archive",
+          "sha256": "03040c6b64cf40f5280d13ffc560e6673573e235eefeccebde84cc6a598f2e30"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "temple curse the",
+      "sourceKey": "the temple curse",
+      "publishers": [
+        "Real Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Temple Curse, The",
+          "catalogue": "archive",
+          "sha256": "bc955e6540135eedfdc819f87b5722ab9328ddc513782ec2c8efedc95c66cc51"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "tomb of drewan the",
+      "sourceKey": "the tomb of drewan",
+      "publishers": [
+        "Audiogenic Software Ltd."
+      ],
+      "sourceYear": 1982,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Tomb of Drewan, The",
+          "catalogue": "archive",
+          "sha256": "097ad3f1807258844f8cca4f5b3f13186fbb32f84739099d6ccb04a23b094cd1"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "trading game the",
+      "sourceKey": "the trading game",
+      "publishers": [
+        "Reelax Games"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Trading Game, The",
+          "catalogue": "archive",
+          "sha256": "785b69c1ed94c09a206e3e9f99534a285357dfda403da318a8d96e44d99c661b"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "ultimate event the",
+      "sourceKey": "the ultimate event",
+      "publishers": [
+        "Markt & Technik/64'er"
+      ],
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Ultimate Event, The",
+          "catalogue": "archive",
+          "sha256": "428fb770824eba452d1f85fab9fca94ba92a4bf899f2c53be7daea961016f0d9"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "united states of america the",
+      "sourceKey": "the united states of america",
+      "publishers": [
+        "Educative Software"
+      ],
+      "sourceYear": null,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "United States of America, The",
+          "catalogue": "archive",
+          "sha256": "20ad0872e90efcc2942b14cdc1e25204c66e6340a8cf32c0ac88d958ac96213f"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "war of wizards the",
+      "sourceKey": "the war of wizards",
+      "publishers": [
+        "Brillant Software"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "War of Wizards, The",
+          "catalogue": "archive",
+          "sha256": "fa2d4cc77d7582d323272f3d60b9ff5c262199e09f7b4b67725e69d8e70b7495"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "warriors of zypar the",
+      "sourceKey": "the warriors of zypar",
+      "publishers": [
+        "Synapse Software"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Warriors of Zypar, The",
+          "catalogue": "active-crt",
+          "sha256": "553faa6c9099d01799255a97a04cd9aa4305d03651cad5f80926e8f2e3afbd56"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "way of the exploding fist the",
+      "sourceKey": "the way of the exploding fist",
+      "publishers": [
+        "Melbourne House"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Way of the Exploding Fist, The",
+          "catalogue": "active-crt",
+          "sha256": "aed6fbee787c8f54bcc6d7926bfe4a8054e0e9fd3c754567b868ed525667e6f3"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "weetabix versus the titchies the",
+      "sourceKey": "the weetabix versus the titchies",
+      "publishers": [
+        "Romix"
+      ],
+      "sourceYear": 1984,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Weetabix versus the Titchies, The",
+          "catalogue": "archive",
+          "sha256": "b8e3c9c89732cf43f2a53f9075a0637ed41bad5080352cf732389eac197dc8e1"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "willow pattern adventure the",
+      "sourceKey": "the willow pattern adventure",
+      "publishers": [
+        "Firebird"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "ccg",
+      "targetPlayableMedia": [
+        {
+          "title": "Willow Pattern Adventure, The",
+          "catalogue": "active-crt",
+          "sha256": "93ea7f57948919948bf7f9e607b95554bb2e0d99ed103a36dbd1bdab9ce376cb"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "witchs cauldron the",
+      "sourceKey": "the witchs cauldron",
+      "publishers": [
+        "Mikro-Gen"
+      ],
+      "sourceYear": 1985,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Witch's Cauldron, The",
+          "catalogue": "active-crt",
+          "sha256": "9ea4cc3c41388ed5646299195289d6ec20b00b02100d45257fb6d96b328402e7"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "wizard of akyrz the",
+      "sourceKey": "the wizard of akyrz",
+      "publishers": [
+        "Channel 8 Software"
+      ],
+      "sourceYear": 1983,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Wizard of Akyrz, The",
+          "catalogue": "archive",
+          "sha256": "1b4d9f83b929460ef0b9a12dcb21d84a0df190e1aa04703a4890d38bec756029"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "yuppie trainer the",
+      "sourceKey": "the yuppie trainer",
+      "publishers": [
+        "CP Verlag/Magic Disk 64"
+      ],
+      "sourceYear": 1991,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Yuppie Trainer, The",
+          "catalogue": "archive",
+          "sha256": "b7e3dd112fa3fe73fe956f8f21e0d5f7643ae799af5c667f32fdc5af3a2febcf"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    },
+    {
+      "key": "zinj complex the",
+      "sourceKey": "the zinj complex",
+      "publishers": [
+        "LWTCDI Software"
+      ],
+      "sourceYear": 1994,
+      "retainedYear": null,
+      "sourceTag": "reference",
+      "targetPlayableMedia": [
+        {
+          "title": "Zinj Complex, The",
+          "catalogue": "archive",
+          "sha256": "1366cb15a60ee0e52f080034acfe3748402b3e3437363e2b79c9b55938d03643"
+        }
+      ],
+      "sourcePublisherTransferredOnly": true
+    }
+  ],
+  "quarantine": [
+    {
+      "key": "last ninja the",
+      "reason": "Two historic publisher/territory labels require edition validation"
+    },
+    {
+      "key": "great giana sisters the",
+      "reason": "Existing source has two publisher territories; hosted release must be identified"
+    },
+    {
+      "key": "dam busters the",
+      "reason": "Historic publisher/region variants require independent comparison"
+    }
+  ]
+}

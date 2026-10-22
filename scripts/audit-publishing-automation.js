@@ -14,7 +14,7 @@ function read(relativePath) {
     problems.push(`Missing required file: ${relativePath}`);
     return "";
   }
-  return fs.readFileSync(filePath, "utf8");
+  return fs.readFileSync(filePath, "utf8").replace(/\r\n/g, "\n");
 }
 
 function requireText(source, expected, message) {
@@ -50,7 +50,15 @@ requireText(gamesPublishing, '"games/games.json"', "Reliable Games Publishing do
 requireText(gamesPublishing, "node scripts/rebuild-games.js", "Reliable Games Publishing does not run the authoritative rebuild command.");
 requireText(gamesPublishing, "sitemap.xml", "Reliable Games Publishing does not stage the root sitemap index.");
 requireText(gamesPublishing, "sitemap-*.xml", "Reliable Games Publishing does not stage child sitemaps.");
-requireText(gamesPublishing, "gh pr merge", "Reliable Games Publishing does not merge its generated-output PR.");
+requireText(gamesPublishing, "node scripts/qualify-generated-publishing.mjs", "Reliable Games Publishing bypasses the generated-output independent qualification gate.");
+const gamePublishMergeGuard = read("scripts/qualify-generated-publishing.mjs");
+requireText(gamePublishMergeGuard, "REQUIRED_VALIDATION_WORKFLOWS", "Generated-output guard does not dispatch independent checks.");
+requireText(gamePublishMergeGuard, "codeReviewPassed", "Generated-output guard does not enforce exact-head independent review.");
+requireText(gamePublishMergeGuard, "currentPullIsSafe", "Generated-output guard lacks fresh-main and head safeguards.");
+requireText(gamePublishMergeGuard, "executedRunPassed", "Generated-output guard may accept zero-job or unsuccessful checks.");
+requireText(gamePublishMergeGuard, "\"commit-tree\"", "Generated-output guard does not create the pinned-parent merge commit.");
+requireText(gamePublishMergeGuard, "refs/heads/main", "Generated-output guard does not atomically push a checked commit to main.");
+requireText(gamePublishMergeGuard, "--force-with-lease=refs/heads/", "Generated-output guard no longer uses an atomic lease for branch cleanup.");
 requirePattern(gamesPublishing, /permissions:\s*[\s\S]*?actions:\s*write\b/, "Reliable Games Publishing cannot dispatch the authoritative Pages deployment.");
 requireText(gamesPublishing, "gh workflow run deploy-github-pages-omega-stable.yml", "Reliable Games Publishing does not dispatch Omega Pages after merging generated output.");
 requireText(gamesPublishing, "--ref main", "Reliable Games Publishing does not dispatch Omega Pages from the merged main branch.");
@@ -65,6 +73,13 @@ const rebuildGames = read("scripts/rebuild-games.js");
 requireText(rebuildGames, '["integrate-year-platform-discovery.js"]', "The authoritative game rebuild no longer integrates year/platform discovery.");
 requireText(rebuildGames, '["generate-sitemaps.js"]', "The authoritative game rebuild no longer regenerates sitemaps.");
 requireText(rebuildGames, '["validate-sitemaps.js"]', "The authoritative game rebuild no longer validates sitemaps.");
+requireText(rebuildGames, '["prepare-seo-game-routes.js", "--output-root", "."]', "The authoritative game publisher no longer generates canonical pages.");
+requireText(rebuildGames, '["link-c64-emulator-games.js"]', "The authoritative game publisher no longer applies approved emulator links.");
+requireText(rebuildGames, '["apply-game-review-seo.js"]', "The authoritative game publisher no longer applies review SEO after generation.");
+if (!(rebuildGames.indexOf('["prepare-seo-game-routes.js"') < rebuildGames.indexOf('["link-c64-emulator-games.js"]') &&
+      rebuildGames.indexOf('["link-c64-emulator-games.js"]') < rebuildGames.indexOf('["apply-game-review-seo.js"]'))) {
+  problems.push("Authoritative game generation must precede approved media linking and review SEO.");
+}
 
 const seoWorkflow = read(".github/workflows/seo.yml");
 requirePattern(seoWorkflow, /^\s{2}push:\s*$/m, "SEO Automation no longer runs on main pushes.");
@@ -110,7 +125,16 @@ requireText(zzapWorkflow, "gh pr merge", "Zzap review refresh does not merge gen
 
 const deploy = read(".github/workflows/deploy-github-pages-omega-stable.yml");
 requirePattern(deploy, /^\s{2}push:\s*$/m, "GitHub Pages deployment no longer runs on main pushes.");
-requireText(deploy, "prepare-seo-game-routes.js --output-root _site", "Deployment does not materialize canonical game routes in the public artifact.");
+requireText(deploy, "rsync -a --prune-empty-dirs", "Deployment no longer stages the publisher-completed public pages.");
+forbidText(deploy, "node scripts/prepare-seo-game-routes.js --output-root _site", "Deployment overwrites publisher-completed game pages with the generic template.");
+requireText(deploy, "validate-seo-game-routes.js --root _site", "Deployment no longer validates staged canonical game pages.");
+requireText(deploy, "python3 scripts/ccg_game_page_release_audit.py", "Deployment lacks all-game source/staged SEO and emulator parity checks.");
+requireText(deploy, "--media-check", "Deployment parity gate no longer verifies approved media using its owning generator.");
+const parityGate = deploy.indexOf("python3 scripts/ccg_game_page_release_audit.py");
+if (!(parityGate > deploy.indexOf("node scripts/normalize-public-header-shell.js --root _site --check") &&
+      parityGate < deploy.indexOf("uses: actions/upload-pages-artifact@v4"))) {
+  problems.push("All-game parity/media checks must run after normalization and before Pages upload.");
+}
 requireText(deploy, "generate-retro-pages.js --root _site", "Deployment does not materialize retro pages in the public artifact.");
 requireText(deploy, "validate-sitemaps.js", "Deployment does not validate sitemap structure before publishing.");
 const deployedVerification = deploy.slice(deploy.indexOf("- name: Verify deployed public pages"));

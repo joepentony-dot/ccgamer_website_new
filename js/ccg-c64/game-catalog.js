@@ -61,7 +61,7 @@ export function parsePackedCatalog(data, { packRoot = PACK_ROOT } = {}) {
 export function parseAdditionalCrtCatalog(data) {
   if (!data || data.version !== 1 || data.ownerRedistributionAttested !== true ||
       data.originalFormatsPreserved !== true || !Array.isArray(data.games) ||
-      data.recordCount !== data.games.length || data.games.length > 2000) {
+      data.recordCount !== data.games.length || data.games.length > 6000) {
     throw new Error("Invalid optional cartridge catalogue.");
   }
   const ids = new Set();
@@ -80,7 +80,7 @@ export function parseAdditionalCrtCatalog(data) {
       throw new Error("Invalid cartridge metadata.");
     }
     const id = "owner-crt-more-" + filename.slice(0, -4);
-    const nameKey = normaliseCatalogSearch(title);
+    const nameKey = catalogGameIdentity(title);
     if (!nameKey || ids.has(id) || titles.has(nameKey)) {
       throw new Error("Duplicate cartridge title or media path.");
     }
@@ -102,25 +102,47 @@ export function parseAdditionalCrtCatalog(data) {
 // media stay untouched until a reviewed, verified, owner-approved CRT is listed.
 // Matching is punctuation-insensitive but never substring-based ("Pitfall" must
 // not hide "Pitfall II", nor a compilation hide its individual games).
+// A strict game-identity key, NOT a fuzzy-search key. Distinguish sequels,
+// numbered games and "+" editions; only merge the owner-approved Le Mans alias.
+// Keep fuzzy/typo matching confined to the search interface.
+export function catalogGameIdentity(title) {
+  const key = normaliseCatalogSearch(String(title ?? "").replace(/\+/g, " plus "));
+  return key === "lemans" ? "le mans" : key;
+}
+
+// The emulator displays ONE playable row per exact game identity even when the
+// underlying approved media still resides in several older packed archives.
+// CRT has priority; identical formats keep their earlier entry/order.
+// This is a VIEW only: never deletes packed bytes, so rollback remains possible.
 export function preferSelectedCartridges(entries) {
   if (!Array.isArray(entries)) return [];
-  const preferred = new Map();
+  const winners = new Map();
   for (const entry of entries) {
-    if (entry?.preferOverOtherFormats !== true ||
-        String(entry.format || "").toLowerCase() !== "crt" ||
-        typeof entry.title !== "string") continue;
-    const key = normaliseCatalogSearch(entry.title);
-    if (key && !preferred.has(key)) preferred.set(key, entry);
+    if (!entry || typeof entry.title !== "string") continue;
+    const key = catalogGameIdentity(entry.title);
+    if (!key) continue;
+    const format = String(entry.format || "").toLowerCase();
+    // Missing approval fields occur in older test fixtures; explicit false
+    // is the only unapproved case. Runtime catalogues filter approval first.
+    const crt = format === "crt" && entry.approved !== false;
+    const promoted = crt && entry.preferOverOtherFormats === true;
+    const score = promoted ? 3 : crt ? 2 : 1;
+    const prior = winners.get(key);
+    if (!prior || score > prior.score) winners.set(key, { entry, score });
   }
-  if (!preferred.size) return entries;
   return entries.filter(entry => {
-    const key = typeof entry?.title === "string" ? normaliseCatalogSearch(entry.title) : "";
-    return !preferred.has(key) || preferred.get(key) === entry;
+    if (!entry || typeof entry.title !== "string") return false;
+    return winners.get(catalogGameIdentity(entry.title))?.entry === entry;
   });
 }
 
-// Indexing punctuation as optional lets "Daley Thompsons" find "Daley Thompson's".
+// Search is deliberately more forgiving than automatic archive-to-media linking.
+// Fuzzy suggestions must never silently launch a different game, sequel or edition.
 const searchTitleCache = new WeakMap();
+const ROMAN_NUMERALS = Object.freeze({
+  i: "1", ii: "2", iii: "3", iv: "4", v: "5", vi: "6",
+  vii: "7", viii: "8", ix: "9", x: "10",
+});
 export function normaliseCatalogSearch(value) {
   return String(value ?? "").normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -129,26 +151,119 @@ export function normaliseCatalogSearch(value) {
     .replace(/[^a-zA-Z0-9]+/g, " ")
     .trim().replace(/\s+/g, " ").toLocaleLowerCase();
 }
-function searchableTitle(entry) {
+
+function searchForms(value) {
+  const literal = normaliseCatalogSearch(value);
+  const parts = literal.split(" ").filter(Boolean).map(part =>
+    ROMAN_NUMERALS[part] || (part === "n" ? "and" : part));
+  // Sorting or removing meaningful words could make different games collide.
+  // Only a movable standalone "The" is ignored for search equivalence.
+  const core = parts.filter(part => part !== "the").join(" ");
+  return {
+    literal,
+    core,
+    compact: core.replace(/ /g, ""),
+    numbers: parts.filter(part => /^[0-9]+$/.test(part)).join("|"),
+  };
+}
+function titleForms(entry) {
   if (searchTitleCache.has(entry)) return searchTitleCache.get(entry);
-  const title = normaliseCatalogSearch(entry.title);
-  searchTitleCache.set(entry, title);
-  return title;
+  const forms = searchForms(entry.title);
+  searchTitleCache.set(entry, forms);
+  return forms;
+}
+function searchRank(forms, query) {
+  if (forms.literal === query.literal) return 0;
+  // Do not turn an explicitly requested sequel/version into another one.
+  if (forms.numbers && query.numbers && forms.numbers !== query.numbers) {
+    // Preserve partial typing: "Game 9" still finds "Game 90"–"Game 99".
+    // A complete wrong sequel number (Beach Head 1 vs 2) never matches.
+    const partialNumber = forms.literal.startsWith(query.literal) &&
+      forms.numbers.length > query.numbers.length &&
+      forms.numbers.startsWith(query.numbers) &&
+      /^[0-9]$/.test(query.numbers);
+    if (!partialNumber) return -1;
+  }
+  if (query.core && forms.core === query.core) return 1;
+  if (query.compact.length >= 4 && forms.compact === query.compact) return 1;
+  if (forms.literal.startsWith(query.literal)) return 2;
+  if (query.core && forms.core.startsWith(query.core + " ") &&
+      forms.numbers === query.numbers) return 2;
+  // A full archive subtitle may not exist in the shorter emulator display name.
+  // Only suggest it when the game/version prefix and explicit numbers agree.
+  if (forms.core.length >= 7 && query.core.startsWith(forms.core + " ") &&
+      forms.numbers === query.numbers) return 3;
+  const index = forms.literal.indexOf(query.literal);
+  if (index >= 0) return index === 0 ? 2 : forms.literal.charAt(index - 1) === " " ? 3 : 4;
+  if (query.core && forms.core.includes(query.core)) return 3;
+  // Spacing/hyphens/initials: "Boulderdash" ↔ "Boulder Dash",
+  // "B.C.'s" ↔ "BC's", and "Trapdoor" ↔ "Trap Door".
+  if (query.compact.length >= 4 && forms.compact.includes(query.compact)) return 4;
+  return -1;
 }
 
+// Bounded Levenshtein fallback is used ONLY if nothing matched by any spelling,
+// article, numeric form or substring. Never offer a differently numbered sequel
+// as a "typo", and do not edit-distance match arbitrary short titles.
+function typoDistanceWithin(a, b, maximum) {
+  if (Math.abs(a.length - b.length) > maximum) return false;
+  let previous = Array.from({ length: b.length + 1 }, (_, n) => n);
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i];
+    let smallest = i;
+    for (let j = 1; j <= b.length; j++) {
+      const value = Math.min(row[j - 1] + 1, previous[j] + 1,
+        previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      row.push(value);
+      if (value < smallest) smallest = value;
+    }
+    if (smallest > maximum) return false;
+    previous = row;
+  }
+  return previous[b.length] <= maximum;
+}
+
+const ENGLISH_TITLE_SORT = new Intl.Collator("en-GB", { sensitivity: "base", numeric: true });
+export function searchCatalogEntries(entries, query) {
+  const text = String(query ?? "").trim();
+  if (!text) return entries.slice().sort((a, b) =>
+    ENGLISH_TITLE_SORT.compare(a.title, b.title));
+  const forms = searchForms(text);
+  if (!forms.literal) return [];
+  const ranked = [];
+  for (const entry of entries) {
+    if (!entry || typeof entry.title !== "string") continue;
+    const rank = searchRank(titleForms(entry), forms);
+    if (rank >= 0) ranked.push({ entry, rank });
+  }
+  if (!ranked.length && forms.compact.length >= 5) {
+    const maxDistance = forms.compact.length >= 9 ? 2 : 1;
+    for (const entry of entries) {
+      if (!entry || typeof entry.title !== "string") continue;
+      const candidate = titleForms(entry);
+      if (candidate.numbers !== forms.numbers ||
+          Math.abs(candidate.compact.length - forms.compact.length) > maxDistance ||
+          candidate.compact[0] !== forms.compact[0]) continue;
+      if (typoDistanceWithin(candidate.compact, forms.compact, maxDistance)) {
+        ranked.push({ entry, rank: 5 });
+      }
+    }
+  }
+  ranked.sort((a, b) => a.rank - b.rank ||
+    ENGLISH_TITLE_SORT.compare(a.entry.title, b.entry.title));
+  return ranked.map(({ entry }) => entry);
+}
 export function filterCatalog(entries, { query = "", format = "all", letter = "all", page = 0 } = {}) {
-  const search = normaliseCatalogSearch(query);
   const wantedFormat = String(format).toLowerCase();
   const wantedLetter = String(letter).toUpperCase();
-  const matching = entries.filter((entry) => {
+  const filtered = entries.filter(entry => {
+    if (!entry || typeof entry.title !== "string") return false;
     if (wantedFormat !== "all" && entry.format !== wantedFormat) return false;
-    const title = entry.title || "";
-    const first = title.trim().charAt(0).toUpperCase();
-    if (wantedLetter !== "ALL" && (wantedLetter === "0-9"
-      ? !/^[0-9]/.test(first) : first !== wantedLetter)) return false;
-    return !search || searchableTitle(entry).includes(search);
+    const first = entry.title.trim().charAt(0).toUpperCase();
+    return wantedLetter === "ALL" || (wantedLetter === "0-9"
+      ? !/^[A-Z]/.test(first) : first === wantedLetter);
   });
-  matching.sort((a, b) => a.title.localeCompare(b.title, "en", { sensitivity: "base", numeric: true }));
+  const matching = searchCatalogEntries(filtered, query);
   const pages = Math.max(1, Math.ceil(matching.length / GAME_PAGE_SIZE));
   const selectedPage = Math.min(pages - 1, Math.max(0, Number.isInteger(page) ? page : 0));
   return {
@@ -157,25 +272,13 @@ export function filterCatalog(entries, { query = "", format = "all", letter = "a
   };
 }
 
-// Compact keyboard-friendly suggestions. No catalogue results are shown for
-// an empty query, and only a few options are rendered regardless of catalogue
-// size. Exact title prefixes rank ahead of word starts, then other matches.
+// The same search ranking drives the small typeahead and the full browser.
+// Suggestions remain capped at eight (hard cap twenty), with no results before typing.
 export function suggestCatalogGames(entries, query, limit = 8) {
-  const text = normaliseCatalogSearch(query);
-  if (!text) return { games: [], total: 0 };
+  if (!normaliseCatalogSearch(query)) return { games: [], total: 0 };
   const safeLimit = Number.isInteger(limit) ? Math.max(1, Math.min(20, limit)) : 8;
-  const ranked = [];
-  for (const entry of entries) {
-    if (!entry || typeof entry.title !== "string") continue;
-    const title = searchableTitle(entry);
-    const index = title.indexOf(text);
-    if (index < 0) continue;
-    const rank = index === 0 ? 0 : /[^\p{L}\p{N}]/u.test(title.charAt(index - 1)) ? 1 : 2;
-    ranked.push({ entry, rank });
-  }
-  ranked.sort((a, b) => a.rank - b.rank ||
-    a.entry.title.localeCompare(b.entry.title, "en", { sensitivity: "base", numeric: true }));
-  return { total: ranked.length, games: ranked.slice(0, safeLimit).map(({ entry }) => entry) };
+  const matching = searchCatalogEntries(entries, query);
+  return { total: matching.length, games: matching.slice(0, safeLimit) };
 }
 
 async function sha256Hex(bytes) {

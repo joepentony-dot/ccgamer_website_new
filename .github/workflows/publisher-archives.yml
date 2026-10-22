@@ -7,6 +7,8 @@ on:
     paths:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/mark-rerelease-publishers.js"
+      - "scripts/link-publisher-strength-genres.js"
       - "scripts/normalize-public-header-shell.js"
       - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
@@ -34,6 +36,8 @@ on:
     paths:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/mark-rerelease-publishers.js"
+      - "scripts/link-publisher-strength-genres.js"
       - "scripts/normalize-public-header-shell.js"
       - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
@@ -87,9 +91,11 @@ jobs:
         run: |
           node --check js/ccg-nav.js
           node --check scripts/generate-publisher-pages.js
+          node --check scripts/mark-rerelease-publishers.js
           node --check scripts/normalize-public-header-shell.js
           node --check scripts/materialize-publisher-histories.js
           node --check scripts/materialize-publisher-histories-tolerant.js
+          node --check scripts/link-publisher-strength-genres.js
           node --check scripts/audit-publisher-seo-evidence.js
           node --check scripts/audit-publisher-seo-evidence-tolerant.js
           node --check scripts/apply-publisher-evidence-overrides.js
@@ -116,11 +122,17 @@ jobs:
       - name: Apply publisher logos
         run: node scripts/apply-publisher-logos.js
 
+      - name: Preserve re-release publisher roles
+        run: node scripts/mark-rerelease-publishers.js
+
       - name: Verify publisher logo output
         run: node scripts/validate-publisher-logo-output.js
 
       - name: Embed available publisher histories without inventing missing biographies
         run: node scripts/materialize-publisher-histories-tolerant.js
+
+      - name: Restore canonical genre links in publisher history strengths
+        run: node scripts/link-publisher-strength-genres.js
 
       - name: Restore publisher runtime parity
         run: node scripts/ensure-publisher-history-runtime.js
@@ -133,6 +145,9 @@ jobs:
 
       - name: Validate publisher SEO and evidence output
         run: node scripts/audit-publisher-seo-evidence-tolerant.js
+
+      - name: Validate publisher directory and re-release role preservation
+        run: node --test tests/archive-directory-system.test.mjs
 
       - name: Detect sitemap-impacting generated changes
         id: sitemap-impact

@@ -85,6 +85,7 @@ const context = vm.createContext({
   gamepadJoyByte: 0xff, touchJoyByte: 0xff, touchHeldMask: 0,
   touchHeldButtons: new Map(),
   inputStatus: { textContent: "" },
+  mobileVirtualHeld: new Map(),
   keyboardJoystickEnabled: false, keyboardJoystickKeys: new Set(),
   keyboardPriorityUntil: 0,
   KEYBOARD_JOYSTICK_MASKS: {
