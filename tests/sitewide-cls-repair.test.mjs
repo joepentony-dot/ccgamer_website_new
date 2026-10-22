@@ -69,7 +69,7 @@ test('secret Easter Egg overlay never takes ownership of the document scroll roo
   const end = source.indexOf('function openSecretModal(', start);
   assert(start >= 0 && end > start, 'secret modal scroll ownership block must remain discoverable');
   const block = source.slice(start, end);
-  assert.doesNotMatch(block, /document\.(?:body|documentElement)\.style\.overflow/);
+  assert.doesNotMatch(block, /document\.(?:body|documentElement)\.style\.overflow(?![A-Za-z_$])/);
   assert.match(block, /scrollY:\s*window\.scrollY/);
 });
 

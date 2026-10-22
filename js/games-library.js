@@ -55,7 +55,8 @@ function scheduleGamesLibraryInit() {
     let started = false;
     let timer = 0;
     let idleHandle = 0;
-    let lastActivityAt = performance.now();
+    const initialisedAt = performance.now();
+    let lastActivityAt = initialisedAt;
     const MIN_START_DELAY_MS = 1800;
     const QUIET_WINDOW_MS = 1400;
 
@@ -92,7 +93,7 @@ function scheduleGamesLibraryInit() {
     const scheduleQuietCheck = () => {
         if (started || timer || idleHandle) return;
         const elapsed = performance.now() - lastActivityAt;
-        const wait = Math.max(120, QUIET_WINDOW_MS - elapsed);
+        const wait = Math.max(120, QUIET_WINDOW_MS - elapsed, MIN_START_DELAY_MS - (performance.now() - initialisedAt));
         timer = window.setTimeout(() => {
             timer = 0;
             if (started) return;
@@ -138,14 +139,10 @@ function scheduleGamesLibraryInit() {
     window.addEventListener("wheel", handleActivity, { passive: true });
     window.addEventListener("touchmove", handleActivity, { passive: true });
 
-    // The complete 666-link static archive is immediately usable. Give the
-    // first interaction window to native scrolling, then build the enhanced
-    // archive only after the page has remained quiet. Search/filter intent
-    // still starts enhancement immediately.
-    timer = window.setTimeout(() => {
-        timer = 0;
-        scheduleQuietCheck();
-    }, MIN_START_DELAY_MS);
+    // The static links work immediately. Do not schedule a blocking catalogue
+    // rebuild on an arbitrary page-load timer: wait for a genuine scroll/wheel/
+    // touch activity followed by the quiet window. Deliberate search/filter
+    // intent still starts the enhancement immediately.
 }
 
 document.addEventListener("DOMContentLoaded", scheduleGamesLibraryInit);

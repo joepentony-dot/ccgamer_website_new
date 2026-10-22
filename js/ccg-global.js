@@ -1925,15 +1925,15 @@ if (IS_ADMIN_PATH) {
         if (!lock) return;
 
         secretState.scrollLock = null;
-        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
         requestAnimationFrame(() => {
             if (secretState.scrollLock) return;
             if (document.body) document.body.style.minHeight = lock.bodyMinHeight;
             document.documentElement.style.overflowAnchor = lock.rootOverflowAnchor;
-            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             requestAnimationFrame(() => {
                 if (secretState.scrollLock) return;
-                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             });
         });
     }
@@ -1972,12 +1972,14 @@ if (IS_ADMIN_PATH) {
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
             const lock = secretState.scrollLock;
-            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             if (content) content.scrollTop = 0;
 
             requestAnimationFrame(() => {
                 if (content) content.scrollTop = 0;
                 closeButton?.focus({ preventScroll: true });
+                // Reaffirm the bookmarked position after focus and overlay layout.
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             });
 
             secretState.backdropUnlockTimer = setTimeout(() => {

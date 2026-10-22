@@ -114,6 +114,8 @@ async function waitForTestPageReady(page, testCase) {
     return null;
   }
 
+  // Focusing the real search control starts the enhanced catalogue on demand.
+  await page.locator('#gamesSearchInput').focus();
   await page.waitForFunction(() => {
     const fallback = document.getElementById('gamesStaticFallback');
     const accordion = document.getElementById('gamesAccordion');
@@ -148,7 +150,7 @@ async function settleAtPageBottom(page) {
       // Use the browser's physically reachable bottom rather than a theoretical
       // scrollHeight - innerHeight target. Mobile emulation can expose a small
       // visual/layout viewport delta even after the page geometry has settled.
-      window.scrollTo(0, Number.MAX_SAFE_INTEGER);
+      window.scrollTo({ top: Number.MAX_SAFE_INTEGER, left: 0, behavior: "instant" });
     });
     await page.waitForTimeout(180);
 
