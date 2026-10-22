@@ -99,7 +99,7 @@
   function countArchiveSessionOnce() {
     // This is an EVENT with the same identifier on every public page. GoatCounter
     // deduplicates an event path once per session when Sessions is enabled.
-    // No browser ID, cookie, localStorage fingerprint or long-lived identifier.
+    // No browser ID, cookies, fingerprints or persistent visitor identifiers.
     if (!isPublicPage() || STARTED) return;
 
     var tries = 0;
