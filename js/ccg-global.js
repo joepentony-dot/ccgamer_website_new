@@ -1896,10 +1896,28 @@ if (IS_ADMIN_PATH) {
     function lockSecretModalScroll() {
         if (secretState.scrollLock) return;
 
+        const root = document.documentElement;
+        const body = document.body;
+        const scrollX = window.scrollX || root.scrollLeft || 0;
+        const scrollY = window.scrollY || root.scrollTop || 0;
+        const lockedDocumentHeight = Math.max(
+            root.scrollHeight,
+            body?.scrollHeight || 0,
+            window.innerHeight
+        );
+
         secretState.scrollLock = {
-            scrollX: window.scrollX || document.documentElement.scrollLeft || 0,
-            scrollY: window.scrollY || document.documentElement.scrollTop || 0,
+            scrollX,
+            scrollY,
+            bodyMinHeight: body?.style.minHeight || "",
+            rootOverflowAnchor: root.style.overflowAnchor,
         };
+
+        // Keep the pre-open page geometry stable without changing the document
+        // overflow owner. This prevents bottom-of-page scroll clamping when a
+        // fixed modal and focus state alter viewport rounding by a few pixels.
+        root.style.overflowAnchor = "none";
+        if (body) body.style.minHeight = `${lockedDocumentHeight}px`;
     }
 
     function unlockSecretModalScroll() {
@@ -1910,7 +1928,13 @@ if (IS_ADMIN_PATH) {
         window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
         requestAnimationFrame(() => {
             if (secretState.scrollLock) return;
+            if (document.body) document.body.style.minHeight = lock.bodyMinHeight;
+            document.documentElement.style.overflowAnchor = lock.rootOverflowAnchor;
             window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            requestAnimationFrame(() => {
+                if (secretState.scrollLock) return;
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            });
         });
     }
 
