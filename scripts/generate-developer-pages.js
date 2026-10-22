@@ -688,7 +688,7 @@ ${mostRepresented.map((group) => `- ${group.name}: **${group.count}** ${group.co
 - Static developer pages containing direct game links.
 - CollectionPage, BreadcrumbList and ItemList structured data.
 - Canonical, Open Graph and Twitter metadata.
-- Sitemap inclusion for the hub and multi-game routes.
+- Sitemap inclusion for the hub and all verified catalogue-backed canonical developer routes, including single-credit routes.
 - A static discovery link from the main Browse Games page.
 
 ## Explicit exclusions
@@ -696,7 +696,7 @@ ${mostRepresented.map((group) => `- ${group.name}: **${group.count}** ${group.co
 - No changes to \`games/games.json\`.
 - No biographies, company histories or unsupported relationships were added.
 - No homepage or intro-loader changes.
-- No single-game developer page was placed in the sitemap.
+- Zero-credit and noncanonical fallback pages are excluded; single-credit canonical developer routes remain eligible.
 
 ## Rollback
 
