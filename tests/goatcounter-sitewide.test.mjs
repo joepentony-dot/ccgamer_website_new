@@ -258,3 +258,24 @@ test("shared-loader on branch-published HTML recovers visible counters", () => {
   assert.equal(loadedOn("/home.html", true).length, 0, "staged script not duplicated");
   assert.equal(loadedOn("/admin/content-publisher.html", false).length, 0, "admin bypassed");
 });
+
+
+test("every committed canonical game page inherits the shared display loader", () => {
+  const gamesDir = path.join(root, "games");
+  const pages = [];
+  for (const item of fs.readdirSync(gamesDir, { withFileTypes: true })) {
+    if (!item.isDirectory()) continue;
+    const index = path.join(gamesDir, item.name, "index.html");
+    if (!fs.existsSync(index)) continue;
+    const html = fs.readFileSync(index, "utf8");
+    if (!/<html\b[^>]*\bdata-ccg-page\s*=\s*(["'])single-game\1/i.test(html)) continue;
+    pages.push(index);
+    assert.match(html, /<script\s+src="(?:\/|\.\.\/)js\/ccg-global\.js"/i,
+      "Missing shared counter loader on " + path.relative(root, index));
+    assert.match(html, /<footer\b[^>]*class="[^"]*\bccg-footer--game\b/i,
+      "Missing footer for view count on " + path.relative(root, index));
+    assert.match(html, /<link rel="canonical"\b|<link rel="canonical"/i,
+      "Missing canonical for view count on " + path.relative(root, index));
+  }
+  assert.ok(pages.length >= 600, "Expected entire 666-game CCG archive to be covered");
+});
