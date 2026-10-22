@@ -391,7 +391,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-developer-system="c64" aria-pressed="false">C64</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-developer-system="amiga" aria-pressed="false">Amiga</button>
                 </div>
-                <p class="ccg-developers-visible-count"><strong id="developerVisibleCount">${groups.length}</strong> developers shown</p>
+                <p class="ccg-developers-visible-count"><strong id="developerVisibleCount">${groups.length}</strong> developers available</p>
             </section>
 
             <section class="ccg-developers-section" aria-labelledby="represented-developers-title">
@@ -404,17 +404,20 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 </div>
             </section>
 
-            <section class="ccg-developers-section" aria-labelledby="all-developers-title">
+            <details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">
+                <summary>Browse all ${groups.length} developers A–Z</summary>
+                <section aria-labelledby="all-developers-title">
                 <div class="ccg-developers-section__heading">
                     <p class="ccg-developers-section__kicker">Full recorded archive</p>
                     <h2 id="all-developers-title">All Developers</h2>
-                    <p>Single-game archive pages remain available for navigation but are excluded from search indexing until another credited title is added.</p>
+                    <p>Dedicated developer pages with verified catalogue credits are eligible for indexing, including single-game archives.</p>
                 </div>
                 <div class="ccg-developer-grid" id="developerGrid">
                     ${groups.map((group) => renderDeveloperCard(group)).join("\n")}
                 </div>
                 <p class="ccg-developers-empty" id="developerEmptyState" hidden>No developers match that search.</p>
-            </section>
+                </section>
+            </details>
 
             <section class="ccg-developers-wayfinding">
                 <h2>Keep Exploring</h2>
