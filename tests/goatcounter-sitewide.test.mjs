@@ -149,7 +149,7 @@ test("canonical game pages count each load regardless of global session deduplic
   const home = path.join(site, "home.html");
   fs.mkdirSync(path.dirname(game), { recursive: true });
   const approved = '<script data-goatcounter="' + endpoint + '" async src="' + source + '"></script>';
-  fs.writeFileSync(game, '<!doctype html><html data-ccg-page="single-game"><head><title>Chuckie Egg</title></head><body><p>Review</p>' + approved + "</body></html>");
+  fs.writeFileSync(game, '<!doctype html><html data-ccg-page="single-game"><head><title>Chuckie Egg</title></head><body><p>Review</p><footer class="ccg-footer ccg-footer--game"></footer>' + approved + "</body></html>");
   fs.writeFileSync(home, page(approved));
 
   assert.equal(runScript(site).status, 0);
