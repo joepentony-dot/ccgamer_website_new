@@ -14,6 +14,7 @@ import {
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
   preferSelectedCartridges, catalogGameIdentity, selectVerifiedExactCrtEdition,
+  findVerifiedExactCrtEdition,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -2592,9 +2593,12 @@ async function initialiseOnlineLibrary() {
   // If the exact SHA-audited CRT disappears or changes, do not boot the
   // older Star Wars image in its place.
   const pinnedDomarkLink = linkedGameId === "owner-crt-more-starwars-1e41e83051d1";
+  const verifiedDomark = pinnedDomarkLink
+    ? findVerifiedExactCrtEdition(allHostedEntries, linkedGameId) : null;
   let linkedGame = validLinkedId
     ? (pinnedDomarkLink
-        ? onlineLibraryEntries.find(entry => entry.id === linkedGameId) || null
+        ? (verifiedDomark && onlineLibraryEntries.find(entry =>
+            entry === verifiedDomark)) || null
         : (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
            (linkedOriginal && onlineLibraryEntries.find(entry =>
              catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
