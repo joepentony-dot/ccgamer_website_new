@@ -639,7 +639,7 @@ function renderReport({ games, creditedGroups, existingPages, routes, generatedW
 | Credited composers with an existing page | **${creditedExisting}** |
 | Newly generated static composer routes | **${generated.length}** |
 | Indexable generated routes | **${indexableGenerated}** |
-| Single-game generated noindex routes | **${noindexGenerated}** |
+| No-credit generated noindex routes | **${noindexGenerated}** |
 | Total static composer routes | **${routes.length}** |
 | Linked game-credit relationships | **${linkedCredits}** |
 | Generated pages written in this run | **${generatedWrites}** |
