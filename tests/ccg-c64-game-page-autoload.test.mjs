@@ -100,7 +100,18 @@ test("real autoload selection preserves Domark 1988 edition rather than an older
   assert.equal(gamePage.context.onlineLibraryEntries.length, 1);
   assert.equal(gamePage.context.onlineLibraryEntries[0].sha256, domark.sha256);
   assert.equal(gamePage.context.gamePageAutoloadConsumed, true);
+  const tampered = await initialiseFor("?game=" + domark.id + "&autoplay=1",
+    { entries: [parker, { ...domark, sha256: "f".repeat(64) }] });
+  assert.equal(tampered.selected.length, 0,
+    "Changed Domark digest must never silently select the older edition");
+  assert.equal(tampered.starts.length, 0);
+  assert.equal(tampered.context.gamePageAutoloadConsumed, false);
+  const absent = await initialiseFor("?game=" + domark.id + "&autoplay=1",
+    { entries: [parker] });
+  assert.equal(absent.selected.length, 0);
+  assert.equal(absent.starts.length, 0);
 });
+
 
 test("legacy game deep links and ordinary browsing never launch automatically", async () => {
   for (const query of ["", "?game=owner-crt-more-sanxion",
