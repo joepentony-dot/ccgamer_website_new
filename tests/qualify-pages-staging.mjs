@@ -29,6 +29,7 @@ export function stagingSteps(source) {
     'Canonicalize first-paint public header shell',
     'Fail closed on C64 emulator links and game-page SEO parity',
     'Verify staged public features',
+    'Guarantee GoatCounter on every staged HTML page',
     'Check published-site size',
   ], 'Qualification must include every existing pre-upload run block');
   return steps;

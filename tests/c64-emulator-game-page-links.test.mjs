@@ -156,6 +156,29 @@ test("six additional full-title game pages link only to pinned emulator releases
   assert.match(linked("teenage-mutant-hero-turtles"), /game=archive-08639&amp;autoplay=1/);
 });
 
+test("He-Man page resolves to a reviewed hosted emulator title without altering other games", () => {
+  assert.match(linked("he-man-and-the-masters-of-the-universe-the-ilearth-stone"), /game=archive-03945&amp;autoplay=1/);
+});
+
+// Summer Games 1 is only a secondary-LOAD stub PRG; a bare PRG cannot boot the complete game.
+test("incomplete Summer Games media must not be advertised as one-click playable", () => {
+  assert.doesNotMatch(read("games/summer-games/index.html"), /data-ccg-play-in-emulator="true"/);
+  assert.doesNotMatch(generator, /\["summer-games",\["Summer Games 1","blast-1565"\]\]/);
+});
+
+test("both original Turrican pages link to the existing owner-approved three-game CRT menu", () => {
+  const trilogy = direct.filter(e => e.id === "turrican-trilogy");
+  assert.equal(trilogy.length, 1);
+  assert.equal(trilogy[0].title, "Turrican Trilogy");
+  assert.equal(trilogy[0].format, "crt");
+  assert.equal(trilogy[0].approved, true);
+  for (const slug of ["turrican", "turrican-2-the-final-fight"]) {
+    assert.match(linked(slug), /game=turrican-trilogy&amp;autoplay=1/);
+  }
+  assert.match(generator, /\["turrican",\["Turrican Trilogy","turrican-trilogy"\]\]/);
+  assert.match(generator, /\["turrican-2-the-final-fight",\["Turrican Trilogy","turrican-trilogy"\]\]/);
+});
+
 test("Kobyashi Naru spelling maps only to approved Kobayashi Naru cartridge", () => {
   const game = c64Games.find(g => g.slug === "kobyashi-naru");
   assert.equal(game?.year, 1987);
