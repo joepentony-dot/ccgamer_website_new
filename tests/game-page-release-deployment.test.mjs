@@ -16,6 +16,9 @@ test('Pages preserves publisher-owned game HTML and validates it before upload',
   assert.match(steps[3].script, /python3 scripts\/ccg_game_page_release_audit\.py/);
   assert.match(steps[3].script, /--media-check/);
   assert.match(steps[3].script, /--report-dir "\$RUNNER_TEMP\/ccg-game-page-release"/);
+  // Tracking must be added only after read-only game-page parity succeeds.
+  assert.match(steps[5].script, /ensure-goatcounter-coverage\.js --root _site/);
+  assert.match(steps[5].script, /ensure-goatcounter-coverage\.js --root _site --check/);
   assert.match(workflow, /uses: actions\/upload-pages-artifact@v4/);
   assert.match(workflow, /uses: actions\/deploy-pages@v4/);
 });
