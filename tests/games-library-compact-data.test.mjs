@@ -33,8 +33,14 @@ test("generated compact browse data stays complete and reproducible", () => {
 test("Browse Games keeps first-scroll startup progressive", () => {
   assert.match(librarySource, /document\.addEventListener\("DOMContentLoaded", scheduleGamesLibraryInit\)/);
   assert.doesNotMatch(librarySource, /document\.addEventListener\("DOMContentLoaded",\s*\(\) => \{\s*initGamesLibrary\(\);/);
-  assert.match(librarySource, /window\.setTimeout\(\(\) => \{[\s\S]*requestIdleCallback\(start, \{ timeout: 3000 \}\)[\s\S]*\}, 2200\)/);
+  assert.match(librarySource, /const MIN_START_DELAY_MS = 1800/);
+  assert.match(librarySource, /const QUIET_WINDOW_MS = 1400/);
+  assert.match(librarySource, /window\.addEventListener\("scroll", handleActivity, \{ passive: true \}\)/);
+  assert.match(librarySource, /window\.addEventListener\("wheel", handleActivity, \{ passive: true \}\)/);
+  assert.match(librarySource, /window\.addEventListener\("touchmove", handleActivity, \{ passive: true \}\)/);
+  assert.match(librarySource, /requestIdleCallback\(\(\) => \{[\s\S]*stillQuietFor < QUIET_WINDOW_MS/);
   assert.match(librarySource, /#gamesSearchInput[\s\S]*\[data-system-filter\][\s\S]*#gamesYearSelect/);
+  assert.match(librarySource, /handleIntent[\s\S]*start\(\)/);
   assert.match(librarySource, /window\.CCG_GAMES_LIBRARY_READY = true/);
 });
 
