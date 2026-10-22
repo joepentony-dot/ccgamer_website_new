@@ -28,6 +28,17 @@ test('staging makes the final cascade active, ordered and idempotent even with p
   assert.equal(fs.readFileSync('games/ace-of-aces/index.html', 'utf8'), source);
 });
 
+test('hidden floating navigation does not expand the document scroll height', () => {
+  const css = fs.readFileSync('resources/css/ccg-master.css', 'utf8');
+  const rule = css.match(/\.ccg-floating-nav\s*\{([^}]*)\}/);
+  assert(rule, 'floating navigation must retain its fixed-position shell');
+  assert.match(rule[1], /position:\s*fixed;/);
+  assert.match(rule[1], /transform:\s*translate\(-50%,\s*4px\);/,
+    'hidden floating navigation must stay within the smallest mobile bottom clearance');
+  assert.doesNotMatch(rule[1], /translate\(-50%,\s*16px\)/,
+    'do not reintroduce the 7–10px bottom-of-page oscillation');
+});
+
 test('responsive fallback preserves existing relative styles and never reorders on resize/load', () => {
   const styles = ['ccg-responsive-safety', 'ccg-responsive-page-polish', 'ccg-sitewide-layout-optimization', 'ccg-nav-labelled-bridge'];
   const links = styles.map(name => ({ href: new URL(`../resources/css/${name}.css`, 'https://ccg.test/games/').href }));

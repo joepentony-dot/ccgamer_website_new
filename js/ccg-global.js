@@ -1915,14 +1915,15 @@ if (IS_ADMIN_PATH) {
         const body = document.body;
         const scrollX = window.scrollX || root.scrollLeft || 0;
         const scrollY = window.scrollY || root.scrollTop || 0;
-        // Reserve invisible scroll headroom while the fixed modal is open.
-        // The page can otherwise clamp a bookmarked bottom position when
-        // opening the overlay changes the visual viewport by a few pixels.
+        // Preserve the document height during the fixed modal without
+        // artificially extending the page beyond its existing bottom.
+        // The floating navigation's off-screen translation is corrected
+        // separately in ccg-master.css.
         const lockedDocumentHeight = Math.max(
             root.scrollHeight,
             body?.scrollHeight || 0,
             window.innerHeight
-        ) + window.innerHeight;
+        );
 
         secretState.scrollLock = {
             scrollX,
