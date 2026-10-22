@@ -19,7 +19,7 @@ const archiveAliases = file(root + "prg-archive/retired-ids.json");
 const sha = data => createHash("sha256").update(data).digest("hex");
 assert.equal(library.version, 1);
 assert.equal(active.recordCount, active.games.length);
-assert.equal(active.recordCount, 2064);
+assert.equal(active.recordCount, 2063);
 assert.equal(blast.recordCount, blast.games.length);
 assert.equal(blast.recordCount, 1150);
 assert.equal(archive.recordCount, archive.games.length);

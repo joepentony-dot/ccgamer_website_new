@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-// Isolated, multi-shard qualification for the existing 1,530 plus 534 individual cartridges.
+// Isolated, multi-shard qualification for owner CRT media (2,064 original, one exact duplicate retired).
 // Verifies real ROM bytes, SHA-256, hardware bank layout and CPU advancement.
 // Three PAL frames are a STARTUP SMOKE, NOT a certified gameplay playthrough.
 import assert from "node:assert/strict";
@@ -22,7 +22,12 @@ assert(Number.isInteger(shard) && Number.isInteger(shardCount) &&
 const sha256 = data => createHash("sha256").update(data).digest("hex");
 const path = "emulator/c64/media/cartridge-replacements/active.json";
 const activation = JSON.parse(fs.readFileSync(path, "utf8"));
-assert.equal(activation.recordCount, 2064, "Activation must contain all 1,530 existing and 534 new CRT files.");
+assert.equal(activation.recordCount, 2063, "Activation must retain all 2,063 unique CRT files after exact-duplicate retirement.");
+const digestToFile = new Map();
+for (const [, filename, , digest] of activation.games) {
+  assert(!digestToFile.has(digest), `Duplicate CRT bytes in activation manifest: ${filename} vs ${digestToFile.get(digest)}`);
+  digestToFile.set(digest, filename);
+}
 assert.equal(activation.ownerRedistributionAttested, true);
 assert.equal(activation.gameplayCertified, false,
   "Three-frame smoke tests must never misstate full gameplay acceptance.");
@@ -39,7 +44,7 @@ const oldTitles = new Set(originals.filter(x => x.format !== "crt")
 const oldCRT = new Set(originals.filter(x => x.format === "crt")
   .map(x => catalogGameIdentity(x.title)));
 const candidates = parseAdditionalCrtCatalog(activation);
-assert.equal(candidates.length, 2064);
+assert.equal(candidates.length, 2063);
 const results = preferSelectedCartridges([...originals, ...candidates]);
 for (const [i, chosen] of candidates.entries()) {
   const key = catalogGameIdentity(chosen.title);
