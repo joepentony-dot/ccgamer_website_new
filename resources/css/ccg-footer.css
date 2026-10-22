@@ -682,3 +682,23 @@ body[data-ccg-mode] .ccg-consent-close {
         transform: none;
     }
 }
+
+/* Distinguish the historic GoatCounter total from hourly visitor sessions. */
+.ccg-footer__counter-wrap .ccg-footer__hourly-visitors {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 0.2rem;
+    color: rgba(232, 236, 255, 0.78);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: center;
+}
+.ccg-footer__hourly-visitors .ccg-footer__hourly-number {
+    color: #72d7ff;
+    font-family: var(--ccg-font-main, "Orbitron", sans-serif);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
