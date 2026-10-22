@@ -246,6 +246,13 @@ async function runCase(browser, testCase) {
 
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.waitForLoadState('load', { timeout: 30000 });
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) {
+      try { await document.fonts.ready; } catch (_) {}
+    }
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
   const readinessState = await waitForTestPageReady(page, testCase);
   const bottomState = await settleAtPageBottom(page);
   const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
