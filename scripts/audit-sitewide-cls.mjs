@@ -108,8 +108,38 @@ try {
       assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
       await page.setViewportSize({ width, height: 900 });
     } else if (width < 960) {
-      await page.locator('[data-ccg-nav-toggle]').click();
-      await page.locator('.ccg-nav-drawer__panel').waitFor({ state: 'visible' });
+      const navToggle = page.locator('[data-ccg-nav-toggle]');
+      await page.waitForFunction(() =>
+        document.querySelector('[data-ccg-nav-toggle]')?.dataset.ccgNavToggleBound === 'true',
+        null,
+        { timeout: 3000 }
+      );
+      await navToggle.click();
+      await page.waitForTimeout(180);
+      const navState = await page.evaluate(() => {
+        const header = document.querySelector('[data-ccg-header]');
+        const toggle = document.querySelector('[data-ccg-nav-toggle]');
+        const drawer = document.querySelector('[data-ccg-nav-drawer]');
+        const panel = drawer?.querySelector('.ccg-nav-drawer__panel');
+        const panelStyle = panel ? getComputedStyle(panel) : null;
+        const drawerStyle = drawer ? getComputedStyle(drawer) : null;
+        return {
+          expanded: toggle?.getAttribute('aria-expanded'),
+          drawerHidden: drawer?.getAttribute('aria-hidden'),
+          headerClass: header?.className || '',
+          drawerDisplay: drawerStyle?.display || '',
+          drawerOpacity: drawerStyle?.opacity || '',
+          drawerPointerEvents: drawerStyle?.pointerEvents || '',
+          panelDisplay: panelStyle?.display || '',
+          panelVisibility: panelStyle?.visibility || '',
+          panelTransform: panelStyle?.transform || '',
+          panelRect: panel?.getBoundingClientRect().toJSON?.() || null
+        };
+      });
+      assert.equal(navState.expanded, 'true', `Mobile Menu toggle did not expand: ${JSON.stringify(navState)}`);
+      assert.equal(navState.drawerHidden, 'false', `Mobile navigation drawer stayed aria-hidden: ${JSON.stringify(navState)}`);
+      assert(navState.headerClass.includes('ccg-header--nav-open'), `Mobile navigation header state did not open: ${JSON.stringify(navState)}`);
+      await page.locator('.ccg-nav-drawer__panel').waitFor({ state: 'visible', timeout: 3000 });
       await page.keyboard.press('Escape');
     }
     await page.keyboard.press('Control+k');
