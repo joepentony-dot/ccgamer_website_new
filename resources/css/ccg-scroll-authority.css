@@ -201,6 +201,15 @@ html[data-ccg-page="collection-single"]
     contain-intrinsic-size: auto 340px;
 }
 
+/* Browse Games has a large static archive, so never invalidate the HTML
+   root's descendant styles simply to pause the small fixed background. */
+html[data-ccg-page="games-index"] .ccg-bg.ccg-perf-paused .ccg-bg-starfield,
+html[data-ccg-page="games-index"] .ccg-bg.ccg-perf-paused .ccg-bg-starfield::after,
+html[data-ccg-page="games-index"] .ccg-bg.ccg-perf-paused .ccg-bg-particles__spark {
+    animation-play-state: paused !important;
+    will-change: auto !important;
+}
+
 /* During active document scrolling the shared `ccg-perf-paused` state pauses
    decorative motion and removes hover-transition churn across ALL public
    pages, including Browse by Genre, Collections, game pages, Home and hubs. */

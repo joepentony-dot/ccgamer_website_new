@@ -38,7 +38,22 @@ async function triggerTripleClick(page) {
     const logo = document.querySelector('.ccg-brand__logo');
     if (!logo) throw new Error('Logo trigger not found');
     const wait = delay => new Promise(resolve => setTimeout(resolve, delay));
+    const history = [];
+    const snapshot = (label) => {
+      const root = document.scrollingElement || document.documentElement;
+      history.push({
+        label,
+        scrollY: window.scrollY,
+        scrollHeight: root.scrollHeight,
+        viewportHeight: window.innerHeight,
+        bodyHeight: Math.round(document.body?.getBoundingClientRect().height || 0),
+        modalOpen: Boolean(document.querySelector('.ccg-secret-modal.is-open')),
+      });
+    };
+    window.__ccgSecretScrollHistory = history;
+    snapshot('before-first-tap');
     for (let index = 0; index < 3; index += 1) {
+      snapshot(`before-tap-${index + 1}`);
       logo.dispatchEvent(new PointerEvent('pointerdown', {
         bubbles: true,
         cancelable: true,
@@ -48,6 +63,7 @@ async function triggerTripleClick(page) {
         button: 0,
       }));
       await wait(170);
+      snapshot(`after-tap-${index + 1}`);
     }
   });
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });
@@ -308,6 +324,7 @@ async function runCase(browser, testCase) {
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });
   await page.waitForTimeout(1000);
   const scrollAfterClose = await page.evaluate(() => window.scrollY);
+  const scrollHistory = await page.evaluate(() => window.__ccgSecretScrollHistory || []);
 
   await triggerTripleClick(page);
   const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);
@@ -387,6 +404,7 @@ async function runCase(browser, testCase) {
     scrollAfterClose: round(scrollAfterClose),
     readinessState,
     bottomState,
+    scrollHistory,
     menuMetrics,
     closeMetrics,
     menuState,
@@ -459,6 +477,7 @@ console.log(JSON.stringify({
     whileOpen: result.menuState?.scrollY,
     afterClose: result.scrollAfterClose,
     bottomState: result.bottomState,
+    scrollHistory: result.scrollHistory,
   })),
 }, null, 2));
 if (failedChecks.length) process.exit(1);

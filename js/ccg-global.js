@@ -528,21 +528,28 @@ if (IS_ADMIN_PATH) {
     ====================================================== */
     function setupScrollPerfPause() {
         const root = document.documentElement;
+        // The archive's static catalogue has hundreds of searchable links.
+        // Pausing animations by changing the HTML class would invalidate all
+        // descendant styles on the first scroll. Restrict that mutation to the
+        // animated background layer; other pages retain their existing policy.
+        const pauseTarget = root.dataset.ccgPage === "games-index"
+            ? document.querySelector(".ccg-bg") || root
+            : root;
         const PAUSE_CLASS = "ccg-perf-paused";
         const resumeDelay = 160;
         let resumeTimer = null;
 
         const setPaused = (paused) => {
             if (paused) {
-                root.classList.add(PAUSE_CLASS);
+                pauseTarget.classList.add(PAUSE_CLASS);
             } else {
-                root.classList.remove(PAUSE_CLASS);
+                pauseTarget.classList.remove(PAUSE_CLASS);
             }
             window.dispatchEvent(new CustomEvent("ccg-perf-pause", { detail: { paused } }));
         };
 
         const onScroll = () => {
-            if (!root.classList.contains(PAUSE_CLASS)) {
+            if (!pauseTarget.classList.contains(PAUSE_CLASS)) {
                 setPaused(true);
             }
             if (resumeTimer) {

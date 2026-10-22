@@ -65,6 +65,10 @@ test('secret Easter Egg overlay never takes ownership of the document scroll roo
   }
 
   const source = fs.readFileSync('js/ccg-global.js', 'utf8');
+  assert.match(source, /root\.dataset\.ccgPage === "games-index"/,
+    'games archive scrolling must use a scoped decorative pause target');
+  assert.match(source, /pauseTarget\.classList\.add\(PAUSE_CLASS\)/,
+    'decorative pause must not require HTML root restyling');
   const start = source.indexOf('function lockSecretModalScroll()');
   const end = source.indexOf('function openSecretModal(', start);
   assert(start >= 0 && end > start, 'secret modal scroll ownership block must remain discoverable');
