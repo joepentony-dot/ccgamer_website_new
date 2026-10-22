@@ -200,7 +200,15 @@ test('music composer pages share the native wheel performance contract', () => {
   assert.match(musicComposerCss, /> body\.ccg-body:not\(\.ccg-body--locked\):not\(\.ccg-body--nav-open\)[\s\S]*overflow-y:\s*visible\s*!important/);
   assert.match(musicComposerCss, /html\.ccg-perf-paused[\s\S]*\.ccg-composer-games__item/);
   assert.match(musicComposerRuntime, /function initMusicScrollPerfPause\(\)/);
-  assert.match(musicComposerRuntime, /window\.addEventListener\("scroll", onScroll, \{ passive: true \}\)/);
+  const start = musicComposerRuntime.indexOf('function initMusicScrollPerfPause()');
+  const end = musicComposerRuntime.indexOf('function initBackToTop()', start);
+  assert(start >= 0 && end > start, 'Music scroll performance helper must remain present');
+  const scrollHelper = musicComposerRuntime.slice(start, end);
+  assert.match(scrollHelper, /root\.dataset\.ccgMusicScrollPerf = "ready"/);
+  assert.doesNotMatch(scrollHelper, /window\.addEventListener\("scroll"/,
+    'Music archives must not install a root-wide scroll invalidation listener');
+  assert.doesNotMatch(scrollHelper, /root\.classList\.(add|remove)\(/,
+    'Music scroll must not recalculate all composer archive styles');
   assert.match(musicComposerRuntime, /window\.CCG_MUSIC_PAGE_READY = true/);
   assert.match(nativeWheelAudit, /\{ path: "\/music\/", label: "Music Hub" \}/);
   assert.match(nativeWheelAudit, /\{ path: "\/music\/paul-norman\/", label: "Music Composer \(Paul Norman\)" \}/);
