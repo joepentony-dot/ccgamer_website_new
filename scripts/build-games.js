@@ -315,7 +315,7 @@ function buildGamesSearchData(gamesList) {
     composer: normaliseComposerNames(game),
     music: normaliseMusicNames(game.music),
     year: game.year,
-    ccg_rating: game.ccg_rating,
+    ccg_rating: game.ccg_rating ?? null,
     ccg_rating_reason: game.ccg_rating_reason || ""
   }));
 }
