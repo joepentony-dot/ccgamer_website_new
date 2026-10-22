@@ -288,7 +288,8 @@ test("export recovery preserves archived totals and legacy game links without du
   assert.match(source, /"master-of-magic":80/);
   assert.match(source, /"ninja-rabbits":73/);
   assert.match(source, /"ace-of-aces":14/);
-  assert.match(source, /Math\.max\(oldSnapshot, oldLive\)/);
+  assert.match(source, /Math\.max\(oldSnapshot, now\) \+ querySnapshot/);
+  assert.doesNotMatch(source, /newLive|Promise\.allSettled/);
   assert.match(source, /ensureGoatCounterTracker\(\)/);
 
   function render(pathname, counters, fail = false) {
@@ -335,14 +336,14 @@ test("export recovery preserves archived totals and legacy game links without du
     return {counter:gameCounter||home,scripts};
   }
   const homepage=render("/home.html",{"ccg-archive-session":7});
-  const master=render("/games/master-of-magic/",{"/games/master-of-magic":80,"/games/master-of-magic/":3});
-  const ace=render("/games/ace-of-aces/",{"/games/ace-of-aces":46,"/games/ace-of-aces/":2});
+  const master=render("/games/master-of-magic/",{"/games/master-of-magic":83});
+  const ace=render("/games/ace-of-aces/",{"/games/ace-of-aces":48});
   const blocked=render("/games/ninja-rabbits/",{},true);
-  const newGame=render("/games/smash-t-v/",{"/games/smash-t-v/":4});
+  const newGame=render("/games/smash-t-v/",{"/games/smash-t-v":4});
   await new Promise(resolve=>setTimeout(resolve,0));
   assert.equal(homepage.counter.textContent,"2,367");
   assert.equal(master.counter.textContent,"83");
-  assert.equal(ace.counter.textContent,"62"); // 46 old + 14 legacy URLs + 2 new
+  assert.equal(ace.counter.textContent,"62"); // 48 direct + 14 distinct legacy URLs
   assert.equal(blocked.counter.textContent,"73");
   assert.equal(newGame.counter.textContent,"4");
   for(const result of [homepage,master,ace,blocked,newGame]){

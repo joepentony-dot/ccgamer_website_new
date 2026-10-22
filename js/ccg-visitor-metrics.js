@@ -109,8 +109,10 @@
       return;
     }
 
-    // Historic /games/slug and current /games/slug/ are separate GoatCounter
-    // keys. Old legacy ?id= and ?slug= paths are preserved separately.
+    // GoatCounter STRIPS trailing slashes from stored paths and from the
+    // public-counter lookup. /games/slug and /games/slug/ are the SAME key.
+    // Never add the two values: that would double recorded game views.
+    // Old ?id= and ?slug= routes were separate paths and can be added once.
     if (!/^\/games\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(path)) return;
     var slug = path.slice("/games/".length, -1);
     var oldSnapshot = HISTORICAL_GAME_HITS[slug] || 0;
@@ -118,15 +120,9 @@
     displayNumber(node, oldSnapshot + querySnapshot, "historical");
     if (!window.fetch) return;
 
-    Promise.allSettled([publicCount(path.slice(0, -1)), publicCount(path)])
-      .then(function (values) {
-        var oldLive = values[0].status === "fulfilled" ? values[0].value : oldSnapshot;
-        var newLive = values[1].status === "fulfilled" ? values[1].value : 0;
-        var source = values.some(function (v) { return v.status === "fulfilled"; })
-          ? "live" : "historical";
-        displayNumber(node, Math.max(oldSnapshot, oldLive) +
-          querySnapshot + newLive, source);
-      }).catch(function () { /* Keep the recoverable historical number. */ });
+    publicCount(path.slice(0, -1)).then(function (now) {
+      displayNumber(node, Math.max(oldSnapshot, now) + querySnapshot, "live");
+    }).catch(function () { /* Keep the recoverable historical number. */ });
   }
 
   // Source-branch deployments may skip staging scripts. Restore the normal
