@@ -30,7 +30,7 @@ html {
     overflow-x: clip;
 }
 
-body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
+body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
     min-height: 100%;
     overflow-x: clip !important;
     overflow-y: auto !important;
@@ -39,7 +39,7 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open)
 
 @supports not (overflow: clip) {
     html,
-    body:not(.ccg-body--locked):not(.ccg-body--nav-open):not(.ccg-secret-modal-open) {
+    body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
         overflow-x: hidden !important;
     }
 }
