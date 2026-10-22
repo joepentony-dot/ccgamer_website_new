@@ -1,8 +1,8 @@
 /* CCG visitor statistics — public GoatCounter counters, no API token.
  *
- * The archive-wide EVENT is counted once per eight-hour GoatCounter session,
- * when Sessions is enabled; it is not a lifetime count of unique people.
- * Game views use GoatCounter's existing per-path visit counts.
+ * Archive visitors: one event per browser per rolling 60-minute window,
+ * across all public pages. This is not a count of lifetime unique humans.
+ * Game views: all recorded game page loads, including refreshes.
  *
  * Public display needs GoatCounter Settings -> Site settings ->
  * "Allow adding visitor counts on your website" enabled.
@@ -15,7 +15,25 @@
 
   var COUNTER_BASE = "https://cheekycommodoregamer.goatcounter.com/counter/";
   var SESSION_EVENT = "ccg-archive-session";
+  var SESSION_KEY = "ccg-archive-hourly-visit-v1";
+  var SESSION_WINDOW_MS = 60 * 60 * 1000;
   var STARTED = false;
+
+  function claimHourlyVisit() {
+    // No individual ID is stored: only a timestamp local to this browser.
+    // Fail closed when local storage is blocked; otherwise frequent page loads
+    // would inflate the visitor number instead of respecting the one-hour rule.
+    try {
+      var now = Date.now();
+      var last = Number(window.localStorage.getItem(SESSION_KEY));
+      if (Number.isFinite(last) && last > 0 && now >= last &&
+          (now - last) < SESSION_WINDOW_MS) return false;
+      window.localStorage.setItem(SESSION_KEY, String(now));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 
   function isPublicPage() {
     var path = window.location.pathname || "/";
@@ -70,13 +88,13 @@
     var path = getGamePath();
     if (!path || document.getElementById("gameNotFound")?.hidden === false) return;
 
-    var content = document.querySelector(".game-hero__content");
-    if (!content || document.getElementById("ccg-game-view-count")) return;
+    var footer = document.querySelector(".ccg-footer--game");
+    if (!footer || document.getElementById("ccg-game-view-count")) return;
 
     var badge = document.createElement("div");
     badge.className = "ccg-game-views";
-    badge.setAttribute("aria-label", "Recognised visits to this game page");
-    badge.title = "Visits to this game; repeat visits during one eight-hour session are not counted again when GoatCounter Sessions is enabled.";
+    badge.setAttribute("aria-label", "Total recorded views of this game page");
+    badge.title = "Page loads for this game, including repeated visits and refreshes. Browser blocking can prevent tracking.";
 
     var label = document.createElement("span");
     label.className = "ccg-game-views__label";
@@ -90,17 +108,15 @@
     badge.appendChild(label);
     badge.appendChild(count);
 
-    var actions = content.querySelector(".game-hero__actions");
-    if (actions) content.insertBefore(badge, actions);
-    else content.appendChild(badge);
+    footer.appendChild(badge);
 
     fetchPublicCount(path, count);
   }
 
   function countArchiveSessionOnce() {
-    // This is an EVENT with the same identifier on every public page. GoatCounter
-    // deduplicates an event path once per session when Sessions is enabled.
-    // No browser ID, cookies, fingerprints or persistent visitor identifiers.
+    // All public pages contribute to the same archive event. Our browser-local
+    // timestamp enforces a rolling one-hour window. no_session tells GoatCounter
+    // to count each permitted event even while its built-in 8-hour sessions are on.
     if (!isPublicPage() || STARTED) return;
 
     var tries = 0;
@@ -110,10 +126,12 @@
         window.clearInterval(handle);
         STARTED = true;
         try {
+          if (!claimHourlyVisit()) return;
           window.goatcounter.count({
             path: SESSION_EVENT,
-            title: "CCG Archive Visitor Sessions",
-            event: true
+            title: "CCG Archive Hourly Visits",
+            event: true,
+            no_session: true
           });
         } catch (_) {
           // Tracking blockers and network failures must not affect the archive.
@@ -132,10 +150,10 @@
       var homeLabel = document.querySelector(".ccg-footer-home__status");
       if (homeLabel) {
         homeLabel.textContent = "Archive visits";
-        homeLabel.title = "Recognised website sessions, once per eight hours when GoatCounter Sessions is enabled. Not distinct lifetime people.";
+        homeLabel.title = "Approximate visitor sessions across the archive, at most one per browser per rolling hour. Not distinct lifetime people.";
       }
-      // Starts when this shared archive session event is first deployed. Existing
-      // historical page-view totals cannot be converted to unique people.
+      // This event began with the new counter. Historical pageviews cannot be
+      // retrospectively translated into unique visitors.
       fetchPublicCount(SESSION_EVENT, homeCount);
     }
 
