@@ -35,6 +35,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Fetch authoritative homepage baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
       - name: Verify fail-closed release regressions
         run: |
           python3 -m unittest discover -v -s tests -p test_ccg_game_page_release_audit.py

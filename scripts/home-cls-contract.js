@@ -40,10 +40,17 @@ function stripApprovedHomeCls(html) {
     '<script src="/js/ccg-archive-pulse-randomizer.js"></script>',
     '<!-- Settled shared layout is a first-paint dependency. -->'
   ]) output = output.replace(tag, '');
-  return output.replace('aria-controls="ccg-more-menu" data-ccg-more-toggle disabled>', 'aria-controls="ccg-more-menu" data-ccg-more-toggle>');
+  return output;
 }
 function isApprovedHomeClsChange(before, after) {
   try { return compact(stripApprovedHomeCls(before)) === compact(stripApprovedHomeCls(after)); }
   catch (_error) { return false; }
 }
-module.exports = { stripApprovedHomeCls, isApprovedHomeClsChange };
+function isApprovedHomeClsChangeFromMain(root) {
+  try {
+    const before = require('node:child_process').execFileSync('git', ['show', 'origin/main:home.html'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    const after = require('node:fs').readFileSync(require('node:path').join(root, 'home.html'), 'utf8');
+    return isApprovedHomeClsChange(before, after);
+  } catch (_error) { return false; }
+}
+module.exports = { stripApprovedHomeCls, isApprovedHomeClsChange, isApprovedHomeClsChangeFromMain };

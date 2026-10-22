@@ -136,7 +136,7 @@ function buildCanonicalNav() {
 ${PRIMARY_LINKS.map(linkMarkup).join("\n")}
               </ul>
               <div class="ccg-nav__more">
-                <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle disabled>
+                <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>
                   More <span aria-hidden="true">▾</span>
                 </button>
                 <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
