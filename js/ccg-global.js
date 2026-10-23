@@ -2343,6 +2343,20 @@ if (IS_ADMIN_PATH) {
 
         let isMoreOpen = false;
         let isNavOpen = false;
+        const traceNavState = (label) => {
+            // Only enabled by disposable CI diagnostics; no public logging.
+            if (!Array.isArray(window.__ccgNavDiagnostic)) return;
+            window.__ccgNavDiagnostic.push({
+                label,
+                open: isNavOpen,
+                expanded: toggle.getAttribute("aria-expanded"),
+                hidden: drawer?.getAttribute("aria-hidden"),
+                connected: toggle.isConnected,
+                at: Math.round(performance.now()),
+                stack: new Error().stack?.split("\n").slice(2, 5).join(" | ")
+            });
+        };
+        traceNavState("listener-installed");
 
         const refreshMoreRefs = (sourceEl = null) => {
             const nextWrap = sourceEl?.closest(".ccg-nav__more") || nav?.querySelector(".ccg-nav__more");
@@ -2396,15 +2410,18 @@ if (IS_ADMIN_PATH) {
         };
 
         const closeNav = () => {
+            traceNavState("close-before");
             isNavOpen = false;
             header.classList.remove("ccg-header--nav-open");
             nav.classList.remove("ccg-nav--open");
             drawer?.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
             syncBodyLock(false);
+            traceNavState("close-after");
         };
 
         const openNav = () => {
+            traceNavState("open-before");
             isNavOpen = true;
             buildDrawer();
             header.classList.add("ccg-header--nav-open");
@@ -2413,6 +2430,7 @@ if (IS_ADMIN_PATH) {
             toggle.setAttribute("aria-expanded", "true");
             syncBodyLock(true);
             setHeaderHeightVar();
+            traceNavState("open-after");
         };
 
         const syncMobileNavState = () => {
@@ -2431,11 +2449,13 @@ if (IS_ADMIN_PATH) {
         };
 
         toggle.addEventListener("click", () => {
+            traceNavState("click-handler-before");
             if (isNavOpen) {
                 closeNav();
             } else {
                 openNav();
             }
+            traceNavState("click-handler-after");
         });
         toggle.dataset.ccgNavToggleBound = "true";
         navBoundButtons.add(toggle);

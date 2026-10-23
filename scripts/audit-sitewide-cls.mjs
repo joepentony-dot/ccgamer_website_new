@@ -45,6 +45,7 @@ try {
     await session.send('Network.enable');
     await session.send('Network.emulateNetworkConditions', { offline: false, latency: 40, downloadThroughput: 1500000, uploadThroughput: 750000 });
     await page.addInitScript(() => {
+      window.__ccgNavDiagnostic = [];
       window.__cls = { shifts: [], errors: [], geometry: [] };
       const geometry = () => Object.fromEntries(['header', 'main'].map(selector => [selector, document.querySelector(selector)?.getBoundingClientRect().toJSON()]));
       new PerformanceObserver(list => list.getEntries().forEach(entry => {
@@ -133,6 +134,11 @@ try {
       await navToggle.click();
       await page.waitForTimeout(180);
       const mobileMenuEvents = await page.evaluate(() => window.__ccgNavOpenAuditEvents || []);
+      const mobileMenuTrace = await page.evaluate(() => ({
+        trace: window.__ccgNavDiagnostic || [],
+        liveBound: window.__ccgNavBoundButtons?.has?.(document.querySelector('[data-ccg-nav-toggle]')),
+        navFitReady: Boolean(window.CCG_NAV_FIT_READY),
+      }));
       const navState = await page.evaluate(() => {
         const header = document.querySelector('[data-ccg-header]');
         const toggle = document.querySelector('[data-ccg-nav-toggle]');
@@ -153,7 +159,7 @@ try {
           panelRect: panel?.getBoundingClientRect().toJSON?.() || null
         };
       });
-      assert.equal(navState.expanded, 'true', `Mobile Menu toggle did not expand: ${JSON.stringify({ ...navState, events: mobileMenuEvents })}`);
+      assert.equal(navState.expanded, 'true', `Mobile Menu toggle did not expand: ${JSON.stringify({ ...navState, events: mobileMenuEvents, diagnostic: mobileMenuTrace })}`);
       assert.equal(navState.drawerHidden, 'false', `Mobile navigation drawer stayed aria-hidden: ${JSON.stringify(navState)}`);
       assert(navState.headerClass.includes('ccg-header--nav-open'), `Mobile navigation header state did not open: ${JSON.stringify(navState)}`);
       await page.locator('.ccg-nav-drawer__panel').waitFor({ state: 'visible', timeout: 3000 });
