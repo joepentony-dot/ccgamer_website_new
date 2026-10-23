@@ -524,7 +524,29 @@ function composerSortLetter(name) {
     );
 
     const featured = buildFeaturedSet(imageLookups, stats);
-    containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false)).join("");
+    // Keep the first scroll responsive: show eight fully rendered featured cards
+    // initially, without discarding any other featured composer or A-Z links.
+    const initialFeatured = featured.slice(0, 8);
+    const remainingFeatured = featured.slice(initialFeatured.length);
+    containerFeatured.innerHTML = initialFeatured
+      .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))
+      .join("");
+
+    if (remainingFeatured.length) {
+      const showMore = document.createElement("button");
+      showMore.type = "button";
+      showMore.className = "ccg-btn ccg-btn--secondary composer-featured-more";
+      showMore.textContent = `Show ${remainingFeatured.length} more featured composers`;
+      containerFeatured.appendChild(showMore);
+      showMore.addEventListener("click", () => {
+        showMore.insertAdjacentHTML("beforebegin", remainingFeatured
+          .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))
+          .join(""));
+        const firstNewCard = containerFeatured.querySelectorAll(".composer-card--featured")[initialFeatured.length];
+        showMore.remove();
+        firstNewCard?.focus({ preventScroll: true });
+      }, { once: true });
+    }
 
     renderHubAccordion(composerList, stats);
 

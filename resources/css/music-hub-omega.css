@@ -106,6 +106,16 @@
   contain: layout paint;
 }
 
+/* Additional cards are available on demand without increasing the first
+   physical wheel's raster area. This occupies the full featured grid row. */
+.ccg-music-hub .composer-grid-featured-omega .composer-featured-more {
+  grid-column: 1 / -1;
+  justify-self: center;
+  min-height: 42px;
+  margin-top: 0.3rem;
+  padding: 0.45rem 1rem;
+}
+
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
   position: relative;
   /* 21 static featured cards should not each own a GPU/compositor layer.

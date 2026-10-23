@@ -202,6 +202,15 @@ test('composer directory isolates collapsed groups without hiding searchable arc
   assert.match(musicComposerCss, /contain-intrinsic-size:\s*none;/);
 });
 
+test('the Music Hub defers excess featured cards while retaining the full directory and reveal', () => {
+  assert.match(musicComposerRuntime, /const initialFeatured = featured\.slice\(0, 8\);/);
+  assert.match(musicComposerRuntime, /const remainingFeatured = featured\.slice\(initialFeatured\.length\);/);
+  assert.match(musicComposerRuntime, /showMore\.addEventListener\("click"/);
+  assert.match(musicComposerRuntime, /showMore\.insertAdjacentHTML\("beforebegin", remainingFeatured/);
+  assert.match(musicComposerRuntime, /firstNewCard\?\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(musicComposerRuntime, /renderHubAccordion\(composerList, stats\)/);
+});
+
 test('music archive featured cards avoid per-card compositor layer promotion', () => {
   const omegaCss = fs.readFileSync('resources/css/music-hub-omega.css', 'utf8');
   const rule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured\s*\{([^}]*)\}/);
