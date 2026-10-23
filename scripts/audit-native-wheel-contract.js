@@ -723,22 +723,10 @@ window.__ccgWheelLatencyHandler = function () {
 window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
 return window.__ccgWheelLatencyProbe.armedAt;`);
 
-    // Collect a low-overhead breakdown of main-thread work on the music hub,
-    // without relaxing the first-wheel timing contract.
-    let perfBefore = null;
-    if (page.path === "/music/") {
-        console.log("DIAGNOSTIC Music Hub wheel target: " + JSON.stringify(target));
-        await cdp(sessionId, "Performance.enable");
-        perfBefore = await cdp(sessionId, "Performance.getMetrics");
-    }
+    // Never issue extra CDP commands after arming this latency timer.
+    // Music-only inspector commands previously consumed the first-wheel
+    // response budget *before* the physical wheel event was dispatched.
     await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);
-    if (perfBefore) {
-        const perfAfter = await cdp(sessionId, "Performance.getMetrics");
-        const values = (row) => Object.fromEntries((row?.metrics || []).map(metric => [metric.name, metric.value]));
-        const before = values(perfBefore), after = values(perfAfter);
-        const names = ["TaskDuration", "ScriptDuration", "LayoutDuration", "RecalcStyleDuration", "JSHeapUsedSize"];
-        console.log("DIAGNOSTIC Music Hub wheel main-thread delta: " + JSON.stringify(Object.fromEntries(names.map(name => [name, (after[name] || 0) - (before[name] || 0)]))));
-    }
     let latency = await execute(sessionId, String.raw`
 var state = window.__ccgWheelLatencyProbe || {};
 if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);

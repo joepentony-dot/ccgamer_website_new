@@ -215,6 +215,15 @@ test('music archive featured cards avoid per-card compositor layer promotion', (
   assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
 });
 
+test('the first-wheel latency benchmark has no CDP round trips between arming and native input', () => {
+  const start = nativeWheelAudit.indexOf('window.__ccgWheelLatencyProbe = { armedAt: performance.now()');
+  const end = nativeWheelAudit.indexOf('await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);', start);
+  assert(start >= 0 && end > start, 'the first-wheel latency probe must precede actual physical input');
+  const measuredPreparation = nativeWheelAudit.slice(start, end);
+  assert.doesNotMatch(measuredPreparation, /await cdp\(sessionId,/, 'CDP inspector commands must not contaminate measured latency');
+  assert.doesNotMatch(measuredPreparation, /await new Promise|setTimeout\(/, 'measurement must not include artificial timer waits');
+});
+
 test('music composer pages share the native wheel performance contract', () => {
   assert.match(musicComposerCss, /CCG MUSIC WHEEL PERFORMANCE CONTRACT/);
   assert.match(musicComposerCss, /data-ccg-page="music-composer"/);
