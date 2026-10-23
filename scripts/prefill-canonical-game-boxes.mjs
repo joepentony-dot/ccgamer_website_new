@@ -22,13 +22,21 @@ for (const slug of fs.readdirSync(gamesDir)) {
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) continue;
   const content = fs.readFileSync(file, 'utf8');
   if (!content.includes('data-ccg-prefilled="true"') ||
-      !content.includes('class="game-hero__box3d" hidden')) { skipped++; continue; }
+      !content.includes('game-hero__box3d')) { skipped++; continue; }
   const names = [slug, slug[0].toUpperCase() + slug.slice(1), slug.toUpperCase()];
   const found = [...new Set(names)].find(name =>
     fs.existsSync(path.join(boxDir, name + '.webp')));
   if (!found) { skipped++; continue; }
   eligible++;
   const boxPath = '/resources/images/games/boxes-3d/' + found + '.webp';
+  if (content.includes('data-ccg-box3d-prefilled="true"')) {
+    if (!content.includes('game-hero--has-box3d') ||
+        !content.includes('src="' + boxPath + '"') ||
+        content.includes('class="game-hero__box3d" hidden')) {
+      throw new Error('Invalid existing first-paint 3D box prefill for ' + slug);
+    }
+    continue;
+  }
   const hero = '<section class="game-hero">';
   if (content.split(hero).length !== 2) throw new Error('Ambiguous hero ' + slug);
   if (content.split('class="game-hero__box3d" hidden').length !== 2) {
