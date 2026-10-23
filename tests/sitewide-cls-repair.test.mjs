@@ -40,6 +40,16 @@ test('music hub scrolling cannot invalidate the entire page on native wheel inpu
     'do not reinstall unnecessary document-wide music scroll listeners');
 });
 
+test('CLS release suite diagnoses the targeted 960px game route before the full matrix', () => {
+  const source = fs.readFileSync('scripts/audit-sitewide-cls.mjs', 'utf8');
+  const workflow = fs.readFileSync('.github/workflows/ccg-game-page-release.yml', 'utf8');
+  assert.match(source, /CCG_CLS_FOCUS === 'ace960'/);
+  assert.match(source, /CLS SOURCE DIAGNOSTIC/);
+  assert.match(workflow, /Diagnose the exact 960px game-page CLS regression/);
+  assert.match(workflow, /- name: Measure staged CLS and exercise page functionality/,
+    'the existing entire staged matrix must still run once focus succeeds');
+});
+
 test('hidden floating navigation does not expand the document scroll height', () => {
   const css = fs.readFileSync('resources/css/ccg-master.css', 'utf8');
   const rule = css.match(/\.ccg-floating-nav\s*\{([^}]*)\}/);

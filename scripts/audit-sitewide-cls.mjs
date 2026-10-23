@@ -26,9 +26,13 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_BIN |
 const results = [];
 const unavailableExternalNetwork = process.env.CCG_OFFLINE_EXTERNALS === '1';
 try {
-  const pages = ['/home.html', '/games/ace-of-aces/', '/games/20-tons/'];
-  const widths = [390, 412, 518, 768, 960, 1199, 1280, 1440];
-  for (const url of pages) for (const mode of ['c64', 'amiga']) for (const width of widths) {
+  // CI can first run the exact failing 960px game case as a fast diagnostic,
+  // followed by the unchanged full desktop/tablet/mobile release matrix.
+  const focused = process.env.CCG_CLS_FOCUS === 'ace960';
+  const pages = focused ? ['/games/ace-of-aces/'] : ['/home.html', '/games/ace-of-aces/', '/games/20-tons/'];
+  const widths = focused ? [960] : [390, 412, 518, 768, 960, 1199, 1280, 1440];
+  const modes = focused ? ['c64'] : ['c64', 'amiga'];
+  for (const url of pages) for (const mode of modes) for (const width of widths) {
     const context = await browser.newContext({ viewport: { width, height: 900 }, serviceWorkers: 'allow' });
     await context.addInitScript(mode => localStorage.setItem('ccg-mode', mode), mode);
     const page = await context.newPage();
@@ -79,6 +83,14 @@ try {
       console.log(`${url} ${mode} ${width} ${cache}: CLS ${cls.toFixed(5)}`);
       assert(evidence.mainVisible, 'Main content must remain visible');
       assert.equal(evidence.mode, mode, 'Saved display mode must survive navigation');
+      if (cls > 0.10) {
+        console.error('CLS SOURCE DIAGNOSTIC ' + JSON.stringify({
+          url, mode, width, cache, cls,
+          largestShifts: [...evidence.shifts].sort((a, b) => b.value - a.value).slice(0, 12),
+          geometry: evidence.geometry,
+          finalGeometry: evidence.finalGeometry,
+        }));
+      }
       assert(cls <= 0.10, `CLS ${cls} exceeds 0.10: ${url} ${mode} ${width} ${cache}`);
       assert.equal(evidence.errors.length, 0, JSON.stringify(evidence.errors));
       if (url === '/home.html') {
