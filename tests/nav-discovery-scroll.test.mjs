@@ -236,7 +236,10 @@ test('music archive bounds compositor promotion to the eight staged featured car
   assert(gridRule, 'music featured grid style must remain available');
   assert.match(gridRule[1], /contain:\s*layout paint;/, 'featured section must be bounded for compositor isolation');
   assert.doesNotMatch(gridRule[1], /(?:transform|will-change)\s*:/, 'the complete grid must not become one large compositing layer');
-  assert.doesNotMatch(omegaCss, /\.composer-card--featured img\s*\{[^}]*will-change:/, 'portrait images must not create nested layers inside staged cards');
+  const portraitRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured img\s*\{([^}]*)\}/);
+  assert(portraitRule, 'decoded portraits must be isolated from staged card chrome');
+  assert.match(portraitRule[1], /transform:\s*translateZ\(0\);/);
+  assert.match(portraitRule[1], /will-change:\s*transform;/);
   assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
 });
 

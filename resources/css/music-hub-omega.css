@@ -134,6 +134,11 @@
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 170ms ease;
 }
 
+.ccg-music-hub .composer-grid-featured-omega .composer-card--featured img {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured::after {
   content: "";
   position: absolute;
