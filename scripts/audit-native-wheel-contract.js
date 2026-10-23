@@ -711,6 +711,14 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     // Let that artificial repositioning and its raster work finish before
     // arming the real-wheel latency probe (as the Home audit already does).
     await new Promise((resolve) => setTimeout(resolve, 450));
+    let perfBefore = null;
+    if (page.path === "/music/") {
+        // Diagnostic only: sample cumulative renderer counters before arming
+        // the latency clock so CDP itself cannot consume the wheel budget.
+        await cdp(sessionId, "Performance.enable");
+        perfBefore = await cdp(sessionId, "Performance.getMetrics");
+        console.log("DIAGNOSTIC Music Hub wheel target: " + JSON.stringify(target));
+    }
     await execute(sessionId, String.raw`
 window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
@@ -727,6 +735,16 @@ return window.__ccgWheelLatencyProbe.armedAt;`);
     // Music-only inspector commands previously consumed the first-wheel
     // response budget *before* the physical wheel event was dispatched.
     await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);
+    if (perfBefore) {
+        const perfAfter = await cdp(sessionId, "Performance.getMetrics");
+        const values = (row) => Object.fromEntries((row?.metrics || []).map((metric) => [metric.name, metric.value]));
+        const before = values(perfBefore);
+        const after = values(perfAfter);
+        const names = ["TaskDuration", "ScriptDuration", "LayoutDuration", "RecalcStyleDuration", "JSHeapUsedSize"];
+        console.log("DIAGNOSTIC Music Hub wheel renderer delta: " + JSON.stringify(Object.fromEntries(
+            names.map((name) => [name, (after[name] || 0) - (before[name] || 0)])
+        )));
+    }
     let latency = await execute(sessionId, String.raw`
 var state = window.__ccgWheelLatencyProbe || {};
 if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
