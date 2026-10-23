@@ -100,6 +100,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.62rem;
+  /* Preserve all 21 image cards while scrolling the whole grid as one
+     bounded compositing surface rather than repainting every card. */
+  contain: layout paint;
+  transform: translateZ(0);
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
@@ -110,10 +114,6 @@
      Hover and keyboard-focus transforms below remain available. */
   will-change: auto;
   transform: none;
-  /* The feature card already clips its contents via overflow:hidden.
-     Give each static card its own bounded paint/layout work instead of
-     rasterising adjacent archive sections on the first wheel gesture. */
-  contain: layout paint;
   border-color: rgba(var(--hub-accent-rgb), 0.27);
   border-radius: 12px;
   background:
