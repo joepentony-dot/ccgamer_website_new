@@ -688,15 +688,17 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     }
 
     if (page.path === "/music/") {
-        // Controlled diagnostic: test whether deferred rasterisation of the
-        // collapsed A-Z groups is the first-wheel bottleneck. This temporary
-        // override is removed before release qualification.
-        const visibilityDiagnostic = await execute(sessionId, String.raw`
-var groups = Array.from(document.querySelectorAll('.composer-accordion__group:not(.is-open)'));
-groups.forEach(function (group) { group.style.contentVisibility = 'visible'; });
-return { groups: groups.length, scrollHeight: Math.round((document.scrollingElement || document.documentElement).scrollHeight) };
+        // Controlled diagnostic: isolate portrait-card decoration from image
+        // and content raster costs. This temporary override is removed before
+        // release qualification.
+        const decorationDiagnostic = await execute(sessionId, String.raw`
+var style = document.createElement('style');
+style.id = 'ccg-music-wheel-decoration-diagnostic';
+style.textContent = '.ccg-music-hub .composer-card--featured{background:#020811!important;box-shadow:none!important;border-color:#163041!important}.ccg-music-hub .composer-card--featured::after{display:none!important}.ccg-music-hub .composer-thumb{background:#05121f!important}';
+document.head.appendChild(style);
+return { cards: document.querySelectorAll('.composer-card--featured').length };
 `);
-        console.log("DIAGNOSTIC Music Hub prepainted collapsed groups: " + JSON.stringify(visibilityDiagnostic));
+        console.log("DIAGNOSTIC Music Hub simplified portrait decoration: " + JSON.stringify(decorationDiagnostic));
         await new Promise((resolve) => setTimeout(resolve, 450));
     }
 
