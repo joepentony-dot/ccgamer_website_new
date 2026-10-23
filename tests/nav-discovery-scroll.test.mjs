@@ -205,13 +205,13 @@ test('composer directory isolates collapsed groups without hiding searchable arc
 test('the Music Hub defers excess featured cards while retaining the full directory and reveal', () => {
   const musicComposerUtils = fs.readFileSync('js/music-composer-utils.js', 'utf8');
   assert.match(musicComposerUtils, /function stageMusicHubFeaturedGrid\(grid\)/);
-  assert.match(musicComposerUtils, /const initialCards = cards\.slice\(0, 8\);/);
+  assert.match(musicComposerUtils, /const initialCards = cards\.slice\(0, 4\);/);
   assert.match(musicComposerUtils, /const deferredCards = cards\.slice\(initialCards\.length\);/);
   assert.match(musicComposerUtils, /\/resources\/images\/composers\/hub\/\$\{slug\}\.webp/);
   assert.match(musicComposerUtils, /showMore\.before\(deferred\)/);
   assert.match(musicComposerUtils, /global\.CCG_MUSIC_HUB_PORTRAITS_READY = Promise\.all/);
   assert.match(musicComposerUtils, /stageMusicHubFeaturedGrid\(grid\);[\s\S]*grid\.dataset\.ccgFeaturedManifest = "omega-21"/);
-  assert.match(musicComposerRuntime, /const initialFeatured = featured\.slice\(0, 8\);/);
+  assert.match(musicComposerRuntime, /const initialFeatured = featured\.slice\(0, 4\);/);
   assert.match(musicComposerRuntime, /const remainingFeatured = featured\.slice\(initialFeatured\.length\);/);
   assert.match(musicComposerRuntime, /showMore\.addEventListener\("click"/);
   assert.match(musicComposerRuntime, /showMore\.insertAdjacentHTML\("beforebegin", remainingFeatured/);
@@ -226,12 +226,12 @@ test('the Music Hub defers excess featured cards while retaining the full direct
   assert.match(musicComposerRuntime, /await window\.CCG_MUSIC_HUB_PORTRAITS_READY;/, 'the ready boundary must include the protected editorial portrait stage');
 });
 
-test('music archive bounds compositor promotion to the eight staged featured cards', () => {
+test('music archive bounds compositor promotion to the four staged portraits', () => {
   const omegaCss = fs.readFileSync('resources/css/music-hub-omega.css', 'utf8');
   const rule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured\s*\{([^}]*)\}/);
   assert(rule, 'music hub must retain a dedicated featured-card style');
-  assert.match(rule[1], /will-change:\s*transform;/, 'the eight staged cards must retain bounded compositor ownership');
-  assert.match(rule[1], /transform:\s*translateZ\(0\);/, 'the staged cards must composite portrait and chrome as one surface');
+  assert.match(rule[1], /will-change:\s*auto;/, 'staged card chrome must stay out of separate compositor layers');
+  assert.match(rule[1], /transform:\s*none;/, 'staged card chrome must remain in normal document paint');
   const gridRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega\s*\{([^}]*)\}/);
   assert(gridRule, 'music featured grid style must remain available');
   assert.match(gridRule[1], /contain:\s*layout paint;/, 'featured section must be bounded for compositor isolation');

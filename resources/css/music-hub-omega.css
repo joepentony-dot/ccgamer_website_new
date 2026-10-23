@@ -118,11 +118,10 @@
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
   position: relative;
-  /* Only eight cards are staged before the first interaction. Keeping each
-     bounded card as one surface avoids repainting its decoded portrait,
-     gradients and copy together during native document scrolling. */
-  will-change: transform;
-  transform: translateZ(0);
+  /* The staged cards stay in normal document paint; only their four decoded
+     portraits own bounded raster surfaces below. */
+  will-change: auto;
+  transform: none;
   border-color: rgba(var(--hub-accent-rgb), 0.27);
   border-radius: 12px;
   background:

@@ -526,9 +526,9 @@ function composerSortLetter(name) {
     );
 
     const featured = buildFeaturedSet(imageLookups, stats);
-    // Keep the first scroll responsive: show eight fully rendered featured cards
+    // Keep the first scroll responsive: show four fully rendered featured cards
     // initially, without discarding any other featured composer or A-Z links.
-    const initialFeatured = featured.slice(0, 8);
+    const initialFeatured = featured.slice(0, 4);
     const remainingFeatured = featured.slice(initialFeatured.length);
     containerFeatured.innerHTML = initialFeatured
       .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))

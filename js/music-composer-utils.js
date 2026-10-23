@@ -265,7 +265,7 @@ function compareComposerNames(a, b) {
     if (!(grid instanceof Element) || grid.dataset.ccgFeaturedStage === "ready") return;
 
     const cards = Array.from(grid.querySelectorAll(".composer-card--featured"));
-    const initialCards = cards.slice(0, 8);
+    const initialCards = cards.slice(0, 4);
     const deferredCards = cards.slice(initialCards.length);
 
     cards.forEach((card) => {
