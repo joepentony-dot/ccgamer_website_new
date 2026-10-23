@@ -687,6 +687,19 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
         await new Promise((resolve) => setTimeout(resolve, 120));
     }
 
+    if (page.path === "/music/") {
+        // Controlled diagnostic: test whether deferred rasterisation of the
+        // collapsed A-Z groups is the first-wheel bottleneck. This temporary
+        // override is removed before release qualification.
+        const visibilityDiagnostic = await execute(sessionId, String.raw`
+var groups = Array.from(document.querySelectorAll('.composer-accordion__group:not(.is-open)'));
+groups.forEach(function (group) { group.style.contentVisibility = 'visible'; });
+return { groups: groups.length, scrollHeight: Math.round((document.scrollingElement || document.documentElement).scrollHeight) };
+`);
+        console.log("DIAGNOSTIC Music Hub prepainted collapsed groups: " + JSON.stringify(visibilityDiagnostic));
+        await new Promise((resolve) => setTimeout(resolve, 450));
+    }
+
     if (page.path === GAME_MEDIA_PAGE || page.path.startsWith("/games/game.html")) {
         const readyDeadline = Date.now() + 10000;
         while (Date.now() < readyDeadline) {
