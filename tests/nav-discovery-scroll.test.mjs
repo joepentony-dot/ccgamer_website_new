@@ -211,7 +211,7 @@ test('music archive featured cards avoid per-card compositor layer promotion', (
   const gridRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega\s*\{([^}]*)\}/);
   assert(gridRule, 'music featured grid style must remain available');
   assert.match(gridRule[1], /contain:\s*layout paint;/, 'featured section must be bounded for compositor isolation');
-  assert.doesNotMatch(gridRule[1], /transform:\s*translateZ\(0\);|will-change:\s*(?:transform|contents)/, 'the featured grid must not force a full-gallery compositor layer');
+  assert.doesNotMatch(gridRule[1], /(?:transform|will-change)\s*:/, 'the complete grid must not become one large compositing layer');
   assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
 });
 
