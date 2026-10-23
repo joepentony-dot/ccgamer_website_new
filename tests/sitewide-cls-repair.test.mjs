@@ -50,6 +50,17 @@ test('CLS release suite diagnoses the targeted 960px game route before the full 
     'the existing entire staged matrix must still run once focus succeeds');
 });
 
+test('staged canonical box-art prefill protects first-paint hero grid', () => {
+  const script = fs.readFileSync('scripts/prefill-canonical-game-boxes.mjs', 'utf8');
+  const workflow = fs.readFileSync('.github/workflows/deploy-github-pages-omega-stable.yml', 'utf8');
+  assert.match(script, /game-hero--has-box3d/);
+  assert.match(script, /data-ccg-box3d-prefilled/);
+  assert.match(script, /games', 'boxes-3d/);
+  assert.match(script, /if \(check\) throw new Error/);
+  assert.match(workflow, /prefill-canonical-game-boxes\.mjs --root _site/);
+  assert.match(workflow, /prefill-canonical-game-boxes\.mjs --root _site --check/);
+});
+
 test('hidden floating navigation does not expand the document scroll height', () => {
   const css = fs.readFileSync('resources/css/ccg-master.css', 'utf8');
   const rule = css.match(/\.ccg-floating-nav\s*\{([^}]*)\}/);
