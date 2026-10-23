@@ -513,10 +513,12 @@ function composerSortLetter(name) {
   }
 
   async function renderHubCards(composers, stats) {
-    const containerFeatured = document.querySelector(".composer-grid-featured");
+    const containerFeatured = document.querySelector(".composer-grid-featured, .composer-grid-featured-omega");
     if (!containerFeatured) {
       return;
     }
+
+    containerFeatured.classList.add("composer-grid-featured-omega");
 
     const composerList = Object.values(composers).sort((a, b) =>
       compareComposerDisplayNames(a.name, b.name)
@@ -1074,7 +1076,7 @@ function composerSortLetter(name) {
       const registry = createComposerRegistry(games);
       const stats = collectComposerStats(registry);
 
-      if (document.querySelector(".composer-grid-featured") && document.getElementById("composer-discovery-accordion")) {
+      if (document.querySelector(".composer-grid-featured, .composer-grid-featured-omega") && document.getElementById("composer-discovery-accordion")) {
         await renderHubCards(registry.composers, stats);
       }
 

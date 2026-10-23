@@ -212,6 +212,7 @@ test('the Music Hub defers excess featured cards while retaining the full direct
   assert.match(musicComposerUtils, /global\.CCG_MUSIC_HUB_PORTRAITS_READY = Promise\.all/);
   assert.match(musicComposerUtils, /stageMusicHubFeaturedGrid\(grid\);[\s\S]*grid\.dataset\.ccgFeaturedManifest = "omega-21"/);
   assert.match(musicComposerRuntime, /const initialFeatured = featured\.slice\(0, 4\);/);
+  assert.match(musicComposerRuntime, /const containerFeatured = document\.querySelector\("\.composer-grid-featured, \.composer-grid-featured-omega"\);[\s\S]*containerFeatured\.classList\.add\("composer-grid-featured-omega"\);[\s\S]*containerFeatured\.innerHTML = initialFeatured/, 'the renderer must activate bounded featured-grid CSS before inserting cards');
   assert.match(musicComposerRuntime, /const remainingFeatured = featured\.slice\(initialFeatured\.length\);/);
   assert.match(musicComposerRuntime, /showMore\.addEventListener\("click"/);
   assert.match(musicComposerRuntime, /showMore\.insertAdjacentHTML\("beforebegin", remainingFeatured/);
