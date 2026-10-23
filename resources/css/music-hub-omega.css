@@ -110,6 +110,10 @@
      Hover and keyboard-focus transforms below remain available. */
   will-change: auto;
   transform: none;
+  /* The feature card already clips its contents via overflow:hidden.
+     Give each static card its own bounded paint/layout work instead of
+     rasterising adjacent archive sections on the first wheel gesture. */
+  contain: layout paint;
   border-color: rgba(var(--hub-accent-rgb), 0.27);
   border-radius: 12px;
   background:

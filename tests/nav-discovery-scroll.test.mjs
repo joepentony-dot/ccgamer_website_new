@@ -208,6 +208,7 @@ test('music archive featured cards avoid per-card compositor layer promotion', (
   assert(rule, 'music hub must retain a dedicated featured-card style');
   assert.match(rule[1], /will-change:\s*auto;/, 'static archive cards must not promote 21 layers');
   assert.match(rule[1], /transform:\s*none;/, 'static cards must not create compositing contexts');
+  assert.match(rule[1], /contain:\s*layout paint;/, 'featured card raster bounds must be isolated');
   assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
 });
 

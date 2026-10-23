@@ -727,6 +727,7 @@ return window.__ccgWheelLatencyProbe.armedAt;`);
     // without relaxing the first-wheel timing contract.
     let perfBefore = null;
     if (page.path === "/music/") {
+        console.log("DIAGNOSTIC Music Hub wheel target: " + JSON.stringify(target));
         await cdp(sessionId, "Performance.enable");
         perfBefore = await cdp(sessionId, "Performance.getMetrics");
     }
