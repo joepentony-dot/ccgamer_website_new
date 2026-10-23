@@ -100,10 +100,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.62rem;
-  /* Isolate layout but avoid promoting the entire gallery into a single
-     paint containment surface when the user's first physical wheel crosses it.
-     Individual card appearance and keyboard/hover states remain unchanged. */
-  contain: layout;
+  /* Keep the 21-card grid's layout and paint work bounded without promoting
+     the whole archive section into one large GPU layer. A forced layer made
+     Chromium rasterise the complete grid on the first physical wheel step. */
+  contain: layout paint;
 }
 
 /* Additional cards are available on demand without increasing the first
@@ -249,9 +249,7 @@
 }
 
 .ccg-music-hub .composer-accordion__group {
-  /* Collapsed groups already hide their bodies; avoid 23 independent paint
-     containment surfaces at the boundary of the first wheel gesture. */
-  contain: layout;
+  contain: layout paint;
   border: 1px solid rgba(var(--hub-accent-rgb), 0.18);
   border-radius: 8px;
   background: rgba(2, 9, 19, 0.88);
