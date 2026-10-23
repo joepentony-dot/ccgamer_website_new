@@ -426,7 +426,7 @@ function composerSortLetter(name) {
 
     return `
       <a href="${getComposerUrl(composer, composer.name, { allowDedicated: !compact })}" class="${cardClass}" data-slug="${composer.slug}">
-        ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
+        ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy" decoding="async" fetchpriority="low"></div>`}
         <div class="composer-info">
           <h3>${composer.name}</h3>
           <p class="composer-platform">${systemLabel}</p>
