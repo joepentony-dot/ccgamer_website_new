@@ -202,6 +202,15 @@ test('composer directory isolates collapsed groups without hiding searchable arc
   assert.match(musicComposerCss, /contain-intrinsic-size:\s*none;/);
 });
 
+test('music archive featured cards avoid per-card compositor layer promotion', () => {
+  const omegaCss = fs.readFileSync('resources/css/music-hub-omega.css', 'utf8');
+  const rule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured\s*\{([^}]*)\}/);
+  assert(rule, 'music hub must retain a dedicated featured-card style');
+  assert.match(rule[1], /will-change:\s*auto;/, 'static archive cards must not promote 21 layers');
+  assert.match(rule[1], /transform:\s*none;/, 'static cards must not create compositing contexts');
+  assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
+});
+
 test('music composer pages share the native wheel performance contract', () => {
   assert.match(musicComposerCss, /CCG MUSIC WHEEL PERFORMANCE CONTRACT/);
   assert.match(musicComposerCss, /data-ccg-page="music-composer"/);

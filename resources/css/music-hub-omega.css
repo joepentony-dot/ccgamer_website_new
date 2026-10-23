@@ -104,6 +104,12 @@
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
   position: relative;
+  /* 21 static featured cards should not each own a GPU/compositor layer.
+     The master .composer-card will-change:transform promotion makes the
+     first physical wheel input expensive on the headless music archive.
+     Hover and keyboard-focus transforms below remain available. */
+  will-change: auto;
+  transform: none;
   border-color: rgba(var(--hub-accent-rgb), 0.27);
   border-radius: 12px;
   background:
