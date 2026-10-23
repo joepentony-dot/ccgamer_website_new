@@ -203,6 +203,14 @@ test('composer directory isolates collapsed groups without hiding searchable arc
 });
 
 test('the Music Hub defers excess featured cards while retaining the full directory and reveal', () => {
+  const musicComposerUtils = fs.readFileSync('js/music-composer-utils.js', 'utf8');
+  assert.match(musicComposerUtils, /function stageMusicHubFeaturedGrid\(grid\)/);
+  assert.match(musicComposerUtils, /const initialCards = cards\.slice\(0, 8\);/);
+  assert.match(musicComposerUtils, /const deferredCards = cards\.slice\(initialCards\.length\);/);
+  assert.match(musicComposerUtils, /\/resources\/images\/composers\/hub\/\$\{slug\}\.webp/);
+  assert.match(musicComposerUtils, /showMore\.before\(deferred\)/);
+  assert.match(musicComposerUtils, /global\.CCG_MUSIC_HUB_PORTRAITS_READY = Promise\.all/);
+  assert.match(musicComposerUtils, /stageMusicHubFeaturedGrid\(grid\);[\s\S]*grid\.dataset\.ccgFeaturedManifest = "omega-21"/);
   assert.match(musicComposerRuntime, /const initialFeatured = featured\.slice\(0, 8\);/);
   assert.match(musicComposerRuntime, /const remainingFeatured = featured\.slice\(initialFeatured\.length\);/);
   assert.match(musicComposerRuntime, /showMore\.addEventListener\("click"/);
@@ -215,6 +223,7 @@ test('the Music Hub defers excess featured cards while retaining the full direct
     assert.ok(fs.existsSync(`resources/images/composers/hub/${file}`), `missing Music Hub portrait derivative: ${file}`);
   }
   assert.match(musicComposerRuntime, /await Promise\.all\(Array\.from\(containerFeatured\.querySelectorAll\("\.composer-card--featured img"\)\)/, 'the Music ready boundary must wait for initial portrait decode');
+  assert.match(musicComposerRuntime, /await window\.CCG_MUSIC_HUB_PORTRAITS_READY;/, 'the ready boundary must include the protected editorial portrait stage');
 });
 
 test('music archive featured cards avoid per-card compositor layer promotion', () => {

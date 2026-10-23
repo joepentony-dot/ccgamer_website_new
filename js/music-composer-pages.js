@@ -1121,6 +1121,9 @@ function composerSortLetter(name) {
         gamesList.innerHTML = "<li class='ccg-composer-games__item'>Unable to load game archive data. Please try again later.</li>";
       }
     } finally {
+      if (window.CCG_MUSIC_HUB_PORTRAITS_READY) {
+        await window.CCG_MUSIC_HUB_PORTRAITS_READY;
+      }
       window.CCG_MUSIC_PAGE_READY = true;
     }
   });

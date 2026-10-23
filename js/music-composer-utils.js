@@ -261,6 +261,50 @@ function compareComposerNames(a, b) {
     grid.dataset.ccgFeaturedSort = "surname";
   }
 
+  function stageMusicHubFeaturedGrid(grid) {
+    if (!(grid instanceof Element) || grid.dataset.ccgFeaturedStage === "ready") return;
+
+    const cards = Array.from(grid.querySelectorAll(".composer-card--featured"));
+    const initialCards = cards.slice(0, 8);
+    const deferredCards = cards.slice(initialCards.length);
+
+    cards.forEach((card) => {
+      const image = card.querySelector(".composer-thumb img");
+      const slug = String(card.dataset.slug || "").trim();
+      if (!(image instanceof HTMLImageElement) || !slug) return;
+      image.src = `/resources/images/composers/hub/${slug}.webp`;
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.width = 400;
+      image.height = 400;
+    });
+
+    const deferred = document.createDocumentFragment();
+    deferredCards.forEach((card) => deferred.appendChild(card));
+
+    if (deferredCards.length) {
+      const showMore = document.createElement("button");
+      showMore.type = "button";
+      showMore.className = "ccg-btn ccg-btn--secondary composer-featured-more";
+      showMore.textContent = `Show ${deferredCards.length} more featured composers`;
+      grid.appendChild(showMore);
+      showMore.addEventListener("click", () => {
+        showMore.before(deferred);
+        showMore.remove();
+        deferredCards[0]?.focus({ preventScroll: true });
+      }, { once: true });
+    }
+
+    global.CCG_MUSIC_HUB_PORTRAITS_READY = Promise.all(initialCards.map((card) => {
+      const image = card.querySelector(".composer-thumb img");
+      return image instanceof HTMLImageElement && typeof image.decode === "function"
+        ? image.decode().catch(() => {})
+        : Promise.resolve();
+    }));
+    grid.dataset.ccgFeaturedStage = "ready";
+  }
+
   function lockMusicHubFeaturedGrid() {
     if (!isMusicHub()) return;
     const grid = document.querySelector(".composer-grid-featured");
@@ -275,6 +319,7 @@ function compareComposerNames(a, b) {
     if (expandedFeaturedCount < 21) return;
 
     sortFeaturedComposerCardsBySurname(grid);
+    stageMusicHubFeaturedGrid(grid);
     grid.dataset.ccgFeaturedManifest = "omega-21";
     grid.classList.add("composer-grid-featured-omega");
     grid.classList.remove("composer-grid-featured");
