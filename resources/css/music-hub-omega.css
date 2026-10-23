@@ -100,10 +100,10 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.62rem;
-  /* Preserve all 21 image cards while scrolling the whole grid as one
-     bounded compositing surface rather than repainting every card. */
+  /* Keep the 21-card grid's layout and paint work bounded without promoting
+     the whole archive section into one large GPU layer. A forced layer made
+     Chromium rasterise the complete grid on the first physical wheel step. */
   contain: layout paint;
-  transform: translateZ(0);
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
