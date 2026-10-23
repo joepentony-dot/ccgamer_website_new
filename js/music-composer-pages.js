@@ -424,9 +424,11 @@ function composerSortLetter(name) {
     const systemLabel = getPlatformLabel(bucket && bucket.systems);
     const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
+    const cardImagePath = imagePath.replace("/resources/images/composers/", "/resources/images/composers/hub/");
+
     return `
       <a href="${getComposerUrl(composer, composer.name, { allowDedicated: !compact })}" class="${cardClass}" data-slug="${composer.slug}">
-        ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy" decoding="async" fetchpriority="low"></div>`}
+        ${compact ? "" : `<div class="composer-thumb"><img src="${cardImagePath}" alt="${composer.name}" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400"></div>`}
         <div class="composer-info">
           <h3>${composer.name}</h3>
           <p class="composer-platform">${systemLabel}</p>
