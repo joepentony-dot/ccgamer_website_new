@@ -548,6 +548,12 @@ function composerSortLetter(name) {
       }, { once: true });
     }
 
+    // The page ready boundary must mean the initial portrait raster work is
+    // complete. decode() honours the async image contract above and prevents
+    // the first real wheel gesture from becoming the decode trigger.
+    await Promise.all(Array.from(containerFeatured.querySelectorAll(".composer-card--featured img"))
+      .map((image) => typeof image.decode === "function" ? image.decode().catch(() => {}) : Promise.resolve()));
+
     renderHubAccordion(composerList, stats);
 
     const totalsLabel = document.getElementById("music-hub-stats");

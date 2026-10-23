@@ -210,6 +210,7 @@ test('the Music Hub defers excess featured cards while retaining the full direct
   assert.match(musicComposerRuntime, /firstNewCard\?\.focus\(\{ preventScroll: true \}\)/);
   assert.match(musicComposerRuntime, /renderHubAccordion\(composerList, stats\)/);
   assert.match(musicComposerRuntime, /loading="lazy" decoding="async" fetchpriority="low"/, 'featured portraits must not synchronously decode during the first wheel step');
+  assert.match(musicComposerRuntime, /await Promise\.all\(Array\.from\(containerFeatured\.querySelectorAll\("\.composer-card--featured img"\)\)/, 'the Music ready boundary must wait for initial portrait decode');
 });
 
 test('music archive featured cards avoid per-card compositor layer promotion', () => {
