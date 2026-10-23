@@ -135,6 +135,15 @@
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 170ms ease;
 }
 
+/* Only the eight initially staged portraits receive their own small raster
+   surfaces. Promoting the complete grid was slower; keeping promotion at the
+   image boundary lets native document scrolling composite decoded artwork
+   without repainting it, while card borders, copy and hover remain unchanged. */
+.ccg-music-hub .composer-grid-featured-omega .composer-card--featured img {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured::after {
   content: "";
   position: absolute;
