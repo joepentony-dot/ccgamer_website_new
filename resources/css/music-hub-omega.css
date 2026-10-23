@@ -118,12 +118,11 @@
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
   position: relative;
-  /* 21 static featured cards should not each own a GPU/compositor layer.
-     The master .composer-card will-change:transform promotion makes the
-     first physical wheel input expensive on the headless music archive.
-     Hover and keyboard-focus transforms below remain available. */
-  will-change: auto;
-  transform: none;
+  /* Only eight cards are staged before the first interaction. Keeping each
+     bounded card as one surface avoids repainting its decoded portrait,
+     gradients and copy together during native document scrolling. */
+  will-change: transform;
+  transform: translateZ(0);
   border-color: rgba(var(--hub-accent-rgb), 0.27);
   border-radius: 12px;
   background:
@@ -133,15 +132,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 10px 22px rgba(0, 0, 0, 0.28);
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 170ms ease;
-}
-
-/* Only the eight initially staged portraits receive their own small raster
-   surfaces. Promoting the complete grid was slower; keeping promotion at the
-   image boundary lets native document scrolling composite decoded artwork
-   without repainting it, while card borders, copy and hover remain unchanged. */
-.ccg-music-hub .composer-grid-featured-omega .composer-card--featured img {
-  transform: translateZ(0);
-  will-change: transform;
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured::after {

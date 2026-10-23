@@ -226,20 +226,17 @@ test('the Music Hub defers excess featured cards while retaining the full direct
   assert.match(musicComposerRuntime, /await window\.CCG_MUSIC_HUB_PORTRAITS_READY;/, 'the ready boundary must include the protected editorial portrait stage');
 });
 
-test('music archive featured cards avoid per-card compositor layer promotion', () => {
+test('music archive bounds compositor promotion to the eight staged featured cards', () => {
   const omegaCss = fs.readFileSync('resources/css/music-hub-omega.css', 'utf8');
   const rule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured\s*\{([^}]*)\}/);
   assert(rule, 'music hub must retain a dedicated featured-card style');
-  assert.match(rule[1], /will-change:\s*auto;/, 'static archive cards must not promote 21 layers');
-  assert.match(rule[1], /transform:\s*none;/, 'static cards must not create compositing contexts');
+  assert.match(rule[1], /will-change:\s*transform;/, 'the eight staged cards must retain bounded compositor ownership');
+  assert.match(rule[1], /transform:\s*translateZ\(0\);/, 'the staged cards must composite portrait and chrome as one surface');
   const gridRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega\s*\{([^}]*)\}/);
   assert(gridRule, 'music featured grid style must remain available');
   assert.match(gridRule[1], /contain:\s*layout paint;/, 'featured section must be bounded for compositor isolation');
   assert.doesNotMatch(gridRule[1], /(?:transform|will-change)\s*:/, 'the complete grid must not become one large compositing layer');
-  const portraitRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured img\s*\{([^}]*)\}/);
-  assert(portraitRule, 'the bounded initial portrait set must own its raster surface');
-  assert.match(portraitRule[1], /transform:\s*translateZ\(0\);/);
-  assert.match(portraitRule[1], /will-change:\s*transform;/);
+  assert.doesNotMatch(omegaCss, /\.composer-card--featured img\s*\{[^}]*will-change:/, 'portrait images must not create nested layers inside staged cards');
   assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
 });
 
