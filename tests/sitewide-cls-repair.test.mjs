@@ -105,6 +105,8 @@ test('secret Easter Egg overlay never takes ownership of the document scroll roo
   assert.doesNotMatch(earlyNavigation, /:not\(\.ccg-secret-modal-open\)/,
     'opening the secret modal must not change document scroll ownership');
   assert.match(block, /const scrollY\s*=\s*window\.scrollY/, 'record the actual scroll position');
+  assert.match(source, /event\.stopImmediatePropagation\(\);[\s\S]*traceNavState\("click-handler-before"\)/,
+    'mobile menu must stop competing click handlers after opening the drawer');
   assert.match(source, /navBoundButtons\.has\(toggle\)/,
     'the mobile menu must not bind duplicate handlers to the same live node');
   assert.match(source, /navBoundButtons\.add\(toggle\)/,

@@ -2448,7 +2448,13 @@ if (IS_ADMIN_PATH) {
             syncNavContainerVisibility();
         };
 
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener("click", (event) => {
+            // This shared header owns the mobile drawer. Browser regression
+            // traces proved that a second target-level click listener closed
+            // the drawer immediately after openNav() had completed. Do not
+            // allow competing button listeners or bubbling navigation helpers
+            // to reverse the authorised menu state in the same click.
+            event.stopImmediatePropagation();
             traceNavState("click-handler-before");
             if (isNavOpen) {
                 closeNav();
