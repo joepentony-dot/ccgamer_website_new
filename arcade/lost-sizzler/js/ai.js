@@ -70,8 +70,7 @@ window.CCGAI=(()=>{
   function crowdPriority(e){
     if(!e?.alive)return true;
     if(e.treasureGoblin&&e.treasureGoblinSpotted)return true;
-    if(e.deathStalker||e.timedHunter||e.hunting||e.follower||e.guardian||e.keyGuardian||e.exitWarden||e.sigilDefender||e.champion||e.championName||e.ccgBoss||e.arenaId)return true;
-    if(e.bridgeThief)return true;
+    if(e.deathStalker||e.timedHunter||e.hunting||e.bridgeThief||e.follower||e.guardian||e.keyGuardian||e.exitWarden||e.sigilDefender||e.champion||e.championName||e.ccgBoss||e.arenaId)return true;
     let nearest=Infinity;for(const p of activePlayers)nearest=Math.min(nearest,dist(e,p));
     if(nearest<=7)return true;
     return e.aiState==="chase"&&nearest<=11;
