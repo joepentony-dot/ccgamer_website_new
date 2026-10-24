@@ -36,8 +36,8 @@ Never merge on old-head checks or deploy from this branch. Refresh main, reconci
 
 ## Continuation checkpoint — 24 October 2026
 
-- Branch remains `fix/sitewide-cls-performance-20261022`; latest main `4a239c3cc` was merged normally at `d49a8438a`. The existing GitHub PR #2885 is currently reported closed/superseded; continue this branch/PR identity only, with no replacement PR.
+- Branch remains `fix/sitewide-cls-performance-20261022`; latest main `4a239c3cc` was merged normally at `d49a8438a`, and the repair commit is `95f0764ac`. Existing GitHub PR #2885 was reopened on this same branch; no replacement PR exists.
 - Preserved main's visitor metrics runtime and merged #2886/#2889 counter fixes, retained the no-inline-credential path, and advanced the service-worker code cache from main v184 / checked continuation v200 to v201.
 - Implemented additive repairs for mobile secret-menu scroll restoration, cloned-header mobile drawer binding/double-click prevention, and Browse Games first-wheel latency (idle enhancement, scoped decorative pause, no hero blur). Existing assertions were retained; new source guards cover the repairs.
 - Checks run: JavaScript syntax checks; `node --test` focused CLS, navigation, archive, GoatCounter, Fourthwall, games-library, header, music, publishing-normalizer and Lighthouse-protocol suites — 84 passed; `git diff --check` passed. Full browser shards, Lighthouse and GitHub Actions remain required; no merge or deployment claim.
-- Smallest safe next action: commit and push this exact branch, reopen/continue #2885 if GitHub permits, then let Actions qualify the exact head and obtain independent review before any merge decision.
+- After the checkpoint commit is pushed, let Actions qualify the exact head and obtain independent review before any merge decision; current early results are green for audit, first-paint, cache version, refresh, itch.io package and one validation job, with the remainder pending.
