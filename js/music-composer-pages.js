@@ -424,9 +424,11 @@ function composerSortLetter(name) {
     const systemLabel = getPlatformLabel(bucket && bucket.systems);
     const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
+    const cardImagePath = imagePath.replace("/resources/images/composers/", "/resources/images/composers/hub/");
+
     return `
       <a href="${getComposerUrl(composer, composer.name, { allowDedicated: !compact })}" class="${cardClass}" data-slug="${composer.slug}">
-        ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
+        ${compact ? "" : `<div class="composer-thumb"><img src="${cardImagePath}" alt="${composer.name}" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400"></div>`}
         <div class="composer-info">
           <h3>${composer.name}</h3>
           <p class="composer-platform">${systemLabel}</p>
@@ -511,10 +513,12 @@ function composerSortLetter(name) {
   }
 
   async function renderHubCards(composers, stats) {
-    const containerFeatured = document.querySelector(".composer-grid-featured");
+    const containerFeatured = document.querySelector(".composer-grid-featured, .composer-grid-featured-omega");
     if (!containerFeatured) {
       return;
     }
+
+    containerFeatured.classList.add("composer-grid-featured-omega");
 
     const composerList = Object.values(composers).sort((a, b) =>
       compareComposerDisplayNames(a.name, b.name)
@@ -524,7 +528,35 @@ function composerSortLetter(name) {
     );
 
     const featured = buildFeaturedSet(imageLookups, stats);
-    containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false)).join("");
+    // Keep the first scroll responsive: show four fully rendered featured cards
+    // initially, without discarding any other featured composer or A-Z links.
+    const initialFeatured = featured.slice(0, 4);
+    const remainingFeatured = featured.slice(initialFeatured.length);
+    containerFeatured.innerHTML = initialFeatured
+      .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))
+      .join("");
+
+    if (remainingFeatured.length) {
+      const showMore = document.createElement("button");
+      showMore.type = "button";
+      showMore.className = "ccg-btn ccg-btn--secondary composer-featured-more";
+      showMore.textContent = `Show ${remainingFeatured.length} more featured composers`;
+      containerFeatured.appendChild(showMore);
+      showMore.addEventListener("click", () => {
+        showMore.insertAdjacentHTML("beforebegin", remainingFeatured
+          .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))
+          .join(""));
+        const firstNewCard = containerFeatured.querySelectorAll(".composer-card--featured")[initialFeatured.length];
+        showMore.remove();
+        firstNewCard?.focus({ preventScroll: true });
+      }, { once: true });
+    }
+
+    // The page ready boundary must mean the initial portrait raster work is
+    // complete. decode() honours the async image contract above and prevents
+    // the first real wheel gesture from becoming the decode trigger.
+    await Promise.all(Array.from(containerFeatured.querySelectorAll(".composer-card--featured img"))
+      .map((image) => typeof image.decode === "function" ? image.decode().catch(() => {}) : Promise.resolve()));
 
     renderHubAccordion(composerList, stats);
 
@@ -1004,23 +1036,12 @@ function composerSortLetter(name) {
       return;
     }
 
+    // Music hub and composer archives have hundreds of interactive links.
+    // The old scroll listener toggled ccg-perf-paused on <html>, forcing
+    // full-page style recalculation on the first native wheel step.
+    // These music pages have no animated universe background to pause.
+    // Keep their visual effects and native scrolling, with no root mutation.
     root.dataset.ccgMusicScrollPerf = "ready";
-    const pauseClass = "ccg-perf-paused";
-    const resumeDelay = 160;
-    let resumeTimer = 0;
-
-    const onScroll = () => {
-      root.classList.add(pauseClass);
-      if (resumeTimer) {
-        window.clearTimeout(resumeTimer);
-      }
-      resumeTimer = window.setTimeout(() => {
-        root.classList.remove(pauseClass);
-      }, resumeDelay);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("touchmove", onScroll, { passive: true });
   }
 
   function initBackToTop() {
@@ -1055,7 +1076,7 @@ function composerSortLetter(name) {
       const registry = createComposerRegistry(games);
       const stats = collectComposerStats(registry);
 
-      if (document.querySelector(".composer-grid-featured") && document.getElementById("composer-discovery-accordion")) {
+      if (document.querySelector(".composer-grid-featured, .composer-grid-featured-omega") && document.getElementById("composer-discovery-accordion")) {
         await renderHubCards(registry.composers, stats);
       }
 
@@ -1102,6 +1123,9 @@ function composerSortLetter(name) {
         gamesList.innerHTML = "<li class='ccg-composer-games__item'>Unable to load game archive data. Please try again later.</li>";
       }
     } finally {
+      if (window.CCG_MUSIC_HUB_PORTRAITS_READY) {
+        await window.CCG_MUSIC_HUB_PORTRAITS_READY;
+      }
       window.CCG_MUSIC_PAGE_READY = true;
     }
   });

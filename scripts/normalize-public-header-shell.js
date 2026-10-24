@@ -17,8 +17,23 @@ const PUBLIC_HEADER_FOUNDATION_STYLES = Object.freeze([
   "/resources/css/ccg-master.css"
 ]);
 const PUBLIC_HEADER_FIRST_PAINT_STYLES = Object.freeze([
+  "/resources/css/ccg-nav-viewport-overlay.css",
+  "/resources/css/ccg-inner-page-density.css",
+  "/resources/css/ccg-scroll-authority.css",
+  "/resources/css/ccg-global-search.css",
+  "/resources/css/ccg-mode-identity.css",
+  "/resources/css/ccg-amiga-mode.css",
+  "/resources/css/ccg-amiga-mobile-fix.css",
+  "/resources/css/ccg-ui-regression-fixes.css",
+  "/resources/css/ccg-engagement-engine.css",
+  "/resources/css/ccg-amiga-identity.css",
+  "/resources/css/ccg-amiga-mobile-alignment.css",
+  "/resources/css/ccg-responsive-safety.css",
+  "/resources/css/ccg-responsive-page-polish.css",
+  "/resources/css/ccg-sitewide-layout-optimization.css",
   "/resources/css/ccg-nav-labelled-bridge.css"
 ]);
+const MODE_BODY_BOOTSTRAP = '<script data-ccg-first-paint-mode="true">(function(){var mode=document.documentElement.getAttribute("data-ccg-mode");if(mode==="c64"||mode==="amiga"){document.body.setAttribute("data-ccg-mode",mode);document.body.setAttribute("data-mode",mode);}})();</script>';
 const PUBLIC_HEADER_EXCLUDED_TOP_LEVEL = new Set(["arcade"]);
 const PUBLIC_HEADER_EXCLUDED_FILES = new Set(["index.html", "app-launch.html", "offline.html"]);
 
@@ -260,7 +275,32 @@ function ensurePublicHeaderFoundationStyles(html) {
 
 function ensurePublicHeaderFirstPaintStyles(html) {
   if (!hasPublicHeader(html)) return html;
-  return ensureStyles(html, PUBLIC_HEADER_FIRST_PAINT_STYLES, "data-ccg-public-header-first-paint-style");
+  const links = [...html.matchAll(/<link\b[^>]*>/gi)].map(match => ({
+    tag: match[0], index: match.index,
+    href: core.normaliseAssetPath(match[0].match(/href=["']([^"']+)/i)?.[1])
+  }));
+  const owned = links.filter(link => PUBLIC_HEADER_FIRST_PAINT_STYLES.includes(link.href));
+  const lastOtherStyle = Math.max(-1, ...links.filter(link =>
+    !PUBLIC_HEADER_FIRST_PAINT_STYLES.includes(link.href) && (/rel=["']stylesheet["']/.test(link.tag) || (/rel=["']preload["']/.test(link.tag) && /as=["']style["']/.test(link.tag)))
+  ).map(link => link.index));
+  if (owned.length === PUBLIC_HEADER_FIRST_PAINT_STYLES.length
+      && owned.every((link, index) => link.href === PUBLIC_HEADER_FIRST_PAINT_STYLES[index]
+        && /rel="stylesheet"/.test(link.tag) && /data-ccg-public-header-first-paint-style="true"/.test(link.tag))
+      && owned[0].index > lastOtherStyle) return html;
+  // Scripts/JSON-LD may be enriched later without changing CSS precedence.
+  // Preserve their placement when the final stylesheet order is already exact.
+  // A preloaded/noscript copy is not an active first-paint dependency. Rebuild
+  // this existing final stack in a deterministic order in disposable staging.
+  let output = html;
+  for (const href of PUBLIC_HEADER_FIRST_PAINT_STYLES) {
+    output = output.replace(/<noscript>\s*<link\b[^>]*>\s*<\/noscript>/gi, (tag) =>
+      core.normaliseAssetPath(tag.match(/href=["']([^"']+)/i)?.[1]) === href ? "" : tag);
+    output = output.replace(/[ \t]*<link\b[^>]*>[ \t]*(?:\r?\n)?/gi, (tag) =>
+      core.normaliseAssetPath(tag.match(/href=["']([^"']+)/i)?.[1]) === href ? "" : tag);
+  }
+  // Remove only blank lines left by the owned tags; retain surrounding HTML.
+  output = output.replace(/^[ \t]+$/gm, "");
+  return ensureStyles(output, PUBLIC_HEADER_FIRST_PAINT_STYLES, "data-ccg-public-header-first-paint-style");
 }
 
 function prepareMusicFirstPaintShell(html, options = {}) {
@@ -346,6 +386,19 @@ function normaliseHtml(html, options = {}) {
   const result = core.normaliseHtml(output);
   let finalHtml = result.html;
   if (result.applicable && hasPublicHeader(finalHtml)) {
+    if (["home", "single-game"].includes(pageType(finalHtml)) && !finalHtml.includes('data-ccg-first-paint-mode="true"')) {
+      finalHtml = insertAfterBodyOpen(finalHtml, MODE_BODY_BOOTSTRAP);
+    }
+    if (["home", "single-game"].includes(pageType(finalHtml)) && !hasModeIdentityBar(finalHtml)) {
+      finalHtml = insertAfterPublicHeader(finalHtml, buildModeIdentityMarkup());
+    }
+    if (pageType(finalHtml) === "single-game") {
+      const title = finalHtml.match(/<h1\b[^>]*id=["']gameHeroTitle["'][^>]*>([^<]+)<\/h1>/i)?.[1];
+      if (title && !finalHtml.includes('data-ccg-engagement-breadcrumbs="true"')) {
+        const crumbs = `<nav class="ccg-engagement-breadcrumbs" aria-label="Breadcrumb" data-ccg-engagement-breadcrumbs="true"><ol class="ccg-engagement-breadcrumbs__list"><li class="ccg-engagement-breadcrumbs__item"><a href="/home.html" data-ccg-breadcrumb="Home">Home</a></li><li class="ccg-engagement-breadcrumbs__item"><a href="/games/" data-ccg-breadcrumb="Games">Games</a></li><li class="ccg-engagement-breadcrumbs__item"><span aria-current="page">${title}</span></li></ol></nav>`;
+        finalHtml = finalHtml.replace(/(<main\b[^>]*>)/i, `$1${crumbs}`);
+      }
+    }
     finalHtml = ensurePublicHeaderFirstPaintStyles(finalHtml);
   }
 
@@ -478,6 +531,7 @@ function main() {
 module.exports = {
   ...core,
   MUSIC_GLOBAL_FIRST_PAINT_STYLES,
+  MODE_BODY_BOOTSTRAP,
   PUBLIC_HEADER_FOUNDATION_STYLES,
   PUBLIC_HEADER_FIRST_PAINT_STYLES,
   PUBLIC_HEADER_EXCLUDED_TOP_LEVEL,

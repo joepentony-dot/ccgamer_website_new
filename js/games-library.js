@@ -51,9 +51,101 @@ function isMobileLikeViewport() {
     return Boolean(CCG_COARSE_QUERY?.matches || window.innerWidth <= 820);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    initGamesLibrary();
-});
+function scheduleGamesLibraryInit() {
+    let started = false;
+    let timer = 0;
+    let idleHandle = 0;
+    const initialisedAt = performance.now();
+    let lastActivityAt = initialisedAt;
+    const MIN_START_DELAY_MS = 1800;
+    const QUIET_WINDOW_MS = 1400;
+
+    const cleanup = () => {
+        if (timer) window.clearTimeout(timer);
+        timer = 0;
+        if (idleHandle && typeof window.cancelIdleCallback === "function") {
+            window.cancelIdleCallback(idleHandle);
+        }
+        idleHandle = 0;
+        document.removeEventListener("focusin", handleIntent, true);
+        document.removeEventListener("pointerdown", handleIntent, true);
+        document.removeEventListener("keydown", handleIntent, true);
+        window.removeEventListener("scroll", handleActivity);
+        window.removeEventListener("wheel", handleActivity);
+        window.removeEventListener("touchmove", handleActivity);
+    };
+
+    const start = () => {
+        if (started) return;
+        started = true;
+        cleanup();
+        void initGamesLibrary();
+    };
+
+    const handleIntent = (event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target?.closest?.("#gamesSearchInput, #gamesSearchClear, [data-system-filter], #gamesYearSelect, [data-games-year-filter], #gamesAlphaStrip")) {
+            return;
+        }
+        start();
+    };
+
+    const scheduleQuietCheck = () => {
+        if (started || timer || idleHandle) return;
+        const elapsed = performance.now() - lastActivityAt;
+        const wait = Math.max(120, QUIET_WINDOW_MS - elapsed, MIN_START_DELAY_MS - (performance.now() - initialisedAt));
+        timer = window.setTimeout(() => {
+            timer = 0;
+            if (started) return;
+            const quietFor = performance.now() - lastActivityAt;
+            if (quietFor < QUIET_WINDOW_MS) {
+                scheduleQuietCheck();
+                return;
+            }
+            if (typeof window.requestIdleCallback === "function") {
+                idleHandle = window.requestIdleCallback(() => {
+                    idleHandle = 0;
+                    const stillQuietFor = performance.now() - lastActivityAt;
+                    if (stillQuietFor < QUIET_WINDOW_MS) {
+                        scheduleQuietCheck();
+                        return;
+                    }
+                    start();
+                }, { timeout: 1200 });
+            } else {
+                start();
+            }
+        }, wait);
+    };
+
+    const handleActivity = () => {
+        if (started) return;
+        lastActivityAt = performance.now();
+        if (timer) {
+            window.clearTimeout(timer);
+            timer = 0;
+        }
+        if (idleHandle && typeof window.cancelIdleCallback === "function") {
+            window.cancelIdleCallback(idleHandle);
+            idleHandle = 0;
+        }
+        scheduleQuietCheck();
+    };
+
+    document.addEventListener("focusin", handleIntent, true);
+    document.addEventListener("pointerdown", handleIntent, true);
+    document.addEventListener("keydown", handleIntent, true);
+    window.addEventListener("scroll", handleActivity, { passive: true });
+    window.addEventListener("wheel", handleActivity, { passive: true });
+    window.addEventListener("touchmove", handleActivity, { passive: true });
+
+    // The static links work immediately. Do not schedule a blocking catalogue
+    // rebuild on an arbitrary page-load timer: wait for a genuine scroll/wheel/
+    // touch activity followed by the quiet window. Deliberate search/filter
+    // intent still starts the enhancement immediately.
+}
+
+document.addEventListener("DOMContentLoaded", scheduleGamesLibraryInit);
 
 async function initGamesLibrary() {
     if (CCG_LIBRARY_INITIALIZED) return;
@@ -77,8 +169,11 @@ async function initGamesLibrary() {
         if (staticFallback && CCG_ALL_GAMES.length > 120) {
             staticFallback.hidden = true;
         }
+        document.documentElement.classList.remove("ccg-games-enhancement-pending");
+        window.CCG_GAMES_LIBRARY_READY = true;
 
     } catch (err) {
+        document.documentElement.classList.remove("ccg-games-enhancement-pending");
         console.error("[CCG] Games index load failed:", err);
     }
 }
@@ -136,14 +231,21 @@ function extractFallbackGamesFromHtml() {
 async function fetchGamesDataset(root) {
     const candidates = [
         {
-            label: "games.json",
-            url: `${root}games/games.json`,
-            mapper: (data) => Array.isArray(data) ? data.map(normalizeGame) : [],
-        },
-        {
             label: "games-search.json",
             url: `${root}games/games-search.json`,
             mapper: (data) => Array.isArray(data) ? data.map(mapSearchEntryToGame) : [],
+            validate: (games) => games.length > 0 && games.every(game =>
+                String(game?.slug || "").trim() &&
+                String(game?.title || "").trim() &&
+                String(game?.system || "").trim() &&
+                String(game?.thumbnail || "").trim()
+            ),
+        },
+        {
+            label: "games.json",
+            url: `${root}games/games.json`,
+            mapper: (data) => Array.isArray(data) ? data.map(normalizeGame) : [],
+            validate: (games) => games.length > 0,
         },
     ];
 
@@ -159,12 +261,12 @@ async function fetchGamesDataset(root) {
 
             const data = await res.json();
             const mapped = candidate.mapper(data).filter(Boolean);
-            if (mapped.length > 0) {
+            if (candidate.validate(mapped)) {
                 console.info(`[CCG] Games library loaded via ${candidate.label}: ${mapped.length} entries`);
                 return mapped;
             }
 
-            failures.push(`${candidate.label} returned 0 entries`);
+            failures.push(`${candidate.label} was incomplete or returned 0 entries`);
         } catch (error) {
             failures.push(`${candidate.label} ${error.message}`);
         }

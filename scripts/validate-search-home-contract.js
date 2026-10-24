@@ -6,6 +6,7 @@ const fs = require("fs");
 const { execFileSync } = require("child_process");
 
 const HOME_PATH = "home.html";
+const { stripApprovedHomeCls } = require("./home-cls-contract.js");
 const EXPECTED = {
   title: "Commodore 64 &amp; Amiga Games, Reviews &amp; Retro Archive | Cheeky Commodore Gamer",
   description: "Explore Cheeky Commodore Gamer's Commodore 64 and Amiga archive: hundreds of games, reviews, videos, Zzap!64 awards, publishers, genres, quizzes, music and retro features.",
@@ -330,8 +331,8 @@ function readBaseline() {
 
 if (!fs.existsSync(HOME_PATH)) fail(`${HOME_PATH} is missing.`);
 
-const current = fs.readFileSync(HOME_PATH, "utf8");
-const baseline = readBaseline();
+const current = stripApprovedHomeCls(fs.readFileSync(HOME_PATH, "utf8"));
+const baseline = stripApprovedHomeCls(readBaseline());
 assertExactHead(current);
 
 const normalizedCurrent = stripApprovedHomeSupportArt(stripApprovedSeoHead(

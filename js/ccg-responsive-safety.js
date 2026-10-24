@@ -36,50 +36,24 @@
         }
     ]);
 
-    let scheduled = false;
-
-    function findLink(config) {
-        return document.querySelector(`link[${config.attr}], link[href="${config.href}"]`);
-    }
-
-    function ensureStylesheetsLast() {
-        scheduled = false;
-
+    // Staged pages declare this same ordered stack before first paint. Legacy
+    // pages may still need it once; moving loaded links invalidates style/layout
+    // and briefly changes the winner of competing responsive rules.
+    function ensureStylesheets() {
         STYLESHEETS.forEach((config) => {
-            let link = findLink(config);
-
-            if (!link) {
-                link = document.createElement("link");
-                link.rel = "stylesheet";
-                link.href = config.href;
-                link.setAttribute(config.attr, "true");
-                document.head.appendChild(link);
-                return;
-            }
-
+            const existing = Array.from(document.querySelectorAll("link[href]"))
+                .find((link) => new URL(link.href, location.href).pathname === config.href);
+            if (existing) return;
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = config.href;
             link.setAttribute(config.attr, "true");
-
-            /* Re-appending an existing link moves it to the end of the
-               stylesheet cascade without duplicating or refetching it. */
-            if (link.parentNode === document.head && link !== document.head.lastElementChild) {
-                document.head.appendChild(link);
-            }
+            document.head.appendChild(link);
         });
     }
 
-    function scheduleEnsure() {
-        if (scheduled) return;
-        scheduled = true;
-        window.requestAnimationFrame(ensureStylesheetsLast);
-    }
-
     function init() {
-        ensureStylesheetsLast();
-        window.setTimeout(ensureStylesheetsLast, 120);
-        window.setTimeout(ensureStylesheetsLast, 600);
-        window.addEventListener("load", ensureStylesheetsLast, { once: true });
-        window.addEventListener("resize", scheduleEnsure, { passive: true });
-        window.addEventListener("orientationchange", scheduleEnsure, { passive: true });
+        ensureStylesheets();
     }
 
     if (document.readyState === "loading") {

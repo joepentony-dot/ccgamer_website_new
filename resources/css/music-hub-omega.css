@@ -100,10 +100,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.62rem;
+  /* Keep the 21-card grid's layout and paint work bounded without promoting
+     the whole archive section into one large GPU layer. A forced layer made
+     Chromium rasterise the complete grid on the first physical wheel step. */
+  contain: layout paint;
+}
+
+/* Additional cards are available on demand without increasing the first
+   physical wheel's raster area. This occupies the full featured grid row. */
+.ccg-music-hub .composer-grid-featured-omega .composer-featured-more {
+  grid-column: 1 / -1;
+  justify-self: center;
+  min-height: 42px;
+  margin-top: 0.3rem;
+  padding: 0.45rem 1rem;
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured {
   position: relative;
+  /* The staged cards stay in normal document paint; only their four decoded
+     portraits own bounded raster surfaces below. */
+  will-change: auto;
+  transform: none;
   border-color: rgba(var(--hub-accent-rgb), 0.27);
   border-radius: 12px;
   background:
@@ -113,6 +131,11 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
     0 10px 22px rgba(0, 0, 0, 0.28);
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 170ms ease;
+}
+
+.ccg-music-hub .composer-grid-featured-omega .composer-card--featured img {
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured::after {
