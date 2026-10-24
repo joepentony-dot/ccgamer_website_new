@@ -68,3 +68,21 @@ test('approved CLS additions cannot exempt unrelated homepage content or executa
   assert(!isApprovedHomeClsChange(baseline, home.replace('Fresh Game Pick', 'Unreviewed pick')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('data-ccg-first-paint-mode="true">', 'data-ccg-first-paint-mode="true">alert(1);')));
 });
+
+test('current CLS repairs retain modal scroll, live mobile navigation, and native Browse Games input', () => {
+  const global = fs.readFileSync('js/ccg-global.js', 'utf8');
+  const games = fs.readFileSync('js/games-library.js', 'utf8');
+  const gamesCss = fs.readFileSync('resources/css/ccg-games-index-omega.css', 'utf8');
+  const sw = fs.readFileSync('service-worker.js', 'utf8');
+  assert.match(global, /behavior:\s*"instant"/);
+  assert.match(global, /const navBoundButtons = window\.__ccgNavBoundButtons/);
+  assert.match(global, /event\.stopImmediatePropagation\(\)/);
+  assert.match(global, /const pauseTarget = document\.querySelector\("\.ccg-bg"\)/);
+  assert.match(games, /function scheduleGamesLibraryInit\(\)/);
+  assert.match(games, /window\.addEventListener\("wheel", onActivity, \{ passive: true \}\)/);
+  assert.doesNotMatch(games, /document\.addEventListener\("DOMContentLoaded", \(\) => \{\s*initGamesLibrary\(\)/);
+  assert.match(gamesCss, /filter:\s*none;/);
+  assert.match(sw, /CODE_CACHE_VERSION = "2026-10-24-public-code-v201"/);
+  assert(fs.existsSync('js/ccg-visitor-metrics.js'), 'merged visitor metrics runtime must remain present');
+  assert.doesNotMatch(global, /api\.goatcounter\.com\/api\/v1/);
+});

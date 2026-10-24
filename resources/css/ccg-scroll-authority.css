@@ -204,9 +204,11 @@ html[data-ccg-page="collection-single"]
     contain-intrinsic-size: auto 340px;
 }
 
-/* During active document scrolling the shared `ccg-perf-paused` state pauses
-   decorative motion and removes hover-transition churn across ALL public
-   pages, including Browse by Genre, Collections, game pages, Home and hubs. */
+/* During active document scrolling the scoped background state pauses
+   decorative motion without invalidating the HTML root. */
+html[data-ccg-page] .ccg-bg.ccg-perf-paused .ccg-bg-starfield,
+html[data-ccg-page] .ccg-bg.ccg-perf-paused .ccg-bg-starfield::after,
+html[data-ccg-page] .ccg-bg.ccg-perf-paused .ccg-bg-particles__spark,
 html.ccg-perf-paused[data-ccg-page] .ccg-bg-starfield,
 html.ccg-perf-paused[data-ccg-page] .ccg-bg-starfield::after,
 html.ccg-perf-paused[data-ccg-page] .ccg-bg-particles__spark,

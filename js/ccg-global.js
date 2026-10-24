@@ -527,28 +527,38 @@ if (IS_ADMIN_PATH) {
        • Passive listeners only (no preventDefault)
     ====================================================== */
     function setupScrollPerfPause() {
-        const root = document.documentElement;
+        // A document-root class invalidates all descendant styles during
+        // native scrolling, especially on large archives. Pause only the
+        // decorative universe when one is present.
+        const pauseTarget = document.querySelector(".ccg-bg");
+        if (!pauseTarget) return;
         const PAUSE_CLASS = "ccg-perf-paused";
         const resumeDelay = 160;
         let resumeTimer = null;
+        let pauseFrame = 0;
 
         const setPaused = (paused) => {
             if (paused) {
-                root.classList.add(PAUSE_CLASS);
+                pauseTarget.classList.add(PAUSE_CLASS);
             } else {
-                root.classList.remove(PAUSE_CLASS);
+                pauseTarget.classList.remove(PAUSE_CLASS);
             }
             window.dispatchEvent(new CustomEvent("ccg-perf-pause", { detail: { paused } }));
         };
 
         const onScroll = () => {
-            if (!root.classList.contains(PAUSE_CLASS)) {
-                setPaused(true);
+            if (!pauseTarget.classList.contains(PAUSE_CLASS) && !pauseFrame) {
+                pauseFrame = requestAnimationFrame(() => {
+                    pauseFrame = 0;
+                    setPaused(true);
+                });
             }
             if (resumeTimer) {
                 window.clearTimeout(resumeTimer);
             }
             resumeTimer = window.setTimeout(() => {
+                if (pauseFrame) cancelAnimationFrame(pauseFrame);
+                pauseFrame = 0;
                 setPaused(false);
             }, resumeDelay);
         };
@@ -1907,10 +1917,14 @@ if (IS_ADMIN_PATH) {
         if (!lock) return;
 
         secretState.scrollLock = null;
-        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
         requestAnimationFrame(() => {
             if (secretState.scrollLock) return;
-            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
+            requestAnimationFrame(() => {
+                if (secretState.scrollLock) return;
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
+            });
         });
     }
 
@@ -1948,12 +1962,13 @@ if (IS_ADMIN_PATH) {
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
             const lock = secretState.scrollLock;
-            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             if (content) content.scrollTop = 0;
 
             requestAnimationFrame(() => {
                 if (content) content.scrollTop = 0;
                 closeButton?.focus({ preventScroll: true });
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             });
 
             secretState.backdropUnlockTimer = setTimeout(() => {
@@ -2201,6 +2216,10 @@ if (IS_ADMIN_PATH) {
     /* ======================================================
        NAV TOGGLE (MOBILE)
     ====================================================== */
+    const navBoundButtons = window.__ccgNavBoundButtons instanceof WeakSet
+        ? window.__ccgNavBoundButtons
+        : (window.__ccgNavBoundButtons = new WeakSet());
+
     function setupNavToggle() {
         const header = document.querySelector("[data-ccg-header]");
         if (!header) return;
@@ -2221,6 +2240,7 @@ if (IS_ADMIN_PATH) {
         const drawerPanel = drawer?.querySelector(".ccg-nav-drawer__panel");
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
+        if (navBoundButtons.has(toggle)) return;
 
         const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 1199;
 
@@ -2377,13 +2397,25 @@ if (IS_ADMIN_PATH) {
             syncNavContainerVisibility();
         };
 
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener("click", (event) => {
+            event.stopImmediatePropagation();
             if (isNavOpen) {
                 closeNav();
             } else {
                 openNav();
             }
         });
+        navBoundButtons.add(toggle);
+
+        if (!window.__ccgNavLiveButtonRecoveryBound) {
+            window.__ccgNavLiveButtonRecoveryBound = true;
+            document.addEventListener("click", event => {
+                const target = event.target instanceof Element
+                    ? event.target.closest("[data-ccg-nav-toggle]")
+                    : null;
+                if (target && !navBoundButtons.has(target)) setupNavToggle();
+            }, { capture: true });
+        }
 
         if (!header.dataset.ccgMoreToggleBound) {
             header.addEventListener("click", event => {

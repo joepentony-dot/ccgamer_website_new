@@ -51,9 +51,68 @@ function isMobileLikeViewport() {
     return Boolean(CCG_COARSE_QUERY?.matches || window.innerWidth <= 820);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    initGamesLibrary();
-});
+let CCG_LIBRARY_SCHEDULED = false;
+
+function scheduleGamesLibraryInit() {
+    if (CCG_LIBRARY_SCHEDULED || CCG_LIBRARY_INITIALIZED) return;
+    CCG_LIBRARY_SCHEDULED = true;
+
+    let timer = 0;
+    let idleHandle = 0;
+    let lastActivityAt = performance.now();
+    const QUIET_WINDOW_MS = 1400;
+
+    const start = () => {
+        if (CCG_LIBRARY_INITIALIZED) return;
+        window.removeEventListener("wheel", onActivity);
+        window.removeEventListener("touchmove", onActivity);
+        document.removeEventListener("focusin", onIntent);
+        document.removeEventListener("pointerdown", onIntent);
+        if (timer) window.clearTimeout(timer);
+        if (idleHandle && "cancelIdleCallback" in window) window.cancelIdleCallback(idleHandle);
+        timer = 0;
+        idleHandle = 0;
+        initGamesLibrary();
+    };
+
+    const scheduleQuietCheck = () => {
+        if (CCG_LIBRARY_INITIALIZED || timer || idleHandle) return;
+        const wait = Math.max(120, QUIET_WINDOW_MS - (performance.now() - lastActivityAt));
+        timer = window.setTimeout(() => {
+            timer = 0;
+            if (performance.now() - lastActivityAt < QUIET_WINDOW_MS) {
+                scheduleQuietCheck();
+                return;
+            }
+            if ("requestIdleCallback" in window) {
+                idleHandle = window.requestIdleCallback(() => {
+                    idleHandle = 0;
+                    start();
+                }, { timeout: 1000 });
+            } else {
+                start();
+            }
+        }, wait);
+    };
+
+    function onActivity() {
+        lastActivityAt = performance.now();
+        scheduleQuietCheck();
+    }
+
+    function onIntent(event) {
+        const target = event.target instanceof Element ? event.target : null;
+        if (target?.closest("#gamesSearchInput, [data-games-filter], [data-games-year-filter]")) start();
+    }
+
+    window.addEventListener("wheel", onActivity, { passive: true });
+    window.addEventListener("touchmove", onActivity, { passive: true });
+    document.addEventListener("focusin", onIntent);
+    document.addEventListener("pointerdown", onIntent);
+    scheduleQuietCheck();
+}
+
+document.addEventListener("DOMContentLoaded", scheduleGamesLibraryInit);
 
 async function initGamesLibrary() {
     if (CCG_LIBRARY_INITIALIZED) return;
