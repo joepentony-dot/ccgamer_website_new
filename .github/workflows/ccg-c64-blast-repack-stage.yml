@@ -1,0 +1,75 @@
+name: CCG C64 BLAST guarded branch-only physical repack
+on:
+  push:
+    branches:
+      - codex/c64-blast-prg-physical-repack-20261016
+    paths:
+      - .github/workflows/ccg-c64-blast-repack-stage.yml
+permissions:
+  contents: write
+jobs:
+  stage-verified-blast-survivors:
+    if: github.ref == 'refs/heads/codex/c64-blast-prg-physical-repack-20261016'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reject conflicting main changes while allowing unrelated SEO updates
+        shell: bash
+        run: |
+          test "$(git branch --show-current)" = "codex/c64-blast-prg-physical-repack-20261016"
+          test -z "$(git status --porcelain)"
+          git fetch origin main
+          base="$(git merge-base HEAD origin/main)"
+          test -n "$base"
+          test -z "$(git diff --name-only "$base" origin/main -- emulator/c64/media/blast emulator/c64/library.json emulator/c64/media/cartridge-replacements/active.json)"
+      - name: Read-only audit with original BLAST pack bytes
+        run: |
+          node --check scripts/ccg-repack-retired-c64-prgs.mjs
+          node scripts/ccg-repack-retired-c64-prgs.mjs --scope blast
+      - name: Rebuild BLAST pack binaries ONLY inside this review branch
+        run: |
+          node scripts/ccg-repack-retired-c64-prgs.mjs \
+            --scope blast --apply \
+            --branch codex/c64-blast-prg-physical-repack-20261016 \
+            --expected-source 1878 --expected-retired 728 --expected-core-added 725
+      - name: Check remaining 1150 games and all pack digests after repack
+        shell: bash
+        run: |
+          node scripts/ccg-repack-retired-c64-prgs.mjs --scope blast > /tmp/ccg-repacked-audit.json
+          node --input-type=module -e '
+            import fs from "node:fs";
+            import assert from "node:assert/strict";
+            const a=JSON.parse(fs.readFileSync("/tmp/ccg-repacked-audit.json","utf8"));
+            const manifest=JSON.parse(fs.readFileSync("emulator/c64/media/blast/catalog.json","utf8"));
+            const core=JSON.parse(fs.readFileSync("emulator/c64/library.json","utf8"));
+            const aliases=JSON.parse(fs.readFileSync("emulator/c64/media/blast/retired-ids.json","utf8"));
+            assert.equal(a.sourceGames,1150);
+            assert.equal(a.retiredPRGs,0);
+            assert.equal(manifest.recordCount,1150);
+            assert.equal(aliases.recordCount,728);
+            assert.equal(Object.keys(aliases.mappings).length,728);
+            assert.equal(core.entries.length,947);
+            for(const id of Object.values(aliases.mappings)){
+              const e=core.entries.find(x=>x.id===id);
+              assert(e&&e.format==="crt"&&e.approved===true&&e.preferOverOtherFormats===true,
+                "Retired packed PRG has no direct CRT fallback: "+id);
+            }
+          '
+          git diff --check
+      - name: Commit reviewed binary/catalogue changes ONLY to this branch
+        shell: bash
+        run: |
+          git add emulator/c64/media/blast emulator/c64/library.json
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --stat
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "C64: compact 728 superseded BLAST PRGs preserving 1150 survivors"
+          git push origin HEAD:refs/heads/codex/c64-blast-prg-physical-repack-20261016

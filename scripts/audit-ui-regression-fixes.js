@@ -100,10 +100,12 @@ rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Ami
 [
     "home-hero__actions--streamlined",
     "Browse Games",
-    "Zzap!64 Awards",
+    "Zzap!64 Reviews &amp; Awards",
     "Find Me a Game",
-    "Browse Genres",
-    "home-cta-upgrade--streamlined",
+    'href="/games/genres/"',
+    'class="home-archive-route__title">Genres</strong>',
+    "home-cta-upgrade",
+    "home-support-art__canvas",
     "home-visitor-callout--compact",
     "ccg-footer--home-compact"
 ].forEach((token) => requireText(homePage, token, "Streamlined home page"));
@@ -113,6 +115,38 @@ rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Ami
     "home-bottom-cta",
     "The Full A–Z Index"
 ].forEach((token) => rejectText(homePage, token, "Streamlined home page"));
+
+/* Homepage stage #2839 deliberately replaced old hero button labels
+   and the former upgraded CTA modifier. Keep the actual route/structure
+   contracts, not copy that no longer appears in the approved layout. */
+[
+    "home-support-art__image"
+].forEach((token) => requireText(homePage, token, "Homepage discovery and support"));
+
+/* Assert the actual archive cards and titles inside the homepage
+   discovery navigation, rather than accepting links from the header. */
+const discoveryNav = homePage.match(/<nav class="home-archive-launchpad"[^>]*>[\s\S]*?<\/nav>/)?.[0] || "";
+if (!discoveryNav) failures.push("Homepage archive discovery navigation is missing.");
+[
+    ["/games/genres/", "Genres"],
+    ["/games/publishers/", "Publishers"],
+    ["/games/collections/", "Collections"],
+    ["/zzap64/", "Zzap!64"]
+].forEach(([href, title]) => {
+    const opening = `<a href="${href}" class="home-archive-route">`;
+    const start = discoveryNav.indexOf(opening);
+    if (start === -1) {
+        failures.push(`Homepage discovery card is missing: ${href}`);
+        return;
+    }
+    const end = discoveryNav.indexOf("</a>", start);
+    if (end === -1) {
+        failures.push(`Homepage discovery card is incomplete: ${href}`);
+        return;
+    }
+    const card = discoveryNav.slice(start, end);
+    requireText(card, `<strong class="home-archive-route__title">${title}</strong>`, `Homepage discovery card ${href}`);
+});
 
 [
     'id="zzapLoading"',

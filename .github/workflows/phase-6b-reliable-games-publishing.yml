@@ -67,6 +67,8 @@ on:
       - tests/single-game-community-uta.test.mjs
       - tests/single-game-dense-layout-oct2026.test.mjs
       - tests/single-game-shared-catalogue.test.mjs
+      - tests/single-game-badges-shared-catalogue.test.mjs
+      - js/ccg-game-badges.js
       - package.json
       - games/genres/**
       - games/collections/**
@@ -169,7 +171,7 @@ jobs:
         run: node --test tests/game-description-enrichment-fallback.test.mjs tests/game-seo-snippet-quality.test.mjs
 
       - name: Run single-game community and UTA regression
-        run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs tests/single-game-dense-layout-oct2026.test.mjs tests/single-game-shared-catalogue.test.mjs
+        run: node --test tests/community-ratings-single-refresh.mjs tests/community-summary-critical-path.mjs tests/single-game-community-uta.test.mjs tests/single-game-dense-layout-oct2026.test.mjs tests/single-game-shared-catalogue.test.mjs tests/single-game-badges-shared-catalogue.test.mjs
 
       - name: Run current catalogue publishing chain unchanged
         run: |

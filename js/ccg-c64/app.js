@@ -5,7 +5,7 @@ import { KEY_MAP, CHAR_MAP } from "./core/cia.js";
 import { D64, d64Variant } from "./core/media/d64.js";
 import { G64, isG64 } from "./core/media/g64.js";
 import { GameVault, encodeGameVaultBackup, decodeGameVaultBackup } from "./game-vault.js";
-import { mountCatalogueBrowser } from "./catalogue-browser.js";
+import { mountCatalogueBrowser } from "./catalogue-browser.js?ccg_rev=20261016_publisher_year_filters_v1";
 import { extractFirstT64Program } from "./t64.js";
 import { WebGLPresenter } from "./core/webgl-presenter.js";
 import { CRT_MODES, presetParams } from "./core/crt-params.js";
@@ -13,7 +13,7 @@ import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
-  preferSelectedCartridges,
+  preferSelectedCartridges, catalogGameIdentity,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -531,6 +531,8 @@ let visibleLibrarySuggestions = [];
 let activeLibrarySuggestionIndex = -1;
 let selectedLibraryEntryId = null;
 let onlineLibraryLoadingGame = false;
+// One automatic launch per emulator navigation; library retries never reboot a game.
+let gamePageAutoloadConsumed = false;
 const onlineLibraryPackCache = new Map();
 let autoStartSteps = null;
 let autoStartTypeRest = "";
@@ -1013,6 +1015,8 @@ function releaseAllInput() {
     touchJoyByte = 0xFF;
     touchHeldMask = 0;
     touchHeldButtons.clear();
+    // Keep this release routine independently testable by the keyboard harness.
+    if (typeof resetTouchDpadUi === "function") resetTouchDpadUi();
     machine.joyPort2 = 0xFF;
     machine._updateLightpen?.();
   }
@@ -1090,9 +1094,17 @@ function releaseHeldMatrixBinding(event, heldKey) {
   if (!binding) return false;
 
   heldMatrixKeys.delete(heldKey);
-  // If the same C64 key is also held on the touchscreen, leave it pressed.
-  if (![...touchFunctionKeyHolds.values()].some(held =>
-      held.col === binding.col && held.row === binding.row)) {
+  // Multiple physical host keys (notably Tab/F9 RUN/STOP) and on-screen
+  // keys may point to the SAME C64 CIA matrix position. Releasing one host
+  // key must not release the shared C64 key until every holder is gone.
+  const stillHeldPhysically = [...heldMatrixKeys.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnTouchscreen = [...touchFunctionKeyHolds.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnMobileKeyboard = [...mobileVirtualHeld.values()].some(held =>
+    (held.col === binding.col && held.row === binding.row) ||
+    (binding.col === 1 && binding.row === 7 && held.shift));
+  if (!stillHeldPhysically && !stillHeldOnTouchscreen && !stillHeldOnMobileKeyboard) {
     machine.cia1.setKey(binding.col, binding.row, false);
   }
   if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
@@ -1143,6 +1155,34 @@ function handleC64Key(event, pressed) {
   if (pressed && (setup?.hidden === false ||
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
     nativeActivation)) return;
+
+  // Plain Tab is C64 RUN/STOP. Keep modified Tab combinations available
+  // for browser navigation, but ALWAYS release a previously-held plain Tab
+  // even if the user presses a modifier before the Tab key-up arrives.
+  if (event.code === "Tab" &&
+      (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
+    if (!pressed && releaseHeldMatrixBinding(event, "Tab")) event.preventDefault();
+    return;
+  }
+
+  // VICE-style emulator shortcuts (key-down edge only). Keep native text
+  // inputs, setup dialogs, AltGr characters and system combinations intact.
+  // Key-up must also be consumed, so the browser doesn't shift focus.
+  if (event.altKey && !event.ctrlKey && !event.metaKey &&
+      !event.getModifierState?.("AltGraph") &&
+      ["KeyJ", "KeyW"].includes(event.code)) {
+    event.preventDefault();
+    if (!pressed) {
+      // J/W may have been pressed as an ordinary C64 key or keyboard-joystick
+      // direction BEFORE Alt went down. Never swallow their release edges.
+      if (keyboardJoystickKeys.delete(event.code)) applyJoystickInput();
+      releaseHeldMatrixBinding(event, event.code || `key:${event.key}`);
+    } else if (!event.repeat) {
+      if (event.code === "KeyJ") swapJoystickPort();
+      else toggleWarpLoad();
+    }
+    return;
+  }
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -2506,11 +2546,91 @@ async function initialiseOnlineLibrary() {
     console.warn("[ccg-c64] Optional PRG archive unavailable:", error);
   }
 
-  onlineLibraryEntries = [...regular, ...packed, ...archived];
-  // Only verified, owner-selected CRT records bearing the explicit preference
-  // flag suppress the matching PRG/disk versions in both packed archives.
-  // Do not rewrite shared binary packs or hide unrelated titles.
-  onlineLibraryEntries = preferSelectedCartridges(onlineLibraryEntries);
+  // A single visible title index. Preserve the underlying media and previous
+  // IDs for old bookmarks, but show only the approved CRT-first winner.
+  // Owner-requested removal: hide only the Hammer Challenge II PRG edition.
+  // Keep the original Friday the 13th CRT and all other editions intact.
+  onlineLibraryEntries = [...regular, ...packed, ...archived].filter((entry) =>
+    !(entry.title.trim().toLocaleLowerCase() === "friday the 13th - hammer challenge ii" &&
+      String(entry.format).toLowerCase() === "prg"));
+  const allHostedEntries = onlineLibraryEntries;
+  onlineLibraryEntries = preferSelectedCartridges(allHostedEntries);
+  // Only a game-page button with autoplay=1 starts the matched catalogue entry.
+  // Ordinary emulator searches and legacy ?game= links still require LOAD.
+  let linkedGameId = "";
+  let linkedGameAutoplay = false;
+  try {
+    const deepLink = new URLSearchParams(window.location.search);
+    linkedGameId = deepLink.get("game") || "";
+    linkedGameAutoplay = deepLink.get("autoplay") === "1";
+  } catch (_) { /* Invalid URL query is ignored. */ }
+  // Existing game pages still use some older BLAST/PRG IDs. Resolve the
+  // bookmark to the selected CRT without changing unrelated game pages.
+  const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
+  const linkedOriginal = validLinkedId
+    ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+  // Preserve bookmarks to directly hosted D64s retired after the matching
+  // owner-selected CRT was installed. These IDs no longer occur in the
+  // direct library, so they need an explicit, reviewed identity mapping.
+  const retiredDirectAliases = {
+    "forbidden-forest": "Forbidden Forest",
+    "paradroid": "Paradroid",
+    "slicks": "Slicks",
+    "uridium": "Uridium",
+    "rodland": "Rodland",
+    "racing-destruction-set": "Racing Destruction Set",
+    "katakis": "Katakis",
+    "bomberland": "Bomberland",
+  };
+  const retiredTitle = Object.hasOwn(retiredDirectAliases, linkedGameId)
+    ? retiredDirectAliases[linkedGameId] : "";
+  let linkedGame = validLinkedId
+    ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
+       (linkedOriginal && onlineLibraryEntries.find(entry =>
+         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
+       (retiredTitle && onlineLibraryEntries.find(entry =>
+         entry.format === "crt" &&
+         catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle))))
+    : null;
+  // Packed PRG IDs are stable bookmarks. After retiring an exact-title PRG,
+  // request the small SHA-audited retirement map ONLY for an unresolved legacy
+  // deep link. Never fetch this extra asset on ordinary library browsing.
+  if (!linkedGame && validLinkedId &&
+      /^(?:blast-\d{4}|archive-\d{5})$/.test(linkedGameId)) {
+    const source = linkedGameId.startsWith("blast-") ? "blast" : "prg-archive";
+    try {
+      const response = await fetch("/emulator/c64/media/" + source + "/retired-ids.json",
+        { credentials: "same-origin", cache: "no-store" });
+      if (response.ok) {
+        const aliasData = await response.json();
+        if (aliasData && aliasData.version === 1 && aliasData.source === source &&
+            Number.isSafeInteger(aliasData.recordCount) &&
+            aliasData.recordCount >= 0 && aliasData.recordCount <= 12000 &&
+            aliasData.mappings && typeof aliasData.mappings === "object" &&
+            !Array.isArray(aliasData.mappings) &&
+            Object.hasOwn(aliasData.mappings, linkedGameId)) {
+          const replacementId = aliasData.mappings[linkedGameId];
+          if (/^owner-crt-more-[a-z0-9-]+$/.test(replacementId)) {
+            // A retired BLAST PRG can map to a second approved CRT edition.
+            // The visible library retains the earlier selected CRT, so an
+            // alias must resolve through its exact verified source identity
+            // rather than fail when that alternative is hidden by deduplication.
+            const replacement = allHostedEntries.find(entry =>
+              entry.id === replacementId && entry.format === "crt" &&
+              entry.approved !== false && entry.preferOverOtherFormats === true);
+            if (replacement) {
+              linkedGame = onlineLibraryEntries.find(entry =>
+                entry.id === replacementId && entry.format === "crt") ||
+                onlineLibraryEntries.find(entry =>
+                  entry.format === "crt" && entry.approved !== false &&
+                  catalogGameIdentity(entry.title) ===
+                    catalogGameIdentity(replacement.title)) || null;
+            }
+          }
+        }
+      }
+    } catch (_) { /* A missing alias must not affect ordinary game loading. */ }
+  }
   if (onlineLibraryPanel) onlineLibraryPanel.hidden = onlineLibraryEntries.length === 0;
   controlsDeck?.classList.toggle("has-online-library", onlineLibraryEntries.length > 0);
   const unavailable = [];
@@ -2521,6 +2641,12 @@ async function initialiseOnlineLibrary() {
     : onlineLibraryEntries.length
       ? `${onlineLibraryEntries.length.toLocaleString("en-GB")} READY` : "EMPTY";
   refreshOnlineLibrarySuggestions();
+  if (linkedGame) {
+    selectOnlineLibraryEntry(linkedGame.id, false);
+    if (stageNote) stageNote.textContent = linkedGameAutoplay
+      ? `Starting ${linkedGame.title} automatically in the CCG C64 emulator...`
+      : `Selected ${linkedGame.title} in the CCG C64 library. Press LOAD to play.`;
+  }
   if ((packedCatalogueError || archiveError) && onlineLibraryCount) {
     onlineLibraryCount.textContent =
       "Some additional games are unavailable. Check connection and retry.";
@@ -2529,6 +2655,12 @@ async function initialiseOnlineLibrary() {
     !(packedCatalogueError || archiveError);
   updateSelectedLibraryGame();
   if (typeof catalogueBrowser !== "undefined") catalogueBrowser?.refresh();
+  if (linkedGame && linkedGameAutoplay && !gamePageAutoloadConsumed) {
+    // Use the same SHA-verified media path and firmware gate as a manual LOAD.
+    // Consume before invoking: a retry cannot start this game a second time.
+    gamePageAutoloadConsumed = true;
+    void loadSelectedLibraryEntry();
+  }
 }
 
 async function loadSelectedLibraryEntry() {
@@ -3261,7 +3393,78 @@ vaultGameSelect?.addEventListener("change", () => {
   void refreshVaultStatus();
 });
 
+// Mobile D-pad: one captured pointer can slide across all eight directions.
+// Diagonals combine two active-low C64 joystick bits; FIRE/JUMP keep their
+// independent pointers so the player can steer and fire simultaneously.
+const touchDpad = document.querySelector(".ccg-c64-touch-dpad");
+const touchDpadDirections = new Map(
+  Array.from(touchDpad?.querySelectorAll("button[data-joy-mask]") || [],
+    button => [Number(button.dataset.joyMask), button])
+);
+let touchDpadPointerId = null;
+
+function resetTouchDpadUi() {
+  touchDpadPointerId = null;
+  for (const button of touchDpadDirections.values()) {
+    button.classList.remove("is-pressed");
+    button.setAttribute("aria-pressed", "false");
+  }
+}
+
+function touchDpadMaskAt(clientX, clientY) {
+  if (!touchDpad) return 0;
+  const rect = touchDpad.getBoundingClientRect();
+  if (!rect.width || !rect.height ||
+      clientX < rect.left || clientX >= rect.right ||
+      clientY < rect.top || clientY >= rect.bottom) return 0;
+  const col = Math.min(2, Math.floor(3 * (clientX - rect.left) / rect.width));
+  const row = Math.min(2, Math.floor(3 * (clientY - rect.top) / rect.height));
+  return (row === 0 ? 1 : row === 2 ? 2 : 0) |
+    (col === 0 ? 4 : col === 2 ? 8 : 0);
+}
+
+function setTouchDpadMask(mask) {
+  const current = touchHeldButtons.get(touchDpad)?.mask || 0;
+  if (current === mask) return;
+  if (mask) touchHeldButtons.set(touchDpad, { mask, pointerId: touchDpadPointerId });
+  else touchHeldButtons.delete(touchDpad);
+  for (const [direction, button] of touchDpadDirections) {
+    const active = direction === mask;
+    button.classList.toggle("is-pressed", active);
+    button.setAttribute("aria-pressed", String(active));
+  }
+  syncTouchJoystick();
+  if (inputStatus) {
+    if (mask) inputStatus.textContent = `TOUCH // PORT ${joystickPort}`;
+    else if (!touchHeldMask && !gamepadConnected) inputStatus.textContent = "KEYBOARD READY";
+  }
+}
+
+touchDpad?.addEventListener("pointerdown", event => {
+  if (touchDpadPointerId !== null ||
+      (event.pointerType === "mouse" && event.button !== 0)) return;
+  event.preventDefault();
+  touchDpadPointerId = event.pointerId;
+  setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY));
+  try { touchDpad.setPointerCapture(event.pointerId); } catch {}
+});
+touchDpad?.addEventListener("pointermove", event => {
+  if (event.pointerId !== touchDpadPointerId) return;
+  event.preventDefault();
+  setTouchDpadMask(touchDpadMaskAt(event.clientX, event.clientY));
+});
+const releaseTouchDpad = event => {
+  if (event.pointerId !== touchDpadPointerId) return;
+  event.preventDefault();
+  touchDpadPointerId = null;
+  setTouchDpadMask(0);
+};
+for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
+  touchDpad?.addEventListener(name, releaseTouchDpad);
+touchDpad?.addEventListener("contextmenu", event => event.preventDefault());
+
 for (const button of document.querySelectorAll("[data-joy-mask]")) {
+  if (touchDpad?.contains(button)) continue;
   const mask = Number(button.getAttribute("data-joy-mask")) & 0x1F;
   const press = event => {
     event.preventDefault();

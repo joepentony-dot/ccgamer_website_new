@@ -32,6 +32,9 @@ jobs:
       - name: Check CCG shell and ROM contract
         run: node tests/ccg-c64-emulator-stage1.test.mjs
 
+      - name: Verify published C64 hamburger drawer and gameplay isolation
+        run: node tests/ccg-c64-header-drawer.test.mjs
+
       - name: Verify iPhone Safari startup and privacy fallbacks
         run: node --test tests/ccg-c64-ios-safari.test.mjs
 
@@ -40,6 +43,9 @@ jobs:
 
       - name: Verify mobile game buttons prevent native text selection and keep search editable
         run: node --test tests/ccg-c64-mobile-button-selection.test.mjs
+
+      - name: Verify eight-way mobile C64 D-pad diagonals and pointer release
+        run: node tests/ccg-c64-eight-way-dpad.test.mjs
 
       - name: Verify VICE keyboard, controls, drag/drop and MAX Warp
         run: node tests/ccg-c64-keyboard-warp.test.mjs
@@ -65,6 +71,9 @@ jobs:
 
       - name: Verify optional clean-name archive activation and 10k-title search
         run: node tests/ccg-c64-clean-prg-archive.test.mjs
+
+      - name: Verify one-click game-page deep links launch once
+        run: node --test tests/ccg-c64-game-page-autoload.test.mjs
 
       - name: Verify explicit select-then-LOAD GAME interaction
         run: node tests/ccg-c64-library-select-load.test.mjs

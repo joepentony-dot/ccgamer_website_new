@@ -10,6 +10,8 @@ on:
       - "sitemap.xml"
       - "sitemap-*.xml"
       - "scripts/audit-publishing-automation.js"
+      - "scripts/qualify-generated-publishing.mjs"
+      - "tests/generated-publishing-guard.test.mjs"
       - "scripts/audit-sitemap-indexability.js"
       - "scripts/generate-sitemaps.js"
       - "scripts/validate-sitemaps.js"
@@ -33,6 +35,8 @@ on:
       - "sitemap.xml"
       - "sitemap-*.xml"
       - "scripts/audit-publishing-automation.js"
+      - "scripts/qualify-generated-publishing.mjs"
+      - "tests/generated-publishing-guard.test.mjs"
       - "scripts/audit-sitemap-indexability.js"
       - "scripts/generate-sitemaps.js"
       - "scripts/validate-sitemaps.js"
@@ -81,6 +85,9 @@ jobs:
 
       - name: Audit publishing ownership and crawler controls
         run: node scripts/audit-publishing-automation.js
+
+      - name: Test generated publishing merge qualification guard
+        run: node --test tests/generated-publishing-guard.test.mjs
 
       - name: Regenerate authoritative sitemap output
         run: node scripts/generate-sitemaps.js

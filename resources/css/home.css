@@ -3577,3 +3577,40 @@ html[data-ccg-page="home"] .home-section--archive-dashboard .home-featured-video
     }
 }
 
+
+/* CCG UX review: balance the two priority routes at wide desktop widths. */
+@media (min-width: 981px) {
+    .home-archive-launchpad > .home-archive-route { grid-column: span 2; }
+}
+
+/* Homepage discovery: show the two main paths first while retaining crawlable archive links. */
+.home-archive-launchpad > .home-archive-more { grid-column: 1 / -1; min-width: 0; }
+.home-archive-more__toggle { cursor: pointer; padding: 15px 18px; border: 1px solid rgba(var(--accent-rgb), .35); border-radius: 12px; background: rgba(0,0,0,.65); color: var(--ccg-text-light, #fff); font-weight: 700; }
+.home-archive-more__toggle:focus-visible { outline: 2px solid rgba(var(--accent-rgb), .9); outline-offset: 3px; }
+.home-archive-more__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 14px; }
+.home-archive-more__grid > .home-archive-route { min-width: 0; }
+@media (max-width: 620px) { .home-archive-more__grid { grid-template-columns: 1fr; } }
+
+/* UX consolidation: maintain the guarded early merch placement but make it less visually prominent. */
+html[data-ccg-page="home"] body.ccg-body .home-merch-promo {
+    width: min(1100px, calc(100% - 24px));
+    margin: 9px auto 13px;
+    border-color: rgba(var(--accent-rgb), .35);
+    background: linear-gradient(120deg, rgba(12, 14, 28, .9), rgba(23, 16, 39, .94));
+    box-shadow: 0 8px 18px rgba(0, 0, 0, .28);
+}
+html[data-ccg-page="home"] body.ccg-body .home-merch-promo__link {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 10px 14px;
+}
+html[data-ccg-page="home"] body.ccg-body .home-merch-promo__mark {
+    width: 42px;
+    height: 42px;
+    font-size: .8rem;
+}
+@media (max-width: 720px) {
+    html[data-ccg-page="home"] body.ccg-body .home-merch-promo__link {
+        grid-template-columns: 42px minmax(0, 1fr);
+    }
+}

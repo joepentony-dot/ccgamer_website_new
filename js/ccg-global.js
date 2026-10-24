@@ -2255,15 +2255,42 @@ if (IS_ADMIN_PATH) {
         const buildDrawer = () => {
             if (!drawer) return;
 
+            const otherPrimary = [];
             if (drawerPrimary) {
-                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Primary</div>";
+                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Quick links</div>";
                 primaryList?.querySelectorAll("a").forEach(link => {
-                    drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                    const pathname = new URL(link.href, window.location.href).pathname;
+                    if (pathname === "/home.html" || pathname === "/games/") {
+                        drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                    } else {
+                        otherPrimary.push(link);
+                    }
                 });
+                const playOnline = document.createElement("a");
+                playOnline.href = "/emulator/c64/";
+                playOnline.className = "ccg-nav__link ccg-nav__link--mobile";
+                playOnline.textContent = "Play C64";
+                drawerPrimary.appendChild(playOnline);
             }
 
             if (drawerSecondary) {
                 drawerSecondary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Explore more</div>";
+                /* Merch lives in the existing mobile drawer, not in the
+                   canonical desktop nav list. Preserve the header generator's
+                   fixed first-paint structure on every public page. */
+                const merchLink = document.createElement("a");
+                merchLink.href = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
+                merchLink.className = "ccg-nav__link ccg-nav__link--mobile ccg-nav__link--merch";
+                merchLink.textContent = "Merch Shop";
+                merchLink.target = "_blank";
+                merchLink.rel = "noopener noreferrer";
+                merchLink.setAttribute("data-ccg-revenue-link", "fourthwall-merch");
+                merchLink.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
+                drawerSecondary.appendChild(merchLink);
+
+                otherPrimary.forEach(link => {
+                    drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                });
                 secondaryList?.querySelectorAll("a").forEach(link => {
                     drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
                 });
@@ -3143,173 +3170,26 @@ function setupFooterSignatureRotator() {
 
 })();
 
-/* ============================================================
-   VISITOR COUNTER — GOATCOUNTER STATISTICS API
-   ------------------------------------------------------------
-   • Footer-only (safe if missing)
-   • Cached for 1 hour (localStorage)
-   • Silent failure (never breaks UI)
-============================================================ */
+/* ================================================================
+   GOATCOUNTER DISPLAY FAILSAFE — SHARED PUBLIC RUNTIME
+   The public GitHub Pages branch build can publish source HTML instead
+   of the staged copy. Every CCG public game and the home page already
+   include ccg-global.js, so load the display runtime from this shared
+   entrypoint even if the staged HTML tag was omitted.
+   The runtime also restores pageview tracking if the deployed HTML lacks it;
+   existing trackers are not duplicated.
+================================================================ */
+(function ccgEnsureVisitorMetrics() {
+    "use strict";
+    if (typeof document === "undefined") return;
+    const path = String(window.location.pathname || "/");
+    if (/^\/(?:admin|auth)(?:\/|$)/i.test(path)) return;
+    if (document.documentElement.getAttribute("data-ccg-page") === "intro") return;
+    if (document.querySelector('script[data-ccg-visitor-metrics]')) return;
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    const counterEl = document.getElementById("ccg-visit-count");
-    if (!counterEl) return;
-
-    const GOATCOUNTER_API_URL = "https://cheekycommodoregamer.goatcounter.com/api/v0/stats/total?start=2020-01-01";
-    const GOATCOUNTER_API_TOKEN = "1h55dk144yvt99xms45tiubge13ctobm2ezngxfwd0a64az1cm";
-    const GOATCOUNTER_CACHE_KEY = "ccg_goatcounter_total";
-    const GOATCOUNTER_CACHE_TTL = 60 * 60 * 1000;
-
-    const parseCount = value => {
-        if (value === null || value === undefined || value === "") {
-            return null;
-        }
-
-        const numeric = Number(value);
-        if (!Number.isFinite(numeric)) {
-            return null;
-        }
-
-        return numeric;
-    };
-
-    const extractCount = data => {
-        if (!data || typeof data !== "object") return null;
-
-        const candidates = [
-            data.total,
-            data.count,
-            data.counts ? data.counts.total : null,
-            data.stats ? data.stats.total : null,
-            data.pageviews,
-        ];
-
-        for (const candidate of candidates) {
-            const parsed = parseCount(candidate);
-            if (parsed !== null) return parsed;
-        }
-
-        return null;
-    };
-
-    const setDisplay = value => {
-        if (!Number.isFinite(value)) {
-            counterEl.textContent = "—";
-            return;
-        }
-
-        counterEl.textContent = value.toLocaleString();
-    };
-
-    const counterContainer = counterEl.closest(".ccg-footer__counter") || counterEl.parentElement;
-    const visitorTokenRegex = /\bvisitors?\b/gi;
-    const visitorTokenTestRegex = /\bvisitors?\b/i;
-
-    const removeVisitorLabel = () => {
-        if (!counterContainer) return;
-
-        const walker = document.createTreeWalker(
-            counterContainer,
-            NodeFilter.SHOW_TEXT,
-            {
-                acceptNode: node => visitorTokenTestRegex.test(node.nodeValue || "")
-                    ? NodeFilter.FILTER_ACCEPT
-                    : NodeFilter.FILTER_REJECT,
-            }
-        );
-
-        const nodes = [];
-        while (walker.nextNode()) {
-            nodes.push(walker.currentNode);
-        }
-
-        nodes.forEach(node => {
-            const cleaned = (node.nodeValue || "")
-                .replace(visitorTokenRegex, "")
-                .replace(/\s{2,}/g, " ")
-                .trim();
-
-            if (!cleaned) {
-                node.remove();
-                return;
-            }
-
-            node.nodeValue = cleaned;
-        });
-    };
-
-    if (counterContainer) {
-        removeVisitorLabel();
-
-        const observer = new MutationObserver(() => {
-            removeVisitorLabel();
-        });
-
-        observer.observe(counterContainer, {
-            childList: true,
-            characterData: true,
-            subtree: true,
-        });
-
-        window.addEventListener("load", removeVisitorLabel, { once: true });
-    }
-
-    const readCache = () => {
-        try {
-            const raw = localStorage.getItem(GOATCOUNTER_CACHE_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            const cachedAt = Number(parsed && parsed.cachedAt);
-            const cachedValue = Number(parsed && parsed.value);
-            if (!Number.isFinite(cachedAt) || !Number.isFinite(cachedValue)) return null;
-            if (Date.now() - cachedAt > GOATCOUNTER_CACHE_TTL) return null;
-            return cachedValue;
-        } catch (error) {
-            return null;
-        }
-    };
-
-    const writeCache = value => {
-        try {
-            localStorage.setItem(GOATCOUNTER_CACHE_KEY, JSON.stringify({
-                value,
-                cachedAt: Date.now(),
-            }));
-        } catch (error) {
-            // Ignore cache write failures.
-        }
-    };
-
-    const cachedValue = readCache();
-    if (cachedValue !== null) {
-        setDisplay(cachedValue);
-        return;
-    }
-
-    fetch(GOATCOUNTER_API_URL, {
-        headers: {
-            Authorization: `Bearer ${GOATCOUNTER_API_TOKEN}`,
-            "Content-Type": "application/json",
-        },
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("GoatCounter stats request failed.");
-            }
-            return response.json();
-        })
-        .then(data => {
-            const total = extractCount(data);
-            if (total === null) {
-                setDisplay(null);
-                return;
-            }
-            writeCache(total);
-            setDisplay(total);
-        })
-        .catch(() => {
-            setDisplay(null);
-        });
-
-});
+    const script = document.createElement("script");
+    script.src = "/js/ccg-visitor-metrics.js?v=20261022-full-archive-visible-counters-v2";
+    script.async = true;
+    script.setAttribute("data-ccg-visitor-metrics", "shared-loader");
+    (document.head || document.documentElement).appendChild(script);
+})();

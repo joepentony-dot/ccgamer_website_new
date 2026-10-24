@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-// Isolated, multi-shard qualification for the owner's 1,530 staged cartridges.
+// Isolated, multi-shard qualification for owner CRT media (2,064 original, one exact duplicate retired).
 // Verifies real ROM bytes, SHA-256, hardware bank layout and CPU advancement.
 // Three PAL frames are a STARTUP SMOKE, NOT a certified gameplay playthrough.
 import assert from "node:assert/strict";
@@ -11,7 +11,7 @@ import { parseCRT } from "../js/ccg-c64/core/media/crt.js";
 import { createCartridgeFromCRT } from "../js/ccg-c64/core/cartridges/registry.js";
 import { C64Machine } from "../js/ccg-c64/core/machine.js";
 import {
-  parseAdditionalCrtCatalog, preferSelectedCartridges, normaliseCatalogSearch,
+  parseAdditionalCrtCatalog, preferSelectedCartridges, catalogGameIdentity,
 } from "../js/ccg-c64/game-catalog.js";
 
 const shard = Number(process.argv[2]);
@@ -22,7 +22,12 @@ assert(Number.isInteger(shard) && Number.isInteger(shardCount) &&
 const sha256 = data => createHash("sha256").update(data).digest("hex");
 const path = "emulator/c64/media/cartridge-replacements/active.json";
 const activation = JSON.parse(fs.readFileSync(path, "utf8"));
-assert.equal(activation.recordCount, 1530, "Activation must contain all selected CRT files.");
+assert.equal(activation.recordCount, 2063, "Activation must retain all 2,063 unique CRT files after exact-duplicate retirement.");
+const digestToFile = new Map();
+for (const [, filename, , digest] of activation.games) {
+  assert(!digestToFile.has(digest), `Duplicate CRT bytes in activation manifest: ${filename} vs ${digestToFile.get(digest)}`);
+  digestToFile.set(digest, filename);
+}
 assert.equal(activation.ownerRedistributionAttested, true);
 assert.equal(activation.gameplayCertified, false,
   "Three-frame smoke tests must never misstate full gameplay acceptance.");
@@ -35,19 +40,38 @@ const originals = [
   ...archive.games.map(x => ({ id: x[0], title: x[1], format: x[2] })),
 ];
 const oldTitles = new Set(originals.filter(x => x.format !== "crt")
-  .map(x => normaliseCatalogSearch(x.title)));
+  .map(x => catalogGameIdentity(x.title)));
 const oldCRT = new Set(originals.filter(x => x.format === "crt")
-  .map(x => normaliseCatalogSearch(x.title)));
+  .map(x => catalogGameIdentity(x.title)));
 const candidates = parseAdditionalCrtCatalog(activation);
-assert.equal(candidates.length, 1530);
+assert.equal(candidates.length, 2063);
 const results = preferSelectedCartridges([...originals, ...candidates]);
-for (const chosen of candidates) {
-  const key = normaliseCatalogSearch(chosen.title);
-  assert(oldTitles.has(key), "No existing non-CRT fallback: " + chosen.title);
-  assert(!oldCRT.has(key), "Would hide an existing CRT: " + chosen.title);
-  const matches = results.filter(x => normaliseCatalogSearch(x.title) === key);
+for (const [i, chosen] of candidates.entries()) {
+  const key = catalogGameIdentity(chosen.title);
+  if (i < 1530) {
+    // The original 1,530 replacements must still suppress a former format,
+    // except for exact same-ID, same-SHA direct CRT fallbacks promoted when
+    // their obsolete standalone D64 binaries were retired.
+    const directCRT = direct.entries.find(e =>
+      e.format === "crt" && catalogGameIdentity(e.title) === key);
+    if (directCRT) {
+      assert.equal(directCRT.id, chosen.id,
+        "Direct CRT fallback conflicts with optional cartridge: " + chosen.title);
+      assert.equal(directCRT.sha256, chosen.sha256,
+        "Direct CRT fallback has different ROM bytes: " + chosen.title);
+    } else {
+      assert(oldTitles.has(key), "Missing original non-CRT fallback: " + chosen.title);
+      assert(!oldCRT.has(key), "Original CRT would hide another CRT: " + chosen.title);
+    }
+  }
+  const matches = results.filter(x => catalogGameIdentity(x.title) === key);
   assert.equal(matches.length, 1, "A competing version remains: " + chosen.title);
-  assert.equal(matches[0].id, chosen.id, "Wrong version selected: " + chosen.title);
+  if (!oldCRT.has(key)) {
+    assert.equal(matches[0].id, chosen.id, "CRT was not prioritised: " + chosen.title);
+  } else {
+    // Existing owner-selected CRT keeps priority over an alternate CRT.
+    assert.equal(matches[0].format, "crt", "Existing CRT fallback lost: " + chosen.title);
+  }
 }
 
 const firmware = Object.fromEntries([

@@ -102,11 +102,23 @@
        same geometry as the fitted header. They remain available in the
        mobile drawer because this rule is desktop-only.
     */
+    /* Preserve the existing permanent More routes as an explicit contract. */
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/games/ccg-games/"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/install-app.html"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),
-    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]) {
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]),
+    /* The first two canonical primary items are Home and Browse Games.
+       Hide every later item even during intermediate nav hydration, before
+       the deferred fitting controller can settle the final More menu. */
+    .ccg-header .ccg-nav [data-ccg-nav-primary] > li:nth-child(n+3),
+    .ccg-header .ccg-nav [data-ccg-nav-secondary] > li {
         display: none !important;
+    }
+
+        /* Avoid reserving space for hidden secondary navigation at first paint. */
+    .ccg-header .ccg-nav .ccg-nav__list--primary,
+    .ccg-header .ccg-nav .ccg-nav__list--secondary {
+        min-width: 0;
     }
 
     /* Reserve the More control from first paint. The fit script owns its
@@ -236,6 +248,13 @@
 
     .ccg-header .ccg-nav__more-menu[hidden] {
         display: none !important;
+    }
+
+    /* Keep the longer More index usable at laptop viewport heights. */
+    .ccg-header .ccg-nav__more-menu {
+        max-height: min(70vh, 620px);
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
     }
 
     .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link {
@@ -503,5 +522,52 @@
 @media (max-width: 520px) {
     .ccg-header .ccg-auth-slot {
         min-height: 34px !important;
+    }
+}
+
+/* FIRST-PAINT PLAY C64 RESERVATION — CLS GUARD
+   The deferred nav-fit controller inserts Play C64 just before More.
+   Reserve exactly the same horizontal width inside More until that link
+   exists, so the centered group and More button do not change position.
+   The real link replaces this inert spacer within a single JS frame. */
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav .ccg-nav__more {
+        gap: 6px;
+    }
+    .ccg-header .ccg-nav:not(.ccg-nav--ux-compact) .ccg-nav__more::before {
+        content: "";
+        display: block;
+        width: 92px;
+        min-width: 92px;
+        flex: 0 0 92px;
+        height: 38px;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav-fit__play {
+        box-sizing: border-box;
+        width: 92px;
+        min-width: 92px;
+        flex: 0 0 92px;
+    }
+}
+
+/* Progressive desktop navigation reduction. These rules only apply after
+   the existing fitting controller has installed the direct Play C64 link. */
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav__list--primary,
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav__list--secondary {
+        min-width: 0;
+    }
+    .ccg-header .ccg-nav.ccg-nav--ux-compact .ccg-nav-fit__play {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        align-self: center;
+        flex: 0 0 auto;
+        min-height: 38px !important;
+        padding: 6px 9px !important;
+        text-decoration: none;
+        white-space: nowrap;
     }
 }

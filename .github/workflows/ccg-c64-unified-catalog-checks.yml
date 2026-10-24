@@ -1,0 +1,27 @@
+name: CCG C64 unified catalogue checks
+on:
+  pull_request:
+    paths:
+      - 'js/ccg-c64/game-catalog.js'
+      - 'js/ccg-c64/app.js'
+      - 'tests/c64-oneload-unified-catalog.test.mjs'
+      - '.github/workflows/ccg-c64-unified-catalog-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  crt-first-catalogue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check js/ccg-c64/game-catalog.js
+          node --check js/ccg-c64/app.js
+          node --check js/ccg-c64/catalogue-browser.js
+      - name: Unified game identity regression tests
+        run: node --test tests/c64-oneload-unified-catalog.test.mjs

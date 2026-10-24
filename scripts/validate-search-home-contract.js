@@ -181,6 +181,58 @@ function stripApprovedHomeFooterCssDeferral(html) {
     );
 }
 
+// Owner-approved CCG merchandise panel, pinned to the official store.
+// This does not permit unrelated homepage edits.
+const APPROVED_FOURTHWALL_PANEL_PREVIOUS = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <a class=\"home-merch-promo__action\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </a> </section>";
+const APPROVED_FOURTHWALL_PANEL_LIVE = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <a class=\"home-merch-promo__link\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"Visit the official CCG merchandise shop on Fourthwall (opens in a new tab)\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">OFFICIAL CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">The CCG Merch Shop</h2> <p class=\"home-merch-promo__description\">Retro gaming T-shirts, mugs, hoodies, badges and more. Purchases help support the Cheeky Commodore Gamer channel and archive.</p> </div> <span class=\"home-merch-promo__action\" aria-hidden=\"true\"> EXPLORE MERCH <span aria-hidden=\"true\">→</span> </span> </a> </section>";
+const APPROVED_FOURTHWALL_PANEL_COMING_SOON = "<section class=\"home-merch-promo ccg-chapter\" aria-labelledby=\"home-merch-title\"> <a class=\"home-merch-promo__link\" href=\"https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp\" target=\"_blank\" rel=\"noopener noreferrer\" data-ccg-revenue-link=\"fourthwall-merch\" aria-label=\"View the new CCG merchandise coming-soon page on Fourthwall (opens in a new tab)\"> <span class=\"home-merch-promo__mark\" aria-hidden=\"true\">CCG</span> <div class=\"home-merch-promo__copy\"> <span class=\"home-merch-promo__eyebrow\">NEW CHEEKY COMMODORE GAMER MERCHANDISE</span> <h2 class=\"home-merch-promo__title\" id=\"home-merch-title\">New CCG Merch Coming Soon</h2> <p class=\"home-merch-promo__description\">The previous range has been retired while a new line of original CCG merchandise is designed, with better products and better prices. Watch this space.</p> </div> <span class=\"home-merch-promo__action\" aria-hidden=\"true\"> COMING SOON </span> </a> </section>";
+const APPROVED_FOURTHWALL_PANEL = APPROVED_FOURTHWALL_PANEL_LIVE;
+// The repositioned version keeps the exact reviewed panel content, but is
+// visible early and does not rely on the chapter reveal animation.
+const APPROVED_FOURTHWALL_PANEL_LIVE_EARLY = APPROVED_FOURTHWALL_PANEL_LIVE.replace(
+  'class="home-merch-promo ccg-chapter"', 'class="home-merch-promo"'
+);
+const APPROVED_FOURTHWALL_PANEL_COMING_SOON_EARLY = APPROVED_FOURTHWALL_PANEL_COMING_SOON.replace(
+  'class="home-merch-promo ccg-chapter"', 'class="home-merch-promo"'
+);
+const APPROVED_FOURTHWALL_PANEL_EARLY = APPROVED_FOURTHWALL_PANEL.replace(
+  'class="home-merch-promo ccg-chapter"', 'class="home-merch-promo"'
+);
+const FOURTHWALL_STYLE_RE = /\s*<link rel="preload" href="\/resources\/css\/home-fourthwall-merch\.css" as="style" onload="this\.onload=null;this\.rel='stylesheet'">\s*<noscript><link rel="stylesheet" href="\/resources\/css\/home-fourthwall-merch\.css" \/><\/noscript>/g;
+
+function stripApprovedFourthwallMerch(html, role) {
+  let source = String(html);
+  const matches = [...source.matchAll(/<section\b[^>]*class=["'][^"']*\bhome-merch-promo\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi)];
+  const styleMatches = [...source.matchAll(FOURTHWALL_STYLE_RE)];
+
+  if (role === "baseline" && matches.length === 0 && styleMatches.length === 0) return source;
+  if (matches.length !== 1 || styleMatches.length !== 1) {
+    fail("Fourthwall merch homepage panel and its deferred stylesheet must each appear exactly once.");
+  }
+  const normalizedPanel = matches[0][0].replace(/\s+/g, " ").trim();
+  // Accept only the two exact historical full-panel designs in baseline, and
+  // require the identical approved panel design at its current location.
+  const approvedPanels = role === "baseline"
+    ? [APPROVED_FOURTHWALL_PANEL_PREVIOUS, APPROVED_FOURTHWALL_PANEL_LIVE, APPROVED_FOURTHWALL_PANEL_LIVE_EARLY, APPROVED_FOURTHWALL_PANEL_COMING_SOON, APPROVED_FOURTHWALL_PANEL_COMING_SOON_EARLY, APPROVED_FOURTHWALL_PANEL, APPROVED_FOURTHWALL_PANEL_EARLY]
+    : [APPROVED_FOURTHWALL_PANEL_EARLY];
+  if (!approvedPanels.includes(normalizedPanel)) {
+    fail("Homepage Fourthwall merchandise panel differs from the approved design or destination.");
+  }
+  if (role === "current") {
+    const hero = source.indexOf('class="home-hero home-hero--streamlined"');
+    const archive = source.indexOf("<!-- PRIMARY ARCHIVE DISCOVERY DASHBOARD -->");
+    const community = source.indexOf('class="home-community-latest ccg-chapter"');
+    if (hero < 0 || archive < 0 || community < 0
+        || !(matches[0].index > hero && matches[0].index > archive && matches[0].index < community)) {
+      fail("The visible merch panel must follow archive discovery and precede the community section.");
+    }
+  }
+  source = source.replace(styleMatches[0][0], " ");
+  source = source.replace(matches[0][0], " ");
+  source = source.replace(/<!-- CCG merchandise: (?:lightweight external checkout, no third-party script or embed|temporary relaunch notice while the new range is being designed)\. -->/g, "");
+  return source;
+}
+
 // Explicitly scoped allowance for the optional homepage support-art replacement.
 // Validate the exact approved graphic in both the current and baseline pages.
 // The rest of home.html is still byte-for-byte checked against origin/main.
@@ -283,10 +335,10 @@ const baseline = readBaseline();
 assertExactHead(current);
 
 const normalizedCurrent = stripApprovedHomeSupportArt(stripApprovedSeoHead(
-  stripApprovedHomeDiscoveryTransformation(current, "current")
+  stripApprovedHomeDiscoveryTransformation(stripApprovedFourthwallMerch(current, "current"), "current")
 ), "current").replace(/\s+/g, " ").trim();
 const normalizedBaseline = stripApprovedHomeSupportArt(stripApprovedSeoHead(
-  stripApprovedHomeDiscoveryTransformation(baseline, "baseline")
+  stripApprovedHomeDiscoveryTransformation(stripApprovedFourthwallMerch(baseline, "baseline"), "baseline")
 ), "baseline").replace(/\s+/g, " ").trim();
 
 if (normalizedCurrent !== normalizedBaseline) {

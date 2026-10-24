@@ -80,6 +80,11 @@ function archiveContentIsCurrent(html, games) {
     return syncArchiveData(html, games) === html;
 }
 
+function discoverySectionIsCurrent(html) {
+    const section = html.match(/<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->[\s\S]*?<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->/i);
+    return Boolean(section && normalizeWhitespace(section[0]) === normalizeWhitespace(discoverySection().trim()));
+}
+
 function isCurrentGamesIndex(html, games = loadGames()) {
     const signatures = [
         `<title>${escapeHtml(TITLE)}</title>`,
@@ -93,11 +98,16 @@ function isCurrentGamesIndex(html, games = loadGames()) {
         'class="games-hero__actions"',
         'CCG GAMES INDEX OMEGA DISCOVERY START',
         'Find C64 &amp; Amiga Games Your Way',
+        'class="games-omega-discovery__summary"',
         'CCG GAMES INDEX OMEGA SEARCH HEADING START',
         'Search &amp; Filter C64 and Amiga Games',
         'aria-label="More ways to browse the C64 and Amiga games archive"'
     ];
-    return signatures.every((signature) => html.includes(signature)) && archiveContentIsCurrent(html, games);
+    return signatures.every((signature) => html.includes(signature))
+        && html.indexOf("<!-- SEARCH -->") < html.indexOf("<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->")
+        && html.indexOf("<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->") < html.indexOf("<!-- ACCORDION -->")
+        && discoverySectionIsCurrent(html)
+        && archiveContentIsCurrent(html, games);
 }
 
 function replaceTitle(html) {
@@ -201,8 +211,10 @@ function discoverySection() {
             <div class="games-omega-discovery__header">
                 <span class="games-omega-discovery__eyebrow">Explore the Commodore archive</span>
                 <h2 id="gamesOmegaDiscoveryTitle">Find C64 &amp; Amiga Games Your Way</h2>
-                <p>Jump straight into the part of the archive you want: browse by genre, publisher, release year, platform or curated collection, or search the complete game library below.</p>
+                <p>Use the search and filters above, or browse by genre, publisher, release year, platform or curated collection.</p>
             </div>
+            <details class="games-omega-discovery__more">
+                <summary class="games-omega-discovery__summary">Browse genres, publishers, years and more</summary>
             <nav class="games-omega-discovery__grid" aria-label="C64 and Amiga game archive sections">
                 <a class="games-omega-discovery__card" href="/games/genres/" data-archive-mark="GENRE"><strong>Browse by Genre</strong><span>Racing, arcade, adventure, platform, strategy, shooters and more.</span></a>
                 <a class="games-omega-discovery__card" href="/games/publishers/" data-archive-mark="PUB"><strong>Game Publishers</strong><span>Explore C64 and Amiga games by publisher and software house.</span></a>
@@ -213,16 +225,20 @@ function discoverySection() {
                 <a class="games-omega-discovery__card" href="/games/downloads/" data-archive-mark="PDF"><strong>Game Manuals A–Z</strong><span>Browse available manuals and documentation for games in the archive.</span></a>
                 <a class="games-omega-discovery__card" href="/music/" data-archive-mark="SID"><strong>C64 &amp; Amiga Music</strong><span>Explore composers, SID music and the wider Commodore music archive.</span></a>
             </nav>
+            </details>
         </section>
         <!-- CCG GAMES INDEX OMEGA DISCOVERY END -->`;
 }
 
 function upsertDiscovery(html) {
     const existing = /\s*<!-- CCG GAMES INDEX OMEGA DISCOVERY START -->[\s\S]*?<!-- CCG GAMES INDEX OMEGA DISCOVERY END -->/i;
-    if (existing.test(html)) return html.replace(existing, `\n${discoverySection()}`);
-    const hero = /(<\/section>\s*\n\s*<div class="ccg-omega-divider" aria-hidden="true">\s*<span class="ccg-omega-core"><\/span>\s*<\/div>)(\s*\n\s*<!-- SEARCH -->)/i;
-    if (!hero.test(html)) fail("games discovery insertion point not found");
-    return html.replace(hero, `$1\n${discoverySection()}$2`);
+    if (!html.includes('<!-- SEARCH -->') || !html.includes('<!-- ACCORDION -->')) {
+        fail("games search and accordion insertion markers are missing");
+    }
+    // Keep the full static directory, but place the search above optional browsing.
+    // This must survive future games.json rebuilds as well as first-time upgrades.
+    const withoutDiscovery = html.replace(existing, "");
+    return withoutDiscovery.replace("<!-- ACCORDION -->", `${discoverySection()}\n\n        <!-- ACCORDION -->`);
 }
 
 function upsertToolsHeading(html) {

@@ -458,6 +458,17 @@ function composerSortLetter(name) {
     let openSet = new Set();
 
     const draw = () => {
+      // The shared Music Hub handler owns letter clicks. Read its persisted
+      // group state before rebuilding filtered search results.
+      const existingGroups = Array.from(accordion.querySelectorAll(".composer-accordion__group"));
+      existingGroups.forEach((group) => {
+        const letter = group.getAttribute("data-letter") || "";
+        if (group.dataset.ccgUserOpen === "true") {
+          openSet.add(letter);
+        } else {
+          openSet.delete(letter);
+        }
+      });
       const query = normaliseName(searchInput.value);
       const hasQuery = query.length > 0;
 
@@ -476,7 +487,7 @@ function composerSortLetter(name) {
           .join("");
 
         return `
-          <section class="composer-accordion__group ${shouldOpen ? "is-open" : ""}" data-letter="${letter}">
+          <section class="composer-accordion__group ${shouldOpen ? "is-open" : ""}" data-letter="${letter}" data-ccg-user-open="${openSet.has(letter) ? "true" : "false"}">
             <button class="composer-accordion__header" type="button" aria-expanded="${shouldOpen ? "true" : "false"}">
               <span class="composer-accordion__letter">${letter}</span>
               <span class="composer-accordion__count">${matches.length}</span>
@@ -490,21 +501,9 @@ function composerSortLetter(name) {
 
       accordion.innerHTML = sections.filter(Boolean).join("") || "<p class='composer-accordion__empty'>No composers match this search.</p>";
 
-      accordion.querySelectorAll(".composer-accordion__header").forEach((button) => {
-        button.addEventListener("click", () => {
-          const group = button.closest(".composer-accordion__group");
-          if (!group) {
-            return;
-          }
-          const letter = group.getAttribute("data-letter") || "";
-          if (openSet.has(letter)) {
-            openSet.delete(letter);
-          } else {
-            openSet.add(letter);
-          }
-          draw();
-        });
-      });
+      // Shared delegated handler retains the focused button and updates
+      // data-ccg-user-open; do not register a second click listener.
+      window.CCGMusicHubOmega?.refreshAccordion?.();
     };
 
     searchInput.addEventListener("input", draw);
