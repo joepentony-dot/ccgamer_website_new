@@ -1,0 +1,75 @@
+name: GoatCounter Display Acceptance
+
+on:
+  pull_request:
+    paths:
+      - "js/ccg-visitor-metrics.js"
+      - "scripts/ensure-goatcounter-coverage.js"
+      - "tests/goatcounter-sitewide.test.mjs"
+      - "tests/browser/goatcounter-visible-counters.py"
+      - "js/ccg-global.js"
+      - "service-worker.js"
+      - ".github/workflows/goatcounter-display-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-live-public-counter:
+    name: Inspect real CCG counters and script delivery
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Examine live tracking script, HTML and public GoatCounter JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import urllib.request
+          import urllib.error
+          urls = {
+            'home': 'https://www.cheekycommodoregamer.co.uk/home.html',
+            'game': 'https://www.cheekycommodoregamer.co.uk/games/chuckie-egg/',
+            'runtime': 'https://www.cheekycommodoregamer.co.uk/js/ccg-visitor-metrics.js',
+            'home_count': 'https://cheekycommodoregamer.goatcounter.com/counter/ccg-archive-session.json',
+            'game_count': 'https://cheekycommodoregamer.goatcounter.com/counter/%2Fgames%2Fchuckie-egg%2F.json',
+          }
+          for name,url in urls.items():
+            try:
+              with urllib.request.urlopen(urllib.request.Request(url, headers={
+                'User-Agent':'CCG-counter-acceptance/1.0',
+                'Cache-Control':'no-cache'
+              }),timeout=20) as response:
+                data = response.read(350000).decode('utf-8','replace')
+                print(f'{name}: HTTP={response.status}; type={response.headers.get("Content-Type")}; bytes={len(data)}')
+                if name in ('home','game'):
+                  print('  script_link=', '/js/ccg-visitor-metrics.js' in data,
+                    'count_script=', 'gc.zgo.at/count.js' in data,
+                    'game_counter_markup=', 'ccg-game-view-count' in data)
+                elif name == 'runtime':
+                  print('  valid_runtime=', 'CCGVisitorMetricsInitialized' in data,
+                    'error_or_html=', data[:90] if 'CCGVisitorMetricsInitialized' not in data else 'no')
+                else:
+                  print('  counter_response=', data[:180])
+            except urllib.error.HTTPError as err:
+              print(f'{name}: HTTP={err.code}; response={err.read(180).decode("utf-8","replace")!r}')
+            except Exception as err:
+              print(f'{name}: ERROR={type(err).__name__}: {err}')
+          PY
+
+  verify-counters-in-chromium:
+    name: Verify visible counters and real numeric data
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout proposed website scripts
+        uses: actions/checkout@v4
+      - name: Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test client
+        run: python -m pip install 'playwright==1.55.0'
+      - name: Test candidate counters against actual live home and game HTML
+        run: python tests/browser/goatcounter-visible-counters.py

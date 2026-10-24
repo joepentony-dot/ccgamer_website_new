@@ -2801,3 +2801,28 @@
         display: none !important;
     }
 }
+
+/* Compact visit count at the very bottom of each game, beneath footer links. */
+.ccg-page--single-game .ccg-footer--game > .ccg-game-views {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: fit-content;
+    max-width: calc(100% - 32px);
+    gap: 10px;
+    margin: 0 auto 14px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(114, 215, 255, 0.35);
+    background: rgba(16, 21, 34, 0.55);
+    color: #d9e9f4;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    font-weight: 500;
+}
+.ccg-page--single-game .ccg-footer--game .ccg-game-views__count {
+    color: #72d7ff;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
