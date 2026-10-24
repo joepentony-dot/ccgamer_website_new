@@ -190,7 +190,7 @@
   function coolReady(key,cooldown,now=performance.now()){const last=state.lastByKey.get(key)||-Infinity;return now-last>=cooldown}
   function clearActiveTimers(active=state.active){if(active?.timer){clearInterval(active.timer);active.timer=null}if(active?.watchdog){clearTimeout(active.watchdog);active.watchdog=null}}
   function releaseDungeonFx(active){if(!active?.dungeonFx)return;try{active.dungeonFx.disconnect()}catch(_){}active.dungeonFx=null}
-  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;return true}
+  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);if(active.audio){try{active.audio.onended=null;active.audio.onerror=null;active.audio.pause()}catch(_){}}releaseDungeonFx(active);state.active=null;state.activePriority=-1;return true}
   function stopActive(reason="stopped"){
     if(reason==="menu"||reason==="stopped")state.pendingGesture=null;
     const active=state.active;if(!active)return false;state.active=null;state.activePriority=-1;state.serial++;
