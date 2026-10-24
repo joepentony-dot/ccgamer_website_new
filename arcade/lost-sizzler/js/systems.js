@@ -660,7 +660,7 @@ window.CCGSystems=(()=>{
     // Exactly one Death Stalker exists on every floor. Only this explicit class uses ordinary-fire immunity.
     host.voidStalkers=[];{
       const room=rooms[((run.floor||1)*7+3)%Math.max(1,rooms.length)]||rooms[0],vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
-      const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.enemies.push(v);host.voidStalkers.push(v.id)
+      const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.deathStalkerSpawn={x:v.x,y:v.y,roomId:room?.id??-1};host.enemies.push(v);host.voidStalkers.push(v.id)
     }
     enforceDeathStalkerSingleton(host);
 
@@ -725,11 +725,16 @@ window.CCGSystems=(()=>{
 
   function enforceDeathStalkerSingleton(host){
     if(!host)return null;
-    const stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
     const previousId=String(host.deathStalkerId||"");
+    let stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
+    if(!stalkers.length&&previousId&&!defeatedIds.has(previousId)&&host.deathStalkerSpawn){
+      const q=host.deathStalkerSpawn,level=Math.max(1,Number(host.v142CampaignFloor||1)),hp=6+level*2;
+      const restored={id:previousId,x:Number(q.x),y:Number(q.y),x0:Number(q.x),y0:Number(q.y),kind:"ghost",hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};
+      host.enemies=Array.isArray(host.enemies)?host.enemies:[];host.enemies.push(restored);stalkers=[restored];
+    }
     const keep=stalkers.find(e=>String(e.id)===previousId)||stalkers[0]||null;
     const floorIds=new Set(stalkers.map(e=>String(e.id||"")));
-    const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
     // A previously banished floor Stalker stays banished even if an older
     // duplicate entry was still marked alive during state reconciliation.
     const permanentlyDefeated=stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||

@@ -1079,6 +1079,7 @@ function updateRescue(){
   }
 }
 function updateStalker(dt){
+  SYS.enforceDeathStalkerSingleton?.(host);
   const s=host.stalker;if(!s||s.permanentlyBanished||!C.stalker.enabled||run.floor<C.stalker.startFloor){S.setStalkerNear(Boolean(host.voidStalkerInSight));return}
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
   if(s.stunMs>0){s.stunMs-=dt;return}s.moveCooldown-=dt;const targets=localPlayers(),target=targets.sort((a,b)=>md(a,s)-md(b,s))[0];if(!target)return;if(SYS.inSanctuary(world,target.x,target.y)){s.near=false;s.seen=false;s.moveCooldown=Math.max(500,Number(s.moveCooldown)||0);S.setStalkerNear(Boolean(host.voidStalkerInSight));return}const sees=W.sameRoom(world,s,target)||A.lineOfSight(world.map,s,target,C.enemy.lineOfSightRange,host);if(sees)s.seen=true;
