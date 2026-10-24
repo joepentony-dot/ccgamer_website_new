@@ -92,6 +92,14 @@ window.CCGAI=(()=>{
   function clearOfUnenteredDoor(host,roomId,x,y){return roomEntered(host,roomId)||roomDoors(host,roomId).every(door=>man({x,y},door)>3)}
   function stalkerDoor(e,host,x,y){const door=W.doorAt(host,x,y);return (e?.deathStalker||e?.bridgeThief)&&door?.type==="room"&&!door.locked?door:null}
   function passable(e,host,map,x,y,world,allowPlayerGoal=false){
+    // Ordinary floor collision does not know about the Trickster Bridge's
+    // permanent pit or its temporarily broken span. A stolen-stash thief
+    // must never escape onto tiles its pursuer cannot physically traverse.
+    if(e?.bridgeThief&&host?.weightBridge){
+      const b=host.weightBridge;
+      if((b.pitTiles||[]).some(q=>q.x===x&&q.y===y)||
+        (b.collapsed&&!b.rebuilt&&(b.bridgeTiles||[]).some(q=>q.x===x&&q.y===y)))return false;
+    }
     if((!W.walkable(map,x,y,host)&&!stalkerDoor(e,host,x,y))||occupied(host,x,y,e)||(!allowPlayerGoal&&occupiedByPlayer(x,y)))return false;
     /* Sanctuary is an unconditional safe-zone boundary. This deliberately
      * includes roaming Stalkers: no monster may enter or spawn inside it. */

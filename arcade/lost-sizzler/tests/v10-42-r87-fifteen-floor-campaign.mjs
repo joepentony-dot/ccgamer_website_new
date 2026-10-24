@@ -45,6 +45,88 @@ assert.match(coreSource,/function floorChallengeComplete\(spec,explorePct=0\)/,"
 assert.match(coreSource,/r114-floor-challenge-cache-f/,"featured floor challenges must create a high-tier reward cache");
 assert.match(coreSource,/FLOOR CHALLENGE COMPLETE/,"featured floor challenges must announce completion and reward");
 
+// P0: challenge caches have a separate reward owner from R114 boss chests.
+// Execute the actual canonical function, including deferred JSON-state replay.
+const challengeStart=coreSource.indexOf("function floorChallengeRewardCell(){");
+const challengeEnd=coreSource.indexOf("function updateQuests(){",challengeStart);
+assert.ok(challengeStart>=0&&challengeEnd>challengeStart,"Challenge cache owner must exist");
+function challengeFixture({occupied=false,full=false,isolated=false,locked=false}={}){
+  const map=Array.from({length:15},()=>Array(15).fill(1));
+  for(let y=3;y<=11;y++)for(let x=3;x<=11;x++)map[y][x]=0;
+  const player={id:"P1",x:7,y:7,health:10};
+  const hostState={enemies:[],generators:[],items:[],chests:[],doors:[],
+    shops:[],shrines:[],switches:[],deathCaches:[],revision:0};
+  if(occupied){
+    hostState.generators.push({id:"active-gen",x:8,y:7,alive:true});
+    hostState.enemies.push({id:"active-enemy",x:6,y:7,alive:true});
+    hostState.items.push({id:"floor-loot",x:7,y:8,active:true});
+    hostState.stalker={id:"count-loadula",x:7,y:6,awake:true};
+  }
+  if(full)for(let y=3;y<=11;y++)for(let x=3;x<=11;x++)
+    if(x!==7||y!==7)hostState.items.push({x,y,active:true});
+  if(isolated||locked){
+    for(let y=3;y<=11;y++)for(let x=3;x<=11;x++)if(x!==7||y!==7)map[y][x]=1;
+    if(locked){
+      map[7][8]=0;hostState.doors.push({x:8,y:7,locked:true,open:false});
+    }
+  }
+  let now=1000,toasts=0,sounds=0;
+  const ctx=vm.createContext({p1:player,host:hostState,run:{floor:5},
+    world:{map,exit:{x:6,y:6}},Date:{now:()=>now},
+    W:{roomAt:()=>1,playerWalkable:(grid,x,y,h)=>grid[y]?.[x]===0&&
+      !(h.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)&&
+      !(h.doors||[]).some(d=>d.x===x&&d.y===y&&(!d.open||d.locked))},
+    S:{sfx(){sounds++}},showToast(){toasts++}});
+  vm.runInContext(coreSource.slice(challengeStart,challengeEnd),ctx,
+    {filename:"game-core.js::floorChallengeReward",timeout:3000});
+  return{ctx,hostState,player,step(){return ctx.floorChallengeReward({challengeTitle:"Bridge"})},
+    later(){now+=1000},toasts:()=>toasts,sounds:()=>sounds};
+}
+const activeCache=challengeFixture({occupied:true});
+assert.equal(activeCache.step(),true);
+const cache=activeCache.hostState.chests[0];
+assert.ok(cache.r114FloorChallengeReward);
+for(const objects of [activeCache.hostState.generators,activeCache.hostState.enemies,
+  activeCache.hostState.items,[activeCache.hostState.stalker],[activeCache.player]]){
+  assert.ok(!objects.some(o=>o.x===cache.x&&o.y===cache.y),
+    "Challenge cache must not collide with an occupied tile");
+}
+assert.equal(activeCache.step(),false);
+assert.equal(activeCache.hostState.chests.length,1);
+assert.equal(activeCache.toasts(),1);
+assert.equal(activeCache.sounds(),1);
+
+const pendingCache=challengeFixture({full:true});
+assert.equal(pendingCache.step(),false,"No free cell leaves the reward pending");
+assert.equal(pendingCache.hostState.chests.length,0);
+assert.equal(pendingCache.toasts(),0);
+pendingCache.ctx.host=JSON.parse(JSON.stringify(pendingCache.ctx.host));
+pendingCache.ctx.host.items.find(o=>o.x===8&&o.y===7).active=false;
+assert.equal(pendingCache.step(),false,"Retry is throttled");
+pendingCache.later();
+assert.equal(pendingCache.step(),true,"Restored pending reward delivers after a cell opens");
+assert.deepEqual([pendingCache.ctx.host.chests[0].x,pendingCache.ctx.host.chests[0].y],[8,7]);
+assert.equal(pendingCache.ctx.host.chests.length,1);
+assert.equal(pendingCache.step(),false);
+assert.equal(pendingCache.toasts(),1);
+
+const oldCache=challengeFixture();
+oldCache.hostState.chests.push({id:"r114-floor-challenge-cache-f5",x:8,y:7,active:false});
+assert.equal(oldCache.step(),false,"Opened legacy cache may never reappear");
+assert.equal(oldCache.hostState.r114FloorChallengeRewarded,true);
+assert.equal(oldCache.hostState.chests.length,1);
+const trappedCache=challengeFixture({isolated:true});
+assert.equal(trappedCache.step(),false,"Never fall back onto the player");
+assert.equal(trappedCache.hostState.chests.length,0);
+const gatedCache=challengeFixture({locked:true});
+assert.equal(gatedCache.step(),false,"Locked door prevents reward on far side");
+assert.equal(gatedCache.hostState.chests.length,0);
+gatedCache.hostState.doors[0].locked=false;gatedCache.hostState.doors[0].open=true;
+gatedCache.later();
+assert.equal(gatedCache.step(),true);
+assert.deepEqual([gatedCache.hostState.chests[0].x,gatedCache.hostState.chests[0].y],[8,7]);
+
+
 assert.equal(floors[0].theme,"C64_ARCHIVE","Floor 1 must retain the neutral opening archive identity");
 assert.equal(floors[14].theme,"BLOOD_CITADEL","Floor 15 must end in the danger-red Blood Citadel");
 assert.match(worldSource,/BLOOD_CITADEL:\{name:"Blood Citadel",floor:"#24090d"/,"world palette must define the authored danger-red final theme");
@@ -207,6 +289,43 @@ const distantThief=thiefRouteCase({distant:true});
 assert.equal(distantThief.initial,true,"Distant thief remains eligible for global simulation");
 assert.equal(distantThief.attacks,0);
 
+// P0 thief collision: actual CCGAI.passable must honour the special bridge
+// even when the underlying floor map reports ordinary open terrain.
+const thiefPassableStart=thiefAiSource.indexOf("  function passable(e,host,map,x,y,world,allowPlayerGoal=false){");
+const thiefPassableEnd=thiefAiSource.indexOf("  function stageUnenteredEnemies(",thiefPassableStart);
+assert.ok(thiefPassableStart>=0&&thiefPassableEnd>thiefPassableStart,
+  "Current authoritative AI passability owner must exist");
+const thiefPassableSource=thiefAiSource.slice(thiefPassableStart,thiefPassableEnd);
+const bridgePathMap=Array.from({length:9},()=>Array(9).fill(0));
+const bridgePathHost={weightBridge:{collapsed:true,rebuilt:false,
+  pitTiles:[{x:4,y:4}],bridgeTiles:[{x:5,y:4}]}};
+const thiefActor={id:"bridge-thief-f5",bridgeThief:true,x:3,y:4,alive:true};
+const unrelatedActor={id:"ordinary",bridgeThief:false,x:3,y:4,alive:true};
+const pathContext=vm.createContext({
+  W:{walkable:(map,x,y)=>map[y]?.[x]===0,roomAt:()=>0},
+  occupied:()=>false,occupiedByPlayer:()=>false,
+  window:{CCGSystems:{inSanctuary:()=>false}},
+  roomEntered:()=>true,clearOfUnenteredDoor:()=>true,stalkerDoor:()=>null
+});
+vm.runInContext(thiefPassableSource+";this.pitPassable=passable;",pathContext,
+  {filename:"ai.js::bridge-thief-special-collision",timeout:1000});
+const canThief=(actor,x,y)=>pathContext.pitPassable(
+  actor,bridgePathHost,bridgePathMap,x,y,{},false);
+assert.equal(canThief(thiefActor,4,4),false,
+  "The Dungeon Thief may never flee into a permanently impassable bridge pit");
+assert.equal(canThief(thiefActor,5,4),false,
+  "The Dungeon Thief may not cross a collapsed span before the switch is shot");
+assert.equal(canThief(thiefActor,3,5),true,
+  "Ordinary accessible floor remains available for the thief's escape");
+assert.equal(canThief(unrelatedActor,4,4),true,
+  "The thief's bridge-specific AI guard must not change unrelated enemy collision");
+bridgePathHost.weightBridge.collapsed=false;
+bridgePathHost.weightBridge.rebuilt=true;
+assert.equal(canThief(thiefActor,4,4),false,
+  "Rebuilding cannot make the permanent pit safe");
+assert.equal(canThief(thiefActor,5,4),true,
+  "Rebuilding must release the span for the thief's existing flee path");
+
 const radarThiefStart=renderSource.indexOf("function radarBridgeThief(hostState){");
 const radarThiefEnd=renderSource.indexOf("function renderRadarPanel(p){",radarThiefStart);
 assert.ok(radarThiefStart>=0&&radarThiefEnd>radarThiefStart,"Real minimap thief selector must exist");
@@ -360,7 +479,271 @@ for(const floor of [2,5,9,12]){
 }
 assert.equal(checkedGeneratorFloors,8,"Sample four generator-objective floors twice each.");
 
+// P0 Floor 5: real threshold door/animation and generator damage owners.
+// Scripted walking routes; NOT proof of natural combat, UI input or owner save.
+const f5DoorStart=gameplaySource.indexOf("function beginDoorOpening(");
+const f5DoorEnd=gameplaySource.indexOf("function chestScoreReward(",f5DoorStart);
+const f5GenStart=gameplaySource.indexOf("function damageGenerator(g,power,p){");
+const f5GenEnd=gameplaySource.indexOf("function hitStalker(",f5GenStart);
+assert.ok(f5DoorStart>=0&&f5DoorEnd>f5DoorStart&&f5GenStart>=0&&f5GenEnd>f5GenStart,
+  "Extract real door and generator owners for scripted route regression");
+const f5Owners=gameplaySource.slice(f5DoorStart,f5DoorEnd)+
+  gameplaySource.slice(f5GenStart,f5GenEnd);
+const f5Dirs=[[1,0],[-1,0],[0,1],[0,-1]],f5Key=(x,y)=>x+","+y;
+let f5Routes=0,f5DoorCount=0;
+for(let sample=0;sample<12;sample++){
+  const seed="ccg-owner-natural-route-floor5-20261015-"+sample;
+  let runState={floor:5,seed,stats:{generators:0}};
+  const worldState=generatedWorld.generate(seed+"-F5");
+  let hostState=generatedWorld.createHostState(worldState);
+  generatedSystems.decorate(worldState,hostState,runState);
+  assert.equal(hostState.generators.length,3,"Required generators remain exactly three");
+  let clock=1000;
+  const player={id:"P1",x:worldState.start.x,y:worldState.start.y,
+    health:25,bronzeKeys:0};
+  const context=vm.createContext({
+    host:hostState,world:worldState,run:runState,
+    W:generatedWorld,SYS:generatedSystems,PGR:generatedRuntime.window.CCGProgression,
+    p1:player,stats:{generators:0,doors:0,secrets:0},score:0,mode:"playing",
+    explored:new Map([[player.id,new Set()]]),P:{orange:"#ff0"},
+    performance:{now:()=>clock},S:{sfx(){}},showToast(){},updateQuests(){},floatText(){}
+  });
+  vm.runInContext(f5Owners,context,{filename:"game-play.js::Floor5-owner-route",timeout:3000});
+  const gate=hostState.doors.find(d=>d.type==="room"&&!d.locked);
+  assert.ok(gate,"Every generated Floor 5 path should have a room threshold");
+  gate.locked=true;
+  assert.equal(context.tryDoor(player,gate.x,gate.y),false,
+    "Locked room gate must reject movement");
+  assert.equal(gate.locked,true);
+  assert.notEqual(gate.open,true);
+  gate.locked=false;
+  let openings=0;
+  for(let index=0;index<3;index++){
+    const generator=hostState.generators[index],start=f5Key(player.x,player.y);
+    const queue=[{x:player.x,y:player.y}],seen=new Set([start]),prev=new Map();
+    let adjacent=null;
+    for(let q=0;q<queue.length;q++){
+      const cell=queue[q];
+      if(Math.abs(cell.x-generator.x)+Math.abs(cell.y-generator.y)===1){
+        adjacent=cell;break;
+      }
+      for(const[dx,dy]of f5Dirs){
+        const x=cell.x+dx,y=cell.y+dy,key=f5Key(x,y);
+        if(seen.has(key)||worldState.map[y]?.[x]!==0||
+          generatedWorld.generatorAt(hostState,x,y)||
+          (hostState.blockingDecor||[]).some(d=>d.x===x&&d.y===y&&!d.destroyed))continue;
+        const door=generatedWorld.doorAt(hostState,x,y);
+        if(door&&(door.type!=="room"||door.locked))continue;
+        seen.add(key);prev.set(key,f5Key(cell.x,cell.y));queue.push({x,y});
+      }
+    }
+    assert.ok(adjacent,seed+" "+generator.id+" requires an accessible attack approach");
+    const steps=[];
+    for(let node=f5Key(adjacent.x,adjacent.y);node!==start;node=prev.get(node)){
+      assert.ok(node,"Route predecessor must return to player position");
+      const[x,y]=node.split(",").map(Number);steps.push({x,y});
+    }
+    steps.reverse();
+    for(const tile of steps){
+      const door=generatedWorld.doorAt(hostState,tile.x,tile.y);
+      if(door&&!door.open){
+        assert.equal(context.tryDoor(player,tile.x,tile.y),false,
+          "An unopened room door must initiate an animation");
+        assert.equal(door.opening,true);
+        clock+=1200;context.updateDoors();openings++;
+        assert.equal(door.open,true,"Actual door owner must complete opening");
+      }
+      if(door)assert.equal(context.tryDoor(player,tile.x,tile.y),true);
+      assert.equal(generatedWorld.playerWalkable(worldState.map,tile.x,tile.y,hostState),true,
+        "All planned steps must be valid against real player collision");
+      player.x=tile.x;player.y=tile.y;
+    }
+    assert.equal(Math.abs(player.x-generator.x)+Math.abs(player.y-generator.y),1,
+      "Player should attack from a neighbouring square");
+    context.damageGenerator(generator,generator.hp,player);
+    assert.equal(generator.alive,false,"Actual generator damage function defeats target");
+    assert.equal(context.stats.generators,index+1);
+    assert.equal(runState.stats.generators,index+1);
+    assert.equal(context.score,700*(index+1),"No duplicate generator reward");
+    assert.equal(hostState.objective.complete,index===2,
+      "Objective must not complete at 2/3 or before");
+    if(sample===0&&index===1){
+      context.host=JSON.parse(JSON.stringify(hostState));
+      context.run=JSON.parse(JSON.stringify(runState));
+      hostState=context.host;runState=context.run;
+      assert.equal(hostState.generators.filter(g=>!g.alive).length,2);
+      assert.equal(hostState.objective.complete,false);
+    }
+  }
+  assert.ok(openings>0,seed+" must traverse doors initially closed");
+  assert.equal(player.bronzeKeys,0,"Mandatory generators cannot demand bronze keys");
+  assert.equal(hostState.exitOpen,false,"Floor exit still requires collected Exit Sigil");
+  assert.ok(hostState.doors.filter(d=>d.sigilGate).every(d=>!d.locked),
+    "Final generator must open the Sigil route, not bypass Sigil pickup");
+  f5DoorCount+=openings;
+  f5Routes++;
+}
+assert.equal(f5Routes,12);
+assert.ok(f5DoorCount>=12);
 
+
+
+
+// P0 bridge emergency supplies: execute the original live pickup-spawn
+// owner against actual stolen-item flood fill rather than trusting terrain
+// near the far-side switch. The original code spawned items across a sealed
+// gap (3,4) while the hero was stranded on the opposite side (7,4).
+const bridgeSupplyStart=gameplaySource.indexOf("function ensureBridgeSwitchAmmo(p,b){");
+const bridgeSupplyEnd=gameplaySource.indexOf("function weightBridgeBlocks(",bridgeSupplyStart);
+const bridgeCellsStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");
+const bridgeCellsEnd=localRuntimeSource.indexOf("function recoverBridgeThiefStash(",bridgeCellsStart);
+assert.ok(bridgeSupplyStart>=0&&bridgeSupplyEnd>bridgeSupplyStart&&bridgeCellsStart>=0&&bridgeCellsEnd>bridgeCellsStart,
+  "Canonical bridge emergency and accessible recovered-item owners must exist");
+const bridgeSupplyCode=gameplaySource.slice(bridgeSupplyStart,bridgeSupplyEnd);
+const bridgeReachCode=localRuntimeSource.slice(bridgeCellsStart,bridgeCellsEnd);
+function emergencySupplyCase({blockLeft=true,blockNorth=true,blockSouth=true,withLoot=true,fill=false}={}){
+  const map=Array.from({length:9},()=>Array(9).fill(1));
+  for(const [x,y] of [[7,4],[6,4],[7,5],[6,5],[3,4]])map[y][x]=0;
+  if(!blockLeft)map[4][5]=0;
+  if(!blockNorth)map[3][4]=0;
+  if(!blockSouth)map[5][4]=0;
+  if(fill){map[4][6]=1;map[5][6]=1;map[5][7]=1}
+  const player={id:"P1",x:7,y:4,weapon:null,firearmUnlocked:false,mana:0},
+    bridge={switchPos:{x:4,y:4},collapsed:true,rebuilt:false,pitTiles:[{x:5,y:4}],bridgeTiles:[{x:5,y:4}]},
+    hostState={items:withLoot?[{id:"standing-loot",x:6,y:4,active:true,kind:"potion"}]:[],
+      enemies:[],generators:[],chests:[],deathCaches:[],switches:[],shrines:[],shops:[],doors:[],revision:0},
+    ctx=vm.createContext({host:hostState,world:{map},p1:player,Date,localPlayers:()=>[player],
+      W:{walkable:(m,x,y)=>m[y]?.[x]===0,playerWalkable:(m,x,y)=>m[y]?.[x]===0},
+      S:{sfx(){}},showToast(){}});
+  vm.runInContext(bridgeReachCode+";"+bridgeSupplyCode,ctx,{timeout:1200});
+  ctx.ensureBridgeSwitchAmmo(player,bridge);
+  return{hostState,player,bridge,map,items:hostState.items.filter(i=>i.r114BridgeEmergency)};
+}
+const emergency=emergencySupplyCase();
+assert.equal(emergency.items.length,2,"Stranded player must receive both needed emergency supplies");
+assert.deepEqual(Array.from(emergency.items,i=>i.kind),["weapon","ammo"]);
+assert.deepEqual(Array.from(emergency.items,i=>[i.x,i.y]),[[6,5],[7,5]],
+  "Both pickups must be reachable on the player's side and not on standing loot");
+assert.equal(new Set(emergency.items.map(i=>i.x+","+i.y)).size,2,
+  "Two supplies must not obscure each other when two safe tiles exist");
+for(const item of emergency.items)assert.notDeepEqual([item.x,item.y],[3,4],
+  "An inaccessible but open square across the ruined bridge is not valid");
+const noLootEmergency=emergencySupplyCase({withLoot:false});
+assert.deepEqual(Array.from(noLootEmergency.items,i=>[i.x,i.y]),[[6,4],[6,5]],
+  "Nearest reachable spaces take priority when existing loot does not occupy them");
+const desperate=emergencySupplyCase({fill:true});
+assert.equal(desperate.items.length,2,"Do not delete emergency supplies when every neighbouring cell is blocked");
+assert.deepEqual(Array.from(desperate.items,i=>[i.x,i.y]),[[7,4],[7,4]],
+  "Legacy player-tile fallback remains available when no free reachable cell exists");
+assert.equal(desperate.hostState.revision,1,"Emergency supply generation refreshes the world once");
+
+// P0 bridge death escape: a player who dies on the far side after the
+// Trickster Bridge collapses respawns at the floor entrance, unable to fire
+// the far-side rebuild switch. Run the actual repair owner from source so
+// the thief, dropped Flask, death cache and player progress remain recoverable.
+const bridgeRepairStart=gameplaySource.indexOf("function restoreWeightBridgeAfterRespawn(){");
+const bridgeRepairEnd=gameplaySource.indexOf("function weightBridgeBlocks(",bridgeRepairStart);
+const deathDamageStart=gameplaySource.indexOf("function hurtPlayer(");
+const deathDamageEnd=gameplaySource.indexOf("const canonicalPlayerDamage=",deathDamageStart);
+assert.ok(bridgeRepairStart>=0&&bridgeRepairEnd>bridgeRepairStart&&deathDamageStart>=0&&deathDamageEnd>deathDamageStart,
+  "Bridge respawn guard and canonical player-death owner must exist");
+const deathCode=gameplaySource.slice(deathDamageStart,deathDamageEnd);
+assert.ok(deathCode.indexOf("if(penalty.gameOver)")>=0&&
+  deathCode.indexOf("const bridgeRepaired=restoreWeightBridgeAfterRespawn();")>deathCode.indexOf("if(penalty.gameOver)")&&
+  deathCode.indexOf("const bridgeRepaired=restoreWeightBridgeAfterRespawn();")<deathCode.indexOf('mode="respawning"'),
+  "Bridge recovery must occur after the continuing-run check but before teleporting player to floor entrance");
+assert.match(deathCode,/bridgeRepaired\?" The Trickster Bridge has rebuilt after your death/,
+  "Death confirmation must explain how the stranded Flask, thief and death cache remain reachable");
+const bridgeRepairCode=gameplaySource.slice(bridgeRepairStart,bridgeRepairEnd);
+function bridgeDeathCase(state={}){
+  const bridge={id:"weight-bridge",crossed:true,collapsed:true,rebuilt:false,stabilized:false,
+    crossingPlayer:"P1",switchId:"bridge-rebuild",thiefId:"bridge-thief-f5",thiefDefeated:false,
+    stolenItems:[{id:"dropped-flask",carriedItem:{kind:"banishment",qty:1}}],...state};
+  const hostState={weightBridge:bridge,revision:9,
+    switches:[{id:"bridge-rebuild",weightBridgeSwitch:true,active:true,toggled:false},
+      {id:"unrelated-switch",active:true,toggled:false}]};
+  const context=vm.createContext({host:hostState});
+  vm.runInContext(bridgeRepairCode+";this.repairBridge=restoreWeightBridgeAfterRespawn;",context,{timeout:1000});
+  return{context,hostState,bridge,repair:()=>context.repairBridge()};
+}
+const collapsedDeath=bridgeDeathCase();
+assert.equal(collapsedDeath.repair(),true,"Death must repair an unrecoverable collapsed bridge");
+assert.equal(collapsedDeath.bridge.collapsed,false);
+assert.equal(collapsedDeath.bridge.rebuilt,true);
+assert.equal(collapsedDeath.bridge.stabilized,true);
+assert.equal(collapsedDeath.bridge.crossingPlayer,null);
+assert.equal(collapsedDeath.hostState.switches[0].active,false,"Far-side switch cannot demand another shot");
+assert.equal(collapsedDeath.hostState.switches[0].toggled,true);
+assert.equal(collapsedDeath.hostState.switches[1].active,true,"Other floor switches must remain active");
+assert.equal(collapsedDeath.hostState.revision,10);
+assert.equal(collapsedDeath.bridge.thiefId,"bridge-thief-f5","Repair must not despawn the stash thief");
+assert.equal(collapsedDeath.bridge.thiefDefeated,false);
+assert.equal(collapsedDeath.bridge.stolenItems.length,1);
+assert.equal(collapsedDeath.bridge.stolenItems[0].carriedItem.kind,"banishment");
+assert.equal(collapsedDeath.repair(),false,"Repeated death/recovery cannot redeploy or pay twice");
+assert.equal(collapsedDeath.hostState.revision,10);
+const alreadyRebuilt=bridgeDeathCase({collapsed:false,rebuilt:true,stabilized:true});
+assert.equal(alreadyRebuilt.repair(),false,"Normal rebuilt bridge must remain unchanged");
+assert.equal(alreadyRebuilt.hostState.switches[0].active,true);
+const beforeCrossing=bridgeDeathCase({crossed:false,collapsed:false});
+assert.equal(beforeCrossing.repair(),false,"Death before crossing must not complete the puzzle");
+const restoredBridgeDeath=bridgeDeathCase();
+restoredBridgeDeath.context.host=JSON.parse(JSON.stringify(restoredBridgeDeath.hostState));
+assert.equal(restoredBridgeDeath.repair(),true,"JSON-restored collapsed bridge must be recoverable");
+assert.equal(restoredBridgeDeath.context.host.weightBridge.stolenItems[0].carriedItem.kind,"banishment");
+assert.equal(restoredBridgeDeath.context.host.revision,10);
+const missingOldSwitch=bridgeDeathCase({switchId:"legacy-missing-switch"});
+assert.equal(missingOldSwitch.repair(),true,"Older save without its switch must still restore traversability");
+assert.equal(missingOldSwitch.bridge.rebuilt,true);
+assert.equal(missingOldSwitch.hostState.switches[0].active,true,"Unmatched switch must not be altered");
+
+// P0 Thief placement: thief's stolen inventory must not be locked behind
+// Bronze, switch or undiscovered secret gates. Source-execute real generated
+// Floor 5 world, host and SYS decoration, not a fabricated free-room map.
+const thiefFnStart=gameplaySource.indexOf("function bridgeThiefCell(p,b){");
+const thiefFnEnd=gameplaySource.indexOf("function bridgeStashedItems(b){",thiefFnStart);
+const puzzleFnStart=gameplaySource.indexOf("function puzzleFloorCells(roomId){");
+const puzzleFnEnd=gameplaySource.indexOf("function spawnPuzzleAmbush(",puzzleFnStart);
+assert.ok(thiefFnStart>=0&&thiefFnEnd>thiefFnStart&&puzzleFnStart>=0&&puzzleFnEnd>puzzleFnStart);
+const realThiefCode=gameplaySource.slice(puzzleFnStart,puzzleFnEnd)+"\n"+gameplaySource.slice(thiefFnStart,thiefFnEnd);
+let accessibleThiefCount=0,rebuiltBridgeDestinations=0;
+for(let seedIndex=0;seedIndex<35;seedIndex++){
+  const seed="ccg-bridge-thief-route-"+(seedIndex*91+3)+"-F5";
+  const w=generatedWorld.generate(seed),h=generatedWorld.createHostState(w),r=generatedRuntime.window.CCGProgression.makeRun();
+  w.floor=5;r.floor=5;generatedSystems.decorate(w,h,r);
+  // Ordinary unlocked doors are allowed to open; optional gated doors stay
+  // locked, reproducing the route available without bronze or secret keys.
+  for(const d of h.doors||[])if(d.type==="room"&&!d.locked){d.open=true;d.opening=false}
+  for(const phase of ["ordinary","post-switch"]){
+    const floorBridge={...(h.weightBridge||{}),roomId:h.weightBridge?.roomId??-100,
+      collapsed:phase==="post-switch",rebuilt:false};
+    const base=phase==="post-switch"?floorBridge.rewardPos:w.start;
+    assert.ok(base,seed+": generated bridge must contain a far-side reward position");
+    const player={id:"P1",x:base.x,y:base.y,health:8};
+    const ctx=vm.createContext({world:w,host:h,W:generatedWorld,localPlayers:()=>[player],Math});
+    vm.runInContext(realThiefCode+";this.pickThief=bridgeThiefCell;",ctx,{timeout:2000});
+    const target=ctx.pickThief(player,floorBridge),roomId=generatedWorld.roomAt(w,target.x,target.y);
+    const pit=new Set((floorBridge.pitTiles||[]).map(q=>q.x+","+q.y)),
+      visited=new Set([player.x+","+player.y]),queue=[{x:player.x,y:player.y}];
+    for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+      const x=queue[i].x+dx,y=queue[i].y+dy,k=x+","+y;
+      if(visited.has(k)||pit.has(k)||w.map[y]?.[x]!==0)continue;
+      if(h.blockingDecor?.some(d=>d.x===x&&d.y===y))continue;
+      if(h.generators?.some(g=>g.alive&&g.x===x&&g.y===y))continue;
+      if(!generatedWorld.playerWalkable(w.map,x,y,h))continue;
+      visited.add(k);queue.push({x,y})
+    }
+    assert.ok(visited.has(target.x+","+target.y),seed+" / "+phase+": player must reach the thief without optional keys after rebuilding the bridge");
+    assert.notEqual(roomId,floorBridge.roomId,seed+" / "+phase+": thief must flee the bridge chamber");
+    assert.ok(!(w.rooms[roomId]||{}).optional||
+      !(h.doors||[]).some(d=>d.roomId===roomId&&d.locked&&d.type!=="room"),
+      seed+" / "+phase+": thief must not hide behind an optional locked gate");
+    if(phase==="post-switch")rebuiltBridgeDestinations++;
+    accessibleThiefCount++;
+  }
+}
+assert.equal(accessibleThiefCount,70,"35 generated floors × normal/post-switch reachability");
+assert.equal(rebuiltBridgeDestinations,35,"All 35 bridge crossings must allow a remote reachable hideout");
 
 // P0 bridge thief: execute the actual stolen-item recovery owner.
 const bridgeStart=localRuntimeSource.indexOf("function bridgeThiefRecoveryCells(");
@@ -416,6 +799,46 @@ for(const row of placedBridge){
 }
 assert.equal(overlapBridge.bridge.stolenItems.length,0);
 assert.equal(overlapBridge.ctx.score,750);
+
+// Rebuilt Trickster Bridge: ordinary terrain reports pit squares walkable,
+// but the game's weightBridgeBlocks rejects them permanently. Force the thief
+// to die beside the pit with a full bag and check the actual recovery owner.
+const pitOverflow=bridgeCase();
+pitOverflow.bridge.collapsed=false;pitOverflow.bridge.rebuilt=true;
+pitOverflow.bridge.pitTiles=[{x:6,y:5}];
+pitOverflow.bridge.bridgeTiles=[{x:7,y:5}];
+pitOverflow.thief.x=6;pitOverflow.thief.y=5;
+const rebuiltCells=pitOverflow.ctx.bridgeThiefRecoveryCells(pitOverflow.player,pitOverflow.bridge);
+assert.ok(!rebuiltCells.some(q=>q.x===6&&q.y===5),
+  "A permanently impassable pit must never be a stolen-item destination after repair");
+assert.ok(rebuiltCells.some(q=>q.x===7&&q.y===5),
+  "A repaired span remains eligible for reachable overflow loot");
+const pitReturn=pitOverflow.ctx.recoverBridgeThiefStash(pitOverflow.thief,pitOverflow.player);
+assert.equal(pitReturn.pending,0);
+assert.equal(pitReturn.dropped,1);
+const pitPickup=pitOverflow.host.items.find(row=>row.active&&row.bridgeRecovered);
+assert.ok(pitPickup&&!(pitPickup.x===6&&pitPickup.y===5),
+  "The stolen Flask must land on recoverable ground, never inside the permanent pit");
+assert.equal(pitPickup.carriedItem.kind,"banishment");
+assert.equal(pitOverflow.bridge.stolenItems.length,0);
+assert.equal(pitOverflow.ctx.score,750);
+assert.equal(pitOverflow.retry(),null,"Pit-safe overflow cannot be issued a second time");
+
+const collapsedPitOverflow=bridgeCase();
+collapsedPitOverflow.bridge.collapsed=true;collapsedPitOverflow.bridge.rebuilt=false;
+collapsedPitOverflow.bridge.pitTiles=[{x:6,y:5}];
+collapsedPitOverflow.bridge.bridgeTiles=[{x:7,y:5}];
+collapsedPitOverflow.thief.x=6;collapsedPitOverflow.thief.y=5;
+const collapsedCells=collapsedPitOverflow.ctx.bridgeThiefRecoveryCells(
+  collapsedPitOverflow.player,collapsedPitOverflow.bridge);
+assert.ok(!collapsedCells.some(q=>(q.x===6||q.x===7)&&q.y===5),
+  "Before switch repair, neither the pit nor the broken bridge may receive recovered loot");
+const collapsedReturn=collapsedPitOverflow.ctx.recoverBridgeThiefStash(
+  collapsedPitOverflow.thief,collapsedPitOverflow.player);
+assert.equal(collapsedReturn.pending,0);
+assert.ok(collapsedPitOverflow.host.items.filter(row=>row.active&&row.bridgeRecovered)
+  .every(row=>!(row.y===5&&(row.x===6||row.x===7))));
+assert.equal(collapsedPitOverflow.ctx.score,750);
 
 const restoredBridge=bridgeCase({sealed:true,capacity:1});
 restoredBridge.player.inventory=[{kind:"potion",qty:1}];
@@ -848,5 +1271,55 @@ ownedCacheTrial.owner.refreshTrial(ownedCacheTrial.h);
 ownedCacheTrial.owner.refreshTrial(ownedCacheTrial.h);
 assert.equal(ownedCacheTrial.h.chests.filter(c=>c.r115TrialReward).length,1,"Recovered Death Cache permits exactly one pending reward");
 assert.equal(ownedCacheTrial.ctx.score,1000,"Deferred trial score is granted exactly once");
+
+
+// Actual generator spawning owner: a reinforcement must NEVER spawn onto
+// the attacking hero, active floor loot, a living Guardian, or a Death Cache.
+// These tests expose the original bug (first neighbour was the hero).
+const spawnStart=gameplaySource.indexOf("function updateGenerators(dt){");
+const spawnEnd=gameplaySource.indexOf("\nfunction updateRescue(){",spawnStart);
+assert.ok(spawnStart>=0&&spawnEnd>spawnStart,"Real generator-spawn owner must remain extractable");
+const spawnSource=gameplaySource.slice(spawnStart,spawnEnd);
+function generatorSpawnFixture({blockedFourth=false,sanctuaryFourth=false}={}){
+  const player={id:"hero",x:6,y:5,health:20},
+    gen={id:"gen0",x:5,y:5,alive:true,powered:true,spawnCooldown:0,spawnTotal:0},
+    cache={id:"cache",x:5,y:4,active:blockedFourth},
+    host={generators:[gen],enemies:[],items:[{id:"loot",x:4,y:5,active:true}],
+      chests:[],deathCaches:[cache],shrines:[],doors:[],
+      guardian:{id:"maw",x:5,y:6,alive:true},stalker:null,
+      rescue:null,trader:null,startShop:null,shops:[],revision:0},
+    ctx={host,world:{map:[]},run:{floor:5,modifier:null},
+      C:{dungeon:{generatorSpawnCap:4}},
+      generatorIlluminated:()=>true,localPlayers:()=>[player],
+      W:{walkable:()=>true,sameRoom:()=>false},
+      SYS:{inSanctuary:(_world,x,y)=>sanctuaryFourth&&x===5&&y===4},S:{sfx(){}},Date,Math};
+  vm.createContext(ctx);
+  vm.runInContext(spawnSource+";this.generatorTick=updateGenerators;",ctx,{timeout:1200});
+  return{host,gen,cache,player,tick:ctx.generatorTick};
+}
+const spaceForSpawn=generatorSpawnFixture();
+spaceForSpawn.tick(16);
+assert.equal(spaceForSpawn.host.enemies.length,1,"Free fourth neighbouring tile must permit one reinforcement");
+assert.equal(spaceForSpawn.host.enemies[0].x,5);
+assert.equal(spaceForSpawn.host.enemies[0].y,4,"Reinforcement must skip hero, loot and Guardian");
+assert.equal(spaceForSpawn.gen.spawnTotal,1);
+assert.equal(spaceForSpawn.host.revision,1);
+const fullyBlockedSpawn=generatorSpawnFixture({blockedFourth:true});
+fullyBlockedSpawn.tick(16);
+assert.equal(fullyBlockedSpawn.host.enemies.length,0,"All four occupied cells must prevent spawn");
+assert.equal(fullyBlockedSpawn.gen.spawnTotal,0,"No phantom spawned tally when all cells are occupied");
+const sanctuarySpawn=generatorSpawnFixture({sanctuaryFourth:true});
+sanctuarySpawn.tick(16);
+assert.equal(sanctuarySpawn.host.enemies.length,0,"Only free Sanctuary cell must reject a generator spawn");
+assert.equal(sanctuarySpawn.gen.spawnTotal,0,"A blocked Sanctuary spawn must not count as an enemy");
+fullyBlockedSpawn.cache.active=false;
+fullyBlockedSpawn.gen.spawnCooldown=0;
+fullyBlockedSpawn.tick(16);
+assert.equal(fullyBlockedSpawn.host.enemies.length,1,"Freeing recovered cache permits reinforcement");
+assert.equal(fullyBlockedSpawn.host.enemies[0].x,5);
+assert.equal(fullyBlockedSpawn.host.enemies[0].y,4);
+fullyBlockedSpawn.gen.spawnCooldown=0;
+fullyBlockedSpawn.tick(16);
+assert.equal(fullyBlockedSpawn.host.enemies.length,1,"Occupied existing spawn blocks repeated collision");
 
 console.log("Dungeon Carnage R87 fifteen-floor campaign and floor-theme contract passed.");

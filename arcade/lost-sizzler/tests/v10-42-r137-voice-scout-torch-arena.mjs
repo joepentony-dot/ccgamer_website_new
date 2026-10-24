@@ -65,4 +65,43 @@ assert.equal(rescueToasts.length,1,"Completion feedback must not repeat");
 assert.equal(rescueToasts[0][4].ccgDialogueVoiceHandled,true,"Generic sanctuary voice must not replace scout");
 assert.equal(updated.length,1,"Rescue objective must update only once");
 
+
+const countSource=cut(play,"function updateStalker(dt){","function updateBanishment(){");
+const countHero={x:3,y:1,health:20,totalXp:500,xp:200};
+const count={x:1,y:1,awake:true,spawnTimer:99999,permanentlyBanished:false,
+  moveCooldown:20000,drainTimer:1000,seen:false,near:false,stunMs:0};
+const countCtx={
+  host:{stalker:count,voidStalkerInSight:false},run:{floor:5,floorXP:300},world:{},
+  C:{stalker:{enabled:true,startFloor:1,drainDistance:4,drainPerSecond:10,nearDistance:2,name:"Count Loadula",moveMs:1000,hitDamage:1},enemy:{lineOfSightRange:9}},
+  S:{setStalkerNear(){},sfx(){}},P:{red:"#f00"},score:500,
+  localPlayers:()=>[countHero],SYS:{inSanctuary:()=>false,pathStep:()=>null},
+  PGR:{difficulty:()=>({stalker:1})},W:{sameRoom:()=>true},
+  A:{lineOfSight:()=>true},md:(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y),
+  showToast(){},floatText(){},hurtPlayer(){},logEvent(){}
+};
+vm.createContext(countCtx);
+vm.runInContext(countSource+";this.tickCount=updateStalker;",countCtx,{timeout:1200});
+countCtx.tickCount(750);assert.equal(countCtx.score,500,"Count drains only after full second");
+countCtx.tickCount(250);assert.equal(countCtx.score,490,"Count normal cadence");
+countCtx.tickCount(1000);assert.equal(countCtx.score,480,"Second ordinary drain");
+assert.equal(countHero.totalXp,480);
+assert.equal(countCtx.run.floorXP,280);
+count.drainTimer=-1e12;
+vm.runInContext("this.tickCount(16);",countCtx,{timeout:1200});
+assert.equal(countCtx.score,480,"Corrupted saved negative timer cannot deduct vast XP");
+assert.equal(countHero.totalXp,480);
+assert.ok(count.drainTimer>0&&count.drainTimer<=1000);
+count.drainTimer=1000;
+vm.runInContext("this.tickCount(600000);",countCtx,{timeout:1200});
+assert.equal(countCtx.score,430,"Suspended frame caps catchup to five seconds");
+count.drainTimer=Number.NEGATIVE_INFINITY;
+vm.runInContext("this.tickCount(16);",countCtx,{timeout:1200});
+assert.equal(countCtx.score,430);
+assert.ok(count.drainTimer>0&&Number.isFinite(count.drainTimer));
+count.drainTimer=null;
+const beforeNull=countCtx.score;
+vm.runInContext("this.tickCount(16);",countCtx,{timeout:1200});
+assert.equal(countCtx.score,beforeNull,"JSON-restored null timer must retain original 1-second grace");
+assert.ok(count.drainTimer>0&&Number.isFinite(count.drainTimer));
+
 console.log("PASS R137 voice watchdog pause, Scout rescue and genuine torch entry (solo dungeon only)");

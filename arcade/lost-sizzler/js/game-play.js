@@ -419,9 +419,41 @@ function triggerSequenceTorch(p,deliberate=false){
 }
 function weightBridgeCell(list,x,y){return (list||[]).some(q=>q.x===x&&q.y===y)}
 function bridgeThiefCell(p,b){
-  const candidates=(world.rooms||[]).filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom).map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)})).sort((a,b)=>b.dist-a.dist);
-  for(const row of candidates){const cells=puzzleFloorCells(row.room.id);if(cells.length)return cells[Math.floor(Math.random()*cells.length)]}
-  const fallback=(world.rooms||[]).find(r=>r.id!==b.roomId),cells=fallback?puzzleFloorCells(fallback.id):[];return cells[0]||{x:world.start.x,y:world.start.y}
+  // The thief carries the player's stolen inventory. Never hide it inside a
+  // Bronze Key, secret or locked challenge room the player cannot reach.
+  // Ordinary unlocked threshold doors are traversable after opening them.
+  // Choose the thief's hideout as reachable *after* firing the switch to
+  // rebuild the bridge. The pit remains unsafe, but restored bridge tiles
+  // become traversable, allowing the thief to flee beyond this chamber.
+  const key=(x,y)=>x+","+y,blockedBridge=new Set((b.pitTiles||[]).map(q=>key(q.x,q.y))),
+    queue=[{x:p.x,y:p.y}],reachable=new Set([key(p.x,p.y)]);
+  const canReach=(x,y)=>{
+    if(world.map[y]?.[x]!==0||blockedBridge.has(key(x,y)))return false;
+    if(host.blockingDecor?.some(d=>d.x===x&&d.y===y))return false;
+    if(host.generators?.some(g=>g.alive&&g.x===x&&g.y===y))return false;
+    const door=typeof W.doorAt==="function"?W.doorAt(host,x,y):
+      (host.doors||[]).find(d=>d.x===x&&d.y===y);
+    if(door)return !door.locked&&(door.open||door.type==="room");
+    return W.playerWalkable(world.map,x,y,host)
+  };
+  for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const x=queue[i].x+dx,y=queue[i].y+dy,k=key(x,y);
+    if(!reachable.has(k)&&canReach(x,y)){reachable.add(k);queue.push({x,y})}
+  }
+  const candidates=(world.rooms||[])
+    .filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom)
+    .map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)}))
+    .sort((a,b)=>b.dist-a.dist);
+  for(const row of candidates){
+    const cells=puzzleFloorCells(row.room.id).filter(q=>reachable.has(key(q.x,q.y)));
+    if(cells.length)return cells[Math.floor(Math.random()*cells.length)]
+  }
+  // If every eligible remote room is sealed, the thief remains within the
+  // player's accessible floor component; never teleport it behind a lock.
+  return queue.find(q=>(q.x!==p.x||q.y!==p.y)&&
+    W.playerWalkable(world.map,q.x,q.y,host)&&
+    !localPlayers().some(player=>player.x===q.x&&player.y===q.y)&&
+    !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y))||{x:p.x,y:p.y}
 }
 function bridgeStashedItems(b){
   const stolen=[],entry=b?.entryPos||null;
@@ -441,11 +473,33 @@ function spawnBridgeThief(p,b){
 function ensureBridgeSwitchAmmo(p,b){
   const noFirearm=!p?.firearmUnlocked||!p?.weapon,needsAmmo=Number(p?.mana||0)<=0;
   if(!noFirearm&&!needsAmmo)return false;
-  const q=b.switchPos||b.rewardPos||{x:p.x,y:p.y},spots=[{x:q.x+1,y:q.y},{x:q.x-1,y:q.y},{x:q.x,y:q.y+1},{x:q.x,y:q.y-1},{x:p.x,y:p.y}].filter(cell=>W.walkable(world.map,cell.x,cell.y,host));
-  const first=spots[0]||{x:p.x,y:p.y},second=spots[1]||first;
+  // The replacement bridge is not yet active here. Reuse the existing
+  // item-recovery flood fill, which respects sealed doors, the collapsed
+  // bridge, furniture and occupied floor cells, rather than assuming that
+  // a walkable tile beside the switch is reachable from the player.
+  const origin=b.switchPos||b.rewardPos||p;
+  const spots=typeof bridgeThiefRecoveryCells==="function"
+    ?bridgeThiefRecoveryCells(p,{...b,thiefRecoveryOrigin:origin})
+      .filter(cell=>cell.x!==origin.x||cell.y!==origin.y)
+    :[];
+  // A completely blocked area retains the old player-tile rescue fallback;
+  // normal floors supply two distinct, genuinely accessible pickup tiles.
+  const first=spots[0]||{x:p.x,y:p.y},second=spots[1]||spots[0]||{x:p.x,y:p.y};
   if(noFirearm)host.items.push({id:`bridge-emergency-weapon-${Date.now()}`,...first,kind:"weapon",active:true,title:"BRIDGE EMERGENCY FIREARM",r114BridgeEmergency:true});
   if(needsAmmo)host.items.push({id:`bridge-emergency-ammo-${Date.now()}`,...second,kind:"ammo",active:true,title:"BRIDGE EMERGENCY AMMO",r114BridgeEmergency:true});
   showToast("BRIDGE FAILSAFE SUPPLIES",noFirearm&&needsAmmo?"A firearm cache and ammunition have appeared beside the bridge switch. Pick them up, then shoot the mechanism.":noFirearm?"A firearm cache has appeared beside the bridge switch so the room cannot trap you.":"An emergency ammo pack has appeared beside the bridge mechanism. Pick it up, then shoot the switch.","cyan",9500);host.revision++;return true
+}
+function restoreWeightBridgeAfterRespawn(){
+  // Death teleports the player to the floor entrance. If the bridge collapsed
+  // before its far-side projectile switch was fired, that switch is no longer
+  // reachable from the entrance and the death cache/stolen Flask can be lost.
+  // Repair only that stranded state, preserving the thief and stolen-item ledger.
+  const b=host?.weightBridge;
+  if(!b?.collapsed||b.rebuilt)return false;
+  b.collapsed=false;b.rebuilt=true;b.stabilized=true;b.crossingPlayer=null;
+  const bridgeSwitch=(host.switches||[]).find(s=>s.id===b.switchId&&s.weightBridgeSwitch);
+  if(bridgeSwitch){bridgeSwitch.active=false;bridgeSwitch.toggled=true}
+  host.revision++;return true
 }
 function weightBridgeBlocks(p,x,y){
   const b=host.weightBridge;if(!b)return false;
@@ -888,11 +942,12 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     const priorCacheLost=(host.deathCaches||[]).some(c=>c?.active);if(priorCacheLost)host.deathCaches=[];const cache=PGR.createDeathCache(p,run,cacheX,cacheY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;cache.score=penalty.scoreLost||0;cache.xp=penalty.xpLost||0;cache.progressionRecovery=penalty.progressionRecovery?JSON.parse(JSON.stringify(penalty.progressionRecovery)):null;cache.active=cache.active||cache.score>0||cache.xp>0||Boolean(cache.progressionRecovery);run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;host.deathCaches=[];PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED — GAME OVER","This is the second death that left your XP reserve at zero. Your final XP warning was already used, so the run is over.","red",12000);endRun("Game over: XP reached zero for the second time after the final warning");return}
     releaseSealedDeathRoom(W.roomAt(world,deathX,deathY));
+    const bridgeRepaired=restoreWeightBridgeAfterRespawn();
     if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
     const playerId=String(p.id||p.name||"P1");
     mode="respawning";p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;p.invuln=Math.max(2200,Number(p.invuln)||0);p.controlLocked=true;p.controlsLocked=true;if(p===p1){fire1=0;fireBuffer1=0;input.delete("Space");input.delete("KeyF");input.delete("Numpad0")}else if(p===p2){fire2=0;fireBuffer2=0;input.delete("Enter")}p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;
     const explore=Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),cacheText=cache.active?` Your death box holds ${Number(cache.score||0).toLocaleString()} score, ${Number(cache.xp||0).toLocaleString()} XP and dropped loot. Recover it before another death or the whole cache is destroyed.`:" You had nothing to cache.",xpText=penalty.xpLost?` ${penalty.xpLost} XP moved to the death box.${penalty.levelLost?` Level ${penalty.levelBefore} fell to ${penalty.levelAfter}; ${penalty.lostSkill||"the latest upgrade"} is held by that death cache and returns with its XP if recovered in time.`:" Your current level was retained."}`:" No XP was available to lose.",priorText=priorCacheLost?" YOUR PREVIOUS DEATH CACHE WAS DESTROYED — any unrecovered loot, XP and stripped progression in it are permanently lost.":"",zeroText=penalty.zeroWarning?" FINAL XP WARNING: your XP reserve has reached zero once. Recover this death cache or earn more XP. If a later death leaves XP at zero again, the run ends.":"";
-    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${priorText}${zeroText}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
+    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${priorText}${zeroText}${bridgeRepaired?" The Trickster Bridge has rebuilt after your death; your cache and the Dungeon Thief remain accessible.":""}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
     host.revision++;
     try{dispatchEvent(new CustomEvent("ccg:player-death",{detail:{playerId,playerName:String(p.name||"Player"),source:String(source||"enemy"),floor:Number(run.floor||1),deathX:Number(deathX),deathY:Number(deathY),cacheActive:Boolean(cache.active),scoreLost:Number(penalty.scoreLost||0),xpLost:Number(penalty.xpLost||0),levelLost:Boolean(penalty.levelLost),recoverableProgression:Boolean(penalty.progressionRecovery),priorCacheLost:Boolean(priorCacheLost),zeroWarning:Boolean(penalty.zeroWarning),requiresConfirmation:true}}))}catch(_){}
   }sync()
@@ -979,7 +1034,25 @@ function updateGenerators(dt){
     const lit=generatorIlluminated(g);if(!lit){g.powered=false;continue}if(!g.powered){g.powered=true;g.spawnCooldown=Math.max(g.spawnCooldown||0,1700);if(localPlayers().some(p=>W.sameRoom(world,p,g)))S.sfx("generator")}
     g.spawnCooldown-=dt;const rate=run.modifier?.id==="RESTLESS_DUNGEON"?.65:1;if(g.spawnCooldown>0)continue;
     g.spawnCooldown=(7200+Math.random()*2800)*rate;const aliveSpawned=(host.enemies||[]).filter(e=>e.alive&&e.generatorId===g.id).length;if(aliveSpawned>=C.dungeon.generatorSpawnCap)continue;
-    const pos=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:g.x+dx,y:g.y+dy})).find(q=>W.walkable(world.map,q.x,q.y,host)&&!SYS.inSanctuary(world,q.x,q.y)&&!host.enemies.some(e=>e.alive&&e.x===q.x&&e.y===q.y));if(!pos)continue;
+    // Generator reinforcements must not materialise on the player, another
+    // machine, actors, loot, chests or other interactive occupied cells.
+    // Geometry (including doors and blocking furniture) remains owned by W.
+    const at=(rows,q,active)=>Array.isArray(rows)&&rows.some(o=>o&&active(o)&&o.x===q.x&&o.y===q.y);
+    const spawnBlocked=q=>
+      at(localPlayers(),q,()=>true)||
+      at(host.enemies,q,o=>o.alive===true)||
+      at(host.generators,q,o=>o.alive===true)||
+      at(host.items,q,o=>o.active!==false)||
+      at(host.chests,q,o=>o.active!==false)||
+      at(host.deathCaches,q,o=>o.active!==false)||
+      at(host.shrines,q,o=>o.active!==false)||
+      at([host.stalker],q,o=>o.awake&&!o.permanentlyBanished)||
+      at([host.guardian,host.rescue,host.trader,host.startShop,...(host.shops||[])],q,o=>o.alive!==false&&o.active!==false&&!o.rescued)||
+      at(host.doors,q,o=>o.locked||!o.open);
+    const pos=[[1,0],[-1,0],[0,1],[0,-1]]
+      .map(([dx,dy])=>({x:g.x+dx,y:g.y+dy}))
+      .find(q=>W.walkable(world.map,q.x,q.y,host)&&!SYS.inSanctuary(world,q.x,q.y)&&!spawnBlocked(q));
+    if(!pos)continue;
     g.spawnTotal=(g.spawnTotal||0)+1;host.enemies.push({id:`spawn-${Date.now()}-${Math.random()}`,...pos,kind:Math.random()<.3?"hunter":"scout",hp:2+run.floor,maxHp:2+run.floor,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,generatorId:g.id,generatorSpawnOrdinal:g.spawnTotal});S.sfx("generator");host.revision++
   }
 }
@@ -1010,7 +1083,21 @@ function updateStalker(dt){
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
   if(s.stunMs>0){s.stunMs-=dt;return}s.moveCooldown-=dt;const targets=localPlayers(),target=targets.sort((a,b)=>md(a,s)-md(b,s))[0];if(!target)return;if(SYS.inSanctuary(world,target.x,target.y)){s.near=false;s.seen=false;s.moveCooldown=Math.max(500,Number(s.moveCooldown)||0);S.setStalkerNear(Boolean(host.voidStalkerInSight));return}const sees=W.sameRoom(world,s,target)||A.lineOfSight(world.map,s,target,C.enemy.lineOfSightRange,host);if(sees)s.seen=true;
   if(s.seen&&s.moveCooldown<=0){const next=SYS.pathStep(world,host,s,target,false);if(next){s.x=next.x;s.y=next.y}s.moveCooldown=C.stalker.moveMs/PGR.difficulty(run).stalker}if(md(s,target)<=1)hurtPlayer(target,C.stalker.hitDamage,false,C.stalker.name);
-  if(md(s,target)<=C.stalker.drainDistance){s.drainTimer=(s.drainTimer??1000)-dt;while(s.drainTimer<=0){s.drainTimer+=1000;const drain=C.stalker.drainPerSecond||10;score=Math.max(0,score-drain);target.totalXp=Math.max(0,(target.totalXp||0)-drain);target.xp=Math.max(0,(target.xp||0)-drain);run.floorXP=Math.max(0,(run.floorXP||0)-drain);floatText(target.x,target.y,`-${drain} SCORE / XP`,P.red);S.sfx("stalker")}}else s.drainTimer=1000;
+  if(md(s,target)<=C.stalker.drainDistance){
+    // Corrupt saved countdowns or long suspended-frame deltas must never
+    // trap the main game update in an unbounded drain loop.
+    const previous=s.drainTimer==null?NaN:Number(s.drainTimer);
+    const remaining=Number.isFinite(previous)&&previous>=-1000&&previous<=1000?previous:1000;
+    const elapsed=Number.isFinite(dt)?Math.max(0,Math.min(dt,5000)):0;
+    const due=remaining-elapsed,ticks=Math.min(5,Math.max(0,Math.ceil((1-due)/1000))),residual=due+ticks*1000;
+    s.drainTimer=ticks===5&&residual<=0?1000:Math.max(1,Math.min(1000,residual));
+    for(let i=0;i<ticks;i++){
+      const drain=C.stalker.drainPerSecond||10;
+      score=Math.max(0,score-drain);target.totalXp=Math.max(0,(target.totalXp||0)-drain);
+      target.xp=Math.max(0,(target.xp||0)-drain);run.floorXP=Math.max(0,(run.floorXP||0)-drain);
+      floatText(target.x,target.y,`-${drain} SCORE / XP`,P.red);S.sfx("stalker")
+    }
+  }else s.drainTimer=1000;
   const near=md(s,target)<=C.stalker.nearDistance||W.sameRoom(world,s,target);if(near!==s.near){s.near=near;S.setStalkerNear(near||Boolean(host.voidStalkerInSight));if(near)showToast(`${C.stalker.name.toUpperCase()} IS NEAR`,`COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",8000)}
 }
 function updateBanishment(){const threats=(host.enemies||[]).filter(e=>e.alive&&e.deathStalker),sight=threats.some(e=>localPlayers().some(p=>Math.hypot(e.x-p.x,e.y-p.y)<=C.enemy.torchSightRange&&A.lineOfSight(world.map,p,e,C.enemy.torchSightRange,host)));host.voidStalkerInSight=sight;S.setStalkerSight?.(sight);S.setStalkerNear(sight||Boolean(host.stalker?.near))}
