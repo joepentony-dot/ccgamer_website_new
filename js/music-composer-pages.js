@@ -1070,6 +1070,19 @@ function composerSortLetter(name) {
     // pending. Pause only those three decorative animations before the first
     // wheel, then restore their normal playback after the scroll settles.
     root.dataset.ccgMusicScrollPerf = "ready";
+
+    const pauseClass = "ccg-music-scroll-perf-paused";
+    const pauseStyle = document.createElement("style");
+    pauseStyle.dataset.ccgMusicScrollPerf = "targeted";
+    pauseStyle.textContent = [
+      "html." + pauseClass + " a.ccg-brand::before",
+      "html." + pauseClass + " a.ccg-brand::after",
+      "html." + pauseClass + " img.ccg-brand__logo",
+      "{ animation-play-state: paused !important; }"
+    ].join(",");
+    (document.head || root).appendChild(pauseStyle);
+    root.classList.add(pauseClass);
+
     const animationNames = new Set(["ccgAurora", "ccgLogoGlow"]);
     let pausedAnimations = [];
     let scrollResumeTimer = 0;
@@ -1086,6 +1099,7 @@ function composerSortLetter(name) {
     };
 
     const pauseDecorativeAnimations = () => {
+      root.classList.add(pauseClass);
       const animations = decorativeAnimations();
       if (!animations.length) return;
 
@@ -1100,6 +1114,7 @@ function composerSortLetter(name) {
     };
 
     const resumeDecorativeAnimations = () => {
+      root.classList.remove(pauseClass);
       const animations = pausedAnimations;
       pausedAnimations = [];
       animations.forEach((animation) => {
@@ -1121,17 +1136,7 @@ function composerSortLetter(name) {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-
-    // The Music Hub injects the shared header after DOMContentLoaded. Pause
-    // once that header is ready, with an immediate attempt covering composer
-    // pages where the header is already present.
     pauseDecorativeAnimations();
-    void waitForMusicNavigationReady().then(() => {
-      pauseDecorativeAnimations();
-      if (!pausedAnimations.length) {
-        window.requestAnimationFrame(() => pauseDecorativeAnimations());
-      }
-    });
   }
 
   function waitForMusicNavigationReady() {
