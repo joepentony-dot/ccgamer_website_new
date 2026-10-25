@@ -769,11 +769,7 @@ return {
         }
     }
     if (latency.firstLatency === null || latency.firstLatency > MAX_FIRST_SCROLL_LATENCY_MS) {
-        if (page.path === "/music/") {
-            const debug = await execute(sessionId, 'return (function () { var hit = document.elementFromPoint(Math.round(window.innerWidth * 0.5), Math.round(window.innerHeight * 0.5)); var path = []; for (var node = hit; node && path.length < 8; node = node.parentElement) { var style = getComputedStyle(node); path.push({ tag: node.tagName.toLowerCase(), id: node.id || "", className: String(node.className || ""), position: style.position, overflowY: style.overflowY, contentVisibility: style.contentVisibility, contain: style.contain, transform: style.transform, filter: style.filter, willChange: style.willChange, boxShadow: style.boxShadow }); } return { hit: hit ? hit.tagName.toLowerCase() + (hit.id ? "#" + hit.id : "") + (hit.className ? "." + String(hit.className).split(/\s+/).slice(0, 5).join(".") : "") : "none", path: path, htmlOverflow: getComputedStyle(document.documentElement).overflowY, bodyOverflow: document.body ? getComputedStyle(document.body).overflowY : "", scrollY: Math.round(window.scrollY), scrollHeight: document.documentElement.scrollHeight }; })();');
-            console.log("DEBUG " + labelPrefix + " " + page.label + ": " + JSON.stringify(debug));
-        }
-        fail(labelPrefix + " " + page.label + ": first native scroll response was too slow (" + latency.firstLatency + "ms)");
+        fail(`${labelPrefix} ${page.label}: first native scroll response was too slow (${latency.firstLatency}ms)`);
     }
 
     await wheelUp(sessionId, target.x, target.y);
