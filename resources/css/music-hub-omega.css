@@ -504,3 +504,8 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   contain-intrinsic-size: none;
   overflow: clip;
 }
+/* Keep the Music Hub discovery panel a paint clip, not a hidden-overflow
+   scroll boundary, while the first native wheel is hit-tested. */
+html[data-ccg-page="music-hub"] .composer-discovery {
+  overflow: clip;
+}
