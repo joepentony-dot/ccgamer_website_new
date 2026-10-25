@@ -1077,12 +1077,11 @@ function composerSortLetter(name) {
     const decorativeAnimations = () => {
       if (!document.getAnimations) return [];
 
-      const header = document.querySelector("[data-ccg-header]");
       return Array.from(document.getAnimations()).filter((animation) => {
-        if (!animationNames.has(animation.animationName)) return false;
-
-        const target = animation.effect?.target;
-        return target && header && (target === header || header.contains(target));
+        // These names are unique to the shared Music header's logo effects;
+        // filtering by name also covers pseudo-element targets and the
+        // dynamically injected header before its final DOM boundary settles.
+        return animationNames.has(animation.animationName);
       });
     };
 
