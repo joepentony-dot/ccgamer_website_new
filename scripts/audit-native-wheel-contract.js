@@ -722,7 +722,7 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     await new Promise((resolve) => setTimeout(resolve, 450));
     let diagnosticBefore = null;
     let animationPauseDiagnostic = null;
-    if (page.path === "/music/") {
+    if (page.path.startsWith("/music/")) {
         await cdp(sessionId, "Performance.enable");
         diagnosticBefore = selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics"));
         animationPauseDiagnostic = await execute(sessionId, String.raw`
@@ -859,8 +859,8 @@ return {
     scrollY: Math.round(window.scrollY),
     scrollEvents: state.scrollEvents || 0
 };`);
-    const diagnosticAfter = page.path === "/music/" ? selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics")) : null;
-    if (page.path === "/music/") console.log("TRACE sitewide Music Hub: " + JSON.stringify({ before: diagnosticBefore, after: diagnosticAfter, animationsPaused: animationPauseDiagnostic, latency: latency }));
+    const diagnosticAfter = page.path.startsWith("/music/") ? selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics")) : null;
+    if (page.path.startsWith("/music/")) console.log("TRACE sitewide Music Hub: " + JSON.stringify({ before: diagnosticBefore, after: diagnosticAfter, animationsPaused: animationPauseDiagnostic, latency: latency }));
     let afterDown = await readY(sessionId);
     if (afterDown - target.scrollY < MIN_WHEEL_DELTA) {
         await movePointer(sessionId, target.x, target.y);
