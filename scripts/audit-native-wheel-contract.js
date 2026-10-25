@@ -339,15 +339,6 @@ async function cdp(sessionId, cmd, params = {}) {
     return payload.value;
 }
 
-
-function selectPerformanceMetrics(value) {
-    const wanted = new Set([
-        "LayoutCount", "RecalcStyleCount", "LayoutDuration", "RecalcStyleDuration",
-        "ScriptDuration", "TaskDuration", "JSHeapUsedSize", "Nodes", "Documents", "Frames"
-    ]);
-    const metrics = Array.isArray(value?.metrics) ? value.metrics : [];
-    return Object.fromEntries(metrics.filter((metric) => wanted.has(metric.name)).map((metric) => [metric.name, metric.value]));
-}
 async function movePointer(sessionId, x, y) {
     await cdp(sessionId, "Input.dispatchMouseEvent", {
         type: "mouseMoved",
@@ -720,114 +711,16 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     // Let that artificial repositioning and its raster work finish before
     // arming the real-wheel latency probe (as the Home audit already does).
     await new Promise((resolve) => setTimeout(resolve, 450));
-    let diagnosticBefore = null;
-    let animationPauseDiagnostic = null;
-    if (page.path.startsWith("/music/")) {
-        await cdp(sessionId, "Performance.enable");
-        diagnosticBefore = selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics"));
-        animationPauseDiagnostic = await execute(sessionId, String.raw`
-return (function () {
-    var animations = document.getAnimations ? document.getAnimations() : [];
-    var selected = animations.filter(function (animation) { return ['ccgAurora', 'ccgLogoGlow'].indexOf(animation.animationName) >= 0; });
-    selected.forEach(function (animation) { animation.pause(); });
-    return { count: selected.length, total: animations.length };
-})();`);
-        await new Promise((resolve) => setTimeout(resolve, 80));
-    }
     await execute(sessionId, String.raw`
-window.__ccgWheelLatencyProbe = {
-    armedAt: performance.now(),
-    firstScrollAt: 0,
-    scrollEvents: 0,
-    wheelAt: 0,
-    wheelTimeStamp: 0,
-    wheelTarget: '',
-    wheelPath: '',
-    wheelDefaultPrevented: false,
-    initialScrollY: Math.round(window.scrollY),
-    diagnosticContext: {
-        nodeCount: document.querySelectorAll('*').length,
-        imageCount: document.images.length,
-        pendingImages: Array.from(document.images).filter(function (img) { return !img.complete; }).length,
-        imageResourceCount: performance.getEntriesByType('resource').filter(function (entry) { return entry.initiatorType === 'img'; }).length,
-        resourceCount: performance.getEntriesByType('resource').length,
-        pendingStyleLinks: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter(function (link) { return !link.sheet; }).length,
-        styleSheetCount: document.styleSheets.length,
-        fontStatus: document.fonts ? document.fonts.status : '',
-        animationCount: document.getAnimations ? document.getAnimations().length : 0,
-        animationDetails: document.getAnimations ? document.getAnimations().slice(0, 24).map(function (animation) {
-            var target = animation.effect && animation.effect.target;
-            var name = animation.animationName || '';
-            return {
-                name: name,
-                playState: animation.playState || '',
-                target: target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : ''
-            };
-        }) : [],
-        scrollHeight: Math.round(document.documentElement.scrollHeight),
-        scrollY: Math.round(window.scrollY)
-    },
-    eventTiming: [],
-    longTasks: []
-};
+window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
-window.__ccgWheelLatencyWheelHandler && window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
-window.__ccgWheelEventTimingObserver && window.__ccgWheelEventTimingObserver.disconnect();
-window.__ccgLongTaskObserver && window.__ccgLongTaskObserver.disconnect();
 window.__ccgWheelLatencyHandler = function () {
     var state = window.__ccgWheelLatencyProbe;
     if (!state) return;
     state.scrollEvents += 1;
     if (!state.firstScrollAt) state.firstScrollAt = performance.now();
 };
-window.__ccgWheelLatencyWheelHandler = function (event) {
-    var state = window.__ccgWheelLatencyProbe;
-    if (!state || state.wheelAt) return;
-    state.wheelAt = performance.now();
-    state.wheelTimeStamp = Number(event.timeStamp) || 0;
-    state.wheelDefaultPrevented = !!event.defaultPrevented;
-    var target = event.target;
-    state.wheelTarget = target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : '';
-    state.wheelPath = event.composedPath ? event.composedPath().slice(0, 8).map(function (node) {
-        if (!node || !node.tagName) return node === window ? 'window' : node === document ? 'document' : '';
-        return node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.className && typeof node.className === 'string' ? '.' + node.className.trim().replace(/\\s+/g, '.').slice(0, 120) : '');
-    }).filter(Boolean).join(' < ') : '';
-};
 window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
-window.addEventListener('wheel', window.__ccgWheelLatencyWheelHandler, { capture: true, passive: true });
-if (window.PerformanceObserver && Array.isArray(PerformanceObserver.supportedEntryTypes) && PerformanceObserver.supportedEntryTypes.indexOf('event') >= 0) {
-    window.__ccgWheelEventTimingObserver = new PerformanceObserver(function (list) {
-        var state = window.__ccgWheelLatencyProbe;
-        if (!state) return;
-        list.getEntries().forEach(function (entry) {
-            if (entry.name !== 'wheel') return;
-            state.eventTiming.push({
-                name: entry.name,
-                startTime: Number(entry.startTime) || 0,
-                processingStart: Number(entry.processingStart) || 0,
-                processingEnd: Number(entry.processingEnd) || 0,
-                duration: Number(entry.duration) || 0,
-                interactionId: Number(entry.interactionId) || 0
-            });
-        });
-    });
-    window.__ccgWheelEventTimingObserver.observe({ type: 'event', buffered: true, durationThreshold: 0 });
-}
-if (window.PerformanceObserver && Array.isArray(PerformanceObserver.supportedEntryTypes) && PerformanceObserver.supportedEntryTypes.indexOf('longtask') >= 0) {
-    window.__ccgLongTaskObserver = new PerformanceObserver(function (list) {
-        var state = window.__ccgWheelLatencyProbe;
-        if (!state) return;
-        list.getEntries().forEach(function (entry) {
-            if (entry.startTime < state.armedAt) return;
-            state.longTasks.push({
-                startTime: Number(entry.startTime) || 0,
-                duration: Number(entry.duration) || 0,
-                name: entry.name || ''
-            });
-        });
-    });
-    window.__ccgLongTaskObserver.observe({ type: 'longtask', buffered: true });
-}
 return window.__ccgWheelLatencyProbe.armedAt;`);
 
     // Never issue extra CDP commands after arming this latency timer.
@@ -837,127 +730,24 @@ return window.__ccgWheelLatencyProbe.armedAt;`);
     let latency = await execute(sessionId, String.raw`
 var state = window.__ccgWheelLatencyProbe || {};
 if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
-if (window.__ccgWheelLatencyWheelHandler) window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
-if (window.__ccgWheelEventTimingObserver) window.__ccgWheelEventTimingObserver.disconnect();
-if (window.__ccgLongTaskObserver) window.__ccgLongTaskObserver.disconnect();
 window.__ccgWheelLatencyHandler = null;
-window.__ccgWheelLatencyWheelHandler = null;
-window.__ccgWheelEventTimingObserver = null;
-window.__ccgLongTaskObserver = null;
 return {
     firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
-    wheelLatency: state.wheelAt && state.armedAt ? Math.round((state.wheelAt - state.armedAt) * 10) / 10 : null,
-    wheelToScrollLatency: state.firstScrollAt && state.wheelAt ? Math.round((state.firstScrollAt - state.wheelAt) * 10) / 10 : null,
-    wheelTimeStamp: state.wheelTimeStamp || 0,
-    wheelTarget: state.wheelTarget || '',
-    wheelPath: state.wheelPath || '',
-    wheelDefaultPrevented: !!state.wheelDefaultPrevented,
-    diagnosticContext: state.diagnosticContext || {},
-    eventTiming: state.eventTiming || [],
-    longTasks: state.longTasks || [],
-    initialScrollY: state.initialScrollY,
-    scrollY: Math.round(window.scrollY),
     scrollEvents: state.scrollEvents || 0
 };`);
-    const diagnosticAfter = page.path.startsWith("/music/") ? selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics")) : null;
-    if (page.path.startsWith("/music/")) console.log("TRACE sitewide Music Hub: " + JSON.stringify({ before: diagnosticBefore, after: diagnosticAfter, animationsPaused: animationPauseDiagnostic, latency: latency }));
     let afterDown = await readY(sessionId);
     if (afterDown - target.scrollY < MIN_WHEEL_DELTA) {
         await movePointer(sessionId, target.x, target.y);
         await execute(sessionId, String.raw`
-window.__ccgWheelLatencyProbe = {
-    armedAt: performance.now(),
-    firstScrollAt: 0,
-    scrollEvents: 0,
-    wheelAt: 0,
-    wheelTimeStamp: 0,
-    wheelTarget: '',
-    wheelPath: '',
-    wheelDefaultPrevented: false,
-    initialScrollY: Math.round(window.scrollY),
-    diagnosticContext: {
-        nodeCount: document.querySelectorAll('*').length,
-        imageCount: document.images.length,
-        pendingImages: Array.from(document.images).filter(function (img) { return !img.complete; }).length,
-        imageResourceCount: performance.getEntriesByType('resource').filter(function (entry) { return entry.initiatorType === 'img'; }).length,
-        resourceCount: performance.getEntriesByType('resource').length,
-        pendingStyleLinks: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter(function (link) { return !link.sheet; }).length,
-        styleSheetCount: document.styleSheets.length,
-        fontStatus: document.fonts ? document.fonts.status : '',
-        animationCount: document.getAnimations ? document.getAnimations().length : 0,
-        animationDetails: document.getAnimations ? document.getAnimations().slice(0, 24).map(function (animation) {
-            var target = animation.effect && animation.effect.target;
-            var name = animation.animationName || '';
-            return {
-                name: name,
-                playState: animation.playState || '',
-                target: target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : ''
-            };
-        }) : [],
-        scrollHeight: Math.round(document.documentElement.scrollHeight),
-        scrollY: Math.round(window.scrollY)
-    },
-    eventTiming: [],
-    longTasks: []
-};
+window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
-window.__ccgWheelLatencyWheelHandler && window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
-window.__ccgWheelEventTimingObserver && window.__ccgWheelEventTimingObserver.disconnect();
-window.__ccgLongTaskObserver && window.__ccgLongTaskObserver.disconnect();
 window.__ccgWheelLatencyHandler = function () {
     var state = window.__ccgWheelLatencyProbe;
     if (!state) return;
     state.scrollEvents += 1;
     if (!state.firstScrollAt) state.firstScrollAt = performance.now();
 };
-window.__ccgWheelLatencyWheelHandler = function (event) {
-    var state = window.__ccgWheelLatencyProbe;
-    if (!state || state.wheelAt) return;
-    state.wheelAt = performance.now();
-    state.wheelTimeStamp = Number(event.timeStamp) || 0;
-    state.wheelDefaultPrevented = !!event.defaultPrevented;
-    var target = event.target;
-    state.wheelTarget = target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : '';
-    state.wheelPath = event.composedPath ? event.composedPath().slice(0, 8).map(function (node) {
-        if (!node || !node.tagName) return node === window ? 'window' : node === document ? 'document' : '';
-        return node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.className && typeof node.className === 'string' ? '.' + node.className.trim().replace(/\\s+/g, '.').slice(0, 120) : '');
-    }).filter(Boolean).join(' < ') : '';
-};
 window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
-window.addEventListener('wheel', window.__ccgWheelLatencyWheelHandler, { capture: true, passive: true });
-if (window.PerformanceObserver && Array.isArray(PerformanceObserver.supportedEntryTypes) && PerformanceObserver.supportedEntryTypes.indexOf('event') >= 0) {
-    window.__ccgWheelEventTimingObserver = new PerformanceObserver(function (list) {
-        var state = window.__ccgWheelLatencyProbe;
-        if (!state) return;
-        list.getEntries().forEach(function (entry) {
-            if (entry.name !== 'wheel') return;
-            state.eventTiming.push({
-                name: entry.name,
-                startTime: Number(entry.startTime) || 0,
-                processingStart: Number(entry.processingStart) || 0,
-                processingEnd: Number(entry.processingEnd) || 0,
-                duration: Number(entry.duration) || 0,
-                interactionId: Number(entry.interactionId) || 0
-            });
-        });
-    });
-    window.__ccgWheelEventTimingObserver.observe({ type: 'event', buffered: true, durationThreshold: 0 });
-}
-if (window.PerformanceObserver && Array.isArray(PerformanceObserver.supportedEntryTypes) && PerformanceObserver.supportedEntryTypes.indexOf('longtask') >= 0) {
-    window.__ccgLongTaskObserver = new PerformanceObserver(function (list) {
-        var state = window.__ccgWheelLatencyProbe;
-        if (!state) return;
-        list.getEntries().forEach(function (entry) {
-            if (entry.startTime < state.armedAt) return;
-            state.longTasks.push({
-                startTime: Number(entry.startTime) || 0,
-                duration: Number(entry.duration) || 0,
-                name: entry.name || ''
-            });
-        });
-    });
-    window.__ccgLongTaskObserver.observe({ type: 'longtask', buffered: true });
-}
 return window.__ccgWheelLatencyProbe.armedAt;`);
         const retryStart = afterDown;
         await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);
@@ -965,26 +755,9 @@ return window.__ccgWheelLatencyProbe.armedAt;`);
         const retryLatency = await execute(sessionId, String.raw`
 var state = window.__ccgWheelLatencyProbe || {};
 if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
-if (window.__ccgWheelLatencyWheelHandler) window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
-if (window.__ccgWheelEventTimingObserver) window.__ccgWheelEventTimingObserver.disconnect();
-if (window.__ccgLongTaskObserver) window.__ccgLongTaskObserver.disconnect();
 window.__ccgWheelLatencyHandler = null;
-window.__ccgWheelLatencyWheelHandler = null;
-window.__ccgWheelEventTimingObserver = null;
-window.__ccgLongTaskObserver = null;
 return {
     firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
-    wheelLatency: state.wheelAt && state.armedAt ? Math.round((state.wheelAt - state.armedAt) * 10) / 10 : null,
-    wheelToScrollLatency: state.firstScrollAt && state.wheelAt ? Math.round((state.firstScrollAt - state.wheelAt) * 10) / 10 : null,
-    wheelTimeStamp: state.wheelTimeStamp || 0,
-    wheelTarget: state.wheelTarget || '',
-    wheelPath: state.wheelPath || '',
-    wheelDefaultPrevented: !!state.wheelDefaultPrevented,
-    diagnosticContext: state.diagnosticContext || {},
-    eventTiming: state.eventTiming || [],
-    longTasks: state.longTasks || [],
-    initialScrollY: state.initialScrollY,
-    scrollY: Math.round(window.scrollY),
     scrollEvents: state.scrollEvents || 0
 };`);
         if (retryEnd - retryStart >= MIN_WHEEL_DELTA) {
