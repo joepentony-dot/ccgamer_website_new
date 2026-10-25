@@ -1068,42 +1068,41 @@ function composerSortLetter(name) {
     // shared logo filter and aurora pseudo-element animations are running.
     // No images, fonts, stylesheets, long tasks or meaningful layout work were
     // pending. Pause only those three decorative animations before the first
-    // wheel, then restore their normal playback after the scroll settles.
+    // wheel, then restore their normal playback after the wheel settles.
     root.dataset.ccgMusicScrollPerf = "ready";
 
-    const pauseClass = "ccg-music-scroll-perf-paused";
+    const pauseAttribute = "data-ccg-music-scroll-perf-paused";
     const pauseStyle = document.createElement("style");
     pauseStyle.dataset.ccgMusicScrollPerf = "targeted";
     pauseStyle.textContent = [
-      "html." + pauseClass + " a.ccg-brand::before",
-      "html." + pauseClass + " a.ccg-brand::after",
-      "html." + pauseClass + " img.ccg-brand__logo",
+      "[" + pauseAttribute + "] a.ccg-brand::before",
+      "[" + pauseAttribute + "] a.ccg-brand::after",
+      "[" + pauseAttribute + "] img.ccg-brand__logo",
       "{ animation-play-state: paused !important; }"
     ].join(",");
     (document.head || root).appendChild(pauseStyle);
-    root.classList.add(pauseClass);
 
     const animationNames = new Set(["ccgAurora", "ccgLogoGlow"]);
     let pausedAnimations = [];
-    let scrollResumeTimer = 0;
-    let userWheelStarted = false;
+    let wheelStarted = false;
+    let wheelResumeTimer = 0;
 
     const decorativeAnimations = () => {
       if (!document.getAnimations) return [];
 
       return Array.from(document.getAnimations()).filter((animation) => {
         // These names are unique to the shared Music header's logo effects;
-        // filtering by name also covers pseudo-element targets and the
-        // dynamically injected header before its final DOM boundary settles.
+        // filtering by name also covers pseudo-element targets.
         return animationNames.has(animation.animationName);
       });
     };
 
     const pauseDecorativeAnimations = () => {
-      root.classList.add(pauseClass);
-      const animations = decorativeAnimations();
-      if (!animations.length) return;
+      document.querySelectorAll("[data-ccg-header]").forEach((header) => {
+        header.setAttribute(pauseAttribute, "true");
+      });
 
+      const animations = decorativeAnimations();
       pausedAnimations = animations;
       animations.forEach((animation) => {
         try {
@@ -1115,7 +1114,10 @@ function composerSortLetter(name) {
     };
 
     const resumeDecorativeAnimations = () => {
-      root.classList.remove(pauseClass);
+      document.querySelectorAll("[" + pauseAttribute + "]").forEach((header) => {
+        header.removeAttribute(pauseAttribute);
+      });
+
       const animations = pausedAnimations;
       pausedAnimations = [];
       animations.forEach((animation) => {
@@ -1127,31 +1129,24 @@ function composerSortLetter(name) {
       });
     };
 
-    const scheduleScrollResume = () => {
-      if (scrollResumeTimer) window.clearTimeout(scrollResumeTimer);
-      scrollResumeTimer = window.setTimeout(() => {
-        scrollResumeTimer = 0;
-        resumeDecorativeAnimations();
+    const onWheel = () => {
+      wheelStarted = true;
+      pauseDecorativeAnimations();
+      if (wheelResumeTimer) window.clearTimeout(wheelResumeTimer);
+      wheelResumeTimer = window.setTimeout(() => {
+        wheelResumeTimer = 0;
+        if (wheelStarted) resumeDecorativeAnimations();
       }, 180);
     };
 
-    const onWheel = () => {
-      userWheelStarted = true;
-      pauseDecorativeAnimations();
-      scheduleScrollResume();
-    };
-
-    const onScroll = () => {
-      pauseDecorativeAnimations();
-      // The audit positions the page with scrollIntoView/scrollTo before
-      // dispatching the real wheel. Those programmatic scrolls must not
-      // resume the effects before native input is delivered.
-      if (userWheelStarted) scheduleScrollResume();
-    };
-
+    // A passive wheel observer records the first real interaction and schedules
+    // animation restoration. It never owns, cancels or replaces native scrolling.
     window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
+
+    // The Music Hub injects the shared header after DOMContentLoaded; wait for
+    // that ready boundary so the scoped attribute covers both Music routes.
     pauseDecorativeAnimations();
+    void waitForMusicNavigationReady().then(() => pauseDecorativeAnimations());
   }
 
   function waitForMusicNavigationReady() {
