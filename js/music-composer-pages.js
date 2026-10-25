@@ -414,6 +414,29 @@ function composerSortLetter(name) {
     return Array.from(featuredMap.values());
   }
 
+  function hasCompleteStaticMusicHub() {
+    const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+    if (pageId !== "music-hub") return false;
+
+    const featuredGrid = document.querySelector(
+      '.composer-grid-featured[data-static-composer-fallback="true"]'
+    );
+    const accordion = document.querySelector(
+      '#composer-discovery-accordion[data-static-composer-fallback="true"]'
+    );
+    if (!featuredGrid || !accordion) return false;
+
+    const statsText = String(document.getElementById("music-hub-stats")?.textContent || "");
+    const expectedComposerCount = Number.parseInt(statsText.match(/\d+/)?.[0] || "0", 10);
+    const staticChipCount = accordion.querySelectorAll(".ccg-composer-chip").length;
+    const staticGroupCount = accordion.querySelectorAll(".composer-accordion__group").length;
+
+    return expectedComposerCount > 0
+      && staticChipCount >= expectedComposerCount
+      && staticGroupCount > 0
+      && featuredGrid.querySelectorAll(".composer-card--featured").length > 0;
+  }
+
   function getSortedComposers(registry) {
     return [...registry.composers].sort((a, b) => compareComposerDisplayNames(a.name, b.name));
   }
@@ -513,6 +536,11 @@ function composerSortLetter(name) {
   }
 
   async function renderHubCards(composers, stats) {
+    // The generated Music Hub page carries a complete static archive for
+    // first paint. Keep that authoritative fallback intact when it is
+    // complete; generated/partial variants still use the dynamic renderer.
+    if (hasCompleteStaticMusicHub()) return;
+
     const containerFeatured = document.querySelector(".composer-grid-featured, .composer-grid-featured-omega");
     if (!containerFeatured) {
       return;
@@ -1072,6 +1100,11 @@ function composerSortLetter(name) {
     ensureBackButton();
 
     try {
+      if (hasCompleteStaticMusicHub()) {
+        console.info("[music] Using the complete static Music Hub archive.");
+        return;
+      }
+
       const games = await loadGames();
       const registry = createComposerRegistry(games);
       const stats = collectComposerStats(registry);
