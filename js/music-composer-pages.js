@@ -1227,6 +1227,13 @@ function composerSortLetter(name) {
           resolve();
         }, 1200);
       });
+      if (document.fonts?.ready) {
+        // Keep late web-font activation out of the first physical wheel.
+        await Promise.race([
+          document.fonts.ready.catch(() => {}),
+          new Promise((resolve) => setTimeout(resolve, 1500))
+        ]);
+      }
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
       });
