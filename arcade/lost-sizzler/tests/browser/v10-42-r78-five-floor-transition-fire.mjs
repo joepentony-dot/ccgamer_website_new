@@ -44,6 +44,77 @@ async function snapshot(page){
   }));
 }
 
+// Closest reproducible normal-player segment.  This deliberately uses the
+// generated Floor 1 route, real keyboard movement and the live UI save owner;
+// it does not rewrite p1 coordinates, health, enemies or damage state.
+async function probeNormalPlayerSegment(page){
+  const entry=await page.evaluate(()=>({floor:Number(run.floor),seed:String(run.seed),x:p1.x,y:p1.y,health:Number(p1.health),mana:Number(p1.mana)}));
+  const route=await page.evaluate(()=>{
+    const enemy=(host.enemies||[]).find(e=>e?.alive&&!e.follower&&!e.guardian&&!e.deathStalker&&!e.voidStalker);
+    if(!enemy)return{error:"No ordinary live enemy was generated for the normal-player route"};
+    const start={x:p1.x,y:p1.y},target={x:enemy.x,y:enemy.y},key=(x,y)=>`${x},${y}`;
+    const q=[start],prev=new Map([[key(start.x,start.y),null]]),step=new Map();
+    for(let i=0;i<q.length;i++){
+      const cell=q[i];
+      if(Math.abs(cell.x-target.x)+Math.abs(cell.y-target.y)===1)break;
+      for(const [dx,dy,k] of [[1,0,"ArrowRight"],[-1,0,"ArrowLeft"],[0,1,"ArrowDown"],[0,-1,"ArrowUp"]]){
+        const x=cell.x+dx,y=cell.y+dy,id=key(x,y);
+        if(prev.has(id)||!W.playerWalkable(world.map,x,y,host)||
+           (host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))continue;
+        prev.set(id,key(cell.x,cell.y));step.set(id,k);q.push({x,y});
+      }
+    }
+    let end=null;
+    for(const cell of q)if(Math.abs(cell.x-target.x)+Math.abs(cell.y-target.y)===1){end=key(cell.x,cell.y);break}
+    if(!end)return{error:"No ordinary enemy was reachable from the Floor 1 start without bypassing a locked route",start,target};
+    const path=[];for(let id=end;prev.get(id)!==null;id=prev.get(id))path.unshift(step.get(id));
+    const dx=Math.sign(target.x-Number(end.split(",")[0])),dy=Math.sign(target.y-Number(end.split(",")[1]));
+    return{path,attackKey:dx>0?"ArrowRight":dx<0?"ArrowLeft":dy>0?"ArrowDown":"ArrowUp",enemyId:enemy.id,start,target};
+  });
+  assert.ok(!route.error,JSON.stringify(route));
+  for(const key of route.path)await page.keyboard.press(key);
+  await page.waitForTimeout(180);
+  const beforeContact=await page.evaluate(()=>({x:p1.x,y:p1.y,health:Number(p1.health),mode:String(mode||""),mana:Number(p1.mana),traceLength:window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace?.length||0}));
+  await page.keyboard.press(route.attackKey);
+  await page.waitForTimeout(260);
+  const contact=await page.evaluate(()=>({x:p1.x,y:p1.y,health:Number(p1.health),mode:String(mode||""),hitStun:Number(p1.hitStunMs||0)}));
+  assert.equal(contact.mode,"playing","normal movement into an ordinary enemy must remain in gameplay");
+  assert.ok(contact.health<beforeContact.health||contact.hitStun>0,"a real enemy collision must be observable after keyboard traversal");
+  await page.keyboard.press("Space");
+  await page.waitForTimeout(260);
+  const fired=await page.evaluate(beforeMana=>({mana:Number(p1.mana),shot:(window.CCGLostSizzlerV142R58AuthoritativeFireCore?.trace||[]).some(row=>row.event==="shot-complete"),mode:String(mode||"")}),beforeContact.mana);
+  assert.equal(fired.mode,"playing");
+  assert.ok(fired.mana<beforeContact.mana&&fired.shot,"physical keyboard FIRE must create a canonical shot and spend ammunition");
+
+  // Walk into the first available closed/locked room door.  The movement
+  // owner must refuse it until its normal key/switch route is satisfied; this
+  // proves the player is not being teleported through a locked room.
+  const locked=await page.evaluate(()=>{
+    const door=(host.doors||[]).find(d=>d.locked&&!d.open);
+    if(!door)return{present:false};
+    const adjacent=[[1,0,"ArrowRight"],[-1,0,"ArrowLeft"],[0,1,"ArrowDown"],[0,-1,"ArrowUp"]].find(([dx,dy])=>p1.x===door.x-dx&&p1.y===door.y-dy);
+    return{present:true,door:{x:door.x,y:door.y},adjacent:Boolean(adjacent),key:adjacent?.[2]||"",before:{x:p1.x,y:p1.y}};
+  });
+  if(locked.present&&locked.adjacent){
+    const before=locked.before;
+    await page.keyboard.press(locked.key);
+    await page.waitForTimeout(120);
+    const after=await page.evaluate(()=>({x:p1.x,y:p1.y}));
+    assert.ok(after.x!==locked.door.x||after.y!==locked.door.y,"a locked room must remain inaccessible until its canonical key/switch route opens it");
+    assert.deepEqual(after,before,"failed locked-door movement must not move the player through the door");
+  }
+
+  await page.evaluate(()=>openPauseMenu());
+  await page.waitForSelector("#pause:not(.hidden)");
+  await page.click("#save-quit-solo-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="false"&&mode==="menu",null,{timeout:10000});
+  await page.click("#continue-save-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1,null,{timeout:20000});
+  const restored=await page.evaluate(()=>({floor:Number(run.floor),seed:String(run.seed),reason:window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.reason||"",x:p1.x,y:p1.y}));
+  assert.deepEqual({floor:restored.floor,seed:restored.seed},{floor:entry.floor,seed:entry.seed},"Save & Quit/Continue must restore the same Solo floor and seed");
+  assert.equal(restored.reason,"save_quit");
+}
+
 // Controlled browser-level Floor 5 acceptance, not the owner's save or a
 // natural movement/combat playthrough. Exercise actual gameplay owners together.
 async function probeFloorFiveSoftlockGuards(page){
@@ -531,6 +602,8 @@ try{
   await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
   await page.click("#solo-btn");
   await settleFloor(page,1);
+
+  await probeNormalPlayerSegment(page);
 
   const floors=[];
   floors.push(await proveFire(page,1));
