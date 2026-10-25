@@ -254,6 +254,12 @@
   function ensureEditorialFeaturedComposers(root = document) {
     const grid = getFeaturedGrid(root);
     if (!grid) return;
+    // Music Hub owns its generated/static featured-card fallback and staging
+    // lifecycle; do not rebuild that grid from this generic integrity guard.
+    if (document.documentElement?.getAttribute("data-ccg-page") === "music-hub") {
+      bindFeaturedImageFallbacks(grid);
+      return;
+    }
     // Music Hub intentionally stages the first four cards and exposes the
     // remaining editorial cards behind an explicit Show More action. Do not
     // re-expand that staged grid from this integrity guard.
