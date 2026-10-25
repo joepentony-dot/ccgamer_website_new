@@ -134,8 +134,9 @@
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured img {
-  transform: translateZ(0);
-  will-change: transform;
+  /* Keep portrait decoding and first-wheel raster work on the normal page surface. */
+  transform: none;
+  will-change: auto;
 }
 
 .ccg-music-hub .composer-grid-featured-omega .composer-card--featured::after {
