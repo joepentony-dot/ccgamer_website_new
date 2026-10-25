@@ -482,15 +482,19 @@
 
     if (!composerLinkObserver && document.body) {
       composerLinkObserver = new MutationObserver((mutations) => {
+        let needsGlobalComposerReconciliation = false;
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach((node) => {
             if (!(node instanceof Element)) return;
             rewriteLegacyComposerLinks(node);
             verifyEssentialTracks(node);
-            ensureEditorialFeaturedComposers(document);
-            ensureEditorialComposerProfileImage(document);
+            needsGlobalComposerReconciliation = true;
           });
         });
+        if (needsGlobalComposerReconciliation) {
+          ensureEditorialFeaturedComposers(document);
+          ensureEditorialComposerProfileImage(document);
+        }
       });
       composerLinkObserver.observe(document.body, { childList: true, subtree: true });
     }
