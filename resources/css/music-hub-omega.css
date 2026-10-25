@@ -505,13 +505,14 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   overflow: clip;
 }
 
-/* Hint the compositor that the Music Hub owns a long native document
-   scroll, so the first wheel does not pay surface promotion cost. */
-html[data-ccg-page="music-hub"] {
-  will-change: scroll-position;
+/* The injected Music Hub header is sticky while the archive scrolls. Keep
+   its document-scroll surface free of backdrop-blur repaint work. */
+html[data-ccg-page="music-hub"] .ccg-header::before {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
-/* Isolate the static 276-link accordion from unrelated style invalidation
-   without changing its layout or paint behavior. */
-html[data-ccg-page="music-hub"] #composer-discovery-accordion {
-  contain: style;
+html[data-ccg-page="music-hub"] .ccg-nav {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: none;
 }
