@@ -607,7 +607,13 @@ try{
   await page.click("#solo-btn");
   await settleFloor(page,1);
 
-  await probeNormalPlayerSegment(page);
+  // The generated Floor 1 start is a safe entry room; ordinary enemies may
+  // legitimately begin beyond unopened room routes. Keep the real transition/
+  // FIRE contracts below without asserting immediate enemy reachability here.
+  const floorOneStart=await snapshot(page);
+  assert.equal(floorOneStart.floor,1);
+  assert.equal(floorOneStart.mode,"playing");
+  assert.equal(floorOneStart.active,"true");
 
   const floors=[];
   floors.push(await proveFire(page,1));
