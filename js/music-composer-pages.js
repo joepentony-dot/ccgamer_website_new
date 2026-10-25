@@ -1161,13 +1161,6 @@ function composerSortLetter(name) {
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
       });
-      await new Promise((resolve) => {
-        if (typeof window.requestIdleCallback === "function") {
-          window.requestIdleCallback(resolve, { timeout: 1000 });
-        } else {
-          window.setTimeout(resolve, 0);
-        }
-      });
       window.CCG_MUSIC_PAGE_READY = true;
     }
   });
