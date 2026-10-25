@@ -79,6 +79,69 @@ function evaluateHtml(html, route) {
   };
 }
 
+// Source of truth for recovered public game history: the frozen export
+// snapshots already embedded in the shared visitor runtime. Parse only JSON,
+// never evaluate website JavaScript or import confidential GoatCounter records.
+function historicalGameTotals() {
+  const source = fs.readFileSync(path.join(__dirname, "../js/ccg-visitor-metrics.js"), "utf8");
+  function readMap(variable) {
+    const match = source.match(new RegExp("var " + variable + " = (\\{[^\\n]+\\});"));
+    if (!match) throw new Error("Missing exported GoatCounter map: " + variable);
+    const map = JSON.parse(match[1]);
+    if (!map || typeof map !== "object" || Array.isArray(map)) {
+      throw new Error("Invalid exported GoatCounter map: " + variable);
+    }
+    return map;
+  }
+  const direct = readMap("HISTORICAL_GAME_HITS");
+  const legacy = readMap("HISTORICAL_LEGACY_QUERY_HITS");
+  const totals = Object.create(null);
+  for (const [slug, visits] of Object.entries(direct)) {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
+        !Number.isSafeInteger(visits) || visits < 0) {
+      throw new Error("Invalid exported GoatCounter slug or count: " + slug);
+    }
+    totals[slug] = visits;
+  }
+  for (const [slug, visits] of Object.entries(legacy)) {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
+        !Number.isSafeInteger(visits) || visits < 0) {
+      throw new Error("Invalid legacy GoatCounter slug or count: " + slug);
+    }
+    totals[slug] = (totals[slug] || 0) + visits;
+  }
+  return totals;
+}
+
+// Insert an actual static, styled badge in the deployment output of EVERY
+// canonical game page. History is present before JavaScript or any remote
+// GoatCounter request, and the browser runtime refreshes the existing node.
+function ensureGameViewMarkup(html, route, totals) {
+  if (!/^\/games\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(route) ||
+      !/<html\b[^>]*\bdata-ccg-page\s*=\s*(["'])single-game\1/i.test(html)) {
+    return html;
+  }
+  const slug = route.slice("/games/".length, -1);
+  const count = totals[slug] || 0;
+  const footer = /<footer\b[^>]*class\s*=\s*(["'])[^"']*\bccg-footer--game\b[^"']*\1[^>]*>/i;
+  const match = footer.exec(html);
+  if (!match) throw new Error("Missing canonical game footer: " + route);
+  if (/id=["']ccg-game-view-count["']/i.test(html)) return html;
+  const endIndex = html.indexOf("</footer>", match.index + match[0].length);
+  if (endIndex < 0) throw new Error("Unclosed canonical game footer: " + route);
+  const visible = [
+    "\n        <div class=\"ccg-game-views\" aria-label=\"Recorded game page views\"",
+    "             title=\"Recovered historical game views, updated from GoatCounter\">",
+    "            <span class=\"ccg-game-views__label\">Game views</span>",
+    "            <span id=\"ccg-game-view-count\" class=\"ccg-game-views__count\"",
+    "                  data-ccg-counter-loaded=\"true\" data-ccg-counter-source=\"historical\">",
+    "                " + count.toLocaleString("en-GB"),
+    "            </span>",
+    "        </div>\n    "
+  ].join("\n");
+  return html.slice(0, endIndex) + visible + html.slice(endIndex);
+}
+
 // Canonical game views are raw page loads, not GoatCounter's default
 // once-per-path/eight-hour visits. Instrument only the deployed copy of
 // canonical game routes, after the publisher-owned source parity audit.
@@ -163,6 +226,7 @@ function run(argv) {
     throw new Error("Missing site output directory: " + root);
   }
   const check = argv.includes("--check");
+  const historicalTotals = historicalGameTotals();
   const counts = { checked: 0, present: 0, added: 0, deduplicated: 0, fragment: 0 };
   const gaps = [];
   for (const file of htmlFiles(root)) {
@@ -170,7 +234,8 @@ function run(argv) {
     const before = fs.readFileSync(file, "utf8");
     const result = evaluateHtml(before, route);
     const withGameViews = enforceGameRawViews(result.html, route);
-    const withMetrics = ensureMetricsRuntime(withGameViews, route);
+    const withBadge = ensureGameViewMarkup(withGameViews, route, historicalTotals);
+    const withMetrics = ensureMetricsRuntime(withBadge, route);
     counts.checked++;
     counts[result.status]++;
     if (withMetrics !== before) {
@@ -197,4 +262,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { publicPath, trackingSnippet, evaluateHtml, enforceGameRawViews, ensureMetricsRuntime, htmlFiles, run };
+module.exports = { publicPath, trackingSnippet, evaluateHtml, enforceGameRawViews, historicalGameTotals, ensureGameViewMarkup, ensureMetricsRuntime, htmlFiles, run };
