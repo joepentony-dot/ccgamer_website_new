@@ -1127,9 +1127,25 @@ function composerSortLetter(name) {
         await window.CCG_MUSIC_HUB_PORTRAITS_READY;
       }
       // The wheel contract starts timing immediately after this boundary.
-      // Let the initial composer cards and portrait decodes complete two paint
-      // frames first, so the first physical wheel is not competing with the
+      // Wait for the dynamically loaded Music Hub stylesheet as well as two
+      // paint frames, so the first physical wheel is not competing with the
       // page's final style/layout flush.
+      await new Promise((resolve) => {
+        const stylesheet = document.querySelector('link[data-ccg-music-hub-omega]');
+        if (!stylesheet || stylesheet.sheet) {
+          resolve();
+          return;
+        }
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          resolve();
+        };
+        stylesheet.addEventListener('load', finish, { once: true });
+        stylesheet.addEventListener('error', finish, { once: true });
+        setTimeout(finish, 1200);
+      });
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
       });
