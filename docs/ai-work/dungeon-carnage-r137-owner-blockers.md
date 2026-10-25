@@ -160,3 +160,11 @@ Last updated: 13 October 2026. Candidate source branch `fix/dungeon-r137-release
 
 ## 14 October 2026 scope correction
 R137 is a **solo-dungeon-only** candidate. Commits `37173e48c9a3b045c59d8d5c8fb79abeb12aec6a` and `af281640a8b0ea5e038af832549882ece94b91ae` reverted the unused arena-function modification and removed its associated test assertions, without reverting live Scout, Flask, voice or torch fixes. The legacy arena function on `main` is unchanged by this draft. The previously requested arena cancellation remains in force. No production release or owner acceptance follows from this correction.
+
+## 25 October 2026 — existing R78 evidence extension, unqualified
+
+The existing PR #2705 branch `fix/dungeon-r137-release-blockers-voice-scout-20261013` now points to `2798bbd93c5ca87d064dfcd09dc26670149947d5`, with `origin/main` still `4a239c3cc5ed513384542fec2121699ccbb80480` and the PR still 0 behind. Only the existing browser artifact `arcade/lost-sizzler/tests/browser/v10-42-r78-five-floor-transition-fire.mjs` was extended. It now adds a normal-player Floor 1 segment using generated-route keyboard movement, real enemy contact, physical FIRE, a locked-door refusal when adjacent, and the real Solo Save & Quit/Continue UI. The existing controlled Floor 5 progression, bridge, thief, death/recovery and triple-threat probes remain intact and explicitly staged.
+
+Focused local source checks passed: R87 fifteen-floor campaign, R137 Flask capacity, Warden ownership, Sigil recovery, the 12-case R122 Flask transaction suite, `node --check` and `git diff --check`. Local Chromium could not run because the pinned Playwright browser download is blocked with HTTP 403 by the environment; no browser pass is claimed. The owner's original Windows save/seed and full natural Floor 5 death/recovery remain unavailable and unreproduced.
+
+Release status remains implemented regression coverage only: exact-head CI must rerun after `2798bbd93`, including six Chromium shards and Windows/itch/mobile/site safety/cache/metadata/SEO/Workers checks. Independent review, owner Windows acceptance, approval, merge, deployment and live status remain outstanding.
