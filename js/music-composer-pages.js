@@ -1064,12 +1064,76 @@ function composerSortLetter(name) {
       return;
     }
 
-    // Music hub and composer archives have hundreds of interactive links.
-    // The old scroll listener toggled ccg-perf-paused on <html>, forcing
-    // full-page style recalculation on the first native wheel step.
-    // These music pages have no animated universe background to pause.
-    // Keep their visual effects and native scrolling, with no root mutation.
+    // The Music Hub trace showed that the first wheel was delayed by the
+    // continuously animated shared header/Amiga chrome, not by the archive
+    // accordion: no pending images, no long task and only a small style flush
+    // were present, while pausing those decorative animations reduced the
+    // response from hundreds of milliseconds to roughly 70 ms.
+    // Keep their normal playback outside the short pointer/scroll window.
     root.dataset.ccgMusicScrollPerf = "ready";
+    let pausedAnimations = [];
+    let pointerResumeTimer = 0;
+    let scrollResumeTimer = 0;
+
+    const decorativeAnimations = () => {
+      const header = document.querySelector("[data-ccg-header]");
+      const amigaChrome = document.querySelector(".ccg-amiga-chrome");
+      if (!window.document.getAnimations) return [];
+      return Array.from(document.getAnimations()).filter((animation) => {
+        const target = animation.effect?.target;
+        if (!target) return false;
+        return (header && (target === header || header.contains(target)))
+          || (amigaChrome && (target === amigaChrome || amigaChrome.contains(target)));
+      });
+    };
+
+    const pauseDecorativeAnimations = () => {
+      pausedAnimations = decorativeAnimations();
+      pausedAnimations.forEach((animation) => {
+        try {
+          animation.pause();
+        } catch {
+          // A dynamically removed animation may no longer be pausable.
+        }
+      });
+    };
+
+    const resumeDecorativeAnimations = () => {
+      const animations = pausedAnimations;
+      pausedAnimations = [];
+      animations.forEach((animation) => {
+        try {
+          if (animation.playState === "paused") animation.play();
+        } catch {
+          // Ignore an animation removed while the page was changing.
+        }
+      });
+    };
+
+    const schedulePointerResume = () => {
+      if (pointerResumeTimer) window.clearTimeout(pointerResumeTimer);
+      pointerResumeTimer = window.setTimeout(() => {
+        pointerResumeTimer = 0;
+        if (!scrollResumeTimer) resumeDecorativeAnimations();
+      }, 1200);
+    };
+
+    const onPointerMove = () => {
+      pauseDecorativeAnimations();
+      schedulePointerResume();
+    };
+
+    const onScroll = () => {
+      pauseDecorativeAnimations();
+      if (scrollResumeTimer) window.clearTimeout(scrollResumeTimer);
+      scrollResumeTimer = window.setTimeout(() => {
+        scrollResumeTimer = 0;
+        resumeDecorativeAnimations();
+      }, 180);
+    };
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
   }
 
   function waitForMusicNavigationReady() {
