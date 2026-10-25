@@ -315,14 +315,30 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
     }
 
     function loadOptionalModules() {
+        const pending = [];
+
         OPTIONAL_MODULES.forEach(({ src, marker }) => {
             if (hasModuleScript(src)) return;
+
             const script = document.createElement("script");
             script.src = src;
             script.async = false;
             script.setAttribute(marker, "true");
-            document.body.appendChild(script);
+            pending.push(new Promise((resolve) => {
+                let settled = false;
+                const finish = () => {
+                    if (settled) return;
+                    settled = true;
+                    resolve();
+                };
+                script.addEventListener("load", finish, { once: true });
+                script.addEventListener("error", finish, { once: true });
+                window.setTimeout(finish, 4000);
+                document.body.appendChild(script);
+            }));
         });
+
+        return Promise.all(pending);
     }
 
     function queueApply() {
@@ -378,7 +394,10 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
         applyNavGlowPatch();
         bindStateReapply();
         installNavigationAuthorityObserver();
-        loadOptionalModules();
+        window.CCG_NAV_OPTIONAL_MODULES_READY = loadOptionalModules();
+        window.CCG_NAV_OPTIONAL_MODULES_READY.then(() => {
+            document.dispatchEvent(new CustomEvent("ccg:navigation-modules-ready"));
+        });
         document.dispatchEvent(new CustomEvent("ccg:navigation-ready"));
         return true;
     }
