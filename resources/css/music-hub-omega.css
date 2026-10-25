@@ -504,3 +504,9 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   contain-intrinsic-size: none;
   overflow: clip;
 }
+
+/* Hint the compositor that the Music Hub owns a long native document
+   scroll, so the first wheel does not pay surface promotion cost. */
+html[data-ccg-page="music-hub"] {
+  will-change: scroll-position;
+}
