@@ -513,7 +513,8 @@ html[data-ccg-page="music-hub"] .composer-discovery {
 html[data-ccg-page="music-hub"] .composer-discovery {
   box-shadow: none;
 }
-/* Keep the collapsed group surface cheap while the pointer target is first hit-tested. */
-html[data-ccg-page="music-hub"] .composer-accordion__group {
-  box-shadow: none;
+/* Keep the first wheel path on a flat panel surface while preserving its
+   border, layout, and clipping contract. */
+html[data-ccg-page="music-hub"] .composer-discovery {
+  background: rgba(7, 20, 34, 0.97);
 }
