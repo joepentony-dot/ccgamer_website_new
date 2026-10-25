@@ -93,24 +93,43 @@ try{
   });
 
   if(maintenanceExpected){
-    console.log("[production smoke] production game closed Round 2 member gate is intentionally active");
+    console.log("[production smoke] production development holding gate is intentionally active");
     await page.goto(`${gameUrl}${gameUrl.includes("?")?"&":"?"}release-smoke=${Date.now()}`,{waitUntil:"domcontentloaded",timeout:30000});
     await page.waitForSelector("#ccg-member-beta-access-gate",{state:"visible",timeout:15000});
-        const gatedUrl=new URL(page.url());
-    assert.equal(gatedUrl.hostname,"www.cheekycommodoregamer.co.uk","Round 2 member gate must stay on the production CCG hostname");
-    assert.equal(gatedUrl.pathname,"/arcade/c64-dungeon-carnage/","Round 2 member gate must keep visitors on the Dungeon Carnage route");
-    const gateSnapshot=await page.evaluate(()=>({
-      gate:Boolean(document.getElementById("ccg-member-beta-access-gate")),
-      signin:document.getElementById("ccg-member-beta-signin")?.textContent?.trim()||"",
-      signinHref:document.getElementById("ccg-member-beta-signin")?.getAttribute("href")||"",
-      exit:document.getElementById("ccg-member-beta-exit")?.getAttribute("href")||"",
-      state:document.documentElement.dataset.ccgPlayMaintenanceGate||null
-    }));
-    assert.equal(gateSnapshot.gate,true,"anonymous production visitor must see the closed Round 2 member gate");
-        assert.equal(gateSnapshot.signin,"SIGN IN AS AN ASSIGNED MEMBER","Round 2 gate must expose the assigned-member sign-in action");
-    assert.match(gateSnapshot.signinHref,/^\/auth\/login\.html\?returnTo=/,"Round 2 member gate must preserve the requested return route through sign-in");
-    assert.equal(gateSnapshot.exit,"/games/ccg-games/","Round 2 member gate must retain a safe exit to CCG Games");
-    assert.equal(gateSnapshot.state,"round2-member-required","anonymous production visitor must remain blocked unless signed in as an assigned Round 2 member");
+    const gatedUrl=new URL(page.url());
+    assert.equal(gatedUrl.hostname,"www.cheekycommodoregamer.co.uk","development holding gate must stay on the production CCG hostname");
+    assert.equal(gatedUrl.pathname,"/arcade/c64-dungeon-carnage/","development holding gate must keep visitors on the Dungeon Carnage route");
+    const gateSnapshot=await page.evaluate(()=>{
+      const gate=document.getElementById("ccg-member-beta-access-gate");
+      const exit=document.getElementById("ccg-member-beta-exit");
+      const follow=document.getElementById("ccg-member-beta-follow");
+      const rect=gate?.getBoundingClientRect();
+      const style=gate?getComputedStyle(gate):null;
+      return {
+        gate:Boolean(gate),
+        title:document.getElementById("ccg-member-beta-access-title")?.textContent?.trim()||"",
+        obsoleteSignin:Boolean(document.getElementById("ccg-member-beta-signin")),
+        exit:exit?.getAttribute("href")||"",
+        exitText:exit?.textContent?.trim()||"",
+        follow:follow?.getAttribute("href")||"",
+        followText:follow?.textContent?.trim()||"",
+        followTarget:follow?.getAttribute("target")||"",
+        followRel:follow?.getAttribute("rel")||"",
+        coversViewport:Boolean(style?.position==="fixed"&&Number(style.zIndex)>1000000&&rect&&rect.left<=0&&rect.top<=0&&rect.right>=innerWidth&&rect.bottom>=innerHeight),
+        state:document.documentElement.dataset.ccgPlayMaintenanceGate||null
+      };
+    });
+    assert.equal(gateSnapshot.gate,true,"anonymous production visitor must see the development holding gate");
+    assert.equal(gateSnapshot.title,"C64 Dungeon Carnage Is In Development","development holding gate must show the current access status");
+    assert.equal(gateSnapshot.obsoleteSignin,false,"development holding gate must not advertise the retired assigned-member sign-in action");
+    assert.equal(gateSnapshot.coversViewport,true,"development holding gate must cover the game viewport");
+    assert.equal(gateSnapshot.exit,"/games/ccg-games/","development holding gate must retain a safe exit to CCG Games");
+    assert.equal(gateSnapshot.exitText,"BACK TO CCG GAMES");
+    assert.equal(gateSnapshot.follow,"https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw","development holding gate must retain the official follow action");
+    assert.equal(gateSnapshot.followText,"FOLLOW DEVELOPMENT");
+    assert.equal(gateSnapshot.followTarget,"_blank");
+    assert.match(gateSnapshot.followRel,/\bnoopener\b/,"external follow action must use noopener");
+    assert.ok(["development-unavailable","public-playtest-expired"].includes(gateSnapshot.state),"anonymous production visitor must remain blocked unless owner/member or a valid public pass is authorised");
 
     let deployedVersion=null,lastVersionPayload=null,lastVersionStatus=0;
     for(let attempt=1;attempt<=18;attempt++){
