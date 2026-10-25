@@ -499,5 +499,7 @@ html[data-ccg-page="music-hub"] .composer-accordion__header {
 }
 html[data-ccg-page="music-hub"] .composer-accordion__header:hover,
 html[data-ccg-page="music-hub"] .composer-accordion__header:focus-visible {
+  /* Keep the pointer target cheap to rasterise before the first wheel tick. */
+  background: rgba(8, 24, 39, 0.97);
   box-shadow: none;
 }
