@@ -52,7 +52,7 @@ async function probeNormalPlayerSegment(page){
   const route=await page.evaluate(()=>{
     const enemies=(host.enemies||[]).filter(e=>e?.alive&&!e.follower&&!e.guardian&&!e.deathStalker&&!e.voidStalker);
     if(!enemies.length)return{error:"No ordinary live enemy was generated for the normal-player route"};
-    const start={x:p1.x,y:p1.y},key=(x,y)=>\`${x},${y}\`\`;
+    const start={x:p1.x,y:p1.y},key=(x,y)=>`${x},${y}`;
     for(const enemy of enemies){
       const target={x:enemy.x,y:enemy.y},q=[start],prev=new Map([[key(start.x,start.y),null]]),step=new Map();
       for(let i=0;i<q.length;i++){
