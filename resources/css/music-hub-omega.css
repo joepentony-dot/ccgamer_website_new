@@ -494,3 +494,7 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   content-visibility: visible;
   contain-intrinsic-size: none;
 }
+html[data-ccg-page="music-hub"] .composer-discovery,
+html[data-ccg-page="music-hub"] .composer-accordion__group {
+  box-shadow: none;
+}
