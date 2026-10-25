@@ -510,15 +510,7 @@ function composerSortLetter(name) {
 
     searchInput.addEventListener("input", draw);
 
-    // The generated hub already contains the complete, crawlable accordion.
-    // Preserve it until a real search requires a dynamic redraw; once a search
-    // has been applied, clearing it continues through the normal redraw path.
-    const hasStaticArchive = accordion.dataset.staticComposerFallback === "true"
-      && accordion.children.length > 0;
-    if (!(hasStaticArchive && !normaliseName(searchInput.value)
-      && !accordion.dataset.ccgAppliedSearch)) {
-      draw();
-    }
+    draw();
   }
 
   async function renderHubCards(composers, stats) {
