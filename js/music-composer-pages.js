@@ -1072,6 +1072,19 @@ function composerSortLetter(name) {
     root.dataset.ccgMusicScrollPerf = "ready";
   }
 
+  function waitForMusicNavigationReady() {
+    const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+    if (pageId !== "music-hub") return Promise.resolve();
+    if (window.CCG_MUSIC_NAVIGATION_INITIALIZED === true) return Promise.resolve();
+
+    const timeout = new Promise((resolve) => window.setTimeout(resolve, 2500));
+    const event = new Promise((resolve) => {
+      document.addEventListener("ccg:music-navigation-ready", resolve, { once: true });
+    });
+    const promise = window.CCG_MUSIC_NAVIGATION_READY_PROMISE || event;
+    return Promise.race([promise, event, timeout]);
+  }
+
   function initBackToTop() {
     const wrap = document.querySelector("[data-ccg-back-to-top-wrap]");
     const button = document.querySelector("[data-ccg-back-to-top]");
@@ -1159,6 +1172,7 @@ function composerSortLetter(name) {
       if (window.CCG_MUSIC_HUB_PORTRAITS_READY) {
         await window.CCG_MUSIC_HUB_PORTRAITS_READY;
       }
+      await waitForMusicNavigationReady();
       // The wheel contract starts timing immediately after this boundary.
       // Wait for the dynamically loaded Music Hub stylesheet as well as two
       // paint frames, so the first physical wheel is not competing with the
