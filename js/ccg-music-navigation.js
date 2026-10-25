@@ -13,6 +13,13 @@
     if (window.CCG_MUSIC_NAVIGATION_READY) return;
     window.CCG_MUSIC_NAVIGATION_READY = true;
 
+    let resolveNavigationReady;
+    const navigationReady = new Promise((resolve) => {
+        resolveNavigationReady = resolve;
+    });
+    window.CCG_MUSIC_NAVIGATION_INITIALIZED = false;
+    window.CCG_MUSIC_NAVIGATION_READY_PROMISE = navigationReady;
+
     const STYLES = [
         "/resources/css/ccg-mode.css",
         "/resources/css/ccg-effects.css",
@@ -66,14 +73,25 @@
     }
 
     function ensureScript(src) {
-        const exists = Array.from(document.scripts)
-            .some((script) => normaliseAssetPath(script.getAttribute("src")) === src);
-        if (exists) return;
-        const script = document.createElement("script");
-        script.src = src;
-        script.async = false;
-        script.dataset.ccgMusicNavigationScript = "true";
-        document.body.appendChild(script);
+        const existing = Array.from(document.scripts)
+            .find((script) => normaliseAssetPath(script.getAttribute("src")) === src);
+        if (existing) {
+            if (window.CCGUnifiedNavCore) return Promise.resolve();
+            return new Promise((resolve) => {
+                existing.addEventListener("load", resolve, { once: true });
+                window.setTimeout(resolve, 2000);
+            });
+        }
+
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.async = false;
+            script.dataset.ccgMusicNavigationScript = "true";
+            script.addEventListener("load", resolve, { once: true });
+            script.addEventListener("error", resolve, { once: true });
+            document.body.appendChild(script);
+        });
     }
 
     function headerMarkup() {
@@ -303,13 +321,19 @@
     }
 
     async function init() {
-        await Promise.all(STYLES.map(waitForStyle));
-        markArchiveDirectory();
-        const header = ensureHeader();
-        if (!header) return;
-        bindDrawer(header);
-        bindMode(header);
-        ensureScript("/js/ccg-nav-core.js");
+        try {
+            await Promise.all(STYLES.map(waitForStyle));
+            markArchiveDirectory();
+            const header = ensureHeader();
+            if (!header) return;
+            bindDrawer(header);
+            bindMode(header);
+            await ensureScript("/js/ccg-nav-core.js");
+        } finally {
+            window.CCG_MUSIC_NAVIGATION_INITIALIZED = true;
+            resolveNavigationReady();
+            document.dispatchEvent(new CustomEvent("ccg:music-navigation-ready"));
+        }
     }
 
     if (document.readyState === "loading") {
