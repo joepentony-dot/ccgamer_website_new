@@ -1136,6 +1136,8 @@ function composerSortLetter(name) {
     // the contract runner; retain pointermove for touch/pen-capable browsers.
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("mousemove", onPointerMove, { passive: true });
+    window.addEventListener("pointerover", onPointerMove, { passive: true });
+    window.addEventListener("mouseover", onPointerMove, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
   }
 
