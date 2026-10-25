@@ -501,6 +501,3 @@ html[data-ccg-page="music-hub"] .composer-accordion__header:hover,
 html[data-ccg-page="music-hub"] .composer-accordion__header:focus-visible {
   box-shadow: none;
 }
-html[data-ccg-page="music-hub"] .composer-discovery {
-  overflow: clip;
-}
