@@ -487,13 +487,6 @@
   }
 
   function bindComposerIntegrityGuards() {
-    // The generated Music Hub is already canonical and complete. Its static
-    // archive has no dynamic composer cards or audio rows for this integrity
-    // layer to repair, so avoid a full-tree scan and subtree observer there.
-    if (document.documentElement?.getAttribute("data-ccg-page") === "music-hub") {
-      return;
-    }
-
     rewriteLegacyComposerLinks(document);
     verifyComposerTrackCards(document);
     verifyEssentialTracks(document);
