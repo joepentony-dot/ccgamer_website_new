@@ -1126,6 +1126,13 @@ function composerSortLetter(name) {
       if (window.CCG_MUSIC_HUB_PORTRAITS_READY) {
         await window.CCG_MUSIC_HUB_PORTRAITS_READY;
       }
+      // The wheel contract starts timing immediately after this boundary.
+      // Let the initial composer cards and portrait decodes complete two paint
+      // frames first, so the first physical wheel is not competing with the
+      // page's final style/layout flush.
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
       window.CCG_MUSIC_PAGE_READY = true;
     }
   });
