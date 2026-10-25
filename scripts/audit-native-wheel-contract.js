@@ -728,7 +728,7 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
         animationPauseDiagnostic = await execute(sessionId, String.raw`
 return (function () {
     var animations = document.getAnimations ? document.getAnimations() : [];
-    var selected = animations.filter(function (animation) { return animation.animationName === 'ccg-social-neon-pulse'; });
+    var selected = animations.filter(function (animation) { return ['ccgAurora', 'ccgLogoGlow'].indexOf(animation.animationName) >= 0; });
     selected.forEach(function (animation) { animation.pause(); });
     return { count: selected.length, total: animations.length };
 })();`);
