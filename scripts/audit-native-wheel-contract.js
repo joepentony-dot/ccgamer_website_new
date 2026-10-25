@@ -769,54 +769,7 @@ return {
         }
     }
     if (latency.firstLatency === null || latency.firstLatency > MAX_FIRST_SCROLL_LATENCY_MS) {
-        if (page.path === "/music/") {
-            const debug = await execute(sessionId, String.raw\`
-return (function () {
-    var probe = window.__ccgWheelLatencyProbe || {};
-    var armedAt = Number(probe.armedAt || 0);
-    var now = performance.now();
-    var longtasks = performance.getEntriesByType("longtask")
-        .filter(function (entry) {
-            return entry.startTime + entry.duration >= armedAt - 50 && entry.startTime <= now + 50;
-        })
-        .map(function (entry) {
-            return {
-                start: Math.round(entry.startTime * 10) / 10,
-                duration: Math.round(entry.duration * 10) / 10,
-                name: entry.name
-            };
-        });
-    var pendingStyles = Array.from(document.querySelectorAll("link[rel=stylesheet]"))
-        .filter(function (link) { return !link.sheet; })
-        .map(function (link) { return link.getAttribute("href") || ""; });
-    var resources = performance.getEntriesByType("resource")
-        .filter(function (entry) {
-            return entry.startTime <= now && entry.startTime + entry.duration >= armedAt - 50;
-        })
-        .map(function (entry) {
-            return {
-                name: entry.name.split("?")[0],
-                start: Math.round(entry.startTime * 10) / 10,
-                duration: Math.round(entry.duration * 10) / 10
-            };
-        })
-        .slice(-30);
-    return {
-        armedAt: Math.round(armedAt * 10) / 10,
-        now: Math.round(now * 10) / 10,
-        longtasks: longtasks,
-        pendingStyles: pendingStyles,
-        resources: resources,
-        elementCount: document.querySelectorAll("*").length,
-        scrollHeight: document.documentElement.scrollHeight,
-        bodyHeight: document.body ? document.body.scrollHeight : 0,
-        htmlClass: document.documentElement.className,
-        bodyClass: document.body ? document.body.className : ""
-    };
-})();\`);
-            console.log("DEBUG " + labelPrefix + " " + page.label + ": " + JSON.stringify(debug));
-        }
-        fail(labelPrefix + " " + page.label + ": first native scroll response was too slow (" + latency.firstLatency + "ms)");
+        fail(`${labelPrefix} ${page.label}: first native scroll response was too slow (${latency.firstLatency}ms)`);
     }
 
     await wheelUp(sessionId, target.x, target.y);
