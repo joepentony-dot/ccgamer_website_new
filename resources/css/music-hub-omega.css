@@ -504,15 +504,3 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   contain-intrinsic-size: none;
   overflow: clip;
 }
-
-/* The injected Music Hub header is sticky while the archive scrolls. Keep
-   its document-scroll surface free of backdrop-blur repaint work. */
-html[data-ccg-page="music-hub"] .ccg-header::before {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-html[data-ccg-page="music-hub"] .ccg-nav {
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  transition: none;
-}
