@@ -1131,20 +1131,32 @@ function composerSortLetter(name) {
       // paint frames, so the first physical wheel is not competing with the
       // page's final style/layout flush.
       await new Promise((resolve) => {
-        const stylesheet = document.querySelector('link[data-ccg-music-hub-omega]');
-        if (!stylesheet || stylesheet.sheet) {
+        const stylesheets = Array.from(document.querySelectorAll(
+          'link[data-ccg-music-hub-omega], link[data-ccg-archive-directory-style]'
+        ));
+        const pending = stylesheets.filter((stylesheet) => !stylesheet.sheet);
+        if (!pending.length) {
           resolve();
           return;
         }
+        let remaining = pending.length;
         let settled = false;
         const finish = () => {
           if (settled) return;
+          remaining -= 1;
+          if (remaining > 0) return;
           settled = true;
           resolve();
         };
-        stylesheet.addEventListener('load', finish, { once: true });
-        stylesheet.addEventListener('error', finish, { once: true });
-        setTimeout(finish, 1200);
+        pending.forEach((stylesheet) => {
+          stylesheet.addEventListener("load", finish, { once: true });
+          stylesheet.addEventListener("error", finish, { once: true });
+        });
+        setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          resolve();
+        }, 1200);
       });
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
