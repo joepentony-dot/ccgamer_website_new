@@ -249,6 +249,10 @@
 .ccg-music-hub .composer-accordion {
   display: grid;
   gap: 0.28rem;
+  /* Keep the full crawlable archive in the document, but defer layout and
+     paint for the below-fold discovery list until it approaches the viewport. */
+  content-visibility: auto;
+  contain-intrinsic-size: 0 2600px;
 }
 
 .ccg-music-hub .composer-accordion__group {
