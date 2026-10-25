@@ -712,15 +712,40 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     // arming the real-wheel latency probe (as the Home audit already does).
     await new Promise((resolve) => setTimeout(resolve, 450));
     await execute(sessionId, String.raw`
-window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
+window.__ccgWheelLatencyProbe = {
+    armedAt: performance.now(),
+    firstScrollAt: 0,
+    scrollEvents: 0,
+    wheelAt: 0,
+    wheelTimeStamp: 0,
+    wheelTarget: '',
+    wheelPath: '',
+    wheelDefaultPrevented: false,
+    initialScrollY: Math.round(window.scrollY)
+};
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+window.__ccgWheelLatencyWheelHandler && window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
 window.__ccgWheelLatencyHandler = function () {
     var state = window.__ccgWheelLatencyProbe;
     if (!state) return;
     state.scrollEvents += 1;
     if (!state.firstScrollAt) state.firstScrollAt = performance.now();
 };
+window.__ccgWheelLatencyWheelHandler = function (event) {
+    var state = window.__ccgWheelLatencyProbe;
+    if (!state || state.wheelAt) return;
+    state.wheelAt = performance.now();
+    state.wheelTimeStamp = Number(event.timeStamp) || 0;
+    state.wheelDefaultPrevented = !!event.defaultPrevented;
+    var target = event.target;
+    state.wheelTarget = target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : '';
+    state.wheelPath = event.composedPath ? event.composedPath().slice(0, 8).map(function (node) {
+        if (!node || !node.tagName) return node === window ? 'window' : node === document ? 'document' : '';
+        return node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.className && typeof node.className === 'string' ? '.' + node.className.trim().replace(/\\s+/g, '.').slice(0, 120) : '');
+    }).filter(Boolean).join(' < ') : '';
+};
 window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
+window.addEventListener('wheel', window.__ccgWheelLatencyWheelHandler, { capture: true, passive: true });
 return window.__ccgWheelLatencyProbe.armedAt;`);
 
     // Never issue extra CDP commands after arming this latency timer.
@@ -730,24 +755,60 @@ return window.__ccgWheelLatencyProbe.armedAt;`);
     let latency = await execute(sessionId, String.raw`
 var state = window.__ccgWheelLatencyProbe || {};
 if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+if (window.__ccgWheelLatencyWheelHandler) window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
 window.__ccgWheelLatencyHandler = null;
+window.__ccgWheelLatencyWheelHandler = null;
 return {
     firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
+    wheelLatency: state.wheelAt && state.armedAt ? Math.round((state.wheelAt - state.armedAt) * 10) / 10 : null,
+    wheelToScrollLatency: state.firstScrollAt && state.wheelAt ? Math.round((state.firstScrollAt - state.wheelAt) * 10) / 10 : null,
+    wheelTimeStamp: state.wheelTimeStamp || 0,
+    wheelTarget: state.wheelTarget || '',
+    wheelPath: state.wheelPath || '',
+    wheelDefaultPrevented: !!state.wheelDefaultPrevented,
+    initialScrollY: state.initialScrollY,
+    scrollY: Math.round(window.scrollY),
     scrollEvents: state.scrollEvents || 0
 };`);
+    if (page.path === "/music/") console.log(`DIAG ${labelPrefix} ${page.label}: ${JSON.stringify(latency)}`);
     let afterDown = await readY(sessionId);
     if (afterDown - target.scrollY < MIN_WHEEL_DELTA) {
         await movePointer(sessionId, target.x, target.y);
         await execute(sessionId, String.raw`
-window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
+window.__ccgWheelLatencyProbe = {
+    armedAt: performance.now(),
+    firstScrollAt: 0,
+    scrollEvents: 0,
+    wheelAt: 0,
+    wheelTimeStamp: 0,
+    wheelTarget: '',
+    wheelPath: '',
+    wheelDefaultPrevented: false,
+    initialScrollY: Math.round(window.scrollY)
+};
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+window.__ccgWheelLatencyWheelHandler && window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
 window.__ccgWheelLatencyHandler = function () {
     var state = window.__ccgWheelLatencyProbe;
     if (!state) return;
     state.scrollEvents += 1;
     if (!state.firstScrollAt) state.firstScrollAt = performance.now();
 };
+window.__ccgWheelLatencyWheelHandler = function (event) {
+    var state = window.__ccgWheelLatencyProbe;
+    if (!state || state.wheelAt) return;
+    state.wheelAt = performance.now();
+    state.wheelTimeStamp = Number(event.timeStamp) || 0;
+    state.wheelDefaultPrevented = !!event.defaultPrevented;
+    var target = event.target;
+    state.wheelTarget = target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : '';
+    state.wheelPath = event.composedPath ? event.composedPath().slice(0, 8).map(function (node) {
+        if (!node || !node.tagName) return node === window ? 'window' : node === document ? 'document' : '';
+        return node.tagName.toLowerCase() + (node.id ? '#' + node.id : '') + (node.className && typeof node.className === 'string' ? '.' + node.className.trim().replace(/\\s+/g, '.').slice(0, 120) : '');
+    }).filter(Boolean).join(' < ') : '';
+};
 window.addEventListener('scroll', window.__ccgWheelLatencyHandler, { passive: true });
+window.addEventListener('wheel', window.__ccgWheelLatencyWheelHandler, { capture: true, passive: true });
 return window.__ccgWheelLatencyProbe.armedAt;`);
         const retryStart = afterDown;
         await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);
@@ -755,9 +816,19 @@ return window.__ccgWheelLatencyProbe.armedAt;`);
         const retryLatency = await execute(sessionId, String.raw`
 var state = window.__ccgWheelLatencyProbe || {};
 if (window.__ccgWheelLatencyHandler) window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
+if (window.__ccgWheelLatencyWheelHandler) window.removeEventListener('wheel', window.__ccgWheelLatencyWheelHandler, true);
 window.__ccgWheelLatencyHandler = null;
+window.__ccgWheelLatencyWheelHandler = null;
 return {
     firstLatency: state.firstScrollAt && state.armedAt ? Math.round((state.firstScrollAt - state.armedAt) * 10) / 10 : null,
+    wheelLatency: state.wheelAt && state.armedAt ? Math.round((state.wheelAt - state.armedAt) * 10) / 10 : null,
+    wheelToScrollLatency: state.firstScrollAt && state.wheelAt ? Math.round((state.firstScrollAt - state.wheelAt) * 10) / 10 : null,
+    wheelTimeStamp: state.wheelTimeStamp || 0,
+    wheelTarget: state.wheelTarget || '',
+    wheelPath: state.wheelPath || '',
+    wheelDefaultPrevented: !!state.wheelDefaultPrevented,
+    initialScrollY: state.initialScrollY,
+    scrollY: Math.round(window.scrollY),
     scrollEvents: state.scrollEvents || 0
 };`);
         if (retryEnd - retryStart >= MIN_WHEEL_DELTA) {
