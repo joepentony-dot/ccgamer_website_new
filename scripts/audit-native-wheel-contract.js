@@ -711,7 +711,25 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     // Let that artificial repositioning and its raster work finish before
     // arming the real-wheel latency probe (as the Home audit already does).
     await new Promise((resolve) => setTimeout(resolve, 450));
-    await execute(sessionId, String.raw`
+    if (page.path.startsWith("/music/")) {
+        const state = await execute(sessionId, String.raw`
+return {
+  pageReady: window.CCG_MUSIC_PAGE_READY === true,
+  pageId: document.documentElement.getAttribute("data-ccg-page") || "",
+  rootClass: document.documentElement.className || "",
+  pauseStyleCount: document.querySelectorAll("style[data-ccg-music-scroll-perf]").length,
+  animationDetails: document.getAnimations ? document.getAnimations().map(function (animation) {
+    var target = animation.effect && animation.effect.target;
+    return {
+      name: animation.animationName || "",
+      playState: animation.playState || "",
+      target: target && target.tagName ? target.tagName.toLowerCase() + (target.className && typeof target.className === "string" ? "." + target.className.trim().replace(/\\s+/g, ".") : "") : ""
+    };
+  }) : []
+};`);
+        console.log("TRACE production Music animation state: " + JSON.stringify(state));
+    }
+    await execute(sessionId, String.raw``
 window.__ccgWheelLatencyProbe = { armedAt: performance.now(), firstScrollAt: 0, scrollEvents: 0 };
 window.__ccgWheelLatencyHandler && window.removeEventListener('scroll', window.__ccgWheelLatencyHandler);
 window.__ccgWheelLatencyHandler = function () {
