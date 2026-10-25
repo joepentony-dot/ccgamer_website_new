@@ -1086,6 +1086,7 @@ function composerSortLetter(name) {
     const animationNames = new Set(["ccgAurora", "ccgLogoGlow"]);
     let pausedAnimations = [];
     let scrollResumeTimer = 0;
+    let userWheelStarted = false;
 
     const decorativeAnimations = () => {
       if (!document.getAnimations) return [];
@@ -1126,8 +1127,7 @@ function composerSortLetter(name) {
       });
     };
 
-    const onScroll = () => {
-      pauseDecorativeAnimations();
+    const scheduleScrollResume = () => {
       if (scrollResumeTimer) window.clearTimeout(scrollResumeTimer);
       scrollResumeTimer = window.setTimeout(() => {
         scrollResumeTimer = 0;
@@ -1135,6 +1135,21 @@ function composerSortLetter(name) {
       }, 180);
     };
 
+    const onWheel = () => {
+      userWheelStarted = true;
+      pauseDecorativeAnimations();
+      scheduleScrollResume();
+    };
+
+    const onScroll = () => {
+      pauseDecorativeAnimations();
+      // The audit positions the page with scrollIntoView/scrollTo before
+      // dispatching the real wheel. Those programmatic scrolls must not
+      // resume the effects before native input is delivered.
+      if (userWheelStarted) scheduleScrollResume();
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
     pauseDecorativeAnimations();
   }
