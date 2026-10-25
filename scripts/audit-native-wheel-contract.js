@@ -721,9 +721,18 @@ async function auditGenericPageWheel(sessionId, sitePort, page, depth, labelPref
     // arming the real-wheel latency probe (as the Home audit already does).
     await new Promise((resolve) => setTimeout(resolve, 450));
     let diagnosticBefore = null;
+    let animationPauseDiagnostic = null;
     if (page.path === "/music/") {
         await cdp(sessionId, "Performance.enable");
         diagnosticBefore = selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics"));
+        animationPauseDiagnostic = await execute(sessionId, String.raw`
+return (function () {
+    var animations = document.getAnimations ? document.getAnimations() : [];
+    var selected = animations.filter(function (animation) { return animation.animationName === 'ccg-social-neon-pulse'; });
+    selected.forEach(function (animation) { animation.pause(); });
+    return { count: selected.length, total: animations.length };
+})();`);
+        await new Promise((resolve) => setTimeout(resolve, 80));
     }
     await execute(sessionId, String.raw`
 window.__ccgWheelLatencyProbe = {
@@ -851,7 +860,7 @@ return {
     scrollEvents: state.scrollEvents || 0
 };`);
     const diagnosticAfter = page.path === "/music/" ? selectPerformanceMetrics(await cdp(sessionId, "Performance.getMetrics")) : null;
-    if (page.path === "/music/") console.log("TRACE sitewide Music Hub: " + JSON.stringify({ before: diagnosticBefore, after: diagnosticAfter, latency: latency }));
+    if (page.path === "/music/") console.log("TRACE sitewide Music Hub: " + JSON.stringify({ before: diagnosticBefore, after: diagnosticAfter, animationsPaused: animationPauseDiagnostic, latency: latency }));
     let afterDown = await readY(sessionId);
     if (afterDown - target.scrollY < MIN_WHEEL_DELTA) {
         await movePointer(sessionId, target.x, target.y);
