@@ -502,4 +502,5 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   contain: none;
   content-visibility: visible;
   contain-intrinsic-size: none;
+  overflow: clip;
 }
