@@ -509,3 +509,7 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
 html[data-ccg-page="music-hub"] .composer-discovery {
   overflow: clip;
 }
+/* Avoid a large discovery-panel shadow raster during the first native wheel. */
+html[data-ccg-page="music-hub"] .composer-discovery {
+  box-shadow: none;
+}
