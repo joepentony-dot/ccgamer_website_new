@@ -513,8 +513,7 @@ html[data-ccg-page="music-hub"] .composer-discovery {
 html[data-ccg-page="music-hub"] .composer-discovery {
   box-shadow: none;
 }
-/* Keep the first wheel path on a flat panel surface while preserving its
-   border, layout, and clipping contract. */
-html[data-ccg-page="music-hub"] .composer-discovery {
-  background: rgba(7, 20, 34, 0.97);
+/* Promote the document scroll root only on the static Music Hub path. */
+html[data-ccg-page="music-hub"] {
+  will-change: scroll-position;
 }
