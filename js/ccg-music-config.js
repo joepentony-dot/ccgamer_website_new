@@ -496,7 +496,8 @@
           ensureEditorialComposerProfileImage(document);
         }
       });
-      composerLinkObserver.observe(document.body, { childList: true, subtree: true });
+      const composerIntegrityRoot = document.querySelector(".ccg-music-hub, .ccg-composer-page, main") || document.body;
+      composerLinkObserver.observe(composerIntegrityRoot, { childList: true, subtree: true });
     }
 
     const gamesList = document.getElementById("composer-games");
