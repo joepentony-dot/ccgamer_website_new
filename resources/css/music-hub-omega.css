@@ -504,10 +504,3 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
   contain-intrinsic-size: none;
   overflow: clip;
 }
-
-/* Bound the tall static discovery panel to its own paint surface so the
-   first document wheel does not invalidate the surrounding page. */
-html[data-ccg-page="music-hub"] .composer-discovery {
-  contain: layout paint;
-  overflow: clip;
-}
