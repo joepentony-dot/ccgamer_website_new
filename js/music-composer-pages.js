@@ -509,16 +509,7 @@ function composerSortLetter(name) {
     };
 
     searchInput.addEventListener("input", draw);
-
-    // The generated hub already contains the complete, crawlable accordion.
-    // Keep that static fallback on first load instead of rebuilding hundreds
-    // of links before the first native wheel; searches still use the dynamic
-    // redraw path above.
-    const hasStaticArchive = accordion.dataset.staticComposerFallback === "true"
-      && accordion.children.length > 0;
-    if (!hasStaticArchive) {
-      draw();
-    }
+    draw();
   }
 
   async function renderHubCards(composers, stats) {
