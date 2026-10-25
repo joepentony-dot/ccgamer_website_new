@@ -1111,12 +1111,20 @@ function composerSortLetter(name) {
       const visible = window.scrollY > 220;
       wrap.classList.toggle("is-visible", visible);
     };
+    let toggleFrame = 0;
+    const scheduleToggle = () => {
+      if (toggleFrame) return;
+      toggleFrame = window.requestAnimationFrame(() => {
+        toggleFrame = 0;
+        toggle();
+      });
+    };
 
     button.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    window.addEventListener("scroll", toggle, { passive: true });
+    window.addEventListener("scroll", scheduleToggle, { passive: true });
     toggle();
   }
 
