@@ -509,7 +509,6 @@ function composerSortLetter(name) {
     };
 
     searchInput.addEventListener("input", draw);
-
     draw();
   }
 
