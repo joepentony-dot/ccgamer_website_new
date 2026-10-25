@@ -50,26 +50,30 @@ async function snapshot(page){
 async function probeNormalPlayerSegment(page){
   const entry=await page.evaluate(()=>({floor:Number(run.floor),seed:String(run.seed),x:p1.x,y:p1.y,health:Number(p1.health),mana:Number(p1.mana)}));
   const route=await page.evaluate(()=>{
-    const enemy=(host.enemies||[]).find(e=>e?.alive&&!e.follower&&!e.guardian&&!e.deathStalker&&!e.voidStalker);
-    if(!enemy)return{error:"No ordinary live enemy was generated for the normal-player route"};
-    const start={x:p1.x,y:p1.y},target={x:enemy.x,y:enemy.y},key=(x,y)=>`${x},${y}`;
-    const q=[start],prev=new Map([[key(start.x,start.y),null]]),step=new Map();
-    for(let i=0;i<q.length;i++){
-      const cell=q[i];
-      if(Math.abs(cell.x-target.x)+Math.abs(cell.y-target.y)===1)break;
-      for(const [dx,dy,k] of [[1,0,"ArrowRight"],[-1,0,"ArrowLeft"],[0,1,"ArrowDown"],[0,-1,"ArrowUp"]]){
-        const x=cell.x+dx,y=cell.y+dy,id=key(x,y);
-        if(prev.has(id)||!W.playerWalkable(world.map,x,y,host)||
-           (host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))continue;
-        prev.set(id,key(cell.x,cell.y));step.set(id,k);q.push({x,y});
+    const enemies=(host.enemies||[]).filter(e=>e?.alive&&!e.follower&&!e.guardian&&!e.deathStalker&&!e.voidStalker);
+    if(!enemies.length)return{error:"No ordinary live enemy was generated for the normal-player route"};
+    const start={x:p1.x,y:p1.y},key=(x,y)=>\`${x},${y}\`\`;
+    for(const enemy of enemies){
+      const target={x:enemy.x,y:enemy.y},q=[start],prev=new Map([[key(start.x,start.y),null]]),step=new Map();
+      for(let i=0;i<q.length;i++){
+        const cell=q[i];
+        if(Math.abs(cell.x-target.x)+Math.abs(cell.y-target.y)===1)break;
+        for(const [dx,dy,k] of [[1,0,"ArrowRight"],[-1,0,"ArrowLeft"],[0,1,"ArrowDown"],[0,-1,"ArrowUp"]]){
+          const x=cell.x+dx,y=cell.y+dy,id=key(x,y);
+          if(prev.has(id)||!W.playerWalkable(world.map,x,y,host)||
+             (host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))continue;
+          prev.set(id,key(cell.x,cell.y));step.set(id,k);q.push({x,y});
+        }
       }
+      let end=null;
+      for(const cell of q)if(Math.abs(cell.x-target.x)+Math.abs(cell.y-target.y)===1){end=key(cell.x,cell.y);break}
+      if(!end)continue;
+      const path=[];for(let id=end;prev.get(id)!==null;id=prev.get(id))path.unshift(step.get(id));
+      const dx=Math.sign(target.x-Number(end.split(",")[0])),dy=Math.sign(target.y-Number(end.split(",")[1]));
+      return{path,attackKey:dx>0?"ArrowRight":dx<0?"ArrowLeft":dy>0?"ArrowDown":"ArrowUp",enemyId:enemy.id,start,target};
     }
-    let end=null;
-    for(const cell of q)if(Math.abs(cell.x-target.x)+Math.abs(cell.y-target.y)===1){end=key(cell.x,cell.y);break}
-    if(!end)return{error:"No ordinary enemy was reachable from the Floor 1 start without bypassing a locked route",start,target};
-    const path=[];for(let id=end;prev.get(id)!==null;id=prev.get(id))path.unshift(step.get(id));
-    const dx=Math.sign(target.x-Number(end.split(",")[0])),dy=Math.sign(target.y-Number(end.split(",")[1]));
-    return{path,attackKey:dx>0?"ArrowRight":dx<0?"ArrowLeft":dy>0?"ArrowDown":"ArrowUp",enemyId:enemy.id,start,target};
+    return{error:"No ordinary enemy was reachable from the Floor 1 start without bypassing a locked route",start,
+      candidates:enemies.map(enemy=>({id:enemy.id,x:enemy.x,y:enemy.y}))};
   });
   assert.ok(!route.error,JSON.stringify(route));
   for(const key of route.path)await page.keyboard.press(key);
