@@ -510,3 +510,8 @@ html[data-ccg-page="music-hub"] .composer-accordion__group {
 html[data-ccg-page="music-hub"] {
   will-change: scroll-position;
 }
+/* Isolate the static 276-link accordion from unrelated style invalidation
+   without changing its layout or paint behavior. */
+html[data-ccg-page="music-hub"] #composer-discovery-accordion {
+  contain: style;
+}
