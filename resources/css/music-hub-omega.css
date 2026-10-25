@@ -494,3 +494,12 @@ html[data-ccg-page="music-hub"] .composer-accordion__header:focus-visible {
   background: rgba(8, 24, 39, 0.97);
   box-shadow: none;
 }
+/* Keep collapsed Music Hub groups in the ordinary document scroll tree.
+   The archive bodies are already hidden until opened; layout/content
+   containment otherwise makes the first wheel over a group header pay the
+   containment activation cost. */
+html[data-ccg-page="music-hub"] .composer-accordion__group {
+  contain: none;
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+}
