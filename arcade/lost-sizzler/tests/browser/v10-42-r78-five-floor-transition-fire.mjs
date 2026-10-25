@@ -44,6 +44,43 @@ async function snapshot(page){
   }));
 }
 
+// A generated Floor 1 entry can have closed routes to distant enemies. Verify
+// actual keyboard traversal only to a currently walkable, unoccupied adjacent
+// floor cell; never teleport the player or assume an enemy is immediately reachable.
+async function probeFloorOneKeyboardTraversal(page){
+  const fixture=await page.evaluate(()=>{
+    if(run?.floor!==1||mode!=="playing"||!p1||!world||!host)return{error:"Solo Floor 1 is not active"};
+    const x=Number(p1.x),y=Number(p1.y),dirs=[
+      {key:"ArrowRight",dx:1,dy:0},{key:"ArrowLeft",dx:-1,dy:0},
+      {key:"ArrowDown",dx:0,dy:1},{key:"ArrowUp",dx:0,dy:-1}
+    ];
+    const selected=dirs.find(({dx,dy})=>{
+      const nx=x+dx,ny=y+dy;
+      return world.map?.[ny]?.[nx]===0&&W.playerWalkable(world.map,nx,ny,host)&&
+        !W.generatorAt(host,nx,ny)&&
+        !(host.enemies||[]).some(e=>e.alive&&e.x===nx&&e.y===ny)&&
+        !(host.chests||[]).some(c=>c.active&&c.x===nx&&c.y===ny)&&
+        !(host.items||[]).some(i=>i.active&&i.x===nx&&i.y===ny)&&
+        !(host.doors||[]).some(d=>!d.open&&d.x===nx&&d.y===ny);
+    });
+    return selected?{key:selected.key,start:{x,y},target:{x:x+selected.dx,y:y+selected.dy}}:
+      {error:"No free adjacent walkable Floor 1 entry cell",start:{x,y},seed:String(run.seed)};
+  });
+  assert.ok(!fixture.error,JSON.stringify(fixture));
+  const before=await snapshot(page);
+  await page.keyboard.down(fixture.key);
+  try{
+    await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  }finally{
+    await page.keyboard.up(fixture.key);
+  }
+  const after=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),mode:String(mode),active:String(document.body.dataset.runActive)}));
+  assert.deepEqual({x:after.x,y:after.y},fixture.target,"Physical keyboard input must move to the verified adjacent Floor 1 cell");
+  assert.equal(after.mode,"playing");
+  assert.equal(after.active,"true");
+  await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
+}
+
 // Exercise the real Solo save UI independently of enemy placement. Closed room
 // doors may legitimately separate ordinary enemies from the safe Floor 1 start.
 async function probeSoloSaveContinue(page){
@@ -554,6 +591,7 @@ try{
   assert.equal(floorOneStart.floor,1);
   assert.equal(floorOneStart.mode,"playing");
   assert.equal(floorOneStart.active,"true");
+  await probeFloorOneKeyboardTraversal(page);
   await probeSoloSaveContinue(page);
 
   const floors=[];
