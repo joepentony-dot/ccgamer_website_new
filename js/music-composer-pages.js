@@ -457,6 +457,17 @@ function composerSortLetter(name) {
     const orderedLetters = ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")]
       .filter((letter) => groups.has(letter));
 
+    // The generated hub ships a complete static A–Z archive. The shared
+    // Music Hub utility already owns its search/filter interaction, so avoid
+    // replacing hundreds of links during startup; rebuild only when a
+    // non-static or incomplete archive needs enhancement.
+    const staticChipCount = accordion.querySelectorAll(".ccg-composer-chip").length;
+    const hasCompleteStaticArchive = accordion.dataset.staticComposerFallback === "true"
+      && staticChipCount >= allComposers.length;
+    if (hasCompleteStaticArchive) {
+      return;
+    }
+
     let openSet = new Set();
 
     const draw = () => {
