@@ -746,6 +746,15 @@ window.__ccgWheelLatencyProbe = {
         styleSheetCount: document.styleSheets.length,
         fontStatus: document.fonts ? document.fonts.status : '',
         animationCount: document.getAnimations ? document.getAnimations().length : 0,
+        animationDetails: document.getAnimations ? document.getAnimations().slice(0, 24).map(function (animation) {
+            var target = animation.effect && animation.effect.target;
+            var name = animation.animationName || '';
+            return {
+                name: name,
+                playState: animation.playState || '',
+                target: target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : ''
+            };
+        }) : [],
         scrollHeight: Math.round(document.documentElement.scrollHeight),
         scrollY: Math.round(window.scrollY)
     },
@@ -867,6 +876,15 @@ window.__ccgWheelLatencyProbe = {
         styleSheetCount: document.styleSheets.length,
         fontStatus: document.fonts ? document.fonts.status : '',
         animationCount: document.getAnimations ? document.getAnimations().length : 0,
+        animationDetails: document.getAnimations ? document.getAnimations().slice(0, 24).map(function (animation) {
+            var target = animation.effect && animation.effect.target;
+            var name = animation.animationName || '';
+            return {
+                name: name,
+                playState: animation.playState || '',
+                target: target && target.tagName ? target.tagName.toLowerCase() + (target.id ? '#' + target.id : '') + (target.className && typeof target.className === 'string' ? '.' + target.className.trim().replace(/\\s+/g, '.').slice(0, 160) : '') : ''
+            };
+        }) : [],
         scrollHeight: Math.round(document.documentElement.scrollHeight),
         scrollY: Math.round(window.scrollY)
     },
