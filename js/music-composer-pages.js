@@ -1075,14 +1075,28 @@ function composerSortLetter(name) {
   function waitForMusicNavigationReady() {
     const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
     if (pageId !== "music-hub") return Promise.resolve();
-    if (window.CCG_MUSIC_NAVIGATION_INITIALIZED === true) return Promise.resolve();
 
-    const timeout = new Promise((resolve) => window.setTimeout(resolve, 2500));
-    const event = new Promise((resolve) => {
-      document.addEventListener("ccg:music-navigation-ready", resolve, { once: true });
-    });
-    const promise = window.CCG_MUSIC_NAVIGATION_READY_PROMISE || event;
-    return Promise.race([promise, event, timeout]);
+    const waitForSignal = (ready, promise, eventName) => {
+      if (ready === true) return Promise.resolve();
+      const timeout = new Promise((resolve) => window.setTimeout(resolve, 2500));
+      const event = new Promise((resolve) => {
+        document.addEventListener(eventName, resolve, { once: true });
+      });
+      return Promise.race([promise || event, event, timeout]);
+    };
+
+    return Promise.all([
+      waitForSignal(
+        window.CCG_MUSIC_NAVIGATION_INITIALIZED,
+        window.CCG_MUSIC_NAVIGATION_READY_PROMISE,
+        "ccg:music-navigation-ready"
+      ),
+      waitForSignal(
+        window.CCG_HEADER_AUTH_INITIALIZED,
+        window.CCG_HEADER_AUTH_READY_PROMISE,
+        "ccg:header-auth-ready"
+      )
+    ]);
   }
 
   function initBackToTop() {
