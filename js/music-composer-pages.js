@@ -457,17 +457,6 @@ function composerSortLetter(name) {
     const orderedLetters = ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")]
       .filter((letter) => groups.has(letter));
 
-    // The generated hub ships a complete static A–Z archive. The shared
-    // Music Hub utility already owns its search/filter interaction, so avoid
-    // replacing hundreds of links during startup; rebuild only when a
-    // non-static or incomplete archive needs enhancement.
-    const staticChipCount = accordion.querySelectorAll(".ccg-composer-chip").length;
-    const hasCompleteStaticArchive = accordion.dataset.staticComposerFallback === "true"
-      && staticChipCount >= allComposers.length;
-    if (hasCompleteStaticArchive) {
-      return;
-    }
-
     let openSet = new Set();
 
     const draw = () => {
@@ -1076,45 +1065,6 @@ function composerSortLetter(name) {
     toggle();
   }
 
-  function waitForNavigationModulesReady() {
-    const readyPromise = window.CCG_NAV_OPTIONAL_MODULES_READY;
-    if (readyPromise && typeof readyPromise.then === "function") {
-      return readyPromise.catch(() => {});
-    }
-
-    return new Promise((resolve) => {
-      let settled = false;
-      let timeoutId = null;
-      const deadline = Date.now() + 5000;
-
-      const finish = () => {
-        if (settled) return;
-        settled = true;
-        if (timeoutId) window.clearTimeout(timeoutId);
-        document.removeEventListener("ccg:navigation-modules-ready", finish);
-        resolve();
-      };
-
-      document.addEventListener("ccg:navigation-modules-ready", finish, { once: true });
-      timeoutId = window.setTimeout(finish, 5000);
-
-      const poll = () => {
-        const promise = window.CCG_NAV_OPTIONAL_MODULES_READY;
-        if (promise && typeof promise.then === "function") {
-          promise.then(finish, finish);
-          return;
-        }
-        if (Date.now() >= deadline) {
-          finish();
-          return;
-        }
-        window.setTimeout(poll, 25);
-      };
-
-      poll();
-    });
-  }
-
   document.addEventListener("DOMContentLoaded", async () => {
     enableArchiveDirectory();
     initMusicScrollPerfPause();
@@ -1176,10 +1126,6 @@ function composerSortLetter(name) {
       if (window.CCG_MUSIC_HUB_PORTRAITS_READY) {
         await window.CCG_MUSIC_HUB_PORTRAITS_READY;
       }
-      // The injected navigation core loads optional modules after DOMContentLoaded.
-      // Keep the documented music-ready boundary after that work settles so the
-      // first physical wheel is not competing with late global initialization.
-      await waitForNavigationModulesReady();
       // The wheel contract starts timing immediately after this boundary.
       // Wait for the dynamically loaded Music Hub stylesheet as well as two
       // paint frames, so the first physical wheel is not competing with the
