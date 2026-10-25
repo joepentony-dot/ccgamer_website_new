@@ -154,6 +154,7 @@ function compareComposerNames(a, b) {
   function applyMusicHubAccordionSearch(accordion, searchInput) {
     if (!(accordion instanceof Element) || !(searchInput instanceof HTMLInputElement)) return;
     const query = normalizeComposerName(searchInput.value);
+
     accordion.querySelectorAll(".composer-accordion__group").forEach((group) => {
       prepareMusicHubAccordionGroup(group);
       const chips = Array.from(group.querySelectorAll(".ccg-composer-chip"));
