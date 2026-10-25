@@ -1111,20 +1111,12 @@ function composerSortLetter(name) {
       const visible = window.scrollY > 220;
       wrap.classList.toggle("is-visible", visible);
     };
-    let toggleFrame = 0;
-    const scheduleToggle = () => {
-      if (toggleFrame) return;
-      toggleFrame = window.requestAnimationFrame(() => {
-        toggleFrame = 0;
-        toggle();
-      });
-    };
 
     button.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    window.addEventListener("scroll", scheduleToggle, { passive: true });
+    window.addEventListener("scroll", toggle, { passive: true });
     toggle();
   }
 
@@ -1227,13 +1219,6 @@ function composerSortLetter(name) {
           resolve();
         }, 1200);
       });
-      if (document.fonts?.ready) {
-        // Keep late web-font activation out of the first physical wheel.
-        await Promise.race([
-          document.fonts.ready.catch(() => {}),
-          new Promise((resolve) => setTimeout(resolve, 1500))
-        ]);
-      }
       await new Promise((resolve) => {
         requestAnimationFrame(() => requestAnimationFrame(resolve));
       });
