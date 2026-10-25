@@ -517,3 +517,7 @@ html[data-ccg-page="music-hub"] .composer-discovery {
 html[data-ccg-page="music-hub"] {
   will-change: scroll-position;
 }
+/* Keep the full collapsed accordion header field cheap to raster on first wheel. */
+html[data-ccg-page="music-hub"] .composer-accordion__header {
+  background: rgba(8, 24, 39, 0.97);
+}
