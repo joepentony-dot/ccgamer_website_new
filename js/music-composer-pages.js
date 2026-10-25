@@ -1064,32 +1064,34 @@ function composerSortLetter(name) {
       return;
     }
 
-    // The Music Hub trace showed that the first wheel was delayed by the
-    // continuously animated shared header/Amiga chrome, not by the archive
-    // accordion: no pending images, no long task and only a small style flush
-    // were present, while pausing those decorative animations reduced the
-    // response from hundreds of milliseconds to roughly 70 ms.
-    // Keep their normal playback outside the short pointer/scroll window.
+    // Chromium traces showed that the first native wheel is delayed while the
+    // shared logo filter and aurora pseudo-element animations are running.
+    // No images, fonts, stylesheets, long tasks or meaningful layout work were
+    // pending. Pause only those three decorative animations before the first
+    // wheel, then restore their normal playback after the scroll settles.
     root.dataset.ccgMusicScrollPerf = "ready";
+    const animationNames = new Set(["ccgAurora", "ccgLogoGlow"]);
     let pausedAnimations = [];
-    let pointerResumeTimer = 0;
     let scrollResumeTimer = 0;
 
     const decorativeAnimations = () => {
+      if (!document.getAnimations) return [];
+
       const header = document.querySelector("[data-ccg-header]");
-      const amigaChrome = document.querySelector(".ccg-amiga-chrome");
-      if (!window.document.getAnimations) return [];
       return Array.from(document.getAnimations()).filter((animation) => {
+        if (!animationNames.has(animation.animationName)) return false;
+
         const target = animation.effect?.target;
-        if (!target) return false;
-        return (header && (target === header || header.contains(target)))
-          || (amigaChrome && (target === amigaChrome || amigaChrome.contains(target)));
+        return target && header && (target === header || header.contains(target));
       });
     };
 
     const pauseDecorativeAnimations = () => {
-      pausedAnimations = decorativeAnimations();
-      pausedAnimations.forEach((animation) => {
+      const animations = decorativeAnimations();
+      if (!animations.length) return;
+
+      pausedAnimations = animations;
+      animations.forEach((animation) => {
         try {
           animation.pause();
         } catch {
@@ -1110,19 +1112,6 @@ function composerSortLetter(name) {
       });
     };
 
-    const schedulePointerResume = () => {
-      if (pointerResumeTimer) window.clearTimeout(pointerResumeTimer);
-      pointerResumeTimer = window.setTimeout(() => {
-        pointerResumeTimer = 0;
-        if (!scrollResumeTimer) resumeDecorativeAnimations();
-      }, 1200);
-    };
-
-    const onPointerMove = () => {
-      pauseDecorativeAnimations();
-      schedulePointerResume();
-    };
-
     const onScroll = () => {
       pauseDecorativeAnimations();
       if (scrollResumeTimer) window.clearTimeout(scrollResumeTimer);
@@ -1132,13 +1121,18 @@ function composerSortLetter(name) {
       }, 180);
     };
 
-    // Chrome's native mouse-wheel path exposes mouseMoved as mousemove in
-    // the contract runner; retain pointermove for touch/pen-capable browsers.
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("mousemove", onPointerMove, { passive: true });
-    window.addEventListener("pointerover", onPointerMove, { passive: true });
-    window.addEventListener("mouseover", onPointerMove, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
+
+    // The Music Hub injects the shared header after DOMContentLoaded. Pause
+    // once that header is ready, with an immediate attempt covering composer
+    // pages where the header is already present.
+    pauseDecorativeAnimations();
+    void waitForMusicNavigationReady().then(() => {
+      pauseDecorativeAnimations();
+      if (!pausedAnimations.length) {
+        window.requestAnimationFrame(() => pauseDecorativeAnimations());
+      }
+    });
   }
 
   function waitForMusicNavigationReady() {
