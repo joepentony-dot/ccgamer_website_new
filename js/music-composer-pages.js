@@ -1143,10 +1143,29 @@ function composerSortLetter(name) {
     // animation restoration. It never owns, cancels or replaces native scrolling.
     window.addEventListener("wheel", onWheel, { passive: true });
 
-    // The Music Hub injects the shared header after DOMContentLoaded; wait for
-    // that ready boundary so the scoped attribute covers both Music routes.
+    const waitForMusicHeader = () => new Promise((resolve) => {
+      if (document.querySelector("[data-ccg-header]")) {
+        resolve();
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        if (!document.querySelector("[data-ccg-header]")) return;
+        observer.disconnect();
+        resolve();
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      window.setTimeout(() => {
+        observer.disconnect();
+        resolve();
+      }, 2500);
+    });
+
+    // The shared header can be injected after DOMContentLoaded on either Music
+    // route. The scoped attribute covers it as soon as it enters the document.
     pauseDecorativeAnimations();
-    void waitForMusicNavigationReady().then(() => pauseDecorativeAnimations());
+    void Promise.all([waitForMusicNavigationReady(), waitForMusicHeader()])
+      .then(() => pauseDecorativeAnimations());
   }
 
   function waitForMusicNavigationReady() {
