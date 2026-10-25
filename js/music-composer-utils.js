@@ -154,6 +154,10 @@ function compareComposerNames(a, b) {
   function applyMusicHubAccordionSearch(accordion, searchInput) {
     if (!(accordion instanceof Element) || !(searchInput instanceof HTMLInputElement)) return;
     const query = normalizeComposerName(searchInput.value);
+    const previousQuery = accordion.dataset.ccgAppliedSearch || "";
+    if (!query && !previousQuery && accordion.dataset.staticComposerFallback === "true") {
+      return;
+    }
 
     accordion.querySelectorAll(".composer-accordion__group").forEach((group) => {
       prepareMusicHubAccordionGroup(group);
@@ -178,6 +182,7 @@ function compareComposerNames(a, b) {
         setMusicHubAccordionState(group, group.dataset.ccgUserOpen === "true", false);
       }
     });
+    accordion.dataset.ccgAppliedSearch = query;
   }
 
   function bindMusicHubAccordion() {
