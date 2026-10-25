@@ -13,6 +13,13 @@
     if (window.CCG_HEADER_AUTH_LOADER_READY) return;
     window.CCG_HEADER_AUTH_LOADER_READY = true;
 
+    let resolveHeaderAuthReady;
+    const headerAuthReady = new Promise((resolve) => {
+        resolveHeaderAuthReady = resolve;
+    });
+    window.CCG_HEADER_AUTH_INITIALIZED = false;
+    window.CCG_HEADER_AUTH_READY_PROMISE = headerAuthReady;
+
     const AUTH_FOUNDATION_SCRIPTS = [
         "/js/ccg-supabase-config.js",
         "/js/ccg-supabase-client.js",
@@ -153,12 +160,12 @@
     }
 
     async function init() {
-        if (isExcludedPage() || !document.querySelector("[data-ccg-header]")) return;
-        ensureRequiredCss();
-        const actions = ensureSharedHeaderActions();
-        if (!actions) return;
-
         try {
+            if (isExcludedPage() || !document.querySelector("[data-ccg-header]")) return;
+            ensureRequiredCss();
+            const actions = ensureSharedHeaderActions();
+            if (!actions) return;
+
             await restoreAuthFoundation();
             await loadScript(HEADER_AUTH_SCRIPT);
 
@@ -169,6 +176,10 @@
             }
         } catch (error) {
             console.warn("[CCG] Header account controls could not be initialised on this page.", error);
+        } finally {
+            window.CCG_HEADER_AUTH_INITIALIZED = true;
+            resolveHeaderAuthReady();
+            document.dispatchEvent(new CustomEvent("ccg:header-auth-ready"));
         }
     }
 
