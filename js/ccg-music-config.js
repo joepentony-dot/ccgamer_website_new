@@ -254,6 +254,13 @@
   function ensureEditorialFeaturedComposers(root = document) {
     const grid = getFeaturedGrid(root);
     if (!grid) return;
+    // Music Hub intentionally stages the first four cards and exposes the
+    // remaining editorial cards behind an explicit Show More action. Do not
+    // re-expand that staged grid from this integrity guard.
+    if (grid.querySelector(".composer-featured-more") || grid.dataset.ccgFeaturedStage === "ready" || grid.dataset.ccgOmegaRuntimeLocked === "true") {
+      bindFeaturedImageFallbacks(grid);
+      return;
+    }
     if (getFeaturedGridSignature(grid) === FEATURED_SIGNATURE) {
       bindFeaturedImageFallbacks(grid);
       return;
