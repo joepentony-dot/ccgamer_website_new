@@ -249,8 +249,6 @@
 .ccg-music-hub .composer-accordion {
   display: grid;
   gap: 0.28rem;
-  /* Isolate the 276-chip archive from first-wheel page-wide invalidation. */
-  contain: layout paint style;
 }
 
 .ccg-music-hub .composer-accordion__group {
