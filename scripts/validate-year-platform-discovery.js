@@ -285,14 +285,48 @@ function validateCanonicalGameRoutes(games, problems) {
     return validated;
 }
 
-function validateBaselineRegistry(current, baseline, problems) {
+// Other generators may publish newly indexable composer, developer and
+// publisher archives. Admit only materialized, self-canonical, indexable
+// routes that also appear exactly once in the generated page sitemap.
+function validateNewForeignArchive(entry, sitemapPageLocs, problems) {
+    if (!/^(?:music|games\/(?:publishers|developers))\/[a-z0-9-]+\/index\.html$/.test(entry)) return "";
+    const url = `${SITE_ORIGIN}/${entry.slice(0, -"index.html".length)}`;
+    const filePath = path.join(repoRoot, entry);
+    if (!fs.existsSync(filePath)) {
+        problems.push(`New indexable archive is not materialized: ${entry}`);
+        return "";
+    }
+    const html = readRequired(filePath);
+    const canonicals = extractCanonicalUrls(html);
+    const robots = extractRobotsDirectives(html);
+    if (canonicals.length !== 1 || canonicals[0] !== url ||
+        robots.length !== 1 || !/^index,follow(?:,|$)/i.test(robots[0]) ||
+        sitemapPageLocs.filter((loc) => loc === url).length !== 1) {
+        problems.push(`New archive must be self-canonical, indexable and uniquely sitemapped: ${entry}`);
+        return "";
+    }
+    return url;
+}
+
+function validateBaselineRegistry(current, baseline, problems, sitemapPageLocs) {
     const baselineForeign = baseline.filter((entry) => !isOwnedArchiveEntry(entry));
     const currentForeign = current.filter((entry) => !isOwnedArchiveEntry(entry));
     const expectedForeign = baselineForeign.filter((entry) => (
         entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
     ));
+    const verifiedNewEntries = new Set();
+    const verifiedNewUrls = new Set();
+    for (const entry of currentForeign) {
+        if (baselineForeign.includes(entry) || REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)) continue;
+        const url = validateNewForeignArchive(entry, sitemapPageLocs, problems);
+        if (url) {
+            verifiedNewEntries.add(entry);
+            verifiedNewUrls.add(url);
+        }
+    }
     const comparableCurrent = currentForeign.filter((entry) => (
-        entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
+        entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY &&
+        !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry) && !verifiedNewEntries.has(entry)
     ));
 
     const missingForeign = expectedForeign.filter((entry) => !comparableCurrent.includes(entry));
@@ -302,6 +336,7 @@ function validateBaselineRegistry(current, baseline, problems) {
     if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
         problems.push(`Phase 5B noindex utility remains in the static registry: ${PHASE5B_EXCLUDED_REGISTRY_ENTRY}`);
     }
+    return verifiedNewUrls;
 }
 
 function validateBaselineSitemap(currentXml, baselineXml, label, problems, authoritativeArchiveUrls = new Set()) {
@@ -607,10 +642,11 @@ function main() {
     const canonicalGameRoutes = validateCanonicalGameRoutes(archiveData.games, problems);
 
     const baselineStaticPagesPath = optionPath("--baseline-static-pages");
+    let verifiedNewArchiveUrls = new Set();
     if (baselineStaticPagesPath) {
         const baseline = readJson(baselineStaticPagesPath);
         if (!Array.isArray(baseline)) problems.push("Baseline static pages config is not an array");
-        else validateBaselineRegistry(staticPages, baseline, problems);
+        else verifiedNewArchiveUrls = validateBaselineRegistry(staticPages, baseline, problems, sitemapPagesLocs);
     }
 
     [
@@ -619,7 +655,8 @@ function main() {
         ["--baseline-sitemap-games", sitemapGames, "sitemap-games.xml"]
     ].forEach(([option, currentXml, label]) => {
         const baselinePath = optionPath(option);
-        if (baselinePath) validateBaselineSitemap(currentXml, readRequired(baselinePath), label, problems, new Set(expectedUrls));
+        if (baselinePath) validateBaselineSitemap(currentXml, readRequired(baselinePath), label, problems,
+            new Set([...expectedUrls, ...verifiedNewArchiveUrls]));
     });
 
     if (!fs.existsSync(phase4cReportPath)) problems.push("Phase 4C report is missing");

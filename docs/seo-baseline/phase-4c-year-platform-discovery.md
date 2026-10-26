@@ -6,12 +6,11 @@
 |---|---:|
 | Browse Games archive shortcuts | **2** |
 | Year routes with previous/next navigation | **15** |
-| Indexable year routes registered | **14** |
+| Indexable year routes registered | **15** |
 | Archive hubs registered | **2** |
 | Platform routes registered | **2** |
-| Total archive entries managed in static registry | **18** |
-| New archive entries appended this run | **0** |
-| Existing non-archive registry entries preserved in order | **299** |
+| Total archive entries managed in static registry | **19** |
+| Existing non-archive registry entries preserved in order | **573** |
 
 ## Discovery integration
 
@@ -22,9 +21,9 @@
 
 ## Sitemap policy
 
-- Registered both archive hubs, both platform routes and the 14 indexable year routes.
-- Kept `/games/years/2023/` out of the static registry and sitemap while it remains `noindex,follow`.
-- Preserved every existing valid registry entry in place and appended only missing year/platform entries.
+- Registered both archive hubs, both platform routes and the 15 indexable year routes.
+- Registered only current metadata-indexable years; excluded any years still marked `noindex,follow`.
+- Rebuilt the year/platform-owned registry block in metadata order, preserving all foreign-owner entries and their relative order.
 
 ## Permanent safeguards
 
@@ -32,14 +31,14 @@
 - Phase 4C reapplies discovery links after generated pages are rebuilt.
 - Validation checks registry membership, sitemap membership, route cross-links and foreign-entry order.
 - Existing publisher, developer, composer, download, retro, genre, collection and core registry entries are not rewritten by the Phase 4C integration script.
-- Existing valid year/platform entries are not removed and re-appended, preventing registry-order ping-pong with other archive workflows.
+- The year/platform-owned block is rebuilt in the same metadata order on every pass, while foreign registry entries remain byte-equivalent and in their existing relative order.
 
 ## Explicit exclusions
 
 - No changes to `games/games.json`.
 - No homepage or intro-loader changes.
 - No new public route families.
-- No sitemap inclusion for the noindex 2023 route.
+- No sitemap inclusion for any route marked noindex by current year metadata.
 
 ## Rollback
 
