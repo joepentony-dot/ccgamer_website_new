@@ -58,7 +58,7 @@ window.CCGAI=(()=>{
     if(!e?.alive)return false;
     // The floor's roaming Death Stalker is intentionally global. Ordinary enemies
     // sleep outside the player's room neighbourhood and wake before they can interact.
-    if(e.deathStalker||e.timedHunter||e.hunting)return true;
+    if(e.deathStalker||e.timedHunter||e.hunting||e.bridgeThief)return true;
     // A spotted Goblin's escape countdown remains live after the player leaves.
     if(e.treasureGoblin&&e.treasureGoblinSpotted)return true;
     const roomId=W.roomAt(world,e.x,e.y);if(roomId>=0&&activeRooms.has(roomId))return true;
@@ -70,7 +70,7 @@ window.CCGAI=(()=>{
   function crowdPriority(e){
     if(!e?.alive)return true;
     if(e.treasureGoblin&&e.treasureGoblinSpotted)return true;
-    if(e.deathStalker||e.timedHunter||e.hunting||e.follower||e.guardian||e.keyGuardian||e.exitWarden||e.sigilDefender||e.champion||e.championName||e.ccgBoss||e.arenaId)return true;
+    if(e.deathStalker||e.timedHunter||e.hunting||e.bridgeThief||e.follower||e.guardian||e.keyGuardian||e.exitWarden||e.sigilDefender||e.champion||e.championName||e.ccgBoss||e.arenaId)return true;
     let nearest=Infinity;for(const p of activePlayers)nearest=Math.min(nearest,dist(e,p));
     if(nearest<=7)return true;
     return e.aiState==="chase"&&nearest<=11;
@@ -89,20 +89,28 @@ window.CCGAI=(()=>{
   function roomEntered(host,roomId){return roomId<0||(host?.enteredRoomIds||[]).includes(roomId)}
   function roomDoors(host,roomId){return (host?.doors||[]).filter(door=>door.roomId===roomId)}
   function clearOfUnenteredDoor(host,roomId,x,y){return roomEntered(host,roomId)||roomDoors(host,roomId).every(door=>man({x,y},door)>3)}
-  function stalkerDoor(e,host,x,y){const door=W.doorAt(host,x,y);return e?.deathStalker&&door?.type==="room"&&!door.locked?door:null}
+  function stalkerDoor(e,host,x,y){const door=W.doorAt(host,x,y);return (e?.deathStalker||e?.bridgeThief)&&door?.type==="room"&&!door.locked?door:null}
   function passable(e,host,map,x,y,world,allowPlayerGoal=false){
+    // Ordinary floor collision does not know about the Trickster Bridge's
+    // permanent pit or its temporarily broken span. A stolen-stash thief
+    // must never escape onto tiles its pursuer cannot physically traverse.
+    if(e?.bridgeThief&&host?.weightBridge){
+      const b=host.weightBridge;
+      if((b.pitTiles||[]).some(q=>q.x===x&&q.y===y)||
+        (b.collapsed&&!b.rebuilt&&(b.bridgeTiles||[]).some(q=>q.x===x&&q.y===y)))return false;
+    }
     if((!W.walkable(map,x,y,host)&&!stalkerDoor(e,host,x,y))||occupied(host,x,y,e)||(!allowPlayerGoal&&occupiedByPlayer(x,y)))return false;
     /* Sanctuary is an unconditional safe-zone boundary. This deliberately
      * includes roaming Stalkers: no monster may enter or spawn inside it. */
     if(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y))return false;
     const sourceRoom=W.roomAt(world,e.x,e.y),targetRoom=W.roomAt(world,x,y);
-    if(sourceRoom>=0&&!roomEntered(host,sourceRoom)&&(targetRoom!==sourceRoom||!clearOfUnenteredDoor(host,sourceRoom,x,y)))return false;
+    if(!e.bridgeThief&&sourceRoom>=0&&!roomEntered(host,sourceRoom)&&(targetRoom!==sourceRoom||!clearOfUnenteredDoor(host,sourceRoom,x,y)))return false;
     return true;
   }
   function stageUnenteredEnemies(host,world){
     if(!host?.enemies||!world?.rooms)return;
     for(const e of host.enemies){
-      if(!e?.alive)continue;const roomId=W.roomAt(world,e.x,e.y);if(roomId<0||roomEntered(host,roomId)||clearOfUnenteredDoor(host,roomId,e.x,e.y))continue;
+      if(!e?.alive||e.bridgeThief)continue;const roomId=W.roomAt(world,e.x,e.y);if(roomId<0||roomEntered(host,roomId)||clearOfUnenteredDoor(host,roomId,e.x,e.y))continue;
       const room=world.rooms[roomId],doors=roomDoors(host,roomId),cells=[];
       for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(W.walkable(world.map,x,y,host)&&!occupied(host,x,y,e)&&clearOfUnenteredDoor(host,roomId,x,y))cells.push({x,y,score:doors.length?Math.min(...doors.map(d=>man({x,y},d))):99});
       cells.sort((a,b)=>b.score-a.score);if(cells[0]){e.x=cells[0].x;e.y=cells[0].y;e.facing={x:0,y:1}}
@@ -216,9 +224,62 @@ window.CCGAI=(()=>{
     hooks.notice?.(`<strong>${String(e.follower.name).toUpperCase()} RETREATS AND USES A RESTORE POTION.</strong> +${heal} HP.`,"heal",e);return true;
   }
 
+  function bridgeThiefEscapeRoute(e,host,map,players,world){
+    const player=(players||[]).filter(p=>p&&Number(p.health)>0).sort((a,b)=>man(a,e)-man(b,e))[0];
+    if(!player)return [];
+    const originRoom=W.roomAt(world,e.x,e.y),startKey=cellKey(e.x,e.y);
+    const queue=[{x:e.x,y:e.y,steps:0}],seen=new Set([startKey]),previous=new Map();
+    let best=null,bestScore=-Infinity;
+    // Bounded reachable survey, followed by a normal one-cell AI move. Keep
+    // corridor bends on the route to avoid single-step greedy oscillation.
+    for(let i=0;i<queue.length&&i<1400;i++){
+      const current=queue[i],room=W.roomAt(world,current.x,current.y);
+      if(current.steps>=3&&room>=0&&!window.CCGSystems?.inSanctuary?.(world,current.x,current.y)){
+        const score=man(current,player)+Math.min(7,current.steps*.16)+(room!==originRoom?7:0);
+        if(score>bestScore){bestScore=score;best=cellKey(current.x,current.y)}
+      }
+      for(const [dx,dy] of DIRS){
+        const x=current.x+dx,y=current.y+dy,key=cellKey(x,y);
+        if(seen.has(key)||!passable(e,host,map,x,y,world))continue;
+        seen.add(key);previous.set(key,cellKey(current.x,current.y));
+        queue.push({x,y,steps:current.steps+1});
+      }
+    }
+    const route=[];
+    for(let current=best;current&&current!==startKey;current=previous.get(current)){
+      const [x,y]=current.split(",").map(Number);route.push({x,y});
+      if(route.length>=1400)break;
+    }
+    route.reverse();return route;
+  }
+  function stepBridgeThief(e,host,map,players,world){
+    // The stolen-stash target remains in the authoritative enemy simulation.
+    e.aiState="flee";e.attackCooldown=Math.max(900,Number(e.attackCooldown)||0);
+    if(e.moveCooldown>0)return false;
+    if(!Array.isArray(e.bridgeFleeRoute)||!e.bridgeFleeRoute.length)
+      e.bridgeFleeRoute=bridgeThiefEscapeRoute(e,host,map,players,world);
+    let next=e.bridgeFleeRoute?.[0]||null;
+    if(next&&!passable(e,host,map,next.x,next.y,world)){
+      e.bridgeFleeRoute=bridgeThiefEscapeRoute(e,host,map,players,world);
+      next=e.bridgeFleeRoute[0]||null;
+    }
+    let moved=false;
+    if(next){
+      const oldX=e.x,oldY=e.y;
+      // Uses existing passability, unlocked-room-door opening, occupancy and
+      // enemy-revision tracking; never overrides locked/sanctuary doors.
+      moved=moveToward(e,host,map,next,world);
+      if(moved&&(e.x!==oldX||e.y!==oldY))e.bridgeFleeRoute.shift();
+    }
+    if(!moved)moved=randomStep(e,host,map,world);
+    e.moveCooldown=Math.max(350,Math.round(560*(e.moveSpeedScale||1)));
+    return moved;
+  }
+
   function stepOne(e,host,map,players,dt,hooks,world){
     if(!e.alive)return false;e.attackCooldown-=dt;e.chargeCooldown=(e.chargeCooldown||0)-dt;e.moveCooldown-=dt;e.tacticalDecisionMs=(e.tacticalDecisionMs||0)-dt;e.tacticalHoldMs=Math.max(0,(e.tacticalHoldMs||0)-dt);e.meleeSwingMs=Math.max(0,(e.meleeSwingMs||0)-dt);if(e.flash>0)e.flash=Math.max(0,e.flash-dt);
     if((e.hitStunMs||0)>0){e.hitStunMs=Math.max(0,e.hitStunMs-dt);e.attackCooldown=Math.max(e.attackCooldown,e.hitStunMs);return false}
+    if(e.bridgeThief)return stepBridgeThief(e,host,map,players,world);
     if(e.deathStalker){const lit=players.filter(p=>p&&p.health>0&&p.torchMs>0&&(W.sameRoom(world,e,p)||dist(e,p)<=Math.max(6,C.player?.torchRadius||6))).sort((a,b)=>dist(e,a)-dist(e,b))[0];if(lit){e.hunting=false;e.aiState="idle";e.lastSeen=null;e.targetId=null;e.memoryMs=0;e.searchMs=0;e.attackCooldown=Math.max(e.attackCooldown,900);if(e.moveCooldown<=0){const opts=DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy,dx,dy,d:dist({x:e.x+dx,y:e.y+dy},lit)})).filter(q=>passable(e,host,map,q.x,q.y,world)).sort((a,b)=>b.d-a.d);if(opts[0]){e.x=opts[0].x;e.y=opts[0].y;e.facing={x:opts[0].dx,y:opts[0].dy};e.moveCooldown=760;return true}}return false}}
     let [seen,range,reason]=visibleTarget(e,map,players,host,world);if(e.deathStalker&&seen)e.hunting=true;if(e.deathStalker&&e.hunting&&!seen){seen=players.filter(p=>p&&p.health>0).sort((a,b)=>dist(e,a)-dist(e,b))[0]||null;if(seen){range=dist(e,seen);reason="hunt"}}
     if((e.chargeTelegraphMs||0)>0){e.chargeTelegraphMs-=dt;if(e.chargeTelegraphMs<=0&&seen){const moved=executeCharge(e,seen,host,map,hooks);e.moveCooldown=chaseInterval(e);return moved||true}return true}

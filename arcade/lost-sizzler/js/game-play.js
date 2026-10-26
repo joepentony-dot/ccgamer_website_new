@@ -193,7 +193,7 @@ function tryDoor(p,x,y){
 function chestScoreReward(chest){if(chest?.weightBridgeReward)return 1500;return 100+Math.min(400,Math.max(0,Math.floor(Number(chest?.depth)||0))*25)}
 function chestBronzeDoorAlreadyPaid(chest){const roomId=Number(chest?.roomId);if(!Number.isFinite(roomId))return false;return(host.doors||[]).some(d=>d.type==="bronze"&&Number(d.roomId)===roomId&&!d.locked)}
 function openChest(p,chest){
-  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
+  if(!chest?.active)return true;const roomKeyPaid=chestBronzeDoorAlreadyPaid(chest);if(chest.locked&&!roomKeyPaid&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200,{dropIfBusy:true})}return false}
   const paidBronzeKey=Boolean(chest.locked&&!roomKeyPaid);if(chest.locked&&!roomKeyPaid)p.bronzeKeys--;if(paidBronzeKey)try{window.CCGLostSizzlerVoice?.say?.("chestUnlocked",{cooldown:0})}catch(_){}chest.locked=false;
   chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;
   const loot=chest.loot||(chest.weightBridgeReward?(PGR.magicSackTier?.(p)||0)<3?{kind:"magicSack",rarity:"GOLD MEDAL",name:"Magic Sack"}:{kind:"mapReveal",rarity:"GOLD MEDAL",name:"Cartographer's Eye"}:PGR.lootForChest(chest,run,Math.random)),evolvingWeapon=loot.kind==="weaponLoot"&&Boolean(window.CCGLostSizzlerV142R47FirearmEvolution),name=evolvingWeapon?"WEAPON CACHE":loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan,scoreReward=chestScoreReward(chest);
@@ -317,7 +317,45 @@ window.CCGLostSizzlerV142R58AuthoritativeTrapCore=authoritativeTrapApi;
 function triggerRescue(p){const r=host.rescue;if(!r||r.rescued)return;if(!r.following&&md(p,r)<=1){r.following=true;r.found=true;showToast("CCG SCOUT FOUND","Escort the scout itself into one of the permanently lit sanctuary rooms. It follows the nearest player.","green",9000);const activeRun=run;setTimeout(()=>{try{if(run===activeRun&&mode==="playing"&&r.following&&!r.rescued)window.CCGLostSizzlerVoice?.say?.("escortScout",{cooldown:0})}catch(_){}},2400)}}
 function triggerArena(p){for(const a of host.arenas||[])if(!a.triggered&&W.roomAt(world,p.x,p.y)===a.roomId){a.triggered=true;a.wave=1;SYS.lockRoomDoors(host,a.roomId,true);showToast("ARENA LOCKDOWN","Doors sealed. Survive the ambush to reopen them and earn a bonus chest.","red",7000);spawnArenaWave(a,4)}}
 function timedChamberCountdown(t=null){const node=document.getElementById("timed-chamber-countdown");if(!node)return;const active=t||((host?.timedRooms||[]).find(row=>row?.triggered&&!row?.cleared));if(!active){node.classList.add("hidden");node.textContent="TIMED CHAMBER · 30s";return}const seconds=Math.max(0,Math.ceil(Number(active.timeLeft||0)/1000));node.textContent=`TIMED CHAMBER · ${seconds}s`;node.classList.remove("hidden")}
-function triggerTimed(p){for(const t of host.timedRooms||[])if(!t.triggered&&W.roomAt(world,p.x,p.y)===t.roomId){t.triggered=true;t.timeLeft=30000;timedChamberCountdown(t);const room=world.rooms[t.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},stalker=host.enemies.find(e=>e.deathStalker&&e.voidStalker);t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));if(!alreadyDefeated){stalker.x=q.x;stalker.y=q.y;stalker.timedHunter=true;stalker.aiState="chase";stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;stalker.moveCooldown=250;stalker.attackCooldown=420;showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range — or survive until the chamber timer expires.","red",11000)}else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500)}}
+function triggerTimed(p){
+  for(const t of host.timedRooms||[])if(!t.triggered&&!t.cleared&&W.roomAt(world,p.x,p.y)===t.roomId){
+    t.triggered=true;t.timeLeft=30000;timedChamberCountdown(t);
+    const stalker=(host.enemies||[]).find(e=>e.deathStalker&&e.voidStalker);
+    t.hunterId=stalker?.id||`death-stalker-floor-${run.floor||1}`;
+    const alreadyDefeated=!stalker?.alive||Boolean(t.stalkerDefeated||(host.defeatedDeathStalkers||[]).includes(t.hunterId));
+    if(!alreadyDefeated){
+      // Keep the floor's existing Stalker. Never teleport it into an occupied
+      // room-centre tile; if no safe tile exists, it keeps its current position.
+      const q=timedHunterSpawnCell(t.roomId,p,stalker);
+      if(q){stalker.x=q.x;stalker.y=q.y;stalker.rx=q.x;stalker.ry=q.y}
+      stalker.timedHunter=true;stalker.aiState="chase";
+      stalker.lastSeen={x:p.x,y:p.y};stalker.memoryMs=999999;stalker.searchMs=0;
+      stalker.moveCooldown=250;stalker.attackCooldown=420;
+      showToast("TIMED CHAMBER — DEATH STALKER","This is the floor's one Death Stalker. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range — or survive until the chamber timer expires.","red",11000);
+    }else showToast("TIMED CHAMBER — STALKER BANISHED","This floor's Death Stalker has already been permanently destroyed. Survive the remaining chamber trial for the reward.","green",8500);
+  }
+}
+function timedHunterSpawnCell(roomId,player,stalker){
+  const room=world.rooms?.[roomId];if(!room)return null;
+  const centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
+  const occupied=(rows,q,active)=>Array.isArray(rows)&&rows.some(o=>o&&active(o)&&o.x===q.x&&o.y===q.y);
+  return puzzleFloorCells(roomId).filter(q=>{
+    if(Math.abs(q.x-player.x)+Math.abs(q.y-player.y)<=1)return false;
+    if(occupied(host.items,q,o=>o.active!==false)||
+       occupied(host.chests,q,o=>o.active!==false)||
+       occupied(host.deathCaches,q,o=>o.active!==false)||
+       occupied(host.switches,q,o=>o.active!==false)||
+       occupied(host.shrines,q,o=>o.active!==false)||
+       occupied(host.shops,q,o=>o.active!==false)||
+       occupied(host.generators,q,o=>o.alive===true))return false;
+    if([host.guardian,host.stalker,host.rescue,host.trader].some(o=>o&&o.x===q.x&&o.y===q.y&&o.alive!==false&&!o.permanentlyBanished&&!o.rescued))return false;
+    return !occupied(host.enemies,q,o=>o!==stalker&&o.alive===true);
+  }).sort((a,b)=>{
+    const da=Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y);
+    const db=Math.abs(b.x-centre.x)+Math.abs(b.y-centre.y);
+    return da-db||a.y-b.y||a.x-b.x;
+  })[0]||null;
+}
 function triggerTrader(p){const shops=host.shops?.length?host.shops:[host.trader].filter(Boolean);const t=shops.find(x=>x.active&&x.x===p.x&&x.y===p.y);if(t)openShop(t,p)}
 function triggerDeathCache(p){for(const c of host.deathCaches||[])if(c.active&&c.x===p.x&&c.y===p.y){const r=PGR.recoverDeathCache(p,run,c);score+=r.score||0;S.sfx("pickup");host.revision++;const restored=r.progressionRecovered?(r.restoredSkill?` Level/stat restored: ${r.restoredSkill}.`:r.pendingLevelRestored?" Lost level entitlement restored.":r.restoredLevel?" Lost level restored.":""):"";showToast("DEATH CACHE RECOVERED",`${r.recovered} carried item${r.recovered===1?"":"s"}, ${r.games} rescued game${r.games===1?"":"s"}, ${Number(r.score||0).toLocaleString()} score and ${Number(r.xp||0).toLocaleString()} XP recovered.${restored}${r.remaining?` ${r.remaining} item${r.remaining===1?"":"s"} remain because your inventory is full.`:""}`,r.remaining?"cyan":"green",10000);if(r.levels?.length){S.sfx("level");if(Math.max(0,Number(p.pendingLevels)||0)>0)queueLevelChoice(p)}}}
 function triggerSigilRoom(p){
@@ -357,6 +395,19 @@ function activateSequenceTorch(torch,p){
   showToast("TORCH ORDER WRONG",spawned?`${torch.dir} was not next. The sequence resets and one guardian enters the chamber. Step on the torches only; weapon fire cannot activate them. The faded blood clue from Floor 2 contains the order.`:`${torch.dir} was not next. The sequence resets. The existing puzzle guardian remains, but no additional enemy is spawned. The faded blood clue from Floor 2 contains the order.`,"red",10000);
   host.revision++;return false
 }
+function reconcileSequenceTorchPosition(p){
+  const z=host?.sequenceTorchPuzzle;if(!z||z.solved||!p)return;
+  z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
+  const id=String(p.id||p.name||"P1");
+  const torch=(z.torches||[]).find(t=>Number(t.x)===Number(p.x)&&Number(t.y)===Number(p.y));
+  z.entryByPlayer[id]=torch?String(torch.dir||""):"";
+}
+function reconcileSequenceTorchOccupants(){
+  // Passive forced motion refreshes occupancy only. A torch activates solely
+  // through triggerSequenceTorch(p,true) at the deliberate movement boundary.
+  if(!host?.sequenceTorchPuzzle||host.sequenceTorchPuzzle.solved)return;
+  for(const player of localPlayers())if(player)reconcileSequenceTorchPosition(player);
+}
 function triggerSequenceTorch(p,deliberate=false){
   const z=host.sequenceTorchPuzzle;if(!z||z.solved||!deliberate||!p)return false;
   z.entryByPlayer=z.entryByPlayer&&typeof z.entryByPlayer==="object"?z.entryByPlayer:{};
@@ -368,9 +419,41 @@ function triggerSequenceTorch(p,deliberate=false){
 }
 function weightBridgeCell(list,x,y){return (list||[]).some(q=>q.x===x&&q.y===y)}
 function bridgeThiefCell(p,b){
-  const candidates=(world.rooms||[]).filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom).map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)})).sort((a,b)=>b.dist-a.dist);
-  for(const row of candidates){const cells=puzzleFloorCells(row.room.id);if(cells.length)return cells[Math.floor(Math.random()*cells.length)]}
-  const fallback=(world.rooms||[]).find(r=>r.id!==b.roomId),cells=fallback?puzzleFloorCells(fallback.id):[];return cells[0]||{x:world.start.x,y:world.start.y}
+  // The thief carries the player's stolen inventory. Never hide it inside a
+  // Bronze Key, secret or locked challenge room the player cannot reach.
+  // Ordinary unlocked threshold doors are traversable after opening them.
+  // Choose the thief's hideout as reachable *after* firing the switch to
+  // rebuild the bridge. The pit remains unsafe, but restored bridge tiles
+  // become traversable, allowing the thief to flee beyond this chamber.
+  const key=(x,y)=>x+","+y,blockedBridge=new Set((b.pitTiles||[]).map(q=>key(q.x,q.y))),
+    queue=[{x:p.x,y:p.y}],reachable=new Set([key(p.x,p.y)]);
+  const canReach=(x,y)=>{
+    if(world.map[y]?.[x]!==0||blockedBridge.has(key(x,y)))return false;
+    if(host.blockingDecor?.some(d=>d.x===x&&d.y===y))return false;
+    if(host.generators?.some(g=>g.alive&&g.x===x&&g.y===y))return false;
+    const door=typeof W.doorAt==="function"?W.doorAt(host,x,y):
+      (host.doors||[]).find(d=>d.x===x&&d.y===y);
+    if(door)return !door.locked&&(door.open||door.type==="room");
+    return W.playerWalkable(world.map,x,y,host)
+  };
+  for(let i=0;i<queue.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const x=queue[i].x+dx,y=queue[i].y+dy,k=key(x,y);
+    if(!reachable.has(k)&&canReach(x,y)){reachable.add(k);queue.push({x,y})}
+  }
+  const candidates=(world.rooms||[])
+    .filter(r=>r&&r.id!==b.roomId&&r.id!==world.startRoomId&&r.id!==world.exitRoomId&&!r.sanctuary&&!r.sigilRoom)
+    .map(room=>({room,dist:Math.abs((room.x+room.w/2)-p.x)+Math.abs((room.y+room.h/2)-p.y)}))
+    .sort((a,b)=>b.dist-a.dist);
+  for(const row of candidates){
+    const cells=puzzleFloorCells(row.room.id).filter(q=>reachable.has(key(q.x,q.y)));
+    if(cells.length)return cells[Math.floor(Math.random()*cells.length)]
+  }
+  // If every eligible remote room is sealed, the thief remains within the
+  // player's accessible floor component; never teleport it behind a lock.
+  return queue.find(q=>(q.x!==p.x||q.y!==p.y)&&
+    W.playerWalkable(world.map,q.x,q.y,host)&&
+    !localPlayers().some(player=>player.x===q.x&&player.y===q.y)&&
+    !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y))||{x:p.x,y:p.y}
 }
 function bridgeStashedItems(b){
   const stolen=[],entry=b?.entryPos||null;
@@ -390,11 +473,33 @@ function spawnBridgeThief(p,b){
 function ensureBridgeSwitchAmmo(p,b){
   const noFirearm=!p?.firearmUnlocked||!p?.weapon,needsAmmo=Number(p?.mana||0)<=0;
   if(!noFirearm&&!needsAmmo)return false;
-  const q=b.switchPos||b.rewardPos||{x:p.x,y:p.y},spots=[{x:q.x+1,y:q.y},{x:q.x-1,y:q.y},{x:q.x,y:q.y+1},{x:q.x,y:q.y-1},{x:p.x,y:p.y}].filter(cell=>W.walkable(world.map,cell.x,cell.y,host));
-  const first=spots[0]||{x:p.x,y:p.y},second=spots[1]||first;
+  // The replacement bridge is not yet active here. Reuse the existing
+  // item-recovery flood fill, which respects sealed doors, the collapsed
+  // bridge, furniture and occupied floor cells, rather than assuming that
+  // a walkable tile beside the switch is reachable from the player.
+  const origin=b.switchPos||b.rewardPos||p;
+  const spots=typeof bridgeThiefRecoveryCells==="function"
+    ?bridgeThiefRecoveryCells(p,{...b,thiefRecoveryOrigin:origin})
+      .filter(cell=>cell.x!==origin.x||cell.y!==origin.y)
+    :[];
+  // A completely blocked area retains the old player-tile rescue fallback;
+  // normal floors supply two distinct, genuinely accessible pickup tiles.
+  const first=spots[0]||{x:p.x,y:p.y},second=spots[1]||spots[0]||{x:p.x,y:p.y};
   if(noFirearm)host.items.push({id:`bridge-emergency-weapon-${Date.now()}`,...first,kind:"weapon",active:true,title:"BRIDGE EMERGENCY FIREARM",r114BridgeEmergency:true});
   if(needsAmmo)host.items.push({id:`bridge-emergency-ammo-${Date.now()}`,...second,kind:"ammo",active:true,title:"BRIDGE EMERGENCY AMMO",r114BridgeEmergency:true});
   showToast("BRIDGE FAILSAFE SUPPLIES",noFirearm&&needsAmmo?"A firearm cache and ammunition have appeared beside the bridge switch. Pick them up, then shoot the mechanism.":noFirearm?"A firearm cache has appeared beside the bridge switch so the room cannot trap you.":"An emergency ammo pack has appeared beside the bridge mechanism. Pick it up, then shoot the switch.","cyan",9500);host.revision++;return true
+}
+function restoreWeightBridgeAfterRespawn(){
+  // Death teleports the player to the floor entrance. If the bridge collapsed
+  // before its far-side projectile switch was fired, that switch is no longer
+  // reachable from the entrance and the death cache/stolen Flask can be lost.
+  // Repair only that stranded state, preserving the thief and stolen-item ledger.
+  const b=host?.weightBridge;
+  if(!b?.collapsed||b.rebuilt)return false;
+  b.collapsed=false;b.rebuilt=true;b.stabilized=true;b.crossingPlayer=null;
+  const bridgeSwitch=(host.switches||[]).find(s=>s.id===b.switchId&&s.weightBridgeSwitch);
+  if(bridgeSwitch){bridgeSwitch.active=false;bridgeSwitch.toggled=true}
+  host.revision++;return true
 }
 function weightBridgeBlocks(p,x,y){
   const b=host.weightBridge;if(!b)return false;
@@ -431,19 +536,108 @@ function bossBurst(fight,boss,phase){
   for(const [dx,dy] of dirs)spawnEnemyShot({x:boss.x,y:boss.y,dx,dy,power,style,ttl,source:fight.name,enemyId:boss.id,damageScale:1});
   S.sfx(style==="fire"?"flame":"enemy");shake=Math.max(shake,phase>=3?10:6)
 }
+function bossRewardCell(fight){
+  const room=world.rooms?.[fight.roomId];if(!room)return null;
+  const player=localPlayers().find(p=>p&&p.health>0&&W.roomAt(world,p.x,p.y)===fight.roomId);
+  if(!player)return null;
+  // Traverse only the player's currently reachable room component.
+  const walk=(x,y)=>W.playerWalkable(world.map,x,y,host)&&W.roomAt(world,x,y)===fight.roomId;
+  if(!walk(player.x,player.y))return null;
+  const key=(x,y)=>x+","+y,queue=[{x:player.x,y:player.y}],seen=new Set([key(player.x,player.y)]);
+  const occupied=(q,rows,valid)=>Array.isArray(rows)&&rows.some(o=>o&&valid(o)&&o.x===q.x&&o.y===q.y);
+  const active=o=>o.active!==false,alive=o=>o.alive===true;
+  const specials=[host.guardian,host.stalker,host.rescue,host.trader,host.startShop];
+  const centre={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)},candidates=[];
+  for(let i=0;i<queue.length;i++){
+    const q=queue[i];
+    if(q.x>room.x&&q.y>room.y&&q.x<room.x+room.w&&q.y<room.y+room.h&&
+       !occupied(q,localPlayers(),()=>true)&&!occupied(q,host.enemies,alive)&&
+       !occupied(q,specials,o=>o.alive!==false&&!o.permanentlyBanished&&!o.rescued&&o.active!==false)&&
+       !occupied(q,host.generators,alive)&&!occupied(q,host.items,active)&&
+       !occupied(q,host.chests,active)&&!occupied(q,host.deathCaches,active)&&
+       !occupied(q,host.switches,active)&&!occupied(q,host.shrines,active)&&
+       !occupied(q,host.shops,active))candidates.push(q);
+    for(const [dx,dy]of[[0,-1],[1,0],[0,1],[-1,0]]){
+      const x=q.x+dx,y=q.y+dy,k=key(x,y);
+      if(seen.has(k)||!walk(x,y))continue;
+      seen.add(k);queue.push({x,y});
+    }
+  }
+  candidates.sort((a,b)=>{
+    const da=Math.abs(a.x-centre.x)+Math.abs(a.y-centre.y),
+      db=Math.abs(b.x-centre.x)+Math.abs(b.y-centre.y);
+    return da-db||a.y-b.y||a.x-b.x;
+  });
+  return candidates[0]||null;
+}
+function reconcileBossRewards(fight,force=false){
+  if(!fight?.cleared)return false;
+  const now=Date.now();if(!force&&Number(fight.rewardRetryAt||0)>now)return false;
+  fight.rewardRetryAt=now+850;
+  // Pre-v2 rewarded saves may already have collected both rewards.
+  if(fight.rewarded&&!fight.rewardSpawnVersion){
+    fight.rewardSpawnVersion=2;fight.sideRewarded=true;
+  }
+  if(!fight.rewardSpawnVersion)fight.rewardSpawnVersion=2;
+  host.chests=host.chests||[];host.items=host.items||[];
+  const id="r114-boss-chest-f"+fight.floor;
+  if(!fight.rewarded){
+    if(host.chests.some(c=>c.id===id))fight.rewarded=true;
+    else{
+      const q=bossRewardCell(fight);
+      if(q){
+        const room=world.rooms[fight.roomId];
+        host.chests.push({id,...q,locked:false,active:true,depth:(room.depth||0)+18,
+          roomId:fight.roomId,r114BossReward:true});
+        fight.rewarded=true;host.revision++;
+      }
+    }
+  }
+  if(fight.rewarded&&!fight.sideRewarded){
+    const side=fight.floor===5?{id:"r114-boss-map-"+fight.floor,kind:"mapReveal",title:"CARTOGRAPHER'S EYE"}:
+      fight.floor===10?{id:"r114-boss-sack-"+fight.floor,kind:"magicSack",title:"MAGIC SACK"}:null;
+    if(!side)fight.sideRewarded=true;
+    else if(host.items.some(item=>item.id===side.id))fight.sideRewarded=true;
+    else{
+      const q=bossRewardCell(fight);
+      if(q){host.items.push({...side,...q,active:true});fight.sideRewarded=true;host.revision++}
+    }
+  }
+  return Boolean(fight.rewarded&&fight.sideRewarded);
+}
 function updateBossFight(dt){
-  const fight=bossFightState();if(!fight||fight.cleared)return;
+  const fight=bossFightState();if(!fight)return;
+  if(fight.cleared){
+    // A saved/interrupted clear may preserve old locked door flags after the
+    // boss died. Recover the original room-door owner without paying twice.
+    const boss=bossEnemyForFight(fight);
+    const otherLockdown=Boolean(
+      (host.memoryPuzzle?.roomId===fight.roomId&&host.memoryPuzzle.lockdownActive&&!host.memoryPuzzle.solved)||
+      (host.sigilRoomId===fight.roomId&&host.sigilLockdown&&!host.sigilResolved)
+    );
+    if(!boss?.alive&&!otherLockdown){
+      const stale=(host.doors||[]).some(d=>d.type==="room"&&d.roomId===fight.roomId&&d.locked);
+      if(stale){
+        SYS.lockRoomDoors(host,fight.roomId,false);
+        const groups=new Set();
+        for(const door of host.doors||[])if(door.type==="room"&&door.roomId===fight.roomId){
+          const id=String(door.groupId||door.id||door.x+","+door.y);
+          if(groups.has(id))continue;
+          groups.add(id);beginDoorOpening(door,900);
+        }
+        host.revision=(Number(host.revision)||0)+1;
+      }
+    }
+    reconcileBossRewards(fight);return;
+  }
   const boss=bossEnemyForFight(fight);if(!boss||!boss.alive){
     fight.cleared=true;fight.triggered=false;SYS.lockRoomDoors(host,fight.roomId,false);
     for(const d of host.doors||[])if(d.type==="room"&&d.roomId===fight.roomId)beginDoorOpening(d,900);
-    if(!fight.rewarded){
-      fight.rewarded=true;score+=fight.floor===15?5000:2500;
-      const room=world.rooms[fight.roomId],q={x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)};
-      host.chests.push({id:`r114-boss-chest-f${fight.floor}`,...q,locked:false,active:true,depth:(room.depth||0)+18,roomId:fight.roomId,r114BossReward:true});
-      if(fight.floor===5)host.items.push({id:`r114-boss-map-${Date.now()}`,x:q.x+1,y:q.y,kind:"mapReveal",active:true,title:"CARTOGRAPHER'S EYE"});
-      if(fight.floor===10)host.items.push({id:`r114-boss-sack-${Date.now()}`,x:q.x-1,y:q.y,kind:"magicSack",active:true,title:"MAGIC SACK"});
+    if(!fight.rewardPaid&&!fight.rewarded){
+      fight.rewardPaid=true;score+=fight.floor===15?5000:2500;
     }
-    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":"The arena doors reopen. A high-tier boss cache has appeared.","green",10000);host.revision++;return
+    const rewardReady=reconcileBossRewards(fight,true);
+    S.sfx("open");showToast(`${fight.name} DEFEATED`,fight.floor===15?"The Blood Citadel's final keeper is down. Finish the Sigil route and escape.":rewardReady?"The chamber doors reopen. Your boss reward is available.":"The chamber doors reopen. Your boss reward is reserved until a reachable tile is free.","green",10000);host.revision++;return
   }
   if(!fight.triggered)return;
   const pct=Math.max(0,Number(boss.hp||0)/Math.max(1,Number(boss.maxHp||1))),phase=pct<=.30?3:pct<=.65?2:1;
@@ -748,11 +942,12 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     const priorCacheLost=(host.deathCaches||[]).some(c=>c?.active);if(priorCacheLost)host.deathCaches=[];const cache=PGR.createDeathCache(p,run,cacheX,cacheY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;cache.score=penalty.scoreLost||0;cache.xp=penalty.xpLost||0;cache.progressionRecovery=penalty.progressionRecovery?JSON.parse(JSON.stringify(penalty.progressionRecovery)):null;cache.active=cache.active||cache.score>0||cache.xp>0||Boolean(cache.progressionRecovery);run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;host.deathCaches=[];PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED — GAME OVER","This is the second death that left your XP reserve at zero. Your final XP warning was already used, so the run is over.","red",12000);endRun("Game over: XP reached zero for the second time after the final warning");return}
     releaseSealedDeathRoom(W.roomAt(world,deathX,deathY));
+    const bridgeRepaired=restoreWeightBridgeAfterRespawn();
     if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
     const playerId=String(p.id||p.name||"P1");
     mode="respawning";p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.hitStunMs=0;p.controlLocked=false;p.controlsLocked=false;p.invuln=Math.max(2200,Number(p.invuln)||0);p.controlLocked=true;p.controlsLocked=true;if(p===p1){fire1=0;fireBuffer1=0;input.delete("Space");input.delete("KeyF");input.delete("Numpad0")}else if(p===p2){fire2=0;fireBuffer2=0;input.delete("Enter")}p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;
     const explore=Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100),objective=SYS.objectiveText(host,run,explore),cacheText=cache.active?` Your death box holds ${Number(cache.score||0).toLocaleString()} score, ${Number(cache.xp||0).toLocaleString()} XP and dropped loot. Recover it before another death or the whole cache is destroyed.`:" You had nothing to cache.",xpText=penalty.xpLost?` ${penalty.xpLost} XP moved to the death box.${penalty.levelLost?` Level ${penalty.levelBefore} fell to ${penalty.levelAfter}; ${penalty.lostSkill||"the latest upgrade"} is held by that death cache and returns with its XP if recovered in time.`:" Your current level was retained."}`:" No XP was available to lose.",priorText=priorCacheLost?" YOUR PREVIOUS DEATH CACHE WAS DESTROYED — any unrecovered loot, XP and stripped progression in it are permanently lost.":"",zeroText=penalty.zeroWarning?" FINAL XP WARNING: your XP reserve has reached zero once. Recover this death cache or earn more XP. If a later death leaves XP at zero again, the run ends.":"";
-    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${priorText}${zeroText}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
+    pendingDeathConfirmation={player:p,playerId,toastTitle:penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,toastText:`OBJECTIVE: ${objective}.${xpText}${cacheText}${priorText}${zeroText}${bridgeRepaired?" The Trickster Bridge has rebuilt after your death; your cache and the Dungeon Thief remain accessible.":""}`,toastDuration:penalty.zeroWarning?13000:10000,offerFloorSave:run.consecutiveDeaths>=5};
     host.revision++;
     try{dispatchEvent(new CustomEvent("ccg:player-death",{detail:{playerId,playerName:String(p.name||"Player"),source:String(source||"enemy"),floor:Number(run.floor||1),deathX:Number(deathX),deathY:Number(deathY),cacheActive:Boolean(cache.active),scoreLost:Number(penalty.scoreLost||0),xpLost:Number(penalty.xpLost||0),levelLost:Boolean(penalty.levelLost),recoverableProgression:Boolean(penalty.progressionRecovery),priorCacheLost:Boolean(priorCacheLost),zeroWarning:Boolean(penalty.zeroWarning),requiresConfirmation:true}}))}catch(_){}
   }sync()
@@ -839,7 +1034,25 @@ function updateGenerators(dt){
     const lit=generatorIlluminated(g);if(!lit){g.powered=false;continue}if(!g.powered){g.powered=true;g.spawnCooldown=Math.max(g.spawnCooldown||0,1700);if(localPlayers().some(p=>W.sameRoom(world,p,g)))S.sfx("generator")}
     g.spawnCooldown-=dt;const rate=run.modifier?.id==="RESTLESS_DUNGEON"?.65:1;if(g.spawnCooldown>0)continue;
     g.spawnCooldown=(7200+Math.random()*2800)*rate;const aliveSpawned=(host.enemies||[]).filter(e=>e.alive&&e.generatorId===g.id).length;if(aliveSpawned>=C.dungeon.generatorSpawnCap)continue;
-    const pos=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:g.x+dx,y:g.y+dy})).find(q=>W.walkable(world.map,q.x,q.y,host)&&!SYS.inSanctuary(world,q.x,q.y)&&!host.enemies.some(e=>e.alive&&e.x===q.x&&e.y===q.y));if(!pos)continue;
+    // Generator reinforcements must not materialise on the player, another
+    // machine, actors, loot, chests or other interactive occupied cells.
+    // Geometry (including doors and blocking furniture) remains owned by W.
+    const at=(rows,q,active)=>Array.isArray(rows)&&rows.some(o=>o&&active(o)&&o.x===q.x&&o.y===q.y);
+    const spawnBlocked=q=>
+      at(localPlayers(),q,()=>true)||
+      at(host.enemies,q,o=>o.alive===true)||
+      at(host.generators,q,o=>o.alive===true)||
+      at(host.items,q,o=>o.active!==false)||
+      at(host.chests,q,o=>o.active!==false)||
+      at(host.deathCaches,q,o=>o.active!==false)||
+      at(host.shrines,q,o=>o.active!==false)||
+      at([host.stalker],q,o=>o.awake&&!o.permanentlyBanished)||
+      at([host.guardian,host.rescue,host.trader,host.startShop,...(host.shops||[])],q,o=>o.alive!==false&&o.active!==false&&!o.rescued)||
+      at(host.doors,q,o=>o.locked||!o.open);
+    const pos=[[1,0],[-1,0],[0,1],[0,-1]]
+      .map(([dx,dy])=>({x:g.x+dx,y:g.y+dy}))
+      .find(q=>W.walkable(world.map,q.x,q.y,host)&&!SYS.inSanctuary(world,q.x,q.y)&&!spawnBlocked(q));
+    if(!pos)continue;
     g.spawnTotal=(g.spawnTotal||0)+1;host.enemies.push({id:`spawn-${Date.now()}-${Math.random()}`,...pos,kind:Math.random()<.3?"hunter":"scout",hp:2+run.floor,maxHp:2+run.floor,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:900,attackCooldown:800,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,generatorId:g.id,generatorSpawnOrdinal:g.spawnTotal});S.sfx("generator");host.revision++
   }
 }
@@ -858,16 +1071,34 @@ function updateRescue(){
   if(distance>1){const next=SYS.pathStep(world,host,r,target,true);if(next){r.x=next.x;r.y=next.y}}
   if(SYS.inSanctuary(world,r.x,r.y)){
     r.rescued=true;r.following=false;
-    showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green");
+    // The rescue state changes here (not in triggerRescue): give the scout,
+    // rather than the sanctuary keeper, ownership of the completion line.
+    try{window.CCGLostSizzlerStage8NpcDialogue?.presentScout?.(null,{force:true,stateKey:"rescued"})}catch(_){}
+    showToast("SCOUT REACHES SANCTUARY","The rescue objective is complete.","green",7000,{ccgDialogueVoiceHandled:true});
     SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(target.id)||new Set(),world)*100))
   }
 }
 function updateStalker(dt){
+  SYS.enforceDeathStalkerSingleton?.(host);
   const s=host.stalker;if(!s||s.permanentlyBanished||!C.stalker.enabled||run.floor<C.stalker.startFloor){S.setStalkerNear(Boolean(host.voidStalkerInSight));return}
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
   if(s.stunMs>0){s.stunMs-=dt;return}s.moveCooldown-=dt;const targets=localPlayers(),target=targets.sort((a,b)=>md(a,s)-md(b,s))[0];if(!target)return;if(SYS.inSanctuary(world,target.x,target.y)){s.near=false;s.seen=false;s.moveCooldown=Math.max(500,Number(s.moveCooldown)||0);S.setStalkerNear(Boolean(host.voidStalkerInSight));return}const sees=W.sameRoom(world,s,target)||A.lineOfSight(world.map,s,target,C.enemy.lineOfSightRange,host);if(sees)s.seen=true;
   if(s.seen&&s.moveCooldown<=0){const next=SYS.pathStep(world,host,s,target,false);if(next){s.x=next.x;s.y=next.y}s.moveCooldown=C.stalker.moveMs/PGR.difficulty(run).stalker}if(md(s,target)<=1)hurtPlayer(target,C.stalker.hitDamage,false,C.stalker.name);
-  if(md(s,target)<=C.stalker.drainDistance){s.drainTimer=(s.drainTimer??1000)-dt;while(s.drainTimer<=0){s.drainTimer+=1000;const drain=C.stalker.drainPerSecond||10;score=Math.max(0,score-drain);target.totalXp=Math.max(0,(target.totalXp||0)-drain);target.xp=Math.max(0,(target.xp||0)-drain);run.floorXP=Math.max(0,(run.floorXP||0)-drain);floatText(target.x,target.y,`-${drain} SCORE / XP`,P.red);S.sfx("stalker")}}else s.drainTimer=1000;
+  if(md(s,target)<=C.stalker.drainDistance){
+    // Corrupt saved countdowns or long suspended-frame deltas must never
+    // trap the main game update in an unbounded drain loop.
+    const previous=s.drainTimer==null?NaN:Number(s.drainTimer);
+    const remaining=Number.isFinite(previous)&&previous>=-1000&&previous<=1000?previous:1000;
+    const elapsed=Number.isFinite(dt)?Math.max(0,Math.min(dt,5000)):0;
+    const due=remaining-elapsed,ticks=Math.min(5,Math.max(0,Math.ceil((1-due)/1000))),residual=due+ticks*1000;
+    s.drainTimer=ticks===5&&residual<=0?1000:Math.max(1,Math.min(1000,residual));
+    for(let i=0;i<ticks;i++){
+      const drain=C.stalker.drainPerSecond||10;
+      score=Math.max(0,score-drain);target.totalXp=Math.max(0,(target.totalXp||0)-drain);
+      target.xp=Math.max(0,(target.xp||0)-drain);run.floorXP=Math.max(0,(run.floorXP||0)-drain);
+      floatText(target.x,target.y,`-${drain} SCORE / XP`,P.red);S.sfx("stalker")
+    }
+  }else s.drainTimer=1000;
   const near=md(s,target)<=C.stalker.nearDistance||W.sameRoom(world,s,target);if(near!==s.near){s.near=near;S.setStalkerNear(near||Boolean(host.voidStalkerInSight));if(near)showToast(`${C.stalker.name.toUpperCase()} IS NEAR`,`COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",8000)}
 }
 function updateBanishment(){const threats=(host.enemies||[]).filter(e=>e.alive&&e.deathStalker),sight=threats.some(e=>localPlayers().some(p=>Math.hypot(e.x-p.x,e.y-p.y)<=C.enemy.torchSightRange&&A.lineOfSight(world.map,p,e,C.enemy.torchSightRange,host)));host.voidStalkerInSight=sight;S.setStalkerSight?.(sight);S.setStalkerNear(sight||Boolean(host.stalker?.near))}
@@ -876,7 +1107,37 @@ function updateNamedEncounters(){
   for(const e of visible)if(!e.dossierSeen){e.dossierSeen=true;run.stats.namedEncounters=(run.stats.namedEncounters||0)+1;PGR.recordNamedEncounter(e.follower.name,false);showToast(`NAMED ENEMY — ${e.follower.name.toUpperCase()}`,"Encounter added to your dossier. Named enemies carry a Restore Potion and scale with your level.","gold",6800)}
   S.setNamedEnemy?.(chosen?.follower?.name||"");if(!host.stalker?.near)S.setRoomMood(chosen?"named":roomMoodFor(W.roomAt(world,p1.x,p1.y)))
 }
+// Save/restore or an interrupted final-defender callback can leave a Sigil
+// chamber sealed after every actual Sigil defender is already dead. Recover
+// ONLY that impossible state; living defenders and incomplete objectives keep
+// all their normal doors and encounter rules.
+function reconcileClearedSigilLockdown(){
+  if(!host?.sigilLockdown||host.sigilResolved||host.sigilRoomId==null||!host.objective?.complete)return false;
+  if(SYS.sigilDefendersAlive(host).length>0)return false;
+  host.sigilResolved=true;
+  host.sigilLockdown=false;
+  const hasSigil=Boolean(host.exitSigilCollected)||(host.items||[]).some(item=>item?.active&&item.kind==="exitSigil");
+  if(!hasSigil){
+    const room=world.rooms?.[host.sigilRoomId];
+    const fallback=room?{x:Math.floor(room.x+room.w/2),y:Math.floor(room.y+room.h/2)}:null;
+    const drop=host.sigilDropPos||fallback;
+    if(drop){
+      host.items=host.items||[];
+      host.items.push({id:`exit-sigil-recovered-${Number(run?.floor||1)}-${host.sigilRoomId}`,x:drop.x,y:drop.y,kind:"exitSigil",active:true,title:"EXIT SIGIL"});
+    }
+  }
+  host.exitSigilDropped=true;
+  for(const door of host.doors||[])if(door.sigilGate){
+    door.locked=false;
+    beginDoorOpening(door,950);
+  }
+  host.revision=(Number(host.revision)||0)+1;
+  try{S.sfx("dooropen")}catch(_){}
+  showToast("SIGIL CHAMBER RECOVERED","All Sigil defenders are gone. The stalled chamber doors have reopened; the Exit Sigil is available.","gold",9000);
+  return true
+}
 function updateFloorObjective(){
+  reconcileClearedSigilLockdown();
   const pct=Math.round(PGR.roomCompletion(explored.get(p1.id)||new Set(),world)*100);SYS.updateObjective(host,run,pct);
   if(host.objective.complete&&!host._objectiveAnnounced){
     host._objectiveAnnounced=true;S.sfx("open");
@@ -917,7 +1178,12 @@ function update(dt){
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
   for(const p of localPlayers())if(p&&Number(p.health)<=0)enforceCanonicalDeathState(p);
   if(mode!=="playing"){fireBuffer1=fireBuffer2=0;return}
+  // Pick up teleport/knockback changes made outside a deliberate movement.
+  reconcileSequenceTorchOccupants();
   enemyCD-=dt;
+  // The existing recovery owner retries a serialized stolen stash if the
+  // first return was blocked; it throttles work and cannot reaward score.
+  if(host?.weightBridge?.thiefDefeated&&(host.weightBridge.stolenItems||[]).length)recoverBridgeThiefStash(null,p1);
   const pauseProjectileCadenceHeld=Boolean(window.__CCG_PAUSE_PROJECTILE_CADENCE_HELD__);
   if(pauseProjectileCadenceHeld){
     projectileCD=0;
@@ -945,7 +1211,7 @@ function update(dt){
     }
     projectileCD=0
   }else if(projectileCD<=0){const liveProjectileWork=bullets.some(b=>b&&b.ttl>0)||enemyBullets.some(b=>b&&b.ttl>0);stepProjectiles();projectileCD=liveProjectileWork?70:0}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendCD=100}if(worldCD<=0){worldCD=350}
-  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBossFight(dt);updateBoulder(dt);reconcileSequenceTorchOccupants();updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   // Final exact-cell pass runs after room/encounter systems so an occupied tile
   // that turns ACTIVE cannot reach HUD synchronisation without HEALTH damage.
   updateActiveTrapContacts("simulation-post");
