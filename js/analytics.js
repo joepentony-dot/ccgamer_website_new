@@ -390,7 +390,20 @@
     document.body.appendChild(script);
   }
 
+  // Load the small, standalone copyright deterrent after normal DOM readiness.
+  // Admin and intro already exit at the top of this shared bootstrap.
+  function loadCopyrightNotice() {
+    if (document.querySelector('script[data-ccg-copyright-notice]')) return;
+    loadStylesheet('/resources/css/ccg-copyright-notice.css', 'data-ccg-copyright-style');
+    var script = document.createElement('script');
+    script.src = '/js/ccg-copyright-notice.js';
+    script.async = true;
+    script.setAttribute('data-ccg-copyright-notice', 'true');
+    document.head.appendChild(script);
+  }
+
   function initDomFeatures() {
+    loadCopyrightNotice();
     appendFooterLinks();
     usePrivacyEnhancedYouTube();
     appendPassiveRevenuePanel();
