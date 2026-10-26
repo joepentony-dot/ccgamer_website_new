@@ -1,3 +1,11 @@
+## 26 October 2026 — #2903 exact-head Codex P2 sitemap lastmod correction (UNMERGED)
+
+- Codex completed an independent review at generated head `e344bc50e87c676972cdf1ad8307fb2ffeef974d` on 26 October at 06:33 UTC and identified unresolved P2: 17 unchanged game HTML routes were incorrectly stamped 2026-10-26 in `sitemap-games.xml`. This supersedes older claims that review had not arrived.
+- Existing generated-output PR **#2903** and its 261 original files remain preserved. On the same existing branch, `scripts/rebuild-games.js` now runs sitemap generation after final SEO opportunity, video override and magazine-runtime writes. Existing `tests/sitemap-content-lastmod.test.mjs` adds an ordering regression, explicitly distinguishing mutating runtime calls from later `--check` validation.
+- Corrected all 17 false game `lastmod` advances back to 2026-10-15, retaining 666 game URLs. `sitemap-games.xml` now matches current main byte-for-byte. Restored the six-child sitemap index's game child `lastmod` to current-main 2026-10-22; the 633-page candidate sitemap (389 prior + 244 archive URLs) is preserved. No game-page HTML, games.json, media, emulator or intro content was edited.
+- Source/test/generated correction commits: `d210defa`, `25d90cd8`, `48e42c5f`, `ff2bd2b3`, `d568070b`. Static cloud readback confirms intended step order and 666 game URLs. **Node tests, full Actions CI, fresh-head Codex re-review and authoritative regeneration have NOT run/passed for this revised branch.** Prior eight validation-only successes belong only to old head `e344bc50`; PR-event `action_required` remains non-passing.
+- Latest observed main `e58ce2d9ce3e2ad8ba0feeedb9fd1d02de5d1cd9`; branch remains behind main and is **BLOCKED, not QUALIFIED/MERGED/LIVE**. Next: obtain actual cloud test execution on revised exact head, verify deterministic full regeneration (including final sitemap dates), reconcile all newer main changes without losing 244 archive URLs, complete clean exact-head Codex re-review, and use guarded merge/deploy/live checks only when every gate is satisfied.
+
 # SEO and generated output
 
 ## 21 October 2026 — Pages must preserve publisher-completed HTML
