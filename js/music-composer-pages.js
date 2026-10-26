@@ -1086,6 +1086,7 @@ function composerSortLetter(name) {
     let pausedAnimations = [];
     let wheelStarted = false;
     let wheelResumeTimer = 0;
+    let nonWheelResumeTimer = 0;
 
     const decorativeAnimations = () => {
       if (!document.getAnimations) return [];
@@ -1114,6 +1115,10 @@ function composerSortLetter(name) {
     };
 
     const resumeDecorativeAnimations = () => {
+      if (nonWheelResumeTimer) {
+        window.clearTimeout(nonWheelResumeTimer);
+        nonWheelResumeTimer = 0;
+      }
       document.querySelectorAll("[" + pauseAttribute + "]").forEach((header) => {
         header.removeAttribute(pauseAttribute);
       });
@@ -1129,8 +1134,27 @@ function composerSortLetter(name) {
       });
     };
 
+    const scheduleNonWheelResume = () => {
+      if (nonWheelResumeTimer) window.clearTimeout(nonWheelResumeTimer);
+      // Do not leave the logo paused for a read-only visit. Interaction paths
+      // below restore it sooner; this bounded fallback covers visitors who
+      // never send wheel input at all.
+      nonWheelResumeTimer = window.setTimeout(() => {
+        nonWheelResumeTimer = 0;
+        if (!wheelStarted) resumeDecorativeAnimations();
+      }, 5000);
+    };
+
+    const onNonWheelInteraction = () => {
+      if (!wheelStarted) resumeDecorativeAnimations();
+    };
+
     const onWheel = () => {
       wheelStarted = true;
+      if (nonWheelResumeTimer) {
+        window.clearTimeout(nonWheelResumeTimer);
+        nonWheelResumeTimer = 0;
+      }
       pauseDecorativeAnimations();
       if (wheelResumeTimer) window.clearTimeout(wheelResumeTimer);
       wheelResumeTimer = window.setTimeout(() => {
@@ -1142,6 +1166,9 @@ function composerSortLetter(name) {
     // A passive wheel observer records the first real interaction and schedules
     // animation restoration. It never owns, cancels or replaces native scrolling.
     window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("pointerdown", onNonWheelInteraction, { passive: true });
+    window.addEventListener("touchstart", onNonWheelInteraction, { passive: true });
+    window.addEventListener("keydown", onNonWheelInteraction, { passive: true });
 
     const waitForMusicHeader = () => new Promise((resolve) => {
       if (document.querySelector("[data-ccg-header]")) {
@@ -1164,8 +1191,13 @@ function composerSortLetter(name) {
     // The shared header can be injected after DOMContentLoaded on either Music
     // route. The scoped attribute covers it as soon as it enters the document.
     pauseDecorativeAnimations();
+    scheduleNonWheelResume();
     void Promise.all([waitForMusicNavigationReady(), waitForMusicHeader()])
-      .then(() => pauseDecorativeAnimations());
+      .then(() => {
+        if (wheelStarted) return;
+        pauseDecorativeAnimations();
+        scheduleNonWheelResume();
+      });
   }
 
   function waitForMusicNavigationReady() {

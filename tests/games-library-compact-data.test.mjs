@@ -58,3 +58,13 @@ test("Browse Games prefers compact data and fails safely to games.json", () => {
   assert.match(librarySource, /String\(game\?\.thumbnail \|\| ""\)\.trim\(\)/);
   assert.match(librarySource, /failures\.push\(\`\$\{candidate\.label\} was incomplete or returned 0 entries\`\)/);
 });
+
+test("Browse Games replays the initiating deferred-control intent", () => {
+  assert.match(librarySource, /CCG_PENDING_LIBRARY_INTENT/);
+  assert.match(librarySource, /type:\s*"system"/);
+  assert.match(librarySource, /type:\s*"clear-search"/);
+  assert.match(librarySource, /type:\s*"alpha"/);
+  assert.match(librarySource, /syncSearchState\(\);/);
+  assert.match(librarySource, /pendingIntent\?\.type === "system"[\s\S]*setSystemFilter/);
+  assert.match(librarySource, /pendingIntent\?\.type === "alpha"[\s\S]*toggleAccordion/);
+});

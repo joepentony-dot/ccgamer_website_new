@@ -40,6 +40,17 @@ test('music hub scrolling cannot invalidate the entire page on native wheel inpu
     'do not reinstall unnecessary document-wide music scroll listeners');
 });
 
+test('music decorative effects have bounded non-wheel restoration', () => {
+  const music = fs.readFileSync('js/music-composer-pages.js', 'utf8');
+  const start = music.indexOf('function initMusicScrollPerfPause()');
+  const end = music.indexOf('function initBackToTop()', start);
+  const block = music.slice(start, end);
+  assert.match(block, /nonWheelResumeTimer/);
+  assert.match(block, /setTimeout\(\(\) => \{[\s\S]*if \(!wheelStarted\) resumeDecorativeAnimations\(\);/);
+  assert.match(block, /addEventListener\("touchstart", onNonWheelInteraction/);
+  assert.match(block, /addEventListener\("keydown", onNonWheelInteraction/);
+});
+
 test('CLS release suite diagnoses the targeted 960px game route before the full matrix', () => {
   const source = fs.readFileSync('scripts/audit-sitewide-cls.mjs', 'utf8');
   const workflow = fs.readFileSync('.github/workflows/ccg-game-page-release.yml', 'utf8');

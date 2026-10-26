@@ -29,6 +29,7 @@ let CCG_GAMES_LOAD_PROMISE = null;
 let CCG_YEAR_FILTER_ELEMENTS = null;
 let CCG_SEARCH_CACHE = new WeakMap();
 let CCG_GRID_BATCH_STATE = new Map();
+let CCG_PENDING_LIBRARY_INTENT = null;
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
@@ -86,6 +87,24 @@ function scheduleGamesLibraryInit() {
         const target = event.target instanceof Element ? event.target : null;
         if (!target?.closest?.("#gamesSearchInput, #gamesSearchClear, [data-system-filter], #gamesYearSelect, [data-games-year-filter], #gamesAlphaStrip")) {
             return;
+        }
+
+        const systemButton = target.closest("[data-system-filter]");
+        const alphaButton = target.closest("#gamesAlphaStrip [data-letter]");
+        if (systemButton) {
+            CCG_PENDING_LIBRARY_INTENT = {
+                type: "system",
+                value: systemButton.dataset.systemFilter || "all"
+            };
+        } else if (target.closest("#gamesSearchClear")) {
+            CCG_PENDING_LIBRARY_INTENT = { type: "clear-search" };
+        } else if (target.closest("#gamesSearchInput")) {
+            CCG_PENDING_LIBRARY_INTENT = { type: "search" };
+        } else if (alphaButton) {
+            CCG_PENDING_LIBRARY_INTENT = {
+                type: "alpha",
+                value: alphaButton.dataset.letter || ""
+            };
         }
         start();
     };
@@ -160,10 +179,29 @@ async function initGamesLibrary() {
         setupSearch();
         setupSystemFilter();
         setupYearFilter();
+
+        const pendingIntent = CCG_PENDING_LIBRARY_INTENT;
+        CCG_PENDING_LIBRARY_INTENT = null;
+        if (pendingIntent?.type === "system") {
+            setSystemFilter(pendingIntent.value, { persist: true, updateButtons: true });
+        } else if (pendingIntent?.type === "clear-search") {
+            const input = document.getElementById("gamesSearchInput");
+            if (input) input.value = "";
+            CCG_ACTIVE_QUERY_RAW = "";
+            CCG_ACTIVE_QUERY = "";
+        }
+
         applyActiveFilters({ preserveScroll: true });
 
         // Restore without scroll jump
         restoreAccordionState({ silent: true });
+
+        if (pendingIntent?.type === "alpha" && pendingIntent.value) {
+            const alphaButton = document.querySelector(
+                `#gamesAlphaStrip [data-letter="${CSS.escape(pendingIntent.value)}"]`
+            );
+            if (alphaButton && !alphaButton.disabled) toggleAccordion(pendingIntent.value);
+        }
 
         const staticFallback = document.getElementById("gamesStaticFallback");
         if (staticFallback && CCG_ALL_GAMES.length > 120) {
@@ -881,11 +919,19 @@ function setupSearch() {
     if (!input || input.dataset.ccgBound === "true") return;
     input.dataset.ccgBound = "true";
 
-    input.addEventListener("input", () => {
+    const syncSearchState = () => {
         const raw = input.value.trim();
         CCG_ACTIVE_QUERY_RAW = raw;
         CCG_ACTIVE_QUERY = normalizeSearchText(raw);
-        if (raw) {
+    };
+    // A search key can arrive while deferred catalogue data is loading. Read
+    // the live control value before binding so the initiating interaction is
+    // applied when the enhancement finally becomes ready.
+    syncSearchState();
+
+    input.addEventListener("input", () => {
+        syncSearchState();
+        if (CCG_ACTIVE_QUERY_RAW) {
             clearAccordionState();
             setSpineActive(null);
         }
