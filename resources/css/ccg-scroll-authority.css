@@ -32,6 +32,7 @@ html[data-ccg-page] > body.ccg-body:not(.ccg-body--locked):not(.ccg-body--nav-op
     height: auto !important;
     min-height: 100% !important;
     max-height: none !important;
+    overflow-x: clip !important;
     overflow-y: visible !important;
     overflow-x: clip !important;
     overscroll-behavior-y: auto !important;
@@ -55,12 +56,16 @@ html[data-ccg-page] > body.ccg-body :where(
     height: auto !important;
     min-height: 0;
     max-height: none !important;
+    overflow-x: clip !important;
     overflow-y: visible !important;
     overscroll-behavior-y: auto !important;
     scroll-behavior: auto !important;
 }
 
-/* Keep intentional viewport locks authoritative while menus/modals are open. */
+/* Keep navigation viewport locks authoritative. The Easter Egg secret modal
+   is a fixed viewport overlay and owns background input itself; changing the
+   document scroll root here can clamp scrollY by a few pixels on short/mobile
+   viewports when the scrollbar geometry changes. */
 html[data-ccg-page]:has(> body.ccg-body.ccg-body--nav-open),
 html[data-ccg-page]:has(> body.ccg-body.ccg-body--locked) {
     overflow: hidden !important;
@@ -194,6 +199,15 @@ html[data-ccg-page="collection-single"]
     will-change: auto;
     content-visibility: auto;
     contain-intrinsic-size: auto 340px;
+}
+
+/* Avoid invalidating the HTML root's descendants simply to pause a small
+   fixed decorative universe, on any CCG page with that background. */
+html[data-ccg-page] .ccg-bg.ccg-perf-paused .ccg-bg-starfield,
+html[data-ccg-page] .ccg-bg.ccg-perf-paused .ccg-bg-starfield::after,
+html[data-ccg-page] .ccg-bg.ccg-perf-paused .ccg-bg-particles__spark {
+    animation-play-state: paused !important;
+    will-change: auto !important;
 }
 
 /* During active document scrolling the shared `ccg-perf-paused` state pauses

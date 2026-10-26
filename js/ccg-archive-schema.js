@@ -495,6 +495,18 @@
     }
 
     function init() {
+        // Music Hub ships complete CollectionPage, ItemList and breadcrumb
+        // schema in its static document. The generic archive reconciler would
+        // otherwise rescan all 276 composer links and schedule repeat renders
+        // during the first interaction window.
+        const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+        if (pageId === "music-hub") {
+            const existingTypes = collectExistingTypes();
+            const complete = ["CollectionPage", "ItemList", "BreadcrumbList"]
+                .every((type) => existingTypes.has(type));
+            if (complete) return;
+        }
+
         scheduleRender(0);
         window.setTimeout(() => scheduleRender(0), 700);
         window.setTimeout(() => scheduleRender(0), 1800);

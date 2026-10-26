@@ -672,7 +672,7 @@
             renderBreadcrumbs(null);
         }
 
-        if (pageId === "home") {
+        if (pageId === "home" && !document.querySelector("[data-ccg-archive-pulse]")) {
             const [games, specials] = await Promise.all([loadGames(), loadRetroSpecials()]);
             renderHomePulse(games, specials);
         }

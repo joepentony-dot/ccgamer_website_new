@@ -46,7 +46,9 @@
     height: clamp(260px, 34vw, 520px);
     border-radius: 50%;
     background: radial-gradient(circle, rgba(var(--accent-rgb), 0.22), transparent 68%);
-    filter: blur(34px);
+    /* The radial gradient already provides the soft edge. A full-size
+       CSS blur re-rasterises this large layer during initial wheel input. */
+    filter: none;
     opacity: 0.86;
 }
 
@@ -377,6 +379,13 @@
     border-top: 1px solid rgba(var(--accent-rgb), 0.16);
     margin-top: 22px;
     padding-top: 20px;
+}
+
+/* JavaScript visitors get a small, immediately usable text slice while the
+   richer A-Z archive waits for a genuine idle window. All 666 links remain in
+   source and no-JS visitors receive the complete fallback. */
+html.ccg-games-enhancement-pending .ccg-page--games-index .games-static-fallback li:nth-child(n+49) {
+    display: none;
 }
 
 @media (max-width: 980px) {

@@ -414,6 +414,29 @@ function composerSortLetter(name) {
     return Array.from(featuredMap.values());
   }
 
+  function hasCompleteStaticMusicHub() {
+    const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+    if (pageId !== "music-hub") return false;
+
+    const featuredGrid = document.querySelector(
+      '.composer-grid-featured[data-static-composer-fallback="true"]'
+    );
+    const accordion = document.querySelector(
+      '#composer-discovery-accordion[data-static-composer-fallback="true"]'
+    );
+    if (!featuredGrid || !accordion) return false;
+
+    const statsText = String(document.getElementById("music-hub-stats")?.textContent || "");
+    const expectedComposerCount = Number.parseInt(statsText.match(/\d+/)?.[0] || "0", 10);
+    const staticChipCount = accordion.querySelectorAll(".ccg-composer-chip").length;
+    const staticGroupCount = accordion.querySelectorAll(".composer-accordion__group").length;
+
+    return expectedComposerCount > 0
+      && staticChipCount >= expectedComposerCount
+      && staticGroupCount > 0
+      && featuredGrid.querySelectorAll(".composer-card--featured").length > 0;
+  }
+
   function getSortedComposers(registry) {
     return [...registry.composers].sort((a, b) => compareComposerDisplayNames(a.name, b.name));
   }
@@ -424,9 +447,11 @@ function composerSortLetter(name) {
     const systemLabel = getPlatformLabel(bucket && bucket.systems);
     const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
+    const cardImagePath = imagePath.replace("/resources/images/composers/", "/resources/images/composers/hub/");
+
     return `
       <a href="${getComposerUrl(composer, composer.name, { allowDedicated: !compact })}" class="${cardClass}" data-slug="${composer.slug}">
-        ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
+        ${compact ? "" : `<div class="composer-thumb"><img src="${cardImagePath}" alt="${composer.name}" loading="lazy" decoding="async" fetchpriority="low" width="400" height="400"></div>`}
         <div class="composer-info">
           <h3>${composer.name}</h3>
           <p class="composer-platform">${systemLabel}</p>
@@ -511,10 +536,17 @@ function composerSortLetter(name) {
   }
 
   async function renderHubCards(composers, stats) {
-    const containerFeatured = document.querySelector(".composer-grid-featured");
+    // The generated Music Hub page carries a complete static archive for
+    // first paint. Keep that authoritative fallback intact when it is
+    // complete; generated/partial variants still use the dynamic renderer.
+    if (hasCompleteStaticMusicHub()) return;
+
+    const containerFeatured = document.querySelector(".composer-grid-featured, .composer-grid-featured-omega");
     if (!containerFeatured) {
       return;
     }
+
+    containerFeatured.classList.add("composer-grid-featured-omega");
 
     const composerList = Object.values(composers).sort((a, b) =>
       compareComposerDisplayNames(a.name, b.name)
@@ -524,7 +556,35 @@ function composerSortLetter(name) {
     );
 
     const featured = buildFeaturedSet(imageLookups, stats);
-    containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false)).join("");
+    // Keep the first scroll responsive: show four fully rendered featured cards
+    // initially, without discarding any other featured composer or A-Z links.
+    const initialFeatured = featured.slice(0, 4);
+    const remainingFeatured = featured.slice(initialFeatured.length);
+    containerFeatured.innerHTML = initialFeatured
+      .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))
+      .join("");
+
+    if (remainingFeatured.length) {
+      const showMore = document.createElement("button");
+      showMore.type = "button";
+      showMore.className = "ccg-btn ccg-btn--secondary composer-featured-more";
+      showMore.textContent = `Show ${remainingFeatured.length} more featured composers`;
+      containerFeatured.appendChild(showMore);
+      showMore.addEventListener("click", () => {
+        showMore.insertAdjacentHTML("beforebegin", remainingFeatured
+          .map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false))
+          .join(""));
+        const firstNewCard = containerFeatured.querySelectorAll(".composer-card--featured")[initialFeatured.length];
+        showMore.remove();
+        firstNewCard?.focus({ preventScroll: true });
+      }, { once: true });
+    }
+
+    // The page ready boundary must mean the initial portrait raster work is
+    // complete. decode() honours the async image contract above and prevents
+    // the first real wheel gesture from becoming the decode trigger.
+    await Promise.all(Array.from(containerFeatured.querySelectorAll(".composer-card--featured img"))
+      .map((image) => typeof image.decode === "function" ? image.decode().catch(() => {}) : Promise.resolve()));
 
     renderHubAccordion(composerList, stats);
 
@@ -1004,23 +1064,167 @@ function composerSortLetter(name) {
       return;
     }
 
+    // Chromium traces showed that the first native wheel is delayed while the
+    // shared logo filter and aurora pseudo-element animations are running.
+    // No images, fonts, stylesheets, long tasks or meaningful layout work were
+    // pending. Pause only those three decorative animations before the first
+    // wheel, then restore their normal playback after the wheel settles.
     root.dataset.ccgMusicScrollPerf = "ready";
-    const pauseClass = "ccg-perf-paused";
-    const resumeDelay = 160;
-    let resumeTimer = 0;
 
-    const onScroll = () => {
-      root.classList.add(pauseClass);
-      if (resumeTimer) {
-        window.clearTimeout(resumeTimer);
-      }
-      resumeTimer = window.setTimeout(() => {
-        root.classList.remove(pauseClass);
-      }, resumeDelay);
+    const pauseAttribute = "data-ccg-music-scroll-perf-paused";
+    const pauseStyle = document.createElement("style");
+    pauseStyle.dataset.ccgMusicScrollPerf = "targeted";
+    pauseStyle.textContent = [
+      "[" + pauseAttribute + "] a.ccg-brand::before",
+      "[" + pauseAttribute + "] a.ccg-brand::after",
+      "[" + pauseAttribute + "] img.ccg-brand__logo",
+      "{ animation-play-state: paused !important; }"
+    ].join(",");
+    (document.head || root).appendChild(pauseStyle);
+
+    const animationNames = new Set(["ccgAurora", "ccgLogoGlow"]);
+    let pausedAnimations = [];
+    let wheelStarted = false;
+    let wheelResumeTimer = 0;
+    let nonWheelResumeTimer = 0;
+
+    const decorativeAnimations = () => {
+      if (!document.getAnimations) return [];
+
+      return Array.from(document.getAnimations()).filter((animation) => {
+        // These names are unique to the shared Music header's logo effects;
+        // filtering by name also covers pseudo-element targets.
+        return animationNames.has(animation.animationName);
+      });
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("touchmove", onScroll, { passive: true });
+    const pauseDecorativeAnimations = () => {
+      document.querySelectorAll("[data-ccg-header]").forEach((header) => {
+        header.setAttribute(pauseAttribute, "true");
+      });
+
+      const animations = decorativeAnimations();
+      pausedAnimations = animations;
+      animations.forEach((animation) => {
+        try {
+          animation.pause();
+        } catch {
+          // A dynamically removed animation may no longer be pausable.
+        }
+      });
+    };
+
+    const resumeDecorativeAnimations = () => {
+      if (nonWheelResumeTimer) {
+        window.clearTimeout(nonWheelResumeTimer);
+        nonWheelResumeTimer = 0;
+      }
+      document.querySelectorAll("[" + pauseAttribute + "]").forEach((header) => {
+        header.removeAttribute(pauseAttribute);
+      });
+
+      const animations = pausedAnimations;
+      pausedAnimations = [];
+      animations.forEach((animation) => {
+        try {
+          if (animation.playState === "paused") animation.play();
+        } catch {
+          // Ignore an animation removed while the page was changing.
+        }
+      });
+    };
+
+    const scheduleNonWheelResume = () => {
+      if (nonWheelResumeTimer) window.clearTimeout(nonWheelResumeTimer);
+      // Do not leave the logo paused for a read-only visit. Interaction paths
+      // below restore it sooner; this bounded fallback covers visitors who
+      // never send wheel input at all.
+      nonWheelResumeTimer = window.setTimeout(() => {
+        nonWheelResumeTimer = 0;
+        if (!wheelStarted) resumeDecorativeAnimations();
+      }, 5000);
+    };
+
+    const onNonWheelInteraction = () => {
+      if (!wheelStarted) resumeDecorativeAnimations();
+    };
+
+    const onWheel = () => {
+      wheelStarted = true;
+      if (nonWheelResumeTimer) {
+        window.clearTimeout(nonWheelResumeTimer);
+        nonWheelResumeTimer = 0;
+      }
+      pauseDecorativeAnimations();
+      if (wheelResumeTimer) window.clearTimeout(wheelResumeTimer);
+      wheelResumeTimer = window.setTimeout(() => {
+        wheelResumeTimer = 0;
+        if (wheelStarted) resumeDecorativeAnimations();
+      }, 180);
+    };
+
+    // A passive wheel observer records the first real interaction and schedules
+    // animation restoration. It never owns, cancels or replaces native scrolling.
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("pointerdown", onNonWheelInteraction, { passive: true });
+    window.addEventListener("touchstart", onNonWheelInteraction, { passive: true });
+    window.addEventListener("keydown", onNonWheelInteraction, { passive: true });
+
+    const waitForMusicHeader = () => new Promise((resolve) => {
+      if (document.querySelector("[data-ccg-header]")) {
+        resolve();
+        return;
+      }
+
+      const observer = new MutationObserver(() => {
+        if (!document.querySelector("[data-ccg-header]")) return;
+        observer.disconnect();
+        resolve();
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      window.setTimeout(() => {
+        observer.disconnect();
+        resolve();
+      }, 2500);
+    });
+
+    // The shared header can be injected after DOMContentLoaded on either Music
+    // route. The scoped attribute covers it as soon as it enters the document.
+    pauseDecorativeAnimations();
+    scheduleNonWheelResume();
+    void Promise.all([waitForMusicNavigationReady(), waitForMusicHeader()])
+      .then(() => {
+        if (wheelStarted) return;
+        pauseDecorativeAnimations();
+        scheduleNonWheelResume();
+      });
+  }
+
+  function waitForMusicNavigationReady() {
+    const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+    if (pageId !== "music-hub") return Promise.resolve();
+
+    const waitForSignal = (ready, promise, eventName) => {
+      if (ready === true) return Promise.resolve();
+      const timeout = new Promise((resolve) => window.setTimeout(resolve, 2500));
+      const event = new Promise((resolve) => {
+        document.addEventListener(eventName, resolve, { once: true });
+      });
+      return Promise.race([promise || event, event, timeout]);
+    };
+
+    return Promise.all([
+      waitForSignal(
+        window.CCG_MUSIC_NAVIGATION_INITIALIZED,
+        window.CCG_MUSIC_NAVIGATION_READY_PROMISE,
+        "ccg:music-navigation-ready"
+      ),
+      waitForSignal(
+        window.CCG_HEADER_AUTH_INITIALIZED,
+        window.CCG_HEADER_AUTH_READY_PROMISE,
+        "ccg:header-auth-ready"
+      )
+    ]);
   }
 
   function initBackToTop() {
@@ -1051,11 +1255,16 @@ function composerSortLetter(name) {
     ensureBackButton();
 
     try {
+      if (hasCompleteStaticMusicHub()) {
+        console.info("[music] Using the complete static Music Hub archive.");
+        return;
+      }
+
       const games = await loadGames();
       const registry = createComposerRegistry(games);
       const stats = collectComposerStats(registry);
 
-      if (document.querySelector(".composer-grid-featured") && document.getElementById("composer-discovery-accordion")) {
+      if (document.querySelector(".composer-grid-featured, .composer-grid-featured-omega") && document.getElementById("composer-discovery-accordion")) {
         await renderHubCards(registry.composers, stats);
       }
 
@@ -1102,6 +1311,45 @@ function composerSortLetter(name) {
         gamesList.innerHTML = "<li class='ccg-composer-games__item'>Unable to load game archive data. Please try again later.</li>";
       }
     } finally {
+      if (window.CCG_MUSIC_HUB_PORTRAITS_READY) {
+        await window.CCG_MUSIC_HUB_PORTRAITS_READY;
+      }
+      await waitForMusicNavigationReady();
+      // The wheel contract starts timing immediately after this boundary.
+      // Wait for the dynamically loaded Music Hub stylesheet as well as two
+      // paint frames, so the first physical wheel is not competing with the
+      // page's final style/layout flush.
+      await new Promise((resolve) => {
+        const stylesheets = Array.from(document.querySelectorAll(
+          'link[data-ccg-music-hub-omega], link[data-ccg-archive-directory-style]'
+        ));
+        const pending = stylesheets.filter((stylesheet) => !stylesheet.sheet);
+        if (!pending.length) {
+          resolve();
+          return;
+        }
+        let remaining = pending.length;
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          remaining -= 1;
+          if (remaining > 0) return;
+          settled = true;
+          resolve();
+        };
+        pending.forEach((stylesheet) => {
+          stylesheet.addEventListener("load", finish, { once: true });
+          stylesheet.addEventListener("error", finish, { once: true });
+        });
+        setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          resolve();
+        }, 1200);
+      });
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      });
       window.CCG_MUSIC_PAGE_READY = true;
     }
   });
