@@ -186,4 +186,52 @@ assert.ok(deathCache.inventory.some(item=>item.kind==="wearable"&&item.deathEqui
 assert.ok(deathCache.inventory.some(item=>item.kind==="wearable"&&item.deathEquippedSlot==="feet"),"death cache must contain equipped Feet gear");
 assert.equal(deathCache.armour,9,"death cache must retain the armour protection snapshot");
 
+assert.match(source,/A complete helmet covers the skull/,"Head equipment must render a full helmet silhouette");
+assert.match(source,/if\(hands\)[\s\S]*pixel\(x,y,5,9/,"Gloves must cover both hands");
+assert.match(source,/if\(feet\)[\s\S]*pixel\(x,9,8,10/,"Boots must cover both feet");
+assert.match(source,/title.textContent="CCG EXPLORER"/,"Avoid clipped long character title");
+assert.match(css,/r80-has-head/,"Preview must hide competing older head overlay");
+
+// Owner screenshot 14 Oct: carried Enchanted/Superior Torchfinder Helm must
+// replace worn Superior Torchfinder Helm even if older save omitted 'slot'.
+const oldHelmet={kind:"wearable",slot:"head",name:"SUPERIOR TORCHFINDER HELM",rarity:"SIZZLER",gearTier:"SUPERIOR",armourBonus:2};
+const legacyUpgrade={kind:"wearable",name:"ENCHANTED SUPERIOR TORCHFINDER HELM",rarity:"GOLD MEDAL",gearTier:"ENCHANTED",armourBonus:3,sightBonus:1};
+const upgradePlayer={inventory:[{kind:"torch",name:"TORCH"},legacyUpgrade],wearables:{head:{...oldHelmet},hands:null,feet:null}};
+assert.equal(api.wearableSlot(legacyUpgrade),"head","recognised legacy helmet names recover their head slot");
+assert.equal(api.equipmentSwapLabel(oldHelmet,legacyUpgrade),"UPGRADE","stronger helmet must be labelled an upgrade");
+assert.equal(api.equipWearable(upgradePlayer,1),true,"owner's enchanted Torchfinder helm must replace current helmet");
+assert.equal(upgradePlayer.wearables.head.name,legacyUpgrade.name);
+assert.equal(upgradePlayer.wearables.head.slot,"head","slot metadata must be repaired and retained for saves");
+assert.equal(upgradePlayer.inventory.length,2,"swap may not delete carried torch or old head gear");
+assert.equal(upgradePlayer.inventory[0].kind,"torch");
+assert.equal(upgradePlayer.inventory[1].name,oldHelmet.name,"former helmet must return to inventory");
+assert.equal(context.window.CCGProgression.effectiveSight(upgradePlayer,context.run),6,"upgraded helmet sight bonus must be active");
+
+// No free spare space is required: removing the candidate opens exactly one
+// slot for the replaced item, including with capacity-constrained inventory.
+const fullPack={inventory:[{...legacyUpgrade},...Array.from({length:5},(_,i)=>({kind:"potion",name:`FILLER ${i}`}))],wearables:{head:{...oldHelmet},hands:null,feet:null}};
+assert.equal(api.equipWearable(fullPack,0),true,"a full inventory must support one-for-one wearable replacement");
+assert.equal(fullPack.inventory.length,6,"full-pack swap preserves item count");
+assert.equal(fullPack.inventory.filter(x=>x.name===oldHelmet.name).length,1);
+assert.equal(fullPack.inventory.filter(x=>x.kind==="potion").length,5);
+
+// If the returned equipped item cannot be stored, the transaction must
+// restore the candidate and preserve both old equipment and active perks.
+const rejectPlayer={inventory:[{...legacyUpgrade}],wearables:{head:{...oldHelmet},hands:null,feet:null}};
+const addOriginal=context.window.CCGProgression.inventoryAdd;
+context.window.CCGProgression.inventoryAdd=()=>false;
+assert.equal(api.equipWearable(rejectPlayer,0),false,"blocked swap must report failure");
+assert.equal(rejectPlayer.inventory[0].name,legacyUpgrade.name,"failed swap must not consume enchanted helmet");
+assert.equal(rejectPlayer.wearables.head.name,oldHelmet.name,"failed swap must not remove worn helmet");
+context.window.CCGProgression.inventoryAdd=addOriginal;
+
+const unrelatedTorch={kind:"torch",name:"ENCHANTED TORCH"};
+const invalidWearable={kind:"wearable",name:"ANCIENT UNSPECIFIED ITEM"};
+assert.equal(api.wearableSlot(unrelatedTorch),null,"torch consumables must never become wearable headgear");
+assert.equal(api.wearableSlot(invalidWearable),null);
+const invalidPlayer={inventory:[invalidWearable]};
+assert.equal(api.equipWearable(invalidPlayer,0),false,"unrecognised wearable must not be discarded");
+assert.equal(invalidPlayer.inventory.length,1);
+assert.match(source,/button.textContent=equipmentSwapLabel/,"equipment panel must indicate UPGRADE or REPLACE");
+assert.match(source,/The original equipped item could not be returned to your inventory/,"inventory failure must be explained");
 console.log("Dungeon R80 genuine wearable equipment contract passed.");

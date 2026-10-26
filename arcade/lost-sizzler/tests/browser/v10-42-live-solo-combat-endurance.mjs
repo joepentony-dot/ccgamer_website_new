@@ -85,23 +85,63 @@ async function verifyOneTimeNamedDossier(page){
     // Do not label either enemy until the synchronous defeat action below.
     // Otherwise live projectiles/AI can defeat an already-labelled fixture
     // between page.evaluate calls and contaminate the exact-once count.
-    return{name:follower.name,ids:enemies.map(e=>e.id),before:Number(PGR.readDossier()?.[follower.name]?.defeats||0)};
+    return{name:follower.name,ids:enemies.map(e=>e.id)};
   });
   assert.ok(fixture,"two ordinary enemies and an unshown authored named dossier are required for the live encounter contract");
-  const defeat=async id=>page.evaluate(({enemyId,name})=>{
+  const defeat=async (id,hazard=false)=>page.evaluate(({enemyId,name,hazard})=>{
     const enemy=host.enemies.find(e=>e.id===enemyId);
     const follower=C.followerElites?.find(f=>f?.name===name);
     if(!enemy||enemy.alive!==true||!follower)return null;
     // Assign the authored identity and defeat in this same JavaScript turn:
     // no frame can interleave an unrelated kill of a labelled enemy.
+    // Baseline and source defeat execute inside one JavaScript task.
+    const beforeDossier=Number(PGR.readDossier()?.[name]?.defeats||0);
+    const beforeNamed=Number(run.stats.namedDefeats||0),beforeKills=Number(run.stats.kills||0);
+    const recap=()=>Number((run.enemyDefeats||[]).find(row=>row.key==="named:"+name)?.count||0);
+    const beforeRecap=recap();
     enemy.follower={...follower};enemy.hp=1;enemy.armor=0;
+    const before={x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry};let trap=null,hazardResolved=false;
+    try{
+      if(hazard){
+        // Deterministically exercise the real recursive hazard-death path.
+        // Restore the player and remove only this test trap in the same turn.
+        let cell=null;
+        for(let y=1;y<world.map.length-1&&!cell;y++)for(let x=2;x<world.map[y].length-2;x++){
+          if([-1,0,1].every(dx=>W.playerWalkable(world.map,x+dx,y,host)&&
+            !host.enemies.some(e=>e!==enemy&&e.alive&&e.x===x+dx&&e.y===y))){cell={x,y};break}
+        }
+        if(!cell)throw new Error("No walkable three-cell knockback fixture");
+        enemy.x=cell.x;enemy.y=cell.y;p1.x=cell.x-1;p1.y=cell.y;
+        trap={id:"endurance-named-knockback",x:cell.x+1,y:cell.y,active:true,kind:"spike",phase:-performance.now(),period:1000000000};
+        host.traps.push(trap);
+        if(!window.CCGLostSizzlerEnvironmentalV121?.trapAt(trap.x,trap.y,true))throw new Error("Knockback fixture trap must be active");
+      }
+      damageEnemy(enemy,10,"energy",p1);
+      hazardResolved=Boolean(trap&&enemy.x===trap.x&&enemy.y===trap.y);
+    }finally{
+      Object.assign(p1,before);
+      if(trap)host.traps=host.traps.filter(row=>row!==trap);
+    }
+    const fallen=enemy.alive===false;
+    const afterFirst={dossier:Number(PGR.readDossier()?.[name]?.defeats||0),
+      named:Number(run.stats.namedDefeats||0),kills:Number(run.stats.kills||0),recap:recap()};
+    // Repeating the callback on the defeated actor must never double-count.
     damageEnemy(enemy,10,"energy",p1);
-    return{fallen:enemy.alive===false,defeats:Number(PGR.readDossier()?.[name]?.defeats||0),
-      autoShown:Boolean(run.namedDossierAutoShown),mode:String(mode)};
-  },{enemyId:id,name:fixture.name});
-  const first=await defeat(fixture.ids[0]);
+    return{fallen,dossierDelta:afterFirst.dossier-beforeDossier,
+      namedDelta:afterFirst.named-beforeNamed,killsDelta:afterFirst.kills-beforeKills,
+      recapDelta:afterFirst.recap-beforeRecap,
+      deadActorIdempotent:Number(PGR.readDossier()?.[name]?.defeats||0)===afterFirst.dossier&&
+        Number(run.stats.namedDefeats||0)===afterFirst.named&&Number(run.stats.kills||0)===afterFirst.kills&&recap()===afterFirst.recap,
+      autoShown:Boolean(run.namedDossierAutoShown),mode:String(mode),hazardResolved};
+  },{enemyId:id,name:fixture.name,hazard});
+  const first=await defeat(fixture.ids[0],true);
+  assert.equal(first?.hazardResolved,true,"First named defeat must execute actual knockback onto the active trap");
   assert.equal(first?.fallen,true,"first named enemy must be freed through the actual damage/death owner");
-  assert.equal(first.defeats,fixture.before+1,"first named defeat must be recorded exactly once");
+  assert.equal(first.dossierDelta,1,"first named defeat must update persistent dossier exactly once");
+  assert.equal(first.namedDelta,1,"first named defeat must update run stats exactly once");
+  assert.equal(first.killsDelta,1,"first named defeat must count exactly one kill");
+  assert.equal(first.recapDelta,1,"first named defeat must update endgame recap exactly once");
+  assert.equal(first.deadActorIdempotent,true,"a dead named enemy must not pay twice");
   assert.equal(first.autoShown,true,"first named defeat must claim the one-time dossier reward");
   await page.waitForFunction(name=>mode==="dossier"&&Boolean(UI.namedDossier)&&
     !UI.namedDossier.classList.contains("hidden")&&
@@ -111,7 +151,11 @@ async function verifyOneTimeNamedDossier(page){
   await page.waitForFunction(()=>mode==="playing"&&Boolean(UI.namedDossier?.classList.contains("hidden")),null,{timeout:5000});
   const second=await defeat(fixture.ids[1]);
   assert.equal(second?.fallen,true,"second named enemy must also be freed through the actual damage/death owner");
-  assert.equal(second.defeats,fixture.before+2,"repeat named defeat must still be recorded exactly once");
+  assert.equal(second.dossierDelta,1,"second named defeat must update persistent dossier exactly once");
+  assert.equal(second.namedDelta,1,"second named defeat must update run stats exactly once");
+  assert.equal(second.killsDelta,1,"second named defeat must count exactly one kill");
+  assert.equal(second.recapDelta,1,"second named defeat must update endgame recap exactly once");
+  assert.equal(second.deadActorIdempotent,true,"second dead named enemy must not pay twice");
   await page.waitForTimeout(500);
   const after=await page.evaluate(()=>({mode:String(mode),hidden:Boolean(UI.namedDossier?.classList.contains("hidden")),autoShown:Boolean(run.namedDossierAutoShown)}));
   assert.equal(after.mode,"playing","repeat named defeat must not interrupt Solo with another dossier");
@@ -134,16 +178,54 @@ async function armEnemy(page){
   });
 }
 
-async function fireCycle(page,key,round){
+async function fireCycle(page,key,round,dossierRace=false){
   await settleGameplayMode(page,`round ${round} before ${key}`);
-  const before=await snap(page);
-  await page.keyboard.down(key);await page.waitForTimeout(520);await page.keyboard.up(key);await page.waitForTimeout(120);
+  let before=await snap(page),dossierDismissed=false;
+  const keyTraceBefore=await page.evaluate(()=>Number(window.__ccgEnduranceKeyTrace?.serial||0));
+  // A discovery callback can open a real dossier after the pre-input mode
+  // check. Space then belongs to that panel, not to the gameplay FIRE owner.
+  // Observe the event's actual mode; never retry a rejected gameplay press.
+  const press=async()=>{
+    await page.evaluate(()=>{window.__ccgEnduranceAttackKey=null});
+    await page.keyboard.down(key);await page.waitForTimeout(520);await page.keyboard.up(key);await page.waitForTimeout(120);
+    return page.evaluate(()=>window.__ccgEnduranceAttackKey);
+  };
+  if(dossierRace)await page.evaluate(()=>showNamedDossier(C.followerElites[0].name,true));
+  let delivery=await press();
+  if(key==="Space"&&delivery?.mode==="dossier"){
+    assert.equal(delivery.dossierVisible,true,`round ${round}: dossier mode must have a visible panel`);
+    assert.equal(delivery.knownDossier,true,`round ${round}: Space may dismiss only an established authored dossier`);
+    const dismissed=await snap(page);
+    assert.equal(dismissed.mode,"playing",`round ${round}: dossier Space must return to gameplay`);
+    assert.equal(await page.evaluate(()=>UI.namedDossier.classList.contains("hidden")),true);
+    assert.equal(dismissed.attackIntents,before.attackIntents,`round ${round}: panel-owned Space must not also attack`);
+    assert.equal(dismissed.updateFaults,before.updateFaults);
+    assert.equal(dismissed.renderFaults,before.renderFaults);
+    assert.equal(dismissed.directAttackErrors,before.directAttackErrors);
+    dossierDismissed=true;
+    await settleGameplayMode(page,`round ${round} after dossier dismissal`);
+    before=await snap(page);
+    delivery=await press();
+  }
+  assert.equal(delivery?.mode,"playing",`round ${round}: expected gameplay keydown, observed ${JSON.stringify(delivery)}`);
   await settleGameplayMode(page,`round ${round} after ${key}`);
   const after=await snap(page);
   assert.equal(after.active,"true",`round ${round}: run deactivated during ${key}`);
   assert.ok(after.elapsed>before.elapsed,`round ${round}: simulation stopped advancing during ${key}`);
   assert.ok(after.rafFrames>before.rafFrames,`round ${round}: requestAnimationFrame stopped advancing during ${key}`);
-  assert.ok(after.attackIntents>before.attackIntents,`round ${round}: ${key} never reached the authoritative attack input owner`);
+  if(!(after.attackIntents>before.attackIntents)){
+    // Preserve the failure without retrying or synthesising any extra input.
+    const diagnostic=await page.evaluate(serial=>({
+      mode:String(mode),active:String(document.body?.dataset?.runActive||""),
+      focusTag:String(document.activeElement?.tagName||""),focusId:String(document.activeElement?.id||""),
+      overlays:["named-dossier-panel","inventory-panel","level-up","shop-panel","pause"].filter(id=>{const n=document.getElementById(id);return Boolean(n&&!n.classList.contains("hidden"))}),
+      keys:(window.__ccgEnduranceKeyTrace?.events||[]).filter(e=>e.serial>serial),
+      fire:(typeof authoritativeFireTrace!=="undefined"?authoritativeFireTrace:[]).slice(-8),
+      heldSpace:Boolean(input.has("Space")),heldNumpad0:Boolean(input.has("Numpad0")),
+      controlLocked:Boolean(p1?.controlLocked),controlsLocked:Boolean(p1?.controlsLocked)
+    }),keyTraceBefore);
+    assert.fail(`round ${round}: ${key} never reached the authoritative attack input owner; diagnostics=${JSON.stringify(diagnostic)}`);
+  }
   assert.ok(after.projectileSteps>before.projectileSteps||after.mana<before.mana,`round ${round}: firing input reached the attack owner but no attack/projectile work occurred for ${key}`);
   assert.equal(after.lifecycleOwner,true,`round ${round}: #2118 projectile lifecycle lost ownership`);
   assert.equal(after.projectileFaultSweeps,before.projectileFaultSweeps,`round ${round}: projectile lifecycle encountered a new downstream fault`);
@@ -153,7 +235,7 @@ async function fireCycle(page,key,round){
   assert.ok(after.bullets<80&&after.enemyBullets<160,`round ${round}: projectile pools grew unexpectedly (${after.bullets}/${after.enemyBullets})`);
   assert.ok(after.particles<=360&&after.rings<=72&&after.floaters<=140,`round ${round}: visual collections exceeded bounded runtime limits`);
   assert.ok(after.maxRafGap<5000,`round ${round}: browser frame gap reached ${Math.round(after.maxRafGap)}ms`);
-  return after;
+  return{...after,dossierDismissed};
 }
 
 async function directQueueAttackCycle(page,round){
@@ -186,7 +268,18 @@ try{
   // services. Stub production Supabase calls so localhost CORS policy cannot
   // create false console failures after the gameplay assertions have passed.
   await context.route("https://*.supabase.co/**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"access-control-allow-origin":"*"},body:"{}"}));
-  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  await context.addInitScript(()=>{
+    try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}
+    // Capture at window entry, ahead of document-level panel/FIRE handlers.
+    addEventListener("keydown",event=>{
+      if(event.repeat||!["Space","Numpad0"].includes(event.code))return;
+      const name=typeof dossierFocusName==="string"?dossierFocusName:"";
+      const row=typeof PGR!=="undefined"?PGR.readDossier()?.[name]:null;
+      window.__ccgEnduranceAttackKey={code:event.code,mode:typeof mode!=="undefined"?mode:"",target:event.target?.id||"",
+        dossierVisible:Boolean(document.getElementById("named-dossier-panel")&&!document.getElementById("named-dossier-panel").classList.contains("hidden")),
+        knownDossier:Boolean(typeof C!=="undefined"&&C.followerElites.some(f=>f.name===name)&&((row?.encounters||0)>0||(row?.defeats||0)>0))};
+    },true);
+  });
   const page=await context.newPage();
   page.setDefaultTimeout(60000);
   const pageErrors=[],consoleErrors=[],failedScripts=[],http404s=[],v142Requests=[];
@@ -225,11 +318,26 @@ try{
     assert.equal(desktopCamera.logicalWidth,desktopCamera.viewportWidth,"non-fullscreen desktop Solo must retain the full logical viewport width");
     assert.equal(desktopCamera.logicalHeight,desktopCamera.viewportHeight,"non-fullscreen desktop Solo must retain the full logical viewport height");
   }
+  // Test-only, read-only key arrival trace to diagnose the 96-round endurance.
+  await page.evaluate(()=>{
+    if(window.__ccgEnduranceKeyTrace)return;
+    const trace=window.__ccgEnduranceKeyTrace={serial:0,events:[]};
+    window.addEventListener("keydown",e=>{
+      if(e.code!=="Space"&&e.code!=="Numpad0")return;
+      trace.events.push({serial:++trace.serial,code:e.code,repeat:Boolean(e.repeat),
+        trusted:Boolean(e.isTrusted),mode:String(mode),target:String(e.target?.tagName||""),
+        targetId:String(e.target?.id||""),dossier:Boolean(UI.namedDossier&&!UI.namedDossier.classList.contains("hidden"))});
+      if(trace.events.length>32)trace.events.shift();
+    },true);
+  });
   const initial=await snap(page);
   assert.equal(initial.lifecycleOwner,true,"#2118 lifecycle owner must remain authoritative in Solo");
   assert.ok(initial.sealGate||initial.sealUnsupported||initial.authoritativeUpdate,"controller owner must be sealed, explicitly unsupported, or already on its authoritative boundary");
 
   await verifyOneTimeNamedDossier(page);
+  assert.equal(await armEnemy(page),true,"dossier/input ownership enemy unavailable");
+  const ownership=await fireCycle(page,"Space",0,true);
+  assert.equal(ownership.dossierDismissed,true,"Late dossier must consume its own Space before a separate gameplay press");
   const keys=["Space","Numpad0"];
   for(let round=1;round<=96;round++){
     await settleGameplayMode(page,`round ${round} start`);
