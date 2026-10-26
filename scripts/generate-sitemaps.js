@@ -188,7 +188,7 @@ function restoreHomepageCanonicalSitemapEntry() {
   const homePath = path.join(repoRoot, "home.html");
   if (!fs.existsSync(homePath) || !fs.existsSync(sitemapPagesPath)) return;
   const homeHtml = fs.readFileSync(homePath, "utf8");
-  const homeCanonical = homeHtml.match(/<link\\b[^>]*\\brel=["']canonical["'][^>]*\\bhref=["']([^"']+)["']/i);
+  const homeCanonical = homeHtml.match(/<link\b[^>]*\brel=["']canonical["'][^>]*\bhref=["']([^"']+)["']/i);
   const expected = `${SITE_ORIGIN}/home.html`;
   if (!homeCanonical || homeCanonical[1] !== expected) {
     fail("Final sitemap pass requires the existing /home.html canonical.");
