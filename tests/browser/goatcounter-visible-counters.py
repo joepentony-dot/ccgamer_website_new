@@ -69,7 +69,7 @@ def check_page(browser, path: str, is_game: bool):
                 return node && node.getAttribute('data-ccg-counter-loaded') === 'true';
             }""", timeout=20000)
             import re
-            assert re.fullmatch(r"[0-9][0-9\\s,.'’]*", hourly.inner_text().strip())
+            assert re.fullmatch(r"[0-9][0-9\s,.'’]*", hourly.inner_text().strip())
             print("PASS: separate cumulative hourly sessions=", hourly.inner_text())
 
         # Verify that the *real* read-only GoatCounter endpoint supplied a
