@@ -12,7 +12,9 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// One verified catalogue game is sufficient for a canonical year archive
+// to be indexable, without promoting legacy or query-string fallback routes.
+const INDEXABLE_MIN_GAMES = 1;
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const yearsDir = path.join(repoRoot, "games", "years");
 const platformsDir = path.join(repoRoot, "games", "platforms");
@@ -545,7 +547,7 @@ function renderYearsIndex(data) {
                 <div class="ccg-archives-section__heading">
                     <p class="ccg-archives-section__kicker">Full recorded archive</p>
                     <h2 id="all-years-title">All Release Years</h2>
-                    <p>The single-game 2023 route remains available for navigation but uses noindex until another title is added for that year.</p>
+                    <p>Every listed release year links directly to its recorded game pages, including years represented by just one title.</p>
                 </div>
                 <div class="ccg-archive-grid">
                     ${data.years.map((group) => renderArchiveCard({
@@ -825,7 +827,7 @@ function buildReport(data) {
 | Platform hub pages | **1** |
 | Static year routes | **${data.years.length}** |
 | Indexable year routes | **${indexableYears.length}** |
-| Single-game noindex year routes | **${noindexYears.length}** |
+| No-credit noindex year routes | **${noindexYears.length}** |
 | Static platform routes | **${data.platforms.length}** |
 | C64 games | **${c64.count}** |
 | Amiga games | **${amiga.count}** |
@@ -852,7 +854,7 @@ function buildReport(data) {
 
 - Both hubs and both platform routes use \`index,follow\`.
 - Year routes containing at least ${INDEXABLE_MIN_GAMES} games use \`index,follow\`.
-- The 2023 route currently contains one game and uses \`noindex,follow\`.
+- The 2023 route has a verified recorded game and therefore uses \`index,follow\`.
 
 ## Explicit exclusions
 
