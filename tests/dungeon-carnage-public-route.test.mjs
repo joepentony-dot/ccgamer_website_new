@@ -19,7 +19,7 @@ const releaseCache=version.cacheToken;
 const releaseBuild=version.build;
 const releaseLabel=releaseBuild.toUpperCase();
 const releaseIndex=Number(/\br(\d+)$/i.exec(releaseBuild)?.[1]||0);
-assert.ok(releaseIndex>=134,"Dungeon Carnage must not downgrade below the licensed-art R134 release");
+assert.ok(releaseIndex>=136,"Dungeon Carnage must not downgrade below the R136 warp-stack and chest-notice fixes");
 assert.match(releaseBuild,/^V10\.42 r\d+$/,"Dungeon Carnage version marker must have a stable V10.42 release format");
 assert.match(releaseCache,/^\d{8}r\d+$/,"Dungeon Carnage release must publish a dated cache token");
 assert.equal(Number(/r(\d+)$/.exec(releaseCache)?.[1]||0),releaseIndex,"Cache release index must match build number");
@@ -31,6 +31,8 @@ for(const [name,page] of [["source",index],["public",publicEntry]]){
   assert.ok(page.includes("flickering animated wall torches")&&page.includes("rotating gold-score coins"),name+" changelog must preserve R118 animation notes");
   assert.ok(page.includes("R119 improves permanent sanctuary spacing")&&page.includes("Treasure Goblin"),name+" changelog must preserve the R119 gameplay corrections");
   assert.ok(page.includes("R134 upgrades the visual presentation of spike traps"),name+" must describe the R134 art release");
+  assert.ok(page.includes("R135 upgrades treasure chests"),name+" must preserve the R135 art release");
+  assert.ok(page.includes("R136 makes Warp/Teleport Spells stack three"),name+" must show the new R136 testable behaviour");
   assert.ok(!page.includes("20261007r117")&&!page.includes("20261008r119"),name+" must not ship stale pre-R134 CSS/JS cache tokens");
   for(const script of ["js/v10-41-cache-guard.js","js/version-check.js","js/asset-overrides.js","js/game-render.js"]){
     assert.ok(page.includes(script+"?v="+releaseCache),name+" must load current "+script+" code");

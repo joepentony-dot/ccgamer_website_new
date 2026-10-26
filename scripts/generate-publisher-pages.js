@@ -15,7 +15,9 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// A verified source game credit qualifies a dedicated self-canonical archive
+// for indexing; empty and unrelated fallback URLs remain excluded.
+const INDEXABLE_MIN_GAMES = 1;
 
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const publishersDir = path.join(repoRoot, "games", "publishers");

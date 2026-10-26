@@ -28,37 +28,83 @@ function recordEnemyDefeat(e,attacker,displayName=""){
   const killerId=String(attacker?.id||displayName||"dungeon"),killerName=String(attacker?.name||displayName||"The Dungeon");let killer=row.killers.find(x=>x.id===killerId);if(!killer){killer={id:killerId,name:killerName,count:0};row.killers.push(killer)}killer.count++;
   const floor=Math.max(1,Number(run.floor||1));let floorRow=row.floors.find(x=>x.floor===floor);if(!floorRow){floorRow={floor,count:0};row.floors.push(floorRow)}floorRow.count++
 }
-function recoverBridgeThiefStash(e,attacker=p1){
-  const b=host?.weightBridge;
-  if(!e?.bridgeThief||!b||b.thiefId!==e.id||b.thiefDefeated)return null;
-  b.thiefDefeated=true;
-  const stolen=Array.isArray(b.stolenItems)?b.stolenItems:[],holder=attacker||p1,dropped=[],recovered=[];
-  const cells=[];
-  for(let radius=0;radius<=3;radius++)for(let dy=-radius;dy<=radius;dy++)for(let dx=-radius;dx<=radius;dx++){
-    if(Math.abs(dx)+Math.abs(dy)!==radius)continue;
-    const x=Number(e.x)+dx,y=Number(e.y)+dy;
-    if(!W.walkable(world.map,x,y,host))continue;
-    if((host.enemies||[]).some(enemy=>enemy?.alive&&enemy!==e&&enemy.x===x&&enemy.y===y))continue;
-    cells.push({x,y})
+function bridgeThiefRecoveryCells(player,bridge){
+  if(!player||!world?.map||!Number.isInteger(Number(player.x))||!Number.isInteger(Number(player.y)))return [];
+  const origin=bridge.thiefRecoveryOrigin||player;
+  const q=[{x:Number(player.x),y:Number(player.y)}],seen=new Set([player.x+","+player.y]);
+  const walk=(x,y)=>typeof W.playerWalkable==="function"?W.playerWalkable(world.map,x,y,host):W.walkable(world.map,x,y,host);
+  // The bridge's pit never becomes traversable, even after its temporary
+  // replacement is deployed. Only the bridge span itself changes state.
+  // W.playerWalkable checks terrain and doors, not this floor's special pit.
+  const blocked=[...(bridge.pitTiles||[]),...(bridge.collapsed&&!bridge.rebuilt?bridge.bridgeTiles||[]:[])],
+    inaccessible=new Set(blocked.map(cell=>cell.x+","+cell.y));
+  for(let i=0;i<q.length;i++)for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+    const x=q[i].x+dx,y=q[i].y+dy,key=x+","+y;
+    if(seen.has(key)||inaccessible.has(key)||!walk(x,y))continue;
+    seen.add(key);q.push({x,y});
   }
-  let cellIndex=0,totalQty=0,recoveredQty=0;
+  const occupied=(p,rows,active)=>Array.isArray(rows)&&rows.some(row=>row&&active(row)&&row.x===p.x&&row.y===p.y);
+  const players=typeof localPlayers==="function"?localPlayers():[player];
+  return q.filter(p=>
+    !inaccessible.has(p.x+","+p.y)&&walk(p.x,p.y)&&
+    !occupied(p,players,()=>true)&&
+    !occupied(p,host.enemies,e=>e.alive===true)&&
+    !occupied(p,[host.guardian,host.stalker,host.rescue,host.trader],e=>e.alive!==false&&!e.rescued&&!e.permanentlyBanished)&&
+    !occupied(p,host.items,e=>e.active!==false)&&
+    !occupied(p,host.chests,e=>e.active!==false)&&
+    !occupied(p,host.deathCaches,e=>e.active!==false)&&
+    !occupied(p,host.generators,e=>e.alive===true)&&
+    !occupied(p,host.switches,e=>e.active!==false)&&
+    !occupied(p,host.shrines,e=>e.active!==false)&&
+    !occupied(p,host.shops,e=>e.active!==false)
+  ).sort((u,v)=>{
+    const a=Math.abs(u.x-origin.x)+Math.abs(u.y-origin.y),b=Math.abs(v.x-origin.x)+Math.abs(v.y-origin.y);
+    return a-b||u.y-v.y||u.x-v.x;
+  });
+}
+function recoverBridgeThiefStash(e=null,attacker=p1){
+  const bridge=host?.weightBridge;if(!bridge)return null;
+  const first=Boolean(e?.bridgeThief&&e.id===bridge.thiefId&&!bridge.thiefDefeated);
+  if(e&&!first)return null;
+  if(!first&&(!bridge.thiefDefeated||!Array.isArray(bridge.stolenItems)||!bridge.stolenItems.length))return null;
+  const now=Date.now();if(!first&&now<Number(bridge.thiefRecoveryRetryAt||0))return null;
+  if(first){
+    bridge.thiefDefeated=true;bridge.thiefRecoveryOrigin={x:e.x,y:e.y};
+    bridge.recoveredItemCount=0;bridge.recoveredToInventory=0;bridge.recoveredOverflow=0;
+    score+=750;S.sfx("pickup");burst(e.x,e.y,P.gold,28,1.6);ring(e.x,e.y,P.gold,44);
+  }
+  const player=attacker||p1,stolen=Array.isArray(bridge.stolenItems)?bridge.stolenItems:[],
+    cells=bridgeThiefRecoveryCells(player,bridge),pending=[];
+  let returned=0,dropped=0;
   for(const row of stolen){
-    const item={...(row?.carriedItem||{})},qty=Math.max(1,Math.floor(Number(item.qty)||1));totalQty+=qty;
-    if(holder&&PGR.inventoryCanAdd(holder,item)&&PGR.inventoryAdd(holder,item)){recovered.push(item);recoveredQty+=qty;continue}
-    const q=cells[cellIndex++%Math.max(1,cells.length)]||{x:e.x,y:e.y},original=(host.items||[]).find(entry=>entry?.id===row?.id);
-    const floorItem=original||{...row,id:`bridge-recovered-${Date.now()}-${cellIndex}`};
-    Object.assign(floorItem,{x:q.x,y:q.y,active:true,bridgeStolen:false,bridgeRecovered:true,carriedItem:{...item},title:`RECOVERED ${String(item.name||item.short||item.kind||"ITEM").toUpperCase()}`});
-    if(!original)host.items.push(floorItem);dropped.push(floorItem)
+    const item={...(row?.carriedItem||{})},qty=Math.max(1,Math.floor(Number(item.qty)||1));
+    if(first)bridge.recoveredItemCount+=qty;
+    if(player&&PGR.inventoryCanAdd(player,item)&&PGR.inventoryAdd(player,item)){
+      bridge.recoveredToInventory+=qty;returned+=qty;continue;
+    }
+    const spot=cells.shift();
+    if(!spot){pending.push(row);continue}
+    const original=(host.items||[]).find(i=>i?.id===row?.id);
+    const floorItem=original||{...row,id:"bridge-recovered-"+bridge.thiefId+"-"+String(bridge.recoveredOverflow)};
+    Object.assign(floorItem,{x:spot.x,y:spot.y,active:true,bridgeStolen:false,bridgeRecovered:true,
+      carriedItem:{...item},title:"RECOVERED "+String(item.name||item.short||item.kind||"ITEM").toUpperCase()});
+    if(!original)host.items.push(floorItem);
+    bridge.recoveredOverflow++;dropped++;
   }
-  b.stolenItems=[];b.recoveredItemCount=totalQty;b.recoveredToInventory=recoveredQty;b.recoveredOverflow=dropped.length;
-  score+=750;host.revision++;
-  S.sfx("pickup");burst(e.x,e.y,P.gold,28,1.6);ring(e.x,e.y,P.gold,44);
-  const recoveryText=totalQty
-    ?`${totalQty} stolen item${totalQty===1?"":"s"} recovered. ${recoveredQty} returned straight to your inventory${dropped.length?`; ${dropped.length} stack${dropped.length===1?"":"s"} could not fit and have been dropped here`:""}. +750 score.`
-    :"He had no stolen stash, but the ambush is over. +750 score.";
-  showToast("DUNGEON THIEF CAUGHT",recoveryText,"gold",11000);
-  try{updateQuests()}catch(_){}
-  return{totalQty,recoveredQty,dropped:dropped.length}
+  bridge.stolenItems=pending;
+  bridge.pendingStolenItemCount=pending.reduce((n,row)=>n+Math.max(1,Math.floor(Number(row?.carriedItem?.qty)||1)),0);
+  bridge.thiefRecoveryRetryAt=now+750; // absolute time survives JSON save/resume
+  if(first||returned||dropped){
+    host.revision++;
+    const message=bridge.recoveredItemCount
+      ?returned+" item(s) returned to inventory, "+dropped+" overflow stack(s) safely placed"+
+        (bridge.pendingStolenItemCount?"; "+bridge.pendingStolenItemCount+" item(s) held for later recovery":"")+
+        (first?". +750 score.":".")
+      :"He had no stolen stash. +750 score.";
+    showToast(first?"DUNGEON THIEF CAUGHT":"STOLEN ITEMS RECOVERED",message,"gold",11000);
+    try{updateQuests()}catch(_){}
+  }
+  return{totalQty:bridge.recoveredItemCount,recoveredQty:returned,dropped,pending:bridge.pendingStolenItemCount};
 }
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
@@ -67,7 +113,9 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
   if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e)&&!(e.treasureGoblin&&e.hp<=0))knockEnemyAway(e,attacker)}
-  if(e.hp>0)return;
+  // Knockback can recursively apply lethal trap/vortex damage. If that call
+  // already completed the death, it owns all defeat and reward accounting.
+  if(!e.alive||e.hp>0)return;
   e.hp=0;e.alive=false;if(e.treasureGoblin)e.treasureGoblinDefeated=true;host.revision++;run.stats.kills++;recordEnemyDefeat(e,attacker||p1);
   let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?15000:e.spider?(e.scoreValue||15):120;
   let xp=e.follower?250:e.spider?(e.xpValue||10):100;
