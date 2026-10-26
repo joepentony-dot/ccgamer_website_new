@@ -128,7 +128,7 @@ test("final sitemap pass preserves SEO opportunity metadata without composer syn
       }
       throw new Error("Unexpected dependency: " + id);
     };
-    vm.runInNewContext(script.replace(/^#![^\\n]*\\n/, ""), {
+    vm.runInNewContext(script.replace(/^#!.*$/, ""), {
       require: mockRequire,
       __dirname: path.join(root, "scripts"),
       process: {
