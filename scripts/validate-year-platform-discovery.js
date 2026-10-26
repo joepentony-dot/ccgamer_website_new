@@ -52,7 +52,7 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/games/ccg-games/`,
         `${SITE_ORIGIN}/games/commodore-quest/`,
         `${SITE_ORIGIN}/videos/`,
-        // New independently verified documentary watch route, added to the static sitemap.
+        // Independently verified documentary watch route, retained from current main.
         `${SITE_ORIGIN}/retro-specials/retro-games-real-prizes-porsche-swords-25000/`
     ])]
 ]);
@@ -304,10 +304,15 @@ function validateBaselineRegistry(current, baseline, problems) {
     }
 }
 
-function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
+function validateBaselineSitemap(currentXml, baselineXml, label, problems, authoritativeArchiveUrls = new Set()) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
     const reviewedAdditions = REVIEWED_FOREIGN_SITEMAP_ADDITIONS.get(label) || new Set();
+    // A newly indexable canonical year is a source-owned addition, not an
+    // unreviewed foreign URL. All other baseline and noncanonical guards stay.
+    const newlyIndexableOwned = label === "sitemap-pages.xml"
+        ? new Set([...authoritativeArchiveUrls].filter((url) => !baselineLocs.includes(url)))
+        : new Set();
     const reviewedRemovals = REVIEWED_FOREIGN_SITEMAP_REMOVALS.get(label) || new Set();
     const expectedLocs = baselineLocs.filter((url) => (
         url !== PHASE5B_EXCLUDED_SITEMAP_URL &&
@@ -315,7 +320,7 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
         !reviewedRemovals.has(url)
     ));
     const comparableCurrent = currentLocs.filter((url) => (
-        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
+        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url) && !newlyIndexableOwned.has(url)
     ));
 
     const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
@@ -354,7 +359,7 @@ function buildReport(summary) {
 - Browse Games contained one bounded year/genre discovery block alongside any other useful archive links.
 - Previous-year and next-year links followed the represented-year sequence.
 - Relevant platform cross-links, static registry entries and sitemap entries were present.
-- The 2023 route used \`noindex,follow\` and was excluded from indexable discovery files.
+- Every canonical year route follows its current catalogue-backed indexability; non-indexable years remain excluded from discovery.
 - Protected-file hashing, bounded generated scope and repeat-generation checks were active.
 
 ## Safeguards added or strengthened in Phase 4D
@@ -364,7 +369,7 @@ function buildReport(summary) {
 - Structural validation of CollectionPage, BreadcrumbList and ItemList JSON-LD on every archive page.
 - Exact source-data membership checks using totals derived from the current games database.
 - Validation that every archive game target exists and is its own canonical game route.
-- Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
+- Exact registry and sitemap occurrence checks for all current catalogue-backed indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
 - Exact membership checks for registry entries and sitemap URLs owned by other workflows, with reviewed non-year/platform additions and deliberate removals excluded from this archive-specific baseline comparison; their dedicated validators remain authoritative.
 - Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
@@ -614,7 +619,7 @@ function main() {
         ["--baseline-sitemap-games", sitemapGames, "sitemap-games.xml"]
     ].forEach(([option, currentXml, label]) => {
         const baselinePath = optionPath(option);
-        if (baselinePath) validateBaselineSitemap(currentXml, readRequired(baselinePath), label, problems);
+        if (baselinePath) validateBaselineSitemap(currentXml, readRequired(baselinePath), label, problems, new Set(expectedUrls));
     });
 
     if (!fs.existsSync(phase4cReportPath)) problems.push("Phase 4C report is missing");
@@ -636,7 +641,7 @@ function main() {
         noindexYearRoutes: years.filter((group) => !group.indexable).length,
         preservedForeignRegistryEntries: staticPages.filter((entry) => !isOwnedArchiveEntry(entry)).length,
         sitemapArchiveUrls: expectedUrls.length,
-        noindexYearExcluded: 2023
+        noindexYearsExcluded: years.filter((group) => !group.indexable).map((group) => group.year)
     };
 
     if (writeReportPath) {
