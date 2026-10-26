@@ -7,7 +7,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/3-2-1-software/"
   },
   {
@@ -18,7 +18,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/andromeda-software/"
   },
   {
@@ -29,7 +29,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/argus-press-software/"
   },
   {
@@ -40,7 +40,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/ariolasoft/"
   },
   {
@@ -51,7 +51,7 @@
     "amigaCount": 1,
     "firstYear": 1994,
     "lastYear": 1994,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/binary-asylum/"
   },
   {
@@ -62,7 +62,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/binary-vision/"
   },
   {
@@ -95,7 +95,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/datasoft/"
   },
   {
@@ -106,7 +106,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/david-h-schroeder/"
   },
   {
@@ -128,7 +128,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/disney/"
   },
   {
@@ -139,7 +139,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/dro-soft-spain/"
   },
   {
@@ -150,7 +150,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/elite/"
   },
   {
@@ -161,7 +161,7 @@
     "amigaCount": 0,
     "firstYear": 1990,
     "lastYear": 1990,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/enigma-variations/"
   },
   {
@@ -172,7 +172,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/erbe-software-spain/"
   },
   {
@@ -183,7 +183,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/fanda/"
   },
   {
@@ -194,7 +194,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/firebird/"
   },
   {
@@ -205,7 +205,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/five-ways-software/"
   },
   {
@@ -216,7 +216,7 @@
     "amigaCount": 1,
     "firstYear": 1995,
     "lastYear": 1995,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/gremlin-graphics/"
   },
   {
@@ -227,7 +227,7 @@
     "amigaCount": 0,
     "firstYear": 1988,
     "lastYear": 1988,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/hewson/"
   },
   {
@@ -238,7 +238,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/infocom/"
   },
   {
@@ -260,7 +260,7 @@
     "amigaCount": 0,
     "firstYear": 1988,
     "lastYear": 1988,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/interplay-productions/"
   },
   {
@@ -304,7 +304,7 @@
     "amigaCount": 0,
     "firstYear": 1989,
     "lastYear": 1989,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/micro-forte/"
   },
   {
@@ -315,7 +315,7 @@
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1983,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/mogul-communications/"
   },
   {
@@ -337,7 +337,7 @@
     "amigaCount": 1,
     "firstYear": 1992,
     "lastYear": 1992,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/peakstar-software/"
   },
   {
@@ -348,7 +348,7 @@
     "amigaCount": 0,
     "firstYear": 1990,
     "lastYear": 1990,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/probe-software/"
   },
   {
@@ -359,7 +359,7 @@
     "amigaCount": 0,
     "firstYear": 1990,
     "lastYear": 1990,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/psygnosis/"
   },
   {
@@ -370,7 +370,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/quest-software/"
   },
   {
@@ -392,7 +392,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/sega/"
   },
   {
@@ -414,7 +414,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/sightsound/"
   },
   {
@@ -425,7 +425,7 @@
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1983,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/software-projects/"
   },
   {
@@ -436,7 +436,7 @@
     "amigaCount": 0,
     "firstYear": 1990,
     "lastYear": 1990,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/system-3/"
   },
   {
@@ -447,7 +447,7 @@
     "amigaCount": 1,
     "firstYear": 1993,
     "lastYear": 1993,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/teque-software/"
   },
   {
@@ -458,7 +458,7 @@
     "amigaCount": 1,
     "firstYear": 1992,
     "lastYear": 1992,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/the-8th-day/"
   },
   {
@@ -469,7 +469,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/the-edge/"
   },
   {
@@ -480,7 +480,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/trevor-inns/"
   },
   {
@@ -502,7 +502,7 @@
     "amigaCount": 0,
     "firstYear": 1989,
     "lastYear": 1989,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/vision-software/"
   },
   {
@@ -513,7 +513,7 @@
     "amigaCount": 1,
     "firstYear": 1994,
     "lastYear": 1994,
-    "indexable": false,
+    "indexable": true,
     "url": "/games/developers/wunderkind/"
   }
 ]

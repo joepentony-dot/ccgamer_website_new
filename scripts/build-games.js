@@ -306,12 +306,17 @@ function buildGamesSearchData(gamesList) {
   return gamesList.map((game) => ({
     title: game.title,
     slug: game.slug,
+    sorttitle: game.sorttitle || game.title,
+    system: game.system,
+    thumbnail: game.thumbnail,
     publisher: normalisePublisherNames(game),
     genre: Array.isArray(game.genres) ? game.genres : [],
     genres: Array.isArray(game.genres) ? game.genres : [],
     composer: normaliseComposerNames(game),
     music: normaliseMusicNames(game.music),
-    year: game.year
+    year: game.year,
+    ccg_rating: game.ccg_rating ?? null,
+    ccg_rating_reason: game.ccg_rating_reason || ""
   }));
 }
 

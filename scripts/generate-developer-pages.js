@@ -15,7 +15,9 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// A verified source game credit qualifies a dedicated self-canonical archive
+// for indexing; empty and unrelated fallback URLs remain excluded.
+const INDEXABLE_MIN_GAMES = 1;
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const developersDir = path.join(repoRoot, "games", "developers");
 const staticPagesPath = path.join(repoRoot, "tools", "seo", "static-pages.json");
@@ -369,7 +371,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 <div class="ccg-developers-hero__stats">
                     <span><strong>${groups.length}</strong> developer credits</span>
                     <span><strong>${groups.reduce((total, group) => total + group.count, 0)}</strong> game associations</span>
-                    <span><strong>${groups.filter((group) => group.count >= INDEXABLE_MIN_GAMES).length}</strong> multi-game archives</span>
+                    <span><strong>${groups.filter((group) => group.count >= INDEXABLE_MIN_GAMES).length}</strong> credited archives</span>
                 </div>
             </section>
 
@@ -408,7 +410,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 <div class="ccg-developers-section__heading">
                     <p class="ccg-developers-section__kicker">Full recorded archive</p>
                     <h2 id="all-developers-title">All Developers</h2>
-                    <p>Single-game archive pages remain available for navigation but are excluded from search indexing until another credited title is added.</p>
+                    <p>Dedicated developer pages with verified catalogue credits are eligible for indexing, including single-game archives.</p>
                 </div>
                 <div class="ccg-developer-grid" id="developerGrid">
                     ${groups.map((group) => renderDeveloperCard(group)).join("\n")}
@@ -663,14 +665,14 @@ function buildReport(games, groups) {
 |---|---:|
 | Game records scanned | **${games.length}** |
 | Static developer routes | **${groups.length}** |
-| Indexable multi-game routes | **${indexable.length}** |
-| Single-game noindex routes | **${thin.length}** |
+| Indexable credited routes | **${indexable.length}** |
+| No-credit noindex routes | **${thin.length}** |
 | Developer hub pages | **1** |
 
 ## Indexing policy
 
 - The developer hub and pages with at least ${INDEXABLE_MIN_GAMES} credited games use \`index,follow\`.
-- Single-game developer pages use \`noindex,follow\` until another credited game is present.
+- Single-game developer pages with one verified catalogue credit use \`index,follow\`. No-credit and noncanonical fallbacks are not promoted.
 - Every route remains linked from the static developer hub.
 
 ## Route-layer normalization
@@ -689,7 +691,7 @@ ${mostRepresented.map((group) => `- ${group.name}: **${group.count}** ${group.co
 - Static developer pages containing direct game links.
 - CollectionPage, BreadcrumbList and ItemList structured data.
 - Canonical, Open Graph and Twitter metadata.
-- Sitemap inclusion for the hub and multi-game routes.
+- Sitemap inclusion for the hub and all verified catalogue-backed canonical developer routes, including single-credit routes.
 - A static discovery link from the main Browse Games page.
 
 ## Explicit exclusions
@@ -697,7 +699,7 @@ ${mostRepresented.map((group) => `- ${group.name}: **${group.count}** ${group.co
 - No changes to \`games/games.json\`.
 - No biographies, company histories or unsupported relationships were added.
 - No homepage or intro-loader changes.
-- No single-game developer page was placed in the sitemap.
+- Zero-credit and noncanonical fallback pages are excluded; single-credit canonical developer routes remain eligible.
 
 ## Rollback
 
@@ -744,7 +746,7 @@ function main() {
     console.log(`[developers] Games scanned: ${games.length}`);
     console.log(`[developers] Developer routes generated: ${groups.length}`);
     console.log(`[developers] Indexable developer pages: ${indexableCount}`);
-    console.log(`[developers] Single-game noindex pages: ${groups.length - indexableCount}`);
+    console.log(`[developers] No-credit noindex pages: ${groups.length - indexableCount}`);
     console.log(`[developers] Files changed: ${writes}`);
     console.log("[developers] Static pages config synchronized for sitemap generation.");
 }

@@ -79,6 +79,8 @@
 
     function init() {
         if (isExcludedPage()) return;
+        const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+        if (pageId.startsWith("music-")) return;
         ensureCss();
         markPanels();
 

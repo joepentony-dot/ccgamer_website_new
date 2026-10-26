@@ -6,14 +6,14 @@
 |---|---:|
 | Game records scanned | **666** |
 | Static developer routes | **47** |
-| Indexable multi-game routes | **11** |
-| Single-game noindex routes | **36** |
+| Indexable credited routes | **47** |
+| No-credit noindex routes | **0** |
 | Developer hub pages | **1** |
 
 ## Indexing policy
 
-- The developer hub and pages with at least 2 credited games use `index,follow`.
-- Single-game developer pages use `noindex,follow` until another credited game is present.
+- The developer hub and pages with at least 1 credited games use `index,follow`.
+- Single-game developer pages with one verified catalogue credit use `index,follow`. No-credit and noncanonical fallbacks are not promoted.
 - Every route remains linked from the static developer hub.
 
 ## Route-layer normalization
@@ -46,7 +46,7 @@ The source records in `games/games.json` remain unchanged.
 - Static developer pages containing direct game links.
 - CollectionPage, BreadcrumbList and ItemList structured data.
 - Canonical, Open Graph and Twitter metadata.
-- Sitemap inclusion for the hub and multi-game routes.
+- Sitemap inclusion for the hub and all verified catalogue-backed canonical developer routes, including single-credit routes.
 - A static discovery link from the main Browse Games page.
 
 ## Explicit exclusions
@@ -54,7 +54,7 @@ The source records in `games/games.json` remain unchanged.
 - No changes to `games/games.json`.
 - No biographies, company histories or unsupported relationships were added.
 - No homepage or intro-loader changes.
-- No single-game developer page was placed in the sitemap.
+- Zero-credit and noncanonical fallback pages are excluded; single-credit canonical developer routes remain eligible.
 
 ## Rollback
 

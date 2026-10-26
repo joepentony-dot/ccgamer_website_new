@@ -254,6 +254,19 @@
   function ensureEditorialFeaturedComposers(root = document) {
     const grid = getFeaturedGrid(root);
     if (!grid) return;
+    // Music Hub owns its generated/static featured-card fallback and staging
+    // lifecycle; do not rebuild that grid from this generic integrity guard.
+    if (document.documentElement?.getAttribute("data-ccg-page") === "music-hub") {
+      bindFeaturedImageFallbacks(grid);
+      return;
+    }
+    // Music Hub intentionally stages the first four cards and exposes the
+    // remaining editorial cards behind an explicit Show More action. Do not
+    // re-expand that staged grid from this integrity guard.
+    if (grid.querySelector(".composer-featured-more") || grid.dataset.ccgFeaturedStage === "ready" || grid.dataset.ccgOmegaRuntimeLocked === "true") {
+      bindFeaturedImageFallbacks(grid);
+      return;
+    }
     if (getFeaturedGridSignature(grid) === FEATURED_SIGNATURE) {
       bindFeaturedImageFallbacks(grid);
       return;
@@ -482,17 +495,22 @@
 
     if (!composerLinkObserver && document.body) {
       composerLinkObserver = new MutationObserver((mutations) => {
+        let needsGlobalComposerReconciliation = false;
         mutations.forEach((mutation) => {
           mutation.addedNodes.forEach((node) => {
             if (!(node instanceof Element)) return;
             rewriteLegacyComposerLinks(node);
             verifyEssentialTracks(node);
-            ensureEditorialFeaturedComposers(document);
-            ensureEditorialComposerProfileImage(document);
+            needsGlobalComposerReconciliation = true;
           });
         });
+        if (needsGlobalComposerReconciliation) {
+          ensureEditorialFeaturedComposers(document);
+          ensureEditorialComposerProfileImage(document);
+        }
       });
-      composerLinkObserver.observe(document.body, { childList: true, subtree: true });
+      const composerIntegrityRoot = document.querySelector(".ccg-music-hub, .ccg-composer-page, main") || document.body;
+      composerLinkObserver.observe(composerIntegrityRoot, { childList: true, subtree: true });
     }
 
     const gamesList = document.getElementById("composer-games");

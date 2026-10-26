@@ -160,6 +160,22 @@
   background: rgba(3, 12, 24, 0.82);
 }
 
+/* The hub retains all composer links in the HTML. Collapsed off-screen
+   groups need only their header painted until they approach the viewport.
+   The measured intrinsic height matches a collapsed group's header, so
+   scrolling does not incur a placeholder-size layout shift. */
+@supports (content-visibility: auto) {
+  html[data-ccg-page="music-hub"] .composer-accordion__group:not(.is-open) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 52px;
+  }
+
+  html[data-ccg-page="music-hub"] .composer-accordion__group.is-open {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
+  }
+}
+
 .composer-accordion__group.is-open {
   border-color: rgba(124, 243, 255, 0.45);
   box-shadow: 0 0 0 1px rgba(120, 238, 255, 0.14), 0 0 20px rgba(11, 147, 186, 0.22);

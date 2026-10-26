@@ -245,12 +245,25 @@
   }
 
   function guardianAliveFor(key,h){return key?.lockedByEnemyId&&h?.enemies?.some(enemy=>enemy.id===key.lockedByEnemyId&&enemy.alive)}
+  function deliverPendingEscapeFlask(player,r=currentRun(),notify=true){
+    if(!player||!r?.v142EscapePhase||!r.v142EscapeFlaskPending)return false;
+    if(r.v142EscapeFlaskGranted===true){r.v142EscapeFlaskPending=false;return false}
+    const flask={kind:"banishment",name:"Sigil Banishment Flask",short:"BANISH"};
+    // Preserve one promised reward in the serialised run. Inventory may
+    // currently be full or already contain the one permitted Flask.
+    if(!PROG.inventoryCanAdd(player,flask)||!PROG.inventoryAdd(player,flask))return false;
+    r.v142EscapeFlaskPending=false;r.v142EscapeFlaskGranted=true;
+    if(notify)announce("SIGIL FLASK DELIVERED","The reserved Banishment Flask has entered your inventory.","gold",7000);
+    broadcast();syncNow();return true;
+  }
   function beginEscape(player){
-    const r=currentRun(),h=currentHost();if(!r||!h||r.v142EscapePhase)return;r.v142EscapePhase=true;r.alert=Math.max(Number(r.alert)||0,Number(PD.escapeAlert)||78);player.sigilBanish=true;
-    if(PROG.inventoryCanAdd(player,{kind:"banishment"}))PROG.inventoryAdd(player,{kind:"banishment",name:"Sigil Banishment Flask",short:"BANISH"});
+    const r=currentRun(),h=currentHost();if(!r||!h||r.v142EscapePhase)return;
+    r.v142EscapePhase=true;r.alert=Math.max(Number(r.alert)||0,Number(PD.escapeAlert)||78);player.sigilBanish=true;
+    r.v142EscapeFlaskPending=true;r.v142EscapeFlaskGranted=false;
+    const granted=deliverPendingEscapeFlask(player,r,false);
     if(h.stalker){h.stalker.spawnTimer=0;h.stalker.v142EscapeAwakened=true}
     for(const enemy of h.enemies||[])if(enemy.alive&&enemy.deathStalker){enemy.aiState="chase";enemy.lastSeen={x:player.x,y:player.y};enemy.memoryMs=999999;enemy.searchMs=0;enemy.moveCooldown=Math.min(enemy.moveCooldown||650,320)}
-    announce("THE SIGIL IS COMPLETE — ESCAPE",`All three Keys are bound to the Sigil. The dungeon is now fully awake. The exit is your objective; a final Banishment Flask has been granted for the run out.`,"red",12000);broadcast();syncNow();
+    announce("THE SIGIL IS COMPLETE — ESCAPE",`All three Keys are bound to the Sigil. The dungeon is now fully awake. The exit is your objective. ${granted?"A final Banishment Flask has been added.":"Your final Banishment Flask is reserved until an unlocked inventory slot is free and you are not carrying another charge."}`,"red",12000);broadcast();syncNow();
   }
 
   if(typeof movementTriggers==="function"){
@@ -327,7 +340,7 @@
   }
 
   function updateSigilAndRelics(){
-    const player=currentPlayer(),h=currentHost(),r=currentRun();if(!player||!h||!r||currentMode()!=="playing")return;initRpg(player);const now=performance.now();
+    const player=currentPlayer(),h=currentHost(),r=currentRun();if(!player||!h||!r||currentMode()!=="playing")return;initRpg(player);if(r.v142EscapeFlaskPending)deliverPendingEscapeFlask(player,r);const now=performance.now();
     if(player.sigilWard&&now>=Number(player.v142WardReadyAt||0)&&player.armor<(PROG.armourCap?.(player)||12)){player.armor=Math.min(PROG.armourCap?.(player)||12,player.armor+1);const arcana=Math.max(0,stat(player,"arcana")-RPG_BASE),cool=Math.max(12000,Number(player.v142WardCooldownMs)||30000-arcana*1800);player.v142WardReadyAt=now+cool;announce("SIGIL WARD","The Sigil restored 1 armour.","cyan",4500)}
     if(player.sigilBind&&now>=Number(player.v142BindReadyAt||0)){
       const targets=(h.enemies||[]).filter(enemy=>enemy.alive&&enemy.deathStalker&&distance(enemy,player)<=8),countTarget=h.stalker?.awake&&distance(h.stalker,player)<=8?h.stalker:null;if(targets.length||countTarget){for(const enemy of targets){enemy.moveCooldown=Math.max(Number(enemy.moveCooldown)||0,1300);enemy.memoryMs=Math.min(Number(enemy.memoryMs)||0,1800)}if(countTarget)countTarget.stunMs=Math.max(Number(countTarget.stunMs)||0,900);player.v142BindReadyAt=now+12000;announce("SIGIL BIND","Nearby supernatural movement has been suppressed briefly.","purple",4500)}

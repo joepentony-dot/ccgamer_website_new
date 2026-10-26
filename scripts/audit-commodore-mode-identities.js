@@ -158,7 +158,8 @@ const allowedPaths = new Set([
 ]);
 
 for (const changedPath of changedFiles()) {
-  if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+  const approvedHomeCls = changedPath === "home.html" && require("./home-cls-contract.js").isApprovedHomeClsChangeFromMain(root);
+  if (protectedPaths.has(changedPath) && !approvedHomeCls) failures.push(`Protected file changed: ${changedPath}`);
   if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
     failures.push(`Out-of-scope local Phase 19 change: ${changedPath}`);
   }

@@ -133,6 +133,14 @@ jobs:
           node scripts/normalize-public-header-shell.js --root _site
           node scripts/normalize-public-header-shell.js --root _site --check
 
+          # Published canonical pages must reserve verified 3D box artwork in
+          # their initial HTML; async media discovery must not change the hero
+          # from two columns to three at tablet widths after first paint.
+          # Update disposable staged HTML only. Approved source game HTML
+          # and its SEO, reviews, awards and emulation links remain unchanged.
+          node scripts/prefill-canonical-game-boxes.mjs --root _site
+          node scripts/prefill-canonical-game-boxes.mjs --root _site --check
+
       - name: Fail closed on C64 emulator links and game-page SEO parity
         shell: bash
         run: |
