@@ -51,11 +51,12 @@ const steps = [
   ["generate-downloads-page.js"],
   ["update-downloads-static-pages.js"],
   ["validate-downloads-page.js"],
-  ["generate-sitemaps.js"],
   ["apply-seo-opportunity-plan.js"],
   ["apply-game-video-overrides.js"],
   ["ensure-magazine-review-runtime.js"],
   ["validate-materialized-magazine-reviews.js"],
+  // Date the final materialised HTML, never an intermediate pre-override page.
+  ["generate-sitemaps.js"],
   ["validate-sitemaps.js"],
   ["validate-legacy-seo-redirects.js"],
   ["validate-video-seo.js"],
