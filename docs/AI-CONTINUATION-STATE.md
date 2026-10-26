@@ -1,3 +1,15 @@
+## CCG MASTER CONTROL — 26 October 2026, 07:35 UTC — single website queue checkpoint (branch-only, NOT merged)
+
+| Workstream | State | Evidence / next gate |
+| --- | --- | --- |
+| Dungeon Carnage #2705 | MERGED / LIVE web deployment; commercial Windows release BLOCKED | Merge `be911c514dfb2d2f7f321224d1b9425a86ef7290`; owner record: **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED**. Original Windows Floor 5 incident remains unverified; do not publish commercial Windows build on this waiver. |
+| Canonical SEO source #2778 | MERGED | Main includes `83d8416fbeaab4b50c4686f114c7abfcb1082d0c`; generated publication is separately outstanding. |
+| Generated SEO #2903 | ACTIVE — BLOCKED | Existing branch `automation/games-publishing-40248792379-1` preserved; original 261 generated files plus review P2 source/test correction. Codex exact-head `e344bc50` review completed with P2 on 17 false game lastmods; repaired on branch, but revised exact-head CI and re-review have NOT completed. 633 page sitemap URLs (389 existing + 244 additions), 666 game URLs and six child sitemaps preserved. Reconcile against current main `e58ce2d9`, then qualify/guarded merge/deploy/live verify. |
+| Lighthouse #2896 | QUEUED — BLOCKED review/current-main reconciliation | Preserve passing old head `26b42981cb958c3eb0614ff30eb7c5dee3e81be1` (40/40 old-head workflows); Codex review not completed, branch three behind observed main. Preserve 250 ms native wheel threshold. |
+| Other website work | QUEUED | Existing PRs only; inspect fresh main/reviews/overlaps after #2903 and #2896. No duplicate PRs, schedules or concurrent source writers. |
+
+No new exact-head Node/Chromium/CI qualification, review, merge or production deployment is claimed by this branch-only checkpoint. Detailed source correction and safeguards: `docs/ai-work/seo-and-generated-output.md`. Main and branch must be refreshed before further action.
+
 ## 21 October 2026 — Preserve completed game pages in existing Pages deployment (candidate)
 - Current main `00dcc736c` includes merged #2868 keyboard, #2870 layout, #2871 documentary and #2874 generated SEO. Existing #2866 and generated #2872 remain separate/open; do not duplicate or overwrite their work.
 - Owner-supplied release ZIP verified and applied on `codex/seo/preserve-completed-game-pages-20261021`: remove destructive Pages-only game regeneration, preserve publisher-owned 666 HTML pages, add fail-closed source/stage SEO/media checks and live CTA smoke to the existing authoritative deployment. New read-only CI qualifies its exact staging blocks; no alternative publishing route or direct protected-file edits.
