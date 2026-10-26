@@ -54,3 +54,23 @@ test("sitemap lastmod follows actual changed HTML bytes, not an outdated commit"
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test("sitemap generation runs after final HTML mutations", () => {
+  const { steps } = require("../scripts/rebuild-games.js");
+  const names = steps.map(([name]) => name);
+  const sitemap = names.indexOf("generate-sitemaps.js");
+  assert.ok(sitemap >= 0, "publishing must generate sitemaps");
+  for (const mutator of [
+    "apply-seo-opportunity-plan.js",
+    "apply-game-video-overrides.js",
+    "ensure-magazine-review-runtime.js",
+    "validate-materialized-magazine-reviews.js",
+  ]) {
+    assert.ok(sitemap > names.indexOf(mutator),
+      `sitemap must reflect final HTML after ${mutator}`);
+  }
+  assert.ok(sitemap > names.lastIndexOf("ensure-magazine-review-runtime.js"),
+    "sitemap must follow the final magazine runtime pass");
+  assert.ok(sitemap < names.indexOf("validate-sitemaps.js"),
+    "sitemap must be generated before its validation");
+});
