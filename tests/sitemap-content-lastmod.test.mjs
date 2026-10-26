@@ -58,8 +58,14 @@ test("sitemap lastmod follows actual changed HTML bytes, not an outdated commit"
 test("sitemap generation runs after final HTML mutations", () => {
   const { steps } = require("../scripts/rebuild-games.js");
   const names = steps.map(([name]) => name);
-  const sitemap = names.indexOf("generate-sitemaps.js");
-  assert.ok(sitemap >= 0, "publishing must generate sitemaps");
+  const firstSitemap = steps.findIndex(([name, ...args]) =>
+    name === "generate-sitemaps.js" && !args.includes("--final-pass"));
+  const sitemap = steps.findIndex(([name, ...args]) =>
+    name === "generate-sitemaps.js" && args.includes("--final-pass"));
+  assert.ok(firstSitemap >= 0 && sitemap > firstSitemap,
+    "publishing must generate the initial SEO growth sitemap and a final lastmod pass");
+  assert.ok(firstSitemap < names.indexOf("apply-seo-opportunity-plan.js"),
+    "initial SEO growth generation must precede the opportunity metadata pass");
   for (const mutator of [
     "apply-seo-opportunity-plan.js",
     "apply-game-video-overrides.js",
