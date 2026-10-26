@@ -187,5 +187,9 @@ const additionalSitemaps = readAdditionalSitemaps();
 require("../tools/seo/generate-sitemap.js");
 pruneUnmaterializedRetroHubUrls();
 restoreAdditionalSitemaps(additionalSitemaps);
-runNodeScript("apply-seo-growth-repair-v4.js");
+// The final pass updates lastmod from final HTML. Re-running SEO growth here
+// would undo the later, authoritative SEO opportunity metadata pass.
+if (!process.argv.includes("--final-pass")) {
+  runNodeScript("apply-seo-growth-repair-v4.js");
+}
 runNodeScript("audit-sitemap-indexability.js");
