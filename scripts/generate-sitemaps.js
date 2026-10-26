@@ -182,11 +182,34 @@ function pruneUnmaterializedRetroHubUrls() {
   }
 }
 
+// The final pass must preserve the established /home.html canonical sitemap
+// entry without repeating the SEO-growth HTML/metadata rewrites.
+function restoreHomepageCanonicalSitemapEntry() {
+  const homePath = path.join(repoRoot, "home.html");
+  if (!fs.existsSync(homePath) || !fs.existsSync(sitemapPagesPath)) return;
+  const homeHtml = fs.readFileSync(homePath, "utf8");
+  const homeCanonical = homeHtml.match(/<link\\b[^>]*\\brel=["']canonical["'][^>]*\\bhref=["']([^"']+)["']/i);
+  const expected = `${SITE_ORIGIN}/home.html`;
+  if (!homeCanonical || homeCanonical[1] !== expected) {
+    fail("Final sitemap pass requires the existing /home.html canonical.");
+  }
+  const xml = fs.readFileSync(sitemapPagesPath, "utf8");
+  const rootEntry = `<loc>${SITE_ORIGIN}/</loc>`;
+  const homeEntry = `<loc>${expected}</loc>`;
+  if (!xml.includes(rootEntry) && !xml.includes(homeEntry)) {
+    fail("Final sitemap pass cannot find the homepage sitemap entry.");
+  }
+  if (xml.includes(rootEntry)) {
+    fs.writeFileSync(sitemapPagesPath, xml.replace(rootEntry, homeEntry), "utf8");
+  }
+}
+
 synchronizeComposerArchives();
 const additionalSitemaps = readAdditionalSitemaps();
 require("../tools/seo/generate-sitemap.js");
 pruneUnmaterializedRetroHubUrls();
 restoreAdditionalSitemaps(additionalSitemaps);
+if (process.argv.includes("--final-pass")) restoreHomepageCanonicalSitemapEntry();
 // The final pass updates lastmod from final HTML. Re-running SEO growth here
 // would undo the later, authoritative SEO opportunity metadata pass.
 if (!process.argv.includes("--final-pass")) {
