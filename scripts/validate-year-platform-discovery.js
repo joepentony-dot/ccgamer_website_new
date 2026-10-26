@@ -289,7 +289,7 @@ function validateCanonicalGameRoutes(games, problems) {
 // publisher archives. Admit only materialized, self-canonical, indexable
 // routes that also appear exactly once in the generated page sitemap.
 function validateNewForeignArchive(entry, sitemapPageLocs, problems) {
-    if (!/^(?:music|games\\/(?:publishers|developers))\\/[a-z0-9-]+\\/index\\.html$/.test(entry)) return "";
+    if (!/^(?:music|games\/(?:publishers|developers))\/[a-z0-9-]+\/index\.html$/.test(entry)) return "";
     const url = `${SITE_ORIGIN}/${entry.slice(0, -"index.html".length)}`;
     const filePath = path.join(repoRoot, entry);
     if (!fs.existsSync(filePath)) {
