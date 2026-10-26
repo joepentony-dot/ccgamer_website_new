@@ -7,7 +7,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/2-99-classics/"
   },
@@ -151,7 +151,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/american-action/"
   },
@@ -175,7 +175,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/amersoft/"
   },
@@ -235,7 +235,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/artworx-software/"
   },
@@ -319,7 +319,7 @@
     "amigaCount": 1,
     "firstYear": 1994,
     "lastYear": 1994,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/black-legend/"
   },
@@ -331,7 +331,7 @@
     "amigaCount": 0,
     "firstYear": 1989,
     "lastYear": 1989,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/blade-software/"
   },
@@ -343,7 +343,7 @@
     "amigaCount": 1,
     "firstYear": 1993,
     "lastYear": 1993,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/bloodhouse/"
   },
@@ -367,7 +367,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/blue-ribbon/"
   },
@@ -415,7 +415,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/bulldog-software/"
   },
@@ -499,7 +499,7 @@
     "amigaCount": 0,
     "firstYear": 2023,
     "lastYear": 2023,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/commodore-plus/"
   },
@@ -511,7 +511,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/compulogical/"
   },
@@ -535,7 +535,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/corgi/"
   },
@@ -559,7 +559,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/craig-communications/"
   },
@@ -571,7 +571,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/creative-software/"
   },
@@ -667,7 +667,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/digital-integration/"
   },
@@ -679,7 +679,7 @@
     "amigaCount": 1,
     "firstYear": 1991,
     "lastYear": 1991,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/digital-magic-software/"
   },
@@ -703,7 +703,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/dro-soft/"
   },
@@ -859,7 +859,7 @@
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1983,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/euro-gold/"
   },
@@ -919,7 +919,7 @@
     "amigaCount": 0,
     "firstYear": 1991,
     "lastYear": 1991,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/gbh/"
   },
@@ -991,7 +991,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/handic-software/"
   },
@@ -1027,7 +1027,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/hodder-and-stoughton/"
   },
@@ -1051,7 +1051,7 @@
     "amigaCount": 1,
     "firstYear": 1994,
     "lastYear": 1994,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/ice/"
   },
@@ -1135,7 +1135,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/interdisc/"
   },
@@ -1171,7 +1171,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/lk-avalon/"
   },
@@ -1267,7 +1267,7 @@
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1983,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/mc-lothlorien/"
   },
@@ -1291,7 +1291,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/melody-hall-publishing/"
   },
@@ -1303,7 +1303,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/micro-fun/"
   },
@@ -1327,7 +1327,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/microdaft/"
   },
@@ -1483,7 +1483,7 @@
     "amigaCount": 0,
     "firstYear": 1989,
     "lastYear": 1989,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/monarch-software/"
   },
@@ -1591,7 +1591,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/ozisoft/"
   },
@@ -1639,7 +1639,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/pick-and-choose/"
   },
@@ -1663,7 +1663,7 @@
     "amigaCount": 0,
     "firstYear": 1989,
     "lastYear": 1989,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/players-premier/"
   },
@@ -1771,7 +1771,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/react-software/"
   },
@@ -1843,7 +1843,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/sharedata/"
   },
@@ -1867,7 +1867,7 @@
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1984,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/sight-and-sound-music-software/"
   },
@@ -1903,7 +1903,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/simulmondo/"
   },
@@ -1915,7 +1915,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/softexpress/"
   },
@@ -1927,7 +1927,7 @@
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/softgold/"
   },
@@ -2011,7 +2011,7 @@
     "amigaCount": 0,
     "firstYear": 1989,
     "lastYear": 1989,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/strategic-studies-group/"
   },
@@ -2083,7 +2083,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/system-4-software/"
   },
@@ -2275,7 +2275,7 @@
     "amigaCount": 0,
     "firstYear": 1991,
     "lastYear": 1991,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/topshots/"
   },
@@ -2299,7 +2299,7 @@
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1983,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/tronix-publishing/"
   },
@@ -2407,7 +2407,7 @@
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1985,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/wicked-software/"
   },
@@ -2443,7 +2443,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/you-premier/"
   },
@@ -2455,7 +2455,7 @@
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/zafiro-software-division/"
   },
