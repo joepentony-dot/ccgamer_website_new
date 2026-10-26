@@ -69,8 +69,10 @@ test("sitemap generation runs after final HTML mutations", () => {
     assert.ok(sitemap > names.indexOf(mutator),
       `sitemap must reflect final HTML after ${mutator}`);
   }
-  assert.ok(sitemap > names.lastIndexOf("ensure-magazine-review-runtime.js"),
-    "sitemap must follow the final magazine runtime pass");
+  const finalRuntimeWrite = steps.findLastIndex(([name, ...args]) =>
+    name === "ensure-magazine-review-runtime.js" && !args.includes("--check"));
+  assert.ok(sitemap > finalRuntimeWrite,
+    "sitemap must follow the final magazine runtime write, not its later --check");
   assert.ok(sitemap < names.indexOf("validate-sitemaps.js"),
     "sitemap must be generated before its validation");
 });
