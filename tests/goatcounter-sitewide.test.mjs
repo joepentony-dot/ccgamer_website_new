@@ -404,5 +404,61 @@ test("home uses full 14,793 archive baseline and public-game counter has shared 
   assert.match(runtime,/if \(committedCount\)/);
   assert.match(runtime,/fetchPublicCount\(path, committedCount\)/);
   assert.match(style,/html\[data-ccg-page="single-game"\] \.ccg-footer--game > \.ccg-game-views/);
-  assert.match(loader,/full-archive-visible-counters-v2/);
+  assert.match(loader,/full-archive-visible-counters-v3/);
+});
+
+
+test("separate hourly-session counter does not replace or double-count the recovered archive total", async () => {
+  const runtime = fs.readFileSync(path.join(root, "js/ccg-visitor-metrics.js"), "utf8");
+  const nodes = {};
+  function node() {
+    return { textContent: "", children: [], attrs: {},
+      appendChild(child) { this.children.push(child); },
+      setAttribute(key, value) { this.attrs[key] = value; } };
+  }
+  const wrap = node();
+  wrap.appendChild = function (child) {
+    this.children.push(child);
+    nodes.hourly = child.children[1];
+  };
+  const home = node();
+  home.closest = selector => selector === ".ccg-footer__counter-wrap" ? wrap : null;
+  const status = node();
+  const requested = [];
+  const document = {
+    readyState: "complete",
+    documentElement: { getAttribute() { return null; } },
+    head: { appendChild() {} },
+    createElement() { return node(); },
+    querySelector(selector) {
+      return selector === ".ccg-footer-home__status" ? status : null;
+    },
+    getElementById(id) {
+      if (id === "ccg-visit-count") return home;
+      if (id === "ccg-hourly-visitor-count") return nodes.hourly || null;
+      return null;
+    }
+  };
+  const window = {
+    location: { pathname: "/home.html" },
+    fetch(url) {
+      requested.push(url);
+      return Promise.resolve({ status: 200, ok: true,
+        json: async () => ({ count: requested.length === 1 ? "7" : "999" }) });
+    },
+    setInterval() { return 1; },
+    clearInterval() {}
+  };
+  vm.runInNewContext(runtime, { window, document, URL,
+    location: { origin: "https://www.cheekycommodoregamer.co.uk" } });
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert.equal(status.textContent, "Archive visits");
+  assert.equal(home.textContent, "14,799", "preserve historic 14,793 plus six new events");
+  assert.equal(nodes.hourly.textContent, "7", "hourly count is cumulative event count only");
+  assert.equal(nodes.hourly.attrs["data-ccg-counter-loaded"], "true");
+  assert.equal(wrap.children.length, 1, "no duplicate hourly badge");
+  assert.equal(requested.length, 1, "both homepage metrics share one GoatCounter request");
+  assert.ok(requested.every(url => url.endsWith("/ccg-archive-session.json")));
+  assert.match(sourceForMetrics(), /HISTORICAL_ARCHIVE_HITS = 14793/);
+  function sourceForMetrics() { return runtime; }
 });

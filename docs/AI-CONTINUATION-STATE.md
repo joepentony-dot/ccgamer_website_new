@@ -1,3 +1,15 @@
+## CCG MASTER CONTROL — 26 October 2026, 14:32 UTC — GoatCounter #2891 review remediation (BRANCH ONLY)
+
+- Fresh main `e946417a98b36e81a10a90ca557bad4bf9bf7d54`; #2891 was 13 ahead / 0 behind at `29091372a144fda4ae4b9bfecc0f19e44aeb80dc`. Previous exact-head CI: 19 successes, one **cancelled** installable-PWA job; no complete green qualification.
+- Completed exact-head Codex review identified an unresolved P2: two identical public GoatCounter hourly-event fetches on Home. This branch repair shares the same promise for both displayed counts and changes the Node regression to require one request, preserving historical 14,793-hit baseline and game counter recovery. New exact-head qualification and clean review are required before any merge. Preserve Omega, cache discipline and other workstreams. Details in `docs/ai-work/goatcounter-history-counters.md`.
+
+## CCG MASTER CONTROL — 26 October 2026, 13:37 UTC — GoatCounter #2891 current-main preservation candidate (BRANCH ONLY)
+
+- Latest observed `main` `e946417a98b36e81a10a90ca557bad4bf9bf7d54` (automated generated SEO #2909); GoatCounter PR #2891 old head `2204d8b75eee4adcf59ed69bf9a0ee9b88b06861`. Lighthouse #2896 and SEO #2903 remain COMPLETE, Dungeon #2705 remains MERGED/LIVE with **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED**; commercial Windows release unaccepted.
+- Preserve main's 14,793 recovered historical archive hits, per-game historical snapshots, query-route reconciliation, existing game footer counts and tracker recovery. Port only the missing separately labelled cumulative 1-hour session event display from #2891; do not overwrite the current 28,548-byte visitor runtime with the older 7,796-byte implementation.
+- The proposed guarded reconciliation retains the four previously unique GoatCounter diagnostic/export files, extends the existing Node and browser counter contracts, scopes new CSS to the footer and advances the public code cache v200→v201. The original historical archive total remains distinct from the separate event counter.
+- **Not a merge to main or a live deployment.** Require successful current-head Node/browser/CI and independent exact-head review before guarded squash merge. #2906/#2907/#2908 remain independent generated-output review/overlap holds. No extra task, branch or PR.
+
 ## CCG MASTER CONTROL — 26 October 2026, 09:30 UTC — generated SEO #2903 P1 remediation (BRANCH ONLY)
 
 - Current main remains `e58ce2d9ce3e2ad8ba0feeedb9fd1d02de5d1cd9`; existing #2903 branch is zero behind. Dungeon #2705 remains MERGED/LIVE web, with **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED** and separate commercial Windows release hold. SEO #2778 source MERGED; #2903 generated output ACTIVE, not MERGED/LIVE. Lighthouse #2896 remains QUEUED, preserve its 250 ms native wheel guard.

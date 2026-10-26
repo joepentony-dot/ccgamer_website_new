@@ -62,6 +62,15 @@ def check_page(browser, path: str, is_game: bool):
                 timeout=15000,
             )
             counter_text = counter.inner_text()
+            hourly = page.locator("#ccg-hourly-visitor-count")
+            hourly.wait_for(state="attached", timeout=15000)
+            page.wait_for_function("""() => {
+                const node = document.getElementById('ccg-hourly-visitor-count');
+                return node && node.getAttribute('data-ccg-counter-loaded') === 'true';
+            }""", timeout=20000)
+            import re
+            assert re.fullmatch(r"[0-9][0-9\s,.'’]*", hourly.inner_text().strip())
+            print("PASS: separate cumulative hourly sessions=", hourly.inner_text())
 
         # Verify that the *real* read-only GoatCounter endpoint supplied a
         # numeric count. A dash indicates the original user-reported bug.

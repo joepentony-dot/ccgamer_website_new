@@ -3288,7 +3288,7 @@ function setupFooterSignatureRotator() {
     if (document.querySelector('script[data-ccg-visitor-metrics]')) return;
 
     const script = document.createElement("script");
-    script.src = "/js/ccg-visitor-metrics.js?v=20261022-full-archive-visible-counters-v2";
+    script.src = "/js/ccg-visitor-metrics.js?v=20261026-full-archive-visible-counters-v3";
     script.async = true;
     script.setAttribute("data-ccg-visitor-metrics", "shared-loader");
     (document.head || document.documentElement).appendChild(script);
