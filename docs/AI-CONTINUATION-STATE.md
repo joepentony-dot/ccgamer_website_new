@@ -1,3 +1,8 @@
+## CCG MASTER CONTROL — 26 October 2026, 14:32 UTC — GoatCounter #2891 review remediation (BRANCH ONLY)
+
+- Fresh main `e946417a98b36e81a10a90ca557bad4bf9bf7d54`; #2891 was 13 ahead / 0 behind at `29091372a144fda4ae4b9bfecc0f19e44aeb80dc`. Previous exact-head CI: 19 successes, one **cancelled** installable-PWA job; no complete green qualification.
+- Completed exact-head Codex review identified an unresolved P2: two identical public GoatCounter hourly-event fetches on Home. This branch repair shares the same promise for both displayed counts and changes the Node regression to require one request, preserving historical 14,793-hit baseline and game counter recovery. New exact-head qualification and clean review are required before any merge. Preserve Omega, cache discipline and other workstreams. Details in `docs/ai-work/goatcounter-history-counters.md`.
+
 ## CCG MASTER CONTROL — 26 October 2026, 13:37 UTC — GoatCounter #2891 current-main preservation candidate (BRANCH ONLY)
 
 - Latest observed `main` `e946417a98b36e81a10a90ca557bad4bf9bf7d54` (automated generated SEO #2909); GoatCounter PR #2891 old head `2204d8b75eee4adcf59ed69bf9a0ee9b88b06861`. Lighthouse #2896 and SEO #2903 remain COMPLETE, Dungeon #2705 remains MERGED/LIVE with **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED**; commercial Windows release unaccepted.

@@ -444,7 +444,7 @@ test("separate hourly-session counter does not replace or double-count the recov
     fetch(url) {
       requested.push(url);
       return Promise.resolve({ status: 200, ok: true,
-        json: async () => ({ count: "7" }) });
+        json: async () => ({ count: requested.length === 1 ? "7" : "999" }) });
     },
     setInterval() { return 1; },
     clearInterval() {}
@@ -457,7 +457,7 @@ test("separate hourly-session counter does not replace or double-count the recov
   assert.equal(nodes.hourly.textContent, "7", "hourly count is cumulative event count only");
   assert.equal(nodes.hourly.attrs["data-ccg-counter-loaded"], "true");
   assert.equal(wrap.children.length, 1, "no duplicate hourly badge");
-  assert.equal(requested.length, 2, "one fetch per independently displayed metric");
+  assert.equal(requested.length, 1, "both homepage metrics share one GoatCounter request");
   assert.ok(requested.every(url => url.endsWith("/ccg-archive-session.json")));
   assert.match(sourceForMetrics(), /HISTORICAL_ARCHIVE_HITS = 14793/);
   function sourceForMetrics() { return runtime; }

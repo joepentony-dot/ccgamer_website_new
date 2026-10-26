@@ -18,6 +18,8 @@
   var SESSION_KEY = "ccg-archive-hourly-visit-v1";
   var SESSION_WINDOW_MS = 60 * 60 * 1000;
   var STARTED = false;
+  // Both homepage totals derive from one shared public hourly-event response.
+  var sessionCountPromise = null;
 
   // Non-personal historical hits recovered from GoatCounter export
   // captured 2026-10-22 15:04:32 UTC. Do not import the raw export here.
@@ -76,7 +78,8 @@
   }
 
   function publicCount(path) {
-    return window.fetch(COUNTER_BASE + encodeURIComponent(path) + ".json",
+    if (path === SESSION_EVENT && sessionCountPromise) return sessionCountPromise;
+    var pending = window.fetch(COUNTER_BASE + encodeURIComponent(path) + ".json",
       { credentials: "omit", mode: "cors" }).then(function (response) {
       if (response.status === 404) return 0;
       if (!response.ok) throw new Error("GoatCounter public counter unavailable");
@@ -92,6 +95,8 @@
         return number;
       });
     });
+    if (path === SESSION_EVENT) sessionCountPromise = pending;
+    return pending;
   }
 
   function fetchPublicCount(path, node) {

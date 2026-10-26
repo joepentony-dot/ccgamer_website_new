@@ -10,3 +10,7 @@ Reconcile old PR head `2204d8b75eee4adcf59ed69bf9a0ee9b88b06861` with latest ins
 
 ## Qualification and release
 Require actual exact-new-head Node GoatCounter regression, browser-visible home/game counters, all applicable current-head GitHub Actions and no performance regressions. Review must be independent, completed on the exact final head and free of major/unresolved findings. Reconcile with any newer main commits, merge via expected-head guarded squash only when qualified, then verify deployment and live home/game counters. Old PR reviews/CI are not transferable. The 22 October Codex usage-limit comment is historical and is not a current quota reading.
+
+## 26 October 2026 — exact-head Codex P2 response
+- Codex review on `29091372a144fda4ae4b9bfecc0f19e44aeb80dc` completed with one unresolved P2: homepage archive and hourly labels separately fetched the identical `ccg-archive-session.json` endpoint, violating the permanent no-duplicate-fetch performance contract. The earlier Node fixture asserted two requests.
+- Smallest repair: memoize only the hourly-event promise inside `publicCount()`, so both displays use one response, retain historical baseline/one-export-event subtraction and neutral hourly fallback on network failure. The existing Node fixture now requires one request and a single consistent response. Fresh exact-head CI, completed clean independent re-review and guarded merge remain mandatory. A cancelled prior PWA workflow is not a pass.
