@@ -136,6 +136,51 @@ export function preferSelectedCartridges(entries) {
   });
 }
 
+
+ 
+// An owner-verified game-page deep link may request a different CRT edition
+// from the single visible winner. Replace only that row for this navigation,
+// after verifying the exact hosted bytes' catalogue identity and digest.
+// Ordinary search, legacy PRG aliases, and all original media remain unchanged.
+const DOMARK_STAR_WARS_EDITION = Object.freeze({
+  id: "owner-crt-more-starwars-1e41e83051d1",
+  title: "Star Wars",
+  format: "crt",
+  bytes: 65728,
+  sha256: "1e41e83051d1646a236f886ffb89294584f0f64496824b43e1479f9477bdc3e3",
+  url: "/emulator/c64/media/cartridge-replacements/starwars-1e41e83051d1.crt",
+});
+// Return a verified source entry or null; an existing visible ID alone is
+// insufficient evidence that the pinned edition still matches its reviewed ROM.
+export function findVerifiedExactCrtEdition(allHostedEntries, linkedId) {
+  if (!Array.isArray(allHostedEntries) ||
+      linkedId !== DOMARK_STAR_WARS_EDITION.id) return null;
+  return allHostedEntries.find(entry => entry &&
+    entry.id === linkedId &&
+    entry.title === DOMARK_STAR_WARS_EDITION.title &&
+    entry.format === DOMARK_STAR_WARS_EDITION.format &&
+    entry.approved === true &&
+    // The loader prioritises packed and inline bytes over entry.url; reject
+    // both paths rather than trusting metadata for unverified ROM contents.
+    !entry.packed &&
+    !Object.hasOwn(entry, "dataBase64") &&
+    entry.bytes === DOMARK_STAR_WARS_EDITION.bytes &&
+    entry.sha256 === DOMARK_STAR_WARS_EDITION.sha256 &&
+    entry.url === DOMARK_STAR_WARS_EDITION.url) || null;
+}
+export function selectVerifiedExactCrtEdition(visibleEntries, allHostedEntries, linkedId) {
+  if (!Array.isArray(visibleEntries)) return visibleEntries;
+  const exact = findVerifiedExactCrtEdition(allHostedEntries, linkedId);
+  if (!exact) return visibleEntries;
+  const selectedIndex = visibleEntries.findIndex(entry =>
+    entry && entry.format === "crt" && entry.approved !== false &&
+    catalogGameIdentity(entry.title) === catalogGameIdentity(exact.title));
+  if (selectedIndex === -1 || visibleEntries[selectedIndex] === exact) return visibleEntries;
+  const selected = visibleEntries.slice();
+  selected[selectedIndex] = exact;
+  return selected;
+}
+
 // Search is deliberately more forgiving than automatic archive-to-media linking.
 // Fuzzy suggestions must never silently launch a different game, sequel or edition.
 const searchTitleCache = new WeakMap();
