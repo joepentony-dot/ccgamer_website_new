@@ -108,7 +108,19 @@ function recoverBridgeThiefStash(e=null,attacker=p1){
 }
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
-  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range.","red",8500);return}
+  if(isDeathStalkerEnemy(e)){
+    // A sealed Warden still repels every real hit. Only the repeated advisory
+    // audio/floater/toast is throttled; immunity, knockback and hit feedback
+    // (flash/HP bar) remain authoritative on every projectile.
+    e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);
+    const now=performance.now(),last=Number(e._ccgSealedWardNoticeAt);
+    if(!Number.isFinite(last)||now<last||now-last>=1600){
+      e._ccgSealedWardNoticeAt=now;
+      S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);
+      showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. Collect Banishment Essence, distil a Flask at an Alchemist, then press B in range.","red",8500);
+    }
+    return
+  }
   power=elementalDamage(e,power,element);e.flash=160;e.hpBarMs=2800;e.hitStunMs=Math.max(e.hitStunMs||0,C.enemy.hitStunMs||1000);
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
