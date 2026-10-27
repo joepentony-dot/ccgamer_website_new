@@ -793,7 +793,7 @@ function drawChests(){
     // their next movement step would trigger its lock. Fog/LOS may lag behind
     // the exact movement boundary, otherwise the key prompt appears on an
     // apparently empty tile. Distant undiscovered chests remain concealed.
-    const nextStepChest=Boolean(focus&&md(c,focus)<=1);
+    const nextStepChest=Boolean(focus&&Math.max(Math.abs(c.x-focus.x),Math.abs(c.y-focus.y))<=1);
     if(!tileInRenderView(c.x,c.y,2)||(!nextStepChest&&!visibleTo(focus,c.x,c.y)))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
     // Stage-1 CC0 chest frames are the default live presentation. Explicit
