@@ -45,8 +45,8 @@ assert.match(finaleSource,/if\(existing\)return/,"asynchronous game-slug enrichm
 assert.doesNotMatch(finaleSource,/setInterval\(/,"finale must never install a new persistent timer");
 assert.match(finaleSource,/insertAdjacentHTML\("afterbegin"/,"finale belongs before the long bestiary and retro game roll");
 
-function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=false}={}){
-  const nodes=new Map(),inserts=[],music=[],styles=[],visited=[];
+function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=false,shareMode="native"}={}){
+  const nodes=new Map(),inserts=[],music=[],styles=[],visited=[],shares=[],copied=[],toasts=[];
   const node=id=>{
     const value={id,events:new Map(),remove(){nodes.delete(id)},addEventListener(event,handler){this.events.set(event,handler)},
       setAttribute(key,value){this[key]=value},scrollIntoView(){visited.push(id)},focus(){visited.push(id+":focus")}};
@@ -62,12 +62,16 @@ function exerciseFinale({floor=15,complete=true,xpGameOver=false,dailyFailed=fal
     window:{CCG_CONFIG:{maxFloors:15},CCGEndCreditsMusic:{play(arg){music.push(arg)}}},
     document:{getElementById:id=>nodes.get(id)||null,querySelectorAll:()=>[],
       createElement:tag=>({tag}),head:{appendChild:style=>styles.push(style)}},
+    navigator:shareMode==="native"?{share:async data=>{shares.push(data)}}:
+      shareMode==="clipboard"?{clipboard:{writeText:async value=>{copied.push(value)}}}:{},
+    location:{href:"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/"},
+    showToast:(...args)=>toasts.push(args),
     fetch:()=>Promise.resolve({ok:true,json:()=>Promise.resolve([])}),
     console:{warn:()=>{}}
   };
   vm.runInNewContext(finaleSource,ctx,{timeout:1000});
   ctx.endRun("Citadel cleared");
-  return{ctx,runState,inserts,nodes,music,styles,visited};
+  return{ctx,runState,inserts,nodes,music,styles,visited,shares,copied,toasts};
 }
 const victory=exerciseFinale();
 const ceremony=victory.inserts.filter(x=>x.html.includes('id="v108-completion-credits"'));
@@ -77,6 +81,26 @@ assert.match(ceremony[0].html,/1,234/,"finale must show authoritative score");
 assert.match(ceremony[0].html,/HERO LEVEL[\s\S]*?9|>9<\/strong><span>HERO LEVEL/,"finale must show actual hero level");
 assert.match(ceremony[0].html,/27<\/strong><span>ENEMIES DEFEATED/,"kills must come from run stats");
 assert.match(ceremony[0].html,/2:03<\/strong><span>RUN TIME/,"elapsed time must come from run");
+await victory.nodes.get("v108-end-share").events.get("click")();
+assert.equal(victory.shares.length,1,"victory must invoke the native share sheet exactly once");
+assert.equal(victory.shares[0].title,"C64 Dungeon Carnage — Campaign Complete");
+assert.match(victory.shares[0].text,/all 15 floors/,"completion share must describe a completed campaign");
+assert.match(victory.shares[0].text,/1,234 points/,"completion share must include real final score");
+assert.match(victory.shares[0].text,/hero level 9/,"completion share must include real hero level");
+assert.match(victory.shares[0].text,/27 enemies defeated/,"completion share must include real kills");
+assert.match(victory.shares[0].text,/2:03/,"completion share must include actual elapsed time");
+assert.equal(victory.shares[0].url,"https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/");
+assert.equal(victory.copied.length,0,"native share must not also copy the clipboard");
+const clipboardVictory=exerciseFinale({shareMode:"clipboard"});
+await clipboardVictory.nodes.get("v108-end-share").events.get("click")();
+assert.equal(clipboardVictory.shares.length,0);
+assert.equal(clipboardVictory.copied.length,1,"desktop clipboard fallback must copy the full result once");
+assert.match(clipboardVictory.copied[0],/1,234 points[\\s\\S]*cheekycommodoregamer\\.co\\.uk/);
+assert.equal(clipboardVictory.toasts[0][0],"COMPLETION COPIED");
+const plainVictory=exerciseFinale({shareMode:"none"});
+await plainVictory.nodes.get("v108-end-share").events.get("click")();
+assert.equal(plainVictory.toasts[0][0],"SHARE COMPLETION","unavailable sharing APIs must retain visible result text");
+assert.match(plainVictory.toasts[0][1],/1,234 points/);
 assert.equal(victory.music.length,1,"end music hook should be called once per winning run");
 assert.equal(victory.music[0].reason,"campaign-complete");
 assert.equal(victory.styles.length,1,"finale must reuse existing single stylesheet owner");
