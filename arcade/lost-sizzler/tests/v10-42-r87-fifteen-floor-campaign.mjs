@@ -1276,7 +1276,7 @@ assert.equal(ownedCacheTrial.ctx.score,1000,"Deferred trial score is granted exa
 // Actual generator spawning owner: a reinforcement must NEVER spawn onto
 // the attacking hero, active floor loot, a living Guardian, or a Death Cache.
 // These tests expose the original bug (first neighbour was the hero).
-const spawnStart=gameplaySource.indexOf("function updateGenerators(dt){");
+const spawnStart=gameplaySource.indexOf("function pruneDeadGeneratorReinforcements(){");
 const spawnEnd=gameplaySource.indexOf("\nfunction updateRescue(){",spawnStart);
 assert.ok(spawnStart>=0&&spawnEnd>spawnStart,"Real generator-spawn owner must remain extractable");
 const spawnSource=gameplaySource.slice(spawnStart,spawnEnd);
