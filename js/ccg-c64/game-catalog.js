@@ -160,6 +160,10 @@ export function findVerifiedExactCrtEdition(allHostedEntries, linkedId) {
     entry.title === DOMARK_STAR_WARS_EDITION.title &&
     entry.format === DOMARK_STAR_WARS_EDITION.format &&
     entry.approved === true &&
+    // The loader prioritises packed and inline bytes over entry.url; reject
+    // both paths rather than trusting metadata for unverified ROM contents.
+    !entry.packed &&
+    !Object.hasOwn(entry, "dataBase64") &&
     entry.bytes === DOMARK_STAR_WARS_EDITION.bytes &&
     entry.sha256 === DOMARK_STAR_WARS_EDITION.sha256 &&
     entry.url === DOMARK_STAR_WARS_EDITION.url) || null;

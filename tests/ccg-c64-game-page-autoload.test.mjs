@@ -121,6 +121,14 @@ test("real autoload selection preserves Domark 1988 edition rather than an older
   assert.equal(changedFirstEdition.selected.length, 0,
     "An invalid Domark edition already in first position must not autostart");
   assert.equal(changedFirstEdition.starts.length, 0);
+  for (const unsafe of [{ dataBase64: "AQID" }, { packed: true }]) {
+    const substituted = await initialiseFor("?game=" + domark.id + "&autoplay=1",
+      { entries: [parker, { ...domark, ...unsafe }] });
+    assert.equal(substituted.selected.length, 0,
+      "Unverified alternate Domark byte sources must not be selected");
+    assert.equal(substituted.starts.length, 0,
+      "Unverified alternate Domark byte sources must not autostart");
+  }
 });
 
 

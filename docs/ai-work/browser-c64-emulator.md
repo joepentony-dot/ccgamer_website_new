@@ -1,3 +1,8 @@
+## 27 October 2026 — #2887 exact-head Codex P2 alternate-media repair (BRANCH ONLY)
+
+- Completed independent review at `e4d1e83b82f909c6af5e54932ae8b47f50e3f2d7` found an unresolved P2: a pinned Domark entry with matching metadata but `dataBase64` could bypass URL CRT checksum verification in the existing loader; `packed` also selects a different loader path. The 21 exact-head PR workflow groups passed, but that head is NOT releasable with this finding.
+- Narrow same-branch candidate rejects packed or inline byte-source fields before accepting the pinned edition and adds catalogue and real-initializer negative regressions. Ordinary browsing, older Star Wars CRT, reviewed media and all unrelated website code are unchanged. **New exact-head CI, clean independent review and resolution of both review threads remain required; no merge or live claim.**
+
 ## 27 October 2026 — #2887 exact Domark Star Wars edition current-main reconciliation (BRANCH ONLY)
 
 - Existing draft #2887 `fix/c64-star-wars-domark-exact-runtime-20261022` preserves the owner-approved Domark 1988 exact CRT ID `owner-crt-more-starwars-1e41e83051d1` and its checksum/size/source/same-origin fail-closed selection; ordinary library search and the older same-title edition must remain unchanged. No new PR or media files.

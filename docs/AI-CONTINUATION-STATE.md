@@ -1,3 +1,8 @@
+## CCG MASTER CONTROL — 27 October 2026 — Domark #2887 review remediation (BRANCH ONLY)
+
+- Current main at inspection `2238b5ef0220ddb5254b9465eb0a3e1c372b9fed` includes GoatCounter #2891; live Pages and navigation verification passed. Lighthouse #2896 post-merge 24-shard matrix `40315844408` completed green (25 jobs, including aggregation), and main's newer matrix `40349544525` also completed green. #2906 remains unmerged and behind main with missing exact-head Codex review; later #2910 overlaps its sitemap date changes and is separate.
+- Draft emulator #2887 was 16 ahead/0 behind at `e4d1e83b82f909c6af5e54932ae8b47f50e3f2d7`, 21 exact-head workflows successful, but latest Codex review exposed P2 inline `dataBase64`/packed alternate-source integrity bypass. Narrow existing-branch fix and two negative regression suites are staged with this checkpoint. **Not qualified or merged**; require exact-new-head CI, clean Codex review, resolution of unresolved findings, current-main recheck, guarded merge and production Star Wars link verification. No competing website workstream.
+
 ## CCG MASTER CONTROL — 27 October 2026, 02:32 UTC — Lighthouse COMPLETE; C64 exact-edition #2887 reconciliation (BRANCH ONLY)
 
 - Fresh `main` `2238b5ef0220ddb5254b9465eb0a3e1c372b9fed` includes guarded GoatCounter #2891 squash merge. Preserve recovered historical site visits and separate hourly-event count; production acceptance for this merge was not independently rechecked in this run.

@@ -196,6 +196,10 @@ test("Star Wars Domark deep link loads exact verified CRT, not the older visible
     "An unrelated deep link cannot modify catalogue priority");
   assert.equal(findVerifiedExactCrtEdition(all, domark.id), domark);
   assert.equal(findVerifiedExactCrtEdition([parker, { ...domark, sha256: "f".repeat(64) }], domark.id), null);
+  assert.equal(findVerifiedExactCrtEdition([parker, { ...domark, dataBase64: "AQID" }], domark.id), null,
+    "Pinned Domark media must reject inline bytes even when the metadata matches");
+  assert.equal(findVerifiedExactCrtEdition([parker, { ...domark, packed: true }], domark.id), null,
+    "Pinned Domark media must reject packed byte sources");
   const targeted = selectVerifiedExactCrtEdition(visible, all, domark.id);
   assert.equal(targeted.length, visible.length, "Do not expose duplicate Star Wars rows");
   assert.equal(targeted.find(e => e.title === "Star Wars")?.id, domark.id,
