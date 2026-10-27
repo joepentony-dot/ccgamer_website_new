@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-10-24T11:06:33.214Z",
+  "updatedAt": "2026-10-27T13:57:08.999Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -4590,6 +4590,15 @@
       "uploadDate": "2024-04-09T17:30:04Z",
       "duration": "PT6M7S",
       "thumbnailUrl": "https://i.ytimg.com/vi/QIXiO2FzV-Y/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "qJZa1zB2zHU": {
+      "title": "50 Commodore 64 Games – Can You Identify Them? | C64 Challenge",
+      "description": "🕹️ 50 Commodore 64 Games – Can You Identify Them? | C64 Challenge\nThink you know your Commodore 64 games? Put your retro gaming knowledge to the test with 50 C64 games across five themed rounds! You'll see just 10 seconds of gameplay from each title, and your challenge is to identify the game before the answer is revealed. How many can you name out of 50? A couple have been deliberately muted to make it a little tougher\n\n🌐 Explore more Commodore 64 games, reviews, manuals & downloads:\n👉 https://www.cheekycommodoregamer.co.uk\n\nFrom arcade conversions and isometric adventures to budget cassette releases, film and television licences, and some rather obscure C64 titles, this challenge covers a wide variety of games from the 1980s. Some you'll recognise almost immediately, while others might have you scratching your head, desperately trying to remember what the bloody thing was called!\n\nAnd to make things a little tougher, I've deliberately removed the sound from certain gameplay clips. So while some games might give you a familiar SID tune or sound effect to jog your memory, others will have to be identified entirely by what you see on screen. No relying on the music to get you out of trouble every time!\n\n🕹️ HOW TO PLAY\nThere are 50 games to identify, divided into five themed rounds, with just 10 seconds of gameplay for each question. Watch the footage, try to name the game before the answer appears, and award yourself one point for every correct identification. Keep a running total out of 50 and see how well you do!\n\nSome of the earlier questions should be relatively manageable, but things get progressively more demanding as we work towards the final round. Whether you've spent decades playing Commodore 64 games or you're revisiting the machine after all these years, there should be plenty here to test your knowledge and bring back a few memories.\n\nAnd remember, no pausing, no searching for answers, and definitely no awarding yourself a point after the game has been revealed!\n\n💬 HOW MANY DID YOU IDENTIFY OUT OF 50?\n\nShare your honest score in the comments! Which games did you recognise straight away, which ones completely stumped you, and were there any you'd forgotten about until you saw them playing again?\n\nI'd also love to know whether you'd like to see an Amiga edition of this challenge next!\n\nIf you enjoy Commodore 64 games, retro gaming history and a bit of 8-bit nostalgia, give the video a thumbs up and subscribe to the Cheeky Commodore Gamer channel for more C64 and Amiga content.\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n🕹️ VIDEO CHAPTERS\n00:00 🕹️ The 50-Game C64 Identification Challenge\n00:30 👾 Round 1 – Arcade Deep Cuts\n05:12 🧊 Round 2 – Isometric Icons\n10:00 📼 Round 3 – Budget Brain-Burners\n14:44 🎬 Round 4 – Movie & Licence Oddities\n19:30 🏆 Round 5 – Veteran's Vault\n24:13 How Many Did You Get?\n\n#Commodore64 #C64Games #RetroGaming #C64Quiz #CheekyCommodoreGamer",
+      "uploadDate": "2026-10-26T18:27:45Z",
+      "duration": "PT25M5S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/qJZa1zB2zHU/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
