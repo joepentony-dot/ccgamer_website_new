@@ -325,13 +325,14 @@ for(const staleKind of ["defeated", "replaced"]){
   assert.equal(ctx.run.stats.wardsBroken,1);
 }
 
-// Two different sealed Wardens in the same chamber need two separate, valid
-// charges. A JSON-restored host must preserve the first break and permit the
-// second, without retargeting the already vulnerable actor or duplicating XP.
+// Two different sealed Wardens in the same chamber require separate charges.
+// The established inventory owner permits only ONE carried Ward-Break Charge
+// at a time. Spend the first, acquire a genuine second, then restore the host;
+// neither a fabricated qty:2 stack nor a free charge is permitted.
 const dualWarden=soloEncounter(),dual=dualWarden.ctx;
 dual.p1.x=6;dual.p1.y=5;
-assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:2}),true);
-assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),2);
+assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:1}),true);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
 const initialDualTargets=dual.banishmentState(dual.p1);
 assert.equal(initialDualTargets.targets.length,2,JSON.stringify({
   range:initialDualTargets.range,
@@ -345,6 +346,8 @@ assert.equal(initialDualTargets.targets.length,2,JSON.stringify({
 assert.equal(dual.activateBanishment(dual.p1),true,"First charge breaks the nearer Death Stalker");
 assert.equal(dualWarden.death.v142WardBroken,true);
 assert.equal(dualWarden.count.v142WardBroken,undefined);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),0);
+assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:1}),true,"Second charge must be acquired after the first is spent");
 assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
 dual.host=JSON.parse(JSON.stringify(dual.host));
 const restoredDeath=dual.host.enemies.find(e=>e.id===dualWarden.death.id);
