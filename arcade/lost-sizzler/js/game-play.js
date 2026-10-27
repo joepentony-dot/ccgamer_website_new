@@ -806,7 +806,16 @@ function damageGenerator(g,power,p){
 }
 function hitStalker(b){
   const s=host.stalker;if(!s?.awake||s.stunMs>0)return false;if(Math.round(b.x)!==s.x||Math.round(b.y)!==s.y)return false;
-  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",6500);S.sfx("stalker");return true
+  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);
+  // Keep each sealed Count hit blocked, but do not flood the UI/audio with
+  // identical long-lived notices under rapid fire or after a saved clock reset.
+  const now=performance.now(),last=Number(s._ccgSealedWardNoticeAt);
+  if(!Number.isFinite(last)||now<last||now-last>=1600){
+    s._ccgSealedWardNoticeAt=now;
+    showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",6500);
+    S.sfx("stalker");
+  }
+  return true
 }
 function projectilePathClear(b,nx,ny){
   // Closed, locked and still-opening doors are solid to gunfire as well as movement.
