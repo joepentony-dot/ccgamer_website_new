@@ -83,8 +83,15 @@
     }
   }
 
+  function liveWardTarget(target,h){
+    // Inventory payment can be interrupted by a death, room replacement or
+    // restored encounter. A stale target must never consume a finite charge.
+    if(target===h.stalker)return Boolean(target.awake&&!target.permanentlyBanished&&!target.v142WardenDefeated);
+    return Boolean((h.enemies||[]).includes(target)&&target.alive&&recognisedEnemy(target)&&!target.v142WardenDefeated);
+  }
+
   function breakWard(target,player){
-    const r=currentRun(),h=currentHost();if(!target||!player||!r||!h||broken(target)||target.v142WardenDefeated)return false;
+    const r=currentRun(),h=currentHost();if(!target||!player||!r||!h||!liveWardTarget(target,h)||broken(target)||target.v142WardenDefeated)return false;
     const hp=wardHp(target,player),name=label(target);
     target.v142WardBroken=true;target.v142WardState="broken";target.v142WardBrokenAt=performance.now();target.v142WardBrokenFloor=floorNo();
     target.maxHp=hp;target.hp=hp;target.armor=0;target.maxArmor=0;target.stunMs=Math.max(Number(target.stunMs)||0,950);target.hitStunMs=Math.max(Number(target.hitStunMs)||0,950);target.flash=280;target.hpBarMs=5000;
