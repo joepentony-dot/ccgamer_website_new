@@ -302,6 +302,54 @@ for(const issue of ["unexpected item","exception"]){
   ctx.PGR.inventoryRemove=remove;
 }
 
+// R143 P0: a paid charge must revalidate the exact live actor, not a stale
+// pre-payment reference after a death or restored host roster replacement.
+for(const staleKind of ["defeated", "replaced"]){
+  const fixture=wardPaymentFixture(),ctx=fixture.ctx,remove=ctx.PGR.inventoryRemove;
+  const before=JSON.stringify(ctx.p1.inventory);
+  ctx.PGR.inventoryRemove=(player,index)=>{
+    const paid=remove(player,index,1);
+    if(staleKind==="defeated")fixture.death.alive=false;
+    else ctx.host.enemies=ctx.host.enemies.filter(e=>e!==fixture.death);
+    return paid;
+  };
+  assert.equal(ctx.activateBanishment(ctx.p1),false,`${staleKind}: stale Warden cannot spend a charge`);
+  assert.equal(JSON.stringify(ctx.p1.inventory),before,`${staleKind}: failed ward break refunds the exact charge`);
+  assert.equal(fixture.death.v142WardBroken,undefined,`${staleKind}: stale Warden remains unchanged`);
+  assert.equal(ctx.run.stats.wardsBroken||0,0);
+  ctx.PGR.inventoryRemove=remove;
+  if(staleKind==="defeated")fixture.death.alive=true;
+  else ctx.host.enemies.unshift(fixture.death);
+  assert.equal(ctx.activateBanishment(ctx.p1),true,`${staleKind}: valid live retry succeeds`);
+  assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
+  assert.equal(ctx.run.stats.wardsBroken,1);
+}
+
+// Two different sealed Wardens in the same chamber need two separate, valid
+// charges. A JSON-restored host must preserve the first break and permit the
+// second, without retargeting the already vulnerable actor or duplicating XP.
+const dualWarden=soloEncounter(),dual=dualWarden.ctx;
+dual.p1.x=6;dual.p1.y=5;
+assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:2}),true);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),2);
+assert.equal(dual.banishmentState(dual.p1).targets.length,2);
+assert.equal(dual.activateBanishment(dual.p1),true,"First charge breaks the nearer Death Stalker");
+assert.equal(dualWarden.death.v142WardBroken,true);
+assert.equal(dualWarden.count.v142WardBroken,undefined);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
+dual.host=JSON.parse(JSON.stringify(dual.host));
+const restoredDeath=dual.host.enemies.find(e=>e.id===dualWarden.death.id);
+const restoredCount=dual.host.stalker;
+assert.equal(dual.banishmentState(dual.p1).targets.length,1,"Restored broken Stalker cannot steal the second target");
+assert.equal(dual.banishmentState(dual.p1).nearest,restoredCount);
+assert.equal(dual.activateBanishment(dual.p1),true,"Second charge breaks the separate Count ward");
+assert.equal(restoredCount.v142WardBroken,true);
+assert.equal(restoredDeath.v142WardBroken,true);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),0);
+assert.equal(dual.run.stats.wardsBroken,2);
+assert.equal(dual.activateBanishment(dual.p1),false,"No phantom third charge after two valid payments");
+assert.equal(dual.run.stats.wardsBroken,2);
+
 const exactPayment=wardPaymentFixture(),paid=exactPayment.ctx;
 const paidInitial=JSON.stringify(paid.p1.inventory);
 assert.equal(paid.activateBanishment(paid.p1),true,"Successful charge breaks one actual sealed ward");
