@@ -106,6 +106,46 @@ function soloEncounter(){
   return{ctx,death,guardian,count,tick,advance:ms=>{now+=ms;tick()}};
 }
 
+// P0 owner Floor 5 feedback pressure: rapid ordinary fire against two
+// distinct sealed supernatural classes must not queue a long-lived warning,
+// floater and audio event for every immune projectile. Combat and ward state
+// are unchanged, and a restored monotonic-clock reset must allow new advice.
+const feedback=soloEncounter(),f=feedback.ctx,wardToasts=[],wardFloaters=[],wardSounds=[];
+f.showToast=(...args)=>wardToasts.push(args);
+f.floatText=(...args)=>wardFloaters.push(args);
+f.S.sfx=name=>wardSounds.push(name);
+const sealedHp=feedback.death.hp;
+for(let i=0;i<80;i++)f.damageEnemy(feedback.death,9,"energy",f.p1);
+assert.equal(feedback.death.hp,sealedHp,"Immune Death Stalker must take no damage under sustained fire");
+assert.equal(feedback.death.alive,true);
+assert.equal(feedback.death.v142WardBroken,undefined);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,1,"80 sealed Stalker impacts yield one advisory toast");
+assert.equal(wardFloaters.filter(row=>row[2]==="KNOCKED BACK").length,1,"80 sealed Stalker impacts yield one advisory floater");
+assert.equal(wardSounds.filter(name=>name==="stalker").length,1,"80 sealed Stalker impacts yield one advisory sound");
+assert.equal(f.run.stats.kills,0);
+assert.equal(f.score,0);
+feedback.advance(1600);
+f.damageEnemy(feedback.death,9,"energy",f.p1);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,2,"Advisory resumes after the real 1600ms cooldown");
+feedback.death._ccgSealedWardNoticeAt=99999999;
+f.damageEnemy(feedback.death,9,"energy",f.p1);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,3,"A restored future timestamp cannot suppress advice indefinitely");
+const another={id:"second-sealed-stalker",x:7,y:5,kind:"ghost",hp:10,maxHp:10,alive:true,deathStalker:true,voidStalker:true};
+f.host.enemies.push(another);
+f.damageEnemy(another,9,"energy",f.p1);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,4,"Different sealed actor retains independent first-hit guidance");
+const countBullet={x:feedback.count.x,y:feedback.count.y,power:1,owner:"p1"};
+const countNoticeCount=()=>wardToasts.filter(row=>String(row[0]).includes("CANNOT BE KNOCKED BACK")).length;
+for(let i=0;i<60;i++){feedback.count.stunMs=0;assert.equal(f.hitStalker(countBullet),true)}
+assert.equal(countNoticeCount(),1,"60 sealed Count impacts yield one advisory toast");
+assert.equal(wardSounds.filter(name=>name==="stalker").length,5,"Sealed Count guidance is audio-throttled separately");
+assert.equal(feedback.count.v142WardBroken,undefined);
+assert.equal(feedback.count.hp,feedback.count.maxHp);
+feedback.advance(1600);
+feedback.count.stunMs=0;f.hitStalker(countBullet);
+assert.equal(countNoticeCount(),2,"Sealed Count guidance resumes after cooldown");
+assert.equal(f.run.stats.kills,0,"Immune-hit feedback never manufactures defeat or XP");
+
 const pair=soloEncounter(),c=pair.ctx;
 c.damageEnemy(pair.death,999,"energy",c.p1);
 assert.equal(pair.death.hp,10,"Sealed Death Stalker must retain ordinary-fire immunity");
