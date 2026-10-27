@@ -332,7 +332,16 @@ const dualWarden=soloEncounter(),dual=dualWarden.ctx;
 dual.p1.x=6;dual.p1.y=5;
 assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:2}),true);
 assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),2);
-assert.equal(dual.banishmentState(dual.p1).targets.length,2);
+const initialDualTargets=dual.banishmentState(dual.p1);
+assert.equal(initialDualTargets.targets.length,2,JSON.stringify({
+  range:initialDualTargets.range,
+  targetIds:initialDualTargets.targets.map(target=>target.id),
+  countAwake:dual.host.stalker.awake,
+  countPosition:{x:dual.host.stalker.x,y:dual.host.stalker.y},
+  deathPosition:{x:dualWarden.death.x,y:dualWarden.death.y},
+  countLOS:dual.A.lineOfSight(dual.world.map,dual.p1,dual.host.stalker,initialDualTargets.range,dual.host),
+  deathLOS:dual.A.lineOfSight(dual.world.map,dual.p1,dualWarden.death,initialDualTargets.range,dual.host)
+}));
 assert.equal(dual.activateBanishment(dual.p1),true,"First charge breaks the nearer Death Stalker");
 assert.equal(dualWarden.death.v142WardBroken,true);
 assert.equal(dualWarden.count.v142WardBroken,undefined);
