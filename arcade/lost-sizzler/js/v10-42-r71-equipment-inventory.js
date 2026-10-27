@@ -107,7 +107,7 @@
         </div>
         <div class="r71-equip-card r71-equip-armour"><span class="r71-slot-label">BODY ARMOUR</span><div class="r71-slot-icon">${icon("armour",armourName(tier))}</div><b>${armourName(tier)}</b><small>ARMOUR ${armour}/12</small></div>
         <div class="r71-equip-card r71-equip-sigil"><span class="r71-slot-label">SIGIL</span><div class="r71-slot-rune">✦</div><b>${escHtml(powersText)}</b><small>ESSENCE ${Math.max(0,Number(player.banishmentEssence||0))}/${essenceCost}</small></div>
-        <div class="r71-equip-card r71-equip-utility" title="${escHtml(sackHelp)}"><span class="r71-slot-label">ACTIVE UTILITY</span><div class="r71-slot-icon">${icon("torch",utility)}</div><b>${escHtml(utility)}</b><small data-r71-magic-sacks="${sackTier}" aria-label="${escHtml(sackHelp)}">MAGIC SACKS ${sackTier}/3 · POTIONS ${potionStack}/STACK<br>MAP ${explore}% · TORCH ${torchStack}/STACK</small></div>
+        <div class="r71-equip-card r71-equip-utility" title="${escHtml(sackHelp)}"><span class="r71-slot-label">ACTIVE UTILITY</span><div class="r71-slot-icon">${icon("torch",utility)}</div><b>${escHtml(utility)}</b><small data-r71-magic-sacks="${sackTier}" aria-label="${escHtml(sackHelp)}">MAGIC SACKS ${sackTier}/3 · MAP ${explore}%</small></div>
       </div>
       <div class="r71-stat-strip">${statHtml}</div>
       <div class="r71-relic-strip"><span class="r71-strip-title">EQUIPPED RELICS</span><div class="r71-relics">${relicHtml}</div></div>

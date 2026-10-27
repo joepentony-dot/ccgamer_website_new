@@ -60,8 +60,9 @@ async function audit(viewport,label){
     assert.equal(sacks.tier,tier,`${label} sack tier ${tier} must be canonical`);
     assert.equal(sacks.attribute,String(tier),`${label} tier ${tier} must be exposed in live DOM`);
     assert.ok(sacks.text.includes(`MAGIC SACKS ${tier}/3`),`${label} live inventory must show tier ${tier}`);
-    assert.ok(sacks.text.includes(`POTIONS ${sacks.potionCap}/STACK`),`${label} live potion stack must reflect tier ${tier}`);
-    assert.ok(sacks.text.includes(`TORCH ${sacks.torchCap}/STACK`),`${label} live torch stack must reflect tier ${tier}`);
+    assert.ok(sacks.text.includes("MAP "),`${label} live utility must retain visible map progress`);
+    assert.ok(sacks.aria.includes(`Potions ${sacks.potionCap} per stack`),`${label} accessible potion stack must reflect tier ${tier}`);
+    assert.ok(sacks.aria.includes(`Torches ${sacks.torchCap}`),`${label} accessible torch stack must reflect tier ${tier}`);
     assert.ok(sacks.aria.includes("Ward-Break Charges remain limited to one carried charge"),`${label} must not misrepresent Ward-Break charge stacking`);
   }
   await page.evaluate(()=>{p1.magicSacks=0;renderInventoryPanel()});

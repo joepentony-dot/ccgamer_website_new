@@ -95,8 +95,9 @@ for(const tier of [0,1,2,3]){
   renderInventory();
   assert.ok(loadout.innerHTML.includes(`data-r71-magic-sacks="${tier}"`),`tier ${tier} must render its authoritative numeric readout`);
   assert.ok(loadout.innerHTML.includes(`MAGIC SACKS ${tier}/3`),`tier ${tier} must show 0–3 owned sacks`);
-  assert.ok(loadout.innerHTML.includes(`POTIONS ${3+tier}/STACK`),`tier ${tier} must show the actual potion stack limit`);
-  assert.ok(loadout.innerHTML.includes(`TORCH ${1+tier}/STACK`),`tier ${tier} must show the actual torch stack limit`);
+  assert.ok(loadout.innerHTML.includes(`Potions ${3+tier} per stack`),`tier ${tier} must expose the actual potion stack limit in its accessible description`);
+  assert.ok(loadout.innerHTML.includes(`Torches ${1+tier}`),`tier ${tier} must expose the actual torch stack limit in its accessible description`);
+  assert.ok(loadout.innerHTML.includes("MAP 0%"),"map exploration must remain visible in the compact one-line utility card");
   assert.ok(loadout.innerHTML.includes(`Teleport Spells ${3+tier}`),`tier ${tier} tooltip must include teleport capacity`);
   assert.ok(loadout.innerHTML.includes("Ward-Break Charges remain limited to one carried charge"),"sack tooltip must not falsely promise extra Ward-Break charges");
   assert.equal(JSON.stringify(gameContext.p1.inventory),beforeInventory,"rendering must not add, remove or mutate carried items");
