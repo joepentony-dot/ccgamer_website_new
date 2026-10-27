@@ -205,11 +205,23 @@ function openChest(p,chest){
 }
 function tryChest(p,x,y){
   const c=W.chestAt(host,x,y);
-  if(!c)return true;
-  // A rare creature may be standing on a chest in an older save or mid-frame.
-  // Resolve the visible enemy encounter first instead of issuing a key warning
-  // for a chest completely hidden under its sprite.
-  if((host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))return true;
+  if(!c||!p)return true;
+  // The renderer paints chests before live actors and full-tile objects.
+  // Old saves and reward drops can put a locked chest beneath one of them:
+  // its key warning must not fire until that chest can actually be seen.
+  const at=q=>q&&q.x===x&&q.y===y;
+  const covered=(host.enemies||[]).some(e=>e?.alive&&at(e))||
+    (host.stalker?.awake&&!host.stalker.permanentlyBanished&&at(host.stalker))||
+    (host.guardian?.alive!==false&&at(host.guardian))||
+    (host.blockingDecor||[]).some(d=>at(d)&&!d.destroyed&&Number(d.hp??1)>0)||
+    (host.deathCaches||[]).some(d=>d?.active&&at(d))||
+    (host.shops||[]).some(s=>s?.active&&at(s))||
+    [host.trader,host.startShop,host.rescue].some(s=>s?.active!==false&&at(s));
+  if(covered)return true;
+  // Movement is always one tile at a time, including diagonal/dash steps.
+  // Do not interact with a distant or camera-clipped chest via stale input.
+  if(Math.max(Math.abs(p.x-x),Math.abs(p.y-y))>1||
+     (typeof tileInRenderView==="function"&&!tileInRenderView(x,y,2)))return true;
   return openChest(p,c)
 }
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.playerWalkable(world.map,p.x+dx,p.y,host)&&W.playerWalkable(world.map,p.x,p.y+dy,host)}
