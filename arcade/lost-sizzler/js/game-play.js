@@ -1028,8 +1028,34 @@ function generatorIlluminated(g){
   for(const e of host.enemies||[])if(e.alive&&e.follower&&W.roomAt(world,e.x,e.y)===roomId&&Math.hypot(e.x-g.x,e.y-g.y)<=lr+.2&&A.lineOfSight(world.map,e,g,lr,host))return true;
   return false;
 }
+// Generator kills are already recorded in run stats and the independent
+// defeat-visual queue. Keeping every dead reinforcement in host.enemies forever
+// makes a long Floor 5 generator fight scan thousands of inert actors per frame
+// (AI, projectile collision and rendering), even though the living spawn cap
+// is respected. Keep the most recent corpses for transient presentation and
+// preserve every live, authored, named and objective actor.
+function pruneDeadGeneratorReinforcements(){
+  const enemies=host?.enemies;
+  if(!Array.isArray(enemies)||enemies.length<=96)return 0;
+  const stale=[];
+  for(let i=0;i<enemies.length;i++){
+    const enemy=enemies[i];
+    if(enemy?.generatorId&&enemy.alive===false&&!enemy.follower&&!enemy.guardian&&
+      !enemy.deathStalker&&!enemy.voidStalker&&!enemy.bridgeThief&&!enemy.timedHunter)
+      stale.push(i);
+  }
+  const excess=stale.length-24;
+  if(excess<=0)return 0;
+  for(let i=excess-1;i>=0;i--){
+    const index=stale[i],enemy=enemies[index];
+    if(enemy?.id&&typeof enemyVisuals!=="undefined")enemyVisuals.delete(enemy.id);
+    enemies.splice(index,1);
+  }
+  host.revision=(Number(host.revision)||0)+1;
+  return excess;
+}
 function updateGenerators(dt){
-  
+  pruneDeadGeneratorReinforcements();
   for(const g of host.generators||[])if(g.alive){
     const lit=generatorIlluminated(g);if(!lit){g.powered=false;continue}if(!g.powered){g.powered=true;g.spawnCooldown=Math.max(g.spawnCooldown||0,1700);if(localPlayers().some(p=>W.sameRoom(world,p,g)))S.sfx("generator")}
     g.spawnCooldown-=dt;const rate=run.modifier?.id==="RESTLESS_DUNGEON"?.65:1;if(g.spawnCooldown>0)continue;
