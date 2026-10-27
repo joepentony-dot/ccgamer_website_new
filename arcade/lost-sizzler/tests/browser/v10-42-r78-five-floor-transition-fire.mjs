@@ -68,12 +68,15 @@ async function probeFloorOneKeyboardTraversal(page){
   });
   assert.ok(!fixture.error,JSON.stringify(fixture));
   const before=await snapshot(page);
-  await page.keyboard.down(fixture.key);
-  try{
-    await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
-  }finally{
-    await page.keyboard.up(fixture.key);
-  }
+  // A held Arrow key intentionally repeats movement at the normal game cadence.
+  // Send one bounded real keyboard press rather than holding the key throughout
+  // an asynchronous Playwright poll (which can move the hero beyond the target).
+  const pressMs=65;
+  const cadence=await page.evaluate(()=>Number(C.player.moveDelay)*(Number(p1.moveMultiplier)||1));
+  assert.ok(Number.isFinite(cadence)&&cadence>pressMs+20,`Floor 1 single-step keyboard press must remain shorter than movement repeat cadence (${cadence} ms)`);
+  await page.waitForFunction(()=>Number(move1||0)<=0&&Number(p1?.hitStunMs||0)<=0,null,{timeout:3000,polling:16});
+  await page.keyboard.press(fixture.key,{delay:pressMs});
+  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
   const after=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),mode:String(mode),active:String(document.body.dataset.runActive)}));
   assert.deepEqual({x:after.x,y:after.y},fixture.target,"Physical keyboard input must move to the verified adjacent Floor 1 cell");
   assert.equal(after.mode,"playing");
