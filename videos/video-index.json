@@ -1,13 +1,27 @@
 {
   "version": 1,
   "counts": {
-    "total": 704,
+    "total": 705,
     "gameVideos": 666,
-    "retroVideos": 38,
+    "retroVideos": 39,
     "c64GameVideos": 563,
     "amigaGameVideos": 103
   },
   "items": [
+    {
+      "id": "qJZa1zB2zHU",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "50 Commodore 64 Games – Can You Identify Them? | C64 Challenge",
+      "description": "Can you identify 50 Commodore 64 games from ten-second gameplay clips across five themed rounds? Some clips have no sound to make the challenge tougher.",
+      "url": "/retro-specials/50-commodore-64-games-can-you-identify-them/",
+      "thumbnail": "https://i.ytimg.com/vi/qJZa1zB2zHU/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
     {
       "id": "A-dBoNnuNzg",
       "kind": "retro",
