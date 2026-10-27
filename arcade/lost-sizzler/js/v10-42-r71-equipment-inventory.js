@@ -77,6 +77,15 @@
     const cap=runState?PGR.floorLevelCap(runState):player.level||1,atCap=(player.level||1)>=cap;
     let explore=0;try{explore=Math.round(PGR.roomCompletion(explored.get(player.id)||new Set(),worldState)*100)}catch(_){}
     const essenceCost=Math.max(1,Number(RPG?.essenceCost?.(player)||player.banishmentEssenceCost||3));
+    // R145: Magic Sacks are persistent run-wide capacity upgrades, not
+    // ordinary bag items. Always read the same progression authority that
+    // owns pickup limits, including after Continue and death-cache recovery.
+    const sackTier=PGR.magicSackTier(player);
+    const potionStack=PGR.stackLimit({kind:"potion"},player);
+    const torchStack=PGR.stackLimit({kind:"torch"},player);
+    const teleportStack=PGR.stackLimit({kind:"teleport"},player);
+    const mapStack=PGR.stackLimit({kind:"mapReveal"},player);
+    const sackHelp=`Magic Sacks ${sackTier} of 3. Potions ${potionStack} per stack; Teleport Spells ${teleportStack}; Torches ${torchStack}; Map Reveals ${mapStack}. Ward-Break Charges remain limited to one carried charge.`;
     const statHtml=rpgStats.map(row=>`<div class="r71-stat"><span>${escHtml(row.short||row.name)}</span><b>${statValue(player,row.id)}</b></div>`).join("");
     const relicHtml=(relicRows.length?relicRows:[{name:"NO RELICS YET",desc:"Defeat Key-domain guardians to awaken passive relics."}]).map(row=>`<div class="r71-relic" title="${escHtml(row.desc||"")}"><i>◆</i><span>${escHtml(row.name)}</span></div>`).join("");
     const utility=player.torchMs>0?`TORCH ${Math.ceil(Number(player.torchMs)/1000)}s`:"NO ACTIVE TORCH";
@@ -98,7 +107,7 @@
         </div>
         <div class="r71-equip-card r71-equip-armour"><span class="r71-slot-label">BODY ARMOUR</span><div class="r71-slot-icon">${icon("armour",armourName(tier))}</div><b>${armourName(tier)}</b><small>ARMOUR ${armour}/12</small></div>
         <div class="r71-equip-card r71-equip-sigil"><span class="r71-slot-label">SIGIL</span><div class="r71-slot-rune">✦</div><b>${escHtml(powersText)}</b><small>ESSENCE ${Math.max(0,Number(player.banishmentEssence||0))}/${essenceCost}</small></div>
-        <div class="r71-equip-card r71-equip-utility"><span class="r71-slot-label">ACTIVE UTILITY</span><div class="r71-slot-icon">${icon("torch",utility)}</div><b>${escHtml(utility)}</b><small>MAP ${explore}%</small></div>
+        <div class="r71-equip-card r71-equip-utility" title="${escHtml(sackHelp)}"><span class="r71-slot-label">ACTIVE UTILITY</span><div class="r71-slot-icon">${icon("torch",utility)}</div><b>${escHtml(utility)}</b><small data-r71-magic-sacks="${sackTier}" aria-label="${escHtml(sackHelp)}">MAGIC SACKS ${sackTier}/3 · POTIONS ${potionStack}/STACK<br>MAP ${explore}% · TORCH ${torchStack}/STACK</small></div>
       </div>
       <div class="r71-stat-strip">${statHtml}</div>
       <div class="r71-relic-strip"><span class="r71-strip-title">EQUIPPED RELICS</span><div class="r71-relics">${relicHtml}</div></div>
