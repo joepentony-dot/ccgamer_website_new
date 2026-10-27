@@ -95,7 +95,7 @@ const clipboardVictory=exerciseFinale({shareMode:"clipboard"});
 await clipboardVictory.nodes.get("v108-end-share").events.get("click")();
 assert.equal(clipboardVictory.shares.length,0);
 assert.equal(clipboardVictory.copied.length,1,"desktop clipboard fallback must copy the full result once");
-assert.match(clipboardVictory.copied[0],/1,234 points[\\s\\S]*cheekycommodoregamer\\.co\\.uk/);
+assert.match(clipboardVictory.copied[0],/1,234 points[\s\S]*cheekycommodoregamer\.co\.uk/);
 assert.equal(clipboardVictory.toasts[0][0],"COMPLETION COPIED");
 const plainVictory=exerciseFinale({shareMode:"none"});
 await plainVictory.nodes.get("v108-end-share").events.get("click")();
