@@ -469,7 +469,7 @@
 
 /* Opt-in retro watch facade. Keeps the player area reserved without loading
    YouTube until visitors request playback. Other watch pages are unchanged. */
-.retro-video-page__hero-media--player > iframe {
+.retro-video-page__hero-media--player > iframe[data-ccg-youtube-src] {
   position: absolute;
   inset: 0;
   display: block;
