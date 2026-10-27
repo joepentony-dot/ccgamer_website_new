@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 
 const root=new URL("../",import.meta.url);
 const html=fs.readFileSync(new URL("index.html",root),"utf8");
@@ -53,5 +54,61 @@ assert.ok(!render.includes("strokeRect(cx-7,cy-17,14,27)"));
 assert.ok(!render.includes("fillRect(cx-5,cy-3,10,5)"));
 assert.ok(render.includes("fillRect(cx-4,cy-2,8,2)"));
 assert.ok(render.includes("fillRect(cx-4,cy-12,8,2)"));
+
+// R145: execute the real progression authority and R71 inventory renderer.
+// Magic Sacks are run-wide upgrades, not carried inventory item counts.
+const progressionSource=fs.readFileSync(new URL("js/progression.js",root),"utf8");
+const progressWindow={CCG_CONFIG:{loot:{rarities:["COMMON","UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]},player:{inventorySlots:12,startingInventorySlots:6}}};
+vm.runInNewContext(progressionSource,{window:progressWindow,console,Math,Date},{filename:"progression.js"});
+const actualPGR=progressWindow.CCGProgression;
+assert.equal(typeof actualPGR.magicSackTier,"function");
+assert.equal(typeof actualPGR.stackLimit,"function");
+actualPGR.floorLevelCap=()=>10;
+actualPGR.roomCompletion=()=>0;
+actualPGR.xpNeed=()=>10;
+
+const loadout={innerHTML:""},objective={innerHTML:""};
+const inventoryList={setAttribute(){},querySelectorAll(){return[]}};
+const layout={appendChild(){}};
+const heading={textContent:""},notice={textContent:"",nextSibling:null};
+const panel={
+  classList:{add(){}},
+  querySelector(selector){return selector===".mobile-panel-head h2"?heading:selector===".r71-inventory-layout"?layout:null},
+  insertBefore(){}
+};
+const fakeDocument={
+  readyState:"loading",
+  addEventListener(){},
+  querySelector(selector){return selector==="#inventory-panel .inventory-panel"?panel:null},
+  getElementById(id){return ({"inventory-mobile-notice":notice,"inventory-loadout":loadout,"inventory-objective":objective,"inventory-list":inventoryList})[id]||null}
+};
+const player={id:"p1",level:1,xp:0,armor:0,magicSacks:0,inventory:[{kind:"potion",qty:1}],relics:[],torchMs:0};
+const gameWindow={CCGProgression:actualPGR,CCGLostSizzlerV142ProceduralOverhaul:{rpgStats:[],relics:[]}};
+const gameContext={window:gameWindow,document:fakeDocument,p1:player,run:{floor:1},host:{keysCollected:0},world:{rooms:[]},C:{keyTarget:3},SYS:{objectiveText:()=>"REACH THE EXIT"},explored:new Map([["p1",new Set()]]),renderInventoryPanel(){}};
+vm.createContext(gameContext);
+vm.runInContext(moduleSource,gameContext,{filename:"v10-42-r71-equipment-inventory.js"});
+const renderInventory=gameWindow.CCGLostSizzlerV142R71EquipmentInventory.render;
+assert.equal(typeof renderInventory,"function");
+for(const tier of [0,1,2,3]){
+  gameContext.p1.magicSacks=tier;
+  const beforeInventory=JSON.stringify(gameContext.p1.inventory);
+  renderInventory();
+  assert.ok(loadout.innerHTML.includes(`data-r71-magic-sacks="${tier}"`),`tier ${tier} must render its authoritative numeric readout`);
+  assert.ok(loadout.innerHTML.includes(`MAGIC SACKS ${tier}/3`),`tier ${tier} must show 0–3 owned sacks`);
+  assert.ok(loadout.innerHTML.includes(`POTIONS ${3+tier}/STACK`),`tier ${tier} must show the actual potion stack limit`);
+  assert.ok(loadout.innerHTML.includes(`TORCH ${1+tier}/STACK`),`tier ${tier} must show the actual torch stack limit`);
+  assert.ok(loadout.innerHTML.includes(`Teleport Spells ${3+tier}`),`tier ${tier} tooltip must include teleport capacity`);
+  assert.ok(loadout.innerHTML.includes("Ward-Break Charges remain limited to one carried charge"),"sack tooltip must not falsely promise extra Ward-Break charges");
+  assert.equal(JSON.stringify(gameContext.p1.inventory),beforeInventory,"rendering must not add, remove or mutate carried items");
+}
+gameContext.p1=JSON.parse(JSON.stringify({...gameContext.p1,magicSacks:2}));
+renderInventory();
+assert.ok(loadout.innerHTML.includes("MAGIC SACKS 2/3"),"JSON-restored run state must render its owned sack tier");
+gameContext.p1.magicSacks=99;
+renderInventory();
+assert.ok(loadout.innerHTML.includes("MAGIC SACKS 3/3"),"legacy over-cap values must be displayed at the canonical maximum");
+gameContext.p1.magicSacks=-4;
+renderInventory();
+assert.ok(loadout.innerHTML.includes("MAGIC SACKS 0/3"),"invalid negative save values must not appear as owned sacks");
 
 console.log("PASS V10.42 R71 equipment inventory contract");
