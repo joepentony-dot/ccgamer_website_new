@@ -41,6 +41,31 @@ async function audit(viewport,label){
   await page.waitForFunction(()=>Boolean(document.getElementById("r80-wearable-strip")));
   await page.waitForTimeout(100);
 
+  // R145: the actual live TAB inventory must derive the sack count and
+  // resulting stack capacities from the same player state as pickup/Continue.
+  for(const tier of [0,1,2,3]){
+    const sacks=await page.evaluate(value=>{
+      p1.magicSacks=value;
+      renderInventoryPanel();
+      const readout=document.querySelector("#inventory-loadout [data-r71-magic-sacks]");
+      return{
+        tier:window.CCGProgression.magicSackTier(p1),
+        text:readout?.textContent||"",
+        aria:readout?.getAttribute("aria-label")||"",
+        attribute:readout?.getAttribute("data-r71-magic-sacks"),
+        potionCap:window.CCGProgression.stackLimit({kind:"potion"},p1),
+        torchCap:window.CCGProgression.stackLimit({kind:"torch"},p1)
+      };
+    },tier);
+    assert.equal(sacks.tier,tier,`${label} sack tier ${tier} must be canonical`);
+    assert.equal(sacks.attribute,String(tier),`${label} tier ${tier} must be exposed in live DOM`);
+    assert.ok(sacks.text.includes(`MAGIC SACKS ${tier}/3`),`${label} live inventory must show tier ${tier}`);
+    assert.ok(sacks.text.includes(`POTIONS ${sacks.potionCap}/STACK`),`${label} live potion stack must reflect tier ${tier}`);
+    assert.ok(sacks.text.includes(`TORCH ${sacks.torchCap}/STACK`),`${label} live torch stack must reflect tier ${tier}`);
+    assert.ok(sacks.aria.includes("Ward-Break Charges remain limited to one carried charge"),`${label} must not misrepresent Ward-Break charge stacking`);
+  }
+  await page.evaluate(()=>{p1.magicSacks=0;renderInventoryPanel()});
+
   const layout=await page.evaluate(()=>{
     const rect=selector=>{
       const node=document.querySelector(selector),r=node?.getBoundingClientRect();
