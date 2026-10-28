@@ -46,6 +46,10 @@ CARDS = "".join(
 HTML = (
     '<!doctype html><html data-ccg-page="single-game" class="ccg-has-floating-nav"><head><meta charset="utf-8"><style>' + CSS +
     '</style></head><body class="ccg-page--single-game"><main class="game-shell">'
+    '<section class="game-hero" aria-label="Game overview"><h1>Test game</h1></section>'
+    '<nav class="ccg-game-section-nav" aria-label="Explore game sections">'
+    '<div class="ccg-game-section-nav__links"><a class="ccg-game-section-nav__link" href="#support-cta">Video</a>'
+    '<a class="ccg-game-section-nav__link" href="#support-cta">Credits</a></div></nav>'
     '<section class="ccg-behind-pixels-inline">'
     '<h2 class="ccg-behind-pixels-inline__title">Game Credits</h2>'
     '<dl class="ccg-behind-pixels-inline__list">' + CREDITS + '</dl></section>'
@@ -74,6 +78,25 @@ def run(browser, width, height):
     try:
         page.route("**/*", lambda route: route.abort())
         page.set_content(HTML, wait_until="domcontentloaded")
+        # Browser regression for the game-specific Explore menu. Unlike the
+        # intentionally floating global controls, this menu must scroll away.
+        explore = page.locator(".ccg-game-section-nav")
+        assert explore.count() == 1, f"{width}: missing single-game Explore menu"
+        assert explore.evaluate("(n)=>getComputedStyle(n).position") == "static", (
+            f"{width}: Explore menu must participate in normal page flow"
+        )
+        assert explore.bounding_box()["y"] < height, f"{width}: Explore not initially visible"
+        page.mouse.move(width // 2, min(height - 20, 450))
+        page.mouse.wheel(0, 900)
+        page.wait_for_function("window.scrollY > 500", timeout=5000)
+        assert explore.evaluate("(n)=>n.getBoundingClientRect().bottom") < 0, (
+            f"{width}: Explore menu follows viewport after physical wheel scroll"
+        )
+        page.mouse.wheel(0, -900)
+        page.wait_for_function("window.scrollY < 100", timeout=5000)
+        assert explore.evaluate("(n)=>n.getBoundingClientRect().bottom") > 0, (
+            f"{width}: Explore menu did not return with normal document scroll"
+        )
         outcome = page.evaluate("""() => {
           const pairs=[...document.querySelectorAll('.ccg-behind-pixels-inline__item')];
           const boxes=pairs.map(item=>{
