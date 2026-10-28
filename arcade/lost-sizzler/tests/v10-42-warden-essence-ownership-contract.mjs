@@ -371,11 +371,11 @@ assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:1}),true,"Seco
 assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
 dual.host=JSON.parse(JSON.stringify(dual.host));
 const restoredDeath=dual.host.enemies.find(e=>e.id===dualWarden.death.id);
-const restoredCount=dual.host.stalker;
+const restoredDualCount=dual.host.stalker;
 assert.equal(dual.banishmentState(dual.p1).targets.length,1,"Restored broken Stalker cannot steal the second target");
-assert.equal(dual.banishmentState(dual.p1).nearest,restoredCount);
+assert.equal(dual.banishmentState(dual.p1).nearest,restoredDualCount);
 assert.equal(dual.activateBanishment(dual.p1),true,"Second charge breaks the separate Count ward");
-assert.equal(restoredCount.v142WardBroken,true);
+assert.equal(restoredDualCount.v142WardBroken,true);
 assert.equal(restoredDeath.v142WardBroken,true);
 assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),0);
 assert.equal(dual.run.stats.wardsBroken,2);
