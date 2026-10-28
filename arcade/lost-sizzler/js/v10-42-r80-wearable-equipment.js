@@ -352,7 +352,19 @@
   }
   if(typeof renderInventoryPanel==="function"){
     const baseRender=renderInventoryPanel;
-    renderInventoryPanel=function r80RenderInventory(...args){const result=baseRender.apply(this,args);renderLoadout();decorateInventory();return result};
+    renderInventoryPanel=function r80RenderInventory(...args){
+      // Base R71 rebuilds the loadout subtree. Preserve keyboard focus on
+      // the same equipment slot after an Enter-driven equip/swap/unequip.
+      const focusedSlot=document.activeElement?.closest?.("#r80-wearable-strip [data-r80-slot]")?.dataset.r80Slot||null;
+      const result=baseRender.apply(this,args);
+      renderLoadout();decorateInventory();
+      if(focusedSlot){
+        const next=document.querySelector(`#r80-wearable-strip [data-r80-slot="${focusedSlot}"] button`)
+          ||document.getElementById("inventory-close-top");
+        try{next?.focus({preventScroll:true})}catch(_){}
+      }
+      return result
+    };
     renderInventoryPanel.__ccgV142R80Wearables=true;renderInventoryPanel.__ccgOriginal=baseRender;
   }
   /* R93: the wrapped renderInventoryPanel call above is the only wearable
