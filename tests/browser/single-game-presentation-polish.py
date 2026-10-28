@@ -86,16 +86,19 @@ def run(browser, width, height):
             f"{width}: Explore menu must participate in normal page flow"
         )
         assert explore.bounding_box()["y"] < height, f"{width}: Explore not initially visible"
-        page.mouse.move(width // 2, min(height - 20, 450))
+        # The single-game shell permits either body or document scrolling;
+        # viewport geometry, not window.scrollY, is the actual user contract.
+        # Wheel over the hero, not the horizontally scrolling related carousel.
+        page.mouse.move(width // 2, 80)
         page.mouse.wheel(0, 900)
-        page.wait_for_function("window.scrollY > 500", timeout=5000)
-        assert explore.evaluate("(n)=>n.getBoundingClientRect().bottom") < 0, (
-            f"{width}: Explore menu follows viewport after physical wheel scroll"
+        page.wait_for_function(
+            "() => document.querySelector('.ccg-game-section-nav').getBoundingClientRect().bottom < 0",
+            timeout=5000,
         )
         page.mouse.wheel(0, -900)
-        page.wait_for_function("window.scrollY < 100", timeout=5000)
-        assert explore.evaluate("(n)=>n.getBoundingClientRect().bottom") > 0, (
-            f"{width}: Explore menu did not return with normal document scroll"
+        page.wait_for_function(
+            "() => document.querySelector('.ccg-game-section-nav').getBoundingClientRect().bottom > 0",
+            timeout=5000,
         )
         outcome = page.evaluate("""() => {
           const pairs=[...document.querySelectorAll('.ccg-behind-pixels-inline__item')];
