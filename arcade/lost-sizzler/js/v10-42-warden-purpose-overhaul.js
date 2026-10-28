@@ -48,25 +48,30 @@
   function inventoryChargeIndex(player){try{return PROG.firstInventory(player,"banishment")}catch(_){return-1}}
   function chargeRange(){return Math.max(2,Number(CFG.stalker?.banishPromptDistance)||8)}
 
-  function wardTargets(player){
-    const h=currentHost(),w=currentWorld();if(!h||!player)return[];
-    const range=chargeRange(),targets=[];
-    // The finite Ward-Break Charge obeys the same closed-door, solid-wall
-    // and furniture sight checks as combat. Distance alone is insufficient.
+  function wardVisibility(player){
+    const h=currentHost(),w=currentWorld(),targets=[],blocked=[];if(!h||!player)return{targets,blocked};
+    const range=chargeRange();
+    // Keep the real line-of-sight gate. Report a sealed Warden in range
+    // behind a door/wall separately instead of falsely saying it is out of range.
     const inSight=target=>w?.map&&typeof A!=="undefined"&&typeof A.lineOfSight==="function"&&
       A.lineOfSight(w.map,player,target,range,h);
+    const consider=target=>{
+      if(dist(target,player)>range)return;
+      (inSight(target)?targets:blocked).push(target);
+    };
     for(const enemy of h.enemies||[]){
       if(!enemy?.alive||!recognisedEnemy(enemy)||enemy.v142WardenDefeated||broken(enemy))continue;
-      if(dist(enemy,player)<=range&&inSight(enemy))targets.push(enemy);
+      consider(enemy);
     }
     const count=h.stalker;
-    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count)&&dist(count,player)<=range&&inSight(count))targets.push(count);
-    return targets.sort((a,b)=>dist(a,player)-dist(b,player));
+    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count))consider(count);
+    const byDistance=(a,b)=>dist(a,player)-dist(b,player);
+    return{targets:targets.sort(byDistance),blocked:blocked.sort(byDistance)};
   }
 
   function banishmentStateV142(player){
-    const range=chargeRange(),hasFlask=inventoryChargeIndex(player)>=0,targets=wardTargets(player);
-    return{ready:hasFlask&&targets.length>0,hasFlask,range,targets,nearest:targets[0]||null,action:"ward-break"};
+    const range=chargeRange(),hasFlask=inventoryChargeIndex(player)>=0,{targets,blocked}=wardVisibility(player);
+    return{ready:hasFlask&&targets.length>0,hasFlask,range,targets,blocked,nearest:targets[0]||null,action:"ward-break"};
   }
 
   function markThreatAggressive(target,player){
@@ -214,7 +219,14 @@
   permanentlyBanish=function(target,player){return breakWard(target,player)};
   activateBanishment=function(player){
     if(!player)return false;const ix=inventoryChargeIndex(player);if(ix<0){sfx("empty");announce("NO WARD-BREAK CHARGE","Distil Banishment Essence at an Alchemist. The charge breaks a supernatural Warden's immunity; it does not kill the target for you.","red",7200);return false}
-    const state=banishmentStateV142(player);if(!state.ready){announce("NO SEALED WARD IN RANGE",`Move within ${state.range} tiles of a sealed Death Stalker or ${String(CFG.stalker?.name||"Count Loadula")}. If its ward has already been broken, use your weapons and finish the fight.`,"cyan",7200);return false}
+    const state=banishmentStateV142(player);if(!state.ready){
+      if(state.blocked.length){
+        announce("WARD-BREAK SIGHT BLOCKED",`${label(state.blocked[0])} is within ${state.range} tiles, but a closed door, wall or other obstruction blocks the charge. Move into a clear line of sight or open the route. No charge spent.`,"cyan",7200);
+      }else{
+        announce("NO SEALED WARD IN RANGE",`Move within ${state.range} tiles of a sealed Death Stalker or ${String(CFG.stalker?.name||"Count Loadula")}. If its ward has already been broken, use your weapons and finish the fight.`,"cyan",7200);
+      }
+      return false;
+    }
     // The Ward-Break Charge is spent only when the target actually loses
     // immunity. Retain exact inventory contents for a failed or interrupted
     // payment, including an older saved charge stack.
