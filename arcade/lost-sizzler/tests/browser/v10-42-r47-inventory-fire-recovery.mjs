@@ -33,7 +33,12 @@ try{
   for(let cycle=0;cycle<5;cycle++){
     await page.keyboard.press("Tab");
     await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel")?.classList.contains("hidden"));
+    // Normal inventory now uses Tab for real keyboard focus navigation.
+    // Verify each cycle retains that focus, then close via physical Escape
+    // before asserting that FIRE still works after returning to gameplay.
     await page.keyboard.press("Tab");
+    await page.waitForFunction(()=>mode==="inventory"&&document.getElementById("inventory-panel")?.contains(document.activeElement));
+    await page.keyboard.press("Escape");
     await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel")?.classList.contains("hidden"));
     const before=await page.evaluate(()=>({mana:Number(p1.mana),shots:bullets.filter(b=>b.owner===p1.id&&b.ttl>0).length}));
     await page.keyboard.press("Space");
