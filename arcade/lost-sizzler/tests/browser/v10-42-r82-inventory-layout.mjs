@@ -122,6 +122,9 @@ async function audit(viewport,label){
 
 async function auditMobileWearable(){
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  // Match the desktop inventory checks: disable the unrelated first-run
+  // tutorial before navigation, while retaining a real touch-driven equip.
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
   const page=await context.newPage();page.setDefaultTimeout(60000);
   await page.goto(`${origin}/arcade/lost-sizzler/?r147-mobile-wearable`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
