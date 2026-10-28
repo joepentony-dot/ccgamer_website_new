@@ -196,6 +196,11 @@ jobs:
       - name: Run rendered responsive browser audit
         run: node scripts/audit-responsive-browser.js
 
+      - name: Run real desktop and mobile single-game Explore scroll regression
+        run: |
+          python -m pip install playwright==1.55.0
+          python tests/browser/single-game-presentation-polish.py
+
       - name: Run physical scroll reachability audit
         run: node scripts/audit-scroll-reachability.js
 
