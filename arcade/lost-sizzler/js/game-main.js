@@ -240,6 +240,14 @@ addEventListener("keydown",e=>{
   // emails, player names and any future editable admin/game field.
   if(isEditableKeyboardTarget(e.target))return;
   if(e.code==="Tab"&&mode==="inventory"){
+    // The active Tutorial inventory lesson explicitly teaches TAB to open and
+    // TAB again to close. Preserve that existing lesson without sacrificing
+    // TAB/Shift+TAB access to wearable controls in the normal inventory.
+    const tutorial=window.CCGLostSizzlerOnboardingV120?.state;
+    if(!e.shiftKey&&tutorial?.active===true&&Number(tutorial.step)===3&&
+       tutorial.inventoryOpened===true&&!tutorial.inventoryClosed){
+      e.preventDefault();toggleInventory();return
+    }
     // TAB/Shift+TAB navigate the actual inventory controls. Keep keyboard
     // focus inside the open modal; Escape and its close buttons still exit.
     const panel=UI.inventory;
