@@ -163,9 +163,10 @@ function installInventoryAttackResumeBoundary(){
       if(!returningFromInventory&&mode==="inventory"&&UI.inventory&&!UI.inventory.classList.contains("hidden")){
         // TAB opens the modal from gameplay. Give keyboard users a real
         // starting point inside it, favouring an available wearable action.
-        const actions=[...UI.inventory.querySelectorAll("#r80-wearable-strip button, #inventory-list button, #inventory-close-top, #inventory-close")]
-          .filter(button=>!button.disabled&&button.getClientRects().length);
-        try{actions[0]?.focus({preventScroll:true})}catch(_){}
+        const first=["#r80-wearable-strip button","#inventory-list button","#inventory-close-top","#inventory-close"]
+          .map(selector=>UI.inventory.querySelector(selector))
+          .find(button=>button&&!button.disabled&&button.getClientRects().length);
+        try{first?.focus({preventScroll:true})}catch(_){}
       }
       if(returningFromInventory&&mode==="playing"){
         settlePauseAttackCadence("inventory-close");
