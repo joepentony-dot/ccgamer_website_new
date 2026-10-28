@@ -146,12 +146,56 @@ async function auditMobileWearable(){
   await context.close();
 }
 
+async function auditKeyboardWearable(){
+  const context=await browser.newContext({viewport:{width:1366,height:768}});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  const page=await context.newPage();page.setDefaultTimeout(60000);
+  const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  await page.goto(`${origin}/arcade/lost-sizzler/?r147-keyboard-wearable`,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.locator("#solo-btn").click();
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"KEYBOARD SCOUT HOOD",rarity:"COMMON",armourBonus:0}];
+    p1.wearables={head:null,hands:null,feet:null};
+    renderInventoryPanel()
+  });
+  // All interaction from this point is through real physical keyboard events.
+  // No test-side focus(), click(), synthetic key dispatch or DOM activation.
+  await page.keyboard.press("Tab");
+  await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
+  assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute("data-r80-equip-slot")),"head","opening TAB must focus a genuine wearable slot action");
+  await page.keyboard.press("Enter");
+  assert.equal(await page.evaluate(()=>p1.wearables?.head?.name),"KEYBOARD SCOUT HOOD","physical Enter must equip carried Head wearable");
+  assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute("data-r80-unequip")),"head","loadout rerender must preserve keyboard focus after equip");
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"KEYBOARD WARDEN CIRCLET",rarity:"GOLD MEDAL",armourBonus:3,sightBonus:1}];
+    renderInventoryPanel()
+  });
+  assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute("data-r80-equip-slot")),"head","a carried upgrade must remain keyboard reachable after rerender");
+  await page.keyboard.press("Enter");
+  const swapped=await page.evaluate(()=>({name:p1.wearables?.head?.name,carried:p1.inventory.map(item=>item.name),cap:CCGProgression.armourCap(p1)}));
+  assert.equal(swapped.name,"KEYBOARD WARDEN CIRCLET","physical Enter must swap to stronger Head wearable");
+  assert.deepEqual(swapped.carried,["KEYBOARD SCOUT HOOD"],"keyboard swap must return previous wearable exactly once");
+  assert.ok(swapped.cap>=15,"keyboard swap must update canonical armour cap");
+  await page.keyboard.press("Tab");
+  assert.equal(await page.evaluate(()=>mode),"inventory","Tab must navigate the inventory rather than closing it");
+  assert.equal(await page.evaluate(()=>document.getElementById("inventory-panel").contains(document.activeElement)),true,"Tab must keep keyboard focus inside inventory");
+  await page.keyboard.press("Shift+Tab");
+  assert.equal(await page.evaluate(()=>mode),"inventory","Shift+Tab must navigate without leaving inventory");
+  await page.keyboard.press("Escape");
+  assert.equal(await page.evaluate(()=>mode),"playing","Escape must close the keyboard inventory and return to play");
+  assert.deepEqual(errors,[],"physical keyboard equip/swap must not throw browser errors");
+  await context.close();
+}
+
 try{
   await audit({width:1664,height:936},"standard-desktop");
   await audit({width:1366,height:768},"short-desktop");
   await audit({width:1280,height:720},"low-height-desktop");
   await auditMobileWearable();
-  console.log("Dungeon Carnage R82 inventory viewport-fit and R147 desktop/mobile direct wearable equip/swap passed.");
+  await auditKeyboardWearable();
+  console.log("Dungeon Carnage R82 inventory viewport-fit and R147 desktop/mobile/physical-keyboard equip/swap passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
