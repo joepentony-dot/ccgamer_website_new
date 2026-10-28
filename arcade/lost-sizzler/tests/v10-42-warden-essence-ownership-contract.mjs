@@ -394,16 +394,25 @@ function wardSightFixture({asCount=false,gate="locked",wall=false}={}){
 }
 for(const asCount of [false,true]){
   const f=wardSightFixture({asCount}),ctx=f.ctx;
-  const initial=JSON.stringify(ctx.p1.inventory);
-  assert.equal(ctx.banishmentState(ctx.p1).ready,false,
+  const initial=JSON.stringify(ctx.p1.inventory),notices=[];
+  ctx.showToast=(title,message)=>notices.push({title,message});
+  const sealed=ctx.banishmentState(ctx.p1);
+  assert.equal(sealed.blocked.length,1,"In-range sealed Warden behind closed gate is classified as obstructed");
+  assert.equal(sealed.blocked[0].id,asCount?"count-loadula":"death-stalker-floor-4");
+  assert.equal(sealed.ready,false,
     "Closed room gate must block B targeting, even inside the charge range");
   assert.equal(ctx.activateBanishment(ctx.p1),false);
+  assert.match(notices.at(-1).title,/WARD-BREAK SIGHT BLOCKED/,"B explains the actual blocked target");
+  assert.match(notices.at(-1).message,/No charge spent/,"Blocked feedback confirms no payment");
+  assert.match(notices.at(-1).message,asCount?/Count Loadula/:/Death Stalker/);
   assert.equal(JSON.stringify(ctx.p1.inventory),initial,"Closed gate must preserve exact Flask");
   assert.equal(ctx.run.stats.wardsBroken||0,0);
   ctx.host=JSON.parse(JSON.stringify(ctx.host));
   assert.equal(ctx.banishmentState(ctx.p1).ready,false,"Saved locked gate remains blocked");
+  assert.equal(ctx.banishmentState(ctx.p1).blocked.length,1,"JSON-restored closed gate preserves blocked reason");
   ctx.host.doors[0].open=true;ctx.host.doors[0].locked=false;
   assert.equal(ctx.banishmentState(ctx.p1).ready,true);
+  assert.equal(ctx.banishmentState(ctx.p1).blocked.length,0,"Opened gate removes the obstruction warning");
   assert.equal(ctx.activateBanishment(ctx.p1),true,"Opening room gate restores normal B use");
   assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
   assert.equal(ctx.run.stats.wardsBroken,1);
@@ -413,7 +422,10 @@ for(const asCount of [false,true]){
 }
 const wallWard=wardSightFixture({gate:"none",wall:true}),wallCtx=wallWard.ctx;
 assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,false,"Solid stone blocks supernatural ward-break");
+assert.equal(wallCtx.banishmentState(wallCtx.p1).blocked.length,1,"Stone wall has a truthful obstruction reason");
+const wallNotices=[];wallCtx.showToast=(title,message)=>wallNotices.push({title,message});
 assert.equal(wallCtx.activateBanishment(wallCtx.p1),false);
+assert.match(wallNotices.at(-1).title,/WARD-BREAK SIGHT BLOCKED/);
 assert.equal(wallCtx.PGR.inventoryKindCount(wallCtx.p1,"banishment"),1);
 wallCtx.world.map[3][3]=0;
 assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,true);
@@ -422,6 +434,8 @@ const visibleWard=wardSightFixture({gate:"none",wall:true}),visibleCtx=visibleWa
 visibleWard.count.x=2;visibleWard.count.y=7;
 assert.equal(visibleCtx.banishmentState(visibleCtx.p1).nearest,visibleWard.count,
   "Visible Count may be selected instead of nearer blocked Stalker");
+assert.equal(visibleCtx.banishmentState(visibleCtx.p1).blocked[0],visibleWard.death,
+  "A blocked nearer Stalker cannot prevent payment to a distinct visible sealed Count");
 assert.equal(visibleCtx.activateBanishment(visibleCtx.p1),true);
 assert.notEqual(visibleWard.death.v142WardBroken,true);
 assert.equal(visibleWard.count.v142WardBroken,true);
