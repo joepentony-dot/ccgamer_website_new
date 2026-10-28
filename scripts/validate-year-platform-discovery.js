@@ -59,7 +59,10 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
     ["sitemap-pages.xml", new Set([
         `${SITE_ORIGIN}/amiga-demo-music/`,
-        `${SITE_ORIGIN}/retro-events/`
+        `${SITE_ORIGIN}/retro-events/`,
+        // The duplicate A-Z composer directory remains navigable, but its
+        // preferred canonical is /music/ and only that URL belongs in sitemaps.
+        `${SITE_ORIGIN}/music/composers/`
     ])],
     // Approved retirement of a game with no surviving playable video.
     // Continue to reject all other missing game sitemap URLs.
@@ -366,7 +369,18 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems, autho
         problems.push(`Phase 5B noindex utility remains in ${label}: ${PHASE5B_EXCLUDED_SITEMAP_URL}`);
     }
     reviewedRemovals.forEach((url) => {
-        if (currentLocs.includes(url)) problems.push(`Retired unmaterialized sitemap URL reappeared in ${label}: ${url}`);
+        if (currentLocs.includes(url)) problems.push(`Reviewed noncanonical sitemap URL reappeared in ${label}: ${url}`);
+        if (label === "sitemap-pages.xml" && url === `${SITE_ORIGIN}/music/composers/`) {
+            // This is the *only* alias retirement allowed for a still-working
+            // public page. Require the actual source HTML and preferred URL
+            // to agree; otherwise the baseline must fail, not silently drop it.
+            const html = readRequired(path.join(repoRoot, "music", "composers", "index.html"));
+            const preferred = `${SITE_ORIGIN}/music/`;
+            const canonicals = extractCanonicalUrls(html);
+            if (canonicals.length !== 1 || canonicals[0] !== preferred || !currentLocs.includes(preferred)) {
+                problems.push("Composer directory sitemap exclusion requires exactly one /music/ canonical and a surviving /music/ sitemap URL");
+            }
+        }
     });
 }
 
