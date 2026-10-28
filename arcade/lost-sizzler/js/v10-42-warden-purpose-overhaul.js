@@ -170,6 +170,9 @@
 
   function finaliseWarden(target,player,{baseScore=0,baseXp=0}={}){
     const h=currentHost(),r=currentRun();if(!target||!player||!h||!r||target.v142WardenRewarded)return false;
+    // Legacy JSON-restored runs may have no stats object. Initialise it before
+    // sealing the defeat, or a missing kills field can strand score, XP and cache.
+    if(!r.stats||typeof r.stats!=="object"||Array.isArray(r.stats))r.stats={};
     target.v142WardenRewarded=true;target.v142WardenDefeated=true;target.v142WardState="defeated";target.v142WardBroken=false;
     const name=label(target);
     if(isCount(target)){

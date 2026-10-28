@@ -235,6 +235,26 @@ deferred.death.v142WardenCachePending=true;deferred.death.v142WardenCacheRetryAt
 assert.equal(deferred.death.v142WardenCachePending,false,"Restored pending flag must reconcile an already-created/opened cache");
 assert.equal(d.host.chests.length,1);
 
+// Source-executed legacy restoration: an already-broken Count can be saved
+// without a stats object by older data. His killing blow must not leave the
+// actor marked defeated while losing its score, XP and Warden cache.
+const restoredCount=soloEncounter(),rc=restoredCount.ctx;
+assert.equal(rc.permanentlyBanish(restoredCount.count,rc.p1),true);
+rc.run=JSON.parse(JSON.stringify(rc.run));delete rc.run.stats;
+assert.equal(rc.hitStalker({x:restoredCount.count.x,y:restoredCount.count.y,power:999,owner:"p1"}),true);
+assert.equal(restoredCount.count.permanentlyBanished,true);
+assert.equal(rc.run.stats.kills,1,"Missing legacy kill statistics must be safely initialised");
+assert.equal(rc.run.stats.wardenKills,1,"Warden defeat statistics survive legacy restoration");
+assert.equal(rc.score,7500,"Legacy restored Count kill must award its full score exactly once");
+assert.equal(rc.p1.totalXp,250,"Legacy restored Count kill must award its XP");
+assert.equal(rc.host.chests.filter(chest=>chest.v142WardenCache).length,1,
+  "Legacy restored Count defeat must not lose its claimable Warden cache");
+assert.equal(rc.hitStalker({x:restoredCount.count.x,y:restoredCount.count.y,power:999,owner:"p1"}),false);
+restoredCount.advance(2100);
+assert.equal(rc.score,7500,"No duplicate score after repeated damage or maintenance");
+assert.equal(rc.p1.totalXp,250,"No duplicate XP after maintenance");
+assert.equal(rc.host.chests.length,1,"No duplicate cache after maintenance");
+
 const countKill=soloEncounter(),k=countKill.ctx;
 k.permanentlyBanish(countKill.count,k.p1);
 k.hitStalker({x:countKill.count.x,y:countKill.count.y,power:999,owner:"p1"});
