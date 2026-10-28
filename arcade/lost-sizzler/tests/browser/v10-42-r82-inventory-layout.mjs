@@ -91,6 +91,55 @@ async function audit(viewport,label){
   }
   assert.ok(layout.viewport.scrollWidth<=layout.viewport.width+2&&layout.viewport.scrollHeight<=layout.viewport.height+2,`${label} inventory overlay must not create page scrollbars: ${JSON.stringify(layout.viewport)}`);
 
+  // Real browser interaction: R147 lets a player equip and replace armour
+  // from the loadout slot, not just from the carried-item action row.
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"COMMON SCOUT HOOD",rarity:"COMMON",armourBonus:0}];
+    p1.wearables={head:null,hands:null,feet:null};
+    renderInventoryPanel()
+  });
+  const firstEquip=page.locator('[data-r80-equip-slot="head"]');
+  await firstEquip.waitFor({state:"visible"});
+  assert.match(await firstEquip.getAttribute("aria-label"),/COMMON SCOUT HOOD/,`${label} action must name the carried item`);
+  await firstEquip.click();
+  const equipped=await page.evaluate(()=>({name:p1.wearables?.head?.name,inventory:p1.inventory.map(item=>item.name),slotLabel:document.querySelector('[data-r80-slot="head"] b')?.textContent}));
+  assert.equal(equipped.name,"COMMON SCOUT HOOD",`${label} direct Head equip must change canonical state`);
+  assert.equal(equipped.slotLabel,"COMMON SCOUT HOOD",`${label} equipment panel must update after equip`);
+  assert.equal(equipped.inventory.length,0,`${label} equipped item must leave carried inventory`);
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"ENCHANTED WARDEN CIRCLET",rarity:"GOLD MEDAL",armourBonus:3,sightBonus:1}];
+    renderInventoryPanel()
+  });
+  await page.locator('[data-r80-equip-slot="head"]').click();
+  const swapped=await page.evaluate(()=>({name:p1.wearables?.head?.name,inventory:p1.inventory.map(item=>item.name),cap:CCGProgression.armourCap(p1)}));
+  assert.equal(swapped.name,"ENCHANTED WARDEN CIRCLET",`${label} direct slot swap must equip selected higher-tier gear`);
+  assert.deepEqual(swapped.inventory,["COMMON SCOUT HOOD"],`${label} replaced item must return exactly once`);
+  assert.ok(swapped.cap>=15,`${label} enchanted gear must increase armour capacity`);
+  assert.deepEqual(errors,[],`${label} direct wearable interaction must not throw browser errors`);
+
+  await context.close();
+}
+
+async function auditMobileWearable(){
+  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const page=await context.newPage();page.setDefaultTimeout(60000);
+  await page.goto(`${origin}/arcade/lost-sizzler/?r147-mobile-wearable`,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.locator("#solo-btn").click();
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"feet",name:"MOBILE RUNNER BOOTS",rarity:"SIZZLER",armourBonus:2,moveFactor:.95}];
+    renderInventoryPanel();
+    document.getElementById("inventory-panel").classList.remove("hidden");
+    mode="inventory"
+  });
+  const button=page.locator('[data-r80-equip-slot="feet"]');
+  await button.waitFor({state:"visible"});
+  await button.tap();
+  const result=await page.evaluate(()=>({name:p1.wearables?.feet?.name,inventory:p1.inventory.length,button:document.querySelector('[data-r80-unequip="feet"]')?.textContent}));
+  assert.equal(result.name,"MOBILE RUNNER BOOTS","mobile touch action must equip canonical Feet gear");
+  assert.equal(result.inventory,0,"mobile equip must remove carried item");
+  assert.equal(result.button,"UNEQUIP","mobile loadout must offer a reversible action");
   await context.close();
 }
 
@@ -98,7 +147,8 @@ try{
   await audit({width:1664,height:936},"standard-desktop");
   await audit({width:1366,height:768},"short-desktop");
   await audit({width:1280,height:720},"low-height-desktop");
-  console.log("Dungeon Carnage R82 equipment/inventory viewport-fit layout passed without desktop scrollbars.");
+  await auditMobileWearable();
+  console.log("Dungeon Carnage R82 inventory viewport-fit and R147 desktop/mobile direct wearable equip/swap passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();
