@@ -420,6 +420,7 @@ function renderFeaturedFallback(routes) {
         .map((name) => byKey.get(normalizeComposerKey(name)))
         .filter(Boolean)
         .map((route) => `<a href="/music/${htmlEscape(route.slug)}/" class="composer-card composer-card--featured" data-slug="${htmlEscape(route.slug)}">
+          <div class="composer-thumb"><img src="/resources/images/composers/hub/${htmlEscape(route.slug)}.webp" alt="Portrait of ${htmlEscape(route.name)}" width="400" height="300" loading="lazy" decoding="async" fetchpriority="low"></div>
           <div class="composer-info">
             <h3>${htmlEscape(route.name)}</h3>
             <p class="composer-platform">${htmlEscape(platformLabel(route))}</p>
