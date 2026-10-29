@@ -328,6 +328,20 @@ test("Music Hub and accessible composer directory consolidate canonical signals 
     assert.ok(markup.includes('href="/music/composers/"'));
     assert.ok(markup.includes('composer-discovery-search'));
   }
+  // Keep JSON-LD CollectionPage aligned with the preferred URL, without
+  // disguising the actual directory route in its visitor breadcrumbs.
+  const parseSchema = (markup) => JSON.parse(
+    markup.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "null"
+  );
+  for (const markup of [music, directory]) {
+    const graph = parseSchema(markup)?.["@graph"];
+    assert.ok(graph, "generated hub must expose valid JSON-LD");
+    const page = graph.find((entry) => entry["@type"] === "CollectionPage");
+    assert.equal(page?.url, root, "JSON-LD page URL must agree with canonical");
+    const crumbs = graph.find((entry) => entry["@type"] === "BreadcrumbList");
+    assert.equal(crumbs?.itemListElement.at(-1)?.item,
+      markup === directory ? alias : root, "visitor breadcrumb retains its route");
+  }
   assert.match(directory, /C64 &amp; Amiga Composer Archive/);
   assert.ok(directory.includes('"item": "' + alias + '"'),
     "the directory's own breadcrumb remains accurate for visitors");
@@ -336,6 +350,10 @@ test("Music Hub and accessible composer directory consolidate canonical signals 
   assert.ok(published.includes('<link rel="canonical" href="' + root + '">'));
   assert.ok(published.includes('<meta property="og:url" content="' + root + '">'));
   assert.ok(published.includes('<meta name="twitter:url" content="' + root + '">'));
+  const liveGraph = parseSchema(published)?.["@graph"] || [];
+  assert.equal(liveGraph.find((entry) => entry["@type"] === "CollectionPage")?.url, root,
+    "published directory CollectionPage matches preferred canonical");
+  assert.equal(liveGraph.find((entry) => entry["@type"] === "BreadcrumbList")?.itemListElement.at(-1)?.item, alias);
   assert.ok(published.includes('/resources/images/composers/hub/'));
   assert.ok(published.includes('href="/music/composers/"'));
 
