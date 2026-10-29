@@ -426,4 +426,60 @@ assert.equal(visibleCtx.activateBanishment(visibleCtx.p1),true);
 assert.notEqual(visibleWard.death.v142WardBroken,true);
 assert.equal(visibleWard.count.v142WardBroken,true);
 
+
+
+// P0 Floor 5: execute the actual canvas owners. A paid Ward-Break is
+// permanent vulnerability, even after Count's short legacy stun expires.
+// Rendering must never keep labelling a breakable Death Stalker indestructible.
+const rendererSource=readOwner("game-render");
+function rendererSection(start,end){
+  const from=rendererSource.indexOf(start),to=rendererSource.indexOf(end,from+start.length);
+  assert.ok(from>=0&&to>from,"Missing authoritative render section "+start);
+  return rendererSource.slice(from,to);
+}
+const wardLabels=[],wardBars=[];
+const wardCanvas=new Proxy({createRadialGradient(){return {addColorStop(){}}}},{
+  get(target,key){return key in target?target[key]:()=>{}},
+  set(target,key,value){target[key]=value;return true}
+});
+const wardRender={
+  window:{CCGDungeonEnemyIdentity:{label(){return null}}},
+  host:{stalker:null},run:{floor:5},focus:{x:4,y:4},
+  performance:{now(){return 10000}},
+  C:{tile:40,stalker:{name:"Count Loadula"},enemy:{followerLightRadius:5}},
+  P:{red:"red",purple:"purple",white:"white",gold:"gold",cyan:"cyan"},
+  ctx:wardCanvas,tileInRenderView(){return true},visibleTo(){return true},
+  enemyScreen:e=>({x:e.x*40,y:e.y*40}),ws:(x,y)=>({x:x*40,y:y*40}),
+  drawGrotesqueBossSprite(){return true},drawPunyEnemySprite(){return true},
+  drawAuthoredDungeonEnemySprite(){return true},drawPixelEnemySprite(){},
+  drawEnemyChargeTelegraph(){},drawTransientHealth:e=>wardBars.push(e.id||"count"),
+  label:text=>wardLabels.push(text),px(){}
+};
+vm.createContext(wardRender);
+vm.runInContext(
+  rendererSection("function drawEnemy(e){","function drawStalker(){")+
+  rendererSection("function drawStalker(){","function drawPlayerResources(")+
+  ";this.renderEnemy=drawEnemy;this.renderCount=drawStalker;",
+  wardRender,{filename:"game-render.js:Ward-Break render owners"}
+);
+function checkWardenRender(draw,expectedLabel,expectedBars){
+  wardLabels.length=0;wardBars.length=0;draw();
+  assert.ok(String(wardLabels.at(-1)).includes(expectedLabel),
+    "Actual canvas label must contain "+expectedLabel+"; got "+wardLabels.at(-1));
+  assert.equal(wardBars.length,expectedBars,"Actual health-bar ownership must match immunity");
+}
+const sealedDeath={id:"death-stalker-floor-5",x:4,y:4,alive:true,
+  deathStalker:true,voidStalker:true,kind:"ghost"};
+checkWardenRender(()=>wardRender.renderEnemy(sealedDeath),"INDESTRUCTIBLE",0);
+const brokenDeath={...sealedDeath,v142WardBroken:true,v142WardState:"broken",hp:11,maxHp:34,hpBarMs:5000};
+checkWardenRender(()=>wardRender.renderEnemy(brokenDeath),"VULNERABLE",1);
+checkWardenRender(()=>wardRender.renderEnemy({...brokenDeath,v142WardState:"defeated"}),"INDESTRUCTIBLE",0);
+wardRender.host.stalker={id:"count-loadula",x:4,y:4,awake:true,vulnerableMs:0,hp:31,maxHp:47,hpBarMs:5000};
+checkWardenRender(()=>wardRender.renderCount(),"COUNT LOADULA",0);
+wardRender.host.stalker.v142WardBroken=true;wardRender.host.stalker.v142WardState="broken";
+checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
+wardRender.host.stalker.v142WardBroken=false;wardRender.host.stalker.vulnerableMs=200;
+checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
+console.log("PASS real canvas Warden labels/health follow sealed, Ward-Broken and legacy temporary-vulnerable state");
+
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");
