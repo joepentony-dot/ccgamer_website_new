@@ -77,6 +77,25 @@
       elapsed:`${minutes}:${String(seconds).padStart(2,"0")}`
     };
   }
+  // Share the earned Floor 15 result, not the generic game introduction.
+  // This is presentation-only: it never changes score, save or completion state.
+  async function shareCompletion(){
+    if(!campaignComplete())return;
+    const result=finalRunHighlights(),url=String(location.href||"");
+    const message=`I completed all ${result.floor} floors of C64 Dungeon Carnage with ${result.score.toLocaleString("en-GB")} points, hero level ${result.level}, ${result.kills} enemies defeated and a time of ${result.elapsed}.`;
+    try{
+      if(navigator.share){
+        await navigator.share({title:"C64 Dungeon Carnage — Campaign Complete",text:message,url});
+        return;
+      }
+      if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(`${message}\n${url}`);
+        showToast("COMPLETION COPIED","Your final result and game link were copied.","green");
+        return;
+      }
+    }catch(error){if(error?.name==="AbortError")return}
+    showToast("SHARE COMPLETION",`${message}\n${url}`,"cyan");
+  }
   function renderCompletionCredits(){
     if(!UI?.endText)return;
     const existing=document.getElementById("v108-completion-credits");
@@ -129,7 +148,7 @@
     };
     jump("v130-jump-bestiary","v106-enemy-credits");
     jump("v130-jump-pickups","v104-retro-credits");
-    document.getElementById("v108-end-share")?.addEventListener("click",()=>{try{shareQuest()}catch(_){try{document.getElementById("share-btn")?.click()}catch(__){}}});
+    document.getElementById("v108-end-share")?.addEventListener("click",()=>shareCompletion());
     if(!run.v108CreditsMusicStarted){
       run.v108CreditsMusicStarted=true;
       try{window.CCGEndCreditsMusic?.play?.({reason:"campaign-complete",run})}catch(_){}
