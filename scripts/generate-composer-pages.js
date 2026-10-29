@@ -375,7 +375,7 @@ ${jsonForHtml(composerPageSchema(route))}
 `;
 }
 
-function hubSchema(routes, canonical, name, description) {
+function hubSchema(routes, pageUrl, canonical, name, description) {
     return {
         "@context": "https://schema.org",
         "@graph": [
@@ -388,11 +388,11 @@ function hubSchema(routes, canonical, name, description) {
             },
             {
                 "@type": "BreadcrumbList",
-                itemListElement: canonical.endsWith("/composers/")
+                itemListElement: pageUrl.endsWith("/composers/")
                     ? [
                         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
                         { "@type": "ListItem", position: 2, name: "Music Hub", item: `${SITE_ORIGIN}/music/` },
-                        { "@type": "ListItem", position: 3, name: "Composers", item: canonical }
+                        { "@type": "ListItem", position: 3, name: "Composers", item: pageUrl }
                     ]
                     : [
                         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
@@ -455,7 +455,11 @@ function renderAccordionFallback(routes) {
 }
 
 function renderHub(routes, composersOnly) {
-    const canonical = composersOnly ? `${SITE_ORIGIN}/music/composers/` : `${SITE_ORIGIN}/music/`;
+    const pageUrl = composersOnly ? `${SITE_ORIGIN}/music/composers/` : `${SITE_ORIGIN}/music/`;
+    // Both hubs display the same featured composers and full A-Z directory.
+    // Keep the dedicated directory route working, but consolidate search signals
+    // on the established Music Hub canonical (never change composer profiles).
+    const canonical = `${SITE_ORIGIN}/music/`;
     const title = composersOnly
         ? "All C64 & Amiga Composers | Cheeky Commodore Gamer"
         : "C64 & Amiga Music Hub | Cheeky Commodore Gamer";
@@ -489,7 +493,7 @@ function renderHub(routes, composersOnly) {
   <meta name="twitter:image" content="${SITE_ORIGIN}/resources/images/og/c64_neon.png">
   <meta name="twitter:url" content="${canonical}">
   <script type="application/ld+json">
-${jsonForHtml(hubSchema(routes, canonical, heading, description))}
+${jsonForHtml(hubSchema(routes, pageUrl, canonical, heading, description))}
   </script>
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
