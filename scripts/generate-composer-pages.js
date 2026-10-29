@@ -375,7 +375,7 @@ ${jsonForHtml(composerPageSchema(route))}
 `;
 }
 
-function hubSchema(routes, canonical, name, description) {
+function hubSchema(routes, pageUrl, canonical, name, description) {
     return {
         "@context": "https://schema.org",
         "@graph": [
@@ -388,11 +388,11 @@ function hubSchema(routes, canonical, name, description) {
             },
             {
                 "@type": "BreadcrumbList",
-                itemListElement: canonical.endsWith("/composers/")
+                itemListElement: pageUrl.endsWith("/composers/")
                     ? [
                         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
                         { "@type": "ListItem", position: 2, name: "Music Hub", item: `${SITE_ORIGIN}/music/` },
-                        { "@type": "ListItem", position: 3, name: "Composers", item: canonical }
+                        { "@type": "ListItem", position: 3, name: "Composers", item: pageUrl }
                     ]
                     : [
                         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
@@ -493,7 +493,7 @@ function renderHub(routes, composersOnly) {
   <meta name="twitter:image" content="${SITE_ORIGIN}/resources/images/og/c64_neon.png">
   <meta name="twitter:url" content="${canonical}">
   <script type="application/ld+json">
-${jsonForHtml(hubSchema(routes, pageUrl, heading, description))}
+${jsonForHtml(hubSchema(routes, pageUrl, canonical, heading, description))}
   </script>
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
