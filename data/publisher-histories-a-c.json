@@ -1,45 +1,5 @@
 [
   {
-    "slug": "2-99-classics",
-    "summary": "2.99 Classics was a budget re-release label from Elite Systems. Its Commodore 64 edition of Skool Daze appeared in 1986, after the original 1985 release from Microsphere.",
-    "facts": [
-      "MobyGames identifies 2.99 Classics as a budget publishing label from Elite Systems Ltd.",
-      "MobyGames records a 1986 UK Commodore 64 budget re-release of Skool Daze under 2.99 Classics, following the 1985 Microsphere edition.",
-      "Lemon64 identifies a Novaload cassette entry for the 2.99 Classics re-release of Skool Daze in 1986."
-    ],
-    "strengths": [
-      "Budget re-releases",
-      "Commodore 64 cassette editions",
-      "1980s home-computer games"
-    ],
-    "related": [
-      {
-        "label": "Elite",
-        "slug": "elite"
-      }
-    ],
-    "note": "The 1985 date in the CCG game archive refers to Skool Daze's original C64 release; the separate 2.99 Classics budget cassette edition is documented for 1986.",
-    "confidence": "high",
-    "verified_on": "2026-10-29",
-    "sources": [
-      {
-        "label": "MobyGames — 2.99 Classics company overview",
-        "url": "https://www.mobygames.com/company/23349/299-classics/",
-        "type": "historical game database"
-      },
-      {
-        "label": "MobyGames — Skool Daze C64 release history",
-        "url": "https://www.mobygames.com/game/15189/skool-daze/releases/",
-        "type": "release records"
-      },
-      {
-        "label": "Lemon64 — Skool Daze release and cassette details",
-        "url": "https://www.lemon64.com/game/skool-daze",
-        "type": "C64 game archive"
-      }
-    ]
-  },
-  {
     "slug": "access-software",
     "summary": "Access Software was a Salt Lake City developer and publisher founded by Bruce Carver. Its catalogue ranged from Commodore 64 action and golf titles to the later Links golf simulations and Tex Murphy adventures.",
     "facts": [
@@ -256,6 +216,41 @@
         "label": "Centre for Computing History — Audiogenic C64 games",
         "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Audiogenic&type=Games",
         "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "blue-ribbon",
+    "summary": "Blue Ribbon appears in the CCG Commodore 64 archive through its cassette edition of Strip Poker: A Sizzling Game of Chance. The Centre for Computing History preserves this edition and also documents Blue Ribbon titles on other British home computers.",
+    "facts": [
+      "The Centre for Computing History catalogues a 1984 Commodore 64 cassette edition of Strip Poker with Blue Ribbon as its publisher.",
+      "The museum credits Sheldon Leemon and Glen Carbone on its Blue Ribbon Strip Poker cassette record.",
+      "The museum also preserves the 1984 BBC Micro game 3D Dotty under the Blue Ribbon publishing credit."
+    ],
+    "strengths": [
+      "C64 cassette editions",
+      "1980s card and arcade games",
+      "Multi-format British home-computer publishing"
+    ],
+    "related": [
+      {
+        "label": "Artworx Software",
+        "slug": "artworx-software"
+      }
+    ],
+    "note": "The CCG game record retains Artworx Software as the original publisher and Blue Ribbon as a separate re-release credit. The museum's 1984 catalogue date is presented as recorded, without asserting a distinct Blue Ribbon release chronology.",
+    "confidence": "high",
+    "verified_on": "2026-10-29",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Blue Ribbon Strip Poker cassette",
+        "url": "https://www.computinghistory.org.uk/det/17531/Strip-Poker/",
+        "type": "museum object record"
+      },
+      {
+        "label": "Centre for Computing History — Blue Ribbon 3D Dotty",
+        "url": "https://www.computinghistory.org.uk/det/36219/3D%20Dotty/",
+        "type": "museum object record"
       }
     ]
   },
