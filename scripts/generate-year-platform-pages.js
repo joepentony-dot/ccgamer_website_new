@@ -637,8 +637,16 @@ function renderPlatformsIndex(data) {
 
 function renderYearPage(group) {
     const canonicalUrl = `${SITE_ORIGIN}${group.url}`;
-    const title = `${group.year} C64 & Amiga Games | Cheeky Commodore Gamer`;
-    const description = `Browse ${group.count} Commodore 64 and Amiga ${group.count === 1 ? "game" : "games"} released in ${group.year} in the Cheeky Commodore Gamer archive.`;
+    // A singleton release year should identify its actual game, rather than
+    // advertising both platforms. Only use verified catalogue facts.
+    const single = group.count === 1 ? group.games[0] : null;
+    const title = single
+        ? `${group.year} ${single.platform === "c64" ? "C64" : "Amiga"} Games — ${single.title} | Cheeky Commodore Gamer`
+        : `${group.year} C64 & Amiga Games | Cheeky Commodore Gamer`;
+    const description = single
+        ? `Explore ${single.title} (${group.year}), the ${single.system} game currently listed in the ${group.year} Cheeky Commodore Gamer release-year archive.`
+        : `Browse ${group.count} Commodore 64 and Amiga ${group.count === 1 ? "game" : "games"} released in ${group.year} in the Cheeky Commodore Gamer archive.`;
+    const schemaName = single ? `${group.year} ${single.system} Games` : `${group.year} C64 & Amiga Games`;
     const robots = group.indexable ? "index,follow" : "noindex,follow";
     const breadcrumbs = [
         { name: "Home", url: `${SITE_ORIGIN}/` },
@@ -647,7 +655,7 @@ function renderYearPage(group) {
         { name: String(group.year), url: canonicalUrl }
     ];
     const schema = collectionSchema({
-        name: `${group.year} C64 & Amiga Games`,
+        name: schemaName,
         description,
         canonicalUrl,
         breadcrumbs,
@@ -661,7 +669,9 @@ function renderYearPage(group) {
     const body = `${renderHero({
         kicker: `Release-year archive · ${group.year}`,
         heading: `${group.year} Games`,
-        intro: `Browse every Commodore 64 and Amiga title currently recorded for ${group.year}. The links below are rendered directly into the page for dependable navigation and search discovery.`,
+        intro: single
+            ? `The ${group.year} ${single.system} archive currently features ${single.title}. Browse its dedicated game page or explore other release years.`
+            : `Browse every Commodore 64 and Amiga title currently recorded for ${group.year}. The links below are rendered directly into the page for dependable navigation and search discovery.`,
         stats: [
             { value: group.count, label: group.count === 1 ? "game" : "games" },
             { value: group.c64Count, label: "C64" },
