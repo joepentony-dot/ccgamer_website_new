@@ -43,7 +43,12 @@ try{
 
   await page.keyboard.press("Tab");
   await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel")?.classList.contains("hidden"));
+  // R147 gives keyboard-only players real Tab navigation inside inventory.
+  // Confirm the second physical Tab does not close the panel, then close
+  // through the supported Escape action before probing live combat.
   await page.keyboard.press("Tab");
+  await page.waitForFunction(()=>mode==="inventory"&&document.getElementById("inventory-panel")?.contains(document.activeElement));
+  await page.keyboard.press("Escape");
   await page.waitForFunction(()=>mode==="playing"&&document.getElementById("inventory-panel")?.classList.contains("hidden"));
 
   const manaBefore=await page.evaluate(()=>Number(p1.mana));

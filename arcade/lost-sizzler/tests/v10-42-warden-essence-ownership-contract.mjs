@@ -106,6 +106,46 @@ function soloEncounter(){
   return{ctx,death,guardian,count,tick,advance:ms=>{now+=ms;tick()}};
 }
 
+// P0 owner Floor 5 feedback pressure: rapid ordinary fire against two
+// distinct sealed supernatural classes must not queue a long-lived warning,
+// floater and audio event for every immune projectile. Combat and ward state
+// are unchanged, and a restored monotonic-clock reset must allow new advice.
+const feedback=soloEncounter(),f=feedback.ctx,wardToasts=[],wardFloaters=[],wardSounds=[];
+f.showToast=(...args)=>wardToasts.push(args);
+f.floatText=(...args)=>wardFloaters.push(args);
+f.S.sfx=name=>wardSounds.push(name);
+const sealedHp=feedback.death.hp;
+for(let i=0;i<80;i++)f.damageEnemy(feedback.death,9,"energy",f.p1);
+assert.equal(feedback.death.hp,sealedHp,"Immune Death Stalker must take no damage under sustained fire");
+assert.equal(feedback.death.alive,true);
+assert.equal(feedback.death.v142WardBroken,undefined);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,1,"80 sealed Stalker impacts yield one advisory toast");
+assert.equal(wardFloaters.filter(row=>row[2]==="KNOCKED BACK").length,1,"80 sealed Stalker impacts yield one advisory floater");
+assert.equal(wardSounds.filter(name=>name==="stalker").length,1,"80 sealed Stalker impacts yield one advisory sound");
+assert.equal(f.run.stats.kills,0);
+assert.equal(f.score,0);
+feedback.advance(1600);
+f.damageEnemy(feedback.death,9,"energy",f.p1);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,2,"Advisory resumes after the real 1600ms cooldown");
+feedback.death._ccgSealedWardNoticeAt=99999999;
+f.damageEnemy(feedback.death,9,"energy",f.p1);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,3,"A restored future timestamp cannot suppress advice indefinitely");
+const another={id:"second-sealed-stalker",x:7,y:5,kind:"ghost",hp:10,maxHp:10,alive:true,deathStalker:true,voidStalker:true};
+f.host.enemies.push(another);
+f.damageEnemy(another,9,"energy",f.p1);
+assert.equal(wardToasts.filter(row=>String(row[0]).includes("INDESTRUCTIBLE")).length,4,"Different sealed actor retains independent first-hit guidance");
+const countBullet={x:feedback.count.x,y:feedback.count.y,power:1,owner:"p1"};
+const countNoticeCount=()=>wardToasts.filter(row=>String(row[0]).includes("CANNOT BE KNOCKED BACK")).length;
+for(let i=0;i<60;i++){feedback.count.stunMs=0;assert.equal(f.hitStalker(countBullet),true)}
+assert.equal(countNoticeCount(),1,"60 sealed Count impacts yield one advisory toast");
+assert.equal(wardSounds.filter(name=>name==="stalker").length,5,"Sealed Count guidance is audio-throttled separately");
+assert.equal(feedback.count.v142WardBroken,undefined);
+assert.equal(feedback.count.hp,feedback.count.maxHp);
+feedback.advance(1600);
+feedback.count.stunMs=0;f.hitStalker(countBullet);
+assert.equal(countNoticeCount(),2,"Sealed Count guidance resumes after cooldown");
+assert.equal(f.run.stats.kills,0,"Immune-hit feedback never manufactures defeat or XP");
+
 const pair=soloEncounter(),c=pair.ctx;
 c.damageEnemy(pair.death,999,"energy",c.p1);
 assert.equal(pair.death.hp,10,"Sealed Death Stalker must retain ordinary-fire immunity");
@@ -195,6 +235,26 @@ deferred.death.v142WardenCachePending=true;deferred.death.v142WardenCacheRetryAt
 assert.equal(deferred.death.v142WardenCachePending,false,"Restored pending flag must reconcile an already-created/opened cache");
 assert.equal(d.host.chests.length,1);
 
+// Source-executed legacy restoration: an already-broken Count can be saved
+// without a stats object by older data. His killing blow must not leave the
+// actor marked defeated while losing its score, XP and Warden cache.
+const restoredCount=soloEncounter(),rc=restoredCount.ctx;
+assert.equal(rc.permanentlyBanish(restoredCount.count,rc.p1),true);
+rc.run=JSON.parse(JSON.stringify(rc.run));delete rc.run.stats;
+assert.equal(rc.hitStalker({x:restoredCount.count.x,y:restoredCount.count.y,power:999,owner:"p1"}),true);
+assert.equal(restoredCount.count.permanentlyBanished,true);
+assert.equal(rc.run.stats.kills,1,"Missing legacy kill statistics must be safely initialised");
+assert.equal(rc.run.stats.wardenKills,1,"Warden defeat statistics survive legacy restoration");
+assert.equal(rc.score,7500,"Legacy restored Count kill must award its full score exactly once");
+assert.equal(rc.p1.totalXp,250,"Legacy restored Count kill must award its XP");
+assert.equal(rc.host.chests.filter(chest=>chest.v142WardenCache).length,1,
+  "Legacy restored Count defeat must not lose its claimable Warden cache");
+assert.equal(rc.hitStalker({x:restoredCount.count.x,y:restoredCount.count.y,power:999,owner:"p1"}),false);
+restoredCount.advance(2100);
+assert.equal(rc.score,7500,"No duplicate score after repeated damage or maintenance");
+assert.equal(rc.p1.totalXp,250,"No duplicate XP after maintenance");
+assert.equal(rc.host.chests.length,1,"No duplicate cache after maintenance");
+
 const countKill=soloEncounter(),k=countKill.ctx;
 k.permanentlyBanish(countKill.count,k.p1);
 k.hitStalker({x:countKill.count.x,y:countKill.count.y,power:999,owner:"p1"});
@@ -262,6 +322,66 @@ for(const issue of ["unexpected item","exception"]){
   ctx.PGR.inventoryRemove=remove;
 }
 
+// R143 P0: a paid charge must revalidate the exact live actor, not a stale
+// pre-payment reference after a death or restored host roster replacement.
+for(const staleKind of ["defeated", "replaced"]){
+  const fixture=wardPaymentFixture(),ctx=fixture.ctx,remove=ctx.PGR.inventoryRemove;
+  const before=JSON.stringify(ctx.p1.inventory);
+  ctx.PGR.inventoryRemove=(player,index)=>{
+    const paid=remove(player,index,1);
+    if(staleKind==="defeated")fixture.death.alive=false;
+    else ctx.host.enemies=ctx.host.enemies.filter(e=>e!==fixture.death);
+    return paid;
+  };
+  assert.equal(ctx.activateBanishment(ctx.p1),false,`${staleKind}: stale Warden cannot spend a charge`);
+  assert.equal(JSON.stringify(ctx.p1.inventory),before,`${staleKind}: failed ward break refunds the exact charge`);
+  assert.equal(fixture.death.v142WardBroken,undefined,`${staleKind}: stale Warden remains unchanged`);
+  assert.equal(ctx.run.stats.wardsBroken||0,0);
+  ctx.PGR.inventoryRemove=remove;
+  if(staleKind==="defeated")fixture.death.alive=true;
+  else ctx.host.enemies.unshift(fixture.death);
+  assert.equal(ctx.activateBanishment(ctx.p1),true,`${staleKind}: valid live retry succeeds`);
+  assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
+  assert.equal(ctx.run.stats.wardsBroken,1);
+}
+
+// Two different sealed Wardens in the same chamber require separate charges.
+// The established inventory owner permits only ONE carried Ward-Break Charge
+// at a time. Spend the first, acquire a genuine second, then restore the host;
+// neither a fabricated qty:2 stack nor a free charge is permitted.
+const dualWarden=soloEncounter(),dual=dualWarden.ctx;
+dual.p1.x=6;dual.p1.y=5;
+assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:1}),true);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
+const initialDualTargets=dual.banishmentState(dual.p1);
+assert.equal(initialDualTargets.targets.length,2,JSON.stringify({
+  range:initialDualTargets.range,
+  targetIds:initialDualTargets.targets.map(target=>target.id),
+  countAwake:dual.host.stalker.awake,
+  countPosition:{x:dual.host.stalker.x,y:dual.host.stalker.y},
+  deathPosition:{x:dualWarden.death.x,y:dualWarden.death.y},
+  countLOS:dual.A.lineOfSight(dual.world.map,dual.p1,dual.host.stalker,initialDualTargets.range,dual.host),
+  deathLOS:dual.A.lineOfSight(dual.world.map,dual.p1,dualWarden.death,initialDualTargets.range,dual.host)
+}));
+assert.equal(dual.activateBanishment(dual.p1),true,"First charge breaks the nearer Death Stalker");
+assert.equal(dualWarden.death.v142WardBroken,true);
+assert.equal(dualWarden.count.v142WardBroken,undefined);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),0);
+assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:1}),true,"Second charge must be acquired after the first is spent");
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
+dual.host=JSON.parse(JSON.stringify(dual.host));
+const restoredDeath=dual.host.enemies.find(e=>e.id===dualWarden.death.id);
+const restoredDualCount=dual.host.stalker;
+assert.equal(dual.banishmentState(dual.p1).targets.length,1,"Restored broken Stalker cannot steal the second target");
+assert.equal(dual.banishmentState(dual.p1).nearest,restoredDualCount);
+assert.equal(dual.activateBanishment(dual.p1),true,"Second charge breaks the separate Count ward");
+assert.equal(restoredDualCount.v142WardBroken,true);
+assert.equal(restoredDeath.v142WardBroken,true);
+assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),0);
+assert.equal(dual.run.stats.wardsBroken,2);
+assert.equal(dual.activateBanishment(dual.p1),false,"No phantom third charge after two valid payments");
+assert.equal(dual.run.stats.wardsBroken,2);
+
 const exactPayment=wardPaymentFixture(),paid=exactPayment.ctx;
 const paidInitial=JSON.stringify(paid.p1.inventory);
 assert.equal(paid.activateBanishment(paid.p1),true,"Successful charge breaks one actual sealed ward");
@@ -294,16 +414,25 @@ function wardSightFixture({asCount=false,gate="locked",wall=false}={}){
 }
 for(const asCount of [false,true]){
   const f=wardSightFixture({asCount}),ctx=f.ctx;
-  const initial=JSON.stringify(ctx.p1.inventory);
-  assert.equal(ctx.banishmentState(ctx.p1).ready,false,
+  const initial=JSON.stringify(ctx.p1.inventory),notices=[];
+  ctx.showToast=(title,message)=>notices.push({title,message});
+  const sealed=ctx.banishmentState(ctx.p1);
+  assert.equal(sealed.blocked.length,1,"In-range sealed Warden behind closed gate is classified as obstructed");
+  assert.equal(sealed.blocked[0].id,asCount?"count-loadula":"death-stalker-floor-4");
+  assert.equal(sealed.ready,false,
     "Closed room gate must block B targeting, even inside the charge range");
   assert.equal(ctx.activateBanishment(ctx.p1),false);
+  assert.match(notices.at(-1).title,/WARD-BREAK SIGHT BLOCKED/,"B explains the actual blocked target");
+  assert.match(notices.at(-1).message,/No charge spent/,"Blocked feedback confirms no payment");
+  assert.match(notices.at(-1).message,asCount?/Count Loadula/:/Death Stalker/);
   assert.equal(JSON.stringify(ctx.p1.inventory),initial,"Closed gate must preserve exact Flask");
   assert.equal(ctx.run.stats.wardsBroken||0,0);
   ctx.host=JSON.parse(JSON.stringify(ctx.host));
   assert.equal(ctx.banishmentState(ctx.p1).ready,false,"Saved locked gate remains blocked");
+  assert.equal(ctx.banishmentState(ctx.p1).blocked.length,1,"JSON-restored closed gate preserves blocked reason");
   ctx.host.doors[0].open=true;ctx.host.doors[0].locked=false;
   assert.equal(ctx.banishmentState(ctx.p1).ready,true);
+  assert.equal(ctx.banishmentState(ctx.p1).blocked.length,0,"Opened gate removes the obstruction warning");
   assert.equal(ctx.activateBanishment(ctx.p1),true,"Opening room gate restores normal B use");
   assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
   assert.equal(ctx.run.stats.wardsBroken,1);
@@ -313,7 +442,10 @@ for(const asCount of [false,true]){
 }
 const wallWard=wardSightFixture({gate:"none",wall:true}),wallCtx=wallWard.ctx;
 assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,false,"Solid stone blocks supernatural ward-break");
+assert.equal(wallCtx.banishmentState(wallCtx.p1).blocked.length,1,"Stone wall has a truthful obstruction reason");
+const wallNotices=[];wallCtx.showToast=(title,message)=>wallNotices.push({title,message});
 assert.equal(wallCtx.activateBanishment(wallCtx.p1),false);
+assert.match(wallNotices.at(-1).title,/WARD-BREAK SIGHT BLOCKED/);
 assert.equal(wallCtx.PGR.inventoryKindCount(wallCtx.p1,"banishment"),1);
 wallCtx.world.map[3][3]=0;
 assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,true);
@@ -322,8 +454,66 @@ const visibleWard=wardSightFixture({gate:"none",wall:true}),visibleCtx=visibleWa
 visibleWard.count.x=2;visibleWard.count.y=7;
 assert.equal(visibleCtx.banishmentState(visibleCtx.p1).nearest,visibleWard.count,
   "Visible Count may be selected instead of nearer blocked Stalker");
+assert.equal(visibleCtx.banishmentState(visibleCtx.p1).blocked[0],visibleWard.death,
+  "A blocked nearer Stalker cannot prevent payment to a distinct visible sealed Count");
 assert.equal(visibleCtx.activateBanishment(visibleCtx.p1),true);
 assert.notEqual(visibleWard.death.v142WardBroken,true);
 assert.equal(visibleWard.count.v142WardBroken,true);
+
+
+
+// P0 Floor 5: execute the actual canvas owners. A paid Ward-Break is
+// permanent vulnerability, even after Count's short legacy stun expires.
+// Rendering must never keep labelling a breakable Death Stalker indestructible.
+const rendererSource=readOwner("game-render");
+function rendererSection(start,end){
+  const from=rendererSource.indexOf(start),to=rendererSource.indexOf(end,from+start.length);
+  assert.ok(from>=0&&to>from,"Missing authoritative render section "+start);
+  return rendererSource.slice(from,to);
+}
+const wardLabels=[],wardBars=[];
+const wardCanvas=new Proxy({createRadialGradient(){return {addColorStop(){}}}},{
+  get(target,key){return key in target?target[key]:()=>{}},
+  set(target,key,value){target[key]=value;return true}
+});
+const wardRender={
+  window:{CCGDungeonEnemyIdentity:{label(){return null}}},
+  host:{stalker:null},run:{floor:5},focus:{x:4,y:4},
+  performance:{now(){return 10000}},
+  C:{tile:40,stalker:{name:"Count Loadula"},enemy:{followerLightRadius:5}},
+  P:{red:"red",purple:"purple",white:"white",gold:"gold",cyan:"cyan"},
+  ctx:wardCanvas,tileInRenderView(){return true},visibleTo(){return true},
+  enemyScreen:e=>({x:e.x*40,y:e.y*40}),ws:(x,y)=>({x:x*40,y:y*40}),
+  drawGrotesqueBossSprite(){return true},drawPunyEnemySprite(){return true},
+  drawAuthoredDungeonEnemySprite(){return true},drawPixelEnemySprite(){},
+  drawEnemyChargeTelegraph(){},drawTransientHealth:e=>wardBars.push(e.id||"count"),
+  label:text=>wardLabels.push(text),px(){}
+};
+vm.createContext(wardRender);
+vm.runInContext(
+  rendererSection("function drawEnemy(e){","function drawStalker(){")+
+  rendererSection("function drawStalker(){","function drawPlayerResources(")+
+  ";this.renderEnemy=drawEnemy;this.renderCount=drawStalker;",
+  wardRender,{filename:"game-render.js:Ward-Break render owners"}
+);
+function checkWardenRender(draw,expectedLabel,expectedBars){
+  wardLabels.length=0;wardBars.length=0;draw();
+  assert.ok(String(wardLabels.at(-1)).includes(expectedLabel),
+    "Actual canvas label must contain "+expectedLabel+"; got "+wardLabels.at(-1));
+  assert.equal(wardBars.length,expectedBars,"Actual health-bar ownership must match immunity");
+}
+const sealedDeath={id:"death-stalker-floor-5",x:4,y:4,alive:true,
+  deathStalker:true,voidStalker:true,kind:"ghost"};
+checkWardenRender(()=>wardRender.renderEnemy(sealedDeath),"INDESTRUCTIBLE",0);
+const brokenDeath={...sealedDeath,v142WardBroken:true,v142WardState:"broken",hp:11,maxHp:34,hpBarMs:5000};
+checkWardenRender(()=>wardRender.renderEnemy(brokenDeath),"VULNERABLE",1);
+checkWardenRender(()=>wardRender.renderEnemy({...brokenDeath,v142WardState:"defeated"}),"INDESTRUCTIBLE",0);
+wardRender.host.stalker={id:"count-loadula",x:4,y:4,awake:true,vulnerableMs:0,hp:31,maxHp:47,hpBarMs:5000};
+checkWardenRender(()=>wardRender.renderCount(),"COUNT LOADULA",0);
+wardRender.host.stalker.v142WardBroken=true;wardRender.host.stalker.v142WardState="broken";
+checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
+wardRender.host.stalker.v142WardBroken=false;wardRender.host.stalker.vulnerableMs=200;
+checkWardenRender(()=>wardRender.renderCount(),"VULNERABLE",1);
+console.log("PASS real canvas Warden labels/health follow sealed, Ward-Broken and legacy temporary-vulnerable state");
 
 console.log("PASS solo paired guardian/Stalker combat and safe, reachable, reserved Warden caches");

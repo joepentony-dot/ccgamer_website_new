@@ -205,11 +205,23 @@ function openChest(p,chest){
 }
 function tryChest(p,x,y){
   const c=W.chestAt(host,x,y);
-  if(!c)return true;
-  // A rare creature may be standing on a chest in an older save or mid-frame.
-  // Resolve the visible enemy encounter first instead of issuing a key warning
-  // for a chest completely hidden under its sprite.
-  if((host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))return true;
+  if(!c||!p)return true;
+  // The renderer paints chests before live actors and full-tile objects.
+  // Old saves and reward drops can put a locked chest beneath one of them:
+  // its key warning must not fire until that chest can actually be seen.
+  const at=q=>q&&q.x===x&&q.y===y;
+  const covered=(host.enemies||[]).some(e=>e?.alive&&at(e))||
+    (host.stalker?.awake&&!host.stalker.permanentlyBanished&&at(host.stalker))||
+    (host.guardian?.alive!==false&&at(host.guardian))||
+    (host.blockingDecor||[]).some(d=>at(d)&&!d.destroyed&&Number(d.hp??1)>0)||
+    (host.deathCaches||[]).some(d=>d?.active&&at(d))||
+    (host.shops||[]).some(s=>s?.active&&at(s))||
+    [host.trader,host.startShop,host.rescue].some(s=>s?.active!==false&&at(s));
+  if(covered)return true;
+  // Movement is always one tile at a time, including diagonal/dash steps.
+  // Do not interact with a distant or camera-clipped chest via stale input.
+  if(Math.max(Math.abs(p.x-x),Math.abs(p.y-y))>1||
+     (typeof tileInRenderView==="function"&&!tileInRenderView(x,y,2)))return true;
   return openChest(p,c)
 }
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.playerWalkable(world.map,p.x+dx,p.y,host)&&W.playerWalkable(world.map,p.x,p.y+dy,host)}
@@ -806,7 +818,16 @@ function damageGenerator(g,power,p){
 }
 function hitStalker(b){
   const s=host.stalker;if(!s?.awake||s.stunMs>0)return false;if(Math.round(b.x)!==s.x||Math.round(b.y)!==s.y)return false;
-  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",6500);S.sfx("stalker");return true
+  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);
+  // Keep each sealed Count hit blocked, but do not flood the UI/audio with
+  // identical long-lived notices under rapid fire or after a saved clock reset.
+  const now=performance.now(),last=Number(s._ccgSealedWardNoticeAt);
+  if(!Number.isFinite(last)||now<last||now-last>=1600){
+    s._ccgSealedWardNoticeAt=now;
+    showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",6500);
+    S.sfx("stalker");
+  }
+  return true
 }
 function projectilePathClear(b,nx,ny){
   // Closed, locked and still-opening doors are solid to gunfire as well as movement.
@@ -994,7 +1015,7 @@ function updateRoomMessage(p,force){
   if(room?.fireplace)S.sfx("fireplace");
   if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"No monster can enter this safe room. Stand on the green regeneration square to recover 1 HP every 3 seconds.","green",9000);
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
-  else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
+  else if(room?.spiderNest&&host?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
   else if(room?.sequenceTorchRoom&&!host.sequenceTorchPuzzle?.solved){showToast("TORCH SEQUENCE PUZZLE","STEP onto the four N/E/S/W torches in the correct order. Only your footsteps count — bullets and enemies cannot activate a torch. The faded blood clue from Floor 2 contains the sequence. A wrong step resets the flames; at most one punishment guardian can be active at a time.","gold",12000)}
   else if(room?.weightBridgeRoom&&host.weightBridge&&!host.weightBridge.crossed){host.weightBridge.discovered=true;updateQuests();showToast("ROTTEN BRIDGE — SOMETHING VALUABLE IS OVER THERE","A rare Trickster Cache is visible on the far side. The bridge will not carry inventory weight: use TAB to DROP your carried items on this side, cross empty-handed, then expect the dungeon to play dirty. A wall switch is mounted beyond the bridge; if the crossing fails, SHOOT that switch to deploy a replacement.","gold",12500)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
@@ -1028,8 +1049,34 @@ function generatorIlluminated(g){
   for(const e of host.enemies||[])if(e.alive&&e.follower&&W.roomAt(world,e.x,e.y)===roomId&&Math.hypot(e.x-g.x,e.y-g.y)<=lr+.2&&A.lineOfSight(world.map,e,g,lr,host))return true;
   return false;
 }
+// Generator kills are already recorded in run stats and the independent
+// defeat-visual queue. Keeping every dead reinforcement in host.enemies forever
+// makes a long Floor 5 generator fight scan thousands of inert actors per frame
+// (AI, projectile collision and rendering), even though the living spawn cap
+// is respected. Keep the most recent corpses for transient presentation and
+// preserve every live, authored, named and objective actor.
+function pruneDeadGeneratorReinforcements(){
+  const enemies=host?.enemies;
+  if(!Array.isArray(enemies)||enemies.length<=96)return 0;
+  const stale=[];
+  for(let i=0;i<enemies.length;i++){
+    const enemy=enemies[i];
+    if(enemy?.generatorId&&enemy.alive===false&&!enemy.follower&&!enemy.guardian&&
+      !enemy.deathStalker&&!enemy.voidStalker&&!enemy.bridgeThief&&!enemy.timedHunter)
+      stale.push(i);
+  }
+  const excess=stale.length-24;
+  if(excess<=0)return 0;
+  for(let i=excess-1;i>=0;i--){
+    const index=stale[i],enemy=enemies[index];
+    if(enemy?.id&&typeof enemyVisuals!=="undefined")enemyVisuals.delete(enemy.id);
+    enemies.splice(index,1);
+  }
+  host.revision=(Number(host.revision)||0)+1;
+  return excess;
+}
 function updateGenerators(dt){
-  
+  pruneDeadGeneratorReinforcements();
   for(const g of host.generators||[])if(g.alive){
     const lit=generatorIlluminated(g);if(!lit){g.powered=false;continue}if(!g.powered){g.powered=true;g.spawnCooldown=Math.max(g.spawnCooldown||0,1700);if(localPlayers().some(p=>W.sameRoom(world,p,g)))S.sfx("generator")}
     g.spawnCooldown-=dt;const rate=run.modifier?.id==="RESTLESS_DUNGEON"?.65:1;if(g.spawnCooldown>0)continue;

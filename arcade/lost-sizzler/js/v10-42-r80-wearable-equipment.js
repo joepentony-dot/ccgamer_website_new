@@ -138,6 +138,21 @@
     if(!current)return"EQUIP";
     return wearableGrade(next)>wearableGrade(current)?"UPGRADE":"REPLACE"
   }
+  function bestCarriedForSlot(player,slot){
+    if(!SLOT_ORDER.includes(slot))return null;
+    const matches=(player?.inventory||[]).map((item,index)=>({item,index}))
+      .filter(({item})=>wearableSlot(item)===slot);
+    matches.sort((a,b)=>wearableGrade(b.item)-wearableGrade(a.item)||a.index-b.index);
+    return matches[0]||null
+  }
+  function equipBestForSlot(player,slot){
+    const candidate=bestCarriedForSlot(player,slot);
+    if(!candidate){
+      wearableEquipNotice("NO MATCHING WEARABLE",`No carried ${SLOT_LABELS[slot]||"equipment"} item is available. Find wearable gear in dungeon chests.`,"cyan");
+      return false
+    }
+    return equipWearable(player,candidate.index)
+  }
   function wearableEquipNotice(title,message,tone="red"){
     try{showToast(title,message,tone,7000)}catch(_){}
   }
@@ -173,7 +188,16 @@
     if(!player||!SLOT_ORDER.includes(slot))return false;
     const slots=wearables(player),old=slots[slot];if(!old)return false;
     if(!PGR.inventoryCanAdd(player,old)){try{showToast("INVENTORY FULL","Free a carried slot before removing this equipped item.","red",6500)}catch(_){}return false}
-    clearSlotEffect(player,slot);slots[slot]=null;PGR.inventoryAdd(player,{...old});state.unequips++;
+    // Do not clear a worn item or its perks until the inventory accepts it.
+    // inventoryCanAdd can become stale after compaction or a failed add.
+    const before=(player.inventory||[]).map(row=>row&&typeof row==="object"?{...row}:row);
+    let stored=false;try{stored=PGR.inventoryAdd(player,{...old})===true}catch(_){}
+    if(!stored){
+      player.inventory=before;
+      wearableEquipNotice("UNEQUIP FAILED","The carried inventory did not accept this item. Your equipped gear and bonuses are unchanged.");
+      return false
+    }
+    clearSlotEffect(player,slot);slots[slot]=null;state.unequips++;
     try{showToast(`${SLOT_LABELS[slot]} UNEQUIPPED`,`${old.name} returned to inventory.`,"cyan",6000)}catch(_){}
     try{if(typeof sync==="function")sync()}catch(_){}
     try{renderInventoryPanel?.()}catch(_){}
@@ -273,7 +297,16 @@
     let strip=loadout.querySelector("#r80-wearable-strip");
     if(!strip){strip=document.createElement("div");strip.id="r80-wearable-strip";strip.className="r80-wearable-strip";board.insertAdjacentElement("afterend",strip)}
     const slots=wearables(player);
-    strip.innerHTML=SLOT_ORDER.map(slot=>{const item=slots[slot];return `<article class="r80-wearable-card ${item?"equipped":"empty"}" data-r80-slot="${slot}"><span>${SLOT_LABELS[slot]}</span><b>${escHtml(item?.name||"EMPTY")}</b><small>${escHtml(item?effectText(item):"FIND WEARABLE GEAR IN DUNGEON CHESTS")}</small>${item?`<button type="button" data-r80-unequip="${slot}">UNEQUIP</button>`:""}</article>`}).join("");
+    strip.innerHTML=SLOT_ORDER.map(slot=>{
+      const item=slots[slot],candidate=bestCarriedForSlot(player,slot),action=candidate?(item?"SWAP BEST":"EQUIP BEST"):"";
+      const equipButton=candidate?`<button type="button" data-r80-equip-slot="${slot}" aria-label="${escHtml(action+" "+candidate.item.name+" in "+SLOT_LABELS[slot]+" slot")}" title="${escHtml("Equip "+candidate.item.name+" from carried inventory")}" >${action}</button>`:"";
+      const unequipButton=item?`<button type="button" data-r80-unequip="${slot}" aria-label="${escHtml("Unequip "+item.name)}">UNEQUIP</button>`:"";
+      return `<article class="r80-wearable-card ${item?"equipped":"empty"}" data-r80-slot="${slot}"><span>${SLOT_LABELS[slot]}</span><b>${escHtml(item?.name||"EMPTY")}</b><small>${escHtml(item?effectText(item):candidate?"CARRIED: "+candidate.item.name:"FIND WEARABLE GEAR IN DUNGEON CHESTS")}</small><div class="r80-wearable-actions">${equipButton}${unequipButton}</div></article>`
+    }).join("");
+    strip.querySelectorAll("[data-r80-equip-slot]").forEach(button=>button.addEventListener("click",event=>{
+      event.preventDefault();event.stopPropagation();
+      equipBestForSlot(player,String(button.dataset.r80EquipSlot||""))
+    }));
     strip.querySelectorAll("[data-r80-unequip]").forEach(button=>button.addEventListener("click",()=>unequipWearable(player,String(button.dataset.r80Unequip||""))));
     const frame=loadout.querySelector(".r71-character-frame");
     if(frame){
@@ -319,7 +352,19 @@
   }
   if(typeof renderInventoryPanel==="function"){
     const baseRender=renderInventoryPanel;
-    renderInventoryPanel=function r80RenderInventory(...args){const result=baseRender.apply(this,args);renderLoadout();decorateInventory();return result};
+    renderInventoryPanel=function r80RenderInventory(...args){
+      // Base R71 rebuilds the loadout subtree. Preserve keyboard focus on
+      // the same equipment slot after an Enter-driven equip/swap/unequip.
+      const focusedSlot=document.activeElement?.closest?.("#r80-wearable-strip [data-r80-slot]")?.dataset.r80Slot||null;
+      const result=baseRender.apply(this,args);
+      renderLoadout();decorateInventory();
+      if(focusedSlot){
+        const next=document.querySelector(`#r80-wearable-strip [data-r80-slot="${focusedSlot}"] button`)
+          ||document.getElementById("inventory-close-top");
+        try{next?.focus({preventScroll:true})}catch(_){}
+      }
+      return result
+    };
     renderInventoryPanel.__ccgV142R80Wearables=true;renderInventoryPanel.__ccgOriginal=baseRender;
   }
   /* R93: the wrapped renderInventoryPanel call above is the only wearable
@@ -398,6 +443,6 @@
   ensureStyle();
   try{renderLoadout();decorateInventory()}catch(_){}
   window.CCGLostSizzlerV142R80WearableEquipment=Object.freeze({
-    version:"V10.42-r80",state,slots:[...SLOT_ORDER],gearTierFor,makeWearable,effectText,wearableSlot,equipmentSwapLabel,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
+    version:"V10.42-r80",state,slots:[...SLOT_ORDER],gearTierFor,makeWearable,effectText,wearableSlot,equipmentSwapLabel,bestCarriedForSlot,equipBestForSlot,equipWearable,unequipWearable,stripWearablesForDeath,qualifiesForDrop,wearables
   });
 })();

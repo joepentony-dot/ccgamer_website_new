@@ -1617,9 +1617,8 @@
 }
 
 .ccg-page--single-game .ccg-game-section-nav {
-    position: sticky;
-    top: calc(var(--ccg-header-height, 0px) + 6px);
-    z-index: 55;
+    /* Explore belongs to the page flow above the video archive, not the viewport. */
+    position: static;
     min-height: 42px;
     padding: 6px 8px;
     border-radius: 10px;
@@ -1897,10 +1896,6 @@
 }
 
 @media (max-width: 900px) {
-    .ccg-page--single-game .ccg-game-section-nav {
-        top: 4px;
-    }
-
     .ccg-page--single-game .game-shell > :is(
         #game-utility-hub-section,
         #game-download-section,
