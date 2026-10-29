@@ -6,8 +6,17 @@
       "Microsoft's 1999 acquisition announcement identified Bruce Carver as Access Software's president, founder and CEO and said the studio would continue development in Salt Lake City.",
       "The announced Microsoft acquisition included the Links golf library and the Tex Murphy adventure series."
     ],
-    "strengths": ["C64 action games", "Golf simulations", "Adventure games"],
-    "related": [{"label":"US Gold","slug":"us-gold"}],
+    "strengths": [
+      "C64 action games",
+      "Golf simulations",
+      "Adventure games"
+    ],
+    "related": [
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      }
+    ],
     "note": "CCG publisher credits continue to follow the publisher recorded for each archived release, while this profile adds company-level historical context.",
     "confidence": "high",
     "verified_on": "2026-08-12",
@@ -32,8 +41,17 @@
       "Miller said the founders funded Accolade themselves after being unable to attract outside investment and that the company became profitable after its first year of development.",
       "Miller designed Law of the West for the Commodore 64 before moving fully into management at Accolade."
     ],
-    "strengths": ["Sports games", "Driving games", "C64 and Amiga releases"],
-    "related": [{"label":"Activision","slug":"activision"}],
+    "strengths": [
+      "Sports games",
+      "Driving games",
+      "C64 and Amiga releases"
+    ],
+    "related": [
+      {
+        "label": "Activision",
+        "slug": "activision"
+      }
+    ],
     "note": "The historical account is based on Alan Miller's first-person recollection of founding and running Accolade.",
     "confidence": "high",
     "verified_on": "2026-08-12",
@@ -52,7 +70,11 @@
       "Sheffield games historian Mark Hardisty describes Alligata as Mike and Tim Mahoney's developer and publisher, formed from the Superior Systems retail outlet on West Street in Sheffield.",
       "The Centre for Computing History documents Alligata publishing Anthony Crowther's BugBlaster for the Commodore 64 in 1983 alongside a wider multi-format catalogue."
     ],
-    "strengths": ["C64 arcade-style games", "Sheffield development scene", "Multi-format 8-bit publishing"],
+    "strengths": [
+      "C64 arcade-style games",
+      "Sheffield development scene",
+      "Multi-format 8-bit publishing"
+    ],
     "related": [],
     "note": "The profile keeps the company history separate from individual author credits, which vary by game and platform.",
     "confidence": "high",
@@ -77,8 +99,17 @@
       "Companies House records Alternative Software Limited as incorporated on 4 June 1986, with its registered office in Castleford, West Yorkshire.",
       "The Centre for Computing History catalogues 85 games under Alternative Software, including numerous Commodore 64 releases and later licensed titles."
     ],
-    "strengths": ["Budget re-releases", "Licensed games", "Large 8-bit catalogue"],
-    "related": [{"label":"Codemasters","slug":"codemasters"}],
+    "strengths": [
+      "Budget re-releases",
+      "Licensed games",
+      "Large 8-bit catalogue"
+    ],
+    "related": [
+      {
+        "label": "Codemasters",
+        "slug": "codemasters"
+      }
+    ],
     "note": "The museum catalogue is not exhaustive, so archive counts shown by CCG continue to reflect only games currently represented on this site.",
     "confidence": "high",
     "verified_on": "2026-08-12",
@@ -102,8 +133,17 @@
       "Bertelsmann's corporate chronicle states that its software activities were grouped into a Digital Information Systems unit and that Ariolasoft became the leading publisher in the German home-computer market.",
       "The Centre for Computing History records a substantial Ariolasoft catalogue including Commodore 64 releases such as Choplifter, Mail Order Monsters and They Stole a Million."
     ],
-    "strengths": ["European publishing", "C64 releases", "Multi-company distribution"],
-    "related": [{"label":"Electronic Arts","slug":"electronic-arts"}],
+    "strengths": [
+      "European publishing",
+      "C64 releases",
+      "Multi-company distribution"
+    ],
+    "related": [
+      {
+        "label": "Electronic Arts",
+        "slug": "electronic-arts"
+      }
+    ],
     "note": "Ariolasoft often handled regional publishing and distribution, so original developers and publishers may differ from the company credited on a particular European release.",
     "confidence": "high",
     "verified_on": "2026-08-12",
@@ -128,7 +168,11 @@
       "Atarisoft assigned platform-specific packaging colours, with Commodore 64 releases using green packaging.",
       "The archive states that most Atarisoft versions were produced by third-party software companies rather than Atari's internal development teams."
     ],
-    "strengths": ["Arcade conversions", "Atari properties on C64", "Multi-platform releases"],
+    "strengths": [
+      "Arcade conversions",
+      "Atari properties on C64",
+      "Multi-platform releases"
+    ],
     "related": [],
     "note": "Atarisoft is treated as the publishing label shown on these non-Atari releases rather than as a separate development studio.",
     "confidence": "high",
@@ -153,7 +197,11 @@
       "Companies House records Audiogenic Software Limited as incorporated on 4 July 1984 and later renamed from Chineham Services Limited in May 1985.",
       "The Centre for Computing History documents Audiogenic publishing Commodore software including Alice in Videoland, Graham Gooch's All-Star Cricket and Emlyn Hughes International Soccer."
     ],
-    "strengths": ["Sports simulations", "Commodore software", "Multi-format publishing"],
+    "strengths": [
+      "Sports simulations",
+      "Commodore software",
+      "Multi-format publishing"
+    ],
     "related": [],
     "note": "Some Audiogenic-associated games were developed by external teams, so developer credits remain distinct from the publisher history shown here.",
     "confidence": "high",
@@ -172,6 +220,41 @@
     ]
   },
   {
+    "slug": "blue-ribbon",
+    "summary": "Blue Ribbon appears in the CCG Commodore 64 archive through its cassette edition of Strip Poker: A Sizzling Game of Chance. The Centre for Computing History preserves this edition and also documents Blue Ribbon titles on other British home computers.",
+    "facts": [
+      "The Centre for Computing History catalogues a 1984 Commodore 64 cassette edition of Strip Poker with Blue Ribbon as its publisher.",
+      "The museum credits Sheldon Leemon and Glen Carbone on its Blue Ribbon Strip Poker cassette record.",
+      "The museum also preserves the 1984 BBC Micro game 3D Dotty under the Blue Ribbon publishing credit."
+    ],
+    "strengths": [
+      "C64 cassette editions",
+      "1980s card and arcade games",
+      "Multi-format British home-computer publishing"
+    ],
+    "related": [
+      {
+        "label": "Artworx Software",
+        "slug": "artworx-software"
+      }
+    ],
+    "note": "The CCG game record retains Artworx Software as the original publisher and Blue Ribbon as a separate re-release credit. The museum's 1984 catalogue date is presented as recorded, without asserting a distinct Blue Ribbon release chronology.",
+    "confidence": "high",
+    "verified_on": "2026-10-29",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Blue Ribbon Strip Poker cassette",
+        "url": "https://www.computinghistory.org.uk/det/17531/Strip-Poker/",
+        "type": "museum object record"
+      },
+      {
+        "label": "Centre for Computing History — Blue Ribbon 3D Dotty",
+        "url": "https://www.computinghistory.org.uk/det/36219/3D%20Dotty/",
+        "type": "museum object record"
+      }
+    ]
+  },
+  {
     "slug": "br-derbund",
     "summary": "Brøderbund Software was founded in 1980 by brothers Douglas and Gary Carlston in Eugene, Oregon. It grew from direct retail distribution of Doug Carlston's early games into a major entertainment and educational software publisher.",
     "facts": [
@@ -179,7 +262,11 @@
       "Doug and Gary Carlston initially marketed the Galactic Saga directly to retailers after deciding to form their own software company.",
       "Brøderbund expanded into in-house entertainment and educational software, with early successes including Choplifter, Lode Runner and The Print Shop."
     ],
-    "strengths": ["Entertainment software", "Educational software", "Major home-computer releases"],
+    "strengths": [
+      "Entertainment software",
+      "Educational software",
+      "Major home-computer releases"
+    ],
     "related": [],
     "note": "The CCG slug reflects the spelling currently produced by the publisher archive generator; the visitor-facing company name remains Brøderbund.",
     "confidence": "high",
@@ -199,7 +286,11 @@
       "The Centre for Computing History records Bubble Bus releases on the Commodore VIC-20 and Commodore 64 from 1981 and 1982, followed by further C64 titles through the mid-1980s.",
       "The museum catalogue documents Starquake under Bubble Bus on several platforms, including Atari 8-bit, ZX Spectrum, BBC Micro and Amstrad CPC."
     ],
-    "strengths": ["C64 action games", "Multi-format 8-bit publishing", "Starquake"],
+    "strengths": [
+      "C64 action games",
+      "Multi-format 8-bit publishing",
+      "Starquake"
+    ],
     "related": [],
     "note": "Reliable company-origin documentation is limited, so this profile intentionally describes only the publishing activity preserved by the museum collection.",
     "confidence": "high",
@@ -225,7 +316,11 @@
       "The Centre for Computing History records Cascade's Cassette 50 on the Commodore 64 and several other home computers in 1983.",
       "The museum collection also documents later Cascade releases including ACE, Sky Runner and ACE 2."
     ],
-    "strengths": ["Multi-game compilations", "Flight-combat games", "C64 publishing"],
+    "strengths": [
+      "Multi-game compilations",
+      "Flight-combat games",
+      "C64 publishing"
+    ],
     "related": [],
     "note": "The company-history dates come from the UK corporate register; individual game dates and platforms are cross-checked against the museum collection.",
     "confidence": "high",
@@ -250,7 +345,11 @@
       "The Strong records Cinemaware as founded in 1986 by Robert and Phyllis Jacob.",
       "The museum archive describes Cinemaware as a developer and publisher known for games inspired by popular films and records 15 releases before the company went bankrupt in 1991."
     ],
-    "strengths": ["Cinematic presentation", "Amiga showcase games", "Home-computer action and strategy"],
+    "strengths": [
+      "Cinematic presentation",
+      "Amiga showcase games",
+      "Home-computer action and strategy"
+    ],
     "related": [],
     "note": "This profile covers the original 1986-1991 Cinemaware company represented by the classic games in the CCG archive.",
     "confidence": "high",
@@ -271,7 +370,11 @@
       "Commodore launched the Commodore 64 in 1982.",
       "The company's later computer range included the Commodore 128, Plus/4 and Amiga systems."
     ],
-    "strengths": ["First-party Commodore software", "C64 releases", "Home-computer platform history"],
+    "strengths": [
+      "First-party Commodore software",
+      "C64 releases",
+      "Home-computer platform history"
+    ],
     "related": [],
     "note": "The publisher archive represents software carrying Commodore as its publishing credit; it is not intended as a complete history of Commodore hardware or corporate ownership.",
     "confidence": "high",
