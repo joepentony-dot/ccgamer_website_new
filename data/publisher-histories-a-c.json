@@ -1,16 +1,16 @@
 [
   {
     "slug": "2-99-classics",
-    "summary": "2.99 Classics was a budget re-release label of Elite Systems. Its Commodore 64 entry in the Cheeky Commodore Gamer archive is Skool Daze, originally issued for the C64 by Microsphere in 1985 and re-released under the 2.99 Classics label in 1986.",
+    "summary": "The 2.99 Classics archive entry concerns a Commodore 64 re-release of Skool Daze, whose original 1985 C64 publisher was Microsphere. The game's wider history includes Microsphere's 1984 ZX Spectrum edition and a separate mobile publication announced by Elite Systems in 2011.",
     "facts": [
-      "MobyGames identifies 2.99 Classics as a budget software label of Elite Systems Ltd.",
-      "The documented Commodore 64 editions of Skool Daze include the original 1985 Microsphere release and a UK 2.99 Classics budget re-release in 1986.",
-      "The RF Generation game database also lists a British Commodore 64 2.99 Classics re-release of Skool Daze in 1986."
+      "The Centre for Computing History preserves a 1984 ZX Spectrum cassette of Skool Daze credited to Microsphere and names David Reidy and Keith Warrington.",
+      "Elite Systems' own corporate history states that the company was incorporated in England in 1984 and developed and published Sinclair ZX Spectrum and Commodore 64 games.",
+      "Elite Systems announced a stand-alone iPhone and iPad edition of the ZX Spectrum version of Skool Daze in March 2011."
     ],
     "strengths": [
-      "Budget 8-bit re-releases",
-      "Commodore 64 cassette games",
-      "Skool Daze"
+      "Budget cassette re-releases",
+      "British home-computer game history",
+      "Skool Daze editions"
     ],
     "related": [
       {
@@ -22,24 +22,24 @@
         "slug": "elite"
       }
     ],
-    "note": "The 1985 date shown on the CCG game card is the original Commodore 64 release year. The separate 2.99 Classics edition dates to 1986, so it must not be presented as the game's original publisher or release year.",
+    "note": "The 1985 year on this archive's C64 game card records the original game release, while 2.99 Classics is credited separately as a re-release label. These approved historical sources do not establish the precise year of the 2.99 Classics C64 edition or the label's ownership, so neither is asserted here.",
     "confidence": "high",
     "verified_on": "2026-10-29",
     "sources": [
       {
-        "label": "MobyGames — 2.99 Classics company overview",
-        "url": "https://www.mobygames.com/company/23349/299-classics/",
-        "type": "game company database"
+        "label": "Centre for Computing History — Microsphere Skool Daze cassette",
+        "url": "https://www.computinghistory.org.uk/det/33953/Skooldaze/",
+        "type": "museum object record"
       },
       {
-        "label": "MobyGames — Skool Daze Commodore 64 releases",
-        "url": "https://www.mobygames.com/game/15189/skool-daze/releases/",
-        "type": "game release database"
+        "label": "Elite Systems — original corporate history",
+        "url": "https://www.elite-systems.co.uk/elite/htdocs/corporate_profile.php",
+        "type": "publisher primary source"
       },
       {
-        "label": "RF Generation — Skool Daze C64 release variants",
-        "url": "https://www.rfgeneration.com/cgi-bin/getinfo.pl?ID=E-018-S-01650-A",
-        "type": "game release database"
+        "label": "Elite Systems — March 2011 Skool Daze mobile announcement",
+        "url": "https://www.elite-systems.co.uk/elite/htdocs/newsarchive.php?show=31",
+        "type": "publisher primary source"
       }
     ]
   },
