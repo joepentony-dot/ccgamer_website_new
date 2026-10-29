@@ -23,6 +23,7 @@ on:
       - "scripts/validate-publisher-logo-output.js"
       - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-histories*.json"
+      - "tests/publisher-blue-ribbon-evidence.test.mjs"
       - "data/publisher-evidence-overrides.json"
       - "data/publisher-logo-sources.json"
       - "data/publisher-playlists.json"
@@ -52,6 +53,7 @@ on:
       - "scripts/validate-publisher-logo-output.js"
       - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-histories*.json"
+      - "tests/publisher-blue-ribbon-evidence.test.mjs"
       - "data/publisher-evidence-overrides.json"
       - "data/publisher-logo-sources.json"
       - "data/publisher-playlists.json"
@@ -145,6 +147,9 @@ jobs:
 
       - name: Validate publisher SEO and evidence output
         run: node scripts/audit-publisher-seo-evidence-tolerant.js
+
+      - name: Guard Blue Ribbon museum evidence and rendered publisher parity
+        run: node --test tests/publisher-blue-ribbon-evidence.test.mjs
 
       - name: Validate publisher directory and re-release role preservation
         run: node --test tests/archive-directory-system.test.mjs
