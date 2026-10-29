@@ -273,6 +273,37 @@ function wardPaymentFixture(){
   assert.equal(ctx.PGR.inventoryAdd(ctx.p1,{kind:"banishment",name:"Ward-Break Charge",qty:1}),true);
   return fixture;
 }
+// R149 owner-facing second-Flask regression: after a charge has already
+// stripped immunity, pressing B again on that SAME live visible Warden must
+// explain its remaining HP without spending a charge. A genuinely separate
+// sealed Count must still accept a second paid charge.
+const brokenFeedback=wardPaymentFixture(),bf=brokenFeedback.ctx,brokenNotices=[];
+bf.p1.x=4;bf.p1.y=5;brokenFeedback.count.awake=false;
+bf.showToast=(title,detail)=>brokenNotices.push({title:String(title),detail:String(detail)});
+assert.equal(bf.activateBanishment(bf.p1),true,"First genuine Flask breaks the Death Stalker ward");
+assert.equal(bf.PGR.inventoryKindCount(bf.p1,"banishment"),0);
+const brokenHp=brokenFeedback.death.hp,brokenScore=bf.score;
+assert.equal(bf.activateBanishment(bf.p1),false,"No charge is needed against an already-broken Warden");
+assert.ok(brokenNotices.at(-1).title.includes("WARD ALREADY BROKEN"),"No-Flask B explains visible broken ward");
+assert.ok(brokenNotices.at(-1).detail.includes(String(brokenHp)+" HP"),"Feedback reports actual remaining Warden HP");
+assert.equal(bf.PGR.inventoryAdd(bf.p1,{kind:"banishment",name:"Ward-Break Charge",qty:1}),true);
+const secondBefore=JSON.stringify(bf.p1.inventory);
+assert.equal(bf.activateBanishment(bf.p1),false,"Second charge must not be spent on the same broken ward");
+assert.ok(brokenNotices.at(-1).title.includes("WARD ALREADY BROKEN"));
+assert.equal(JSON.stringify(bf.p1.inventory),secondBefore,"No second payment or inventory mutation");
+assert.equal(brokenFeedback.death.hp,brokenHp,"Repeat B cannot heal or harm the already-broken target");
+assert.equal(bf.run.stats.wardsBroken,1,"No duplicate ward-break count");
+assert.equal(bf.score,brokenScore,"Repeat B cannot award score");
+brokenFeedback.count.awake=true;
+assert.equal(bf.activateBanishment(bf.p1),true,"A different live sealed Count accepts the genuinely second Flask");
+assert.equal(brokenFeedback.count.v142WardBroken,true);
+assert.equal(bf.PGR.inventoryKindCount(bf.p1,"banishment"),0,"Second valid target consumes exactly one charge");
+assert.equal(bf.run.stats.wardsBroken,2,"Each distinct ward breaks once");
+brokenFeedback.death.alive=false;brokenFeedback.count.awake=false;
+assert.equal(bf.activateBanishment(bf.p1),false,"Dead and sleeping Wardens cannot claim broken-target advice");
+assert.equal(brokenNotices.at(-1).title,"NO WARD-BREAK CHARGE");
+console.log("PASS R149 broken Warden repeat B feedback, no charge loss and separate second Flask");
+
 const missingPayment=wardPaymentFixture(),missing=missingPayment.ctx;
 const missingOriginalRemove=missing.PGR.inventoryRemove;
 const missingInventoryBefore=JSON.stringify(missing.p1.inventory);
