@@ -235,6 +235,26 @@ deferred.death.v142WardenCachePending=true;deferred.death.v142WardenCacheRetryAt
 assert.equal(deferred.death.v142WardenCachePending,false,"Restored pending flag must reconcile an already-created/opened cache");
 assert.equal(d.host.chests.length,1);
 
+// Source-executed legacy restoration: an already-broken Count can be saved
+// without a stats object by older data. His killing blow must not leave the
+// actor marked defeated while losing its score, XP and Warden cache.
+const restoredCount=soloEncounter(),rc=restoredCount.ctx;
+assert.equal(rc.permanentlyBanish(restoredCount.count,rc.p1),true);
+rc.run=JSON.parse(JSON.stringify(rc.run));delete rc.run.stats;
+assert.equal(rc.hitStalker({x:restoredCount.count.x,y:restoredCount.count.y,power:999,owner:"p1"}),true);
+assert.equal(restoredCount.count.permanentlyBanished,true);
+assert.equal(rc.run.stats.kills,1,"Missing legacy kill statistics must be safely initialised");
+assert.equal(rc.run.stats.wardenKills,1,"Warden defeat statistics survive legacy restoration");
+assert.equal(rc.score,7500,"Legacy restored Count kill must award its full score exactly once");
+assert.equal(rc.p1.totalXp,250,"Legacy restored Count kill must award its XP");
+assert.equal(rc.host.chests.filter(chest=>chest.v142WardenCache).length,1,
+  "Legacy restored Count defeat must not lose its claimable Warden cache");
+assert.equal(rc.hitStalker({x:restoredCount.count.x,y:restoredCount.count.y,power:999,owner:"p1"}),false);
+restoredCount.advance(2100);
+assert.equal(rc.score,7500,"No duplicate score after repeated damage or maintenance");
+assert.equal(rc.p1.totalXp,250,"No duplicate XP after maintenance");
+assert.equal(rc.host.chests.length,1,"No duplicate cache after maintenance");
+
 const countKill=soloEncounter(),k=countKill.ctx;
 k.permanentlyBanish(countKill.count,k.p1);
 k.hitStalker({x:countKill.count.x,y:countKill.count.y,power:999,owner:"p1"});
@@ -351,11 +371,11 @@ assert.equal(dual.PGR.inventoryAdd(dual.p1,{kind:"banishment",qty:1}),true,"Seco
 assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),1);
 dual.host=JSON.parse(JSON.stringify(dual.host));
 const restoredDeath=dual.host.enemies.find(e=>e.id===dualWarden.death.id);
-const restoredCount=dual.host.stalker;
+const restoredDualCount=dual.host.stalker;
 assert.equal(dual.banishmentState(dual.p1).targets.length,1,"Restored broken Stalker cannot steal the second target");
-assert.equal(dual.banishmentState(dual.p1).nearest,restoredCount);
+assert.equal(dual.banishmentState(dual.p1).nearest,restoredDualCount);
 assert.equal(dual.activateBanishment(dual.p1),true,"Second charge breaks the separate Count ward");
-assert.equal(restoredCount.v142WardBroken,true);
+assert.equal(restoredDualCount.v142WardBroken,true);
 assert.equal(restoredDeath.v142WardBroken,true);
 assert.equal(dual.PGR.inventoryKindCount(dual.p1,"banishment"),0);
 assert.equal(dual.run.stats.wardsBroken,2);
@@ -394,16 +414,25 @@ function wardSightFixture({asCount=false,gate="locked",wall=false}={}){
 }
 for(const asCount of [false,true]){
   const f=wardSightFixture({asCount}),ctx=f.ctx;
-  const initial=JSON.stringify(ctx.p1.inventory);
-  assert.equal(ctx.banishmentState(ctx.p1).ready,false,
+  const initial=JSON.stringify(ctx.p1.inventory),notices=[];
+  ctx.showToast=(title,message)=>notices.push({title,message});
+  const sealed=ctx.banishmentState(ctx.p1);
+  assert.equal(sealed.blocked.length,1,"In-range sealed Warden behind closed gate is classified as obstructed");
+  assert.equal(sealed.blocked[0].id,asCount?"count-loadula":"death-stalker-floor-4");
+  assert.equal(sealed.ready,false,
     "Closed room gate must block B targeting, even inside the charge range");
   assert.equal(ctx.activateBanishment(ctx.p1),false);
+  assert.match(notices.at(-1).title,/WARD-BREAK SIGHT BLOCKED/,"B explains the actual blocked target");
+  assert.match(notices.at(-1).message,/No charge spent/,"Blocked feedback confirms no payment");
+  assert.match(notices.at(-1).message,asCount?/Count Loadula/:/Death Stalker/);
   assert.equal(JSON.stringify(ctx.p1.inventory),initial,"Closed gate must preserve exact Flask");
   assert.equal(ctx.run.stats.wardsBroken||0,0);
   ctx.host=JSON.parse(JSON.stringify(ctx.host));
   assert.equal(ctx.banishmentState(ctx.p1).ready,false,"Saved locked gate remains blocked");
+  assert.equal(ctx.banishmentState(ctx.p1).blocked.length,1,"JSON-restored closed gate preserves blocked reason");
   ctx.host.doors[0].open=true;ctx.host.doors[0].locked=false;
   assert.equal(ctx.banishmentState(ctx.p1).ready,true);
+  assert.equal(ctx.banishmentState(ctx.p1).blocked.length,0,"Opened gate removes the obstruction warning");
   assert.equal(ctx.activateBanishment(ctx.p1),true,"Opening room gate restores normal B use");
   assert.equal(ctx.PGR.inventoryKindCount(ctx.p1,"banishment"),0);
   assert.equal(ctx.run.stats.wardsBroken,1);
@@ -413,7 +442,10 @@ for(const asCount of [false,true]){
 }
 const wallWard=wardSightFixture({gate:"none",wall:true}),wallCtx=wallWard.ctx;
 assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,false,"Solid stone blocks supernatural ward-break");
+assert.equal(wallCtx.banishmentState(wallCtx.p1).blocked.length,1,"Stone wall has a truthful obstruction reason");
+const wallNotices=[];wallCtx.showToast=(title,message)=>wallNotices.push({title,message});
 assert.equal(wallCtx.activateBanishment(wallCtx.p1),false);
+assert.match(wallNotices.at(-1).title,/WARD-BREAK SIGHT BLOCKED/);
 assert.equal(wallCtx.PGR.inventoryKindCount(wallCtx.p1,"banishment"),1);
 wallCtx.world.map[3][3]=0;
 assert.equal(wallCtx.banishmentState(wallCtx.p1).ready,true);
@@ -422,6 +454,8 @@ const visibleWard=wardSightFixture({gate:"none",wall:true}),visibleCtx=visibleWa
 visibleWard.count.x=2;visibleWard.count.y=7;
 assert.equal(visibleCtx.banishmentState(visibleCtx.p1).nearest,visibleWard.count,
   "Visible Count may be selected instead of nearer blocked Stalker");
+assert.equal(visibleCtx.banishmentState(visibleCtx.p1).blocked[0],visibleWard.death,
+  "A blocked nearer Stalker cannot prevent payment to a distinct visible sealed Count");
 assert.equal(visibleCtx.activateBanishment(visibleCtx.p1),true);
 assert.notEqual(visibleWard.death.v142WardBroken,true);
 assert.equal(visibleWard.count.v142WardBroken,true);
