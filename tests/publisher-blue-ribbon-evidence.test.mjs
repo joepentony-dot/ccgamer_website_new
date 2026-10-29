@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const history = require("../scripts/materialize-publisher-histories.js");
+const genres = require("../scripts/link-publisher-strength-genres.js");
 const root = process.cwd();
 const html = fs.readFileSync(path.join(root, "games/publishers/blue-ribbon/index.html"), "utf8");
 const metadata = JSON.parse(fs.readFileSync(path.join(root, "games/publishers/publishers.json"), "utf8"));
@@ -28,7 +29,9 @@ test("Blue Ribbon profile uses approved museum sources without invented company 
 test("checked-in Blue Ribbon page matches the publisher-history renderer exactly", () => {
   const profile = history.loadProfiles().find(x => x.slug === "blue-ribbon");
   const map = history.buildArchiveMap(metadata);
-  const generated = history.renderHistorySection(profile, map);
+  // Publisher output is deliberately decorated with canonical genre links
+  // after materializing the source-backed history. Check the full pipeline.
+  const generated = genres.enhanceHtml(history.renderHistorySection(profile, map));
   const a = html.indexOf(history.HISTORY_START), b = html.indexOf(history.HISTORY_END);
   assert.ok(a >= 0 && b > a, "history section must be in initial HTML");
   assert.equal(html.slice(a, b + history.HISTORY_END.length), generated);
