@@ -304,3 +304,64 @@ test("publisher-history postprocessing cannot undo one-credit indexability", () 
   assert.equal(histories.isPublisherIndexable({ count: 0 }, { sourceBacked: true }), true,
     "existing independently sourced exceptions remain supported");
 });
+
+test("Music Hub and accessible composer directory consolidate canonical signals without losing navigation or portraits", () => {
+  const generator = require("../scripts/generate-composer-pages.js");
+  const featured = [{
+    name: "Rob Hubbard", slug: "rob-hubbard", count: 32, c64Count: 24,
+    amigaCount: 8, games: []
+  }];
+  const music = generator.renderHub(featured, false);
+  const directory = generator.renderHub(featured, true);
+  const root = "https://www.cheekycommodoregamer.co.uk/music/";
+  const alias = "https://www.cheekycommodoregamer.co.uk/music/composers/";
+
+  for (const markup of [music, directory]) {
+    assert.ok(markup.includes('<link rel="canonical" href="' + root + '">'));
+    assert.ok(markup.includes('<meta property="og:url" content="' + root + '">'));
+    assert.ok(markup.includes('<meta name="twitter:url" content="' + root + '">'));
+    assert.match(markup, /name="robots" content="index,follow"/);
+    assert.match(markup, /<h2>🎼 Featured Composers<\/h2>/);
+    assert.match(markup, /<h2>All Composers<\/h2>/);
+    assert.ok(markup.includes('/resources/images/composers/hub/rob-hubbard.webp'));
+    assert.ok(markup.includes('href="/music/rob-hubbard/"'));
+    assert.ok(markup.includes('href="/music/composers/"'));
+    assert.ok(markup.includes('composer-discovery-search'));
+  }
+  // Keep JSON-LD CollectionPage aligned with the preferred URL, without
+  // disguising the actual directory route in its visitor breadcrumbs.
+  const parseSchema = (markup) => JSON.parse(
+    markup.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "null"
+  );
+  for (const markup of [music, directory]) {
+    const graph = parseSchema(markup)?.["@graph"];
+    assert.ok(graph, "generated hub must expose valid JSON-LD");
+    const page = graph.find((entry) => entry["@type"] === "CollectionPage");
+    assert.equal(page?.url, root, "JSON-LD page URL must agree with canonical");
+    const crumbs = graph.find((entry) => entry["@type"] === "BreadcrumbList");
+    assert.equal(crumbs?.itemListElement.at(-1)?.item,
+      markup === directory ? alias : root, "visitor breadcrumb retains its route");
+  }
+  assert.match(directory, /C64 &amp; Amiga Composer Archive/);
+  assert.ok(directory.includes('"item": "' + alias + '"'),
+    "the directory's own breadcrumb remains accurate for visitors");
+
+  const published = fs.readFileSync(path.join("music", "composers", "index.html"), "utf8");
+  assert.ok(published.includes('<link rel="canonical" href="' + root + '">'));
+  assert.ok(published.includes('<meta property="og:url" content="' + root + '">'));
+  assert.ok(published.includes('<meta name="twitter:url" content="' + root + '">'));
+  const liveGraph = parseSchema(published)?.["@graph"] || [];
+  assert.equal(liveGraph.find((entry) => entry["@type"] === "CollectionPage")?.url, root,
+    "published directory CollectionPage matches preferred canonical");
+  assert.equal(liveGraph.find((entry) => entry["@type"] === "BreadcrumbList")?.itemListElement.at(-1)?.item, alias);
+  assert.ok(published.includes('/resources/images/composers/hub/'));
+  assert.ok(published.includes('href="/music/composers/"'));
+
+  const sitemap = fs.readFileSync("sitemap-pages.xml", "utf8");
+  assert.ok(sitemap.includes("<loc>" + root + "</loc>"),
+    "preferred Music Hub must remain discoverable");
+  assert.ok(!sitemap.includes("<loc>" + alias + "</loc>"),
+    "duplicate directory URL must not be offered as a competing sitemap canonical");
+  assert.ok(sitemap.includes("<loc>" + root + "neil-crossley/</loc>"),
+    "independently indexable composer profiles remain discoverable");
+});
