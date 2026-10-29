@@ -1,5 +1,49 @@
 [
   {
+    "slug": "2-99-classics",
+    "summary": "2.99 Classics was a budget re-release label of Elite Systems. Its Commodore 64 entry in the Cheeky Commodore Gamer archive is Skool Daze, originally issued for the C64 by Microsphere in 1985 and re-released under the 2.99 Classics label in 1986.",
+    "facts": [
+      "MobyGames identifies 2.99 Classics as a budget software label of Elite Systems Ltd.",
+      "The documented Commodore 64 editions of Skool Daze include the original 1985 Microsphere release and a UK 2.99 Classics budget re-release in 1986.",
+      "The RF Generation game database also lists a British Commodore 64 2.99 Classics re-release of Skool Daze in 1986."
+    ],
+    "strengths": [
+      "Budget 8-bit re-releases",
+      "Commodore 64 cassette games",
+      "Skool Daze"
+    ],
+    "related": [
+      {
+        "label": "Microsphere",
+        "slug": "microsphere"
+      },
+      {
+        "label": "Elite",
+        "slug": "elite"
+      }
+    ],
+    "note": "The 1985 date shown on the CCG game card is the original Commodore 64 release year. The separate 2.99 Classics edition dates to 1986, so it must not be presented as the game's original publisher or release year.",
+    "confidence": "high",
+    "verified_on": "2026-10-29",
+    "sources": [
+      {
+        "label": "MobyGames — 2.99 Classics company overview",
+        "url": "https://www.mobygames.com/company/23349/299-classics/",
+        "type": "game company database"
+      },
+      {
+        "label": "MobyGames — Skool Daze Commodore 64 releases",
+        "url": "https://www.mobygames.com/game/15189/skool-daze/releases/",
+        "type": "game release database"
+      },
+      {
+        "label": "RF Generation — Skool Daze C64 release variants",
+        "url": "https://www.rfgeneration.com/cgi-bin/getinfo.pl?ID=E-018-S-01650-A",
+        "type": "game release database"
+      }
+    ]
+  },
+  {
     "slug": "access-software",
     "summary": "Access Software was a Salt Lake City developer and publisher founded by Bruce Carver. Its catalogue ranged from Commodore 64 action and golf titles to the later Links golf simulations and Tex Murphy adventures.",
     "facts": [
