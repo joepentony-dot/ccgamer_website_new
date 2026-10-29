@@ -1207,7 +1207,28 @@ function updateAlert(dt){run.elapsed+=dt;host.floorElapsed+=dt;run.alert=Math.ma
 function burst(tx,ty,col,n=10,power=1){for(let i=0;i<n;i++)particles.push({x:tx*C.tile+C.tile/2,y:ty*C.tile+C.tile/2,vx:(Math.random()-.5)*3.8*power,vy:(Math.random()-.5)*3.8*power,life:280+Math.random()*430,col,size:1.2+Math.random()*3.4*power,drag:.965,glow:4+power*5})}
 function ring(tx,ty,col,max=30){rings.push({x:tx*C.tile+C.tile/2,y:ty*C.tile+C.tile/2,r:3,max,life:340,col})}
 function floatText(tx,ty,text,col=P.white,opts={}){const life=opts.life||720;floaters.push({x:tx*C.tile+C.tile/2,y:ty*C.tile-3,text,life,maxLife:life,col,ownerId:opts.ownerId||null,pickup:Boolean(opts.pickup),startScale:opts.startScale||1,endScale:opts.endScale||1.15})}
-function floatPickupText(p,text,col=P.gold){if(!p||!text)return;floatText(p.x,p.y,String(text).toUpperCase(),col,{ownerId:p.id,pickup:true,life:1250,startScale:.42,endScale:1.28})}
+function floatPickupText(p,text,col=P.gold){
+  if(!p||!text)return;
+  const label=String(text).toUpperCase(),now=performance.now();
+  // Repeated genuine pickups in one burst should not create a stack of
+  // identical expensive canvas labels. Keep every event in the visible count;
+  // do not touch the authoritative pickup, inventory, XP or score owners.
+  const previous=p.id==null?null:[...floaters].reverse().find(f=>
+    f?.pickup&&f.ownerId===p.id&&f.pickupLabel===label&&f.col===col&&f.life>0&&
+    Number.isFinite(f.pickupLastAt)&&now-f.pickupLastAt>=0&&now-f.pickupLastAt<=450
+  );
+  if(previous){
+    previous.pickupCount=Math.max(1,Math.floor(Number(previous.pickupCount)||1))+1;
+    previous.text=`${label} ×${previous.pickupCount}`;
+    previous.pickupLastAt=now;previous.life=1250;previous.maxLife=1250;
+    return;
+  }
+  floatText(p.x,p.y,label,col,{ownerId:p.id,pickup:true,life:1250,startScale:.42,endScale:1.28});
+  const latest=floaters[floaters.length-1];
+  if(latest?.pickup&&latest.ownerId===p.id){
+    latest.pickupLabel=label;latest.pickupCount=1;latest.pickupLastAt=now;
+  }
+}
 function muzzle(tx,ty,d){const x=tx*C.tile+C.tile/2+d.x*13,y=ty*C.tile+C.tile/2+d.y*13;for(let i=0;i<18;i++){const hot=i<7;particles.push({x,y,vx:d.x*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),vy:d.y*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),life:hot?120+Math.random()*110:190+Math.random()*220,col:hot?(i%3?P.gold:"#fff7c8"):(i%2?P.orange:"#9a7290"),size:hot?2+Math.random()*3:1.5+Math.random()*2.5,drag:hot ? .91 : .96,glow:hot?12:4})}rings.push({x,y,r:2,max:17,life:170,col:P.gold})}
 function trailBetween(x1,y1,x2,y2,col){for(let i=0;i<8;i++){const t=i/7;particles.push({x:(x1+(x2-x1)*t)*C.tile+C.tile/2,y:(y1+(y2-y1)*t)*C.tile+C.tile/2,vx:0,vy:0,life:220+i*12,col,size:3,drag:.97})}}
 function updateEffects(dt){const wallNow=performance.now(),expired=(row,pad=220)=>{if(!row)return true;if(!Number.isFinite(Number(row.__ccgWallBornAt)))row.__ccgWallBornAt=wallNow;if(!Number.isFinite(Number(row.__ccgWallLifeMs)))row.__ccgWallLifeMs=Math.max(80,Number(row.life||0)+pad);return wallNow-Number(row.__ccgWallBornAt)>Number(row.__ccgWallLifeMs)};for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.angle=(q.angle||0)+(q.spin||0);q.life-=dt}for(let i=particles.length-1;i>=0;i--)if(particles[i].life<=0||expired(particles[i],260))particles.splice(i,1);if(particles.length>MAX_GAMEPLAY_PARTICLES)particles.splice(0,particles.length-MAX_GAMEPLAY_PARTICLES);for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}for(let i=rings.length-1;i>=0;i--)if(rings[i].life<=0||expired(rings[i],220))rings.splice(i,1);if(rings.length>MAX_GAMEPLAY_RINGS)rings.splice(0,rings.length-MAX_GAMEPLAY_RINGS);for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0||expired(floaters[i],360))floaters.splice(i,1);if(floaters.length>96)floaters.splice(0,floaters.length-96)}
