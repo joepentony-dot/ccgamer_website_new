@@ -160,6 +160,14 @@ function installInventoryAttackResumeBoundary(){
     toggleInventory=function(...args){
       const returningFromInventory=mode==="inventory"&&UI.inventory&&!UI.inventory.classList.contains("hidden");
       const result=baseToggleInventory(...args);
+      if(!returningFromInventory&&mode==="inventory"&&UI.inventory&&!UI.inventory.classList.contains("hidden")){
+        // TAB opens the modal from gameplay. Give keyboard users a real
+        // starting point inside it, favouring an available wearable action.
+        const first=["#r80-wearable-strip button","#inventory-list button","#inventory-close-top","#inventory-close"]
+          .map(selector=>UI.inventory.querySelector(selector))
+          .find(button=>button&&!button.disabled&&button.getClientRects().length);
+        try{first?.focus({preventScroll:true})}catch(_){}
+      }
       if(returningFromInventory&&mode==="playing"){
         settlePauseAttackCadence("inventory-close");
         try{focusGameplayKeyboard()}catch(_){}
@@ -231,6 +239,29 @@ addEventListener("keydown",e=>{
   // the gameplay preventDefault calls so Space remains usable in bug reports,
   // emails, player names and any future editable admin/game field.
   if(isEditableKeyboardTarget(e.target))return;
+  if(e.code==="Tab"&&mode==="inventory"){
+    // The active Tutorial inventory lesson explicitly teaches TAB to open and
+    // TAB again to close. Preserve that existing lesson without sacrificing
+    // TAB/Shift+TAB access to wearable controls in the normal inventory.
+    const tutorial=window.CCGLostSizzlerOnboardingV120?.state;
+    if(!e.shiftKey&&tutorial?.active===true&&Number(tutorial.step)===3&&
+       tutorial.inventoryOpened===true&&!tutorial.inventoryClosed){
+      e.preventDefault();toggleInventory();return
+    }
+    // TAB/Shift+TAB navigate the actual inventory controls. Keep keyboard
+    // focus inside the open modal; Escape and its close buttons still exit.
+    const panel=UI.inventory;
+    const controls=[...(panel?.querySelectorAll("button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex='-1'])")||[])]
+      .filter(node=>node.getClientRects().length);
+    if(controls.length){
+      const active=document.activeElement,first=controls[0],last=controls[controls.length-1];
+      if(!panel.contains(active)||(e.shiftKey&&active===first)||(!e.shiftKey&&active===last)){
+        e.preventDefault();
+        try{(e.shiftKey?last:first).focus({preventScroll:true})}catch(_){}
+      }
+    }
+    return;
+  }
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
   if(mode==="shop"&&(e.code==="Backspace"||e.code==="KeyX")){e.preventDefault();closeShop();return}
   if(e.code==="Escape"){
@@ -247,7 +278,7 @@ addEventListener("keydown",e=>{
   }
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){if(mode==="paused")resumePausedRun();else pause();return}
   if(e.code==="KeyF"){toggleFullscreen();return}
-  if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
+  if(e.code==="Tab"&&mode==="playing"){toggleInventory();return}
   if(mode!=="playing")return;if(p1)setDir(p1,e.code);
   if(!e.repeat&&p1)maybeDoubleTapDash(p1,e.code)
   input.add(e.code);
