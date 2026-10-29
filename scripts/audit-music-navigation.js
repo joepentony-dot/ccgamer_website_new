@@ -35,6 +35,37 @@ const mobileAlignment = read("resources/css/ccg-amiga-mobile-alignment.css");
 const musicHub = read("music/index.html");
 const composerHub = read("music/composers/index.html");
 
+const staticFeaturedPortraitSlugs = [
+    "allister-brimble",
+    "barry-leitch",
+    "ben-daglish",
+    "chris-huelsbeck",
+    "david-whittaker",
+    "fred-gray",
+    "martin-galway",
+    "rob-hubbard"
+];
+const composerGenerator = read("scripts/generate-composer-pages.js");
+requireText(composerGenerator, 'src="/resources/images/composers/hub/${htmlEscape(route.slug)}.webp"', "The composer generator must emit the existing lightweight WebP portraits on each Featured Composer card.");
+requireText(composerGenerator, 'width="400" height="300" loading="lazy" decoding="async" fetchpriority="low"', "The composer generator must preserve sized, lazy, low-priority Featured Composer imagery.");
+staticFeaturedPortraitSlugs.forEach((slug) => {
+    const portrait = `/resources/images/composers/hub/${slug}.webp`;
+    if (!fs.existsSync(path.join(ROOT, portrait.slice(1)))) {
+        problems.push(`Missing lightweight Featured Composer portrait: ${portrait}`);
+    }
+    [["Music Hub", musicHub], ["All Composers", composerHub]].forEach(([label, html]) => {
+        const at = html.indexOf(`data-slug="${slug}"`);
+        const end = at < 0 ? -1 : html.indexOf("</a>", at);
+        if (end < 0) {
+            problems.push(`${label} is missing the static Featured Composer card for ${slug}.`);
+            return;
+        }
+        const card = html.slice(at, end);
+        requireText(card, `src="${portrait}"`, `${label} is missing the portrait for ${slug}.`);
+        requireText(card, 'width="400" height="300" loading="lazy" decoding="async" fetchpriority="low"', `${label} must reserve portrait dimensions and use low-priority lazy decoding for ${slug}.`);
+    });
+});
+
 requireText(config, "/js/ccg-music-navigation.js", "Music pages do not request the shared header bootstrap.");
 requireText(navigation, "data-ccg-music-header", "The injected music header marker is missing.");
 requireText(navigation, "/js/ccg-nav-core.js", "The music header does not load the unified navigation core.");
