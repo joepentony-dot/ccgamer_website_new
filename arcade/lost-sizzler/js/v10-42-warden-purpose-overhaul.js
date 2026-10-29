@@ -69,6 +69,23 @@
     return{targets:targets.sort(byDistance),blocked:blocked.sort(byDistance)};
   }
 
+  // A Ward-Broken Warden still has real HP. Pressing B again must explain
+  // why another charge is unnecessary rather than implying a failed payment.
+  // Only report a live, visible target: a hidden/defeated Warden is not evidence.
+  function nearbyBrokenWarden(player){
+    const h=currentHost(),w=currentWorld();
+    if(!h||!player||!w?.map||typeof A==="undefined"||typeof A.lineOfSight!=="function")return null;
+    const range=chargeRange();
+    return [...(h.enemies||[]),h.stalker]
+      .filter(target=>target&&broken(target)&&liveWardTarget(target,h)&&Number(target.hp)>0&&
+        dist(target,player)<=range&&A.lineOfSight(w.map,player,target,range,h))
+      .sort((a,b)=>dist(a,player)-dist(b,player))[0]||null;
+  }
+  function explainBrokenWarden(target){
+    const name=label(target),hp=Math.max(1,Math.ceil(Number(target.hp)||1));
+    announce(`WARD ALREADY BROKEN — ${name.toUpperCase()}`,`${name} has ${hp} HP remaining. Its immunity is already gone. Use your weapons to finish the fight; another Ward-Break Charge is not needed. No charge spent.`,"cyan",7200);
+  }
+
   function banishmentStateV142(player){
     const range=chargeRange(),hasFlask=inventoryChargeIndex(player)>=0,{targets,blocked}=wardVisibility(player);
     return{ready:hasFlask&&targets.length>0,hasFlask,range,targets,blocked,nearest:targets[0]||null,action:"ward-break"};
@@ -221,10 +238,19 @@
   banishmentState=function(player){return banishmentStateV142(player)};
   permanentlyBanish=function(target,player){return breakWard(target,player)};
   activateBanishment=function(player){
-    if(!player)return false;const ix=inventoryChargeIndex(player);if(ix<0){sfx("empty");announce("NO WARD-BREAK CHARGE","Distil Banishment Essence at an Alchemist. The charge breaks a supernatural Warden's immunity; it does not kill the target for you.","red",7200);return false}
-    const state=banishmentStateV142(player);if(!state.ready){
+    if(!player)return false;
+    const ix=inventoryChargeIndex(player),state=banishmentStateV142(player);
+    const alreadyBroken=state.targets.length||state.blocked.length?null:nearbyBrokenWarden(player);
+    if(ix<0){
+      if(alreadyBroken)explainBrokenWarden(alreadyBroken);
+      else{sfx("empty");announce("NO WARD-BREAK CHARGE","Distil Banishment Essence at an Alchemist. The charge breaks a supernatural Warden's immunity; it does not kill the target for you.","red",7200)}
+      return false;
+    }
+    if(!state.ready){
       if(state.blocked.length){
         announce("WARD-BREAK SIGHT BLOCKED",`${label(state.blocked[0])} is within ${state.range} tiles, but a closed door, wall or other obstruction blocks the charge. Move into a clear line of sight or open the route. No charge spent.`,"cyan",7200);
+      }else if(alreadyBroken){
+        explainBrokenWarden(alreadyBroken);
       }else{
         announce("NO SEALED WARD IN RANGE",`Move within ${state.range} tiles of a sealed Death Stalker or ${String(CFG.stalker?.name||"Count Loadula")}. If its ward has already been broken, use your weapons and finish the fight.`,"cyan",7200);
       }
