@@ -1,5 +1,49 @@
 [
   {
+    "slug": "2-99-classics",
+    "summary": "The 2.99 Classics archive entry concerns a Commodore 64 re-release of Skool Daze, whose original 1985 C64 publisher was Microsphere. The game's wider history includes Microsphere's 1984 ZX Spectrum edition and a separate mobile publication announced by Elite Systems in 2011.",
+    "facts": [
+      "The Centre for Computing History preserves a 1984 ZX Spectrum cassette of Skool Daze credited to Microsphere and names David Reidy and Keith Warrington.",
+      "Elite Systems' own corporate history states that the company was incorporated in England in 1984 and developed and published Sinclair ZX Spectrum and Commodore 64 games.",
+      "Elite Systems announced a stand-alone iPhone and iPad edition of the ZX Spectrum version of Skool Daze in March 2011."
+    ],
+    "strengths": [
+      "Budget cassette re-releases",
+      "British home-computer game history",
+      "Skool Daze editions"
+    ],
+    "related": [
+      {
+        "label": "Microsphere",
+        "slug": "microsphere"
+      },
+      {
+        "label": "Elite",
+        "slug": "elite"
+      }
+    ],
+    "note": "The 1985 year on this archive's C64 game card records the original game release, while 2.99 Classics is credited separately as a re-release label. These approved historical sources do not establish the precise year of the 2.99 Classics C64 edition or the label's ownership, so neither is asserted here.",
+    "confidence": "high",
+    "verified_on": "2026-10-29",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Microsphere Skool Daze cassette",
+        "url": "https://www.computinghistory.org.uk/det/33953/Skooldaze/",
+        "type": "museum object record"
+      },
+      {
+        "label": "Elite Systems — original corporate history",
+        "url": "https://www.elite-systems.co.uk/elite/htdocs/corporate_profile.php",
+        "type": "publisher primary source"
+      },
+      {
+        "label": "Elite Systems — March 2011 Skool Daze mobile announcement",
+        "url": "https://www.elite-systems.co.uk/elite/htdocs/newsarchive.php?show=31",
+        "type": "publisher primary source"
+      }
+    ]
+  },
+  {
     "slug": "access-software",
     "summary": "Access Software was a Salt Lake City developer and publisher founded by Bruce Carver. Its catalogue ranged from Commodore 64 action and golf titles to the later Links golf simulations and Tex Murphy adventures.",
     "facts": [
