@@ -378,6 +378,51 @@
     return true
   }
 
+  // Read-only Floor 5 encounter evidence: Count and the floor Death Stalker
+  // are separate actors. Record their identities, ward states and charge routing
+  // so an owner report can distinguish a duplicate from two authored threats.
+  function wardenEncounterSnapshot(player,h,route=null){
+    if(!h)return null;
+    const numeric=value=>Number.isFinite(Number(value))?Number(value):null;
+    const actor=(entity,role)=>entity?{
+      role,id:String(entity.id||""),x:numeric(entity.x),y:numeric(entity.y),
+      alive:role==="count"?Boolean(entity.awake&&!entity.permanentlyBanished):Boolean(entity.alive),
+      hp:numeric(entity.hp),wardState:String(entity.v142WardState||""),
+      wardBroken:Boolean(entity.v142WardBroken),wardDefeated:Boolean(entity.v142WardenDefeated),
+      rewardSettled:Boolean(entity.v142WardenRewarded),
+      permanentlyBanished:Boolean(entity.permanentlyBanished)
+    }:null;
+    const enemies=Array.isArray(h.enemies)?h.enemies:[],
+      stalkers=enemies.filter(enemy=>enemy?.deathStalker===true),
+      generators=Array.isArray(h.generators)?h.generators:[],
+      inventory=Array.isArray(player?.inventory)?player.inventory:[],
+      routeIds=rows=>Array.isArray(rows)?rows.slice(0,8).map(target=>String(target?.id||"")):[],
+      last=h.v142LastWardBreak;
+    return{
+      count:actor(h.stalker,"count"),
+      deathStalkerTotal:stalkers.length,
+      deathStalkerAlive:stalkers.filter(enemy=>enemy.alive===true).length,
+      deathStalkers:stalkers.slice(0,8).map(enemy=>actor(enemy,"death-stalker")),
+      guardian:actor(h.guardian,"guardian"),
+      generatorsTotal:generators.length,
+      generatorsDestroyed:generators.filter(generator=>generator?.alive===false).length,
+      generators:generators.slice(0,8).map(generator=>({
+        id:String(generator?.id||""),x:numeric(generator?.x),y:numeric(generator?.y),
+        alive:Boolean(generator?.alive),hp:numeric(generator?.hp)
+      })),
+      flaskInventoryRows:inventory.filter(item=>item?.kind==="banishment").length,
+      wardBreakRoute:route?{
+        ready:Boolean(route.ready),hasFlask:Boolean(route.hasFlask),
+        range:numeric(route.range),visibleIds:routeIds(route.targets),
+        blockedIds:routeIds(route.blocked)
+      }:null,
+      lastWardBreak:last?{
+        name:String(last.name||""),x:numeric(last.x),y:numeric(last.y),
+        floor:numeric(last.floor),at:numeric(last.at)
+      }:null
+    };
+  }
+
   function currentSnapshot(reason="snapshot"){
     const player=safe(()=>p1,null),second=safe(()=>p2,null);
     const playerId=player?.id;
@@ -424,6 +469,7 @@
             enemies:(host.enemies||[]).filter(e=>e?.alive&&e.arenaId===arena.id).map(e=>({id:String(e.id),x:e.x,y:e.y}))}:null,
           roomDoors:doors.map(d=>({id:String(d.id),x:d.x,y:d.y,locked:Boolean(d.locked),open:Boolean(d.open)})),
           stalker:host?.stalker?{awake:Boolean(host.stalker.awake),x:host.stalker.x,y:host.stalker.y,permanentlyBanished:Boolean(host.stalker.permanentlyBanished)}:null,
+          wardenEncounter:wardenEncounterSnapshot(player,host,safe(()=>window.CCGLostSizzlerV142WardenPurposeOverhaul?.state?.(player),null)),
           flaskHeld:(player?.inventory||[]).some(item=>item?.kind==="banishment"),
           scout:rescue?{following:Boolean(rescue.following),rescued:Boolean(rescue.rescued),x:rescue.x,y:rescue.y}:null,
           torch:torch?{roomId:torch.roomId,progress:torch.progress,solved:Boolean(torch.solved),
@@ -464,6 +510,7 @@
         loopFinalizer:safe(()=>window.CCGLostSizzlerV141R29LoopFinalizer?.state||null,null),
         renderOwnership:safe(()=>window.CCGLostSizzlerV141R51RenderOwnershipFinalizer?.state||null,null),
         chestRender:safe(()=>window.__CCG_CHEST_RENDER_DIAGNOSTICS__||null,null),
+        radar:safe(()=>window.__CCG_RADAR_DIAGNOSTICS__||null,null),
         projectileLifecycle:safe(()=>window.CCGLostSizzlerV142ProjectileLifecycle?.state||null,null),
         performanceGovernor:safe(()=>window.CCGLostSizzlerV141R47AllModeOptimisation?.getDiagnostics?.()||null,null),
         globalPerformance:safe(()=>window.CCGLostSizzlerV141R37GlobalPerformance?.getDiagnostics?.()||null,null),
@@ -661,6 +708,7 @@
       `Input: ${g.inputKeys.join(", ")||"none"}`,
       `Inventory hidden: ${s.panels.inventory.hidden} | Pause hidden: ${s.panels.pause.hidden} | Focus: ${s.browser.hasFocus} | Active element: ${s.browser.activeElement?.tag||""}#${s.browser.activeElement?.id||""}`,
       `Room state: ${JSON.stringify(s.floorProgress||{})}`,
+      `Warden encounter: ${JSON.stringify(s.floorProgress?.wardenEncounter||{})}`,
       `Memory puzzle: ${mem?`phase=${mem.phase} input=${mem.inputIndex}/${mem.sequence.length} failures=${mem.failures} flash=${mem.flashTile}`:"none"}`,
       `Trap monitor: contacts=${state.trapContacts} verifiedHits=${state.trapVerifiedHits} trapAnomalies=${state.trapAnomalies}`,
       `Loop monitor: acceptedFrames=${s.diagnostics.soloClock?.acceptedFrames??"-"} duplicateFrames=${s.diagnostics.soloClock?.duplicateFramesSkipped??"-"} watchdogRecoveries=${s.diagnostics.soloClock?.loopWatchdogRecoveries??"-"} lastAcceptedWallAt=${s.diagnostics.soloClock?.lastAcceptedWallAt??"-"}`,

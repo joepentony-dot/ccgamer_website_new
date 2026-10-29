@@ -1,3 +1,8 @@
+## 29 October 2026 — Dungeon R148 encounter diagnostics (BRANCH ONLY)
+
+- Fresh protected main `08c52923c43b324f30b528c8ee7aa5b17a6c8d70` includes completed release-first Music #2927, Explore #2925 and Dungeon #2921/#2922/#2923/#2924/#2915 merges. Current-main Pages `40842204998`, Full Dungeon `40842205029` (8/8), production smoke `40842205066` and live navigation `40842483141` succeeded; direct live portrait-image HTTP verification and real public desktop/mobile Explore scroll remain separately unverified. Cloudflare Workers production check still reports FAILED with inaccessible dashboard reason, not green.
+- One new active Dungeon R148 branch `fix/dungeon-r148-warden-incident-evidence-20261029` extends the existing opt-in F8 bug reporter with bounded, passive Warden identity/Flask route/generator/radar evidence and source-executed 2/3 -> 3/3 regression cases. Source `1b90e6f67e2e943fe88f3bd549439e595cb13247`; test `b0b540149e1bdcc79cf80f79a6b48731ee515b9c`. Branch-only, CI/Windows qualification pending, not a Floor 5 fix. All six owner issues NOT WINDOWS OWNER ACCEPTED. Mobile Lighthouse follow-up QUEUED. **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED.** Windows commercial release HOLD.
+
 ## 29 October 2026 — R140 #2915 safe current-main reconciliation (BRANCH ONLY)
 
 - Protected main `2badc10d39d956688c2f7529f7272990d531464c` already includes Music #2927, static Explore nav #2925, Dungeon chest R144 #2921, Magic Sacks R145 #2922, Warden obstruction R146 #2923 and wearable equipment R147 #2924. The two R140 functional source/test paths remain unchanged on main since the original #2915 base, so existing R140 completion-sharing implementation and genuine Node VM coverage can be retained byte-for-byte without losing later gameplay.
