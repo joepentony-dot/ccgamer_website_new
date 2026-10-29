@@ -12,18 +12,18 @@ const publisherPage = fs.readFileSync(path.join(root, "games/publishers/2-99-cla
 const metadata = JSON.parse(fs.readFileSync(path.join(root, "games/publishers/publishers.json"), "utf8"));
 const games = JSON.parse(fs.readFileSync(path.join(root, "games/games.json"), "utf8"));
 
-test("2.99 Classics has sourced 1986 budget-release history, without changing original C64 credits", () => {
+test("2.99 Classics has independently documented game context without changing original C64 credits", () => {
   const profile = history.loadProfiles().find((entry) => entry.slug === "2-99-classics");
   assert.ok(profile, "publisher history registry should include the budget label");
   const safe = history.sanitizeProfile(profile);
   assert.equal(safe.sourceBacked, true);
   assert.equal(safe.sources.length, 3);
-  assert.ok(safe.sources.some((source) => source.url.includes("mobygames.com/company/23349/299-classics/")));
-  assert.ok(safe.sources.some((source) => source.url.includes("rfgeneration.com")));
+  assert.ok(safe.sources.some((source) => source.url.includes("computinghistory.org.uk/det/33953/Skooldaze/")));
+  assert.ok(safe.sources.some((source) => source.url.includes("elite-systems.co.uk/elite/htdocs/newsarchive.php?show=31")));
   assert.ok(safe.facts.some((fact) => fact.includes("Elite Systems")));
-  assert.ok(safe.facts.some((fact) => fact.includes("1985 Microsphere")));
-  assert.ok(safe.facts.some((fact) => fact.includes("1986")));
-  assert.ok(safe.note.includes("original Commodore 64 release year"));
+  assert.ok(safe.facts.some((fact) => fact.includes("1984 ZX Spectrum") && fact.includes("Microsphere")));
+  assert.ok(safe.facts.some((fact) => fact.includes("March 2011")));
+  assert.ok(safe.note.includes("1985 year") && safe.note.includes("re-release label"));
   const record = metadata.find((entry) => entry.slug === "2-99-classics");
   assert.ok(record && record.count === 1 && record.firstYear === 1985 && record.indexable);
   assert.equal(history.isPublisherIndexable(record, safe), true);
@@ -48,5 +48,5 @@ test("checked-in budget label page matches authoritative source-backed publisher
   assert.ok(publisherPage.includes('href="/games/skool-daze/"'));
   assert.ok(publisherPage.includes('href="/games/publishers/microsphere/"'));
   assert.ok(publisherPage.includes('href="/games/publishers/elite/"'));
-  assert.ok(expected.includes("1986") && expected.includes("Elite Systems"));
+  assert.ok(expected.includes("2011") && expected.includes("Elite Systems"));
 });
