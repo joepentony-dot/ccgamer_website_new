@@ -462,8 +462,16 @@ function renderGameCard(game) {
 function renderDeveloperPage(group) {
     const canonicalUrl = `${SITE_ORIGIN}/games/developers/${group.slug}/`;
     const systemLabel = platformLabel(group);
-    const title = `${group.name} ${systemLabel} Games | Cheeky Commodore Gamer`;
-    const description = `Browse ${group.count} ${systemLabel} ${group.count === 1 ? "game" : "games"} carrying a ${group.name} developer credit in the Cheeky Commodore Gamer archive.`;
+    const single = group.count === 1 && group.games.length === 1 ? group.games[0] : null;
+    const singlePlatform = single?.system === "C64" ? "Commodore 64"
+        : single?.system === "Amiga" ? "Amiga" : systemLabel;
+    const singleYear = Number.isInteger(single?.year) && single.year > 0 ? ` (${single.year})` : "";
+    const title = single
+        ? `${group.name}: ${single.title}${singleYear} | ${singlePlatform} Developer | Cheeky Commodore Gamer`
+        : `${group.name} ${systemLabel} Games | Cheeky Commodore Gamer`;
+    const description = single
+        ? `${single.title}${singleYear} on ${singlePlatform} carries a recorded developer credit for ${group.name}. Explore the dedicated game page.`
+        : `Browse ${group.count} ${systemLabel} ${group.count === 1 ? "game" : "games"} carrying a ${group.name} developer credit in the Cheeky Commodore Gamer archive.`;
     const indexable = group.count >= INDEXABLE_MIN_GAMES;
     const robots = indexable ? "index,follow" : "noindex,follow";
 
@@ -472,7 +480,7 @@ function renderDeveloperPage(group) {
         "@graph": [
             {
                 "@type": "CollectionPage",
-                name: `${group.name} developer-credit games`,
+                name: single ? `${group.name} developer credit: ${single.title}` : `${group.name} developer-credit games`,
                 description,
                 url: canonicalUrl,
                 about: { "@type": "Thing", name: group.name },
@@ -517,9 +525,11 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
         <main class="ccg-main ccg-developers-main">
             <section class="ccg-developers-hero ccg-developer-hero">
                 <p class="ccg-developers-hero__kicker">Developer credit archive · ${htmlEscape(systemLabel)}</p>
-                <h1 class="ccg-developers-hero__title">${htmlEscape(group.name)} Games</h1>
+                <h1 class="ccg-developers-hero__title">${htmlEscape(single ? `${group.name}: ${single.title}` : `${group.name} Games`)}</h1>
                 <p class="ccg-developers-hero__intro">
-                    Browse every title currently carrying a ${htmlEscape(group.name)} developer credit in the CCG database. This page reports the stored credit without adding biographies or unsupported company history.
+                    ${single
+                        ? `${htmlEscape(single.title)}${htmlEscape(singleYear)} is recorded with a ${htmlEscape(group.name)} developer credit on ${htmlEscape(singlePlatform)}. Follow the game link below for its catalogue details.`
+                        : `Browse every title currently carrying a ${htmlEscape(group.name)} developer credit in the CCG database. This page reports the stored credit without adding biographies or unsupported company history.`}
                 </p>
                 <div class="ccg-developers-hero__stats">
                     <span><strong>${group.count}</strong> ${group.count === 1 ? "game" : "games"}</span>
