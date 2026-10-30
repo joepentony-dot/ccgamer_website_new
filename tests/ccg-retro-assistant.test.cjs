@@ -19,3 +19,14 @@ assert.deepEqual(match('nothing remotely matching anything'),[]);
 assert.ok(words('best games on C64').includes('c64'));
 assert.equal(matchingGames(games,'game',100).length,0);
 console.log('CCG Retro Assistant: 9 archive, platform, safety and relevance tests passed');
+
+
+/* Home-only bootstrap is independent from the approved CLS whitelist. */
+test('Home-only bootstrap loads assistant without changing protected HTML', () => {
+  const randomizer = fs.readFileSync(path.join(ROOT, 'js/ccg-archive-pulse-randomizer.js'), 'utf8');
+  const home = fs.readFileSync(path.join(ROOT, 'home.html'), 'utf8');
+  assert.match(randomizer, /data-ccg-page/);
+  assert.match(randomizer, /\/js\/ccg-retro-assistant\.js/);
+  assert.match(randomizer, /data-ai-enabled/);
+  assert.doesNotMatch(home, /ccg-retro-assistant\.js/);
+});

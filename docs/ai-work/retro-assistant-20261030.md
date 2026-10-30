@@ -28,3 +28,7 @@ User-requested branded C64/Amiga retro game assistant. This work is isolated fro
 - The local matcher uses only catalogue fields and may not understand indirect clues or deliver magazine review analysis; it labels these responses as archive search, not AI.
 - Per-client IP quotas are best effort due to proxy headers; the global daily quota and Turnstile validation are the primary spend controls. Actual API organisation budget must be separately capped.
 - No paid AI connectivity until an actual API key and Turnstile site key are configured and verified.
+
+## 30 October — Homepage CLS guard remediation
+
+GitHub PR exact-head CI `CCG Game Page Release Safeguards` failed its intentionally strict `tests/sitewide-cls-repair.test.mjs` homepage integrity check when the pilot added a script to `home.html`. That check must not be weakened. The follow-up candidate restores `home.html` byte-for-byte to base main and attaches the opt-in feature after DOM readiness from the existing homepage-only `js/ccg-archive-pulse-randomizer.js`, which is already loaded by the real homepage. AI remains disabled. Re-run exact-head CI on the new commit; earlier checks are stale. Do not merge until guard passes and the normal performance, review, and one-active-workstream rules are met.
