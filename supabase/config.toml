@@ -1,10 +1,6 @@
 [functions.send-new-game-notification]
 verify_jwt = false
 
-[functions.send-auth-email]
-verify_jwt = false
 
-# Public assistant uses verified Turnstile + atomic database quotas instead of a user JWT.
-# The endpoint remains disabled unless its required environment secrets are supplied.
-[functions.ccg-retro-assistant]
+[functions.send-auth-email]
 verify_jwt = false
