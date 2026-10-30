@@ -23,7 +23,7 @@ test("C64 identification quiz is present once in both collection and video libra
   assert.equal(index.counts.total, index.items.length);
   assert.match(collection, /qJZa1zB2zHU/);
   assert.match(library, /50-commodore-64-games-can-you-identify-them/);
-  assert.match(library, /<strong>39<\/strong> retro features/);
+  assert.match(library, new RegExp(`<strong>${index.counts.retroVideos}</strong> retro features`));
 });
 
 test("new video has a canonical watch page with no eager third-party player request", () => {
