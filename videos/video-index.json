@@ -1,13 +1,41 @@
 {
   "version": 1,
   "counts": {
-    "total": 705,
+    "total": 707,
     "gameVideos": 666,
-    "retroVideos": 39,
+    "retroVideos": 41,
     "c64GameVideos": 563,
     "amigaGameVideos": 103
   },
   "items": [
+    {
+      "id": "XxEhpjSoYc8",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Think You Know the ZX Spectrum? Name These 50 Games!",
+      "description": "Think you know your ZX Spectrum games? Try to identify 50 titles from ten-second gameplay clips across five rounds, from familiar favourites to lesser-known games.",
+      "url": "/retro-specials/50-zx-spectrum-games-can-you-identify-them/",
+      "thumbnail": "https://i.ytimg.com/vi/XxEhpjSoYc8/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
+    {
+      "id": "kc86gnQh7ww",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Think You Know the Commodore Amiga? Try This 50-Game Quiz!",
+      "description": "Can you recognise 50 Commodore Amiga games from short gameplay clips? Test your memory across a range of familiar favourites and tougher titles.",
+      "url": "/retro-specials/50-amiga-games-can-you-identify-them/",
+      "thumbnail": "https://i.ytimg.com/vi/kc86gnQh7ww/mqdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
     {
       "id": "qJZa1zB2zHU",
       "kind": "retro",
