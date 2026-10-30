@@ -70,6 +70,22 @@ assert.equal(archiveFact([{...known[0],ccg_rating:''}],'What is your rating for 
 assert.match(archiveFact(known,'Zzap score for Uridium?').reply, /cannot verify a magazine score/);
 assert.equal(archiveFact(known,'Who published an unknown game?'),null);
 assert.equal(archiveFact([{...known[0],slug:'../unsafe'}],'Who published Uridium?'),null);
+// Separate C64/Amiga editions must never answer a named-platform question
+// using the first title match from the wrong system.
+const editions = [
+  {system:'C64',slug:'example-c64',title:'Example',year:1985,credits:{publisher:['C64 Publisher'],musician:['C64 Musician']}},
+  {system:'Amiga',slug:'example-amiga',title:'Example',year:1991,credits:{publisher:['Amiga Publisher'],musician:['Amiga Musician']}}
+];
+assert.equal(archiveFact(editions,'Who published Example on Amiga?').game.slug,'example-amiga');
+assert.match(archiveFact(editions,'Who published Example on Amiga?').reply,/Amiga Publisher/);
+assert.match(archiveFact(editions,'When was Example released on Amiga?').reply,/1991/);
+assert.match(archiveFact(editions,'Who composed the music for Example on Amiga?').reply,/Amiga Musician/);
+assert.match(archiveFact(editions,'Who published Example on Commodore 64?').reply,/C64 Publisher/);
+assert.equal(archiveFact(editions,'Who published Example on ZX Spectrum?'),null);
+assert.equal(archiveFact(editions,'Who published Example on C64 and Amiga?'),null);
+assert.equal(archiveFact([editions[0]],'Who published Example on Amiga?'),null);
+console.log('CCG Retro Assistant: explicit edition attribution never borrows a different platform');
+
 assert.match(hardwareFact('Tell me about the SID chip'), /three independently programmable/);
 assert.match(hardwareFact('What is Paula?'), /four channels/);
 assert.equal(hardwareFact('How do I open a chest?'),null);
