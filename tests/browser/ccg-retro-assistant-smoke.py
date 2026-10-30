@@ -44,7 +44,16 @@ def run(browser, width, height):
         page.add_script_tag(content=JS)
         launcher = page.locator(".ccg-ra__trigger")
         assert launcher.count() == 1 and launcher.is_visible(), f"{width}: missing free launcher"
-        assert not requests, f"{width}: network request before visitor interaction: {requests}"
+        assert not any("/games/games.json" in u for u in requests), (
+            f"{width}: catalogue fetched before visitor question"
+        )
+        assert all("/resources/css/ccg-retro-assistant.css" in u for u in requests), (
+            f"{width}: unexpected network work before interaction: {requests}"
+        )
+        page.wait_for_function(
+            "() => getComputedStyle(document.querySelector('.ccg-ra')).position === 'fixed'",
+            timeout=5000
+        )
         launcher.click()
         panel = page.locator(".ccg-ra__panel")
         assert panel.is_visible(), f"{width}: panel failed to open"
@@ -59,11 +68,13 @@ def run(browser, width, height):
         send = page.locator(".ccg-ra__send")
 
         def ask(value, expected):
+            before = page.locator(".ccg-ra__message--bot").count()
             field.fill(value)
             send.click()
             page.wait_for_function(
-                "(text) => [...document.querySelectorAll('.ccg-ra__message--bot')]"
-                ".some(node => node.textContent.includes(text))", expected, timeout=8000
+                "(args) => {const bots=[...document.querySelectorAll('.ccg-ra__message--bot')];"
+                "return bots.length > args.before && bots[bots.length-1].textContent.includes(args.expected);}",
+                arg={"before": before, "expected": expected}, timeout=8000
             )
 
         ask("Tell me about the SID chip", "three independently programmable")
