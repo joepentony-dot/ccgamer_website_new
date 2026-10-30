@@ -291,3 +291,24 @@
         void init();
     }
 })();
+
+/* Home-only, idle-cost-neutral launcher for the optional CCG Retro Assistant.
+   The catalogue is fetched only after a visitor submits a question. */
+(function () {
+  "use strict";
+  if (document.documentElement.getAttribute("data-ccg-page") !== "home") return;
+  function loadAssistant() {
+    if (document.querySelector('script[data-ccg-retro-assistant]')) return;
+    const script = document.createElement("script");
+    script.src = "/js/ccg-retro-assistant.js";
+    script.async = true;
+    script.setAttribute("data-ccg-retro-assistant", "true");
+    script.setAttribute("data-ai-enabled", "false");
+    document.head.appendChild(script);
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadAssistant, { once: true });
+  } else {
+    loadAssistant();
+  }
+})();
