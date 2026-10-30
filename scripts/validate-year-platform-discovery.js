@@ -53,7 +53,11 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/games/commodore-quest/`,
         `${SITE_ORIGIN}/videos/`,
         // Independently verified documentary watch route, retained from current main.
-        `${SITE_ORIGIN}/retro-specials/retro-games-real-prizes-porsche-swords-25000/`
+        `${SITE_ORIGIN}/retro-specials/retro-games-real-prizes-porsche-swords-25000/`,
+        // Two source-backed, self-canonical Retro Specials quizzes approved by the site owner.
+        // Keep the foreign-sitemap allowlist exact; do not relax archive baseline checks.
+        `${SITE_ORIGIN}/retro-specials/50-amiga-games-can-you-identify-them/`,
+        `${SITE_ORIGIN}/retro-specials/50-zx-spectrum-games-can-you-identify-them/`
     ])]
 ]);
 const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
