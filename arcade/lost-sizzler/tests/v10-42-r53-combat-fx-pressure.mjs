@@ -31,14 +31,12 @@ assert.match(
   /retainLive\(floaters,360,96\)/,
   "floating combat text pool must be bounded during crowded combat"
 );
-assert.match(
-  play,
-  /const overflow=Math\\.max\\(0,write-limit\\)/,
+assert.ok(
+  play.includes("const overflow=Math.max(0,write-limit)"),
   "visual FX caps must still evict oldest overflow, not skip legitimate effects"
 );
-assert.match(
-  play,
-  /rows\\.length=write/,
+assert.ok(
+  play.includes("rows.length=write"),
   "visual FX retirement must shrink each bounded pool in place"
 );
 assert.doesNotMatch(
