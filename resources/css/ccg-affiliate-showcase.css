@@ -628,6 +628,27 @@
     line-height: 1.35;
 }
 
+/* Small first-party gateway to the CCG Retro Shop; no new Amazon calls or cards. */
+.ccg-page--single-game .affiliate-products-section--showcase .ccg-retro-shop-game-link {
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
+    color: #9be8ff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: .76rem;
+    font-weight: 650;
+    line-height: 1.45;
+}
+.ccg-page--single-game .affiliate-products-section--showcase .ccg-retro-shop-game-link:hover,
+.ccg-page--single-game .affiliate-products-section--showcase .ccg-retro-shop-game-link:focus-visible {
+    color: #fff;
+}
+.ccg-page--single-game .affiliate-products-section--showcase .ccg-retro-shop-game-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
 @media (max-width: 760px) {
     .ccg-page--single-game .affiliate-products-section--showcase .ccg-hardware-accordion {
         grid-template-columns: 1fr auto;
