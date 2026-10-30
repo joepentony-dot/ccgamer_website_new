@@ -777,12 +777,23 @@ window.CCGSystems=(()=>{
     }
   }
 
+  // An authored boss owns its chamber until defeated. Keep the two unique
+  // roaming ward-dependent hunters separate from that fight without removing
+  // either actor, changing payment, or suppressing post-boss pursuit.
+  function liveBossRoomId(host){
+    const fight=host?.r114BossFight,roomId=Number(fight?.roomId);
+    if(!fight||fight.cleared||fight.roomId==null||!Number.isInteger(roomId)||roomId<0)return -1;
+    return (host.enemies||[]).some(e=>e?.id===fight.bossId&&e.alive===true)?roomId:-1;
+  }
   function pathStep(world,host,start,target,allowSanctuary=false){
     const width=C.worldWidth,height=C.worldHeight,total=width*height,prev=new Int32Array(total);prev.fill(-2);const q=new Int32Array(total);let head=0,tail=0;
     const si=start.y*width+start.x,gi=target.y*width+target.x,locked=new Set((host.doors||[]).filter(d=>d.locked||!d.open).map(d=>d.y*width+d.x));
+    const bossRoomId=start?.id==="count-loadula"&&!allowSanctuary?liveBossRoomId(host):-1;
+    const bossRoom=bossRoomId>=0?(world.rooms||[]).find(r=>Number(r.id)===bossRoomId):null;
+    const outsideBoss=Boolean(bossRoom&&!inside(bossRoom,start));
     let sanctuary=null;if(!allowSanctuary){sanctuary=new Uint8Array(total);for(const id of world.sanctuaryRooms||[]){const r=world.rooms[id];if(!r)continue;for(let y=r.y;y<=r.y+r.h;y++)for(let x=r.x;x<=r.x+r.w;x++)sanctuary[y*width+x]=1}}
     const startSafe=sanctuary?Boolean(sanctuary[si]):false;prev[si]=-1;q[tail++]=si;
-    while(head<tail){const idx=q[head++];if(idx===gi)break;const x=idx%width,y=(idx/width)|0;for(const [dx,dy] of DIRS){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height)continue;const ni=ny*width+nx;if(prev[ni]!==-2||world.map[ny][nx]!==0||locked.has(ni))continue;if(sanctuary&&sanctuary[ni]&&!startSafe)continue;prev[ni]=idx;q[tail++]=ni}}
+    while(head<tail){const idx=q[head++];if(idx===gi)break;const x=idx%width,y=(idx/width)|0;for(const [dx,dy] of DIRS){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height)continue;const ni=ny*width+nx;if(prev[ni]!==-2||world.map[ny][nx]!==0||locked.has(ni))continue;if(outsideBoss&&inside(bossRoom,{x:nx,y:ny}))continue;if(sanctuary&&sanctuary[ni]&&!startSafe)continue;prev[ni]=idx;q[tail++]=ni}}
     if(prev[gi]===-2)return null;let cur=gi,parent=prev[cur];while(parent!==-1&&parent!==si){cur=parent;parent=prev[cur]}return{x:cur%width,y:(cur/width)|0};
   }
   function objectiveBaseText(host,run,explorePct=0){
