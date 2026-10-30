@@ -18,18 +18,26 @@ assert.match(
 );
 assert.match(
   play,
-  /if\(particles\.length>MAX_GAMEPLAY_PARTICLES\)particles\.splice\(0,particles\.length-MAX_GAMEPLAY_PARTICLES\)/,
+  /retainLive\(particles,260,MAX_GAMEPLAY_PARTICLES\)/,
   "particle pool cap must remain bounded"
 );
 assert.match(
   play,
-  /if\(rings\.length>MAX_GAMEPLAY_RINGS\)rings\.splice\(0,rings\.length-MAX_GAMEPLAY_RINGS\)/,
+  /retainLive\(rings,220,MAX_GAMEPLAY_RINGS\)/,
   "ring pool must be bounded during crowded combat"
 );
 assert.match(
   play,
-  /if\(floaters\.length>96\)floaters\.splice\(0,floaters\.length-96\)/,
+  /retainLive\(floaters,360,96\)/,
   "floating combat text pool must be bounded during crowded combat"
+);
+assert.ok(
+  play.includes("const overflow=Math.max(0,write-limit)"),
+  "visual FX caps must still evict oldest overflow, not skip legitimate effects"
+);
+assert.ok(
+  play.includes("rows.length=write"),
+  "visual FX retirement must shrink each bounded pool in place"
 );
 assert.doesNotMatch(
   play,
