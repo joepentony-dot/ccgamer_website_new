@@ -204,6 +204,9 @@ jobs:
           python -m pip install playwright==1.55.0
           python tests/browser/single-game-presentation-polish.py
 
+      - name: Verify Ask CCG in real desktop and mobile Chromium
+        run: python tests/browser/ccg-retro-assistant-smoke.py
+
       - name: Run physical scroll reachability audit
         run: node scripts/audit-scroll-reachability.js
 
