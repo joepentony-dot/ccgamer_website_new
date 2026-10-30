@@ -53,6 +53,14 @@ assert.equal(enter(),true,"Death Stalker resumes hunt after boss death");
 host.enemies[0].alive=true;host.r114BossFight.cleared=true;
 assert.equal(step()?.x,5,"Boss clear releases Count without erasing it");
 assert.equal(enter(),true,"Boss clear releases Death Stalker without erasing it");
+host.r114BossFight={roomId:null,bossId:"boss-5",cleared:false};
+assert.equal(contextS.pathStep(world,host,{id:"count-loadula",x:5,y:4},{x:3,y:4},false)?.x,4,
+  "Malformed null boss room cannot block a saved Count from leaving");
+assert.equal(contextA.passable({...death,x:5},host,world.map,4,4,world),true,
+  "Malformed null boss room cannot trap a Death Stalker");
+host.r114BossFight.roomId=-1;
+assert.equal(contextS.pathStep(world,host,{id:"count-loadula",x:5,y:4},{x:3,y:4},false)?.x,4,
+  "Malformed negative boss room is ignored");
 delete host.r114BossFight;
 assert.equal(step()?.x,5,"Ordinary floors without a boss fight are unchanged");
 assert.equal(enter(),true,"Death Stalker remains global on ordinary floors");

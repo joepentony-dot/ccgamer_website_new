@@ -782,7 +782,7 @@ window.CCGSystems=(()=>{
   // either actor, changing payment, or suppressing post-boss pursuit.
   function liveBossRoomId(host){
     const fight=host?.r114BossFight,roomId=Number(fight?.roomId);
-    if(!fight||fight.cleared||!Number.isInteger(roomId))return -1;
+    if(!fight||fight.cleared||fight.roomId==null||!Number.isInteger(roomId)||roomId<0)return -1;
     return (host.enemies||[]).some(e=>e?.id===fight.bossId&&e.alive===true)?roomId:-1;
   }
   function pathStep(world,host,start,target,allowSanctuary=false){

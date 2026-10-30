@@ -106,7 +106,7 @@ window.CCGAI=(()=>{
     // The unique Death Stalker cannot join a living authored boss fight.
     // Existing in-room legacy actors may leave; the normal hunt resumes on victory.
     const bossFight=host?.r114BossFight,bossRoomId=Number(bossFight?.roomId);
-    if(e?.deathStalker&&bossFight&&!bossFight.cleared&&Number.isInteger(bossRoomId)&&
+    if(e?.deathStalker&&bossFight&&!bossFight.cleared&&bossFight.roomId!=null&&Number.isInteger(bossRoomId)&&bossRoomId>=0&&
       (host.enemies||[]).some(actor=>actor?.id===bossFight.bossId&&actor.alive===true)&&
       W.roomAt(world,e.x,e.y)!==bossRoomId&&W.roomAt(world,x,y)===bossRoomId)return false;
     const sourceRoom=W.roomAt(world,e.x,e.y),targetRoom=W.roomAt(world,x,y);
