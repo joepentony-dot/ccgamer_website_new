@@ -22,11 +22,13 @@ console.log('CCG Retro Assistant: 9 archive, platform, safety and relevance test
 
 
 /* Home-only bootstrap is independent from the approved CLS whitelist. */
-test('Home-only bootstrap loads assistant without changing protected HTML', () => {
-  const randomizer = fs.readFileSync(path.join(ROOT, 'js/ccg-archive-pulse-randomizer.js'), 'utf8');
-  const home = fs.readFileSync(path.join(ROOT, 'home.html'), 'utf8');
-  assert.match(randomizer, /data-ccg-page/);
-  assert.match(randomizer, /\/js\/ccg-retro-assistant\.js/);
-  assert.match(randomizer, /data-ai-enabled/);
-  assert.doesNotMatch(home, /ccg-retro-assistant\.js/);
-});
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const randomizer = fs.readFileSync(path.join(root, 'js/ccg-archive-pulse-randomizer.js'), 'utf8');
+const home = fs.readFileSync(path.join(root, 'home.html'), 'utf8');
+assert.match(randomizer, /data-ccg-page/);
+assert.match(randomizer, /\/js\/ccg-retro-assistant\.js/);
+assert.match(randomizer, /data-ai-enabled/);
+assert.doesNotMatch(home, /ccg-retro-assistant\.js/);
+console.log('CCG Retro Assistant: home-only lazy bootstrap / protected homepage guard passed');
