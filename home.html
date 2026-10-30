@@ -85,6 +85,8 @@
     <!-- PAGE CSS -->
     <link rel="stylesheet" href="resources/css/home.css" />
     <link rel="stylesheet" href="/resources/css/home-support-panel.css" />
+    <link rel="preload" href="/resources/css/retro-shop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/retro-shop.css" /></noscript>
     <link rel="preload" href="/resources/css/home-fourthwall-merch.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="/resources/css/home-fourthwall-merch.css" /></noscript>
     <link rel="stylesheet" href="/resources/css/home-c64-emulator-promo.css" />
@@ -587,6 +589,16 @@
                 <div class="home-community-latest__card" id="homeCommunityLatestCard" aria-live="polite">
                     <p class="ccg-community-muted">Checking the latest community review…</p>
                 </div>
+            </section>
+
+            <!-- CCG RETRO SHOP: NON-INTRUSIVE LINK TO CURATED COLLECTIONS -->
+            <section class="ccg-amazon-home-promo" aria-labelledby="ccg-amazon-home-promo-title">
+                <div class="ccg-amazon-home-promo__copy">
+                    <p class="ccg-amazon-home-promo__kicker">Retro Gaming Shop · Amazon UK</p>
+                    <h2 id="ccg-amazon-home-promo-title">Retro books, Evercade games &amp; classic hardware</h2>
+                    <p>Have a browse through my selected Bitmap Books, Evercade collections and C64/Amiga accessories. Some links earn a commission which helps support the channel.</p>
+                </div>
+                <a class="ccg-amazon-home-promo__link" href="/retro-shop.html">Explore the Retro Shop</a>
             </section>
 
             <!-- OPTIONAL HOME SUPPORT: EXACT ARTWORK WITH ACCESSIBLE LINK HOTSPOTS -->
