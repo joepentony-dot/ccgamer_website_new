@@ -22,10 +22,10 @@ vm.runInContext(source.slice(start,end),scope,{filename:"game-play.js::updateEff
 for(const rows of [particles,rings,floaters]){
   Object.defineProperty(rows,"splice",{value:()=>{throw Error("Repeated splice during visual effect retirement")},configurable:true});
 }
-for(let i=0;i<1100;i++)particles.push({id:`expired-p-${i}`,x:1,y:1,vx:1,vy:2,drag:.9,life:1});
+for(let i=0;i<1200;i++)particles.push({id:`expired-p-${i}`,x:1,y:1,vx:1,vy:2,drag:.9,life:1});
 for(let i=0;i<42;i++)particles.push({id:`live-p-${i}`,x:1,y:2,vx:2,vy:3,drag:.5,life:2000});
 particles.push({id:"wall-expired-p",x:1,y:1,vx:0,vy:0,drag:1,life:2000,__ccgWallBornAt:1000,__ccgWallLifeMs:100});
-for(let i=0;i<500;i++)rings.push({id:`expired-r-${i}`,r:3,max:30,life:1});
+for(let i=0;i<600;i++)rings.push({id:`expired-r-${i}`,r:3,max:30,life:1});
 for(let i=0;i<21;i++)rings.push({id:`live-r-${i}`,r:3,max:30,life:2000});
 rings.push({id:"wall-expired-r",r:3,max:30,life:2000,__ccgWallBornAt:1000,__ccgWallLifeMs:100});
 for(let i=0;i<600;i++)floaters.push({id:`expired-f-${i}`,y:100,life:1});
