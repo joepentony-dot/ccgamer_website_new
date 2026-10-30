@@ -725,7 +725,8 @@
       "top-15-commodore-64-games",
       "commodore-64-budget-games-under-3"
     ],
-    "deferYouTubePlayer": true
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
   },
   {
     "id": "50-amiga-games-can-you-identify-them",
@@ -759,7 +760,8 @@
       "50-essential-amiga-games",
       "x-copy-amiga-history"
     ],
-    "deferYouTubePlayer": true
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
   },
   {
     "id": "50-zx-spectrum-games-can-you-identify-them",
@@ -793,6 +795,7 @@
       "c64-vs-zx-spectrum",
       "zx-spectrum-memories-hodgy"
     ],
-    "deferYouTubePlayer": true
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
   }
 ]
