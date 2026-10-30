@@ -4,11 +4,31 @@
   'use strict';
 
   const STOP = new Set(['a','an','the','and','or','for','from','like','find','show','me','some','please','what','which','was','were','are','is','games','game','of','with','on','to','in','do','did','can','you','any','i','want','about','best','great','good','old','classic','retro','my']);
+  const ALIASES = Object.freeze({platformers:'platform',platformer:'platform',shooters:'shooter',shmups:'shooter',shmup:'shooter',puzzlers:'puzzle',racer:'racing',racers:'racing'});
   function words(s) {
-    return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').split(/\s+/).filter(t => t.length > 1 && !STOP.has(t));
+    return String(s || '').toLowerCase()
+      .replace(/\bshoot[\s'-]*em[\s'-]*ups?\b/g, 'shooter')
+      .replace(/[^a-z0-9]+/g, ' ').split(/\s+/)
+      .filter(t => t.length > 1 && !STOP.has(t)).map(t => ALIASES[t] || t);
+  }
+  // Only carry context when the follow-up consists of platform, year or player
+  // filters. A new title/genre request starts a fresh search, not a guessed one.
+  function contextualQuestion(previous, question) {
+    const current = String(question || '').trim();
+    const prior = String(previous || '').trim();
+    if (!prior || !/^(?:what about|how about|and|also|anything|any)\b/i.test(current)) return current;
+    const fragment = current.replace(/^(?:what about|how about|and|also|anything(?:\s+from|\s+on)?|any(?:\s+from|\s+on)?)\s+/i, '')
+      .replace(/[?!.\s]+$/g, '').trim();
+    const leftover = fragment.replace(/\b(?:on|from|in|for|the|games?|commodore|64|c64|amiga|two|2|player|players|multiplayer|co|op|19[78]\d|199\d|200\d)\b/gi, '').replace(/[\s-]+/g, '');
+    if (!fragment || leftover) return current;
+    let base = prior.replace(/[?!.\s]+$/g, '');
+    if (/\b(amiga|c64|commodore\s*64)\b/i.test(fragment)) base = base.replace(/\b(amiga|c64|commodore\s*64)\b/gi, ' ');
+    if (/\b(?:19[78]\d|199\d|200\d)\b/.test(fragment)) base = base.replace(/\b(?:19[78]\d|199\d|200\d)\b/g, ' ');
+    if (/\b(?:two[\s-]*players?|2[\s-]*players?|multiplayer|co[\s-]*op)\b/i.test(fragment)) base = base.replace(/\b(?:two[\s-]*players?|2[\s-]*players?|multiplayer|co[\s-]*op)\b/gi, ' ');
+    return (base + ' ' + fragment).replace(/\s+/g, ' ').trim();
   }
   function field(v) { return Array.isArray(v) ? v.join(' ') : typeof v === 'string' ? v : ''; }
-  function matchingGames(items, question, max = 5) {
+  function matchingGames(items, question, max = 5, offset = 0) {
     if (!Array.isArray(items)) return [];
     const q = String(question || '').toLowerCase();
     const tokens = [...new Set(words(q))];
@@ -44,10 +64,11 @@
       if ((queryC64 || queryAmiga) && !tokens.length) points += 1;
       return points > 0 ? { game, points, index } : null;
     }).filter(Boolean).sort((a,b) => b.points-a.points || a.index-b.index);
-    return scored.slice(0, Math.max(1, Math.min(8, max))).map(x => x.game);
+    const start = Math.max(0, Math.trunc(Number(offset) || 0));
+    return scored.slice(start, start + Math.max(1, Math.min(8, max))).map(x => x.game);
   }
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = { matchingGames, words };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { matchingGames, words, contextualQuestion };
   if (!root.document || root.__ccgRetroAssistantLoaded) return;
   root.__ccgRetroAssistantLoaded = true;
 
@@ -60,6 +81,8 @@
   let loadedGames = null;
   let loadingGames = null;
   let waiting = false;
+  let lastArchiveQuestion = '';
+  let lastArchiveOffset = 0;
   let turnstileToken = '';
   let turnstileWidgetId = null;
   let panel, trigger, chat, input, form, status, closeButton;
@@ -135,6 +158,13 @@
     if (waiting) return;
     question = String(question).trim().slice(0,280);
     if (question.length < 3) return;
+    const wantsMore = /^(?:show\s+me\s+)?more(?:\s+(?:games|results|like these))?\??$/i.test(question);
+    if (wantsMore && !lastArchiveQuestion) {
+      addMessage('Ask about a game, platform or genre first, then request more results.', 'bot');
+      return;
+    }
+    const archiveQuestion = wantsMore ? lastArchiveQuestion : contextualQuestion(lastArchiveQuestion, question);
+    const resultOffset = wantsMore ? lastArchiveOffset + 5 : 0;
     waiting = true;
     input.disabled = true;
     form.querySelector('button').disabled = true;
@@ -142,13 +172,20 @@
     status.textContent = 'Checking the archive…';
     try {
       const games = await loadCatalogue();
-      if (await tryAI(question)) { status.textContent = 'Answer based on the CCG archive'; return; }
-      const hits = matchingGames(games, question);
+      if (await tryAI(archiveQuestion)) { status.textContent = 'Answer based on the CCG archive'; return; }
+      const hits = matchingGames(games, archiveQuestion, 5, resultOffset);
       if (hits.length) {
-        addMessage('Here are matches from the CCG archive. These are catalogue search results, not an AI-generated review. Open a game page for its original information and ratings.', 'bot');
+        lastArchiveQuestion = archiveQuestion;
+        lastArchiveOffset = resultOffset;
+        addMessage(wantsMore
+          ? 'Here are more matches from the CCG archive.'
+          : 'Here are matches from the CCG archive. These are catalogue search results, not an AI-generated review. Open a game page for its original information and ratings.', 'bot');
         hits.forEach(card);
       } else {
-        addMessage('I couldn’t confirm a match in the current CCG catalogue. Try a game title, publisher, genre or year. I won’t invent an answer.', 'bot');
+        if (!wantsMore) { lastArchiveQuestion = archiveQuestion; lastArchiveOffset = 0; }
+        addMessage(wantsMore
+          ? 'That’s all the matching games I can confirm in the current archive.'
+          : 'I couldn’t confirm a match in the current CCG catalogue. Try a game title, publisher, genre or year. I won’t invent an answer.', 'bot');
       }
       status.textContent = aiEnabled ? 'Archive search (AI unavailable or verification incomplete)' : 'Archive search · AI not enabled';
     } catch (_) {
