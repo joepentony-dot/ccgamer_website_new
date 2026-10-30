@@ -1247,7 +1247,7 @@ function updateEffects(dt){
     let write=0;
     for(let read=0;read<rows.length;read++){
       const row=rows[read];
-      if(row.life>0&&!expired(row,pad))rows[write++]=row;
+      if(!(row.life<=0)&&!expired(row,pad))rows[write++]=row;
     }
     const overflow=Math.max(0,write-limit);
     if(overflow){
