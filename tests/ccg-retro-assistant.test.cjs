@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { matchingGames, words, contextualQuestion } = require('../js/ccg-retro-assistant.js');
+const { matchingGames, words, contextualQuestion, archiveFact, hardwareFact } = require('../js/ccg-retro-assistant.js');
 const games = [
   {system:'C64',slug:'summer-games-ii',title:'Summer Games II',year:1985,genres:['sports'],description:'Two-player multi-event sports competition',credits:{publisher:['Epyx']}},
   {system:'C64',slug:'spy-vs-spy',title:'Spy vs Spy',year:1984,genres:['strategy'],description:'A competitive two player action puzzle game',credits:{publisher:['First Star Software']}},
@@ -58,3 +58,18 @@ assert.match(assistantSource, /lastArchiveOffset/);
 assert.match(assistantSource, /if \(!aiEnabled \|\| !endpoint \|\| !siteKey \|\| !turnstileToken\) return false/);
 assert.match(assistantSource, /a\.href = '\/games\/' \+ encodeURIComponent\(game\.slug\)/);
 console.log('CCG Retro Assistant: canonical games.json, opt-in-only AI and safe archive links passed');
+
+/* All factual game answers must derive from canonical fields, not AI guesses. */
+const known = [{system:'C64',slug:'uridium',title:'Uridium',year:1986,
+  credits:{publisher:['Hewson'],musician:['Steve Turner']},ccg_rating:8}];
+assert.match(archiveFact(known,'Who published Uridium?').reply, /Hewson/);
+assert.match(archiveFact(known,'When was Uridium released?').reply, /1986/);
+assert.match(archiveFact(known,'Who composed the music for Uridium?').reply, /Steve Turner/);
+assert.match(archiveFact(known,'What is your rating for Uridium?').reply, /CCG catalogue rating.*8/);
+assert.match(archiveFact(known,'Zzap score for Uridium?').reply, /cannot verify a magazine score/);
+assert.equal(archiveFact(known,'Who published an unknown game?'),null);
+assert.equal(archiveFact([{...known[0],slug:'../unsafe'}],'Who published Uridium?'),null);
+assert.match(hardwareFact('Tell me about the SID chip'), /three independently programmable/);
+assert.match(hardwareFact('What is Paula?'), /four channels/);
+assert.equal(hardwareFact('How do I open a chest?'),null);
+console.log('CCG Retro Assistant: canonical publisher/year/composer/CCG rating, magazine restraint and hardware facts passed');
