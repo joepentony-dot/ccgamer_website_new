@@ -103,13 +103,14 @@ window.CCGAI=(()=>{
     /* Sanctuary is an unconditional safe-zone boundary. This deliberately
      * includes roaming Stalkers: no monster may enter or spawn inside it. */
     if(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y))return false;
+    const sourceRoom=W.roomAt(world,e.x,e.y),targetRoom=W.roomAt(world,x,y);
     // The unique Death Stalker cannot join a living authored boss fight.
-    // Existing in-room legacy actors may leave; the normal hunt resumes on victory.
+    // Check the room boundary before scanning the enemy roster: pathfinding
+    // calls this for thousands of candidate tiles in crowded boss floors.
     const bossFight=host?.r114BossFight,bossRoomId=Number(bossFight?.roomId);
     if(e?.deathStalker&&bossFight&&!bossFight.cleared&&bossFight.roomId!=null&&Number.isInteger(bossRoomId)&&bossRoomId>=0&&
-      (host.enemies||[]).some(actor=>actor?.id===bossFight.bossId&&actor.alive===true)&&
-      W.roomAt(world,e.x,e.y)!==bossRoomId&&W.roomAt(world,x,y)===bossRoomId)return false;
-    const sourceRoom=W.roomAt(world,e.x,e.y),targetRoom=W.roomAt(world,x,y);
+      sourceRoom!==bossRoomId&&targetRoom===bossRoomId&&
+      (host.enemies||[]).some(actor=>actor?.id===bossFight.bossId&&actor.alive===true))return false;
     if(!e.bridgeThief&&sourceRoom>=0&&!roomEntered(host,sourceRoom)&&(targetRoom!==sourceRoom||!clearOfUnenteredDoor(host,sourceRoom,x,y)))return false;
     return true;
   }

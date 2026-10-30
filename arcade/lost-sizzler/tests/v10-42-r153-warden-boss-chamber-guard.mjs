@@ -33,6 +33,14 @@ const enter=(actor=death)=>contextA.passable(actor,host,world.map,5,4,world);
 const before=JSON.stringify(host);
 assert.equal(step(),null,"Count must not path into a live authored boss room");
 assert.equal(enter(),false,"Death Stalker must not enter a live authored boss room");
+let rosterScans=0;
+const observedEnemies=new Proxy(host.enemies,{get(target,key,receiver){
+  if(key==="some")rosterScans++;
+  return Reflect.get(target,key,receiver);
+}});
+assert.equal(contextA.passable(death,{...host,enemies:observedEnemies},world.map,3,4,world),true,
+  "Death Stalker can move outside the boss chamber");
+assert.equal(rosterScans,0,"Ordinary pathfinding tiles must not rescan the full enemy roster");
 assert.equal(enter({id:"ordinary",x:4,y:4}),true,"Ordinary enemies retain authored AI");
 assert.equal(step({id:"ordinary",x:4,y:4})?.x,5,"Other pathStep users retain their routes");
 assert.equal(contextS.pathStep(world,host,{id:"count-loadula",x:6,y:4},{x:3,y:4},false)?.x,5,
