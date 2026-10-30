@@ -34,6 +34,8 @@ const phase4dReportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-4d-
 const PHASE5B_EXCLUDED_REGISTRY_ENTRY = "viewer/manual.html";
 const PHASE5B_EXCLUDED_SITEMAP_URL = `${SITE_ORIGIN}/viewer/manual.html`;
 const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
+    // Reviewed, self-canonical non-archive destination for Amazon Influencer collections.
+    "retro-shop.html",
     "games/discover/index.html",
     "games/ccg-games/index.html",
     "games/commodore-quest/index.html",
@@ -48,6 +50,7 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/sitemap-retro-videos.xml`
     ])],
     ["sitemap-pages.xml", new Set([
+        `${SITE_ORIGIN}/retro-shop.html`,
         `${SITE_ORIGIN}/games/discover/`,
         `${SITE_ORIGIN}/games/ccg-games/`,
         `${SITE_ORIGIN}/games/commodore-quest/`,
