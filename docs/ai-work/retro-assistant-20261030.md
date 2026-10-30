@@ -1,0 +1,30 @@
+# CCG Retro Assistant — 30 October 2026 — PARKED / DRAFT, NO PUBLIC AI SERVICE
+
+## Scope / release boundary
+User-requested branded C64/Amiga retro game assistant. This work is isolated from the sole active Dungeon R153 implementation PR #2958. No intro files, game JSON, emulator, global navigation or generated game pages may change. Do not merge this draft, deploy the Edge Function, modify the live database or turn on paid AI while R153 remains the active website workstream. Preserve CCG MASTER CONTROL ownership and request fresh owner release approval after qualification.
+
+## Included
+- Homepage-only fixed launcher loaded by a single deferred script. Panel is opt-in, keyboard-accessible, and inherits existing C64/Amiga mode palette without overriding locked Omega CSS.
+- Local archive-backed responses using lazy `/games/games.json` fetch; game links derive from validated original slugs, never from model output or guessed slugs. The local fallback is functional without a paid API, even if AI is disabled.
+- Optional Supabase Edge Function that is **off by default**, validates permitted Origin and Cloudflare Turnstile before an AI call, enforces atomic daily global and best-effort per-client quotas through service-role-only SQL, fetches the current CCG catalogue for response context, and sends capped stateless OpenAI Responses requests (`store:false`). Service secrets never appear in browser files. No AI output is HTML-interpreted.
+- No background tracking, local storage, newsletter signup, autoplay, analytics, extra embeds, new image assets, eager catalogue download, or page reflow caused by the fixed launcher.
+
+## Checks run prior to staging
+- `node --check js/ccg-retro-assistant.js`
+- `node tests/ccg-retro-assistant.test.cjs` (archive matching, canonical slug and platform invariants)
+- Browser smoke of open/close, catalogue lazy load, suggestions, Esc, theme and mobile required before merge.
+- Full repository CI and production deployment **not** completed by offline package tests.
+
+## Required before public AI enablement
+1. Review & apply SQL with DB backup, security advisors, permissions inspection and migration history; deploy Edge Function with JWT=false **only after** reviewing schema, CORS and security.
+2. Set Supabase Edge secrets: `OPENAI_API_KEY`, `CCG_TURNSTILE_SECRET`, long random `CCG_ASSISTANT_SALT`, `CCG_ASSISTANT_ENABLED=1`, optional `CCG_ASSISTANT_MODEL`; never commit these values. Verify actual account API budget separately from ChatGPT subscription.
+3. Configure a Cloudflare Turnstile widget with allowed CCG hostnames; set its **public** site key in the homepage script `data-turnstile-sitekey`, set `data-endpoint` to the exact deployed Edge Function URL, and only then `data-ai-enabled=true`.
+4. Update site's privacy information and consent disclosure to cover server-side processing of questions via AI provider, CAPTCHA/Turnstile, and short-lived pseudonymous abuse counters; review UK GDPR/data retention and provider terms.
+5. Test live signed-out visitor flow, captcha expiry, abuse/global caps, OpenAI failures and backend disabled mode across desktop/mobile; run Site Safety / Lighthouse / generated publishing and independent code review at exact PR head.
+6. Fresh-main, no unresolved review, owner authorisation, guarded squash merge, Pages CI and independent browser/live verification. Do not use remote green checks from older heads.
+
+## Known limitations
+- Homepage-only entry point in v1; broader sitewide / generated game-page rollout requires a follow-up after performance and usage observation.
+- The local matcher uses only catalogue fields and may not understand indirect clues or deliver magazine review analysis; it labels these responses as archive search, not AI.
+- Per-client IP quotas are best effort due to proxy headers; the global daily quota and Turnstile validation are the primary spend controls. Actual API organisation budget must be separately capped.
+- No paid AI connectivity until an actual API key and Turnstile site key are configured and verified.
