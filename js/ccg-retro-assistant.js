@@ -73,8 +73,17 @@
   function archiveFact(items, question) {
     if (!Array.isArray(items)) return null;
     const q = String(question || '').toLowerCase();
+    // The archive can contain separate C64 and Amiga editions of the same
+    // title. Honour the platform named in the question before returning a
+    // publisher, year or musician: a different edition is not evidence.
+    const requestedAmiga = /\bamiga\b/.test(q);
+    const requestedC64 = /\b(?:c64|commodore[\s-]*64)\b/.test(q);
+    if ((requestedAmiga && requestedC64) ||
+        (!requestedAmiga && !requestedC64 && /\b(?:zx spectrum|spectrum|atari st)\b/.test(q))) return null;
     const game = items.filter(g => g && /^[a-z0-9-]{1,100}$/.test(g.slug || '') &&
-      typeof g.title === 'string' && g.title.length >= 3 && q.includes(g.title.toLowerCase()))
+      typeof g.title === 'string' && g.title.length >= 3 && q.includes(g.title.toLowerCase()) &&
+      (!requestedAmiga || /amiga/i.test(String(g.system || ''))) &&
+      (!requestedC64 || /(?:c64|commodore)/i.test(String(g.system || ''))))
       .sort((a,b) => b.title.length - a.title.length)[0];
     if (!game) return null;
     const label = game.title + (game.system ? ' (' + game.system + ')' : '');
