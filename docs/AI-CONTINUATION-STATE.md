@@ -1,3 +1,11 @@
+## 30 October 2026 — Ask CCG edition-grounding correction (BRANCH ONLY, 20:30 UTC)
+
+- Sole ACTIVE ordinary-site candidate remains existing draft #2959. A source-executed negative control proved its earlier archiveFact returned the C64 publisher and 1985 year when the visitor explicitly asked about the Amiga edition of the same title. This was a real factual misattribution.
+- js/ccg-retro-assistant.js commit a0358cd05c9da21dd2b9e181f33df0caec88b44a now filters canonical title matches by explicit C64/Amiga platform and declines contradictory/unsupported platform questions. tests/ccg-retro-assistant.test.cjs commit e4b78699abd428309bb31ade67fa39e541833d01 adds eight edition-specific publisher/year/musician and negative regressions. Five real-source V8 candidate cases passed before source write. NO paid AI or backend enabled.
+- Previous head 98b9d00755e4d9895847acedf8572b81a7b50b13 had 15/16 Actions successful; Full Dungeon 41108563873 FAILED with canonical Node job still in_progress, manifest queued and Chromium skipped. GitHub denied one targeted rerun with 403. These receipts are stale for the new source head. Await new exact-head CI; do not bypass a denied rerun. Main at check 7423a19336cda4b3a158fe4da7af0718962a70a2, branch 0 behind.
+- Amazon #2957 PARKED pending authenticated Idea List titles and UK offsite earning tag joepentony-20; Dungeon R153 #2958 PARKED with six successful workflows and Windows preview artifact 12985697296, but all six owner Windows conditions remain NOT OWNER ACCEPTED. OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED. Commercial Windows release HOLD.
+- Next: inspect actual new-head CI, fix demonstrated failures, then native release gates, guarded expected-head squash merge and independent Pages/live desktop/mobile acceptance for free v1. NOT MERGED/DEPLOYED/LIVE.
+
 ## 30 October 2026 — Ask CCG bounded FREE archive assistant, branch-only qualification
 
 - Amazon Retro Shop #2957 **PARKED/BLOCKED**: existing head `cc5ad612928e7f89cdc0849a476e7f199b3631bb` was 0 behind main `7423a19336cda4b3a158fe4da7af0718962a70a2` with 25/25 exact-head Actions passing, but owner-only Amazon UK Idea List title mapping and earning ID `joepentony-20` remain unverified. No repeat account searches or unsafe merge.
