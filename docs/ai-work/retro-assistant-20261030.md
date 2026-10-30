@@ -32,3 +32,7 @@ User-requested branded C64/Amiga retro game assistant. This work is isolated fro
 ## 30 October — Homepage CLS guard remediation
 
 GitHub PR exact-head CI `CCG Game Page Release Safeguards` failed its intentionally strict `tests/sitewide-cls-repair.test.mjs` homepage integrity check when the pilot added a script to `home.html`. That check must not be weakened. The follow-up candidate restores `home.html` byte-for-byte to base main and attaches the opt-in feature after DOM readiness from the existing homepage-only `js/ccg-archive-pulse-randomizer.js`, which is already loaded by the real homepage. AI remains disabled. Re-run exact-head CI on the new commit; earlier checks are stale. Do not merge until guard passes and the normal performance, review, and one-active-workstream rules are met.
+
+## 30 October — Public code cache guard
+
+Exact-head CI additionally caught stale public JS code-cache namespace v205. As required by the permanent cache protocol, this isolated candidate advances `service-worker.js` `CODE_CACHE_VERSION` from v205 to v206 without changing the SW behaviour or cache policy. All previous-head CI receipts are obsolete. Fresh exact-head source, browser and Lighthouse qualification plus independent review are still required.
