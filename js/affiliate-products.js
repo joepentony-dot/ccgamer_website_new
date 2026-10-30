@@ -312,6 +312,18 @@
         }
         if (intro) intro.textContent = toSafeString(group.intro) || "Optional Amazon affiliate recommendations matched to this system.";
 
+        // Link to the curated shop rather than injecting extra product offers into every game.
+        // Idempotent across repeated ccg:game-loaded events; existing accordion ownership stays unchanged.
+        const header = section.querySelector(".ccg-hardware-accordion__header");
+        if (header && !header.querySelector("[data-ccg-retro-shop-link]")) {
+            const shop = document.createElement("a");
+            shop.href = resolveSiteUrl("retro-shop.html");
+            shop.className = "ccg-retro-shop-game-link";
+            shop.setAttribute("data-ccg-retro-shop-link", "true");
+            shop.textContent = "Browse more retro books, hardware & Evercade games";
+            header.appendChild(shop);
+        }
+
         section.querySelectorAll(".affiliate-products-legal").forEach((node) => node.remove());
         panel.appendChild(createDisclosure(config, "affiliate-products-legal"));
 
