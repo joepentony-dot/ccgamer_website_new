@@ -1,3 +1,8 @@
+## 30 October 2026 — Ask CCG platform-only search negative control and fix (BRANCH ONLY)
+
+- Direct execution of the current draft's real matcher exposed another visitor-facing defect: asking just "Amiga", "C64" or "Commodore 64" returned no games, despite matching canonical entries. Root cause: platform tokens remained in the token array, defeating the fallback for platform-only searches. A source-executed negative control failed before this correction; five candidate controls now pass (three positive platform filters, two unsupported-term negatives).
+- The same existing PR #2959 branch now fixes platform-only archive matching and extends the existing Node regression without touching paid AI, homepage HTML, catalogue, intro, game pages or backend. Previous CI receipts are stale; requalify the final head and do not bypass GitHub Actions or merge before every applicable exact-head check succeeds. Shop #2957 remains Amazon-account BLOCKED; Dungeon #2958 remains Windows/high-risk PARKED. **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED.** Commercial Windows release HOLD.
+
 ## 30 October 2026 — Ask CCG edition-grounding correction (BRANCH ONLY, 20:30 UTC)
 
 - Sole ACTIVE ordinary-site candidate remains existing draft #2959. A source-executed negative control proved its earlier archiveFact returned the C64 publisher and 1985 year when the visitor explicitly asked about the Amiga edition of the same title. This was a real factual misattribution.

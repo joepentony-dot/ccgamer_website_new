@@ -85,6 +85,12 @@ assert.equal(archiveFact(editions,'Who published Example on ZX Spectrum?'),null)
 assert.equal(archiveFact(editions,'Who published Example on C64 and Amiga?'),null);
 assert.equal(archiveFact([editions[0]],'Who published Example on Amiga?'),null);
 console.log('CCG Retro Assistant: explicit edition attribution never borrows a different platform');
+assert.deepEqual(matchingGames(editions,'Amiga').map(g=>g.slug),['example-amiga']);
+assert.deepEqual(matchingGames(editions,'C64').map(g=>g.slug),['example-c64']);
+assert.deepEqual(matchingGames(editions,'Commodore 64').map(g=>g.slug),['example-c64']);
+assert.deepEqual(matchingGames(editions,'Amiga nonsense').map(g=>g.slug),[]);
+console.log('CCG Retro Assistant: platform-only requests return matching archive editions');
+
 
 assert.match(hardwareFact('Tell me about the SID chip'), /three independently programmable/);
 assert.match(hardwareFact('What is Paula?'), /four channels/);

@@ -61,7 +61,10 @@
       }
       if (queryMulti && isMulti) points += 7;
       if (year) points += 3;
-      if ((queryC64 || queryAmiga) && !tokens.length) points += 1;
+      // Platform names remain tokens, so !tokens.length wrongly rejected
+      // a visitor asking simply for "C64" or "Amiga" games.
+      const platformOnly = tokens.every(t => ['c64','amiga','commodore','64'].includes(t) || t === year);
+      if ((queryC64 || queryAmiga) && platformOnly) points += 1;
       return points > 0 ? { game, points, index } : null;
     }).filter(Boolean).sort((a,b) => b.points-a.points || a.index-b.index);
     const start = Math.max(0, Math.trunc(Number(offset) || 0));
