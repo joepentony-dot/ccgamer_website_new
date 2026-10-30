@@ -169,6 +169,7 @@ test('approved CLS additions cannot exempt unrelated homepage content or executa
   const home = fs.readFileSync('home.html', 'utf8');
   assert(isApprovedHomeClsChange(baseline, home));
   assert(!isApprovedHomeClsChange(baseline, home.replace('Find Your Way Around CCG', 'Unreviewed redesign')));
+  assert(!isApprovedHomeClsChange(baseline, home.replace('Bitmap Books, Evercade collections', 'unreviewed commercial claims')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('Fresh Game Pick', 'Unreviewed pick')));
   assert(!isApprovedHomeClsChange(baseline, home.replace('data-ccg-first-paint-mode="true">', 'data-ccg-first-paint-mode="true">alert(1);')));
 });
