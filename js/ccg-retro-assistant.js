@@ -68,7 +68,41 @@
     return scored.slice(start, start + Math.max(1, Math.min(8, max))).map(x => x.game);
   }
 
-  if (typeof module !== 'undefined' && module.exports) module.exports = { matchingGames, words, contextualQuestion };
+  // Short, source-backed answers: canonical catalogue fields only. Magazine
+  // scores are deliberately NOT inferred from the separate CCG rating.
+  function archiveFact(items, question) {
+    if (!Array.isArray(items)) return null;
+    const q = String(question || '').toLowerCase();
+    const game = items.filter(g => g && /^[a-z0-9-]{1,100}$/.test(g.slug || '') &&
+      typeof g.title === 'string' && g.title.length >= 3 && q.includes(g.title.toLowerCase()))
+      .sort((a,b) => b.title.length - a.title.length)[0];
+    if (!game) return null;
+    const label = game.title + (game.system ? ' (' + game.system + ')' : '');
+    const publisher = field(game.credits?.publisher || game.publisher);
+    const musician = field(game.credits?.musician || game.musician);
+    if (/\b(?:zzap|crash|magazine|amiga format)\b.*\b(?:score|rating|percent|review)\b/.test(q))
+      return { reply: 'I cannot verify a magazine score for ' + label + ' from this catalogue. Check the original magazine material on its game page where available.', game };
+    if (/\b(?:publisher|published|who released)\b/.test(q) && publisher)
+      return { reply: label + ' is listed as published by ' + publisher + ' in the CCG catalogue.', game };
+    if (/\b(?:composer|composed|music by|wrote the music|soundtrack)\b/.test(q) && musician)
+      return { reply: 'The CCG catalogue credits ' + musician + ' for the music on ' + label + '.', game };
+    if (/\b(?:when|what year|which year|release year)\b/.test(q) && /^\d{4}$/.test(String(game.year)))
+      return { reply: label + ' is listed in the CCG catalogue as a ' + game.year + ' release.', game };
+    if (/\b(?:ccg rating|cheeky.*rating|your rating|ccg score)\b/.test(q) && Number.isFinite(Number(game.ccg_rating)))
+      return { reply: 'The CCG catalogue rating for ' + label + ' is ' + game.ccg_rating + '. This is not a magazine percentage.', game };
+    return null;
+  }
+  // Hardware facts checked against the C64 Programmer's Reference Guide
+  // (commodore.ca/manuals) and Amiga Paula audio documentation (sprites.org).
+  function hardwareFact(question) {
+    const q = String(question || '').toLowerCase();
+    if (/\b(?:sid|c64 sound chip|commodore 64 sound chip)\b/.test(q))
+      return 'The Commodore 64 uses the SID sound chip. It has three independently programmable synthesiser voices.';
+    if (/\b(?:paula|amiga sound chip|amiga audio chip)\b/.test(q))
+      return 'The Amiga uses the Paula custom chip for four channels of 8-bit sampled audio.';
+    return null;
+  }
+  if (typeof module !== 'undefined' && module.exports) module.exports = { matchingGames, words, contextualQuestion, archiveFact, hardwareFact };
   if (!root.document || root.__ccgRetroAssistantLoaded) return;
   root.__ccgRetroAssistantLoaded = true;
 
@@ -171,7 +205,22 @@
     addMessage(question,'visitor');
     status.textContent = 'Checking the archive…';
     try {
+      const hardware = hardwareFact(archiveQuestion);
+      if (hardware) {
+        addMessage(hardware, 'bot');
+        status.textContent = 'Verified hardware reference · no external AI';
+        return;
+      }
       const games = await loadCatalogue();
+      const fact = archiveFact(games, archiveQuestion);
+      if (fact) {
+        addMessage(fact.reply, 'bot');
+        card(fact.game);
+        lastArchiveQuestion = archiveQuestion;
+        lastArchiveOffset = 0;
+        status.textContent = 'Answer from CCG catalogue · no external AI';
+        return;
+      }
       if (await tryAI(archiveQuestion)) { status.textContent = 'Answer based on the CCG archive'; return; }
       const hits = matchingGames(games, archiveQuestion, 5, resultOffset);
       if (hits.length) {
