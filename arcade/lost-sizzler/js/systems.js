@@ -68,6 +68,19 @@ window.CCGSystems=(()=>{
   }
   function openRooms(world){return world.rooms.filter(r=>!r.optional&&r.id!==world.startRoomId)}
   function deepRooms(world){return [...openRooms(world)].sort((a,b)=>(b.depth||0)-(a.depth||0))}
+  // Keep the two unique ward-dependent hunters out of the authored boss and
+  // Sigil chambers at initial generation. Both remain on the floor and retain
+  // their normal AI, ward/payment and defeat ownership.
+  function selectWardenSpawnRooms(world,host,rooms,run){
+    const guardianRoomId=host.guardian?W.roomAt(world,host.guardian.x,host.guardian.y):null;
+    const protectedRooms=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,guardianRoomId].filter(id=>id!=null&&id>=0));
+    const eligible=rooms.filter(r=>r&&!protectedRooms.has(r.id)&&!r.sanctuary);
+    const countRoom=eligible[0]||rooms.find(r=>r&&!protectedRooms.has(r.id))||rooms[0]||world.rooms[world.exitRoomId];
+    const separate=eligible.filter(r=>r.id!==countRoom?.id);
+    const floor=Math.max(1,Number(run?.floor)||1);
+    const deathRoom=separate.length?separate[(floor*7+3)%separate.length]:countRoom;
+    return{countRoom,deathRoom};
+  }
   function freeInRoom(world,room,used){
     const a=[];for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){if(world.map[y]?.[x]!==0)continue;if(used.has(cell(x,y)))continue;a.push({x,y})}
     if(!a.length)return centre(room);const q=a[Math.floor(world.random()*a.length)];used.add(cell(q.x,q.y));return q;
@@ -654,12 +667,12 @@ window.CCGSystems=(()=>{
     installSkeletonHorde(world,host,run,rooms,used);
 
     // Count Loadula remains separate from ordinary enemies. A Banishment Flask can make him vulnerable briefly.
-    const stalkRoom=rooms[0]||world.rooms[world.exitRoomId],sq=freeInRoom(world,stalkRoom,used);
+    const {countRoom:stalkRoom,deathRoom:deathStalkerRoom}=selectWardenSpawnRooms(world,host,rooms,run),sq=freeInRoom(world,stalkRoom,used);
     host.stalker={id:"count-loadula",name:C.stalker.name,...sq,x0:sq.x,y0:sq.y,active:false,seen:false,awake:false,moveCooldown:C.stalker.moveMs,stunMs:0,vulnerableMs:0,hp:C.stalker.banishHpBase+(run.floor||1)*2,maxHp:C.stalker.banishHpBase+(run.floor||1)*2,spawnTimer:(run.modifier?.id==="STALKER_ACTIVE"?9000:C.stalker.spawnDelayMs),near:false};
 
     // Exactly one Death Stalker exists on every floor. Only this explicit class uses ordinary-fire immunity.
     host.voidStalkers=[];{
-      const room=rooms[((run.floor||1)*7+3)%Math.max(1,rooms.length)]||rooms[0],vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
+      const room=deathStalkerRoom,vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
       const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.deathStalkerSpawn={x:v.x,y:v.y,roomId:room?.id??-1};host.enemies.push(v);host.voidStalkers.push(v.id)
     }
     enforceDeathStalkerSingleton(host);
