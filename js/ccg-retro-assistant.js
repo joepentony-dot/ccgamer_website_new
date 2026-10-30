@@ -88,7 +88,7 @@
       return { reply: 'The CCG catalogue credits ' + musician + ' for the music on ' + label + '.', game };
     if (/\b(?:when|what year|which year|release year)\b/.test(q) && /^\d{4}$/.test(String(game.year)))
       return { reply: label + ' is listed in the CCG catalogue as a ' + game.year + ' release.', game };
-    if (/\b(?:ccg rating|cheeky.*rating|your rating|ccg score)\b/.test(q) && Number.isFinite(Number(game.ccg_rating)))
+    if (/\b(?:ccg rating|cheeky.*rating|your rating|ccg score)\b/.test(q) && game.ccg_rating !== '' && game.ccg_rating != null && Number.isFinite(Number(game.ccg_rating)))
       return { reply: 'The CCG catalogue rating for ' + label + ' is ' + game.ccg_rating + '. This is not a magazine percentage.', game };
     return null;
   }

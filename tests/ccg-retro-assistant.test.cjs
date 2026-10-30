@@ -66,6 +66,7 @@ assert.match(archiveFact(known,'Who published Uridium?').reply, /Hewson/);
 assert.match(archiveFact(known,'When was Uridium released?').reply, /1986/);
 assert.match(archiveFact(known,'Who composed the music for Uridium?').reply, /Steve Turner/);
 assert.match(archiveFact(known,'What is your rating for Uridium?').reply, /CCG catalogue rating.*8/);
+assert.equal(archiveFact([{...known[0],ccg_rating:''}],'What is your rating for Uridium?'),null);
 assert.match(archiveFact(known,'Zzap score for Uridium?').reply, /cannot verify a magazine score/);
 assert.equal(archiveFact(known,'Who published an unknown game?'),null);
 assert.equal(archiveFact([{...known[0],slug:'../unsafe'}],'Who published Uridium?'),null);
