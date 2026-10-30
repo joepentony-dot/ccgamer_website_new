@@ -57,4 +57,13 @@ assert.equal(floaters.length,0,"Expired floater lifetimes cannot persist indefin
 scope.updateEffects(16);
 assert.equal(floaters.length,0,"Empty effect queues remain safe");
 
-console.log("R151 source-executed linear visual-effect retirement: 16 assertions passed");
+// Preserve the old wall-age fallback for legacy malformed FX: NaN lifetime
+// was not removed by the original <=0 check, but must expire by wall clock.
+floaters.push({id:"legacy-nonnumeric-f",y:100,life:NaN,ownerId:"player"});
+scope.updateEffects(16);
+assert.equal(floaters.length,1,"Legacy nonnumeric effect gets its bounded wall-age grace");
+now+=500;
+scope.updateEffects(16);
+assert.equal(floaters.length,0,"Legacy nonnumeric effect still expires by wall clock");
+
+console.log("R151 source-executed linear visual-effect retirement: 18 assertions passed");
