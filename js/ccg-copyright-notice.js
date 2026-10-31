@@ -23,6 +23,7 @@
 
   var toast = null;
   var timeoutId = null;
+  var pointerInside = false;
 
   function guarded(target) {
     if (!target || typeof target.closest !== 'function') return false;
@@ -30,15 +31,31 @@
     return Boolean(target.closest('img, picture, [data-ccg-protected-content]'));
   }
 
-  function dismiss() {
+  function clearDismissTimer() {
     if (timeoutId !== null) {
       window.clearTimeout(timeoutId);
       timeoutId = null;
     }
+  }
+
+  function dismiss() {
+    clearDismissTimer();
     if (toast) {
       toast.remove();
       toast = null;
     }
+    pointerInside = false;
+  }
+
+  function scheduleDismiss() {
+    clearDismissTimer();
+    // Never remove the link or Dismiss button while someone is using it.
+    if (!toast || pointerInside || toast.contains(document.activeElement)) return;
+    timeoutId = window.setTimeout(function () {
+      timeoutId = null;
+      if (!toast || pointerInside || toast.contains(document.activeElement)) return;
+      dismiss();
+    }, 4500);
   }
 
   function showNotice() {
@@ -78,7 +95,20 @@
     toast.appendChild(footer);
     document.body.appendChild(toast);
 
-    timeoutId = window.setTimeout(dismiss, 4500);
+    toast.addEventListener('mouseenter', function () {
+      pointerInside = true;
+      clearDismissTimer();
+    });
+    toast.addEventListener('mouseleave', function () {
+      pointerInside = false;
+      scheduleDismiss();
+    });
+    toast.addEventListener('focusin', clearDismissTimer);
+    toast.addEventListener('focusout', function () {
+      // Focus settles after focusout; check the destination before resuming.
+      window.setTimeout(scheduleDismiss, 0);
+    });
+    scheduleDismiss();
   }
 
   document.addEventListener('contextmenu', function (event) {
