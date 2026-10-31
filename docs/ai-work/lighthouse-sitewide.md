@@ -1,5 +1,12 @@
 # Site-wide Lighthouse programme
 
+## 31 October 2026 — canonical game-video poster duplicate transfer (BRANCH ONLY)
+
+- Fresh 30 October mobile Lighthouse shard `13016661277` from site-wide run `41134029080` showed the canonical Doriath game page loading YouTube `maxresdefault.jpg` (~375 KB transfer) for a 368px facade, while the shared `js/load-single-game.js` runtime then rewrites the same image to `hqdefault.jpg`. The SEO generator reused full-resolution VideoObject metadata as the small facade `src`; this is an evidenced duplicate-request and image-delivery defect, not proof of an overall mobile LCP improvement.
+- Existing Amazon #2957 remains account-acceptance BLOCKED; Dungeon #2958 remains high-risk/Windows PARKED. The one ACTIVE website implementation is draft **PR #2962**, `fix/sitewide-game-video-facade-poster-20261031`, based on main `4730c38813e98cbfd68f12580344632765479f1c`. It changes only `scripts/generate-video-seo.js` and `tests/game-video-facade-performance.test.mjs` plus this checkpoint: both existing and newly created visible facades use the runtime's 480px `hqdefault.jpg`, while VideoObject and video sitemap preserve original metadata thumbnails. Six source-executed preflight checks passed; exact-head Actions/Chromium and a regenerated-site/mobile Lighthouse comparison are **NOT YET QUALIFIED**.
+- Next: check exact latest-head CI and existing native protections, reconcile main if needed, guarded squash merge only when eligible; regenerate canonical game pages through the owning publisher (not hand edits), then verify public poster requests, video/SEO retention and repeat representative mobile/desktop Lighthouse. Do not mark LIVE or claim score improvement without those receipts.
+
+
 ## Video facade reconciliation onto public cache v128 — 14 October 2026
 
 - Existing draft PR **#2719** remains the sole performance integration vehicle. Current main at reconciliation: `aea758ccdc3c789ac6de6410c34aa5b0ee57a99f` with cache `2026-10-14-public-code-v128`, including merged game SEO #2717 and all recent C64 emulator changes. Since old PR base `762342ee887205e912828eef17b3852605e5505e`, the only overlapping path is `service-worker.js`; all other 12 intended performance files remain source-exclusive to this PR.
