@@ -1,3 +1,9 @@
+## 31 October 2026 — generated-output duplicate suppression (BRANCH ONLY)
+
+- Existing generated publishing PR #2967 at `7b44a8d79ceaf7d00d6e4b51981a8ecba623b12a` has 8/8 exact-head dispatch workflows successful, zero behind main `1556354c2ac8f2ab7f941e8d4ff05c20fd8d58a0`, but lacks the repository-required independent exact-head Codex no-findings receipt. **PARKED/BLOCKED; NO MERGE.** Do not repeat CI without new evidence or bypass the review guard.
+- Sole ACTIVE independent source candidate: `fix/generated-publishing-identical-pr-dedup-20261031`. The publishing workflow checks staged generated output against same-repo, open, current-main-ancestor generated PRs and skips creating a new branch only for a byte-identical complete Git patch. Changed sitemap dates/SEO content and stale branches cannot be silently reused. Existing review, exact-head CI and atomic release guard are untouched. **BRANCH ONLY / TESTS AND PR QUALIFICATION PENDING / NOT LIVE.**
+- Public Developer Directory language from merged #2966 independently verified live on Lucasfilm Games and 3-2-1 Software routes; browser search/filter acceptance remains separate. Amazon #2957, Dungeon #2958 and measured genre CLS #2964 retain their existing release holds.
+
 ## 31 October 2026 — Developer detail language correction (BRANCH ONLY)
 
 - Developers directory #2853 MERGED/DEPLOYED at main `e9948bbbc45bc9565f0b3b48244e90d0946bd9ad`; live search/filter acceptance remains outstanding. New bounded ACTIVE defect: 36 single-credit routes say “1 games shown”; Lucasfilm Games renders “Lucasfilm Games Games”.
