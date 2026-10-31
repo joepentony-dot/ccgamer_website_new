@@ -12,6 +12,11 @@
         return String(value || "").trim().toLowerCase();
     }
 
+    function developerCountSuffix(count, hasSearch) {
+        const noun = count === 1 ? "developer" : "developers";
+        return hasSearch ? ` ${noun} found` : ` ${noun} available`;
+    }
+
     function setPressed(buttons, activeValue, attributeName) {
         buttons.forEach((button) => {
             const isActive = normalize(button.getAttribute(attributeName)) === activeValue;
@@ -125,7 +130,7 @@
             if (heading) heading.textContent = hasSearch ? "Matching Developers" : originalHeading;
             if (count) count.textContent = String(visible);
             if (count?.parentElement?.lastChild?.nodeType === 3) {
-                count.parentElement.lastChild.nodeValue = hasSearch ? " developers found" : " developers available";
+                count.parentElement.lastChild.nodeValue = developerCountSuffix(visible, hasSearch);
             }
             if (empty) empty.hidden = visible !== 0;
             setPressed(buttons, system, "data-developer-system");

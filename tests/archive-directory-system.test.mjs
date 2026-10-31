@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -214,6 +215,32 @@ test("developer index reduces default clutter without dropping a credited route"
     assert.doesNotMatch(css, /#developerGrid\s*\{[^}]*display:\s*none/s);
 });
 
+
+test("developer index announces accurate singular/plural live search and filter counts", () => {
+    const runtime = read("js/developer-pages.js");
+    const marker = '    function setPressed(buttons, activeValue, attributeName) {';
+    assert.ok(runtime.includes(marker), "the live-count formatter is exercised from actual runtime source");
+    const sandbox = { document: { readyState: "loading", addEventListener() {} } };
+    vm.runInNewContext(
+        runtime.replace(marker, '    globalThis.__testDeveloperCountSuffix = developerCountSuffix;\\n\\n' + marker).replace(/\\n/g, "\n"),
+        sandbox
+    );
+    const format = sandbox.__testDeveloperCountSuffix;
+    assert.equal(typeof format, "function");
+    for (const [count, found, available] of [
+        [0, " developers found", " developers available"],
+        [1, " developer found", " developer available"],
+        [2, " developers found", " developers available"],
+        [47, " developers found", " developers available"]
+    ]) {
+        assert.equal(format(count, true), found);
+        assert.equal(format(count, false), available);
+    }
+    const liveRegion = /<p class="ccg-developers-visible-count" role="status" aria-live="polite" aria-atomic="true">/;
+    assert.match(read("games/developers/index.html"), liveRegion);
+    assert.match(read("scripts/generate-developer-pages.js"), liveRegion);
+    assert.ok(runtime.includes("count.parentElement.lastChild.nodeValue = developerCountSuffix(visible, hasSearch);"));
+});
 
 test("developer index keeps complete static A-Z links and opens bookmarked system results", () => {
     const html = read("games/developers/index.html");
