@@ -10,6 +10,7 @@ on:
       - 'resources/css/games.css'
       - 'resources/css/game-pages.css'
       - 'scripts/generate-video-seo.js'
+      - 'tests/game-video-facade-performance.test.mjs'
       - 'tests/browser/game-video-facade-live.py'
       - 'tests/browser/single-game-presentation-polish.py'
       - '.github/workflows/ccg-game-video-browser.yml'
@@ -22,6 +23,7 @@ on:
       - 'resources/css/games.css'
       - 'resources/css/game-pages.css'
       - 'scripts/generate-video-seo.js'
+      - 'tests/game-video-facade-performance.test.mjs'
       - '.github/workflows/ccg-game-video-browser.yml'
 
 permissions:
@@ -48,6 +50,12 @@ jobs:
         run: |
           google-chrome --version
           python -m py_compile tests/browser/game-video-facade-live.py
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Verify canonical facade and VideoObject metadata contracts
+        run: node --test tests/game-video-facade-performance.test.mjs
       - name: Check real Chromium poster and deferred iframe interactions
         run: python tests/browser/game-video-facade-live.py
       - name: Verify full-height related cards, aligned credits and unobstructed footer
