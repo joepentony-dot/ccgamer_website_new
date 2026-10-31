@@ -1,3 +1,9 @@
+## 31 October 2026 — genre mobile performance #2964: measured font-swap regression, corrective candidate
+
+- Main checked at 189b07de44ba26c5695fa84a7d3f479e4ec7da53. The single ACTIVE website implementation is existing draft #2964. Exact-head Lighthouse 41172597475 failed mobile/desktop CLS after high-priority banner loading; raw artifact 13032165757 attributes the major movement to late Roboto font swaps. The comparative gate remains enforced.
+- Corrective source candidate on SAME PR: preserve eager banner discovery, reduce banner priority high→auto, and preconnect existing Google Fonts origins through the owning category generator on 15 genre pages. Existing font families, Omega visuals, homepage, intro, catalogue, ratings, emulator and other pages unchanged. Requalify new exact-head CI and mobile/desktop CLS/LCP before any guarded merge. BRANCH ONLY, NOT LIVE.
+- Amazon #2957 blocked by UK Idea List title/tracking verification, Dungeon #2958 parked pending high-risk/Windows acceptance, generated publishing #2963 blocked by existing review-receipt safeguard. Ask CCG #2959 already merged. **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED.** Commercial Windows release HOLD.
+
 ## 31 October 2026 — category mobile LCP follow-up (BRANCH ONLY)
 
 - Fresh main `189b07de44ba26c5695fa84a7d3f479e4ec7da53`; Pages 41160741131, live navigation 41160927852, 24/24 site-wide Lighthouse 41160741115 successful. New single active category performance branch `fix/category-hero-lcp-priority-20261031` prioritises 15 above-fold genre banners through `scripts/upgrade-category-pages.js`, preserves artwork/card lazy loading and extends `tests/category-omega.test.mjs`. Not qualified/merged/live; full evidence in `docs/ai-work/lighthouse-sitewide.md`. Publishing #2963, Amazon #2957 and Dungeon #2958 remain parked on their respective non-waived gates. **OWNER WAIVER — WINDOWS MANUAL ACCEPTANCE NOT PERFORMED.** Commercial Windows release HOLD.

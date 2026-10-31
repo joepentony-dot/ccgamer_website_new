@@ -1,3 +1,9 @@
+## 31 October 2026 — genre banner font-contention correction (BRANCH ONLY)
+
+- PR #2964 exact-head Lighthouse comparison run 41172597475 failed: mobile LCP 20.33s → 17.42s, CLS 0.099 → 0.751; desktop CLS 0.238 → 1.132. Raw eight-report artifact 13032165757 attributes major candidate shifts to late Roboto font swaps (genre hero and decorative Amiga layer). The first high-priority banner candidate is **NOT QUALIFIED**. Do not weaken the browser gate.
+- SAME existing draft PR correction: keep eager first-viewport banner discovery (original main image was lazy), lower fetch priority high→auto and add idempotent preconnects for the existing Google Fonts stylesheet and font origin on all 15 genre pages through the authoritative generator. Existing Orbitron/Roboto, artwork, dimensions, content and below-fold card behaviour remain unchanged. Re-run exact-head mobile/desktop Lighthouse and full applicable CI before merge; no CLS or LCP gain is claimed from the correction until measured.
+- Main 189b07de44ba26c5695fa84a7d3f479e4ec7da53 at preparation; no merge/deployment/live change. Amazon #2957, Dungeon #2958 and generated publishing #2963 remain parked for their previously established external release gates.
+
 ## 31 October 2026 — genre banner image priority (BRANCH ONLY)
 
 - Completed site-wide Lighthouse 41160741115: 1306 routes x 2, 0 errors; mobile median 71, P75 LCP 6612 ms. Genre mobile median 47, P75 LCP 8933 ms, P75 CLS 0.402. Raw role-playing genre attributed ~0.048 CLS to its above-fold banner; dominant genre CLS is caused by webfont swaps and is NOT fixed here.
