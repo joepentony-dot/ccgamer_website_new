@@ -287,6 +287,8 @@ jobs:
       - name: Commit generated publishing output
         id: publish_output
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add \
             games \
@@ -309,6 +311,14 @@ jobs:
           if git diff --cached --quiet; then
             echo "Generated publishing output is already current."
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          DUPLICATE_PR=$(node scripts/deduplicate-generated-publishing.mjs)
+          if [ -n "$DUPLICATE_PR" ]; then
+            echo "::notice::Generated output exactly matches existing PR #${DUPLICATE_PR}; retaining that PR and skipping duplicate branch creation."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "duplicate_pr=$DUPLICATE_PR" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
