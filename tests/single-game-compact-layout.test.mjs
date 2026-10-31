@@ -101,7 +101,15 @@ test("game record layout keeps rich resources compact and reviews opt-in", () =>
   assert.match(css, /CCG GAME RECORD — DENSE ARCHIVE LAYOUT/);
   assert.match(css, /grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\)/);
   assert.match(css, /#game-reading-section,[\s\S]*#game-music-archive-section,[\s\S]*#game-tape-archive-section[\s\S]*grid-column:\s*span 6/);
-  assert.match(css, /\.ccg-game-section-nav\s*\{[\s\S]*position:\s*sticky/);
+  const navRules = [...css.matchAll(/\.ccg-page--single-game \.ccg-game-section-nav\s*\{([^}]*)\}/g)].map((match) => match[1]);
+  assert.ok(navRules.length >= 1, "single-game Explore nav must retain its scoped CSS");
+  assert.ok(navRules.some((rule) => /\bposition:\s*static\s*;/.test(rule)), "Explore nav must scroll with the page");
+  for (const rule of navRules) {
+    assert.doesNotMatch(rule, /\bposition:\s*(?:sticky|fixed)\b/, "no desktop or mobile sticky Explore nav");
+    assert.doesNotMatch(rule, /\btop\s*:/, "no obsolete sticky top offset");
+    assert.doesNotMatch(rule, /\bz-index\s*:/, "Explore nav must not overlay scrolling content");
+  }
+  assert.match(loader, /insertAfter\(hero, nav\)/, "keep Explore directly after the hero, before video");
   assert.match(seoRoutes, /const hasEditorialVideo = Boolean/);
   assert.match(seoRoutes, /if \(!hasEditorialVideo\)/);
   assert.doesNotMatch(
@@ -112,5 +120,5 @@ test("game record layout keeps rich resources compact and reviews opt-in", () =>
 
 test("public cache version covers the shared CSS and JavaScript change", () => {
   const sw = read("service-worker.js");
-  assert.match(sw, /CODE_CACHE_VERSION = "2026-09-25-public-code-v23"/);
+  assert.match(sw, /CODE_CACHE_VERSION = "2026-10-28-public-code-v204"/);
 });

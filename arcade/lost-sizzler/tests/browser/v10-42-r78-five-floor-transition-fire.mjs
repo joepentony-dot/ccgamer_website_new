@@ -44,6 +44,562 @@ async function snapshot(page){
   }));
 }
 
+// A generated Floor 1 entry can have closed routes to distant enemies. Verify
+// actual keyboard traversal only to a currently walkable, unoccupied adjacent
+// floor cell; never teleport the player or assume an enemy is immediately reachable.
+async function probeFloorOneKeyboardTraversal(page){
+  const fixture=await page.evaluate(()=>{
+    if(run?.floor!==1||mode!=="playing"||!p1||!world||!host)return{error:"Solo Floor 1 is not active"};
+    const x=Number(p1.x),y=Number(p1.y),dirs=[
+      {key:"ArrowRight",dx:1,dy:0},{key:"ArrowLeft",dx:-1,dy:0},
+      {key:"ArrowDown",dx:0,dy:1},{key:"ArrowUp",dx:0,dy:-1}
+    ];
+    const selected=dirs.find(({dx,dy})=>{
+      const nx=x+dx,ny=y+dy;
+      return world.map?.[ny]?.[nx]===0&&W.playerWalkable(world.map,nx,ny,host)&&
+        !W.generatorAt(host,nx,ny)&&
+        !(host.enemies||[]).some(e=>e.alive&&e.x===nx&&e.y===ny)&&
+        !(host.chests||[]).some(c=>c.active&&c.x===nx&&c.y===ny)&&
+        !(host.items||[]).some(i=>i.active&&i.x===nx&&i.y===ny)&&
+        !(host.doors||[]).some(d=>!d.open&&d.x===nx&&d.y===ny);
+    });
+    return selected?{key:selected.key,start:{x,y},target:{x:x+selected.dx,y:y+selected.dy}}:
+      {error:"No free adjacent walkable Floor 1 entry cell",start:{x,y},seed:String(run.seed)};
+  });
+  assert.ok(!fixture.error,JSON.stringify(fixture));
+  const before=await snapshot(page);
+  // A held Arrow key intentionally repeats movement at the normal game cadence.
+  // Send one bounded real keyboard press rather than holding the key throughout
+  // an asynchronous Playwright poll (which can move the hero beyond the target).
+  const pressMs=65;
+  const cadence=await page.evaluate(()=>Number(C.player.moveDelay)*(Number(p1.moveMultiplier)||1));
+  assert.ok(Number.isFinite(cadence)&&cadence>pressMs+20,`Floor 1 single-step keyboard press must remain shorter than movement repeat cadence (${cadence} ms)`);
+  await page.waitForFunction(()=>Number(move1||0)<=0&&Number(p1?.hitStunMs||0)<=0,null,{timeout:3000,polling:16});
+  await page.keyboard.press(fixture.key,{delay:pressMs});
+  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
+  const after=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),mode:String(mode),active:String(document.body.dataset.runActive)}));
+  assert.deepEqual({x:after.x,y:after.y},fixture.target,"Physical keyboard input must move to the verified adjacent Floor 1 cell");
+  assert.equal(after.mode,"playing");
+  assert.equal(after.active,"true");
+  await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
+}
+
+// Exercise the real Solo save UI independently of enemy placement. Closed room
+// doors may legitimately separate ordinary enemies from the safe Floor 1 start.
+async function probeSoloSaveContinue(page){
+  const entry=await page.evaluate(()=>({floor:Number(run.floor),seed:String(run.seed)}));
+  await page.evaluate(()=>openPauseMenu());
+  await page.waitForSelector("#pause:not(.hidden)");
+  await page.click("#save-quit-solo-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="false"&&mode==="menu",null,{timeout:10000});
+  await page.click("#continue-save-btn");
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&run?.floor===1,null,{timeout:20000});
+  const restored=await page.evaluate(()=>({floor:Number(run.floor),seed:String(run.seed),reason:window.CCGLostSizzlerV141R43SoloSave?.readEnvelope?.()?.reason||"",x:p1.x,y:p1.y}));
+  assert.deepEqual({floor:restored.floor,seed:restored.seed},{floor:entry.floor,seed:entry.seed},"Save & Quit/Continue must restore the same Solo floor and seed");
+  assert.equal(restored.reason,"save_quit");
+}
+
+// Controlled browser-level Floor 5 acceptance, not the owner's save or a
+// natural movement/combat playthrough. Exercise actual gameplay owners together.
+async function probeFloorFiveSoftlockGuards(page){
+  const before=await snapshot(page);
+  assert.equal(before.floor,5);
+  const state=await page.evaluate(()=>{
+    if(!host?.stalker||!host?.r114BossFight||!p1||run?.floor!==5)return{error:"Required Floor 5 bosses missing"};
+    const generators=(host.generators||[]).filter(g=>g.alive),
+      stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    if(generators.length!==3||stalkers.length!==1)return{
+      error:"Three generators and exactly one Death Stalker required",
+      seed:String(run?.seed||""),floor:Number(run?.floor||0),
+      objective:String(host.objective?.type||""),objectiveTarget:Number(host.objective?.target||0),
+      worldRooms:Number(world.rooms?.length||0),
+      generators:generators.length,totalGenerators:(host.generators||[]).length,
+      generatorStates:(host.generators||[]).map(g=>({id:g.id,alive:g.alive,x:g.x,y:g.y,roomId:g.roomId})),
+      stalkers:stalkers.length,stalkerIds:stalkers.map(e=>({id:e.id,alive:e.alive,x:e.x,y:e.y})),
+      deathStalkerId:host.deathStalkerId,voidStalkerIds:host.voidStalkers,
+      otherDeathStalkers:(host.enemies||[]).filter(e=>e?.deathStalker||e?.voidStalker).map(e=>({id:e.id,alive:e.alive,deathStalker:e.deathStalker,voidStalker:e.voidStalker}))
+    };
+    const sigilStatus=()=>({
+      id:host.sigilRoomId??null,roomCount:world.rooms?.length||0,
+      optionalRooms:(world.rooms||[]).filter(room=>room.optional).length,
+      sigilRoomExists:host.sigilRoomId!=null&&Boolean(world.rooms?.[host.sigilRoomId]),
+      sigilRoomFlags:(world.rooms||[]).filter(room=>room.sigilRoom).map(room=>({id:room.id,optional:room.optional})),
+      sigilGates:(host.doors||[]).filter(door=>door.sigilGate).map(door=>({id:door.id,roomId:door.roomId,locked:door.locked,open:door.open})),
+      sigilDefenderIds:host.sigilDefenderIds||[],
+      sigilWarden:host.sigilWarden?.id||null,
+      defendersAlive:SYS.sigilDefendersAlive(host).length,
+      objective:host.objective?.type||null
+    });
+    const sigilBefore=sigilStatus();
+    const count=host.stalker,stalker=stalkers[0],initialScore=score,killsBefore=run.stats.generators||0;
+    p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;
+    count.spawnTimer=0;updateStalker(16);
+    const bothAlive=Boolean(count.awake&&!count.permanentlyBanished&&stalker.alive);
+    for(const g of generators.slice(0,2))damageGenerator(g,Math.max(1,g.hp),p1);
+    const twoComplete=Boolean(host.objective.complete),twoExit=Boolean(host.exitOpen);
+    damageGenerator(generators[2],Math.max(1,generators[2].hp),p1);
+    damageGenerator(generators[2],9999,p1);
+    updateFloorObjective();
+    const after={dead:generators.filter(g=>!g.alive).length,complete:Boolean(host.objective.complete),exit:Boolean(host.exitOpen),
+      kills:(run.stats.generators||0)-killsBefore,score:score-initialScore,
+      count:Boolean(count.awake&&!count.permanentlyBanished),stalker:Boolean(stalker.alive),
+      stalkerCount:(host.enemies||[]).filter(e=>e.deathStalker&&e.voidStalker).length};
+    const sigilAfter=sigilStatus();
+    // Floors 1–14 in the fifteen-floor campaign have boss-gated stairs,
+    // not a Sigil chamber; only Floor 15 has the final Sigil encounter.
+    const fight=host.r114BossFight,guardian=(host.enemies||[]).find(e=>e.id===fight?.bossId);
+    if(!guardian?.alive)return{error:"Floor 5 Guardian Maw missing",sigilBefore,sigilAfter,bothAlive,twoComplete,twoExit,after};
+    const beforeBoss={alive:guardian.alive,cleared:Boolean(fight.cleared),objective:Boolean(host.objective.complete),exit:Boolean(host.exitOpen)};
+    guardian.alive=false; // simulate interrupted final hit, not normal player combat
+    updateBossFight(16);updateFloorObjective();
+    const afterBoss={
+      cleared:Boolean(fight.cleared),objective:Boolean(host.objective.complete),exit:Boolean(host.exitOpen),
+      sigilRoomId:host.sigilRoomId??null,sigilResolved:Boolean(host.sigilResolved),
+      defenderCount:SYS.sigilDefendersAlive(host).length,
+      activeSigils:(host.items||[]).filter(i=>i.kind==="exitSigil"&&i.active).length,
+      doorsUnlocked:(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===fight.roomId).every(d=>!d.locked),
+      countAwake:Boolean(count.awake&&!count.permanentlyBanished),stalkerAlive:Boolean(stalker.alive)
+    };
+    const paid=score,chests=(host.chests||[]).length;
+    updateBossFight(16);updateFloorObjective();
+    afterBoss.repeatScore=score-paid;afterBoss.repeatChests=(host.chests||[]).length-chests;
+    return{bothAlive,twoComplete,twoExit,after,sigilBefore,sigilAfter,beforeBoss,afterBoss,mode};
+  });
+  assert.ok(!state.error,`Generated Floor 5 scenario: ${JSON.stringify(state)}`);
+  assert.equal(state.bothAlive,true,"Count and Death Stalker must coexist");
+  assert.equal(state.twoComplete,false,"2/3 generators cannot complete objective");
+  assert.equal(state.twoExit,false);
+  assert.equal(state.after.dead,3);
+  assert.equal(state.after.complete,false,"The living Guardian must keep Floor 5 incomplete");
+  assert.equal(state.after.kills,3,"Generators must pay exactly once");
+  assert.equal(state.after.score,2100,"Three generators pay exactly 700 each");
+  assert.equal(state.after.exit,false,"Third generator alone cannot open stairs");
+  assert.equal(state.after.count,true);
+  assert.equal(state.after.stalker,true);
+  assert.equal(state.after.stalkerCount,1);
+  assert.equal(state.sigilBefore.id,null,"Interim Floor 5 must not require a final Sigil");
+  assert.equal(state.sigilAfter.id,null,"Generator completion cannot create an interim Sigil");
+  assert.equal(state.sigilAfter.defendersAlive,0);
+  assert.equal(state.beforeBoss.alive,true);
+  assert.equal(state.beforeBoss.cleared,false);
+  assert.equal(state.beforeBoss.objective,false);
+  assert.equal(state.beforeBoss.exit,false);
+  assert.equal(state.afterBoss.cleared,true,"Boss death must clear the Guardian chamber");
+  assert.equal(state.afterBoss.objective,true,"Guardian plus three generators complete Floor 5");
+  assert.equal(state.afterBoss.exit,true,"Interim stairs open without Exit Sigil");
+  assert.equal(state.afterBoss.sigilRoomId,null);
+  assert.equal(state.afterBoss.sigilResolved,true);
+  assert.equal(state.afterBoss.defenderCount,0);
+  assert.equal(state.afterBoss.activeSigils,0);
+  assert.equal(state.afterBoss.doorsUnlocked,true);
+  assert.equal(state.afterBoss.countAwake,true);
+  assert.equal(state.afterBoss.stalkerAlive,true);
+  assert.equal(state.afterBoss.repeatScore,0,"Boss completion must not pay twice");
+  assert.equal(state.afterBoss.repeatChests,0,"Boss completion must not duplicate caches");
+  assert.equal(state.mode,"playing");
+  await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,before.acceptedFrames,{timeout:3500,polling:25});
+}
+
+// Controlled live browser bridge crossing, switch and stolen-item return.
+// The origin is staged near the bridge to avoid unrelated exploration and
+// combat. Crossing and return use real movePlayer boundaries, the bridge
+// switch uses the real shot-qualified handler, and the thief's defeat uses
+// actual damageEnemy. This is not a natural complete Floor 5 playthrough.
+async function probeFloorFiveBridgeTraversal(page){
+  const state=await page.evaluate(()=>{
+    const bridge=host?.weightBridge,side=bridge?.entranceSide;
+    if(run?.floor!==5||mode!=="playing"||!bridge?.bridgeTiles?.length||
+       !["west","east","north","south"].includes(side))return{error:"Bridge traversal fixture not installed on active Floor 5"};
+    const s=(host.switches||[]).find(q=>q.id===bridge.switchId&&q.weightBridgeSwitch);
+    if(!s?.active)return{error:"Fresh bridge rebuild switch missing"};
+    if(bridge.crossed||bridge.collapsed||bridge.rebuilt)return{error:"Bridge was already triggered"};
+    const horizontal=side==="west"||side==="east",dx=side==="west"?1:side==="east"?-1:0,
+      dy=side==="north"?1:side==="south"?-1:0;
+    const ordered=[...bridge.bridgeTiles].sort((a,b)=>horizontal?(a.x-b.x)*dx:(a.y-b.y)*dy);
+    const near={x:ordered[0].x-dx,y:ordered[0].y-dy},
+      far={x:ordered.at(-1).x+dx,y:ordered.at(-1).y+dy};
+    if(world.map[near.y]?.[near.x]!==0||world.map[far.y]?.[far.x]!==0)
+      return{error:"Generated bridge approach has impassable underlying terrain",near,far,side};
+    // Create an actual TAB-drop at the entrance and cross empty-handed.
+    p1.inventory=[{kind:"banishment",name:"Banishment Flask",short:"BANISH",qty:1}];
+    p1.x=near.x;p1.y=near.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.hitStunMs=0;p1.health=Math.max(5000,Number(p1.health)||0);
+    const droppedBefore=new Set((host.items||[]).map(i=>i.id));
+    dropInventorySlot(p1,0);
+    const dropped=(host.items||[]).find(i=>!droppedBefore.has(i.id)&&i.active&&i.carriedItem?.kind==="banishment");
+    if(!dropped||PGR.inventoryCount(p1)!==0)return{error:"Actual inventory drop was not available"};
+    const positions=[];
+    for(let i=0;i<ordered.length+1;i++){
+      movePlayer(p1,dx,dy);
+      positions.push({x:p1.x,y:p1.y});
+    }
+    const thief=(host.enemies||[]).find(e=>e.id===bridge.thiefId&&e.bridgeThief);
+    const afterCross={
+      crossed:bridge.crossed,collapsed:bridge.collapsed,rebuilt:bridge.rebuilt,
+      playerAtFar:p1.x===far.x&&p1.y===far.y,
+      stolen:bridge.stolenItems?.filter(i=>i.carriedItem?.kind==="banishment").length||0,
+      dropInactive:dropped.active===false,
+      thiefAlive:Boolean(thief?.alive),thiefId:bridge.thiefId,
+      path:positions
+    };
+    movePlayer(p1,-dx,-dy);
+    const blockedReturn=p1.x===far.x&&p1.y===far.y;
+    const switchActuated=activateSwitch(s,p1,true);
+    const afterSwitch={rebuilt:bridge.rebuilt,collapsed:bridge.collapsed,
+      stabilized:bridge.stabilized,switchInactive:!s.active,switchToggled:s.toggled,
+      actuated:Boolean(switchActuated)};
+    const back=[];
+    for(let i=0;i<ordered.length+1;i++){movePlayer(p1,-dx,-dy);back.push({x:p1.x,y:p1.y})}
+    const returned=p1.x===near.x&&p1.y===near.y;
+    const beforeScore=score;
+    if(thief?.alive){thief.hp=1;thief.armor=0;damageEnemy(thief,500,"energy",p1)}
+    return{
+      side,near,far,afterCross,blockedReturn,afterSwitch,returned,returnPath:back,
+      thiefDefeated:Boolean(bridge.thiefDefeated&&thief?.alive===false),
+      flaskCount:PGR.inventoryKindCount(p1,"banishment"),
+      recoveredCount:Number(bridge.recoveredItemCount||0),
+      recoveredToInventory:Number(bridge.recoveredToInventory||0),
+      pending:Number(bridge.pendingStolenItemCount||0),
+      scoreDelta:score-beforeScore,
+      mode
+    };
+  });
+  assert.ok(!state.error,JSON.stringify(state));
+  assert.equal(state.afterCross.crossed,true,"Actual movement must trigger the Trickster Bridge");
+  assert.equal(state.afterCross.collapsed,true,"Crossing must collapse the first span");
+  assert.equal(state.afterCross.rebuilt,false);
+  assert.equal(state.afterCross.playerAtFar,true,JSON.stringify(state.afterCross.path));
+  assert.equal(state.afterCross.stolen,1,"A real dropped Flask must move to the thief ledger");
+  assert.equal(state.afterCross.dropInactive,true,"Stolen floor item must be deactivated");
+  assert.equal(state.afterCross.thiefAlive,true,"Bridge crossing must spawn a live Dungeon Thief");
+  assert.equal(state.blockedReturn,true,"Walking back onto collapsed span must be refused");
+  assert.equal(state.afterSwitch.actuated,true,"Shot-qualified switch owner must accept rebuild");
+  assert.equal(state.afterSwitch.rebuilt,true);
+  assert.equal(state.afterSwitch.collapsed,false);
+  assert.equal(state.afterSwitch.stabilized,true);
+  assert.equal(state.afterSwitch.switchInactive,true);
+  assert.equal(state.afterSwitch.switchToggled,true);
+  assert.equal(state.returned,true,JSON.stringify(state.returnPath));
+  assert.equal(state.thiefDefeated,true,"Actual damage owner must resolve the thief defeat");
+  assert.equal(state.flaskCount,1,"Stolen Flask must return to the player's inventory once");
+  assert.equal(state.recoveredCount,1);
+  assert.equal(state.recoveredToInventory,1);
+  assert.equal(state.pending,0);
+  assert.ok(state.scoreDelta>=750,"Defeated Dungeon Thief must still grant his advertised bonus");
+  assert.equal(state.mode,"playing");
+}
+
+// Real browser death/respawn integration for the repaired Trickster Bridge.
+// This stages the collapsed-bridge condition on a generated Floor 5, then
+// invokes the authoritative player-death owner. It is NOT a natural keyboard
+// crossing, owner's original saved incident or complete Windows acceptance.
+async function probeFloorFiveBridgeDeath(page){
+  const before=await snapshot(page);
+  assert.equal(before.floor,5,"Bridge death probe requires the generated fifth floor");
+  const result=await page.evaluate(()=>{
+    const bridge=host?.weightBridge;
+    if(!bridge?.rewardPos||!bridge?.switchId)return{error:"Generated Trickster Bridge/switch missing"};
+    const switchOwner=(host.switches||[]).find(s=>s.id===bridge.switchId&&s.weightBridgeSwitch);
+    if(!switchOwner)return{error:"Real far-side rebuild switch missing"};
+    const farSide={...bridge.rewardPos},playerId=String(p1.id||p1.name||"P1");
+    // Stage only the hard-to-reach state. The actual death, cache, respawn,
+    // bridge release and confirmation below run through canonical owners.
+    bridge.crossed=true;bridge.collapsed=true;bridge.rebuilt=false;
+    bridge.stabilized=false;bridge.crossingPlayer=null;
+    bridge.thiefId=bridge.thiefId||"floor-five-bridge-death-fixture";
+    bridge.thiefDefeated=false;
+    bridge.stolenItems=[{id:"dropped-bridge-flask-fixture",carriedItem:{kind:"banishment",qty:1}}];
+    switchOwner.active=true;switchOwner.toggled=false;
+    run.daily=false;
+    p1.totalXp=Math.max(10000,Number(p1.totalXp)||0);
+    p1.xp=Math.max(1000,Number(p1.xp)||0);
+    run.bankedXP=Math.max(10000,Number(run.bankedXP)||0);
+    score=Math.max(2000,Number(score)||0);
+    p1.x=farSide.x;p1.y=farSide.y;p1.rx=p1.x;p1.ry=p1.y;
+    p1.health=1;p1.invuln=0;p1.armor=0;p1.hitStunMs=0;
+    const deathsBefore=Number(run.stats.deaths||0),scoreBefore=score;
+    hurtPlayer(p1,1,false,"bridge recovery regression");
+    const deathCache=(host.deathCaches||[]).find(c=>c.active&&c.x===farSide.x&&c.y===farSide.y);
+    const state={
+      modeAfterDeath:mode,
+      deaths:Number(run.stats.deaths||0)-deathsBefore,
+      scoreBefore,scoreAfter:score,
+      playerAtStart:p1.x===world.start.x&&p1.y===world.start.y,
+      repaired:bridge.rebuilt&&!bridge.collapsed&&bridge.stabilized,
+      switchDisabled:switchOwner.active===false&&switchOwner.toggled===true,
+      stolenFlaskCount:(bridge.stolenItems||[]).filter(x=>x.carriedItem?.kind==="banishment").length,
+      thiefId:bridge.thiefId,
+      deathCache:!!deathCache,
+      message:String(pendingDeathConfirmation?.toastText||""),
+      confirmed:false,
+      modeAfterConfirm:""
+    };
+    // Consume the actual death confirmation; do not leave the existing
+    // browser suite trapped in a modal or with gameplay disabled.
+    if(mode==="respawning")state.confirmed=finishPendingDeathRespawn({playerId});
+    state.modeAfterConfirm=mode;
+    return state;
+  });
+  assert.ok(!result.error,JSON.stringify(result));
+  assert.equal(result.modeAfterDeath,"respawning","Fatal hit must enter canonical death confirmation");
+  assert.equal(result.deaths,1,"A single bridge death must count once");
+  assert.equal(result.scoreAfter,Math.floor(result.scoreBefore/2),"Death must retain the normal score penalty");
+  assert.equal(result.playerAtStart,true,"Real respawn must return the hero to floor entrance");
+  assert.equal(result.repaired,true,"The collapsed bridge must become traversable on respawn");
+  assert.equal(result.switchDisabled,true,"The far-side switch cannot remain a second required action");
+  assert.equal(result.stolenFlaskCount,1,"A stolen Banishment Flask must not vanish on death");
+  assert.ok(result.thiefId,"Bridge thief tracking must survive the player's death");
+  assert.equal(result.deathCache,true,"Actual death-cache owner must preserve recoverable belongings/score");
+  assert.match(result.message,/Trickster Bridge has rebuilt after your death/);
+  assert.equal(result.confirmed,true,"Canonical confirmation must resume play");
+  assert.equal(result.modeAfterConfirm,"playing");
+  await page.waitForFunction(previous=>Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)>previous,
+    before.acceptedFrames,{timeout:3500,polling:25});
+}
+
+// Browser-level, staged Floor 5 pressure: actual world simulation runs with
+// Guardian Maw, Count Loadula and the Death Stalker alive at 2/3 generators.
+// This is a long-running interaction probe, not the owner's original save.
+async function probeFloorFiveTripleThreatPressure(context,origin){
+  const page=await context.newPage();
+  page.setDefaultTimeout(30000);
+  const errors=[];
+  page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  try{
+    await page.goto(`${origin}/arcade/lost-sizzler/?r78-floor5-triple-pressure=1`,{waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&
+      Boolean(window.CCGLostSizzlerV141R59LiveRegressionFixes),null,{timeout:90000});
+    await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
+    await page.click("#solo-btn");
+    await settleFloor(page,1);
+    for(let floor=2;floor<=5;floor++){
+      await page.evaluate(()=>floorComplete("R78 live Floor 5 triple-pressure acceptance"));
+      await page.waitForFunction(()=>mode==="floorcomplete",null,{timeout:10000});
+      await page.evaluate(()=>descendFloor());
+      await settleFloor(page,floor);
+    }
+    const staged=await page.evaluate(()=>{
+      const fight=host?.r114BossFight,room=world?.rooms?.[fight?.roomId],
+        maw=(host?.enemies||[]).find(e=>e.id===fight?.bossId&&e.alive),
+        deathStalker=(host?.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker),
+        count=host?.stalker,gens=(host?.generators||[]).filter(g=>g.alive);
+      if(run?.floor!==5||!room||!maw||!deathStalker||!count||gens.length!==3)
+        return{error:"Generated Floor 5 Maw, Count, Stalker or three generators missing"};
+      const cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+        if(world.map[y]?.[x]!==0||W.roomAt(world,x,y)!==fight.roomId||
+           !W.playerWalkable(world.map,x,y,host)||
+           (host.blockingDecor||[]).some(d=>d.x===x&&d.y===y)||
+           (host.generators||[]).some(g=>g.alive&&g.x===x&&g.y===y)||
+           (host.chests||[]).some(c=>c.active&&c.x===x&&c.y===y)||
+           (host.items||[]).some(i=>i.active&&i.x===x&&i.y===y))continue;
+        cells.push({x,y});
+      }
+      const playerCell=cells.find(q=>Math.abs(q.x-maw.x)+Math.abs(q.y-maw.y)>=3&&
+        !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y));
+      const rivals=cells.filter(q=>playerCell&&(q.x!==playerCell.x||q.y!==playerCell.y)&&
+        (q.x!==maw.x||q.y!==maw.y)&&
+        !(host.enemies||[]).some(e=>e.alive&&e.x===q.x&&e.y===q.y)&&
+        Math.abs(q.x-playerCell.x)+Math.abs(q.y-playerCell.y)>=2);
+      if(!playerCell||rivals.length<2)return{error:"Maw room lacks independent walkable pressure cells"};
+      p1.x=playerCell.x;p1.y=playerCell.y;p1.rx=p1.x;p1.ry=p1.y;
+      p1.maxHealth=5000;p1.health=5000;p1.armor=0;p1.hitStunMs=0;p1.invuln=0;
+      p1.controlLocked=false;p1.controlsLocked=false;
+      deathStalker.x=rivals[0].x;deathStalker.y=rivals[0].y;
+      deathStalker.dossierSeen=true;deathStalker.aiState="chase";
+      deathStalker.moveCooldown=180;deathStalker.attackCooldown=950;
+      count.x=rivals[1].x;count.y=rivals[1].y;
+      count.stunMs=0;count.spawnTimer=0;count.moveCooldown=180;
+      for(const e of host.enemies||[])e.dossierSeen=true;
+      for(const g of gens.slice(0,2))damageGenerator(g,Math.max(1,g.hp),p1);
+      const triggered=triggerBossFight(p1);
+      updateStalker(16);updateFloorObjective();
+      return{
+        triggered,frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+        elapsed:Number(host.floorElapsed||0),
+        floor:Number(run.floor),destroyed:gens.filter(g=>!g.alive).length,
+        remaining:(host.generators||[]).filter(g=>g.alive).length,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        mawAlive:maw.alive,bossTriggered:Boolean(fight.triggered),
+        stalkerAlive:deathStalker.alive,countAwake:Boolean(count.awake),
+        mode:String(mode||"")
+      };
+    });
+    assert.ok(!staged.error,JSON.stringify(staged));
+    assert.equal(staged.triggered,true,"Guardian Maw chamber must begin a genuine boss lockdown");
+    assert.equal(staged.destroyed,2);
+    assert.equal(staged.remaining,1);
+    assert.equal(staged.complete,false);
+    assert.equal(staged.exit,false);
+    assert.equal(staged.mawAlive,true);
+    assert.equal(staged.bossTriggered,true);
+    assert.equal(staged.stalkerAlive,true);
+    assert.equal(staged.countAwake,true);
+    assert.equal(staged.mode,"playing");
+    await page.waitForTimeout(12000);
+    const after=await page.evaluate(()=>{
+      const fight=host.r114BossFight;
+      return{
+        floor:Number(run?.floor||0),mode:String(mode||""),
+        frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+        elapsed:Number(host.floorElapsed||0),
+        remaining:(host.generators||[]).filter(g=>g.alive).length,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        mawAlive:Boolean((host.enemies||[]).find(e=>e.id===fight?.bossId)?.alive),
+        bossTriggered:Boolean(fight?.triggered),
+        stalkerAlive:Boolean((host.enemies||[]).find(e=>e.deathStalker&&e.voidStalker)?.alive),
+        countAwake:Boolean(host.stalker?.awake),health:Number(p1.health||0),
+        enemyShots:(enemyBullets||[]).length
+      };
+    });
+    assert.equal(after.floor,5);
+    assert.equal(after.mode,"playing","Three simultaneous threats cannot freeze or leave live gameplay");
+    assert.ok(after.frames>=staged.frames+45,"The authoritative simulation must keep accepting frames");
+    assert.ok(after.elapsed>=staged.elapsed+7000,"The live floor timer must keep advancing");
+    assert.equal(after.remaining,1,"The third generator cannot vanish without a player hit");
+    assert.equal(after.complete,false,"2/3 generators and a living Maw cannot finish the objective");
+    assert.equal(after.exit,false);
+    assert.equal(after.mawAlive,true);
+    assert.equal(after.bossTriggered,true);
+    assert.equal(after.stalkerAlive,true);
+    assert.equal(after.countAwake,true);
+    assert.ok(after.health>0);
+    assert.deepEqual(errors,[],"The simultaneous Floor 5 encounter must produce no JS faults");
+    // R141: execute the real live Floor 5 generator owner after a long
+    // battle's worth of defeated reinforcements, without staging a kill or
+    // changing the Count/Maw/Stalker, objectives, rewards or door state.
+    const corpsePressure=await page.evaluate(()=>{
+      const originalRoster=host.enemies,stalker=(host.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker),
+        maw=(host.enemies||[]).find(e=>e.id===host.r114BossFight?.bossId&&e.alive),
+        generator=(host.generators||[]).find(g=>g.alive);
+      if(!stalker||!maw||!host.stalker?.awake||!generator)
+        return{error:"Floor 5 actors missing before generator retention pressure"};
+      const scoreBefore=score,killsBefore=Number(run.stats.kills||0),
+        generatorCountBefore=Number(run.stats.generators||0);
+      for(let i=0;i<300;i++){
+        const enemy={id:`r141-dead-generator-${i}`,generatorId:generator.id,
+          generatorSpawnOrdinal:i+1,alive:false,x:generator.x,y:generator.y};
+        host.enemies.push(enemy);
+        enemyVisuals.set(enemy.id,{rx:enemy.x,ry:enemy.y});
+      }
+      updateGenerators(16);
+      return{
+        sameRoster:host.enemies===originalRoster,
+        retained:(host.enemies||[]).filter(e=>String(e.id||"").startsWith("r141-dead-generator-")).length,
+        oldVisual:enemyVisuals.has("r141-dead-generator-0"),
+        recentVisual:enemyVisuals.has("r141-dead-generator-299"),
+        countAwake:Boolean(host.stalker.awake),mawAlive:Boolean(maw.alive),
+        stalkerAlive:Boolean(stalker.alive),scoreUnchanged:score===scoreBefore,
+        killsUnchanged:Number(run.stats.kills||0)===killsBefore,
+        generatorsUnchanged:Number(run.stats.generators||0)===generatorCountBefore,
+        frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)
+      };
+    });
+    assert.ok(!corpsePressure.error,JSON.stringify(corpsePressure));
+    assert.equal(corpsePressure.sameRoster,true,"Live game must preserve enemy-array identity");
+    assert.equal(corpsePressure.retained,24,"Real Floor 5 engine must discard old inert generator actors");
+    assert.equal(corpsePressure.oldVisual,false,"Old reinforcement visual entries must be pruned");
+    assert.equal(corpsePressure.recentVisual,true,"Recent defeat presentation must survive");
+    assert.equal(corpsePressure.countAwake,true);
+    assert.equal(corpsePressure.mawAlive,true);
+    assert.equal(corpsePressure.stalkerAlive,true);
+    assert.equal(corpsePressure.scoreUnchanged,true,"Cleanup must not grant or remove Score");
+    assert.equal(corpsePressure.killsUnchanged,true,"Cleanup must not change enemy defeat tally");
+    assert.equal(corpsePressure.generatorsUnchanged,true,"Cleanup must not change generator objective tally");
+    await page.waitForTimeout(1500);
+    const pressureAfter=await page.evaluate(()=>({
+      mode:String(mode||""),
+      frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+      particles:particles.length,rings:rings.length,floaters:floaters.length
+    }));
+    assert.equal(pressureAfter.mode,"playing","Live Floor 5 input loop must remain playable under reinforcement history pressure");
+    assert.ok(pressureAfter.frames>=corpsePressure.frames+5,"Live browser must continue accepting real frames after generator cleanup");
+    assert.ok(pressureAfter.particles<=360&&pressureAfter.rings<=72&&pressureAfter.floaters<=96,
+      "Visual pools must retain their existing bounded combat contracts");
+    assert.deepEqual(errors,[],"Real browser generator pressure must not throw a JS error");
+    console.log("Dungeon R141 live Floor 5 300-defeat retention and frame-liveness passed:",JSON.stringify({corpsePressure,pressureAfter}));
+    console.log("Dungeon R78 live 12s Count/Maw/Stalker at 2/3 generators passed:",JSON.stringify(after));
+    // Follow the same pressured encounter through the actual third-generator
+    // and boss damage owners. No teleport, staged save-restore or artificial
+    // defeat flag is used for these two final kills. The Count and Stalker
+    // stay active; the objective and rewards must settle exactly once.
+    const completion=await page.evaluate(()=>{
+      const fight=host.r114BossFight,maw=(host.enemies||[]).find(e=>e.id===fight.bossId),
+        generator=(host.generators||[]).find(g=>g.alive),
+        stalker=(host.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker);
+      if(!maw?.alive||!generator||!stalker?.alive||!host.stalker?.awake)
+        return{error:"Simultaneous Floor 5 threats missing before final progression"};
+      const generatorCountBefore=Number(run.stats.generators||0),scoreBefore=score;
+      damageGenerator(generator,Math.max(1,Number(generator.hp)||1),p1);
+      updateFloorObjective();
+      const afterGenerator={
+        dead:generator.alive===false,
+        destroyed:Number(run.stats.generators||0)-generatorCountBefore,
+        remaining:(host.generators||[]).filter(g=>g.alive).length,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        mawAlive:Boolean(maw.alive),scoreDelta:score-scoreBefore
+      };
+      const beforeMawScore=score;
+      damageEnemy(maw,Math.max(9999,Number(maw.hp||0)+Number(maw.armor||0)+1000),"physical",p1);
+      updateBossFight(16);
+      updateFloorObjective();
+      const afterMaw={
+        alive:Boolean(maw.alive),cleared:Boolean(fight.cleared),
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        scoreDelta:score-beforeMawScore,
+        lockedDoors:(host.doors||[]).filter(d=>d.type==="room"&&d.roomId===fight.roomId&&d.locked).length,
+        rewardChests:(host.chests||[]).filter(c=>c.id==="r114-boss-chest-f5").length,
+        rewardSideItems:(host.items||[]).filter(i=>i.id==="r114-boss-map-5").length,
+        countAwake:Boolean(host.stalker.awake),stalkerAlive:Boolean(stalker.alive),
+        mode:String(mode||"")
+      };
+      const repeatScore=score,chests=(host.chests||[]).length,items=(host.items||[]).length,
+        kills=Number(run.stats.kills||0),generators=Number(run.stats.generators||0);
+      damageEnemy(maw,9999,"physical",p1);
+      damageGenerator(generator,9999,p1);
+      updateBossFight(16);updateFloorObjective();
+      const repeat={
+        score:score-repeatScore,
+        chests:(host.chests||[]).length-chests,
+        items:(host.items||[]).length-items,
+        kills:Number(run.stats.kills||0)-kills,
+        generators:Number(run.stats.generators||0)-generators,
+        complete:Boolean(host.objective?.complete),exit:Boolean(host.exitOpen),
+        countAwake:Boolean(host.stalker.awake),stalkerAlive:Boolean(stalker.alive),
+        mode:String(mode||"")
+      };
+      return{afterGenerator,afterMaw,repeat};
+    });
+    assert.ok(!completion.error,JSON.stringify(completion));
+    assert.equal(completion.afterGenerator.dead,true,"The final generator must die through real damage");
+    assert.equal(completion.afterGenerator.destroyed,1);
+    assert.equal(completion.afterGenerator.remaining,0);
+    assert.equal(completion.afterGenerator.scoreDelta,700,"Third generator must award its usual 700 points");
+    assert.equal(completion.afterGenerator.mawAlive,true);
+    assert.equal(completion.afterGenerator.complete,false,"Living Maw must still prevent completion");
+    assert.equal(completion.afterGenerator.exit,false);
+    assert.equal(completion.afterMaw.alive,false,"The real enemy damage owner must defeat Maw");
+    assert.equal(completion.afterMaw.cleared,true);
+    assert.equal(completion.afterMaw.complete,true,"Three destroyed generators and defeated Maw must complete Floor 5");
+    assert.equal(completion.afterMaw.exit,true,"Final boss reward settlement must release Floor 5 stairs");
+    assert.equal(completion.afterMaw.lockedDoors,0,"The Maw room must reopen after the win");
+    assert.ok(completion.afterMaw.scoreDelta>=2500,"The boss must award its canonical victory bonus");
+    assert.ok(completion.afterMaw.rewardChests<=1&&completion.afterMaw.rewardSideItems<=1,
+      "The Floor 5 boss must never duplicate unique rewards");
+    assert.equal(completion.afterMaw.countAwake,true);
+    assert.equal(completion.afterMaw.stalkerAlive,true);
+    assert.equal(completion.afterMaw.mode,"playing");
+    assert.deepEqual(completion.repeat,{
+      score:0,chests:0,items:0,kills:0,generators:0,
+      complete:true,exit:true,countAwake:true,stalkerAlive:true,mode:"playing"
+    },"Repeated final damage and boss settlement must not re-award progress");
+    assert.deepEqual(errors,[],"Completing the pressured Floor 5 battle must raise no browser errors");
+    console.log("Dungeon R78 post-pressure third generator, Guardian Maw defeat and exact-once progression passed:",JSON.stringify(completion));
+  }finally{
+    await page.close();
+  }
+}
+
 async function proveFire(page,floor){
   const before=await page.evaluate(()=>{
     p1.maxHealth=Math.max(5000,Number(p1.maxHealth)||0);p1.health=p1.maxHealth;p1.invuln=0;p1.hitStunMs=0;
@@ -84,6 +640,16 @@ try{
   await page.click("#solo-btn");
   await settleFloor(page,1);
 
+  // The generated Floor 1 start is a safe entry room; ordinary enemies may
+  // legitimately begin beyond unopened room routes. Keep the real transition/
+  // FIRE contracts below without asserting immediate enemy reachability here.
+  const floorOneStart=await snapshot(page);
+  assert.equal(floorOneStart.floor,1);
+  assert.equal(floorOneStart.mode,"playing");
+  assert.equal(floorOneStart.active,"true");
+  await probeFloorOneKeyboardTraversal(page);
+  await probeSoloSaveContinue(page);
+
   const floors=[];
   floors.push(await proveFire(page,1));
   for(let next=2;next<=5;next++){
@@ -96,8 +662,12 @@ try{
     assert.equal(entered.floor,next,`descent must reach floor ${next}`);
     assert.ok(entered.deepest>=next,`deepest-floor progress must reach ${next}`);
     assert.ok(entered.acceptedFrames>beforeTransition.acceptedFrames,`simulation clock must continue across descent to floor ${next}`);
+    if(next===5)await probeFloorFiveSoftlockGuards(page);
     floors.push(await proveFire(page,next));
   }
+
+  await probeFloorFiveBridgeTraversal(page);
+  await probeFloorFiveBridgeDeath(page);
 
   assert.deepEqual(floors.map(row=>row.floor),[1,2,3,4,5],"real campaign transition path must reach all five floors in order");
   assert.equal(floors[1].clue,true,"Floor 2 must install the blood-clue puzzle");
@@ -110,6 +680,8 @@ try{
 
   console.log("Dungeon R78 real Floor 1→5 transition, puzzle installation and firearm continuity acceptance passed.");
   await page.evaluate(()=>{try{window.CCGProgression?.clearCheckpoint?.()}catch(_){}});
+  await page.close();
+  await probeFloorFiveTripleThreatPressure(context,origin);
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));

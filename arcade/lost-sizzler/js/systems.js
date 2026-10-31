@@ -68,6 +68,19 @@ window.CCGSystems=(()=>{
   }
   function openRooms(world){return world.rooms.filter(r=>!r.optional&&r.id!==world.startRoomId)}
   function deepRooms(world){return [...openRooms(world)].sort((a,b)=>(b.depth||0)-(a.depth||0))}
+  // Keep the two unique ward-dependent hunters out of the authored boss and
+  // Sigil chambers at initial generation. Both remain on the floor and retain
+  // their normal AI, ward/payment and defeat ownership.
+  function selectWardenSpawnRooms(world,host,rooms,run){
+    const guardianRoomId=host.guardian?W.roomAt(world,host.guardian.x,host.guardian.y):null;
+    const protectedRooms=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,guardianRoomId].filter(id=>id!=null&&id>=0));
+    const eligible=rooms.filter(r=>r&&!protectedRooms.has(r.id)&&!r.sanctuary);
+    const countRoom=eligible[0]||rooms.find(r=>r&&!protectedRooms.has(r.id))||rooms[0]||world.rooms[world.exitRoomId];
+    const separate=eligible.filter(r=>r.id!==countRoom?.id);
+    const floor=Math.max(1,Number(run?.floor)||1);
+    const deathRoom=separate.length?separate[(floor*7+3)%separate.length]:countRoom;
+    return{countRoom,deathRoom};
+  }
   function freeInRoom(world,room,used){
     const a=[];for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){if(world.map[y]?.[x]!==0)continue;if(used.has(cell(x,y)))continue;a.push({x,y})}
     if(!a.length)return centre(room);const q=a[Math.floor(world.random()*a.length)];used.add(cell(q.x,q.y));return q;
@@ -574,7 +587,7 @@ window.CCGSystems=(()=>{
     // Per-floor persistent knowledge/state. These reset only when a new floor is generated.
     host.radarSigilSeen=null;host.radarSigilGateSeen=null;host.defeatedDeathStalkers=[];
 
-    host.arenas=[];if(activeFeatureRooms.length){const room=activeFeatureRooms[Math.floor(activeFeatureRooms.length*.55)];host.arenas.push({id:"arena0",roomId:room.id,triggered:false,cleared:false,wave:0,rewarded:false})}
+    host.arenas=[]; // The cancelled arena cannot spawn or seal doors in the solo campaign.
     host.timedRooms=[];if(activeFeatureRooms.length>3){const room=activeFeatureRooms[Math.floor(activeFeatureRooms.length*.7)];host.timedRooms.push({id:"timed0",roomId:room.id,triggered:false,cleared:false,timeLeft:30000,rewarded:false})}
 
     const obj=PGR.objectiveFor(run);
@@ -654,13 +667,13 @@ window.CCGSystems=(()=>{
     installSkeletonHorde(world,host,run,rooms,used);
 
     // Count Loadula remains separate from ordinary enemies. A Banishment Flask can make him vulnerable briefly.
-    const stalkRoom=rooms[0]||world.rooms[world.exitRoomId],sq=freeInRoom(world,stalkRoom,used);
+    const {countRoom:stalkRoom,deathRoom:deathStalkerRoom}=selectWardenSpawnRooms(world,host,rooms,run),sq=freeInRoom(world,stalkRoom,used);
     host.stalker={id:"count-loadula",name:C.stalker.name,...sq,x0:sq.x,y0:sq.y,active:false,seen:false,awake:false,moveCooldown:C.stalker.moveMs,stunMs:0,vulnerableMs:0,hp:C.stalker.banishHpBase+(run.floor||1)*2,maxHp:C.stalker.banishHpBase+(run.floor||1)*2,spawnTimer:(run.modifier?.id==="STALKER_ACTIVE"?9000:C.stalker.spawnDelayMs),near:false};
 
     // Exactly one Death Stalker exists on every floor. Only this explicit class uses ordinary-fire immunity.
     host.voidStalkers=[];{
-      const room=rooms[((run.floor||1)*7+3)%Math.max(1,rooms.length)]||rooms[0],vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
-      const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.enemies.push(v);host.voidStalkers.push(v.id)
+      const room=deathStalkerRoom,vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
+      const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.deathStalkerSpawn={x:v.x,y:v.y,roomId:room?.id??-1};host.enemies.push(v);host.voidStalkers.push(v.id)
     }
     enforceDeathStalkerSingleton(host);
 
@@ -724,8 +737,33 @@ window.CCGSystems=(()=>{
   }
 
   function enforceDeathStalkerSingleton(host){
-    if(!host)return null;const stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker),keep=stalkers[0]||null;
+    if(!host)return null;
+    const previousId=String(host.deathStalkerId||"");
+    let stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker);
+    const defeatedIds=new Set((host.defeatedDeathStalkers||[]).map(id=>String(id)));
+    if(!stalkers.length&&previousId&&!defeatedIds.has(previousId)&&host.deathStalkerSpawn){
+      const q=host.deathStalkerSpawn,level=Math.max(1,Number(host.v142CampaignFloor||1)),hp=6+level*2;
+      const restored={id:previousId,x:Number(q.x),y:Number(q.y),x0:Number(q.x),y0:Number(q.y),kind:"ghost",hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};
+      host.enemies=Array.isArray(host.enemies)?host.enemies:[];host.enemies.push(restored);stalkers=[restored];
+    }
+    const keep=stalkers.find(e=>String(e.id)===previousId)||stalkers[0]||null;
+    const floorIds=new Set(stalkers.map(e=>String(e.id||"")));
+    // A previously banished floor Stalker stays banished even if an older
+    // duplicate entry was still marked alive during state reconciliation.
+    const permanentlyDefeated=stalkers.some(e=>e.alive===false||defeatedIds.has(String(e.id)))||
+      Boolean(previousId&&floorIds.has(previousId)&&defeatedIds.has(previousId));
     if(stalkers.length>1)host.enemies=(host.enemies||[]).filter(e=>!(e?.deathStalker&&e?.voidStalker)||e===keep);
+    if(keep){
+      for(const trial of host.timedRooms||[]){
+        if(trial?.hunterId!=null&&floorIds.has(String(trial.hunterId)))trial.hunterId=keep.id;
+        if(permanentlyDefeated&&String(trial?.hunterId||"")===String(keep.id))trial.stalkerDefeated=true;
+      }
+      if(permanentlyDefeated){
+        keep.alive=false;
+        host.defeatedDeathStalkers=Array.isArray(host.defeatedDeathStalkers)?host.defeatedDeathStalkers:[];
+        if(!host.defeatedDeathStalkers.includes(keep.id))host.defeatedDeathStalkers.push(keep.id);
+      }
+    }
     host.voidStalkers=keep?[keep.id]:[];host.deathStalkerId=keep?.id||null;return keep
   }
 

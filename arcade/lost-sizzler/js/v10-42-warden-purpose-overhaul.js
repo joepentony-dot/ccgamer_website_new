@@ -48,20 +48,47 @@
   function inventoryChargeIndex(player){try{return PROG.firstInventory(player,"banishment")}catch(_){return-1}}
   function chargeRange(){return Math.max(2,Number(CFG.stalker?.banishPromptDistance)||8)}
 
-  function wardTargets(player){
-    const h=currentHost();if(!h||!player)return[];const range=chargeRange(),targets=[];
+  function wardVisibility(player){
+    const h=currentHost(),w=currentWorld(),targets=[],blocked=[];if(!h||!player)return{targets,blocked};
+    const range=chargeRange();
+    // Keep the real line-of-sight gate. Report a sealed Warden in range
+    // behind a door/wall separately instead of falsely saying it is out of range.
+    const inSight=target=>w?.map&&typeof A!=="undefined"&&typeof A.lineOfSight==="function"&&
+      A.lineOfSight(w.map,player,target,range,h);
+    const consider=target=>{
+      if(dist(target,player)>range)return;
+      (inSight(target)?targets:blocked).push(target);
+    };
     for(const enemy of h.enemies||[]){
       if(!enemy?.alive||!recognisedEnemy(enemy)||enemy.v142WardenDefeated||broken(enemy))continue;
-      if(dist(enemy,player)<=range)targets.push(enemy);
+      consider(enemy);
     }
     const count=h.stalker;
-    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count)&&dist(count,player)<=range)targets.push(count);
-    return targets.sort((a,b)=>dist(a,player)-dist(b,player));
+    if(count?.awake&&!count.permanentlyBanished&&!count.v142WardenDefeated&&!broken(count))consider(count);
+    const byDistance=(a,b)=>dist(a,player)-dist(b,player);
+    return{targets:targets.sort(byDistance),blocked:blocked.sort(byDistance)};
+  }
+
+  // A Ward-Broken Warden still has real HP. Pressing B again must explain
+  // why another charge is unnecessary rather than implying a failed payment.
+  // Only report a live, visible target: a hidden/defeated Warden is not evidence.
+  function nearbyBrokenWarden(player){
+    const h=currentHost(),w=currentWorld();
+    if(!h||!player||!w?.map||typeof A==="undefined"||typeof A.lineOfSight!=="function")return null;
+    const range=chargeRange();
+    return [...(h.enemies||[]),h.stalker]
+      .filter(target=>target&&broken(target)&&liveWardTarget(target,h)&&Number(target.hp)>0&&
+        dist(target,player)<=range&&A.lineOfSight(w.map,player,target,range,h))
+      .sort((a,b)=>dist(a,player)-dist(b,player))[0]||null;
+  }
+  function explainBrokenWarden(target){
+    const name=label(target),hp=Math.max(1,Math.ceil(Number(target.hp)||1));
+    announce(`WARD ALREADY BROKEN — ${name.toUpperCase()}`,`${name} has ${hp} HP remaining. Its immunity is already gone. Use your weapons to finish the fight; another Ward-Break Charge is not needed. No charge spent.`,"cyan",7200);
   }
 
   function banishmentStateV142(player){
-    const range=chargeRange(),hasFlask=inventoryChargeIndex(player)>=0,targets=wardTargets(player);
-    return{ready:hasFlask&&targets.length>0,hasFlask,range,targets,nearest:targets[0]||null,action:"ward-break"};
+    const range=chargeRange(),hasFlask=inventoryChargeIndex(player)>=0,{targets,blocked}=wardVisibility(player);
+    return{ready:hasFlask&&targets.length>0,hasFlask,range,targets,blocked,nearest:targets[0]||null,action:"ward-break"};
   }
 
   function markThreatAggressive(target,player){
@@ -78,8 +105,15 @@
     }
   }
 
+  function liveWardTarget(target,h){
+    // Inventory payment can be interrupted by a death, room replacement or
+    // restored encounter. A stale target must never consume a finite charge.
+    if(target===h.stalker)return Boolean(target.awake&&!target.permanentlyBanished&&!target.v142WardenDefeated);
+    return Boolean((h.enemies||[]).includes(target)&&target.alive&&recognisedEnemy(target)&&!target.v142WardenDefeated);
+  }
+
   function breakWard(target,player){
-    const r=currentRun(),h=currentHost();if(!target||!player||!r||!h||broken(target)||target.v142WardenDefeated)return false;
+    const r=currentRun(),h=currentHost();if(!target||!player||!r||!h||!liveWardTarget(target,h)||broken(target)||target.v142WardenDefeated)return false;
     const hp=wardHp(target,player),name=label(target);
     target.v142WardBroken=true;target.v142WardState="broken";target.v142WardBrokenAt=performance.now();target.v142WardBrokenFloor=floorNo();
     target.maxHp=hp;target.hp=hp;target.armor=0;target.maxArmor=0;target.stunMs=Math.max(Number(target.stunMs)||0,950);target.hitStunMs=Math.max(Number(target.hitStunMs)||0,950);target.flash=280;target.hpBarMs=5000;
@@ -92,11 +126,46 @@
     broadcast();syncNow();return true;
   }
 
+  function wardenCacheCell(target){
+    const h=currentHost(),w=currentWorld(),player=currentPlayer();
+    if(!h||!w?.map||!player||typeof W==="undefined"||!W.playerWalkable)return null;
+    const walkable=(x,y)=>w.map[y]?.[x]===0&&W.playerWalkable(w.map,x,y,h);
+    const start={x:Math.round(player.x),y:Math.round(player.y)};
+    if(!walkable(start.x,start.y))return null;
+    const occupied=new Set(),mark=q=>{if(q)occupied.add(`${Math.round(q.x)},${Math.round(q.y)}`)};
+    localRoster().forEach(mark);
+    for(const list of [h.enemies,h.generators])for(const q of list||[])if(q.alive)mark(q);
+    for(const list of [h.items,h.chests,h.deathCaches,h.switches,h.shrines])for(const q of list||[])if(q?.active!==false)mark(q);
+    for(const q of h.doors||[])mark(q);
+    for(const q of [...(h.shops||[]),h.trader,h.rescue,h.cartographer])if(q?.active!==false)mark(q);
+    if(h.stalker?.awake&&!h.stalker.permanentlyBanished)mark(h.stalker);
+    // Search only the player's connected walkable area. A nearby free tile
+    // across a sealed door or solid generator is not an accessible reward.
+    const queue=[start],seen=new Set([`${start.x},${start.y}`]);let best=null,bestDistance=Infinity;
+    for(let i=0;i<queue.length;i++){
+      const q=queue[i],distance=dist(q,target);
+      if(distance<bestDistance&&!occupied.has(`${q.x},${q.y}`)){best=q;bestDistance=distance;if(distance===0)break}
+      for(const [dx,dy] of [[0,-1],[1,0],[0,1],[-1,0]]){
+        const x=q.x+dx,y=q.y+dy,key=`${x},${y}`;
+        if(!seen.has(key)&&walkable(x,y)){seen.add(key);queue.push({x,y})}
+      }
+    }
+    return best;
+  }
+
   function spawnWardenCache(target){
     const h=currentHost(),w=currentWorld(),r=currentRun();if(!h||!target||!r)return null;
-    h.chests=h.chests||[];if(h.chests.some(chest=>chest.v142WardenCache&&chest.v142WardenSource===target.id))return null;
-    const roomId=typeof W!=="undefined"&&W?.roomAt&&w?W.roomAt(w,target.x,target.y):-1,room=roomId>=0?w?.rooms?.[roomId]:null;
-    const chest={id:`v142-warden-cache-${floorNo()}-${String(target.id||"count")}`,x:target.x,y:target.y,locked:false,active:true,depth:Math.max(8,Number(room?.depth)||0)+8,roomId,v142WardenCache:true,v142WardenSource:target.id||"count-loadula"};
+    h.chests=h.chests||[];
+    if(h.chests.some(chest=>chest.v142WardenCache&&chest.v142WardenSource===(target.id||"count-loadula"))){target.v142WardenCachePending=false;delete target.v142WardenCacheRetryAt;return null}
+    const q=wardenCacheCell(target);
+    if(!q){target.v142WardenCachePending=true;target.v142WardenCacheRetryAt=performance.now()+2000;return null}
+    const roomId=W.roomAt(w,q.x,q.y),room=roomId>=0?w?.rooms?.[roomId]:null;
+    const chest={id:`v142-warden-cache-${floorNo()}-${String(target.id||"count")}`,...q,locked:false,active:true,depth:Math.max(8,Number(room?.depth)||0)+8,roomId,v142WardenCache:true,v142WardenSource:target.id||"count-loadula"};
+    // Domain cleansing can precede a deferred placement. Keep its cache half
+    // of the Seal claimable without rerunning kill rewards or cleansing.
+    const state=r.v142WardenFloors?.[String(floorNo())];
+    if(state?.resolved&&String(state.resolvedSourceId)===String(chest.v142WardenSource)&&!state.cacheFragmentAwarded){chest.v142SealEligible=true;chest.v142WardenFloor=floorNo()}
+    target.v142WardenCachePending=false;delete target.v142WardenCacheRetryAt;
     h.chests.push(chest);return chest;
   }
 
@@ -118,6 +187,9 @@
 
   function finaliseWarden(target,player,{baseScore=0,baseXp=0}={}){
     const h=currentHost(),r=currentRun();if(!target||!player||!h||!r||target.v142WardenRewarded)return false;
+    // Legacy JSON-restored runs may have no stats object. Initialise it before
+    // sealing the defeat, or a missing kills field can strand score, XP and cache.
+    if(!r.stats||typeof r.stats!=="object"||Array.isArray(r.stats))r.stats={};
     target.v142WardenRewarded=true;target.v142WardenDefeated=true;target.v142WardState="defeated";target.v142WardBroken=false;
     const name=label(target);
     if(isCount(target)){
@@ -136,7 +208,7 @@
     const essenceOwner=wardBreakOwner(player),essenceBefore=Math.max(0,Math.floor(Number(essenceOwner?.banishmentEssence)||0)),essence=grantEssence(essenceOwner),essenceGain=Math.max(0,essence-essenceBefore),cache=spawnWardenCache(target);startAftershock(target,player);
     h.revision=(Number(h.revision)||0)+1;sfx("elite");fxBurst(target.x,target.y);
     try{floatText(target.x,target.y,`WARDEN DOWN! +${SCORE_REWARD.toLocaleString()} SCORE`,P.gold,{life:3200})}catch(_){}
-    announce(`${name.toUpperCase()} DEFEATED`,`Warden kill secured: ${SCORE_REWARD.toLocaleString()} total score, ${XP_REWARD} total XP, ${essenceGain?"+1 Banishment Essence, ":""}+2 armour and an ammo refill. ${cache?"A high-tier Warden Cache has appeared at the kill site. ":""}The kill has also triggered a ${Math.round(AFTERSHOCK_MS/1000)}-second dungeon aftershock at ${AFTERSHOCK_ALERT}%+ alert, so taking the reward still carries risk. Vessel Essence: ${essence}.`,"green",12500);
+    announce(`${name.toUpperCase()} DEFEATED`,`Warden kill secured: ${SCORE_REWARD.toLocaleString()} total score, ${XP_REWARD} total XP, ${essenceGain?"+1 Banishment Essence, ":""}+2 armour and an ammo refill. ${cache?"A high-tier Warden Cache has appeared nearby. ":"The Warden Cache is reserved until a safe tile is available. "}The kill has also triggered a ${Math.round(AFTERSHOCK_MS/1000)}-second dungeon aftershock at ${AFTERSHOCK_ALERT}%+ alert, so taking the reward still carries risk. Vessel Essence: ${essence}.`,"green",12500);
     broadcast();syncNow();return true;
   }
 
@@ -166,9 +238,41 @@
   banishmentState=function(player){return banishmentStateV142(player)};
   permanentlyBanish=function(target,player){return breakWard(target,player)};
   activateBanishment=function(player){
-    if(!player)return false;const ix=inventoryChargeIndex(player);if(ix<0){sfx("empty");announce("NO WARD-BREAK CHARGE","Distil Banishment Essence at an Alchemist. The charge breaks a supernatural Warden's immunity; it does not kill the target for you.","red",7200);return false}
-    const state=banishmentStateV142(player);if(!state.ready){announce("NO SEALED WARD IN RANGE",`Move within ${state.range} tiles of a sealed Death Stalker or ${String(CFG.stalker?.name||"Count Loadula")}. If its ward has already been broken, use your weapons and finish the fight.`,"cyan",7200);return false}
-    PROG.inventoryRemove(player,ix);return breakWard(state.nearest,player);
+    if(!player)return false;
+    const ix=inventoryChargeIndex(player),state=banishmentStateV142(player);
+    const alreadyBroken=state.targets.length||state.blocked.length?null:nearbyBrokenWarden(player);
+    if(ix<0){
+      if(alreadyBroken)explainBrokenWarden(alreadyBroken);
+      else{sfx("empty");announce("NO WARD-BREAK CHARGE","Distil Banishment Essence at an Alchemist. The charge breaks a supernatural Warden's immunity; it does not kill the target for you.","red",7200)}
+      return false;
+    }
+    if(!state.ready){
+      if(state.blocked.length){
+        announce("WARD-BREAK SIGHT BLOCKED",`${label(state.blocked[0])} is within ${state.range} tiles, but a closed door, wall or other obstruction blocks the charge. Move into a clear line of sight or open the route. No charge spent.`,"cyan",7200);
+      }else if(alreadyBroken){
+        explainBrokenWarden(alreadyBroken);
+      }else{
+        announce("NO SEALED WARD IN RANGE",`Move within ${state.range} tiles of a sealed Death Stalker or ${String(CFG.stalker?.name||"Count Loadula")}. If its ward has already been broken, use your weapons and finish the fight.`,"cyan",7200);
+      }
+      return false;
+    }
+    // The Ward-Break Charge is spent only when the target actually loses
+    // immunity. Retain exact inventory contents for a failed or interrupted
+    // payment, including an older saved charge stack.
+    const before=(player.inventory||[]).map(item=>({...item}));
+    let payment=null;try{payment=PROG.inventoryRemove(player,ix)}catch(_){}
+    if(!payment||payment.kind!=="banishment"){
+      player.inventory=before;
+      announce("WARD-BREAK NOT APPLIED","No Banishment Charge was spent. The charge remains in your inventory.","cyan",5500);
+      return false;
+    }
+    let applied=false;try{applied=breakWard(state.nearest,player)===true}catch(_){}
+    if(!applied){
+      player.inventory=before;
+      announce("WARD-BREAK NOT APPLIED","The target's ward changed before the charge could take effect. Your charge has been returned.","cyan",6000);
+      return false;
+    }
+    return true;
   };
   useBanishment=function(player){return activateBanishment(player)};
 
@@ -226,6 +330,10 @@
 
   function scanWardenDefeats(){
     const h=currentHost(),player=currentPlayer();if(!h||!player)return;
+    if(currentMode()==="playing")for(const target of [...(h.enemies||[]),h.stalker]){
+      if(!target?.v142WardenRewarded||!target.v142WardenCachePending||performance.now()<Number(target.v142WardenCacheRetryAt||0))continue;
+      if(spawnWardenCache(target)){h.revision=(Number(h.revision)||0)+1;broadcast();syncNow()}
+    }
     for(const enemy of h.enemies||[]){
       if(enemy?.alive||!enemy?.v142WardBroken||enemy.v142WardenRewarded||!baseIsDeathStalkerEnemy?.(enemy))continue;
       finaliseWarden(enemy,player,{baseScore:120,baseXp:100});

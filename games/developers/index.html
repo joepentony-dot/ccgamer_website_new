@@ -386,6 +386,20 @@
   <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-shell-style="true">
   <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
   <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
+  <link rel="stylesheet" href="/resources/css/ccg-nav-viewport-overlay.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-inner-page-density.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-scroll-authority.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-global-search.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-mode-identity.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mode.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mobile-fix.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-ui-regression-fixes.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-engagement-engine.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-identity.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mobile-alignment.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-responsive-safety.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-responsive-page-polish.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-sitewide-layout-optimization.css" data-ccg-public-header-first-paint-style="true">
   <link rel="stylesheet" href="/resources/css/ccg-nav-labelled-bridge.css" data-ccg-public-header-first-paint-style="true">
 </head>
 <body class="ccg-body ccg-developers-page" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -559,7 +573,7 @@
                 <div class="ccg-developers-hero__stats">
                     <span><strong>47</strong> developer credits</span>
                     <span><strong>77</strong> game associations</span>
-                    <span><strong>11</strong> multi-game archives</span>
+                    <span><strong>47</strong> credited archives</span>
                 </div>
             </section>
 
@@ -701,16 +715,16 @@
                 </div>
             </section>
 
-            <details class="ccg-developer-directory-disclosure" data-developer-directory-disclosure>
-                <summary class="ccg-developer-directory-disclosure__summary">Browse the other 36 developers A–Z</summary>
-                <section class="ccg-developers-section" aria-labelledby="all-developers-title">
-                    <div class="ccg-developers-section__heading">
-                        <p class="ccg-developers-section__kicker">Full recorded archive</p>
-                        <h2 id="all-developers-title">Other Developers</h2>
-                        <p>Single-game archive pages remain available for navigation but are excluded from search indexing until another credited title is added.</p>
-                    </div>
-                    <div class="ccg-developer-grid" id="developerGrid">
-                        <a class="ccg-developer-card "
+            <details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>
+                <summary>Browse the other 36 developers A–Z</summary>
+                <section aria-labelledby="all-developers-title">
+                <div class="ccg-developers-section__heading">
+                    <p class="ccg-developers-section__kicker">Full recorded archive</p>
+                    <h2 id="all-developers-title">Other Developers</h2>
+                    <p>Dedicated developer pages with verified catalogue credits are eligible for indexing, including single-game archives.</p>
+                </div>
+                <div class="ccg-developer-grid" id="developerGrid">
+                    <a class="ccg-developer-card "
        href="/games/developers/3-2-1-software/"
        data-developer-card
        data-developer-name="3-2-1 software"
@@ -1070,8 +1084,8 @@
         <span class="ccg-developer-card__count">1 game</span>
         <span class="ccg-developer-card__meta">1 Amiga · 1994</span>
     </a>
-                    </div>
-                    <p class="ccg-developers-empty" id="developerEmptyState" hidden>No developers match that search.</p>
+                </div>
+                <p class="ccg-developers-empty" id="developerEmptyState" hidden>No developers match that search.</p>
                 </section>
             </details>
 

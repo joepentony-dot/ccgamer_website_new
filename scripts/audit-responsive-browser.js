@@ -13,6 +13,7 @@
  *   - excessive shared-header height
  *   - physical overlap between top-level header controls
  *   - semantic shared-navigation state at responsive breakpoints
+ *   - physical priority and overlap of Home/Games discovery sections
  */
 
 "use strict";
@@ -354,6 +355,62 @@ async function executeDiagnostics(sessionId) {
     return payload.value;
 }
 
+/* Guard the on-screen hierarchy at every existing audit breakpoint. */
+const DISCOVERY_PRIORITY_SCRIPT = String.raw`
+return (function () {
+    var pathname = location.pathname;
+    var selectors = pathname === "/home.html"
+        ? [".home-hero", ".home-section--archive-dashboard", ".home-merch-promo", ".home-community-latest"]
+        : [".games-hero", ".games-tools", ".games-omega-discovery", ".games-library"];
+    return selectors.map(function (selector) {
+        var element = document.querySelector(selector);
+        if (!element) return { selector: selector, present: false };
+        var rect = element.getBoundingClientRect();
+        return { selector: selector, present: true, top: Math.round(rect.top + window.scrollY),
+            bottom: Math.round(rect.bottom + window.scrollY),
+            width: Math.round(rect.width), height: Math.round(rect.height) };
+    });
+})();`;
+
+async function auditDiscoveryPriority(sessionId, page, viewport) {
+    const response = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+        script: DISCOVERY_PRIORITY_SCRIPT, args: []
+    });
+    const sections = response.value;
+    if (!Array.isArray(sections) || sections.length !== 4 || sections.some((s) => !s.present || s.height <= 0 || s.width <= 0)) {
+        throw new Error(`${page} @ ${viewport.label}: missing or invisible priority section: ${JSON.stringify(sections)}`);
+    }
+    for (let i = 1; i < sections.length; i += 1) {
+        if (sections[i].top + 4 < sections[i - 1].bottom) {
+            throw new Error(`${page} @ ${viewport.label}: priority sections overlap: ${JSON.stringify(sections[i - 1])} / ${JSON.stringify(sections[i])}`);
+        }
+    }
+    if (page === "/games/index.html") {
+        const response = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+            script: `
+                const input = document.getElementById("gamesSearchInput");
+                const browse = document.querySelector(".games-omega-discovery");
+                const divider = browse?.nextElementSibling;
+                if (!input || !browse || !divider?.classList.contains("ccg-omega-divider")) return { exists: false };
+                input.value = "1942";
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                const hiddenDuringSearch = getComputedStyle(browse).display === "none"
+                    && getComputedStyle(divider).display === "none";
+                input.value = "";
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                return { exists: true, hiddenDuringSearch: hiddenDuringSearch,
+                    restoredAfterClear: getComputedStyle(browse).display !== "none"
+                        && getComputedStyle(divider).display !== "none" };
+            `,
+            args: []
+        });
+        const state = response.value;
+        if (!state?.exists || !state.hiddenDuringSearch || !state.restoredAfterClear) {
+            throw new Error(`Games Archive @ ${viewport.label}: active-search discovery placement failed: ${JSON.stringify(state)}`);
+        }
+    }
+}
+
 async function auditPublisherDirectory(sessionId, viewport) {
     const execute = async (script) => {
         const payload = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
@@ -649,6 +706,9 @@ async function main() {
                     await navigate(sessionId, url);
                     const result = await executeDiagnostics(sessionId);
                     validateResult(result, page, viewport);
+                    if (page === "/home.html" || page === "/games/index.html") {
+                        await auditDiscoveryPriority(sessionId, page, viewport);
+                    }
                     if (page === "/games/publishers/index.html") {
                         await auditPublisherDirectory(sessionId, viewport);
                     }

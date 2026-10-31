@@ -26,6 +26,7 @@
     const INDEX_PATH = "/games/games-index.json";
     const SPECIALS_PATH = "/data/retro-specials.json";
     const PREVIOUS_KEY = "ccgArchivePulsePreviousV2";
+    const PREPARED_KEY = "ccgArchivePulseNextVisitV1";
     const TARGET_GAME_TYPES = ["game-of-the-day", "archive-pick"];
 
     function toArray(value) {
@@ -227,7 +228,7 @@
 
     async function init() {
         const pulse = await waitForPulse();
-        if (!pulse || pulse.dataset.ccgEveryVisitRandomized === "true") return;
+        if (!pulse || (pulse.dataset.ccgStaticPulse !== "true" && pulse.dataset.ccgEveryVisitRandomized === "true")) return;
 
         try {
             const [{ games, specials, thumbnails }, previous] = await Promise.all([
@@ -237,15 +238,51 @@
             const selectedGames = chooseGames(games, previous.games);
             const selectedZzap = chooseZzap(specials, previous.zzap);
 
-            TARGET_GAME_TYPES.forEach((type, index) => {
-                updateGameCard(type, selectedGames[index], thumbnails);
-            });
-            updateZzapCard(selectedZzap);
-            writePrevious(selectedGames, selectedZzap);
-            pulse.dataset.ccgEveryVisitRandomized = "true";
+            if (pulse.dataset.ccgStaticPulse === "true") {
+                // Prepare the next visit without changing already-painted text.
+                // The same module applies these real catalogue picks synchronously
+                // beside the static cards during parsing on the next navigation.
+                sessionStorage.setItem(PREPARED_KEY, JSON.stringify({
+                    savedAt: Date.now(), games: selectedGames, zzap: selectedZzap,
+                    thumbnails: selectedGames.map(game => [game.slug, thumbnails.get(game.slug) || ""])
+                }));
+            } else {
+                TARGET_GAME_TYPES.forEach((type, index) => updateGameCard(type, selectedGames[index], thumbnails));
+                updateZzapCard(selectedZzap);
+                writePrevious(selectedGames, selectedZzap);
+                pulse.dataset.ccgEveryVisitRandomized = "true";
+            }
         } catch (error) {
             console.warn("[ccg-archive-pulse-randomizer] Could not rotate Archive Pulse", error);
         }
+    }
+
+    function applyPreparedVisit() {
+        const pulse = document.querySelector('[data-ccg-static-pulse="true"]');
+        if (!pulse) return;
+        try {
+            const prepared = JSON.parse(sessionStorage.getItem(PREPARED_KEY) || "null");
+            if (!prepared || Date.now() - prepared.savedAt > 86400000 || !Array.isArray(prepared.games) || prepared.games.length !== 2) return;
+            if (!prepared.games.every(game => /^[a-z0-9-]+$/.test(game?.slug || ""))) return;
+            const thumbnails = new Map(prepared.thumbnails || []);
+            TARGET_GAME_TYPES.forEach((type, index) => updateGameCard(type, prepared.games[index], thumbnails));
+            updateZzapCard(prepared.zzap);
+            writePrevious(prepared.games, prepared.zzap);
+            pulse.dataset.ccgEveryVisitRandomized = "true";
+            // Selection below prepares another non-repeating visit.
+            sessionStorage.removeItem(PREPARED_KEY);
+        } catch (_error) { /* Retain the real static, offline-safe cards. */ }
+    }
+
+    applyPreparedVisit();
+    const staticPulse = document.querySelector('[data-ccg-static-pulse="true"]');
+    if (staticPulse && staticPulse.dataset.ccgEveryVisitRandomized !== "true") {
+        const displayed = TARGET_GAME_TYPES.map(type => {
+            const card = staticPulse.querySelector(`[data-ccg-archive-pulse="${type}"]`);
+            return { slug: card ? new URL(card.href, location.href).pathname.split("/")[2] : "" };
+        });
+        const feature = staticPulse.querySelector('[data-ccg-archive-pulse="zzap-feature"]');
+        writePrevious(displayed, { slug: feature ? new URL(feature.href, location.href).pathname.split("/")[2] : "" });
     }
 
     if (document.readyState === "loading") {
@@ -253,4 +290,25 @@
     } else {
         void init();
     }
+})();
+
+/* Home-only, idle-cost-neutral launcher for the optional CCG Retro Assistant.
+   The catalogue is fetched only after a visitor submits a question. */
+(function () {
+  "use strict";
+  if (document.documentElement.getAttribute("data-ccg-page") !== "home") return;
+  function loadAssistant() {
+    if (document.querySelector('script[data-ccg-retro-assistant]')) return;
+    const script = document.createElement("script");
+    script.src = "/js/ccg-retro-assistant.js";
+    script.async = true;
+    script.setAttribute("data-ccg-retro-assistant", "true");
+    script.setAttribute("data-ai-enabled", "false");
+    document.head.appendChild(script);
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadAssistant, { once: true });
+  } else {
+    loadAssistant();
+  }
 })();

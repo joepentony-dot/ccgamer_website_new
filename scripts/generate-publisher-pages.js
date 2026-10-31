@@ -15,7 +15,9 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// A verified source game credit qualifies a dedicated self-canonical archive
+// for indexing; empty and unrelated fallback URLs remain excluded.
+const INDEXABLE_MIN_GAMES = 1;
 
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const publishersDir = path.join(repoRoot, "games", "publishers");
@@ -510,8 +512,16 @@ function renderGameCard(game) {
 function renderPublisherPage(group, playlists) {
     const canonicalUrl = `${SITE_ORIGIN}/games/publishers/${group.slug}/`;
     const systemLabel = platformLabel(group);
-    const description = `Browse ${group.count} ${group.name} ${systemLabel} ${group.count === 1 ? "game" : "games"} in the Cheeky Commodore Gamer archive, with release years, videos and direct game links.`;
-    const title = `${group.name} C64 & Amiga Games | Cheeky Commodore Gamer`;
+    const single = group.count === 1 && group.games.length === 1 ? group.games[0] : null;
+    const singlePlatform = single?.system === "C64" ? "Commodore 64"
+        : single?.system === "Amiga" ? "Amiga" : systemLabel;
+    const singleYear = Number.isInteger(single?.year) && single.year > 0 ? ` (${single.year})` : "";
+    const description = single
+        ? `${single.title}${singleYear} on ${singlePlatform} appears in the ${group.name} publisher archive. Explore its dedicated game page.`
+        : `Browse ${group.count} ${group.name} ${systemLabel} ${group.count === 1 ? "game" : "games"} in the Cheeky Commodore Gamer archive, with release years, videos and direct game links.`;
+    const title = single
+        ? `${group.name}: ${single.title}${singleYear} | ${singlePlatform} Publisher | Cheeky Commodore Gamer`
+        : `${group.name} C64 & Amiga Games | Cheeky Commodore Gamer`;
     const robots = group.count >= INDEXABLE_MIN_GAMES ? "index,follow" : "noindex,follow";
     const playlistUrl = getPlaylistUrl(playlists, group);
 
@@ -520,7 +530,7 @@ function renderPublisherPage(group, playlists) {
         "@graph": [
             {
                 "@type": "CollectionPage",
-                name: `${group.name} Games`,
+                name: single ? `${group.name} publisher archive: ${single.title}` : `${group.name} Games`,
                 description,
                 url: canonicalUrl,
                 isPartOf: {
@@ -592,9 +602,11 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
         <main class="ccg-main ccg-publishers-main">
             <section class="ccg-publishers-hero ccg-publisher-hero">
                 <p class="ccg-publishers-hero__kicker">Publisher archive · ${htmlEscape(systemLabel)}</p>
-                <h1 class="ccg-publishers-hero__title">${htmlEscape(group.name)} Games</h1>
+                <h1 class="ccg-publishers-hero__title">${htmlEscape(single ? `${group.name}: ${single.title}` : `${group.name} Games`)}</h1>
                 <p class="ccg-publishers-hero__intro">
-                    Browse every ${htmlEscape(group.name)} title currently catalogued by Cheeky Commodore Gamer. New games are added here automatically when their publisher credit is present in the main game database.
+                    ${single
+                        ? `${htmlEscape(single.title)}${htmlEscape(singleYear)} is listed under ${htmlEscape(group.name)} in the ${htmlEscape(singlePlatform)} publisher archive. Follow the linked game for its catalogue details.`
+                        : `Browse every ${htmlEscape(group.name)} title currently catalogued by Cheeky Commodore Gamer. New games are added here automatically when their publisher credit is present in the main game database.`}
                 </p>
                 <div class="ccg-publishers-hero__stats">
                     <span><strong>${group.count}</strong> ${group.count === 1 ? "game" : "games"}</span>

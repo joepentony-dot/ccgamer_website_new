@@ -32,6 +32,9 @@ on:
       - "workers/game-music-upload/src/worker.mjs"
       - "workers/game-music-upload/wrangler.toml"
       - "tests/content-publisher.test.mjs"
+      - "scripts/ensure-goatcounter-coverage.js"
+      - "tests/goatcounter-sitewide.test.mjs"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "tests/content-publisher-source-preflight.test.mjs"
       - "tests/lemon-source-discovery.test.mjs"
       - "tests/new-game-enrichment-validation.test.mjs"
@@ -70,6 +73,9 @@ on:
       - "workers/game-music-upload/src/worker.mjs"
       - "workers/game-music-upload/wrangler.toml"
       - "tests/content-publisher.test.mjs"
+      - "scripts/ensure-goatcounter-coverage.js"
+      - "tests/goatcounter-sitewide.test.mjs"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "tests/content-publisher-source-preflight.test.mjs"
       - "tests/lemon-source-discovery.test.mjs"
       - "tests/new-game-enrichment-validation.test.mjs"
@@ -109,6 +115,7 @@ jobs:
           node --check admin/js/guard.js
           node --check scripts/discover-new-lemon-source.js
           node --check scripts/audit-admin-runtime-bootstrap.js
+          node --check scripts/ensure-goatcounter-coverage.js
           node --check js/load-single-game.js
           node --check js/collection-loader.js
           node --check js/ccg-zzap64-matcher.js
@@ -119,6 +126,7 @@ jobs:
       - name: Run publisher and collection regression tests
         run: |
           node --test tests/content-publisher.test.mjs
+          node --test tests/goatcounter-sitewide.test.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs
           node --test tests/lemon-source-discovery.test.mjs

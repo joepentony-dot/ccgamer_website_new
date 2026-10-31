@@ -64,7 +64,8 @@
 */
 .ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-filter__range,
 .ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-alpha,
-.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-tools + .ccg-omega-divider {
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-omega-discovery,
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-omega-discovery + .ccg-omega-divider {
     display: none;
 }
 

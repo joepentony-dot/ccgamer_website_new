@@ -221,6 +221,10 @@ jobs:
         if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: node --test tests/retro-video-script-whitespace.test.js
 
+      - name: Guard catalogue-backed single-game archive metadata
+        if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
+        run: node --test tests/archive-singleton-seo.test.mjs
+
       - name: Check generated output whitespace
         if: github.event_name != 'push' || steps.publish_scope.outputs.authoritative_game_publish != 'true'
         run: git diff --check

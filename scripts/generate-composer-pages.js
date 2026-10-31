@@ -18,7 +18,10 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// A verified catalogue music credit is enough to make a dedicated, self-canonical
+// composer route eligible for indexing. Zero-credit/legacy fallback routes retain
+// their independently established indexing policies.
+const INDEXABLE_MIN_GAMES = 1;
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const musicDir = path.join(repoRoot, "music");
 const composersDir = path.join(musicDir, "composers");
@@ -372,7 +375,7 @@ ${jsonForHtml(composerPageSchema(route))}
 `;
 }
 
-function hubSchema(routes, canonical, name, description) {
+function hubSchema(routes, pageUrl, canonical, name, description) {
     return {
         "@context": "https://schema.org",
         "@graph": [
@@ -385,11 +388,11 @@ function hubSchema(routes, canonical, name, description) {
             },
             {
                 "@type": "BreadcrumbList",
-                itemListElement: canonical.endsWith("/composers/")
+                itemListElement: pageUrl.endsWith("/composers/")
                     ? [
                         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
                         { "@type": "ListItem", position: 2, name: "Music Hub", item: `${SITE_ORIGIN}/music/` },
-                        { "@type": "ListItem", position: 3, name: "Composers", item: canonical }
+                        { "@type": "ListItem", position: 3, name: "Composers", item: pageUrl }
                     ]
                     : [
                         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
@@ -417,6 +420,7 @@ function renderFeaturedFallback(routes) {
         .map((name) => byKey.get(normalizeComposerKey(name)))
         .filter(Boolean)
         .map((route) => `<a href="/music/${htmlEscape(route.slug)}/" class="composer-card composer-card--featured" data-slug="${htmlEscape(route.slug)}">
+          <div class="composer-thumb"><img src="/resources/images/composers/hub/${htmlEscape(route.slug)}.webp" alt="Portrait of ${htmlEscape(route.name)}" width="400" height="300" loading="lazy" decoding="async" fetchpriority="low"></div>
           <div class="composer-info">
             <h3>${htmlEscape(route.name)}</h3>
             <p class="composer-platform">${htmlEscape(platformLabel(route))}</p>
@@ -451,7 +455,11 @@ function renderAccordionFallback(routes) {
 }
 
 function renderHub(routes, composersOnly) {
-    const canonical = composersOnly ? `${SITE_ORIGIN}/music/composers/` : `${SITE_ORIGIN}/music/`;
+    const pageUrl = composersOnly ? `${SITE_ORIGIN}/music/composers/` : `${SITE_ORIGIN}/music/`;
+    // Both hubs display the same featured composers and full A-Z directory.
+    // Keep the dedicated directory route working, but consolidate search signals
+    // on the established Music Hub canonical (never change composer profiles).
+    const canonical = `${SITE_ORIGIN}/music/`;
     const title = composersOnly
         ? "All C64 & Amiga Composers | Cheeky Commodore Gamer"
         : "C64 & Amiga Music Hub | Cheeky Commodore Gamer";
@@ -485,7 +493,7 @@ function renderHub(routes, composersOnly) {
   <meta name="twitter:image" content="${SITE_ORIGIN}/resources/images/og/c64_neon.png">
   <meta name="twitter:url" content="${canonical}">
   <script type="application/ld+json">
-${jsonForHtml(hubSchema(routes, canonical, heading, description))}
+${jsonForHtml(hubSchema(routes, pageUrl, canonical, heading, description))}
   </script>
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
@@ -578,7 +586,12 @@ function updateStaticPages(routes, previousMetadata) {
     const next = [];
     current.forEach((entry) => {
         if (typeof entry !== "string") return;
-        if (staleGenerated.has(entry) && !desired.has(entry)) return;
+        // Other owners rebuild publisher/developer entries before composers.
+        // Always remove our prior generated block, then reappend the desired
+        // composer block below in one stable order. Preserving the old block's
+        // position made pass 1 and pass 2 disagree when new composers became
+        // indexable and another generator reordered its own entries.
+        if (staleGenerated.has(entry)) return;
         if (seen.has(entry)) return;
         seen.add(entry);
         next.push(entry);
@@ -631,7 +644,7 @@ function renderReport({ games, creditedGroups, existingPages, routes, generatedW
 | Credited composers with an existing page | **${creditedExisting}** |
 | Newly generated static composer routes | **${generated.length}** |
 | Indexable generated routes | **${indexableGenerated}** |
-| Single-game generated noindex routes | **${noindexGenerated}** |
+| No-credit generated noindex routes | **${noindexGenerated}** |
 | Total static composer routes | **${routes.length}** |
 | Linked game-credit relationships | **${linkedCredits}** |
 | Generated pages written in this run | **${generatedWrites}** |
@@ -641,7 +654,8 @@ function renderReport({ games, creditedGroups, existingPages, routes, generatedW
 
 - Existing curated composer pages remain unchanged and retain their current indexing policy.
 - Newly generated pages with at least ${INDEXABLE_MIN_GAMES} credited games use \`index,follow\`.
-- Newly generated one-game pages use \`noindex,follow\` until another matching credit is present.
+- Newly generated one-game pages with a verified catalogue credit use \`index,follow\`; they are not excluded solely for having one credit.
+- Zero-credit fallback routes and existing curated pages retain their independently established indexing policies.
 - The music hub and all-composers hub are static, indexable and link to every route.
 
 ## Most represented composer credits

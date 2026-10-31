@@ -12,7 +12,9 @@ const repoRoot = process.env.CCG_REPO_ROOT
     : path.resolve(__dirname, "..");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
-const INDEXABLE_MIN_GAMES = 2;
+// One verified catalogue game is sufficient for a canonical year archive
+// to be indexable, without promoting legacy or query-string fallback routes.
+const INDEXABLE_MIN_GAMES = 1;
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const yearsDir = path.join(repoRoot, "games", "years");
 const platformsDir = path.join(repoRoot, "games", "platforms");
@@ -545,7 +547,7 @@ function renderYearsIndex(data) {
                 <div class="ccg-archives-section__heading">
                     <p class="ccg-archives-section__kicker">Full recorded archive</p>
                     <h2 id="all-years-title">All Release Years</h2>
-                    <p>The single-game 2023 route remains available for navigation but uses noindex until another title is added for that year.</p>
+                    <p>Every listed release year links directly to its recorded game pages, including years represented by just one title.</p>
                 </div>
                 <div class="ccg-archive-grid">
                     ${data.years.map((group) => renderArchiveCard({
@@ -635,8 +637,16 @@ function renderPlatformsIndex(data) {
 
 function renderYearPage(group) {
     const canonicalUrl = `${SITE_ORIGIN}${group.url}`;
-    const title = `${group.year} C64 & Amiga Games | Cheeky Commodore Gamer`;
-    const description = `Browse ${group.count} Commodore 64 and Amiga ${group.count === 1 ? "game" : "games"} released in ${group.year} in the Cheeky Commodore Gamer archive.`;
+    // A singleton release year should identify its actual game, rather than
+    // advertising both platforms. Only use verified catalogue facts.
+    const single = group.count === 1 ? group.games[0] : null;
+    const title = single
+        ? `${group.year} ${single.platform === "c64" ? "C64" : "Amiga"} Games — ${single.title} | Cheeky Commodore Gamer`
+        : `${group.year} C64 & Amiga Games | Cheeky Commodore Gamer`;
+    const description = single
+        ? `Explore ${single.title} (${group.year}), the ${single.system} game currently listed in the ${group.year} Cheeky Commodore Gamer release-year archive.`
+        : `Browse ${group.count} Commodore 64 and Amiga ${group.count === 1 ? "game" : "games"} released in ${group.year} in the Cheeky Commodore Gamer archive.`;
+    const schemaName = single ? `${group.year} ${single.system} Games` : `${group.year} C64 & Amiga Games`;
     const robots = group.indexable ? "index,follow" : "noindex,follow";
     const breadcrumbs = [
         { name: "Home", url: `${SITE_ORIGIN}/` },
@@ -645,7 +655,7 @@ function renderYearPage(group) {
         { name: String(group.year), url: canonicalUrl }
     ];
     const schema = collectionSchema({
-        name: `${group.year} C64 & Amiga Games`,
+        name: schemaName,
         description,
         canonicalUrl,
         breadcrumbs,
@@ -659,7 +669,9 @@ function renderYearPage(group) {
     const body = `${renderHero({
         kicker: `Release-year archive · ${group.year}`,
         heading: `${group.year} Games`,
-        intro: `Browse every Commodore 64 and Amiga title currently recorded for ${group.year}. The links below are rendered directly into the page for dependable navigation and search discovery.`,
+        intro: single
+            ? `The ${group.year} ${single.system} archive currently features ${single.title}. Browse its dedicated game page or explore other release years.`
+            : `Browse every Commodore 64 and Amiga title currently recorded for ${group.year}. The links below are rendered directly into the page for dependable navigation and search discovery.`,
         stats: [
             { value: group.count, label: group.count === 1 ? "game" : "games" },
             { value: group.c64Count, label: "C64" },
@@ -825,7 +837,7 @@ function buildReport(data) {
 | Platform hub pages | **1** |
 | Static year routes | **${data.years.length}** |
 | Indexable year routes | **${indexableYears.length}** |
-| Single-game noindex year routes | **${noindexYears.length}** |
+| No-credit noindex year routes | **${noindexYears.length}** |
 | Static platform routes | **${data.platforms.length}** |
 | C64 games | **${c64.count}** |
 | Amiga games | **${amiga.count}** |
@@ -852,7 +864,7 @@ function buildReport(data) {
 
 - Both hubs and both platform routes use \`index,follow\`.
 - Year routes containing at least ${INDEXABLE_MIN_GAMES} games use \`index,follow\`.
-- The 2023 route currently contains one game and uses \`noindex,follow\`.
+- The 2023 route has a verified recorded game and therefore uses \`index,follow\`.
 
 ## Explicit exclusions
 

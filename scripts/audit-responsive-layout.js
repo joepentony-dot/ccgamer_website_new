@@ -161,7 +161,16 @@ expectText(safetyLoader, 'href: "/resources/css/ccg-responsive-safety.css"', "th
 expectText(safetyLoader, 'href: "/resources/css/ccg-responsive-page-polish.css"', "the responsive page-polish stylesheet path");
 expectText(safetyLoader, 'pageId === "intro"', "intro-loader isolation");
 expectText(safetyLoader, 'pathname.startsWith("/admin/")', "admin-tool isolation");
-expectText(safetyLoader, "ensureStylesheetsLast", "late-cascade stylesheet enforcement");
+expectText(safetyLoader, "function ensureStylesheets()", "one-time responsive stylesheet fallback");
+expectText(safetyLoader, "if (existing) return;", "preservation of the staged stylesheet order");
+if (/setTimeout|addEventListener\(["'](?:resize|orientationchange|load)/.test(safetyLoader)) {
+    errors.push("Responsive styles must be stable at first paint, not repeatedly reordered by lifecycle events");
+}
+const stagedStyles = require("./normalize-public-header-shell.js").PUBLIC_HEADER_FIRST_PAINT_STYLES;
+for (const href of ["/resources/css/ccg-responsive-safety.css", "/resources/css/ccg-responsive-page-polish.css", "/resources/css/ccg-sitewide-layout-optimization.css", "/resources/css/ccg-nav-labelled-bridge.css"]) {
+    if (!stagedStyles.includes(href)) errors.push(`Missing first-paint staged stylesheet: ${href}`);
+}
+if (stagedStyles.at(-1) !== "/resources/css/ccg-nav-labelled-bridge.css") errors.push("Labelled navigation must remain the final staged responsive stylesheet");
 
 expectText(safetyCss, "DOCUMENT + VIEWPORT OWNERSHIP", "document-scroll ownership rules");
 expectText(safetyCss, "body:not(.ccg-body--locked):not(.ccg-body--nav-open)", "body scroll-lock exception handling");

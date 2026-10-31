@@ -1,0 +1,23 @@
+name: GoatCounter Production Truth Check
+on:
+  pull_request:
+    paths:
+      - "js/ccg-visitor-metrics.js"
+      - "js/ccg-global.js"
+      - "tests/browser/goatcounter-live-diagnosis.py"
+      - ".github/workflows/goatcounter-production-truth.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unmodified-live-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install 'playwright==1.55.0'
+      - name: Inspect actual public counters with unmodified Chromium
+        run: python tests/browser/goatcounter-live-diagnosis.py

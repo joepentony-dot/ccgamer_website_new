@@ -2524,7 +2524,9 @@ html.ccg-perf-paused [data-ccg-wow] {
     position: fixed;
     left: 50%;
     bottom: calc(16px + env(safe-area-inset-bottom));
-    transform: translate(-50%, 16px);
+    /* Keep the transparent state inside the viewport: moving 16px past a
+       6–8px bottom clearance expands document scrollHeight in Chromium. */
+    transform: translate(-50%, 4px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 220ms ease, transform 220ms ease;
@@ -3162,10 +3164,6 @@ body.ccg-is-mobile .home-hero__bg {
     color: #d7f7ff;
     font-family: inherit;
     text-transform: uppercase;
-}
-
-.ccg-secret-modal-open {
-    overflow: hidden;
 }
 
 @media (max-width: 720px) {
@@ -4451,7 +4449,6 @@ body.ccg-crt::before {
 }
 
 body.ccg-secret-modal-open {
-    overflow: hidden;
     overscroll-behavior: none;
     touch-action: auto;
 }

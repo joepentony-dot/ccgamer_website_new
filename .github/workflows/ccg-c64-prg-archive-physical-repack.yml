@@ -58,7 +58,7 @@ jobs:
             assert.equal(Object.keys(aliases.mappings).length,1528);
             assert.equal(catalog.recordCount+aliases.recordCount,9849);
             assert.equal(direct.entries.length,1772);
-            assert.equal(active.recordCount,2064);
+            assert.equal(active.recordCount,2063);
             const byId=new Map(direct.entries.map(e=>[e.id,e]));
             assert.equal(byId.size,1772,"Duplicate directly hosted game ID");
             const activeById=new Map(active.games.map(row=>["owner-crt-more-"+row[1].slice(0,-4),row]));

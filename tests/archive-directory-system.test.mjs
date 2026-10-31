@@ -199,7 +199,7 @@ test("developer index reduces default clutter without dropping a credited route"
     assert.ok(featured.length > 0 && other.length > 0);
     assert.equal(featured.length + other.length, expected);
     assert.ok(html.includes(`Browse the other ${other.length} developers A–Z</summary>`));
-    assert.match(html, /<details class="ccg-developer-directory-disclosure" data-developer-directory-disclosure>/);
+    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>/);
     assert.match(html, /<h2 id="all-developers-title">Other Developers<\/h2>/);
     assert.match(html, /id="developerSearchInput"/);
     assert.match(generator, /new Set\(represented\.map\(\(group\) => group\.slug\)\)/);
@@ -209,8 +209,226 @@ test("developer index reduces default clutter without dropping a credited route"
     assert.match(runtime, /allCards\.filter\(\(card\) => matches\(card, query\)\)/);
     assert.match(runtime, /directory\.open = hasSearch \|\| system !== "all" \|\| manuallyExpanded/);
     assert.match(runtime, /event\.preventDefault\(\)/);
-    assert.match(css, /\.ccg-developer-directory-disclosure__summary:focus-visible/);
-    assert.match(css, /\.ccg-developer-directory-disclosure\[open\]/);
+    assert.match(css, /\.ccg-developers-directory > summary:focus-visible/);
+    assert.match(css, /\.ccg-developers-directory > section/);
     assert.doesNotMatch(css, /#developerGrid\s*\{[^}]*display:\s*none/s);
 });
 
+
+test("developer index keeps complete static A-Z directory and opens bookmarked system results", () => {
+    const html = read("games/developers/index.html");
+    const generator = read("scripts/generate-developer-pages.js");
+    const js = read("js/developer-pages.js");
+    const css = read("resources/css/developers.css");
+
+    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
+    assert.match(generator, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
+    const summary = html.match(/<summary>Browse all (\d+) developers A–Z<\/summary>/);
+    assert.ok(summary, "developer disclosure includes a real available count");
+    const directoryStart = html.indexOf('<div class="ccg-developer-grid" id="developerGrid">');
+    const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
+    assert.ok(directoryStart >= 0 && directoryEnd > directoryStart, "directory links exist in static HTML");
+    const hrefs = Array.from(html.slice(directoryStart, directoryEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
+    assert.equal(hrefs.length, Number(summary[1]), "all counted developer links are present without JavaScript");
+    assert.equal(new Set(hrefs).size, hrefs.length, "developer routes are not duplicated inside directory");
+    assert.match(js, /if \(directory && system !== "all"\) directory\.open = true;/,
+        "supported bookmarked system filters must open the disclosure on page load");
+    assert.match(js, /Boolean\(normalize\(search\.value\)\) \|\| system !== "all" \|\| initialDirectoryOpen/,
+        "clearing a name search must not close active platform-filter results");
+    assert.match(css, /\.ccg-developers-directory > summary:focus-visible/,
+        "native directory disclosure keeps visible keyboard focus");
+});
+
+test("Zzap archive quick links target distinct preserved archive sections", () => {
+    const html = read("zzap64/index.html");
+    const css = read("resources/css/zzap64-awards.css");
+    const targets = [
+        ["zzap-award-videos", "zzap-video-years-title", "zzapYearCards"],
+        ["zzap-award-search", "zzap-index-title", "zzapAwardsGrid"],
+        ["zzap-additional-reviews", "zzap-all-reviews-title", "zzapReviewGrid"]
+    ];
+
+    assert.match(html, /<nav class="zzap-archive__jump-nav" aria-label="Jump to Zzap!64 archive section">/,
+        "jump destinations must be announced as navigation");
+    for (const [id, headingId, originalGrid] of targets) {
+        assert.equal((html.match(new RegExp('href="#' + id + '"', 'g')) || []).length, 1,
+            "one clear quick-nav entry exists for " + id);
+        assert.equal((html.match(new RegExp('id="' + id + '"', 'g')) || []).length, 1,
+            "one stable scroll target exists for " + id);
+        assert.ok(html.includes('id="' + headingId + '"'), "existing heading contract survives: " + headingId);
+        assert.ok(html.includes('id="' + originalGrid + '"'), "existing runtime grid survives: " + originalGrid);
+    }
+    assert.match(html, /id="zzap-video-years-title" class="zzap-archive__section-title"/,
+        "year videos use a visible heading");
+    assert.match(html, /id="zzap-index-title" class="zzap-archive__section-title"/,
+        "award search uses a visible heading");
+    assert.match(css, /\.zzap-archive__destination\s*\{\s*scroll-margin-top:\s*calc\(var\(--ccg-header-height, 92px\) \+ 16px\);/,
+        "anchor targets account for fixed navigation height");
+    assert.match(css, /\.zzap-archive__jump-nav a:focus-visible/,
+        "keyboard navigation gets an obvious focus indication");
+});
+
+test("Music Hub composer letters have one delegated controller and preserve keyboard focus", () => {
+    const pages = read("js/music-composer-pages.js");
+    const utils = read("js/music-composer-utils.js");
+    const page = read("music/index.html");
+    const start = pages.indexOf("function renderHubAccordion(");
+    const end = pages.indexOf("async function renderHubCards(", start);
+    assert.ok(start >= 0 && end > start, "composer accordion renderer exists");
+    const renderer = pages.slice(start, end);
+
+    assert.match(utils, /accordion\.addEventListener\("click", \(event\) => \{/,
+        "the existing composer utility delegates letter clicks to the accordion");
+    assert.match(utils, /setMusicHubAccordionState\(group, nextOpen, true\)/,
+        "the shared controller persists user-selected open state");
+    assert.doesNotMatch(renderer, /\.addEventListener\("click"/,
+        "the composer renderer must not register a second, conflicting click handler");
+    assert.match(renderer, /window\.CCGMusicHubOmega\?\.refreshAccordion\?\.\(\)/,
+        "the shared controller must be rebound after filter redraws when needed");
+    assert.match(renderer, /group\.dataset\.ccgUserOpen === "true"/,
+        "previously selected groups must be read before a search redraw");
+    assert.match(renderer, /openSet\.add\(letter\)/,
+        "a visible, manually expanded letter remains open");
+    assert.match(renderer, /openSet\.delete\(letter\)/,
+        "a visible, manually collapsed letter remains closed");
+    assert.doesNotMatch(renderer, /openSet = new Set\(existingGroups/,
+        "search filtering must not discard user choices for temporarily hidden letters");
+    assert.match(renderer, /data-ccg-user-open="/,
+        "user open state must survive redraw in rendered group markup");
+    assert.match(renderer, /const shouldOpen = hasQuery \|\| openSet\.has\(letter\)/,
+        "matching search letter groups stay expanded");
+    assert.match(page, /id="composer-discovery-accordion"/);
+    assert.match(page, /class="composer-accordion__header" type="button" aria-expanded=/);
+});
+
+test("Games Archive combines title search with the selected release year", () => {
+    const source = read("js/games-library.js");
+    const page = read("games/index.html");
+    const start = source.indexOf("function setupSearch()");
+    const end = source.indexOf("function setupSystemFilter()", start);
+    assert.ok(start >= 0 && end > start, "game search binding exists");
+    const searchBinding = source.slice(start, end);
+    assert.match(searchBinding, /CCG_ACTIVE_QUERY = normalizeSearchText\(raw\)/,
+        "search terms must still be normalised");
+    assert.match(searchBinding, /applyActiveFilters\(\{ preserveScroll: true \}\)/,
+        "typing and clearing search both rebuild the filtered index");
+    assert.doesNotMatch(searchBinding, /setYearFilterSpan\("all"/,
+        "search input must not silently reset a selected release year");
+    assert.match(source, /function getFilteredGames\(\)[\s\S]*?matchesYearRange\(game\.year\)/,
+        "year filtering must remain part of the title-search eligibility check");
+    assert.match(source, /function getFilteredGames\(\)[\s\S]*?matchesSearchQuery\(game, queryData\)/,
+        "normal title matching must still operate inside the filtered archive");
+    assert.match(source, /yearSelect\.addEventListener\("change"/,
+        "the visitor must remain able to change or reset the year explicitly");
+    assert.match(page, /id="gamesSearchInput"/);
+    assert.match(page, /id="gamesYearSelect"/);
+});
+
+test("Games Archive clear control preserves keyboard workflow and active filters", () => {
+    const source = read("js/games-library.js");
+    const page = read("games/index.html");
+    const styles = read("resources/css/games.css");
+    const start = source.indexOf("function setupSearch()");
+    const end = source.indexOf("function setupSystemFilter()", start);
+    assert.ok(start >= 0 && end > start, "archive search binding is present");
+    const binding = source.slice(start, end);
+    const clearStart = binding.indexOf('if (clearBtn) {');
+    assert.ok(clearStart >= 0, "clear control is bound");
+    const clearHandler = binding.slice(clearStart);
+    assert.match(clearHandler, /input\.value = "";/,
+        "clear button empties the current query");
+    assert.match(clearHandler, /input\.dispatchEvent\(new Event\("input", \{ bubbles: true \}\)\);/,
+        "clearing must reuse the existing input filtering pipeline");
+    assert.match(clearHandler, /input\.focus\(\{ preventScroll: true \}\);/,
+        "keyboard focus returns to the search input without jumping the page");
+    assert.doesNotMatch(clearHandler, /CCG_ACTIVE_QUERY(?:_RAW)?\s*=/,
+        "clear must not manage a separate query state");
+    assert.doesNotMatch(clearHandler, /setYearFilterSpan\("all"/,
+        "clear must preserve the visitor's chosen release year");
+    assert.match(page, /id="gamesSearchInput"/);
+    assert.match(page, /id="gamesSearchClear" type="button" aria-label="Clear game search"/);
+    assert.match(styles, /\.games-search input\[type="search"\]:focus-visible/,
+        "the restored input focus is visually indicated");
+});
+
+test("Games Archive empty results explain active search and filters without clearing them", () => {
+    const source = read("js/games-library.js");
+    const page = read("games/index.html");
+    const start = source.indexOf("function setEmptyState(isEmpty)");
+    const end = source.indexOf("function updateSingleResultLayout(", start);
+    assert.ok(start >= 0 && end > start, "empty-state controller is present");
+    const handler = source.slice(start, end);
+    assert.match(handler, /CCG_ACTIVE_QUERY_RAW\.trim\(\)/);
+    assert.match(handler, /getSystemFilterLabel\(CCG_ACTIVE_SYSTEM_FILTER\)/);
+    assert.match(handler, /getYearFocusLabel\(\)/);
+    assert.match(handler, /if \(query && filters\.length\)/);
+    assert.match(handler, /else if \(query\)/);
+    assert.match(handler, /else if \(filters\.length\)/);
+    assert.match(handler, /message\.textContent =/);
+    assert.doesNotMatch(handler, /setYearFilterSpan|setSystemFilter|input\.value\s*=/,
+        "display-only empty state must not reset the user's filters");
+    assert.match(page, /id="gamesEmptyState"/);
+});
+
+test("Music Hub composer search stays above A–Z without obscuring letter groups", () => {
+    const css = read("resources/css/ccg-archive-directory.css");
+    const markup = read("music/index.html");
+    const generator = read("scripts/generate-composer-pages.js");
+    const selector = 'body[data-ccg-directory="music-index"] .composer-discovery__search-wrap';
+    const searchStyleStart = css.indexOf(selector + " {");
+    const searchStyleEnd = css.indexOf("}", searchStyleStart);
+    assert.ok(searchStyleStart >= 0 && searchStyleEnd > searchStyleStart, "music search style exists");
+    const rule = css.slice(searchStyleStart, searchStyleEnd);
+    assert.match(rule, /position:\s*static\s*;/, "composer search remains above first letter in normal flow");
+    assert.doesNotMatch(rule, /(?:top|z-index):/, "no desktop sticky offset or layer over the accordion");
+    assert.doesNotMatch(css.slice(searchStyleEnd), /composer-discovery__search-wrap\s*\{\s*top:/,
+        "mobile rules do not reintroduce sticky offsets");
+    const inputPos = markup.indexOf('id="composer-discovery-search"');
+    const accordionPos = markup.indexOf('id="composer-discovery-accordion"');
+    assert.ok(inputPos >= 0 && accordionPos > inputPos, "input precedes the alphabet directory in static HTML");
+    assert.match(generator, /composer-discovery__search-wrap[\s\S]*?composer-discovery-accordion/,
+        "regeneration retains the same search-then-accordion order");
+});
+
+
+test("homepage prioritises playable archive discovery before optional merchandise", () => {
+    const html = read("home.html");
+    const hero = html.indexOf('<section class="home-hero home-hero--streamlined"');
+    const discovery = html.indexOf('class="home-section home-section--highlights');
+    const emulator = html.indexOf('class="home-c64-emulator-promo"');
+    const merch = html.indexOf('<section class="home-merch-promo"');
+    const community = html.indexOf('<section class="home-community-latest');
+    assert.ok(hero >= 0 && hero < discovery && discovery < emulator && emulator < merch && merch < community,
+        "hero and core archive links come before the merchandise CTA, community follows merchandise");
+    assert.equal(html.match(/class="home-merch-promo"/g)?.length, 1, "merchandise CTA exists exactly once");
+    assert.equal(html.match(/class="home-c64-emulator-promo"/g)?.length, 1, "emulator CTA stays unique");
+    const merchPanel = html.slice(merch, community);
+    assert.match(merchPanel, /The CCG Merch Shop/);
+    assert.match(merchPanel, /EXPLORE MERCH/);
+    assert.doesNotMatch(merchPanel, /New CCG Merch Coming Soon/);
+    assert.match(merchPanel, /href="https:\/\/cheeky-commodore-gamer-shop\.fourthwall\.com\/en-gbp"/,
+        "merchandise panel should preserve the official Fourthwall destination");
+    assert.match(read("resources/css/home-fourthwall-merch.css"), /Scoped below the homepage archive discovery/);
+});
+
+test("Games Archive search comes before optional browse destinations and results remain reachable", () => {
+    const html = read("games/index.html");
+    const hero = html.indexOf('class="games-hero"');
+    const search = html.indexOf('class="games-tools ccg-chapter"');
+    const browse = html.indexOf('class="games-omega-discovery ccg-chapter"');
+    const library = html.indexOf('class="games-library ccg-chapter"');
+    assert.ok(hero >= 0 && hero < search && search < browse && browse < library,
+        "search and filters appear immediately after the hero, before optional browsing and results");
+    assert.equal(html.match(/id="gamesSearchInput"/g)?.length, 1);
+    assert.equal(html.match(/id="gamesYearSelect"/g)?.length, 1);
+    assert.equal(html.match(/id="gamesAccordion"/g)?.length, 1);
+    assert.match(html.slice(search, browse), /data-system-filter="c64"/);
+    assert.match(html.slice(search, browse), /data-system-filter="amiga"/);
+    assert.match(html.slice(browse, library), /<details class="games-omega-discovery__more">/);
+    for (const route of ["/games/genres/", "/games/publishers/", "/games/collections/", "/games/years/", "/games/developers/"]) {
+        assert.ok(html.slice(browse, library).includes('href="' + route + '"'),
+            "all browse destinations retained: " + route);
+    }
+    assert.match(html.slice(library), /id="gamesStaticFallback"/,
+        "crawlable game links remain below the rendered library");
+});

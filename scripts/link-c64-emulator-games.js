@@ -181,6 +181,10 @@ const verifiedPageTitleAliases = new Map([
   ["the-wombles",["Wombles, The","owner-crt-more-womblesthe-eeeeb83dbe3e"]],
   ["the-transformers",["Transformers","owner-crt-more-transformers"]],
   ["the-trap-door",["Trap Door, The","owner-crt-more-trapdoorthe-f9e40ebe1021"]],
+  ["he-man-and-the-masters-of-the-universe-the-ilearth-stone",["He-Man and Masters of the Universe - The Ilearth Stone","archive-03945"]],
+  // The owner-approved Turrican Trilogy CRT opens a selection menu for all three games.
+  ["turrican",["Turrican Trilogy","turrican-trilogy"]],
+  ["turrican-2-the-final-fight",["Turrican Trilogy","turrican-trilogy"]],
   ["the-faces-of-haarne",["Faces of Haarne","owner-crt-more-facesofhaarne-3f498ebd2059"]],
   ["the-sentinel",["Sentinel, The","owner-crt-more-sentinel-the"]],
   ["the-snowman",["Snowman, The","archive-07817"]],
@@ -191,6 +195,8 @@ const verifiedPageTitleAliases = new Map([
   ["last-ninja-2-back-with-a-vengeance",["Last Ninja 2","last-ninja-2"]],
   ["sid-meiers-pirates",["Pirates!","pirates"]],
   ["teenage-mutant-hero-turtles",["Teenage Mutant Ninja Turtles, The","archive-08639"]],
+  ["kobyashi-naru",["Kobayashi Naru","owner-crt-more-kobayashi-naru"]],
+  ["cops-n-robbers",["Cops & Robbers","owner-crt-more-cops-and-robbers"]],
 ]);
 
 // Owner-reviewed exact-title duplicate CRTs: the pinned ID is the first
@@ -221,6 +227,14 @@ function emulatorMatch(game) {
   }
   const best = Math.min(...matches.map(e => priority[e.format] ?? 99));
   const preferred = matches.filter(e => (priority[e.format] ?? 99) === best);
+  // The Domark 1988 game page must not select the older same-title cartridge.
+  // The matching runtime deep link validates this precise edition again.
+  if (game.slug === "star-wars") {
+    const pinned = matches.filter(e =>
+      e.id === "owner-crt-more-starwars-1e41e83051d1" &&
+      e.format === "crt" && validMedia.includes(e));
+    return pinned.length === 1 ? pinned[0] : null;
+  }
   // Direct approved files precede extra CRT, Blast and optional packed PRGs.
   // A tie at the same priority needs an exact ID or is deliberately unlinked.
   if (preferred.length === 1) return preferred[0];

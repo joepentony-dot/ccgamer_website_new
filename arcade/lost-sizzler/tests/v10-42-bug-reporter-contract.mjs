@@ -19,6 +19,61 @@ for(const owner of ["firePlayer","queueAttack","movePlayer","toggleInventory","r
   assert.doesNotMatch(reporter,new RegExp(String.raw`\\b${owner}\\s*=`),`incident reporter must not replace ${owner}`);
 }
 assert.match(reporter,/const MAX_EVENTS=240/,"diagnostic history must remain bounded");
+
+assert.ok(reporter.includes("wardenEncounter:wardenEncounterSnapshot(player,host"),"incident report must capture real live Warden identities");
+assert.ok(reporter.includes("radar:safe(()=>window.__CCG_RADAR_DIAGNOSTICS__"),"incident report must capture the actual radar marker diagnostic");
+assert.ok(reporter.includes("Warden encounter:"),"copyable incident report must expose the Warden and Flask route evidence");
+{
+  const start=reporter.indexOf("function wardenEncounterSnapshot(player,h,route=null)");
+  const end=reporter.indexOf("\n  function currentSnapshot",start);
+  assert.ok(start>=0&&end>start,"read-only Warden encounter snapshot must remain source-executable");
+  const context=vm.createContext({});
+  vm.runInContext(reporter.slice(start,end),context,{filename:"dungeon-warden-incident-evidence.js"});
+  const snapshot=context.wardenEncounterSnapshot;
+  assert.equal(typeof snapshot,"function");
+  assert.equal(snapshot(null,null),null,"no run must not fabricate a Warden encounter");
+
+  const count={id:"count-loadula",x:11,y:12,awake:true,hp:55,v142WardState:"sealed"};
+  const first={id:"death-stalker-floor-5",x:14,y:12,alive:true,deathStalker:true,hp:34,v142WardState:"broken",v142WardBroken:true};
+  const second={id:"restored-death-stalker-duplicate",x:15,y:12,alive:true,deathStalker:true,hp:34,v142WardState:"sealed"};
+  const host={stalker:count,enemies:[first,second,{id:"ordinary",alive:true}],guardian:{id:"maw",x:16,y:12,alive:true,hp:80},
+    generators:[{id:"g1",alive:false},{id:"g2",alive:false},{id:"g3",alive:true}],
+    v142LastWardBreak:{name:"Death Stalker",x:14,y:12,floor:5,at:900}};
+  const player={inventory:[{kind:"banishment"},{kind:"bronze"}]};
+  const route={ready:true,hasFlask:true,range:8,targets:[second],blocked:[count]};
+  const before=JSON.stringify({host,player,route});
+  const firstReport=snapshot(player,host,route);
+  assert.equal(firstReport.count.id,"count-loadula");
+  assert.equal(firstReport.deathStalkerTotal,2,"duplicate Death Stalker identities must remain visible, not silently deduplicated");
+  assert.equal(firstReport.deathStalkerAlive,2);
+  assert.equal(firstReport.deathStalkers[0].wardBroken,true);
+  assert.equal(firstReport.deathStalkers[1].wardBroken,false);
+  assert.equal(firstReport.guardian.id,"maw");
+  assert.equal(firstReport.generatorsTotal,3);
+  assert.equal(firstReport.generatorsDestroyed,2,"2/3 generator softlock context must be captured");
+  assert.equal(firstReport.flaskInventoryRows,1,"count real Flask inventory rows, not fabricated charges");
+  assert.equal(firstReport.wardBreakRoute.visibleIds[0],second.id);
+  assert.equal(firstReport.wardBreakRoute.blockedIds[0],count.id);
+  assert.equal(firstReport.lastWardBreak.floor,5);
+  assert.equal(JSON.stringify({host,player,route}),before,"incident capture must never mutate game state");
+
+  const restored=JSON.parse(JSON.stringify(host));
+  restored.generators[2].alive=false;
+  restored.stalker.v142WardBroken=true;
+  restored.stalker.v142WardState="broken";
+  restored.enemies[0].alive=false;
+  const finalReport=snapshot({inventory:[]},restored,{ready:false,hasFlask:false,targets:[],blocked:[restored.enemies[1]]});
+  assert.equal(finalReport.generatorsDestroyed,3,"restored 3/3 state must be reported accurately");
+  assert.equal(finalReport.deathStalkerAlive,1);
+  assert.equal(finalReport.count.wardBroken,true);
+  assert.equal(finalReport.flaskInventoryRows,0);
+  assert.equal(finalReport.wardBreakRoute.blockedIds[0],second.id);
+  const crowded={enemies:Array.from({length:12},(_,i)=>({id:"stalker-"+i,deathStalker:true,alive:true})),generators:[]};
+  const bounded=snapshot(null,crowded);
+  assert.equal(bounded.deathStalkerTotal,12);
+  assert.equal(bounded.deathStalkers.length,8,"large corrupted rosters must remain bounded in incident JSON");
+}
+
 assert.match(reporter,/events\.length>MAX_EVENTS/,"old diagnostics must be discarded instead of growing indefinitely");
 assert.match(reporter,/const anomalyJournal=\[\]/,"anomaly events must have an independent journal so noisy telemetry cannot evict the actual bug type");
 assert.match(reporter,/const MAX_ANOMALY_EVENTS=48/,"anomaly journal must remain bounded");

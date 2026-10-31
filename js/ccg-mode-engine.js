@@ -154,6 +154,8 @@
 
     function ensureStylesheet({ id, path, label }) {
         if (document.getElementById(id)) return;
+        const existing = document.querySelector(`link[href="${path}"]`);
+        if (existing) { existing.id = id; return; }
 
         const stylesheet = document.createElement("link");
         stylesheet.id = id;

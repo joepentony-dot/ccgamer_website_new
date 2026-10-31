@@ -5,7 +5,7 @@ import test from "node:test";
 
 const read = (path) => fs.readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const require = createRequire(import.meta.url);
-const { enhanceVideoSection } = require("../scripts/generate-video-seo.js");
+const { enhanceVideoSection, enhanceGameGraph, buildVideoSitemap } = require("../scripts/generate-video-seo.js");
 
 const shell = read("games/game.html");
 const runtime = read("js/load-single-game.js");
@@ -47,6 +47,25 @@ test("generated canonical pages use poster metadata without materialising a YouT
   assert.match(videoSeo, /<div class="game-video__stage">/);
   assert.match(videoSeo, /youtubeThumbnail\(videoId, metadata\)/);
   assert.doesNotMatch(videoSeo, /iframe = setAttribute\(iframe, "src"/);
+});
+
+test("canonical facade uses the runtime-sized thumbnail without changing SEO artwork", () => {
+  const videoId = "wkGIlMg4ogI";
+  const maxres = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+  const compact = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  const game = { slug: "doriath", title: "Doriath", system: "C64" };
+  const metadata = { thumbnailUrl: maxres, uploadDate: "2025-10-07T17:30:25Z" };
+  const existing = `<section id="game-video-section"><div class="game-video"><div class="game-video__stage"><button id="game-video-facade"><img id="game-video-poster" src="${maxres}" alt=""></button><iframe id="game-video-embed" src="https://www.youtube-nocookie.com/embed/${videoId}"></iframe></div></div></section>`;
+  const upgraded = enhanceVideoSection(existing, game, videoId, metadata);
+  const poster = upgraded.match(/<img\b[^>]*id="game-video-poster"[^>]*>/i)?.[0] || "";
+  assert.ok(poster.includes(`src="${compact}"`), "existing facade must match the runtime poster");
+  assert.ok(!poster.includes(maxres), "do not fetch a second oversized thumbnail");
+  assert.equal(enhanceVideoSection(upgraded, game, videoId, metadata), upgraded, "rebuild must be idempotent");
+  const withoutFacade = `<section id="game-video-section"><div class="game-video"><iframe id="game-video-embed" src="https://www.youtube-nocookie.com/embed/${videoId}"></iframe></div></section>`;
+  assert.ok(enhanceVideoSection(withoutFacade, game, videoId, metadata).includes(`src="${compact}"`), "new facades use compact artwork");
+  const graph = '<script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame"}]}</script>';
+  assert.ok(enhanceGameGraph(graph, game, videoId, metadata).includes(maxres), "VideoObject retains full-resolution thumbnail");
+  assert.ok(buildVideoSitemap([{ game, videoId, metadata }]).includes(maxres), "video sitemap retains original metadata");
 });
 
 test("external non-YouTube overrides keep ownership and suppress the YouTube facade", () => {
