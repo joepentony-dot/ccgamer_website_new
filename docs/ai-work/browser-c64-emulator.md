@@ -1,3 +1,8 @@
+## 31 October 2026 — existing C64 publisher cohort #2828 source-only current-main reconciliation
+
+- Exact main `43a8689ab06a63210142066264e6679f236c61e9` and original PR head `2b83d1006f349a2e6375cfb5c86dc9ebb37ba557` checked before write. The PR's 16 source-backed publisher/year keys are all missing from main; the other 8,763 entries are unchanged and remain ordered. The 1,000-screened-title ledger and 16-source/two-quarantine ledger are carried forward intact. No media, ID, title alias, emulator runtime, service worker, games.json or public HTML change.
+- Reconcile the existing branch by merging main as a second parent with a tree based on main, not by copying the stale branch tree. This preserves all later mainline fixes. PR remains unqualified until current-head publisher/browser/safety/SEO CI, required review, guarded squash merge and deployed live checks. Do not count staged 16 credits as live.
+
 ## 27 October 2026 — #2887 exact-head Codex P2 alternate-media repair (BRANCH ONLY)
 
 - Completed independent review at `e4d1e83b82f909c6af5e54932ae8b47f50e3f2d7` found an unresolved P2: a pinned Domark entry with matching metadata but `dataBase64` could bypass URL CRT checksum verification in the existing loader; `packed` also selects a different loader path. The 21 exact-head PR workflow groups passed, but that head is NOT releasable with this finding.

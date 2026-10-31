@@ -1,3 +1,9 @@
+## 31 October 2026 — C64 publisher cohort #2828 reconciled with current main (BRANCH ONLY)
+
+- Existing #2828 had diverged 106 commits behind protected main `43a8689ab06a63210142066264e6679f236c61e9`. All other website candidates remain parked on their existing release gates; urgent Ask CCG rollback #2970 is already merged and Pages-deployed, with real cached-browser acceptance still outstanding.
+- Source comparison verifies that the 16 individually sourced C64 publisher/year tuples in #2828 are absent from current main, while all 8,763 current metadata tuples are byte-identical in the candidate. The 1,000-row screened cohort, 16-row source/media provenance ledger and two quarantined ambiguities are retained. Build this branch from the exact current-main tree with only these three candidate source/evidence blobs and these two fresh checkpoint entries; preserve main's service worker v210, homepage rollback, SEO, media, catalogue, games.json and every unrelated file.
+- This is current-main reconciliation, NOT a new publisher research claim, actual hosted-edition certification or deployed change. Existing publisher/C64 browser, site safety, SEO and other exact-head CI, review requirements, guarded merge, Pages deployment and live filter verification remain mandatory. Do not inherit old-head green CI or Codex receipt. Dungeon Windows acceptance remains NOT PERFORMED and commercial release HOLD.
+
 ## 31 October 2026 — generated-output duplicate suppression (BRANCH ONLY)
 
 - Existing generated publishing PR #2967 at `7b44a8d79ceaf7d00d6e4b51981a8ecba623b12a` has 8/8 exact-head dispatch workflows successful, zero behind main `1556354c2ac8f2ab7f941e8d4ff05c20fd8d58a0`, but lacks the repository-required independent exact-head Codex no-findings receipt. **PARKED/BLOCKED; NO MERGE.** Do not repeat CI without new evidence or bypass the review guard.
