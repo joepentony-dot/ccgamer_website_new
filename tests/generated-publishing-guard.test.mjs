@@ -137,7 +137,7 @@ test("authoritative publisher checks staged patch equivalence before creating a 
   const dedup = workflow.indexOf("node scripts/deduplicate-generated-publishing.mjs");
   const branch = workflow.indexOf('OUTPUT_BRANCH="automation/games-publishing-');
   assert.ok(stage > 0 && dedup > stage && branch > dedup);
-  assert.match(workflow, /duplicate_pr=\\$DUPLICATE_PR/);
-  assert.match(workflow, /GH_TOKEN: \\$\\{\\{ github\\.token \\}\\}/);
-  assert.match(workflow, /node scripts\\/qualify-generated-publishing\\.mjs/);
+  assert.ok(workflow.includes('duplicate_pr=$DUPLICATE_PR'));
+  assert.ok(workflow.includes('GH_TOKEN: ${{ github.token }}'));
+  assert.ok(workflow.includes('node scripts/qualify-generated-publishing.mjs'));
 });
