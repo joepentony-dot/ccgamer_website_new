@@ -140,4 +140,6 @@ test("authoritative publisher checks staged patch equivalence before creating a 
   assert.ok(workflow.includes('duplicate_pr=$DUPLICATE_PR'));
   assert.ok(workflow.includes('GH_TOKEN: ${{ github.token }}'));
   assert.ok(workflow.includes('node scripts/qualify-generated-publishing.mjs'));
+  const dedupSource = fs.readFileSync("scripts/deduplicate-generated-publishing.mjs", "utf8");
+  assert.ok(dedupSource.includes('if (base !== main) return "";'));
 });
