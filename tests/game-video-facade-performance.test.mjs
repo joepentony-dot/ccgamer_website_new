@@ -57,7 +57,7 @@ test("canonical facade uses the runtime-sized thumbnail without changing SEO art
   const metadata = { thumbnailUrl: maxres, uploadDate: "2025-10-07T17:30:25Z" };
   const existing = `<section id="game-video-section"><div class="game-video"><div class="game-video__stage"><button id="game-video-facade"><img id="game-video-poster" src="${maxres}" alt=""></button><iframe id="game-video-embed" src="https://www.youtube-nocookie.com/embed/${videoId}"></iframe></div></div></section>`;
   const upgraded = enhanceVideoSection(existing, game, videoId, metadata);
-  const poster = upgraded.match(/<img\\b[^>]*id="game-video-poster"[^>]*>/i)?.[0] || "";
+  const poster = upgraded.match(/<img\b[^>]*id="game-video-poster"[^>]*>/i)?.[0] || "";
   assert.ok(poster.includes(`src="${compact}"`), "existing facade must match the runtime poster");
   assert.ok(!poster.includes(maxres), "do not fetch a second oversized thumbnail");
   assert.equal(enhanceVideoSection(upgraded, game, videoId, metadata), upgraded, "rebuild must be idempotent");
