@@ -68,7 +68,11 @@ export function findExistingPrFromCheckout(repo) {
         "refs/heads/" + pr.headRefName + ":" + ref]);
       sha = git(["rev-parse", "--verify", ref + "^{commit}"]);
     }
-    const base = git(["merge-base", "HEAD", sha]);
+    const main = git(["rev-parse", "HEAD"]);
+    const base = git(["merge-base", main, sha]);
+    // Never suppress a fresh candidate in favour of an older PR that
+    // cannot pass the repository's current-main ancestry release guard.
+    if (base !== main) return "";
     return git(["diff", "--no-ext-diff", "--binary", "--full-index", base, sha]);
   }, owner);
 }
