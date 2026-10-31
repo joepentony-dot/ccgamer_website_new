@@ -18,7 +18,10 @@ function target(type, options = {}) {
       }
       if (selector === 'img') return type === 'image' ? {} : null;
       if (selector.startsWith('a, ')) return options.link ? {} : null;
-      if (selector.startsWith('input, textarea')) return options.interactive ? {} : null;
+      if (selector.startsWith('input, textarea')) {
+        const selectors = selector.split(',').map((entry) => entry.trim());
+        return options.interactive || (options.link && selectors.includes('a')) ? {} : null;
+      }
       if (selector.startsWith('[data-ccg-allow-contextmenu]')) return options.excluded ? {} : null;
       return null;
     }
@@ -78,6 +81,14 @@ test('ordinary text and interactive areas retain standard browser right-click', 
   assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { interactive: true })), false);
   assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { excluded: true })), false);
   assert.equal(site.appended.length, 0);
+});
+
+test('linked artwork and protected content retain the native browser context menu', () => {
+  const site = run();
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image', { link: true })), false);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('protected-text', { link: true })), false);
+  assert.equal(dispatch(site.handlers, 'contextmenu', target('image')), true);
+  assert.equal(site.appended.length, 1);
 });
 
 test('opt-in protected text triggers notice but linked images are still draggable', () => {
