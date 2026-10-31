@@ -5,6 +5,7 @@ import {
   REQUIRED_VALIDATION_WORKFLOWS, executedRunPassed,
   codeReviewPassed, currentPullIsSafe
 } from "../scripts/qualify-generated-publishing.mjs";
+import { findEquivalentGeneratedPr } from "../scripts/deduplicate-generated-publishing.mjs";
 
 const SHA = "a".repeat(40);
 const goodRun = {id:44, head_sha:SHA, event:"workflow_dispatch", status:"completed", conclusion:"success"};
@@ -104,4 +105,46 @@ test("authoritative publishing executes the guard before dispatching deployment"
   const deployIndex = workflow.indexOf("gh workflow run deploy-github-pages-omega-stable.yml");
   assert.ok(guardIndex > 0 && deployIndex > guardIndex);
   assert.doesNotMatch(workflow.slice(guardIndex), /gh pr merge/);
+});
+
+test("generated publisher reuses only an exactly equivalent same-repository open PR", () => {
+  const patch = "diff --git a/games/test/index.html b/games/test/index.html\\n-index\\n+poster\\n";
+  const make = (number, extras = {}) => ({
+    number, title:"Publish generated game archive output",
+    headRefName:"automation/games-publishing-" + number + "-1",
+    headRepositoryOwner:{login:"joepentony-dot"}, baseRefName:"main", ...extras
+  });
+  const newer = make(3002);
+  const older = make(3001);
+  const matching = findEquivalentGeneratedPr([older, newer], patch,
+    pr => pr.number === 3002 ? patch : patch + "different sitemap", "joepentony-dot");
+  assert.equal(matching?.number, 3002);
+  assert.equal(findEquivalentGeneratedPr([older], patch, () => patch, "joepentony-dot")?.number, 3001);
+  assert.equal(findEquivalentGeneratedPr([newer], patch, () => patch + "lastmod", "joepentony-dot"), null);
+  assert.equal(findEquivalentGeneratedPr([newer], "", () => patch, "joepentony-dot"), null);
+  assert.equal(findEquivalentGeneratedPr([newer], patch, () => patch, ""), null);
+  assert.equal(findEquivalentGeneratedPr([
+    make(3003, {headRepositoryOwner:{login:"untrusted-fork"}}),
+    make(3004, {headRefName:"other/branch"}),
+    make(3005, {baseRefName:"development"}),
+    make(3006, {title:"Different change"})
+  ], patch, () => patch, "joepentony-dot"), null);
+});
+
+test("authoritative publisher checks staged patch equivalence before creating a new branch", () => {
+  const workflow = fs.readFileSync(".github/workflows/games-publishing.yml", "utf8");
+  const stage = workflow.indexOf("git diff --cached --quiet");
+  const dedup = workflow.indexOf("node scripts/deduplicate-generated-publishing.mjs");
+  const branch = workflow.indexOf('OUTPUT_BRANCH="automation/games-publishing-');
+  assert.ok(stage > 0 && dedup > stage && branch > dedup);
+  assert.ok(workflow.includes('duplicate_pr=$DUPLICATE_PR'));
+  assert.ok(workflow.includes('GH_TOKEN: ${{ github.token }}'));
+  assert.ok(workflow.includes('node scripts/qualify-generated-publishing.mjs'));
+  const dedupSource = fs.readFileSync("scripts/deduplicate-generated-publishing.mjs", "utf8");
+  assert.ok(dedupSource.includes('if (base !== main) return "";'));
+  assert.ok(dedupSource.includes('live.head?.sha !== sha'));
+  assert.ok(dedupSource.includes('live.head?.repo?.full_name !== repo'));
+  assert.ok(dedupSource.includes('const stagedPatch = run("git", ["diff"'));
+  assert.ok(dedupSource.includes('return run("git", ["diff"'));
+  assert.ok(!dedupSource.includes('trimEnd()'));
 });

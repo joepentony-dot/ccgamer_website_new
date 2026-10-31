@@ -1,3 +1,9 @@
+## 31 October 2026 — exact-patch generated publishing PR deduplication (BRANCH ONLY)
+
+- Generated output #2967 is blocked solely on the repository's independent Codex receipt after eight completed exact-head validation workflows. Its existing review request is pending; do not create a replacement PR merely to repeat the same generated patch.
+- On the sole active ordinary-site source branch `fix/generated-publishing-identical-pr-dedup-20261031`, add `scripts/deduplicate-generated-publishing.mjs`, integrate it after staging in `.github/workflows/games-publishing.yml`, and extend `tests/generated-publishing-guard.test.mjs`. Match only exact complete staged binary diffs against same-repository open generated PRs whose branch contains current main; any differing sitemap/SEO bytes or stale branch requires a fresh candidate. The existing eight-workflow + genuine external Codex receipt + atomic merge gate remains unchanged. GitHub CI, browser/production qualification and guarded merge remain pending; no generated PR or main change has been made by this branch.
+- This reduces unnecessary generated PR churn when publication remains blocked without suppressing genuine changed output. Do not claim a release or remove old PRs solely from matching titles.
+
 ## 20 October 2026 — Generated-output publisher merge guard (PR #2864, staged)
 - The user confirmed both live Home and Games Archive layout improvements work. PR #2862 passed 20/20 workflows and merged as `4d447d6214de151dee24c6683ab8d4c43289c476`; later generated-output PR #2863 merged as `c9fadfc6fb5aad2f161afbdfc5b63f3679e2df1e`.
 - PR #2863 auto-merged before independent pull-request qualification. Ten failed PR-event checks had **zero jobs** rather than executed tests. Parent Reliable Games Publishing run `39345293586`, final Omega Pages deployment, Cloudflare build and live navigation passed; this does NOT qualify the unexecuted PR checks.
