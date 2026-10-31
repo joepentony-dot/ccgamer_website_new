@@ -173,6 +173,9 @@
             });
 
             if (count) count.textContent = String(visible);
+            if (count?.parentElement?.lastChild?.nodeType === 3) {
+                count.parentElement.lastChild.nodeValue = visible === 1 ? " game shown" : " games shown";
+            }
             if (empty) empty.hidden = visible !== 0;
             setPressed(buttons, system, "data-developer-game-system");
         }

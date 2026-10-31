@@ -1,3 +1,8 @@
+## 31 October 2026 — Developer detail-page language correction
+
+- Following merged directory #2853, 36 single-credit pages incorrectly show “1 games shown” and Lucasfilm Games duplicates “Games” in its hero heading. A separate bounded source-generator correction repairs both, including dynamic filter counts, while retaining all 47 credited routes and original SEO.
+- Source and static output parity regression added to existing archive-directory tests; JS cache v208→v209. Branch-only until current-head CI and deployment acceptance.
+
 # CCG website usability audit — 19 October 2026
 
 ## 31 October 2026 — Developers directory, reconcile existing PR #2853 with current main

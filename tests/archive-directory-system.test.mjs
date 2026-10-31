@@ -444,3 +444,40 @@ test("Games Archive search comes before optional browse destinations and results
     assert.match(html.slice(library), /id="gamesStaticFallback"/,
         "crawlable game links remain below the rendered library");
 });
+
+
+test("developer detail generator and all 47 published pages retain accurate headings and game-count grammar", () => {
+    const { buildDeveloperGroups } = require("../scripts/developer-utils.js");
+    const { renderDeveloperPage } = require("../scripts/generate-developer-pages.js");
+    const games = JSON.parse(read("games/games.json"));
+    const groups = buildDeveloperGroups(games);
+    const metadata = JSON.parse(read("games/developers/developers.json"));
+    assert.equal(groups.length, metadata.length, "all developer routes remain represented");
+    assert.ok(groups.length > 0, "the catalogue has credited developers");
+
+    for (const group of groups) {
+        const file = "games/developers/" + group.slug + "/index.html";
+        const published = read(file);
+        const generated = renderDeveloperPage(group);
+        const heading = /<h1 class="ccg-developers-hero__title">([^<]+)<\/h1>/;
+        const count = /<strong id="developerGameVisibleCount">(\d+)<\/strong> (game|games) shown/;
+        const actualHeading = published.match(heading)?.[1];
+        const generatedHeading = generated.match(heading)?.[1];
+        const actualCount = published.match(count);
+        const generatedCount = generated.match(count);
+
+        assert.equal(actualHeading, generatedHeading, file + " heading matches the source generator");
+        assert.ok(actualCount && generatedCount, file + " has a visible, grammatical count");
+        assert.equal(Number(actualCount[1]), group.count, file + " displays the real credit count");
+        assert.equal(actualCount[2], group.count === 1 ? "game" : "games", file + " pluralisation");
+        assert.equal(actualCount[0], generatedCount[0], file + " count matches the source generator");
+        if (group.count > 1 && /\bgames$/i.test(group.name)) {
+            assert.equal(actualHeading, group.name + " — Developer Archive",
+                file + " must not repeat Games Games");
+        }
+    }
+
+    const runtime = read("js/developer-pages.js");
+    assert.match(runtime, /visible === 1 \? " game shown" : " games shown"/,
+        "live C64/Amiga and title filtering must update singular and plural count labels");
+});
