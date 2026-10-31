@@ -14,7 +14,7 @@
   }
   window.ccgCopyrightNoticeLoaded = true;
 
-  var INTERACTIVE = 'input, textarea, select, option, button, [contenteditable], [role="textbox"], a[download]';
+  var INTERACTIVE = 'input, textarea, select, option, button, a, [contenteditable], [role="textbox"]';
   var EXCLUDED = '[data-ccg-allow-contextmenu], [data-ccg-no-copyright-guard], ' +
     'canvas, video, audio, iframe, object, embed, pre, code, ' +
     '.emulator, .ccg-emulator, .emulator-container, ' +
