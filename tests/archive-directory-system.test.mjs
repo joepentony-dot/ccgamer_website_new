@@ -239,7 +239,7 @@ test("developer index announces accurate singular/plural live search and filter 
     const liveRegion = /<p class="ccg-developers-visible-count" role="status" aria-live="polite" aria-atomic="true">/;
     assert.match(read("games/developers/index.html"), liveRegion);
     assert.match(read("scripts/generate-developer-pages.js"), liveRegion);
-    assert.match(runtime, /count\\.parentElement\\.lastChild\\.nodeValue = developerCountSuffix\\(visible, hasSearch\\)/);
+    assert.ok(runtime.includes("count.parentElement.lastChild.nodeValue = developerCountSuffix(visible, hasSearch);"));
 });
 
 test("developer index keeps complete static A-Z links and opens bookmarked system results", () => {
