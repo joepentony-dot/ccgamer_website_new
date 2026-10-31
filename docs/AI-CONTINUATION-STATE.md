@@ -1,3 +1,8 @@
+## 31 October 2026 — composer dynamic markup safety (BRANCH ONLY)
+
+- Source-executed negative control found unescaped editable composer names in Music Hub dynamic card and search markup. One bounded ACTIVE branch `fix/music-composer-markup-escape-20261031` adds HTML encoding to existing dynamic composer templates, a source-executed regression in `tests/archive-directory-system.test.mjs`, and public-code cache v211→v212; full details in `docs/ai-work/website-ux-audit-20261019.md`.
+- This is NOT qualified, merged, deployed or live. Recheck exact-head CI and current main; no other website implementation PR is active. Ask CCG rollback #2970 remains merged; Amazon #2957 and Dungeon #2958 remain parked, with Windows commercial release HOLD.
+
 ## 31 October 2026 — C64 publisher cohort #2828 reconciled with current main (BRANCH ONLY)
 
 - Existing #2828 had diverged 106 commits behind protected main `43a8689ab06a63210142066264e6679f236c61e9`. All other website candidates remain parked on their existing release gates; urgent Ask CCG rollback #2970 is already merged and Pages-deployed, with real cached-browser acceptance still outstanding.
