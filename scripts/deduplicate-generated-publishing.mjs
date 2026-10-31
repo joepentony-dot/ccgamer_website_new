@@ -38,18 +38,18 @@ function run(command, args) {
     stdio: ["ignore", "pipe", "inherit"],
     timeout: 120000,
     maxBuffer: 64 * 1024 * 1024
-  }).trimEnd();
+  });
 }
 
-function git(args) { return run("git", args); }
-function gh(args) { return run("gh", args); }
+function git(args) { return run("git", args).trim(); }
+function gh(args) { return run("gh", args).trim(); }
 
 export function findExistingPrFromCheckout(repo) {
   if (!/^[^/]+\/[^/]+$/.test(repo || "")) {
     throw new Error("Expected GITHUB_REPOSITORY owner/name.");
   }
   const owner = repo.split("/")[0];
-  const stagedPatch = git(["diff", "--cached", "--no-ext-diff", "--binary", "--full-index"]);
+  const stagedPatch = run("git", ["diff", "--cached", "--no-color", "--no-ext-diff", "--binary", "--full-index"]);
   if (!stagedPatch.includes("diff --git ")) return null;
 
   const pulls = JSON.parse(gh(["pr", "list", "--repo", repo,
@@ -80,7 +80,7 @@ export function findExistingPrFromCheckout(repo) {
     // Never suppress a fresh candidate in favour of an older PR that
     // cannot pass the repository's current-main ancestry release guard.
     if (base !== main) return "";
-    return git(["diff", "--no-ext-diff", "--binary", "--full-index", base, sha]);
+    return run("git", ["diff", "--no-color", "--no-ext-diff", "--binary", "--full-index", base, sha]);
   }, owner);
 }
 
