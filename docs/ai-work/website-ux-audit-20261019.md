@@ -1,3 +1,9 @@
+## 31 October 2026 — Composer dynamic HTML encoding (BRANCH ONLY)
+
+- A source-executed negative control showed that a catalogue composer credit containing a quoted HTML element was inserted unescaped into both a generated featured card's image alt attribute and visible heading; the same unescaped interpolation existed in the composer search accordion, profile and related links. Static generator output already escaped catalogue names; this is a dynamic runtime inconsistency.
+- One isolated ACTIVE ordinary-site source branch: `fix/music-composer-markup-escape-20261031`, based on main `4b23abec3490f736e048eebabda426055d9ec160`. Escape editable composer/track text in existing dynamic HTML templates, preserve textContent paths, add source-executed negative regression to the existing archive-directory test, and advance public code cache v211→v212. No catalogue data, static composer routes, artwork, CSS, Omega intro, backend or Dungeon changes.
+- **BRANCH ONLY / NOT QUALIFIED / NOT MERGED / NOT DEPLOYED.** Require exact-head archive-directory/site-safety/music/SEO/cache and applicable Full Dungeon CI, current-main comparison, guarded squash merge, Pages deployment and desktop/mobile composer search/portrait acceptance. Ask CCG remains removed; Dungeon Windows commercial release HOLD and Amazon attribution block remain unchanged.
+
 ## 31 October 2026 — Developer detail-page language correction
 
 - Following merged directory #2853, 36 single-credit pages incorrectly show “1 games shown” and Lucasfilm Games duplicates “Games” in its hero heading. A separate bounded source-generator correction repairs both, including dynamic filter counts, while retaining all 47 credited routes and original SEO.
