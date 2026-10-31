@@ -125,6 +125,30 @@ function canonicalFromHtml(html, fallback) {
   return match?.[1] || fallback;
 }
 
+// Preserve existing Omega typography; early image paint must not starve fonts.
+// Establish font origins before the existing blocking Google stylesheet.
+function ensureGenreFontPreconnect(html) {
+  const googleCss = /<link\b[^>]*href=["']https:\/\/fonts\.googleapis\.com\/css2[^>]*>/i;
+  if (!googleCss.test(html)) return html;
+  const tags = [
+    '<link rel="preconnect" href="https://fonts.googleapis.com">',
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+  ];
+  for (const tag of tags) {
+    if (!html.includes(tag)) html = html.replace(googleCss, match => tag + "\n    " + match);
+  }
+  return html;
+}
+
+// Preserve the above-fold genre artwork; eager loading without forcing
+// high priority lets the browser balance the existing Roboto/Orbitron fonts.
+function prioritiseAboveFoldGenreBanner(html) {
+  return html.replace(/<img\b[^>]*\bclass=["'][^"']*\bccg-genre-hero__img\b[^"']*["'][^>]*>/gi, (tag) => {
+    const withoutOldHints = tag.replace(/\s(?:loading|fetchpriority)\s*=\s*(?:"[^"]*"|'[^']*')/gi, "");
+    return withoutOldHints.replace(/(\s*\/?>)$/, (closing) => ` loading="eager" fetchpriority="auto"${closing}`);
+  });
+}
+
 function upgradeFile(relativePath, tuple, kind) {
   const filePath = path.join(ROOT, relativePath);
   if (!fs.existsSync(filePath)) throw new Error(`Missing category page: ${relativePath}`);
@@ -151,6 +175,10 @@ function upgradeFile(relativePath, tuple, kind) {
   html = replaceClassElement(html, "h1", "ccg-genre-hero__title", h1);
   html = replaceClassElement(html, "p", "ccg-genre-hero__tagline", tagline);
   html = replaceFirstIntro(html, description);
+  if (kind === "genre") {
+    html = ensureGenreFontPreconnect(html);
+    html = prioritiseAboveFoldGenreBanner(html);
+  }
 
   if (html === before) return false;
   if (!CHECK_ONLY) fs.writeFileSync(filePath, html, "utf8");
