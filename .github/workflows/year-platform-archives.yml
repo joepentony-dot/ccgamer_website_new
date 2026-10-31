@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/year-platform-archives.yml"
       - "scripts/generate-year-platform-pages.js"
+      - "tests/year-singleton-seo.test.mjs"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
       - "scripts/validate-search-home-contract.js"
@@ -34,6 +35,7 @@ on:
     paths:
       - ".github/workflows/year-platform-archives.yml"
       - "scripts/generate-year-platform-pages.js"
+      - "tests/year-singleton-seo.test.mjs"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
       - "scripts/validate-search-home-contract.js"
@@ -137,6 +139,9 @@ jobs:
           node --check scripts/validate-sitemaps.js
           node --check tools/seo/generate-sitemap.js
           node --check js/year-platform-archives.js
+
+      - name: Validate source-backed singleton-year SEO
+        run: node --test tests/year-singleton-seo.test.mjs
 
       - name: Regenerate Phase 4B archive foundations
         run: node scripts/generate-year-platform-pages.js

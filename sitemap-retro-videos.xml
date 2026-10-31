@@ -188,6 +188,28 @@
     </video:video>
   </url>
   <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/50-amiga-games-can-you-identify-them/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/kc86gnQh7ww/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Think You Know the Commodore Amiga? Try This 50-Game Quiz!</video:title>
+      <video:description>Test your Commodore Amiga knowledge in this 50-game identification quiz. Watch short gameplay clips and see how many classic Amiga games you can recognise.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/kc86gnQh7ww</video:player_loc>
+      <video:duration>1406</video:duration>
+      <video:publication_date>2026-10-28T17:56:54Z</video:publication_date>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/50-commodore-64-games-can-you-identify-them/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/qJZa1zB2zHU/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>50 Commodore 64 Games – How Many Can You Still Recognise?</video:title>
+      <video:description>Identify 50 Commodore 64 games from ten-second gameplay clips in five themed rounds. Test your C64 knowledge with this retro game recognition challenge.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/qJZa1zB2zHU</video:player_loc>
+      <video:duration>1505</video:duration>
+      <video:publication_date>2026-10-26T18:27:45Z</video:publication_date>
+    </video:video>
+  </url>
+  <url>
     <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/50-essential-amiga-games/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/PwYUnlhPfbA/maxresdefault.jpg</video:thumbnail_loc>
@@ -207,6 +229,17 @@
       <video:player_loc>https://www.youtube.com/embed/QHYAdbqWzoY</video:player_loc>
       <video:duration>3880</video:duration>
       <video:publication_date>2026-03-11T18:30:35Z</video:publication_date>
+    </video:video>
+  </url>
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/50-zx-spectrum-games-can-you-identify-them/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/XxEhpjSoYc8/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Think You Know the ZX Spectrum? Name These 50 Games!</video:title>
+      <video:description>Take the ZX Spectrum 50-game quiz. Recognise classic Speccy games from ten-second gameplay clips across five rounds and see how many titles you can name.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/XxEhpjSoYc8</video:player_loc>
+      <video:duration>1466</video:duration>
+      <video:publication_date>2026-10-30T18:30:10Z</video:publication_date>
     </video:video>
   </url>
   <url>
@@ -279,7 +312,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/guru-meditation-amiga/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/qody-Yqd19o/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Amiga Guru Meditation Error Explained | The Commodore Amiga Crash Screen That Became Legend</video:title>
+      <video:title>Why Did the Commodore Amiga Say &quot;Guru Meditation&quot; When It Crashed?</video:title>
       <video:description>Watch Guru Meditation – Commodore Amiga Error That Became a Legend on Cheeky Commodore Gamer&apos;s Retro Specials collection.</video:description>
       <video:player_loc>https://www.youtube.com/embed/qody-Yqd19o</video:player_loc>
       <video:duration>358</video:duration>
@@ -323,7 +356,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/sid-chip-story/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/rRKBcyiWO2I/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>The Commodore 64 SID Chip Explained | The Sound That Defined C64 Music</video:title>
+      <video:title>Why Did the Commodore 64 Sound SO Much Better Than Its Rivals?</video:title>
       <video:description>Explore the Commodore 64 SID chip story, the sound hardware behind iconic 8-bit music, game soundtracks and lasting C64 nostalgia.</video:description>
       <video:player_loc>https://www.youtube.com/embed/rRKBcyiWO2I</video:player_loc>
       <video:duration>495</video:duration>
@@ -345,7 +378,7 @@
     <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/x-copy-amiga-history/</loc>
     <video:video>
       <video:thumbnail_loc>https://i.ytimg.com/vi/2OG2tPx5gnU/maxresdefault.jpg</video:thumbnail_loc>
-      <video:title>Amiga X-Copy Explained | The Legendary Disk Copier Every Amiga Owner Remembers</video:title>
+      <video:title>Remember X-Copy? The Amiga Disk Copier With That Famous BOING!</video:title>
       <video:description>Discover the story of X-Copy on Commodore Amiga, the famous disk copier utility remembered by Amiga owners from the late 1980s and early 1990s.</video:description>
       <video:player_loc>https://www.youtube.com/embed/2OG2tPx5gnU</video:player_loc>
       <video:duration>308</video:duration>

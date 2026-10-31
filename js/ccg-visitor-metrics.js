@@ -18,6 +18,8 @@
   var SESSION_KEY = "ccg-archive-hourly-visit-v1";
   var SESSION_WINDOW_MS = 60 * 60 * 1000;
   var STARTED = false;
+  // Both homepage totals derive from one shared public hourly-event response.
+  var sessionCountPromise = null;
 
   // Non-personal historical hits recovered from GoatCounter export
   // captured 2026-10-22 15:04:32 UTC. Do not import the raw export here.
@@ -76,7 +78,8 @@
   }
 
   function publicCount(path) {
-    return window.fetch(COUNTER_BASE + encodeURIComponent(path) + ".json",
+    if (path === SESSION_EVENT && sessionCountPromise) return sessionCountPromise;
+    var pending = window.fetch(COUNTER_BASE + encodeURIComponent(path) + ".json",
       { credentials: "omit", mode: "cors" }).then(function (response) {
       if (response.status === 404) return 0;
       if (!response.ok) throw new Error("GoatCounter public counter unavailable");
@@ -92,6 +95,8 @@
         return number;
       });
     });
+    if (path === SESSION_EVENT) sessionCountPromise = pending;
+    return pending;
   }
 
   function fetchPublicCount(path, node) {
@@ -201,6 +206,39 @@
     fetchPublicCount(path, count);
   }
 
+
+  // Separate cumulative hourly browser-session events from the recovered
+  // historical archive total. Never add the same event twice to the baseline.
+  function addHourlySessionCounter(homeCount) {
+    if (!window.fetch || typeof homeCount.closest !== "function") return;
+    var wrap = homeCount.closest(".ccg-footer__counter-wrap");
+    if (!wrap || document.getElementById("ccg-hourly-visitor-count")) return;
+
+    var hourly = document.createElement("div");
+    hourly.className = "ccg-footer__hourly-visitors";
+    hourly.title = "Cumulative hourly browser-session events since October 2026. Not visitors currently online or distinct lifetime people.";
+
+    var label = document.createElement("span");
+    label.className = "ccg-footer__hourly-label";
+    label.textContent = "1-hour visitor sessions";
+
+    var count = document.createElement("span");
+    count.className = "ccg-footer__hourly-number";
+    count.id = "ccg-hourly-visitor-count";
+    count.textContent = "—";
+
+    hourly.appendChild(label);
+    hourly.appendChild(count);
+    wrap.appendChild(hourly);
+
+    publicCount(SESSION_EVENT).then(function (value) {
+      displayNumber(count, value, "live");
+      count.title = "Cumulative hourly sessions since October 2026. Not active users in the last hour or unique people.";
+    }).catch(function () {
+      count.setAttribute("data-ccg-counter-loaded", "false");
+    });
+  }
+
   function countArchiveSessionOnce() {
     // All public pages contribute to the same archive event. Our browser-local
     // timestamp enforces a rolling one-hour window. no_session tells GoatCounter
@@ -243,6 +281,7 @@
       // The export is a historic all-page hit count. New increments follow
       // the separate once-per-browser-per-hour archive rule.
       fetchPublicCount(SESSION_EVENT, homeCount);
+      addHourlySessionCounter(homeCount);
     }
 
     addGameCounter();

@@ -9,8 +9,8 @@
 | Existing dedicated composer pages preserved | **20** |
 | Credited composers with an existing page | **20** |
 | Newly generated static composer routes | **256** |
-| Indexable generated routes | **63** |
-| Single-game generated noindex routes | **193** |
+| Indexable generated routes | **256** |
+| No-credit generated noindex routes | **0** |
 | Total static composer routes | **276** |
 | Linked game-credit relationships | **585** |
 | Generated pages written in this run | **256** |
@@ -19,8 +19,9 @@
 ## Indexing policy
 
 - Existing curated composer pages remain unchanged and retain their current indexing policy.
-- Newly generated pages with at least 2 credited games use `index,follow`.
-- Newly generated one-game pages use `noindex,follow` until another matching credit is present.
+- Newly generated pages with at least 1 credited games use `index,follow`.
+- Newly generated one-game pages with a verified catalogue credit use `index,follow`; they are not excluded solely for having one credit.
+- Zero-credit fallback routes and existing curated pages retain their independently established indexing policies.
 - The music hub and all-composers hub are static, indexable and link to every route.
 
 ## Most represented composer credits
@@ -66,7 +67,7 @@ The source records in `games/games.json` remain unchanged.
 - Externally researched generated profiles: **95**
 - Credit-only generated profiles: **161**
 - Research registry: `music/composers/research.json`
-- Research-backed single-credit SEO overrides: **31**
+- Research-backed single-credit SEO overrides: **0**
 
 ## Explicit exclusions
 

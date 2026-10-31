@@ -19,3 +19,9 @@ The public-page bootstrap appends the self-hosted stylesheet and async script af
 ## Verification and release requirements
 
 Targeted unit tests: `node --test tests/copyright-notice.test.mjs`. Validate real browser right-click on Home, a canonical game page, an ordinary link and form, and the exemption on emulator/arcade pages. Run applicable Site Safety, SEO/shared-code, performance and browser workflow checks against the exact PR head. Require fresh-main reconciliation and independent review with no unresolved significant findings before guarded squash merge. Do not claim live deployment until checked.
+
+## 31 October 2026 — linked artwork and fresh-main reconciliation
+
+- Source-executed negative control reproduced native context-menu suppression on linked images; corrected the interactive selector on the existing PR branch. The new regression tests linked artwork and protected linked content while preserving unlinked-image notice and unlinked drag protection.
+- Safely reconcile the existing branch with main a0f1d9271bcf5b151ed4a432d71a263ccf28bb9e using a non-forced two-parent merge commit whose tree is based on current main, retaining all incoming code, site assets and newer consent/analytics behaviour. Public code cache increments v206 to v207; the main Site Safety workflow now executes the focused regression. No unrelated generated game data or intro changes.
+- Qualification must be established on the exact reconciled head: targeted Node, full applicable CI, browser interaction, performance and fresh-main gates. This record does not authorise an unqualified merge or assert live deployment. Owner's waiver of optional Codex review does not waive native protection or CI.

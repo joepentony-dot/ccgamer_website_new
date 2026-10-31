@@ -54,7 +54,7 @@ assert.match(play,/evolvingWeapon=loot\.kind==="weaponLoot"[\s\S]*name=evolvingW
 assert.match(core,/MAX_GAMEPLAY_PARTICLES=360,MAX_GAMEPLAY_RINGS=72/,"gameplay visuals must have a hard bounded budget");
 assert.match(core,/particles\.push=function\(\.\.\.items\)\{return boundedVisualPush\(particles,MAX_GAMEPLAY_PARTICLES,items\)\}/,"all shared particle producers must pass through the hard cap");
 assert.match(play,/burst\(h\.x,h\.y,P\.orange,h\.direct\?16:12/,"anti-loitering explosions must use the reduced burst size");
-assert.match(play,/particles\.length>MAX_GAMEPLAY_PARTICLES/,"effect cleanup must preserve the same hard particle ceiling");
-assert.match(play,/rings\.length>MAX_GAMEPLAY_RINGS/,"effect cleanup must preserve the ring ceiling");
+assert.match(play,/retainLive\(particles,260,MAX_GAMEPLAY_PARTICLES\)/,"effect cleanup must preserve the same hard particle ceiling");
+assert.match(play,/retainLive\(rings,220,MAX_GAMEPLAY_RINGS\)/,"effect cleanup must preserve the ring ceiling");
 
 console.log("V10.42 R65 floor/cache/effect safety contract passed");

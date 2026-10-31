@@ -238,6 +238,11 @@ function featuredGamesFor(entry, metadata, gamesBySlug, games) {
     add(gamesBySlug.get(String(slug || "").trim()));
   }
 
+  // Identification quizzes describe the rules, not necessarily the games shown.
+  // Common catalogue titles such as "Premiere" and "Arcade Classics" can occur in
+  // ordinary prose; only curator-selected game references are safe for these pages.
+  if (entry?.disableAutoFeaturedGames === true) return selected.slice(0, 30);
+
   const source = normalizeSearchText([
     entry?.title,
     entry?.summary,

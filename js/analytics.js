@@ -390,9 +390,10 @@
     document.body.appendChild(script);
   }
 
-  // Load the small, standalone copyright deterrent after normal DOM readiness.
-  // Admin and intro already exit at the top of this shared bootstrap.
+  // Deferred, first-party copyright notice; no listeners on game or emulator routes.
   function loadCopyrightNotice() {
+    var route = (window.location.pathname || '').toLowerCase();
+    if (/^\/(?:arcade|emulator)\//.test(route)) return;
     if (document.querySelector('script[data-ccg-copyright-notice]')) return;
     loadStylesheet('/resources/css/ccg-copyright-notice.css', 'data-ccg-copyright-style');
     var script = document.createElement('script');

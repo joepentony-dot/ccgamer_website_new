@@ -215,6 +215,52 @@ assert.equal(fullPack.inventory.length,6,"full-pack swap preserves item count");
 assert.equal(fullPack.inventory.filter(x=>x.name===oldHelmet.name).length,1);
 assert.equal(fullPack.inventory.filter(x=>x.kind==="potion").length,5);
 
+// R147: the loadout itself must provide a keyboard/pointer-operable route
+// to equip or replace the best matching carried item without guessing which
+// inventory button controls the Head, Hands or Feet slot.
+assert.match(source,/data-r80-equip-slot/,"matching loadout slots must offer a direct Equip/Swap action");
+assert.match(source,/aria-label=.*candidate\.item\.name/,"direct slot action must identify the exact selected item");
+assert.match(source,/equipBestForSlot\(player,String\(button\.dataset\.r80EquipSlot/,"loadout button must use the real equip transaction");
+assert.match(css,/\.r80-wearable-actions>button:focus-visible/,"slot actions must retain visible keyboard focus");
+const chosenPlayer={
+  inventory:[
+    {kind:"wearable",slot:"head",name:"COMMON HOOD",rarity:"COMMON",armourBonus:0},
+    {kind:"torch",name:"TORCH"},
+    {kind:"wearable",slot:"hands",name:"RARE GLOVES",rarity:"UNCOMMON",armourBonus:1},
+    {...legacyUpgrade},
+    {kind:"wearable",slot:"head",name:"SUPERIOR HELM",rarity:"SIZZLER",armourBonus:2}
+  ],
+  wearables:{head:{...oldHelmet},hands:null,feet:null}
+};
+assert.equal(api.bestCarriedForSlot(chosenPlayer,"head").index,3,"direct slot action chooses strongest matching wearable, not the first unrelated item");
+assert.equal(api.bestCarriedForSlot(chosenPlayer,"hands").index,2,"different slots cannot select Head equipment");
+assert.equal(api.bestCarriedForSlot(chosenPlayer,"body"),null,"unsupported body slot must not consume carried gear");
+assert.equal(api.equipBestForSlot(chosenPlayer,"head"),true,"loadout swap must use the real transactional equip owner");
+assert.equal(chosenPlayer.wearables.head.name,legacyUpgrade.name);
+assert.equal(chosenPlayer.inventory.filter(item=>item.name===oldHelmet.name).length,1,"replaced gear returns to inventory exactly once");
+assert.equal(chosenPlayer.inventory.filter(item=>item.name==="COMMON HOOD").length,1);
+assert.equal(api.equipBestForSlot(chosenPlayer,"hands"),true,"a second slot equips independently");
+assert.equal(chosenPlayer.wearables.hands.name,"RARE GLOVES");
+assert.equal(api.equipBestForSlot(chosenPlayer,"feet"),false,"empty matching slot must not consume an unrelated item");
+
+// An inventoryCanAdd preflight is not a committed transaction: if the real
+// inventoryAdd subsequently rejects, the equipped item and bonuses survive.
+const unequipReject={
+  inventory:[{kind:"torch",name:"TORCH"}],
+  scavenger:.35,v142R80HandsBonus:.15,
+  wearables:{head:null,hands:{kind:"wearable",slot:"hands",name:"SAVED GLOVES",scavengerBonus:.15},feet:null}
+};
+const originalCanAdd=context.window.CCGProgression.inventoryCanAdd;
+const originalAdd=context.window.CCGProgression.inventoryAdd;
+context.window.CCGProgression.inventoryCanAdd=()=>true;
+context.window.CCGProgression.inventoryAdd=()=>false;
+assert.equal(api.unequipWearable(unequipReject,"hands"),false,"rejected unequip must not drop the worn item");
+assert.equal(unequipReject.wearables.hands.name,"SAVED GLOVES");
+assert.equal(unequipReject.inventory.length,1);
+assert.equal(unequipReject.scavenger,.35,"rejected unequip must not remove equipped bonuses");
+context.window.CCGProgression.inventoryCanAdd=originalCanAdd;
+context.window.CCGProgression.inventoryAdd=originalAdd;
+
 // If the returned equipped item cannot be stored, the transaction must
 // restore the candidate and preserve both old equipment and active perks.
 const rejectPlayer={inventory:[{...legacyUpgrade}],wearables:{head:{...oldHelmet},hands:null,feet:null}};

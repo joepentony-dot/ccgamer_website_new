@@ -1276,7 +1276,7 @@ assert.equal(ownedCacheTrial.ctx.score,1000,"Deferred trial score is granted exa
 // Actual generator spawning owner: a reinforcement must NEVER spawn onto
 // the attacking hero, active floor loot, a living Guardian, or a Death Cache.
 // These tests expose the original bug (first neighbour was the hero).
-const spawnStart=gameplaySource.indexOf("function updateGenerators(dt){");
+const spawnStart=gameplaySource.indexOf("function pruneDeadGeneratorReinforcements(){");
 const spawnEnd=gameplaySource.indexOf("\nfunction updateRescue(){",spawnStart);
 assert.ok(spawnStart>=0&&spawnEnd>spawnStart,"Real generator-spawn owner must remain extractable");
 const spawnSource=gameplaySource.slice(spawnStart,spawnEnd);
@@ -1294,8 +1294,8 @@ function generatorSpawnFixture({blockedFourth=false,sanctuaryFourth=false}={}){
       W:{walkable:()=>true,sameRoom:()=>false},
       SYS:{inSanctuary:(_world,x,y)=>sanctuaryFourth&&x===5&&y===4},S:{sfx(){}},Date,Math};
   vm.createContext(ctx);
-  vm.runInContext(spawnSource+";this.generatorTick=updateGenerators;",ctx,{timeout:1200});
-  return{host,gen,cache,player,tick:ctx.generatorTick};
+  vm.runInContext(spawnSource+";this.generatorTick=updateGenerators;this.pruneGeneratorHistory=pruneDeadGeneratorReinforcements;",ctx,{timeout:1200});
+  return{host,gen,cache,player,ctx,tick:ctx.generatorTick};
 }
 const spaceForSpawn=generatorSpawnFixture();
 spaceForSpawn.tick(16);
@@ -1321,5 +1321,52 @@ assert.equal(fullyBlockedSpawn.host.enemies[0].y,4);
 fullyBlockedSpawn.gen.spawnCooldown=0;
 fullyBlockedSpawn.tick(16);
 assert.equal(fullyBlockedSpawn.host.enemies.length,1,"Occupied existing spawn blocks repeated collision");
+
+// R141 Floor 5 owner freeze pressure: repeated genuine generator kills were
+// retained indefinitely even though their rewards and death visuals are
+// already owned elsewhere. Exercise the real updateGenerators source with
+// a long-fight roster, adversarial named actors, and a JSON-restored host.
+const longFight=generatorSpawnFixture({blockedFourth:true});
+longFight.gen.alive=false;
+longFight.ctx.run.stats={kills:39};
+longFight.ctx.score=2500;
+const specialCorpse={id:"death-stalker-floor-5",generatorId:"gen0",deathStalker:true,alive:false};
+const guardianCorpse={id:"guardian-maw",generatorId:"gen0",guardian:true,alive:false};
+const livingReinforcement={id:"live-generator-actor",generatorId:"gen0",alive:true};
+const authoredCorpse={id:"authored-follower",alive:false,follower:{name:"Retained"}};
+longFight.host.enemies.push(specialCorpse,guardianCorpse,livingReinforcement,authoredCorpse);
+longFight.ctx.enemyVisuals=new Map();
+for(let i=0;i<260;i++){
+  const dead={id:`dead-generator-${i}`,generatorId:"gen0",generatorSpawnOrdinal:i+1,alive:false};
+  longFight.host.enemies.push(dead);
+  longFight.ctx.enemyVisuals.set(dead.id,{rx:5,ry:5});
+}
+const roster=longFight.host.enemies;
+longFight.tick(16);
+assert.equal(longFight.host.enemies,roster,"Pruning must retain the canonical live enemy-array identity");
+assert.equal(longFight.host.enemies.filter(e=>e.generatorId==="gen0"&&!e.alive&&!e.deathStalker&&!e.guardian).length,24,"Old generator corpses must be bounded at 24");
+assert.equal(longFight.host.enemies.some(e=>e.id==="dead-generator-0"),false,"Oldest inert reinforcement must be removed");
+assert.equal(longFight.host.enemies.some(e=>e.id==="dead-generator-259"),true,"Recent defeated reinforcements must be retained");
+assert.equal(longFight.host.enemies.includes(specialCorpse),true,"Defeated Death Stalker remains in its authoritative ledger");
+assert.equal(longFight.host.enemies.includes(guardianCorpse),true,"Defeated Guardian remains available for encounter ownership");
+assert.equal(longFight.host.enemies.includes(livingReinforcement),true,"Living reinforcements cannot be removed");
+assert.equal(longFight.host.enemies.includes(authoredCorpse),true,"Authored named enemies cannot be removed");
+assert.equal(longFight.ctx.enemyVisuals.has("dead-generator-0"),false,"Pruned enemy visuals cannot leak");
+assert.equal(longFight.ctx.enemyVisuals.has("dead-generator-259"),true,"Recent enemy visuals must survive");
+assert.equal(longFight.ctx.run.stats.kills,39,"Cleanup must not change recorded kills or XP");
+assert.equal(longFight.ctx.score,2500,"Cleanup must not change Gold/Score");
+assert.equal(longFight.gen.spawnTotal,0,"Cleanup must not create reinforcements");
+const stableRevision=longFight.host.revision;
+longFight.tick(16);
+assert.equal(longFight.host.revision,stableRevision,"Repeated cleanup without overflow must be idempotent");
+const restoredHost=JSON.parse(JSON.stringify(longFight.host));
+for(let i=0;i<140;i++)restoredHost.enemies.push({id:`restored-generator-${i}`,generatorId:"gen0",alive:false});
+longFight.ctx.host=restoredHost;
+longFight.tick(16);
+assert.equal(restoredHost.enemies.filter(e=>e.generatorId==="gen0"&&!e.alive&&!e.deathStalker&&!e.guardian).length,24,"JSON-restored long fight must not restore unbounded corpses");
+assert.ok(restoredHost.enemies.some(e=>e.id==="death-stalker-floor-5"),"Save restore must preserve defeated Stalker identity");
+assert.ok(restoredHost.enemies.some(e=>e.id==="guardian-maw"),"Save restore must preserve Guardian identity");
+assert.ok(restoredHost.enemies.some(e=>e.id==="live-generator-actor"),"Save restore must preserve active combat");
+assert.equal(longFight.ctx.run.stats.kills,39,"Save cleanup must not duplicate rewards");
 
 console.log("Dungeon Carnage R87 fifteen-floor campaign and floor-theme contract passed.");

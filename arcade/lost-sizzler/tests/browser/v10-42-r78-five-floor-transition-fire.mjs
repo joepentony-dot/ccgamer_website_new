@@ -68,12 +68,15 @@ async function probeFloorOneKeyboardTraversal(page){
   });
   assert.ok(!fixture.error,JSON.stringify(fixture));
   const before=await snapshot(page);
-  await page.keyboard.down(fixture.key);
-  try{
-    await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
-  }finally{
-    await page.keyboard.up(fixture.key);
-  }
+  // A held Arrow key intentionally repeats movement at the normal game cadence.
+  // Send one bounded real keyboard press rather than holding the key throughout
+  // an asynchronous Playwright poll (which can move the hero beyond the target).
+  const pressMs=65;
+  const cadence=await page.evaluate(()=>Number(C.player.moveDelay)*(Number(p1.moveMultiplier)||1));
+  assert.ok(Number.isFinite(cadence)&&cadence>pressMs+20,`Floor 1 single-step keyboard press must remain shorter than movement repeat cadence (${cadence} ms)`);
+  await page.waitForFunction(()=>Number(move1||0)<=0&&Number(p1?.hitStunMs||0)<=0,null,{timeout:3000,polling:16});
+  await page.keyboard.press(fixture.key,{delay:pressMs});
+  await page.waitForFunction(target=>Number(p1.x)===target.x&&Number(p1.y)===target.y,fixture.target,{timeout:3000,polling:16});
   const after=await page.evaluate(()=>({x:Number(p1.x),y:Number(p1.y),mode:String(mode),active:String(document.body.dataset.runActive)}));
   assert.deepEqual({x:after.x,y:after.y},fixture.target,"Physical keyboard input must move to the verified adjacent Floor 1 cell");
   assert.equal(after.mode,"playing");
@@ -462,6 +465,59 @@ async function probeFloorFiveTripleThreatPressure(context,origin){
     assert.equal(after.countAwake,true);
     assert.ok(after.health>0);
     assert.deepEqual(errors,[],"The simultaneous Floor 5 encounter must produce no JS faults");
+    // R141: execute the real live Floor 5 generator owner after a long
+    // battle's worth of defeated reinforcements, without staging a kill or
+    // changing the Count/Maw/Stalker, objectives, rewards or door state.
+    const corpsePressure=await page.evaluate(()=>{
+      const originalRoster=host.enemies,stalker=(host.enemies||[]).find(e=>e.alive&&e.deathStalker&&e.voidStalker),
+        maw=(host.enemies||[]).find(e=>e.id===host.r114BossFight?.bossId&&e.alive),
+        generator=(host.generators||[]).find(g=>g.alive);
+      if(!stalker||!maw||!host.stalker?.awake||!generator)
+        return{error:"Floor 5 actors missing before generator retention pressure"};
+      const scoreBefore=score,killsBefore=Number(run.stats.kills||0),
+        generatorCountBefore=Number(run.stats.generators||0);
+      for(let i=0;i<300;i++){
+        const enemy={id:`r141-dead-generator-${i}`,generatorId:generator.id,
+          generatorSpawnOrdinal:i+1,alive:false,x:generator.x,y:generator.y};
+        host.enemies.push(enemy);
+        enemyVisuals.set(enemy.id,{rx:enemy.x,ry:enemy.y});
+      }
+      updateGenerators(16);
+      return{
+        sameRoster:host.enemies===originalRoster,
+        retained:(host.enemies||[]).filter(e=>String(e.id||"").startsWith("r141-dead-generator-")).length,
+        oldVisual:enemyVisuals.has("r141-dead-generator-0"),
+        recentVisual:enemyVisuals.has("r141-dead-generator-299"),
+        countAwake:Boolean(host.stalker.awake),mawAlive:Boolean(maw.alive),
+        stalkerAlive:Boolean(stalker.alive),scoreUnchanged:score===scoreBefore,
+        killsUnchanged:Number(run.stats.kills||0)===killsBefore,
+        generatorsUnchanged:Number(run.stats.generators||0)===generatorCountBefore,
+        frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0)
+      };
+    });
+    assert.ok(!corpsePressure.error,JSON.stringify(corpsePressure));
+    assert.equal(corpsePressure.sameRoster,true,"Live game must preserve enemy-array identity");
+    assert.equal(corpsePressure.retained,24,"Real Floor 5 engine must discard old inert generator actors");
+    assert.equal(corpsePressure.oldVisual,false,"Old reinforcement visual entries must be pruned");
+    assert.equal(corpsePressure.recentVisual,true,"Recent defeat presentation must survive");
+    assert.equal(corpsePressure.countAwake,true);
+    assert.equal(corpsePressure.mawAlive,true);
+    assert.equal(corpsePressure.stalkerAlive,true);
+    assert.equal(corpsePressure.scoreUnchanged,true,"Cleanup must not grant or remove Score");
+    assert.equal(corpsePressure.killsUnchanged,true,"Cleanup must not change enemy defeat tally");
+    assert.equal(corpsePressure.generatorsUnchanged,true,"Cleanup must not change generator objective tally");
+    await page.waitForTimeout(1500);
+    const pressureAfter=await page.evaluate(()=>({
+      mode:String(mode||""),
+      frames:Number(window.CCGLostSizzlerV141R59LiveRegressionFixes?.state?.acceptedFrames||0),
+      particles:particles.length,rings:rings.length,floaters:floaters.length
+    }));
+    assert.equal(pressureAfter.mode,"playing","Live Floor 5 input loop must remain playable under reinforcement history pressure");
+    assert.ok(pressureAfter.frames>=corpsePressure.frames+5,"Live browser must continue accepting real frames after generator cleanup");
+    assert.ok(pressureAfter.particles<=360&&pressureAfter.rings<=72&&pressureAfter.floaters<=96,
+      "Visual pools must retain their existing bounded combat contracts");
+    assert.deepEqual(errors,[],"Real browser generator pressure must not throw a JS error");
+    console.log("Dungeon R141 live Floor 5 300-defeat retention and frame-liveness passed:",JSON.stringify({corpsePressure,pressureAfter}));
     console.log("Dungeon R78 live 12s Count/Maw/Stalker at 2/3 generators passed:",JSON.stringify(after));
     // Follow the same pressured encounter through the actual third-generator
     // and boss damage owners. No teleport, staged save-restore or artificial

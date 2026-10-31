@@ -6,6 +6,7 @@
 
     <script>
         (function () {
+            document.documentElement.classList.add('ccg-games-enhancement-pending');
             try {
                 var saved = localStorage.getItem('ccg-mode');
                 if (!saved) return;

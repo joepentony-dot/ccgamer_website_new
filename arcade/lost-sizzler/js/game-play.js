@@ -205,11 +205,23 @@ function openChest(p,chest){
 }
 function tryChest(p,x,y){
   const c=W.chestAt(host,x,y);
-  if(!c)return true;
-  // A rare creature may be standing on a chest in an older save or mid-frame.
-  // Resolve the visible enemy encounter first instead of issuing a key warning
-  // for a chest completely hidden under its sprite.
-  if((host.enemies||[]).some(e=>e?.alive&&e.x===x&&e.y===y))return true;
+  if(!c||!p)return true;
+  // The renderer paints chests before live actors and full-tile objects.
+  // Old saves and reward drops can put a locked chest beneath one of them:
+  // its key warning must not fire until that chest can actually be seen.
+  const at=q=>q&&q.x===x&&q.y===y;
+  const covered=(host.enemies||[]).some(e=>e?.alive&&at(e))||
+    (host.stalker?.awake&&!host.stalker.permanentlyBanished&&at(host.stalker))||
+    (host.guardian?.alive!==false&&at(host.guardian))||
+    (host.blockingDecor||[]).some(d=>at(d)&&!d.destroyed&&Number(d.hp??1)>0)||
+    (host.deathCaches||[]).some(d=>d?.active&&at(d))||
+    (host.shops||[]).some(s=>s?.active&&at(s))||
+    [host.trader,host.startShop,host.rescue].some(s=>s?.active!==false&&at(s));
+  if(covered)return true;
+  // Movement is always one tile at a time, including diagonal/dash steps.
+  // Do not interact with a distant or camera-clipped chest via stale input.
+  if(Math.max(Math.abs(p.x-x),Math.abs(p.y-y))>1||
+     (typeof tileInRenderView==="function"&&!tileInRenderView(x,y,2)))return true;
   return openChest(p,c)
 }
 function diagonalClear(dx,dy,p){if(!dx||!dy)return true;return W.playerWalkable(world.map,p.x+dx,p.y,host)&&W.playerWalkable(world.map,p.x,p.y+dy,host)}
@@ -806,7 +818,16 @@ function damageGenerator(g,power,p){
 }
 function hitStalker(b){
   const s=host.stalker;if(!s?.awake||s.stunMs>0)return false;if(Math.round(b.x)!==s.x||Math.round(b.y)!==s.y)return false;
-  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",6500);S.sfx("stalker");return true
+  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);
+  // Keep each sealed Count hit blocked, but do not flood the UI/audio with
+  // identical long-lived notices under rapid fire or after a saved clock reset.
+  const now=performance.now(),last=Number(s._ccgSealedWardNoticeAt);
+  if(!Number.isFinite(last)||now<last||now-last>=1600){
+    s._ccgSealedWardNoticeAt=now;
+    showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. COLLECT BANISHMENT ESSENCE, DISTIL A FLASK AT AN ALCHEMIST, THEN PRESS B IN RANGE.`,"red",6500);
+    S.sfx("stalker");
+  }
+  return true
 }
 function projectilePathClear(b,nx,ny){
   // Closed, locked and still-opening doors are solid to gunfire as well as movement.
@@ -994,7 +1015,7 @@ function updateRoomMessage(p,force){
   if(room?.fireplace)S.sfx("fireplace");
   if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"No monster can enter this safe room. Stand on the green regeneration square to recover 1 HP every 3 seconds.","green",9000);
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
-  else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
+  else if(room?.spiderNest&&host?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
   else if(room?.sequenceTorchRoom&&!host.sequenceTorchPuzzle?.solved){showToast("TORCH SEQUENCE PUZZLE","STEP onto the four N/E/S/W torches in the correct order. Only your footsteps count — bullets and enemies cannot activate a torch. The faded blood clue from Floor 2 contains the sequence. A wrong step resets the flames; at most one punishment guardian can be active at a time.","gold",12000)}
   else if(room?.weightBridgeRoom&&host.weightBridge&&!host.weightBridge.crossed){host.weightBridge.discovered=true;updateQuests();showToast("ROTTEN BRIDGE — SOMETHING VALUABLE IS OVER THERE","A rare Trickster Cache is visible on the far side. The bridge will not carry inventory weight: use TAB to DROP your carried items on this side, cross empty-handed, then expect the dungeon to play dirty. A wall switch is mounted beyond the bridge; if the crossing fails, SHOOT that switch to deploy a replacement.","gold",12500)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
@@ -1028,8 +1049,34 @@ function generatorIlluminated(g){
   for(const e of host.enemies||[])if(e.alive&&e.follower&&W.roomAt(world,e.x,e.y)===roomId&&Math.hypot(e.x-g.x,e.y-g.y)<=lr+.2&&A.lineOfSight(world.map,e,g,lr,host))return true;
   return false;
 }
+// Generator kills are already recorded in run stats and the independent
+// defeat-visual queue. Keeping every dead reinforcement in host.enemies forever
+// makes a long Floor 5 generator fight scan thousands of inert actors per frame
+// (AI, projectile collision and rendering), even though the living spawn cap
+// is respected. Keep the most recent corpses for transient presentation and
+// preserve every live, authored, named and objective actor.
+function pruneDeadGeneratorReinforcements(){
+  const enemies=host?.enemies;
+  if(!Array.isArray(enemies)||enemies.length<=96)return 0;
+  const stale=[];
+  for(let i=0;i<enemies.length;i++){
+    const enemy=enemies[i];
+    if(enemy?.generatorId&&enemy.alive===false&&!enemy.follower&&!enemy.guardian&&
+      !enemy.deathStalker&&!enemy.voidStalker&&!enemy.bridgeThief&&!enemy.timedHunter)
+      stale.push(i);
+  }
+  const excess=stale.length-24;
+  if(excess<=0)return 0;
+  for(let i=excess-1;i>=0;i--){
+    const index=stale[i],enemy=enemies[index];
+    if(enemy?.id&&typeof enemyVisuals!=="undefined")enemyVisuals.delete(enemy.id);
+    enemies.splice(index,1);
+  }
+  host.revision=(Number(host.revision)||0)+1;
+  return excess;
+}
 function updateGenerators(dt){
-  
+  pruneDeadGeneratorReinforcements();
   for(const g of host.generators||[])if(g.alive){
     const lit=generatorIlluminated(g);if(!lit){g.powered=false;continue}if(!g.powered){g.powered=true;g.spawnCooldown=Math.max(g.spawnCooldown||0,1700);if(localPlayers().some(p=>W.sameRoom(world,p,g)))S.sfx("generator")}
     g.spawnCooldown-=dt;const rate=run.modifier?.id==="RESTLESS_DUNGEON"?.65:1;if(g.spawnCooldown>0)continue;
@@ -1160,10 +1207,62 @@ function updateAlert(dt){run.elapsed+=dt;host.floorElapsed+=dt;run.alert=Math.ma
 function burst(tx,ty,col,n=10,power=1){for(let i=0;i<n;i++)particles.push({x:tx*C.tile+C.tile/2,y:ty*C.tile+C.tile/2,vx:(Math.random()-.5)*3.8*power,vy:(Math.random()-.5)*3.8*power,life:280+Math.random()*430,col,size:1.2+Math.random()*3.4*power,drag:.965,glow:4+power*5})}
 function ring(tx,ty,col,max=30){rings.push({x:tx*C.tile+C.tile/2,y:ty*C.tile+C.tile/2,r:3,max,life:340,col})}
 function floatText(tx,ty,text,col=P.white,opts={}){const life=opts.life||720;floaters.push({x:tx*C.tile+C.tile/2,y:ty*C.tile-3,text,life,maxLife:life,col,ownerId:opts.ownerId||null,pickup:Boolean(opts.pickup),startScale:opts.startScale||1,endScale:opts.endScale||1.15})}
-function floatPickupText(p,text,col=P.gold){if(!p||!text)return;floatText(p.x,p.y,String(text).toUpperCase(),col,{ownerId:p.id,pickup:true,life:1250,startScale:.42,endScale:1.28})}
+function floatPickupText(p,text,col=P.gold){
+  if(!p||!text)return;
+  const label=String(text).toUpperCase(),now=performance.now();
+  // Repeated genuine pickups in one burst should not create a stack of
+  // identical expensive canvas labels. Keep every event in the visible count;
+  // do not touch the authoritative pickup, inventory, XP or score owners.
+  const previous=p.id==null?null:[...floaters].reverse().find(f=>
+    f?.pickup&&f.ownerId===p.id&&f.pickupLabel===label&&f.col===col&&f.life>0&&
+    Number.isFinite(f.pickupLastAt)&&now-f.pickupLastAt>=0&&now-f.pickupLastAt<=450
+  );
+  if(previous){
+    previous.pickupCount=Math.max(1,Math.floor(Number(previous.pickupCount)||1))+1;
+    previous.text=`${label} ×${previous.pickupCount}`;
+    previous.pickupLastAt=now;previous.life=1250;previous.maxLife=1250;
+    return;
+  }
+  floatText(p.x,p.y,label,col,{ownerId:p.id,pickup:true,life:1250,startScale:.42,endScale:1.28});
+  const latest=floaters[floaters.length-1];
+  if(latest?.pickup&&latest.ownerId===p.id){
+    latest.pickupLabel=label;latest.pickupCount=1;latest.pickupLastAt=now;
+  }
+}
 function muzzle(tx,ty,d){const x=tx*C.tile+C.tile/2+d.x*13,y=ty*C.tile+C.tile/2+d.y*13;for(let i=0;i<18;i++){const hot=i<7;particles.push({x,y,vx:d.x*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),vy:d.y*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),life:hot?120+Math.random()*110:190+Math.random()*220,col:hot?(i%3?P.gold:"#fff7c8"):(i%2?P.orange:"#9a7290"),size:hot?2+Math.random()*3:1.5+Math.random()*2.5,drag:hot ? .91 : .96,glow:hot?12:4})}rings.push({x,y,r:2,max:17,life:170,col:P.gold})}
 function trailBetween(x1,y1,x2,y2,col){for(let i=0;i<8;i++){const t=i/7;particles.push({x:(x1+(x2-x1)*t)*C.tile+C.tile/2,y:(y1+(y2-y1)*t)*C.tile+C.tile/2,vx:0,vy:0,life:220+i*12,col,size:3,drag:.97})}}
-function updateEffects(dt){const wallNow=performance.now(),expired=(row,pad=220)=>{if(!row)return true;if(!Number.isFinite(Number(row.__ccgWallBornAt)))row.__ccgWallBornAt=wallNow;if(!Number.isFinite(Number(row.__ccgWallLifeMs)))row.__ccgWallLifeMs=Math.max(80,Number(row.life||0)+pad);return wallNow-Number(row.__ccgWallBornAt)>Number(row.__ccgWallLifeMs)};for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.angle=(q.angle||0)+(q.spin||0);q.life-=dt}for(let i=particles.length-1;i>=0;i--)if(particles[i].life<=0||expired(particles[i],260))particles.splice(i,1);if(particles.length>MAX_GAMEPLAY_PARTICLES)particles.splice(0,particles.length-MAX_GAMEPLAY_PARTICLES);for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}for(let i=rings.length-1;i>=0;i--)if(rings[i].life<=0||expired(rings[i],220))rings.splice(i,1);if(rings.length>MAX_GAMEPLAY_RINGS)rings.splice(0,rings.length-MAX_GAMEPLAY_RINGS);for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0||expired(floaters[i],360))floaters.splice(i,1);if(floaters.length>96)floaters.splice(0,floaters.length-96)}
+function updateEffects(dt){
+  const wallNow=performance.now();
+  const expired=(row,pad=220)=>{
+    if(!row)return true;
+    if(!Number.isFinite(Number(row.__ccgWallBornAt)))row.__ccgWallBornAt=wallNow;
+    if(!Number.isFinite(Number(row.__ccgWallLifeMs)))row.__ccgWallLifeMs=Math.max(80,Number(row.life||0)+pad);
+    return wallNow-Number(row.__ccgWallBornAt)>Number(row.__ccgWallLifeMs);
+  };
+  // A dense Guardian fight can retire hundreds of effects together. Repeated
+  // splice() shifts every surviving entry and makes retirement quadratic.
+  // Compact in place, retain the original draw order and discard the oldest
+  // overflow just as the existing caps did. Combat/reward events are untouched.
+  const retainLive=(rows,pad,limit)=>{
+    let write=0;
+    for(let read=0;read<rows.length;read++){
+      const row=rows[read];
+      if(!(row.life<=0)&&!expired(row,pad))rows[write++]=row;
+    }
+    const overflow=Math.max(0,write-limit);
+    if(overflow){
+      for(let i=overflow;i<write;i++)rows[i-overflow]=rows[i];
+      write-=overflow;
+    }
+    rows.length=write;
+  };
+  for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.angle=(q.angle||0)+(q.spin||0);q.life-=dt}
+  retainLive(particles,260,MAX_GAMEPLAY_PARTICLES);
+  for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}
+  retainLive(rings,220,MAX_GAMEPLAY_RINGS);
+  for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}
+  retainLive(floaters,360,96);
+}
 function updateEmergencyAmmo(p,dt){
   if(p.mana>0){p.emergencyRechargeMs=0;return}
   if(!(p.emergencyRechargeMs>0))p.emergencyRechargeMs=C.player.emergencyRechargeMs;

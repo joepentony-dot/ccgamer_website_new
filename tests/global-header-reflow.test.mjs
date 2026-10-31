@@ -5,7 +5,7 @@ import test from "node:test";
 const source = fs.readFileSync("js/ccg-global.js", "utf8");
 
 test("header height measurement is deferred past the current mutation batch", () => {
-  const fn = source.match(/function setHeaderHeightVar\(\) \{[\s\S]*?\n    \}/)?.[0] || "";
+  const fn = source.match(/function setHeaderHeightVar\(measuredHeight\) \{[\s\S]*?\n    \}/)?.[0] || "";
   assert.match(source, /let headerHeightFrame = 0/);
   assert.match(source, /let lastHeaderHeight = -1/);
   assert.match(fn, /requestAnimationFrame/);

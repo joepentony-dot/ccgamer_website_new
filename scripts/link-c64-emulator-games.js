@@ -227,6 +227,14 @@ function emulatorMatch(game) {
   }
   const best = Math.min(...matches.map(e => priority[e.format] ?? 99));
   const preferred = matches.filter(e => (priority[e.format] ?? 99) === best);
+  // The Domark 1988 game page must not select the older same-title cartridge.
+  // The matching runtime deep link validates this precise edition again.
+  if (game.slug === "star-wars") {
+    const pinned = matches.filter(e =>
+      e.id === "owner-crt-more-starwars-1e41e83051d1" &&
+      e.format === "crt" && validMedia.includes(e));
+    return pinned.length === 1 ? pinned[0] : null;
+  }
   // Direct approved files precede extra CRT, Blast and optional packed PRGs.
   // A tie at the same priority needs an exact ID or is deliberately unlinked.
   if (preferred.length === 1) return preferred[0];

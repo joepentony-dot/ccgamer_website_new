@@ -151,6 +151,12 @@ jobs:
           node --check js/music-composer-pages.js
           node --check scripts/audit-scroll-reachability.js
 
+      - name: Verify selective copyright notice preserves linked artwork controls
+        run: |
+          node --check js/ccg-copyright-notice.js
+          node --check js/analytics.js
+          node --test tests/copyright-notice.test.mjs
+
       - name: Run global header reflow regression guard
         run: node --test tests/global-header-reflow.test.mjs
 
@@ -165,6 +171,9 @@ jobs:
 
       - name: Run mobile-lite startup regression guard
         run: node tests/ccg-mobile-lite-startup.mjs
+
+      - name: Verify free CCG Retro Assistant catalogue facts and safe follow-ups
+        run: node tests/ccg-retro-assistant.test.cjs
 
       - name: Run archive directory system regression guard
         run: node --test tests/archive-directory-system.test.mjs
@@ -195,6 +204,14 @@ jobs:
 
       - name: Run rendered responsive browser audit
         run: node scripts/audit-responsive-browser.js
+
+      - name: Run real desktop and mobile single-game Explore scroll regression
+        run: |
+          python -m pip install playwright==1.55.0
+          python tests/browser/single-game-presentation-polish.py
+
+      - name: Verify Ask CCG in real desktop and mobile Chromium
+        run: python tests/browser/ccg-retro-assistant-smoke.py
 
       - name: Run physical scroll reachability audit
         run: node scripts/audit-scroll-reachability.js

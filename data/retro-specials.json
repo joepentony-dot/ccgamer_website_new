@@ -691,5 +691,111 @@
         "title": "👋 Final Thoughts – Did You Ever Win a Gaming Prize?"
       }
     ]
+  },
+  {
+    "id": "50-commodore-64-games-can-you-identify-them",
+    "slug": "50-commodore-64-games-can-you-identify-them",
+    "type": "retro-specials",
+    "title": "50 Commodore 64 Games – Can You Identify Them? | C64 Challenge",
+    "youtubeId": "qJZa1zB2zHU",
+    "thumbnail": "https://img.youtube.com/vi/qJZa1zB2zHU/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 23,
+    "summary": "Can you identify 50 Commodore 64 games from ten-second gameplay clips across five themed rounds? Some clips have no sound to make the challenge tougher.",
+    "description": "Test your Commodore 64 knowledge with 50 games to identify across five themed rounds. Watch a ten-second gameplay clip, guess the title before the answer is revealed, and award yourself one point for each correct answer. The challenge covers arcade conversions, isometric adventures, budget releases, film and television licences, and some lesser-known C64 titles. A few clips deliberately have their sound removed to make recognition that little bit harder. How many can you name out of 50?",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "50 Commodore 64 Games – Can You Identify Them? | C64 Video Quiz | Cheeky Commodore Gamer",
+      "description": "Identify 50 Commodore 64 games from ten-second gameplay clips in five themed rounds. Test your C64 knowledge with this retro game recognition challenge."
+    },
+    "created_at": "2026-10-26T00:00:00.000Z",
+    "tags": [
+      "C64",
+      "Commodore 64",
+      "retro gaming quiz",
+      "game identification",
+      "1980s games"
+    ],
+    "platforms": [
+      "C64"
+    ],
+    "relatedSlugs": [
+      "50-essential-commodore-64-games",
+      "hardest-commodore-64-games",
+      "top-15-commodore-64-games",
+      "commodore-64-budget-games-under-3"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
+  },
+  {
+    "id": "50-amiga-games-can-you-identify-them",
+    "slug": "50-amiga-games-can-you-identify-them",
+    "type": "retro-specials",
+    "title": "Think You Know the Commodore Amiga? Try This 50-Game Quiz!",
+    "youtubeId": "kc86gnQh7ww",
+    "thumbnail": "https://img.youtube.com/vi/kc86gnQh7ww/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 24,
+    "summary": "Can you recognise 50 Commodore Amiga games from short gameplay clips? Test your memory across a range of familiar favourites and tougher titles.",
+    "description": "How many Commodore Amiga games can you name? Watch short gameplay clips, identify each game before the answer appears, and give yourself one point for each correct answer. The challenge includes well-known favourites alongside less familiar Amiga titles, so even long-time players might discover something they missed. Keep track of your score out of 50 and share your result in the comments.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Commodore Amiga Quiz – Can You Name 50 Games? | Cheeky Commodore Gamer",
+      "description": "Test your Commodore Amiga knowledge in this 50-game identification quiz. Watch short gameplay clips and see how many classic Amiga games you can recognise."
+    },
+    "created_at": "2026-10-30T00:00:00.000Z",
+    "tags": [
+      "Amiga",
+      "retro gaming quiz",
+      "name that game",
+      "50 games"
+    ],
+    "platforms": [
+      "Amiga"
+    ],
+    "relatedSlugs": [
+      "50-commodore-64-games-can-you-identify-them",
+      "50-zx-spectrum-games-can-you-identify-them",
+      "50-essential-amiga-games",
+      "x-copy-amiga-history"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
+  },
+  {
+    "id": "50-zx-spectrum-games-can-you-identify-them",
+    "slug": "50-zx-spectrum-games-can-you-identify-them",
+    "type": "retro-specials",
+    "title": "Think You Know the ZX Spectrum? Name These 50 Games!",
+    "youtubeId": "XxEhpjSoYc8",
+    "thumbnail": "https://img.youtube.com/vi/XxEhpjSoYc8/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 25,
+    "summary": "Think you know your ZX Spectrum games? Try to identify 50 titles from ten-second gameplay clips across five rounds, from familiar favourites to lesser-known games.",
+    "description": "ZX Spectrum fans, how many games do you still recognise? Across five rounds, there are 50 games to identify from ten-second gameplay clips before their titles are revealed. Expect a mixture of familiar classics and less obvious choices, rather than fifty easy questions. Award yourself one point for each correct answer and let me know your total out of 50. You might also discover a few games worth returning to. The video may not play until its scheduled YouTube premiere is public.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "ZX Spectrum Quiz – Can You Name 50 Games? | Cheeky Commodore Gamer",
+      "description": "Take the ZX Spectrum 50-game quiz. Recognise classic Speccy games from ten-second gameplay clips across five rounds and see how many titles you can name."
+    },
+    "created_at": "2026-10-30T00:00:00.000Z",
+    "tags": [
+      "Spectrum",
+      "retro gaming quiz",
+      "name that game",
+      "50 games"
+    ],
+    "platforms": [
+      "ZX Spectrum"
+    ],
+    "relatedSlugs": [
+      "50-commodore-64-games-can-you-identify-them",
+      "50-amiga-games-can-you-identify-them",
+      "c64-vs-zx-spectrum",
+      "zx-spectrum-memories-hodgy"
+    ],
+    "deferYouTubePlayer": true,
+    "disableAutoFeaturedGames": true
   }
 ]

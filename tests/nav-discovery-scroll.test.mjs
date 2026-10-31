@@ -194,13 +194,80 @@ test('music waits for adaptive navigation CSS before exposing its injected heade
   assert.match(musicNavigation, /await Promise\.all\(STYLES\.map\(waitForStyle\)\);[\s\S]*const header = ensureHeader\(\);/);
 });
 
+test('composer directory isolates collapsed groups without hiding searchable archive links', () => {
+  assert.match(musicComposerCss, /@supports \(content-visibility: auto\)/);
+  assert.match(musicComposerCss, /\.composer-accordion__group:not\(\.is-open\)\s*\{[\s\S]*content-visibility:\s*auto;/);
+  assert.match(musicComposerCss, /\.composer-accordion__group\.is-open\s*\{[\s\S]*content-visibility:\s*visible;/);
+  assert.match(musicComposerCss, /contain-intrinsic-size:\s*auto 52px;/);
+  assert.match(musicComposerCss, /contain-intrinsic-size:\s*none;/);
+});
+
+test('the Music Hub defers excess featured cards while retaining the full directory and reveal', () => {
+  const musicComposerUtils = fs.readFileSync('js/music-composer-utils.js', 'utf8');
+  assert.match(musicComposerUtils, /function stageMusicHubFeaturedGrid\(grid\)/);
+  assert.match(musicComposerUtils, /const initialCards = cards\.slice\(0, 4\);/);
+  assert.match(musicComposerUtils, /const deferredCards = cards\.slice\(initialCards\.length\);/);
+  assert.match(musicComposerUtils, /\/resources\/images\/composers\/hub\/\$\{slug\}\.webp/);
+  assert.match(musicComposerUtils, /showMore\.before\(deferred\)/);
+  assert.match(musicComposerUtils, /global\.CCG_MUSIC_HUB_PORTRAITS_READY = Promise\.all/);
+  assert.match(musicComposerUtils, /stageMusicHubFeaturedGrid\(grid\);[\s\S]*grid\.dataset\.ccgFeaturedManifest = "omega-21"/);
+  assert.match(musicComposerRuntime, /const initialFeatured = featured\.slice\(0, 4\);/);
+  assert.match(musicComposerRuntime, /const containerFeatured = document\.querySelector\("\.composer-grid-featured, \.composer-grid-featured-omega"\);[\s\S]*containerFeatured\.classList\.add\("composer-grid-featured-omega"\);[\s\S]*containerFeatured\.innerHTML = initialFeatured/, 'the renderer must activate bounded featured-grid CSS before inserting cards');
+  assert.match(musicComposerRuntime, /const remainingFeatured = featured\.slice\(initialFeatured\.length\);/);
+  assert.match(musicComposerRuntime, /showMore\.addEventListener\("click"/);
+  assert.match(musicComposerRuntime, /showMore\.insertAdjacentHTML\("beforebegin", remainingFeatured/);
+  assert.match(musicComposerRuntime, /firstNewCard\?\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(musicComposerRuntime, /renderHubAccordion\(composerList, stats\)/);
+  assert.match(musicComposerRuntime, /loading="lazy" decoding="async" fetchpriority="low"/, 'featured portraits must not synchronously decode during the first wheel step');
+  assert.match(musicComposerRuntime, /resources\/images\/composers\/hub\//, 'featured cards must use bounded hub portrait derivatives');
+  for (const file of fs.readdirSync('resources/images/composers').filter((name) => name.endsWith('.webp'))) {
+    assert.ok(fs.existsSync(`resources/images/composers/hub/${file}`), `missing Music Hub portrait derivative: ${file}`);
+  }
+  assert.match(musicComposerRuntime, /await Promise\.all\(Array\.from\(containerFeatured\.querySelectorAll\("\.composer-card--featured img"\)\)/, 'the Music ready boundary must wait for initial portrait decode');
+  assert.match(musicComposerRuntime, /await window\.CCG_MUSIC_HUB_PORTRAITS_READY;/, 'the ready boundary must include the protected editorial portrait stage');
+});
+
+test('music archive bounds compositor promotion to the four staged portraits', () => {
+  const omegaCss = fs.readFileSync('resources/css/music-hub-omega.css', 'utf8');
+  const rule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured\s*\{([^}]*)\}/);
+  assert(rule, 'music hub must retain a dedicated featured-card style');
+  assert.match(rule[1], /will-change:\s*auto;/, 'staged card chrome must stay out of separate compositor layers');
+  assert.match(rule[1], /transform:\s*none;/, 'staged card chrome must remain in normal document paint');
+  const gridRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega\s*\{([^}]*)\}/);
+  assert(gridRule, 'music featured grid style must remain available');
+  assert.match(gridRule[1], /contain:\s*layout paint;/, 'featured section must be bounded for compositor isolation');
+  assert.doesNotMatch(gridRule[1], /(?:transform|will-change)\s*:/, 'the complete grid must not become one large compositing layer');
+  const portraitRule = omegaCss.match(/\.ccg-music-hub \.composer-grid-featured-omega \.composer-card--featured img\s*\{([^}]*)\}/);
+  assert(portraitRule, 'decoded portraits must be isolated from staged card chrome');
+  assert.match(portraitRule[1], /transform:\s*translateZ\(0\);/);
+  assert.match(portraitRule[1], /will-change:\s*transform;/);
+  assert.match(omegaCss, /\.composer-card--featured:hover/, 'hover behaviour must remain available');
+});
+
+test('the first-wheel latency benchmark has no CDP round trips between arming and native input', () => {
+  const start = nativeWheelAudit.indexOf('window.__ccgWheelLatencyProbe = { armedAt: performance.now()');
+  const end = nativeWheelAudit.indexOf('await dispatchWheel(sessionId, target.x, target.y, WHEEL_DELTA);', start);
+  assert(start >= 0 && end > start, 'the first-wheel latency probe must precede actual physical input');
+  const measuredPreparation = nativeWheelAudit.slice(start, end);
+  assert.doesNotMatch(measuredPreparation, /await cdp\(sessionId,/, 'CDP inspector commands must not contaminate measured latency');
+  assert.doesNotMatch(measuredPreparation, /await new Promise|setTimeout\(/, 'measurement must not include artificial timer waits');
+});
+
 test('music composer pages share the native wheel performance contract', () => {
   assert.match(musicComposerCss, /CCG MUSIC WHEEL PERFORMANCE CONTRACT/);
   assert.match(musicComposerCss, /data-ccg-page="music-composer"/);
   assert.match(musicComposerCss, /> body\.ccg-body:not\(\.ccg-body--locked\):not\(\.ccg-body--nav-open\)[\s\S]*overflow-y:\s*visible\s*!important/);
   assert.match(musicComposerCss, /html\.ccg-perf-paused[\s\S]*\.ccg-composer-games__item/);
   assert.match(musicComposerRuntime, /function initMusicScrollPerfPause\(\)/);
-  assert.match(musicComposerRuntime, /window\.addEventListener\("scroll", onScroll, \{ passive: true \}\)/);
+  const start = musicComposerRuntime.indexOf('function initMusicScrollPerfPause()');
+  const end = musicComposerRuntime.indexOf('function initBackToTop()', start);
+  assert(start >= 0 && end > start, 'Music scroll performance helper must remain present');
+  const scrollHelper = musicComposerRuntime.slice(start, end);
+  assert.match(scrollHelper, /root\.dataset\.ccgMusicScrollPerf = "ready"/);
+  assert.doesNotMatch(scrollHelper, /window\.addEventListener\("scroll"/,
+    'Music archives must not install a root-wide scroll invalidation listener');
+  assert.doesNotMatch(scrollHelper, /root\.classList\.(add|remove)\(/,
+    'Music scroll must not recalculate all composer archive styles');
   assert.match(musicComposerRuntime, /window\.CCG_MUSIC_PAGE_READY = true/);
   assert.match(nativeWheelAudit, /\{ path: "\/music\/", label: "Music Hub" \}/);
   assert.match(nativeWheelAudit, /\{ path: "\/music\/paul-norman\/", label: "Music Composer \(Paul Norman\)" \}/);
