@@ -68,6 +68,13 @@ export function findExistingPrFromCheckout(repo) {
         "refs/heads/" + pr.headRefName + ":" + ref]);
       sha = git(["rev-parse", "--verify", ref + "^{commit}"]);
     }
+    // Do not trust a checkout's remote-tracking ref if the open PR head
+    // has moved or the PR was closed since the listing was retrieved.
+    const live = JSON.parse(gh(["api", "repos/" + repo + "/pulls/" + pr.number]));
+    if (live.state !== "open" || live.head?.sha !== sha ||
+        live.head?.ref !== pr.headRefName ||
+        live.head?.repo?.full_name !== repo ||
+        live.base?.ref !== "main") return "";
     const main = git(["rev-parse", "HEAD"]);
     const base = git(["merge-base", main, sha]);
     // Never suppress a fresh candidate in favour of an older PR that
