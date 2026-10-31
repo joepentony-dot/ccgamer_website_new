@@ -1,5 +1,12 @@
 # CCG website usability audit — 19 October 2026
 
+## 31 October 2026 — Developers directory, reconcile existing PR #2853 with current main
+
+- Main already has a native closed `#developerDirectory` containing all 47 credits **and** 11 repeated featured links. Preserve that current disclosure styling and newly updated developer indexing eligibility rather than replacing them with the older PR's markup/SEO text. Reconciled source renders 11 featured links plus only 36 nonfeatured directory links (47 unique total); searchable alphabetic results include both groups and keep active filters visible. Preserve no-JS static links and C64/Amiga filters.
+- Update only current generator, index, JS, responsive audit and directory tests, plus monotonic service-worker public code cache v207→v208. Do not copy the older PR's stale cache v169, old generated SEO copy or older CSS fork. The superseded overlapping PR #2852 remains parked.
+- **BRANCH ONLY, NOT QUALIFIED/NOT MERGED/NOT DEPLOYED/NOT LIVE** until generator parity, source-executed tests, real 360/768/956/1440 browser checks, exact-head CI, current-main reconciliation and guarded merge. Do not claim user-facing improvement from static card counts alone.
+
+
 Objective: reduce time-to-task across all significant page families while preserving Omega identity, accessibility, search indexing, content depth, monetisation, links and existing browser/emulator functionality. 'Perfect' is not a measurable state; real desktop/mobile user flows and regression tests are release gates.
 
 ## Navigation

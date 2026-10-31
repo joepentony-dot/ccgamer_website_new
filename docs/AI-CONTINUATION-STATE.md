@@ -1,3 +1,9 @@
+## 31 October 2026 — measured genre regression parked; Developers directory reconciliation active (branch-only)
+
+- Existing genre-performance PR #2964 **PARKED/DRAFT** after second measured CLS failure at head `185691d5`: Category Omega run `41177238247` failed desktop CLS 0.214 baseline → 0.742 candidate, despite 10/11 workflows passing. Raw artifact `13033243940`. No merge, deployment or test waiver. Resume only with reproducible hero stability fix.
+- ONE ACTIVE ordinary-site implementation: existing Developers directory PR **#2853**, reconciling its intended unique-card/search behaviour onto current main `189b07de44ba26c5695fa84a7d3f479e4ec7da53` (not copying stale cache v169 or overriding new developer SEO). Preserve all 47 crawlable routes, 11 featured + 36 unique A–Z details entries, no-JS disclosure, source generator, responsive browser audit and public-code cache v208. Branch candidate only; fresh exact-head CI, generator parity and browser acceptance must pass before guarded merge. Older overlapping #2852 remains parked.
+- Amazon #2957 remains owner-account BLOCKED; Dungeon #2958 remains Windows/high-risk PARKED with six owner conditions unaccepted and commercial release HOLD; generated publishing #2963 remains blocked by its non-waived review-receipt gate. Free Ask CCG #2959 already MERGED/DEPLOYED; do not duplicate.
+
 ## 31 October 2026 — Site-wide mobile game-video poster transfer, existing single-writer queue
 
 - Latest main checked at `4730c38813e98cbfd68f12580344632765479f1c` after copyright notice #2905 guarded merge `5f42bc75e086822a40b1329b5baf08abc8331990`; Pages run `41159078522` and live navigation run `41159245938` succeeded, but actual right-click/browser copyright acceptance remains unverified. #2959 free Ask CCG is already merged; do not revive.

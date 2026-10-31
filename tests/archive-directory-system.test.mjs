@@ -175,26 +175,78 @@ test("public code cache includes the shared directory stylesheet", () => {
     assert.match(sw, /\/resources\/css\/ccg-archive-directory\.css/);
 });
 
-test("developer index keeps complete static A-Z directory and opens bookmarked system results", () => {
+test("developer index reduces default clutter without dropping a credited route", () => {
+    const html = read("games/developers/index.html");
+    const generator = read("scripts/generate-developer-pages.js");
+    const runtime = read("js/developer-pages.js");
+    const css = read("resources/css/developers.css");
+
+    const links = [...html.matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    const totalMatch = html.match(/id="developerVisibleCount">(\d+)<\/strong> developers available/);
+    assert.ok(totalMatch, "default static count describes available credits, not expanded cards");
+    const expected = Number(totalMatch[1]);
+    assert.equal(links.length, expected, "every developer appears exactly once as a static card");
+    assert.equal(new Set(links).size, expected, "the featured set and directory never duplicate a route");
+
+    const featured = [...html.matchAll(/<a class="ccg-developer-card ccg-developer-card--featured"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    const directoryStart = html.indexOf('id="developerGrid"');
+    const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
+    assert.ok(directoryStart > 0 && directoryEnd > directoryStart, "other credits have a static crawlable directory");
+    const other = [...html.slice(directoryStart, directoryEnd).matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g)]
+        .map((match) => match[1]);
+    assert.ok(featured.length > 0 && other.length > 0);
+    assert.equal(featured.length + other.length, expected);
+    assert.ok(html.includes(`Browse the other ${other.length} developers A–Z</summary>`));
+    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>/);
+    assert.match(html, /<h2 id="all-developers-title">Other Developers<\/h2>/);
+    assert.match(html, /id="developerSearchInput"/);
+    assert.match(generator, /new Set\(represented\.map\(\(group\) => group\.slug\)\)/);
+    assert.match(generator, /groups\.filter\(\(group\) => !representedSlugs\.has\(group\.slug\)\)/);
+    assert.match(generator, /Browse the other \$\{remainingGroups\.length\} developers A–Z/);
+    assert.match(runtime, /data-developer-search-result/);
+    assert.match(runtime, /allCards\.filter\(\(card\) => matches\(card, query\)\)/);
+    assert.match(runtime, /directory\.open = hasSearch \|\| system !== "all" \|\| manuallyExpanded/);
+    assert.match(runtime, /event\.preventDefault\(\)/);
+    assert.match(css, /\.ccg-developers-directory > summary:focus-visible/);
+    assert.match(css, /\.ccg-developers-directory > section/);
+    assert.doesNotMatch(css, /#developerGrid\s*\{[^}]*display:\s*none/s);
+});
+
+
+test("developer index keeps complete static A-Z links and opens bookmarked system results", () => {
     const html = read("games/developers/index.html");
     const generator = read("scripts/generate-developer-pages.js");
     const js = read("js/developer-pages.js");
     const css = read("resources/css/developers.css");
 
-    assert.match(html, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
-    assert.match(generator, /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">/);
-    const summary = html.match(/<summary>Browse all (\d+) developers A–Z<\/summary>/);
-    assert.ok(summary, "developer disclosure includes a real available count");
+    const detailsTag = /<details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>/;
+    assert.match(html, detailsTag, "the native directory is closed before JS and is keyboard accessible");
+    assert.match(generator, detailsTag, "the authoritative generator preserves the native disclosure");
+    const summary = html.match(/<summary>Browse the other (\d+) developers A–Z<\/summary>/);
+    assert.ok(summary, "the summary accurately counts nonfeatured developers");
     const directoryStart = html.indexOf('<div class="ccg-developer-grid" id="developerGrid">');
     const directoryEnd = html.indexOf('id="developerEmptyState"', directoryStart);
     assert.ok(directoryStart >= 0 && directoryEnd > directoryStart, "directory links exist in static HTML");
-    const hrefs = Array.from(html.slice(directoryStart, directoryEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
-    assert.equal(hrefs.length, Number(summary[1]), "all counted developer links are present without JavaScript");
-    assert.equal(new Set(hrefs).size, hrefs.length, "developer routes are not duplicated inside directory");
-    assert.match(js, /if \(directory && system !== "all"\) directory\.open = true;/,
-        "supported bookmarked system filters must open the disclosure on page load");
-    assert.match(js, /Boolean\(normalize\(search\.value\)\) \|\| system !== "all" \|\| initialDirectoryOpen/,
-        "clearing a name search must not close active platform-filter results");
+    const otherHrefs = Array.from(html.slice(directoryStart, directoryEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
+    assert.equal(otherHrefs.length, Number(summary[1]), "every nonfeatured developer is available without JavaScript");
+
+    const featuredStart = html.indexOf('aria-labelledby="represented-developers-title"');
+    const featuredEnd = html.indexOf("</section>", featuredStart);
+    assert.ok(featuredStart >= 0 && featuredEnd > featuredStart, "featured credits remain visible");
+    const featuredHrefs = Array.from(html.slice(featuredStart, featuredEnd).matchAll(/href="(\/games\/developers\/[^"]+\/)"(?:\s|>)/g), (match) => match[1]);
+    const total = Number(html.match(/id="developerVisibleCount">(\d+)<\/strong> developers available/)?.[1]);
+    assert.ok(Number.isInteger(total) && total > 0, "the static total remains available");
+    assert.equal(featuredHrefs.length + otherHrefs.length, total, "featured and other links cover the full archive");
+    assert.equal(new Set([...featuredHrefs, ...otherHrefs]).size, total, "no credited route is duplicated or lost");
+
+    assert.match(js, /readInitialSystem\(\["all", "c64", "amiga"\]\)/,
+        "bookmarked C64/Amiga system filters are read on initialisation");
+    assert.match(js, /directory\.open = hasSearch \|\| system !== "all" \|\| manuallyExpanded/,
+        "active search and bookmarked system filters open the directory");
+    assert.match(js, /event\.preventDefault\(\)/,
+        "the disclosure cannot be closed while filtered results are active");
     assert.match(css, /\.ccg-developers-directory > summary:focus-visible/,
         "native directory disclosure keeps visible keyboard focus");
 });

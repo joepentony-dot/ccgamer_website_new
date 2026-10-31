@@ -311,6 +311,8 @@ function renderDeveloperIndex(groups) {
     const represented = [...groups]
         .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "en", { sensitivity: "base" }))
         .slice(0, 11);
+    const representedSlugs = new Set(represented.map((group) => group.slug));
+    const remainingGroups = groups.filter((group) => !representedSlugs.has(group.slug));
 
     const schema = {
         "@context": "https://schema.org",
@@ -404,16 +406,16 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 </div>
             </section>
 
-            <details class="ccg-developers-section ccg-developers-directory" id="developerDirectory">
-                <summary>Browse all ${groups.length} developers A–Z</summary>
+            <details class="ccg-developers-section ccg-developers-directory" id="developerDirectory" data-developer-directory-disclosure>
+                <summary>Browse the other ${remainingGroups.length} developers A–Z</summary>
                 <section aria-labelledby="all-developers-title">
                 <div class="ccg-developers-section__heading">
                     <p class="ccg-developers-section__kicker">Full recorded archive</p>
-                    <h2 id="all-developers-title">All Developers</h2>
+                    <h2 id="all-developers-title">Other Developers</h2>
                     <p>Dedicated developer pages with verified catalogue credits are eligible for indexing, including single-game archives.</p>
                 </div>
                 <div class="ccg-developer-grid" id="developerGrid">
-                    ${groups.map((group) => renderDeveloperCard(group)).join("\n")}
+                    ${remainingGroups.map((group) => renderDeveloperCard(group)).join("\n")}
                 </div>
                 <p class="ccg-developers-empty" id="developerEmptyState" hidden>No developers match that search.</p>
                 </section>
