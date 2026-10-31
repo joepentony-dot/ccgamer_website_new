@@ -56,6 +56,8 @@ const steps = [
   ["apply-game-video-overrides.js"],
   ["ensure-magazine-review-runtime.js"],
   ["validate-materialized-magazine-reviews.js"],
+  // Refresh dates against final HTML without reapplying SEO growth rewrites.
+  ["generate-sitemaps.js", "--final-pass"],
   ["validate-sitemaps.js"],
   ["validate-legacy-seo-redirects.js"],
   ["validate-video-seo.js"],

@@ -53,6 +53,7 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
 html[data-ccg-page] > body.ccg-body :where(.ccg-page, .ccg-main, main) {
     height: auto !important;
     max-height: none !important;
+    overflow-x: clip !important;
     overflow-y: visible !important;
     overscroll-behavior-y: auto !important;
 }

@@ -119,8 +119,29 @@ async function runCase(browser, testCase) {
 
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  await page.waitForTimeout(800);
-  await page.evaluate(() => window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
+  await page.waitForLoadState('load', { timeout: 30000 });
+  if (testCase.page === 'games/index.html') {
+    // Measure one stable page state. Browse Games intentionally starts with its
+    // complete static archive, then upgrades to the enhanced A-Z interface.
+    // Comparing scroll offsets across those two layouts would test the upgrade,
+    // not modal scroll preservation.
+    await page.locator('#gamesSearchInput').focus();
+    await page.waitForFunction(() => window.CCG_GAMES_LIBRARY_READY === true, null, { timeout: 15000 });
+    await page.waitForFunction(() => {
+      const fallback = document.getElementById('gamesStaticFallback');
+      const accordion = document.getElementById('gamesAccordion');
+      return Boolean(fallback?.hidden && accordion?.children.length);
+    }, null, { timeout: 5000 });
+  } else {
+    await page.waitForTimeout(800);
+  }
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) {
+      try { await document.fonts.ready; } catch (_) {}
+    }
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    window.scrollTo(0, Math.max(0, document.documentElement.scrollHeight - window.innerHeight));
+  });
   await page.waitForTimeout(150);
   const scrollBefore = await page.evaluate(() => window.scrollY);
 

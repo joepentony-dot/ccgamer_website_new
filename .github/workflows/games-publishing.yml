@@ -51,6 +51,9 @@ on:
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
+      - "scripts/ensure-goatcounter-coverage.js"
+      - "tests/goatcounter-sitewide.test.mjs"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "scripts/validate-game-performance-contract.mjs"
       - "scripts/apply-game-review-seo.js"
       - "scripts/generate-legacy-seo-redirects.js"
@@ -150,6 +153,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Guard site-wide GoatCounter and new-game publishing
+        run: node --test tests/goatcounter-sitewide.test.mjs
+
       - name: Verify future C64 game emulator auto-link and one-click launch contract
         run: node --test tests/c64-new-game-auto-emulator-link.test.mjs tests/ccg-c64-game-page-autoload.test.mjs
 
@@ -163,6 +169,9 @@ jobs:
           node --check scripts/validate-new-game-enrichment.mjs
           node --test tests/content-publisher-source-preflight.test.mjs
           node --test tests/game-seo-snippet-quality.test.mjs
+
+      - name: Validate fail-closed generated publishing merge guard
+        run: node --test tests/generated-publishing-guard.test.mjs
 
       - name: Validate game description fallback
         run: node --test tests/game-description-enrichment-fallback.test.mjs
@@ -278,6 +287,8 @@ jobs:
       - name: Commit generated publishing output
         id: publish_output
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add \
             games \
@@ -300,6 +311,14 @@ jobs:
           if git diff --cached --quiet; then
             echo "Generated publishing output is already current."
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          DUPLICATE_PR=$(node scripts/deduplicate-generated-publishing.mjs)
+          if [ -n "$DUPLICATE_PR" ]; then
+            echo "::notice::Generated output exactly matches existing PR #${DUPLICATE_PR}; retaining that PR and skipping duplicate branch creation."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "duplicate_pr=$DUPLICATE_PR" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -361,24 +380,8 @@ jobs:
 
           echo "Generated-output PR: $PR_URL"
 
-          MERGED=false
-          for attempt in 1 2 3; do
-            if gh pr merge "$PR_URL" \
-              --repo "$GITHUB_REPOSITORY" \
-              --squash \
-              --delete-branch; then
-              MERGED=true
-              break
-            fi
-
-            echo "::warning::Generated-output PR merge attempt ${attempt} failed; retrying without altering the validated branch."
-            sleep $((attempt * 5))
-          done
-
-          if [ "$MERGED" != "true" ]; then
-            echo "::error::Unable to merge the generated-output PR after 3 attempts. The validated PR remains open for recovery."
-            exit 1
-          fi
+          echo "Requiring independent executed validation and a no-findings Codex review before merge."
+          node scripts/qualify-generated-publishing.mjs "$PR_URL" "$OUTPUT_BRANCH"
 
           echo "Dispatching the authoritative Omega Pages deployment for the newly merged generated output."
           gh workflow run deploy-github-pages-omega-stable.yml \

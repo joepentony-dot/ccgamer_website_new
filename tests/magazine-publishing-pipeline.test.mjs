@@ -293,16 +293,30 @@ test("Ollie's Follies retains its verified Zzap!64 budget review", () => {
 });
 
 
-test("GitHub Pages regenerates game sitemaps after canonical routes and before validation", () => {
+test("GitHub Pages preserves publisher-completed routes, regenerates sitemaps and verifies parity before upload", () => {
   const workflow = fs.readFileSync(
     path.join(root, ".github", "workflows", "deploy-github-pages-omega-stable.yml"),
     "utf8"
   );
-  const routes = workflow.indexOf("node scripts/prepare-seo-game-routes.js --output-root _site");
+  const staged = workflow.indexOf("rsync -a --prune-empty-dirs");
   const sitemap = workflow.indexOf("(cd _site && node scripts/generate-sitemaps.js)");
   const validation = workflow.indexOf("node scripts/validate-seo-game-routes.js --root _site");
 
-  assert.ok(routes >= 0, "Pages deployment must generate canonical game routes");
-  assert.ok(sitemap > routes, "Pages deployment must regenerate sitemaps after the new canonical routes exist");
+  const normalization = workflow.indexOf("node scripts/normalize-public-header-shell.js --root _site --check");
+  const parity = workflow.indexOf("python3 scripts/ccg_game_page_release_audit.py");
+  const upload = workflow.indexOf("uses: actions/upload-pages-artifact@v4");
+  assert.ok(staged >= 0, "Pages must stage the publisher's complete canonical game pages");
+  assert.ok(!workflow.includes("node scripts/prepare-seo-game-routes.js --output-root _site"),
+    "Pages must not overwrite later magazine, emulator and review SEO publishing layers");
+  assert.ok(sitemap > staged, "Pages must regenerate sitemaps after the completed canonical routes exist");
   assert.ok(validation > sitemap, "Pages deployment must validate game routes only after the sitemap is regenerated");
+  assert.ok(normalization > validation && parity > normalization && upload > parity,
+    "All-game content parity must be checked after normalization and before upload");
+  assert.ok(workflow.slice(parity, upload).includes("--media-check"), "Parity must verify the approved owning media generator");
+  const rebuild = fs.readFileSync(path.join(root, "scripts", "rebuild-games.js"), "utf8");
+  const routes = rebuild.indexOf('["prepare-seo-game-routes.js", "--output-root", "."]');
+  const media = rebuild.indexOf('["link-c64-emulator-games.js"]');
+  const editorial = rebuild.indexOf('["apply-game-review-seo.js"]');
+  assert.ok(routes >= 0 && media > routes && editorial > media,
+    "Canonical generation must remain in the authoritative publisher before media/editorial layers");
 });

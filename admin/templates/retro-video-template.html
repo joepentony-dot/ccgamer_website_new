@@ -303,12 +303,13 @@
       </div>
 
       <div class="retro-video-page__hero-media retro-video-page__hero-media--player" id="watch-video">
-        <iframe src="https://www.youtube-nocookie.com/embed/{{YOUTUBE_ID}}"
+        <iframe src="{{YOUTUBE_PLAYER_SRC}}"{{YOUTUBE_DEFER_ATTRIBUTE}}
           title="{{TITLE}} — watch on Cheeky Commodore Gamer"
           loading="eager"
           data-ccg-primary-video="true"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
+{{YOUTUBE_FACADE_HTML}}
       </div>
     </header>
 

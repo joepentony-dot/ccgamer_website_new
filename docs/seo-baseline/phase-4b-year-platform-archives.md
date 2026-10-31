@@ -8,8 +8,8 @@
 | Year hub pages | **1** |
 | Platform hub pages | **1** |
 | Static year routes | **15** |
-| Indexable year routes | **14** |
-| Single-game noindex year routes | **1** |
+| Indexable year routes | **15** |
+| No-credit noindex year routes | **0** |
 | Static platform routes | **2** |
 | C64 games | **563** |
 | Amiga games | **103** |
@@ -31,7 +31,7 @@
 - `/games/years/1993/` — 15 games — `index,follow`
 - `/games/years/1994/` — 14 games — `index,follow`
 - `/games/years/1995/` — 4 games — `index,follow`
-- `/games/years/2023/` — 1 game — `noindex,follow`
+- `/games/years/2023/` — 1 game — `index,follow`
 - `/games/platforms/`
 - `/games/platforms/c64/` — 563 games
 - `/games/platforms/amiga/` — 103 games
@@ -49,8 +49,8 @@
 ## Indexing policy
 
 - Both hubs and both platform routes use `index,follow`.
-- Year routes containing at least 2 games use `index,follow`.
-- The 2023 route currently contains one game and uses `noindex,follow`.
+- Year routes containing at least 1 games use `index,follow`.
+- The 2023 route has a verified recorded game and therefore uses `index,follow`.
 
 ## Explicit exclusions
 

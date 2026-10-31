@@ -13,6 +13,13 @@
     if (window.CCG_MUSIC_NAVIGATION_READY) return;
     window.CCG_MUSIC_NAVIGATION_READY = true;
 
+    let resolveNavigationReady;
+    const navigationReady = new Promise((resolve) => {
+        resolveNavigationReady = resolve;
+    });
+    window.CCG_MUSIC_NAVIGATION_INITIALIZED = false;
+    window.CCG_MUSIC_NAVIGATION_READY_PROMISE = navigationReady;
+
     const STYLES = [
         "/resources/css/ccg-mode.css",
         "/resources/css/ccg-effects.css",
@@ -66,14 +73,25 @@
     }
 
     function ensureScript(src) {
-        const exists = Array.from(document.scripts)
-            .some((script) => normaliseAssetPath(script.getAttribute("src")) === src);
-        if (exists) return;
-        const script = document.createElement("script");
-        script.src = src;
-        script.async = false;
-        script.dataset.ccgMusicNavigationScript = "true";
-        document.body.appendChild(script);
+        const existing = Array.from(document.scripts)
+            .find((script) => normaliseAssetPath(script.getAttribute("src")) === src);
+        if (existing) {
+            if (window.CCGUnifiedNavCore) return Promise.resolve();
+            return new Promise((resolve) => {
+                existing.addEventListener("load", resolve, { once: true });
+                window.setTimeout(resolve, 2000);
+            });
+        }
+
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.async = false;
+            script.dataset.ccgMusicNavigationScript = "true";
+            script.addEventListener("load", resolve, { once: true });
+            script.addEventListener("error", resolve, { once: true });
+            document.body.appendChild(script);
+        });
     }
 
     function headerMarkup() {
@@ -180,18 +198,45 @@
         const secondaryList = header.querySelector("[data-ccg-nav-secondary]");
         if (!primaryTarget || !secondaryTarget || !primaryList || !secondaryList) return;
 
-        primaryTarget.innerHTML = '<div class="ccg-nav-drawer__label">Primary</div>';
+        const cloneLink = (source) => {
+            const clone = source.cloneNode(true);
+            clone.classList.add("ccg-nav__link--mobile");
+            return clone;
+        };
+        primaryTarget.innerHTML = '<div class="ccg-nav-drawer__label">Quick links</div>';
         secondaryTarget.innerHTML = '<div class="ccg-nav-drawer__label">Explore more</div>';
 
+        // Music pages have their own drawer owner; match the canonical mobile
+        // discovery route while preserving all original specialist links.
+        const otherPrimary = [];
         primaryList.querySelectorAll("a").forEach((link) => {
-            const clone = link.cloneNode(true);
-            clone.classList.add("ccg-nav__link--mobile");
-            primaryTarget.appendChild(clone);
+            const pathname = new URL(link.href, window.location.href).pathname;
+            if (pathname === "/home.html" || pathname === "/games/") {
+                primaryTarget.appendChild(cloneLink(link));
+            } else {
+                otherPrimary.push(link);
+            }
         });
+
+        const play = document.createElement("a");
+        play.href = "/emulator/c64/";
+        play.className = "ccg-nav__link ccg-nav__link--mobile";
+        play.textContent = "Play C64";
+        primaryTarget.appendChild(play);
+
+        const merch = document.createElement("a");
+        merch.href = "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp";
+        merch.className = "ccg-nav__link ccg-nav__link--mobile ccg-nav__link--merch";
+        merch.textContent = "Merch Shop";
+        merch.target = "_blank";
+        merch.rel = "noopener noreferrer";
+        merch.setAttribute("data-ccg-revenue-link", "fourthwall-merch");
+        merch.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
+        secondaryTarget.appendChild(merch);
+
+        otherPrimary.forEach((link) => secondaryTarget.appendChild(cloneLink(link)));
         secondaryList.querySelectorAll("a").forEach((link) => {
-            const clone = link.cloneNode(true);
-            clone.classList.add("ccg-nav__link--mobile");
-            secondaryTarget.appendChild(clone);
+            secondaryTarget.appendChild(cloneLink(link));
         });
     }
 
@@ -276,13 +321,19 @@
     }
 
     async function init() {
-        await Promise.all(STYLES.map(waitForStyle));
-        markArchiveDirectory();
-        const header = ensureHeader();
-        if (!header) return;
-        bindDrawer(header);
-        bindMode(header);
-        ensureScript("/js/ccg-nav-core.js");
+        try {
+            await Promise.all(STYLES.map(waitForStyle));
+            markArchiveDirectory();
+            const header = ensureHeader();
+            if (!header) return;
+            bindDrawer(header);
+            bindMode(header);
+            await ensureScript("/js/ccg-nav-core.js");
+        } finally {
+            window.CCG_MUSIC_NAVIGATION_INITIALIZED = true;
+            resolveNavigationReady();
+            document.dispatchEvent(new CustomEvent("ccg:music-navigation-ready"));
+        }
     }
 
     if (document.readyState === "loading") {

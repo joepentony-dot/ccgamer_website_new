@@ -39,6 +39,69 @@ try{
   await page.click("#solo-btn");
   await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof mode!=="undefined"&&mode==="playing"&&Boolean(p1)&&Boolean(host)&&typeof tryChest==="function",null,{timeout:20000});
 
+  // R144 browser acceptance: use the real running game, not a copied chest
+  // handler. Foreground actors must own their visible tile before the hidden
+  // chest's locked-key feedback can run; an uncovered chest must still warn.
+  const chestVisibility=await page.evaluate(()=>{
+    const original={
+      chests:host.chests,enemies:host.enemies,stalker:host.stalker,
+      guardian:host.guardian,blockingDecor:host.blockingDecor,
+      deathCaches:host.deathCaches,shops:host.shops,
+      trader:host.trader,startShop:host.startShop,rescue:host.rescue
+    };
+    const originalKeys=p1.bronzeKeys;
+    const x=p1.x+1,y=p1.y;
+    const chest={id:"r144-browser-visible-ownership",x,y,active:true,opened:false,locked:true,mimic:false,
+      loot:{kind:"potion",amount:1,qty:1,rarity:"COMMON",name:"R144 Test Potion"}};
+    const observations=[];
+    try{
+      host.chests=[chest];host.enemies=[];host.stalker=null;host.guardian=null;
+      host.blockingDecor=[];host.deathCaches=[];host.shops=[];
+      host.trader=null;host.startShop=null;host.rescue=null;
+      p1.bronzeKeys=0;
+      const inView=tileInRenderView(x,y,2);
+      host.chests=[];
+      const noChest=tryChest(p1,x,y);
+      host.chests=[chest];
+      const blockers=[
+        ["ordinary enemy","enemies",[{x,y,alive:true}],[]],
+        ["Count Loadula","stalker",{x,y,awake:true},null],
+        ["Guardian","guardian",{x,y,alive:true},null],
+        ["blocking furniture","blockingDecor",[{x,y,hp:2}],[]],
+        ["death cache","deathCaches",[{x,y,active:true}],[]],
+        ["merchant","shops",[{x,y,active:true}],[]],
+        ["rescue NPC","rescue",{x,y,active:true},null]
+      ];
+      for(const [name,field,occupant,empty] of blockers){
+        host[field]=occupant;
+        const result=tryChest(p1,x,y);
+        observations.push({name,result,feedback:chest._lockedFeedbackAt??null,
+          opened:chest.opened,active:chest.active,keys:p1.bronzeKeys});
+        host[field]=empty;
+      }
+      const uncovered=tryChest(p1,x,y);
+      return{inView,noChest,observations,uncovered,
+        warningAt:chest._lockedFeedbackAt??null,active:chest.active,
+        opened:chest.opened,keys:p1.bronzeKeys};
+    }finally{
+      Object.assign(host,original);
+      p1.bronzeKeys=originalKeys;
+    }
+  });
+  assert.equal(chestVisibility.inView,true,"R144 browser chest must be within the actual camera");
+  assert.equal(chestVisibility.noChest,true,"No chest at the target must not cause a key warning");
+  for(const row of chestVisibility.observations){
+    assert.equal(row.result,true,row.name+" must defer hidden chest interaction");
+    assert.equal(row.feedback,null,row.name+" must not emit an invisible locked-key warning");
+    assert.equal(row.active,true,row.name+" must preserve the chest for later");
+    assert.equal(row.opened,false,row.name+" must not open an obscured chest");
+    assert.equal(row.keys,0,row.name+" must not spend a key");
+  }
+  assert.equal(chestVisibility.uncovered,false,"A real adjacent uncovered locked chest must still refuse without a key");
+  assert.ok(chestVisibility.warningAt>0,"The real uncovered locked chest must record its key warning");
+  assert.equal(chestVisibility.active,true,"The warned chest must remain available to unlock");
+  assert.equal(chestVisibility.opened,false,"A keyless attempt must not open the chest");
+
   const keyed=await page.evaluate(()=>{
     p1.bronzeKeys=2;
     p1.inventorySlots=6;

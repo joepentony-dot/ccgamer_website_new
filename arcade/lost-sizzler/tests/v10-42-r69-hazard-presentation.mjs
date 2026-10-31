@@ -94,4 +94,5 @@ assert.match(play,/S\.sfx\("hazardwarn"\)[\s\S]*hazardWarning/,
 assert.match(play,/S\.sfx\(hazard\.type==="blade"\?"bladehit":"trap"\)/,
   "dedicated blade contact must use its impact SFX without changing hazard damage ownership");
 
+assert.match(render,/const size=active\?C\.tile\*\.78:warning\?C\.tile\*\.68:C\.tile\*\.54/,"blade trap art must distinguish idle, warning and active sizes");
 console.log("Dungeon R69 hazard presentation contract remains compatible with R70 hysteretic performance recovery.");

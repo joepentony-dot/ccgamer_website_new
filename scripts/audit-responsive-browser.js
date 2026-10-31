@@ -13,6 +13,7 @@
  *   - excessive shared-header height
  *   - physical overlap between top-level header controls
  *   - semantic shared-navigation state at responsive breakpoints
+ *   - physical priority and overlap of Home/Games discovery sections
  */
 
 "use strict";
@@ -32,6 +33,7 @@ const PAGES = [
     "/games/game.html?id=1942",
     "/games/genres/index.html",
     "/games/publishers/index.html",
+    "/games/developers/index.html",
     "/videos/index.html",
     "/zzap64/index.html",
     "/about.html",
@@ -353,6 +355,259 @@ async function executeDiagnostics(sessionId) {
     return payload.value;
 }
 
+/* Guard the on-screen hierarchy at every existing audit breakpoint. */
+const DISCOVERY_PRIORITY_SCRIPT = String.raw`
+return (function () {
+    var pathname = location.pathname;
+    var selectors = pathname === "/home.html"
+        ? [".home-hero", ".home-section--archive-dashboard", ".home-merch-promo", ".home-community-latest"]
+        : [".games-hero", ".games-tools", ".games-omega-discovery", ".games-library"];
+    return selectors.map(function (selector) {
+        var element = document.querySelector(selector);
+        if (!element) return { selector: selector, present: false };
+        var rect = element.getBoundingClientRect();
+        return { selector: selector, present: true, top: Math.round(rect.top + window.scrollY),
+            bottom: Math.round(rect.bottom + window.scrollY),
+            width: Math.round(rect.width), height: Math.round(rect.height) };
+    });
+})();`;
+
+async function auditDiscoveryPriority(sessionId, page, viewport) {
+    const response = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+        script: DISCOVERY_PRIORITY_SCRIPT, args: []
+    });
+    const sections = response.value;
+    if (!Array.isArray(sections) || sections.length !== 4 || sections.some((s) => !s.present || s.height <= 0 || s.width <= 0)) {
+        throw new Error(`${page} @ ${viewport.label}: missing or invisible priority section: ${JSON.stringify(sections)}`);
+    }
+    for (let i = 1; i < sections.length; i += 1) {
+        if (sections[i].top + 4 < sections[i - 1].bottom) {
+            throw new Error(`${page} @ ${viewport.label}: priority sections overlap: ${JSON.stringify(sections[i - 1])} / ${JSON.stringify(sections[i])}`);
+        }
+    }
+    if (page === "/games/index.html") {
+        const response = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+            script: `
+                const input = document.getElementById("gamesSearchInput");
+                const browse = document.querySelector(".games-omega-discovery");
+                const divider = browse?.nextElementSibling;
+                if (!input || !browse || !divider?.classList.contains("ccg-omega-divider")) return { exists: false };
+                input.value = "1942";
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                const hiddenDuringSearch = getComputedStyle(browse).display === "none"
+                    && getComputedStyle(divider).display === "none";
+                input.value = "";
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                return { exists: true, hiddenDuringSearch: hiddenDuringSearch,
+                    restoredAfterClear: getComputedStyle(browse).display !== "none"
+                        && getComputedStyle(divider).display !== "none" };
+            `,
+            args: []
+        });
+        const state = response.value;
+        if (!state?.exists || !state.hiddenDuringSearch || !state.restoredAfterClear) {
+            throw new Error(`Games Archive @ ${viewport.label}: active-search discovery placement failed: ${JSON.stringify(state)}`);
+        }
+    }
+}
+
+async function auditPublisherDirectory(sessionId, viewport) {
+    const execute = async (script) => {
+        const payload = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+            script,
+            args: []
+        });
+        return payload.value;
+    };
+    // Ground browser expectations in the generated static publisher HTML.
+    // Catalogue growth or pruning must not make the rendered audit stale.
+    const indexHtml = fs.readFileSync(path.join(ROOT, "games", "publishers", "index.html"), "utf8");
+    const publisherLinks = Array.from(indexHtml.matchAll(/class="ccg-publisher-card__link" href="([^"]+)"/g), (match) => match[1]);
+    const expectedPublisherCount = new Set(publisherLinks).size;
+    const gridStart = indexHtml.indexOf('id="publisherGrid"');
+    const gridEnd = indexHtml.indexOf('id="publisherEmptyState"', gridStart);
+    if (gridStart < 0 || gridEnd <= gridStart) {
+        throw new Error("Generated publisher index lacks an intact static directory.");
+    }
+    const expectedDirectoryCount = (indexHtml.slice(gridStart, gridEnd).match(/\bdata-publisher-card\b/g) || []).length;
+    const expectedFeaturedCount = (indexHtml.match(/<article class="ccg-publisher-card ccg-publisher-card--featured" data-publisher-card/g) || []).length;
+    if (!expectedPublisherCount || !expectedDirectoryCount || expectedDirectoryCount + expectedFeaturedCount !== expectedPublisherCount) {
+        throw new Error(`Generated publisher archive count mismatch: total=${expectedPublisherCount}, featured=${expectedFeaturedCount}, remaining=${expectedDirectoryCount}`);
+    }
+
+    const initial = await execute(`
+        const disclosure = document.querySelector('[data-publisher-directory-disclosure]');
+        const grid = document.querySelector('#publisherGrid');
+        const nav = disclosure?.querySelector('[data-publisher-alphabet]');
+        return {
+            disclosure: Boolean(disclosure),
+            closed: disclosure ? !disclosure.open : false,
+            hasNativeSummary: disclosure?.firstElementChild?.tagName === 'SUMMARY',
+            fullLinkCount: document.querySelectorAll('a.ccg-publisher-card__link[href]').length,
+            otherDirectoryCount: grid?.querySelectorAll('a.ccg-publisher-card__link[href]').length || 0,
+            alphabetInside: Boolean(nav && disclosure.contains(nav)),
+            search: Boolean(document.querySelector('#publisherSearchInput')),
+            featuredOutside: Boolean(document.querySelector('.ccg-publishers-section--featured') && !disclosure?.contains(document.querySelector('.ccg-publishers-section--featured')))
+        };
+    `);
+    if (!initial.disclosure || !initial.closed || !initial.hasNativeSummary
+        || initial.fullLinkCount !== expectedPublisherCount || initial.otherDirectoryCount !== expectedDirectoryCount || !initial.alphabetInside || !initial.search || !initial.featuredOutside) {
+        throw new Error(`Publisher disclosure baseline failed at ${viewport.label}: ${JSON.stringify(initial)}`);
+    }
+
+    const matching = await execute(`
+        const search = document.querySelector('#publisherSearchInput');
+        search.value = 'ocean';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+        const disclosure = document.querySelector('[data-publisher-directory-disclosure]');
+        return {
+            open: disclosure.open,
+            matches: disclosure.querySelectorAll('[data-publisher-search-result]').length,
+            oceanLink: Boolean(disclosure.querySelector('[data-publisher-search-result] a[href="/games/publishers/ocean-software/"]')),
+            featuredHidden: document.querySelector('.ccg-publishers-section--featured')?.hidden
+        };
+    `);
+    if (!matching.open || matching.matches < 1 || !matching.oceanLink || !matching.featuredHidden) {
+        throw new Error(`Publisher typed-search disclosure failed at ${viewport.label}: ${JSON.stringify(matching)}`);
+    }
+
+    const restored = await execute(`
+        const search = document.querySelector('#publisherSearchInput');
+        search.value = '';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+        const disclosure = document.querySelector('[data-publisher-directory-disclosure]');
+        return {
+            closed: !disclosure.open,
+            resultClones: disclosure.querySelectorAll('[data-publisher-search-result]').length,
+            originalCards: Array.from(disclosure.querySelectorAll('#publisherGrid > [data-publisher-card]'))
+                .filter((card) => !card.hidden).length,
+            featuredVisible: !document.querySelector('.ccg-publishers-section--featured')?.hidden
+        };
+    `);
+    if (!restored.closed || restored.resultClones !== 0 || restored.originalCards !== expectedDirectoryCount || !restored.featuredVisible) {
+        throw new Error(`Publisher clear-search restoration failed at ${viewport.label}: ${JSON.stringify(restored)}`);
+    }
+}
+
+
+async function auditDeveloperDirectory(sessionId, viewport) {
+    const execute = async (callback) => {
+        const payload = await webdriver("POST", "/session/" + sessionId + "/execute/sync", {
+            script: "return (" + callback.toString() + ")();",
+            args: []
+        });
+        return payload.value;
+    };
+
+    const indexHtml = fs.readFileSync(path.join(ROOT, "games", "developers", "index.html"), "utf8");
+    const staticCards = Array.from(indexHtml.matchAll(/<a class="ccg-developer-card [^"]*"\s+href="\/games\/developers\/([^/]+)\//g), (match) => match[1]);
+    const expectedCount = new Set(staticCards).size;
+    const gridStart = indexHtml.indexOf('id="developerGrid"');
+    const gridEnd = indexHtml.indexOf('id="developerEmptyState"', gridStart);
+    if (gridStart < 0 || gridEnd <= gridStart || staticCards.length !== expectedCount) {
+        throw new Error("Generated developer index must contain one static link per credited developer.");
+    }
+    const expectedOtherCount = (indexHtml.slice(gridStart, gridEnd).match(/\bdata-developer-card\b/g) || []).length;
+    const expectedFeaturedCount = (indexHtml.match(/class="ccg-developer-card ccg-developer-card--featured"/g) || []).length;
+    if (!expectedCount || !expectedFeaturedCount || !expectedOtherCount ||
+        expectedFeaturedCount + expectedOtherCount !== expectedCount) {
+        throw new Error("Generated developer archive has inconsistent featured/other credits.");
+    }
+
+    const initial = await execute(() => {
+        const disclosure = document.querySelector("[data-developer-directory-disclosure]");
+        const featured = document.querySelector('[aria-labelledby="represented-developers-title"]');
+        return {
+            closed: Boolean(disclosure && !disclosure.open),
+            summary: disclosure?.firstElementChild?.tagName === "SUMMARY",
+            fullLinkCount: document.querySelectorAll("a[data-developer-card][href]").length,
+            otherCount: document.querySelectorAll("#developerGrid > [data-developer-card]").length,
+            featuredCount: featured?.querySelectorAll("[data-developer-card]").length,
+            availableCount: Number(document.getElementById("developerVisibleCount")?.textContent),
+            featuredVisible: Boolean(featured && !featured.hidden)
+        };
+    });
+    if (!initial.closed || !initial.summary || !initial.featuredVisible ||
+        initial.fullLinkCount !== expectedCount || initial.otherCount !== expectedOtherCount ||
+        initial.featuredCount !== expectedFeaturedCount || initial.availableCount !== expectedCount) {
+        throw new Error("Developer baseline failed at " + viewport.label + ": " + JSON.stringify(initial));
+    }
+
+    const searched = await execute(() => {
+        const first = document.querySelector(".ccg-developer-grid--featured [data-developer-card]");
+        const search = document.getElementById("developerSearchInput");
+        const directory = document.querySelector("[data-developer-directory-disclosure]");
+        const targetHref = first.getAttribute("href");
+        search.value = first.dataset.developerName;
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        const matches = Array.from(directory.querySelectorAll("[data-developer-search-result]"));
+        const matchingLink = matches.some((card) => card.getAttribute("href") === targetHref);
+        directory.querySelector("summary").click();
+        return {
+            open: directory.open,
+            matchingLink,
+            uniqueMatches: new Set(matches.map((card) => card.getAttribute("href"))).size === matches.length,
+            matches: matches.length,
+            featuredHidden: document.querySelector('[aria-labelledby="represented-developers-title"]')?.hidden,
+            count: Number(document.getElementById("developerVisibleCount")?.textContent)
+        };
+    });
+    if (!searched.open || !searched.matchingLink || !searched.uniqueMatches ||
+        !searched.matches || !searched.featuredHidden || searched.count !== searched.matches) {
+        throw new Error("Developer featured search failed at " + viewport.label + ": " + JSON.stringify(searched));
+    }
+
+    const restored = await execute(() => {
+        const search = document.getElementById("developerSearchInput");
+        search.value = "";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        const directory = document.querySelector("[data-developer-directory-disclosure]");
+        return {
+            closed: !directory.open,
+            leftoverClones: directory.querySelectorAll("[data-developer-search-result]").length,
+            originalCards: Array.from(directory.querySelectorAll("#developerGrid > [data-developer-card]")).filter((card) => !card.hidden).length,
+            featuredVisible: !document.querySelector('[aria-labelledby="represented-developers-title"]')?.hidden,
+            totalCount: Number(document.getElementById("developerVisibleCount")?.textContent)
+        };
+    });
+    if (!restored.closed || restored.leftoverClones || !restored.featuredVisible ||
+        restored.originalCards !== expectedOtherCount || restored.totalCount !== expectedCount) {
+        throw new Error("Developer clear-search restore failed at " + viewport.label + ": " + JSON.stringify(restored));
+    }
+
+    const filtered = await execute(() => {
+        const allCards = Array.from(document.querySelectorAll("[data-developer-card]"));
+        const matchingAmiga = allCards.filter((card) => Number(card.dataset.amigaCount || 0) > 0).length;
+        document.querySelector('[data-developer-system="amiga"]').click();
+        const directory = document.querySelector("[data-developer-directory-disclosure]");
+        directory.querySelector("summary").click();
+        const expandedAndProtected = directory.open;
+        const counted = Number(document.getElementById("developerVisibleCount")?.textContent);
+        document.querySelector('[data-developer-system="all"]').click();
+        return { expandedAndProtected, counted, matchingAmiga, restoredClosed: !directory.open };
+    });
+    if (!filtered.expandedAndProtected || filtered.counted !== filtered.matchingAmiga || !filtered.restoredClosed) {
+        throw new Error("Developer system filter failed at " + viewport.label + ": " + JSON.stringify(filtered));
+    }
+
+    const manuallyOpened = await execute(() => {
+        const directory = document.querySelector("[data-developer-directory-disclosure]");
+        directory.querySelector("summary").click();
+        const expanded = directory.open;
+        const search = document.getElementById("developerSearchInput");
+        search.value = "mastertronic";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        search.value = "";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        const preserved = directory.open;
+        directory.querySelector("summary").click();
+        return { expanded, preserved, closed: !directory.open };
+    });
+    if (!manuallyOpened.expanded || !manuallyOpened.preserved || !manuallyOpened.closed) {
+        throw new Error("Developer manual disclosure state failed at " + viewport.label + ": " + JSON.stringify(manuallyOpened));
+    }
+}
+
 function validateResult(result, page, viewport) {
     const failures = [];
     const maxHeaderHeight = Math.min(300, Math.round(viewport.height * 0.34));
@@ -451,6 +706,15 @@ async function main() {
                     await navigate(sessionId, url);
                     const result = await executeDiagnostics(sessionId);
                     validateResult(result, page, viewport);
+                    if (page === "/home.html" || page === "/games/index.html") {
+                        await auditDiscoveryPriority(sessionId, page, viewport);
+                    }
+                    if (page === "/games/publishers/index.html") {
+                        await auditPublisherDirectory(sessionId, viewport);
+                    }
+                    if (page === "/games/developers/index.html") {
+                        await auditDeveloperDirectory(sessionId, viewport);
+                    }
                     widestHeader = Math.max(widestHeader, result.headerHeight || 0);
                     const navState = result.hasSharedHeader
                         ? ` | nav ${result.navVisible ? "desktop" : "menu"}`

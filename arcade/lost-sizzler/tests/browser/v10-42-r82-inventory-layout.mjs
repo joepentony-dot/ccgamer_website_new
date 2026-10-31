@@ -41,6 +41,32 @@ async function audit(viewport,label){
   await page.waitForFunction(()=>Boolean(document.getElementById("r80-wearable-strip")));
   await page.waitForTimeout(100);
 
+  // R145: the actual live TAB inventory must derive the sack count and
+  // resulting stack capacities from the same player state as pickup/Continue.
+  for(const tier of [0,1,2,3]){
+    const sacks=await page.evaluate(value=>{
+      p1.magicSacks=value;
+      renderInventoryPanel();
+      const readout=document.querySelector("#inventory-loadout [data-r71-magic-sacks]");
+      return{
+        tier:window.CCGProgression.magicSackTier(p1),
+        text:readout?.textContent||"",
+        aria:readout?.getAttribute("aria-label")||"",
+        attribute:readout?.getAttribute("data-r71-magic-sacks"),
+        potionCap:window.CCGProgression.stackLimit({kind:"potion"},p1),
+        torchCap:window.CCGProgression.stackLimit({kind:"torch"},p1)
+      };
+    },tier);
+    assert.equal(sacks.tier,tier,`${label} sack tier ${tier} must be canonical`);
+    assert.equal(sacks.attribute,String(tier),`${label} tier ${tier} must be exposed in live DOM`);
+    assert.ok(sacks.text.includes(`MAGIC SACKS ${tier}/3`),`${label} live inventory must show tier ${tier}`);
+    assert.ok(sacks.text.includes("MAP "),`${label} live utility must retain visible map progress`);
+    assert.ok(sacks.aria.includes(`Potions ${sacks.potionCap} per stack`),`${label} accessible potion stack must reflect tier ${tier}`);
+    assert.ok(sacks.aria.includes(`Torches ${sacks.torchCap}`),`${label} accessible torch stack must reflect tier ${tier}`);
+    assert.ok(sacks.aria.includes("Ward-Break Charges remain limited to one carried charge"),`${label} must not misrepresent Ward-Break charge stacking`);
+  }
+  await page.evaluate(()=>{p1.magicSacks=0;renderInventoryPanel()});
+
   const layout=await page.evaluate(()=>{
     const rect=selector=>{
       const node=document.querySelector(selector),r=node?.getBoundingClientRect();
@@ -91,6 +117,101 @@ async function audit(viewport,label){
   }
   assert.ok(layout.viewport.scrollWidth<=layout.viewport.width+2&&layout.viewport.scrollHeight<=layout.viewport.height+2,`${label} inventory overlay must not create page scrollbars: ${JSON.stringify(layout.viewport)}`);
 
+  // Real browser interaction: R147 lets a player equip and replace armour
+  // from the loadout slot, not just from the carried-item action row.
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"COMMON SCOUT HOOD",rarity:"COMMON",armourBonus:0}];
+    p1.wearables={head:null,hands:null,feet:null};
+    renderInventoryPanel()
+  });
+  const firstEquip=page.locator('[data-r80-equip-slot="head"]');
+  await firstEquip.waitFor({state:"visible"});
+  assert.match(await firstEquip.getAttribute("aria-label"),/COMMON SCOUT HOOD/,`${label} action must name the carried item`);
+  await firstEquip.click();
+  const equipped=await page.evaluate(()=>({name:p1.wearables?.head?.name,inventory:p1.inventory.map(item=>item.name),slotLabel:document.querySelector('[data-r80-slot="head"] b')?.textContent}));
+  assert.equal(equipped.name,"COMMON SCOUT HOOD",`${label} direct Head equip must change canonical state`);
+  assert.equal(equipped.slotLabel,"COMMON SCOUT HOOD",`${label} equipment panel must update after equip`);
+  assert.equal(equipped.inventory.length,0,`${label} equipped item must leave carried inventory`);
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"ENCHANTED WARDEN CIRCLET",rarity:"GOLD MEDAL",armourBonus:3,sightBonus:1}];
+    renderInventoryPanel()
+  });
+  await page.locator('[data-r80-equip-slot="head"]').click();
+  const swapped=await page.evaluate(()=>({name:p1.wearables?.head?.name,inventory:p1.inventory.map(item=>item.name),cap:CCGProgression.armourCap(p1)}));
+  assert.equal(swapped.name,"ENCHANTED WARDEN CIRCLET",`${label} direct slot swap must equip selected higher-tier gear`);
+  assert.deepEqual(swapped.inventory,["COMMON SCOUT HOOD"],`${label} replaced item must return exactly once`);
+  assert.ok(swapped.cap>=15,`${label} enchanted gear must increase armour capacity`);
+  assert.deepEqual(errors,[],`${label} direct wearable interaction must not throw browser errors`);
+
+  await context.close();
+}
+
+async function auditMobileWearable(){
+  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  // Match the desktop inventory checks: disable the unrelated first-run
+  // tutorial before navigation, while retaining a real touch-driven equip.
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  const page=await context.newPage();page.setDefaultTimeout(60000);
+  await page.goto(`${origin}/arcade/lost-sizzler/?r147-mobile-wearable`,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.locator("#solo-btn").click();
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"feet",name:"MOBILE RUNNER BOOTS",rarity:"SIZZLER",armourBonus:2,moveFactor:.95}];
+    renderInventoryPanel();
+    document.getElementById("inventory-panel").classList.remove("hidden");
+    mode="inventory"
+  });
+  const button=page.locator('[data-r80-equip-slot="feet"]');
+  await button.waitFor({state:"visible"});
+  await button.tap();
+  const result=await page.evaluate(()=>({name:p1.wearables?.feet?.name,inventory:p1.inventory.length,button:document.querySelector('[data-r80-unequip="feet"]')?.textContent}));
+  assert.equal(result.name,"MOBILE RUNNER BOOTS","mobile touch action must equip canonical Feet gear");
+  assert.equal(result.inventory,0,"mobile equip must remove carried item");
+  assert.equal(result.button,"UNEQUIP","mobile loadout must offer a reversible action");
+  await context.close();
+}
+
+async function auditKeyboardWearable(){
+  const context=await browser.newContext({viewport:{width:1366,height:768}});
+  await context.addInitScript(()=>{try{localStorage.setItem("ccg-lost-sizzler-tutorial-seen-v1","true")}catch(_){}});
+  const page=await context.newPage();page.setDefaultTimeout(60000);
+  const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
+  await page.goto(`${origin}/arcade/lost-sizzler/?r147-keyboard-wearable`,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.locator("#solo-btn").click();
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true"&&mode==="playing"&&Boolean(p1),null,{timeout:20000});
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"KEYBOARD SCOUT HOOD",rarity:"COMMON",armourBonus:0}];
+    p1.wearables={head:null,hands:null,feet:null};
+    renderInventoryPanel()
+  });
+  // All interaction from this point is through real physical keyboard events.
+  // No test-side focus(), click(), synthetic key dispatch or DOM activation.
+  await page.keyboard.press("Tab");
+  await page.waitForFunction(()=>mode==="inventory"&&!document.getElementById("inventory-panel").classList.contains("hidden"));
+  assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute("data-r80-equip-slot")),"head","opening TAB must focus a genuine wearable slot action");
+  await page.keyboard.press("Enter");
+  assert.equal(await page.evaluate(()=>p1.wearables?.head?.name),"KEYBOARD SCOUT HOOD","physical Enter must equip carried Head wearable");
+  assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute("data-r80-unequip")),"head","loadout rerender must preserve keyboard focus after equip");
+  await page.evaluate(()=>{
+    p1.inventory=[{kind:"wearable",slot:"head",name:"KEYBOARD WARDEN CIRCLET",rarity:"GOLD MEDAL",armourBonus:3,sightBonus:1}];
+    renderInventoryPanel()
+  });
+  assert.equal(await page.evaluate(()=>document.activeElement?.getAttribute("data-r80-equip-slot")),"head","a carried upgrade must remain keyboard reachable after rerender");
+  await page.keyboard.press("Enter");
+  const swapped=await page.evaluate(()=>({name:p1.wearables?.head?.name,carried:p1.inventory.map(item=>item.name),cap:CCGProgression.armourCap(p1)}));
+  assert.equal(swapped.name,"KEYBOARD WARDEN CIRCLET","physical Enter must swap to stronger Head wearable");
+  assert.deepEqual(swapped.carried,["KEYBOARD SCOUT HOOD"],"keyboard swap must return previous wearable exactly once");
+  assert.ok(swapped.cap>=15,"keyboard swap must update canonical armour cap");
+  await page.keyboard.press("Tab");
+  assert.equal(await page.evaluate(()=>mode),"inventory","Tab must navigate the inventory rather than closing it");
+  assert.equal(await page.evaluate(()=>document.getElementById("inventory-panel").contains(document.activeElement)),true,"Tab must keep keyboard focus inside inventory");
+  await page.keyboard.press("Shift+Tab");
+  assert.equal(await page.evaluate(()=>mode),"inventory","Shift+Tab must navigate without leaving inventory");
+  await page.keyboard.press("Escape");
+  assert.equal(await page.evaluate(()=>mode),"playing","Escape must close the keyboard inventory and return to play");
+  assert.deepEqual(errors,[],"physical keyboard equip/swap must not throw browser errors");
   await context.close();
 }
 
@@ -98,7 +219,9 @@ try{
   await audit({width:1664,height:936},"standard-desktop");
   await audit({width:1366,height:768},"short-desktop");
   await audit({width:1280,height:720},"low-height-desktop");
-  console.log("Dungeon Carnage R82 equipment/inventory viewport-fit layout passed without desktop scrollbars.");
+  await auditMobileWearable();
+  await auditKeyboardWearable();
+  console.log("Dungeon Carnage R82 inventory viewport-fit and R147 desktop/mobile/physical-keyboard equip/swap passed.");
 }finally{
   await browser.close();
   for(const socket of sockets)socket.destroy();

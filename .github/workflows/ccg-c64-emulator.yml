@@ -32,6 +32,9 @@ jobs:
       - name: Check CCG shell and ROM contract
         run: node tests/ccg-c64-emulator-stage1.test.mjs
 
+      - name: Verify published C64 hamburger drawer and gameplay isolation
+        run: node tests/ccg-c64-header-drawer.test.mjs
+
       - name: Verify iPhone Safari startup and privacy fallbacks
         run: node --test tests/ccg-c64-ios-safari.test.mjs
 

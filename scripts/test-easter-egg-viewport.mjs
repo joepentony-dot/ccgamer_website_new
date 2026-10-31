@@ -38,7 +38,22 @@ async function triggerTripleClick(page) {
     const logo = document.querySelector('.ccg-brand__logo');
     if (!logo) throw new Error('Logo trigger not found');
     const wait = delay => new Promise(resolve => setTimeout(resolve, delay));
+    const history = [];
+    const snapshot = (label) => {
+      const root = document.scrollingElement || document.documentElement;
+      history.push({
+        label,
+        scrollY: window.scrollY,
+        scrollHeight: root.scrollHeight,
+        viewportHeight: window.innerHeight,
+        bodyHeight: Math.round(document.body?.getBoundingClientRect().height || 0),
+        modalOpen: Boolean(document.querySelector('.ccg-secret-modal.is-open')),
+      });
+    };
+    window.__ccgSecretScrollHistory = history;
+    snapshot('before-first-tap');
     for (let index = 0; index < 3; index += 1) {
+      snapshot(`before-tap-${index + 1}`);
       logo.dispatchEvent(new PointerEvent('pointerdown', {
         bubbles: true,
         cancelable: true,
@@ -48,6 +63,7 @@ async function triggerTripleClick(page) {
         button: 0,
       }));
       await wait(170);
+      snapshot(`after-tap-${index + 1}`);
     }
   });
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });
@@ -114,6 +130,8 @@ async function waitForTestPageReady(page, testCase) {
     return null;
   }
 
+  // Focusing the real search control starts the enhanced catalogue on demand.
+  await page.locator('#gamesSearchInput').focus();
   await page.waitForFunction(() => {
     const fallback = document.getElementById('gamesStaticFallback');
     const accordion = document.getElementById('gamesAccordion');
@@ -142,13 +160,14 @@ async function settleAtPageBottom(page) {
   let previous = null;
   let stableSamples = 0;
   let latest = null;
+  const sampleHistory = [];
 
   while (Date.now() < deadline) {
     await page.evaluate(() => {
       // Use the browser's physically reachable bottom rather than a theoretical
       // scrollHeight - innerHeight target. Mobile emulation can expose a small
       // visual/layout viewport delta even after the page geometry has settled.
-      window.scrollTo(0, Number.MAX_SAFE_INTEGER);
+      window.scrollTo({ top: Number.MAX_SAFE_INTEGER, left: 0, behavior: "instant" });
     });
     await page.waitForTimeout(180);
 
@@ -164,15 +183,19 @@ async function settleAtPageBottom(page) {
       };
     });
 
+    sampleHistory.push(latest);
+    if (sampleHistory.length > 18) sampleHistory.shift();
+
     // The physically reachable scrollY is authoritative here. Chromium mobile
     // emulation can report scrollHeight - innerHeight several CSS pixels below
     // the actual reachable bottom because the layout and visual viewports do
-    // not have identical rounding. Require repeated physical stability while
-    // allowing only a small amount of late layout-height drift; the real modal
-    // containment, scroll-lock and restoration assertions still run afterwards.
+    // not have identical rounding. The page itself must nevertheless stop
+    // changing to the same tolerance used by the modal scroll-preservation
+    // assertion, otherwise a late page-height change can be misattributed to
+    // opening the overlay.
     const stable = previous
-      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 12
-      && Math.abs(latest.scrollY - previous.scrollY) <= 4;
+      && Math.abs(latest.scrollHeight - previous.scrollHeight) <= 2
+      && Math.abs(latest.scrollY - previous.scrollY) <= 2;
 
     if (stable) {
       stableSamples += 1;
@@ -185,7 +208,7 @@ async function settleAtPageBottom(page) {
   }
 
   throw new Error(
-    `Page bottom did not settle before viewport validation: ${JSON.stringify(latest)}`
+    `Page bottom did not settle before viewport validation: ${JSON.stringify({ latest, sampleHistory })}`
   );
 }
 
@@ -245,6 +268,13 @@ async function runCase(browser, testCase) {
 
   const url = new URL(testCase.page, args.baseUrl).toString();
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.waitForLoadState('load', { timeout: 30000 });
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) {
+      try { await document.fonts.ready; } catch (_) {}
+    }
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  });
   const readinessState = await waitForTestPageReady(page, testCase);
   const bottomState = await settleAtPageBottom(page);
   const scrollBeforeOpen = await page.evaluate(() => window.scrollY);
@@ -294,6 +324,7 @@ async function runCase(browser, testCase) {
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });
   await page.waitForTimeout(1000);
   const scrollAfterClose = await page.evaluate(() => window.scrollY);
+  const scrollHistory = await page.evaluate(() => window.__ccgSecretScrollHistory || []);
 
   await triggerTripleClick(page);
   const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);
@@ -373,6 +404,7 @@ async function runCase(browser, testCase) {
     scrollAfterClose: round(scrollAfterClose),
     readinessState,
     bottomState,
+    scrollHistory,
     menuMetrics,
     closeMetrics,
     menuState,
@@ -435,5 +467,17 @@ const rows = results.map(result => {
 const report = `# Easter Egg Viewport Positioning Validation\n\n## Verdict\n\n**${evidence.verdict}**\n\nThe three-click command menu, a shared framed result and the direct BSOD overlay were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.\n\n| Case | Viewport | Result | Menu height | Result frame height |\n|---|---:|---:|---:|---:|\n${rows}\n\n## Required behaviour\n\n- Menu panel, close button, framed result, direct result and exit button remain inside the visible viewport.\n- Long menus scroll internally with the close control remaining visible.\n- Every reopen begins at the top of the command list.\n- Opening and closing does not move the underlying page.\n- Wheel input on the modal backdrop cannot scroll the underlying page.\n- The body is no longer changed to fixed positioning or touch-action none.\n- Keyboard focus moves to the active close/exit control.\n\n## Failed checks\n\n${failedChecks.length ? failedChecks.map(item => `- ${item}`).join('\n') : '- None'}\n`;
 
 fs.writeFileSync(path.resolve(args.report), report);
-console.log(JSON.stringify({ verdict: evidence.verdict, testedCases: results.length, failedChecks }, null, 2));
+console.log(JSON.stringify({
+  verdict: evidence.verdict,
+  testedCases: results.length,
+  failedChecks,
+  failedScrollEvidence: results.filter(result => !result.passed).map(result => ({
+    case: result.name,
+    before: result.scrollBeforeOpen,
+    whileOpen: result.menuState?.scrollY,
+    afterClose: result.scrollAfterClose,
+    bottomState: result.bottomState,
+    scrollHistory: result.scrollHistory,
+  })),
+}, null, 2));
 if (failedChecks.length) process.exit(1);

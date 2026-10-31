@@ -6,6 +6,7 @@
 
     <script>
         (function () {
+            document.documentElement.classList.add('ccg-games-enhancement-pending');
             try {
                 var saved = localStorage.getItem('ccg-mode');
                 if (!saved) return;
@@ -300,25 +301,7 @@
             <span class="ccg-omega-core"></span>
         </div>
 
-        <!-- CCG GAMES INDEX OMEGA DISCOVERY START -->
-        <section class="games-omega-discovery ccg-chapter" aria-labelledby="gamesOmegaDiscoveryTitle">
-            <div class="games-omega-discovery__header">
-                <span class="games-omega-discovery__eyebrow">Explore the Commodore archive</span>
-                <h2 id="gamesOmegaDiscoveryTitle">Find C64 &amp; Amiga Games Your Way</h2>
-                <p>Jump straight into the part of the archive you want: browse by genre, publisher, release year, platform or curated collection, or search the complete game library below.</p>
-            </div>
-            <nav class="games-omega-discovery__grid" aria-label="C64 and Amiga game archive sections">
-                <a class="games-omega-discovery__card" href="/games/genres/" data-archive-mark="GENRE"><strong>Browse by Genre</strong><span>Racing, arcade, adventure, platform, strategy, shooters and more.</span></a>
-                <a class="games-omega-discovery__card" href="/games/publishers/" data-archive-mark="PUB"><strong>Game Publishers</strong><span>Explore C64 and Amiga games by publisher and software house.</span></a>
-                <a class="games-omega-discovery__card" href="/games/collections/" data-archive-mark="CCG"><strong>Curated Collections</strong><span>Licensed games, cartridges, CCG favourites and specialist archive groups.</span></a>
-                <a class="games-omega-discovery__card" href="/games/years/" data-archive-mark="YEAR"><strong>Browse by Release Year</strong><span>Follow the Commodore game library through its release timeline.</span></a>
-                <a class="games-omega-discovery__card" href="/games/platforms/" data-archive-mark="64/A"><strong>Browse by Platform</strong><span>Go directly to the Commodore 64 or Amiga game archives.</span></a>
-                <a class="games-omega-discovery__card" href="/games/developers/" data-archive-mark="DEV"><strong>Game Developers</strong><span>Discover games through the people and studios behind them.</span></a>
-                <a class="games-omega-discovery__card" href="/games/downloads/" data-archive-mark="PDF"><strong>Game Manuals A–Z</strong><span>Browse available manuals and documentation for games in the archive.</span></a>
-                <a class="games-omega-discovery__card" href="/music/" data-archive-mark="SID"><strong>C64 &amp; Amiga Music</strong><span>Explore composers, SID music and the wider Commodore music archive.</span></a>
-            </nav>
-        </section>
-        <!-- CCG GAMES INDEX OMEGA DISCOVERY END -->
+
 
         <!-- SEARCH -->
         <section class="games-tools ccg-chapter">
@@ -330,51 +313,81 @@
                 <p>Search by title, composer, publisher, genre or year, then narrow the archive by system and release year.</p>
             </div>
             <!-- CCG GAMES INDEX OMEGA SEARCH HEADING END -->
-            <div class="games-search">
-                <label class="visually-hidden" for="gamesSearchInput">Search the games library</label>
-                <input type="search" id="gamesSearchInput" placeholder="Search games…" aria-describedby="gamesSearchHelp" />
-                <button id="gamesSearchClear" type="button" aria-label="Clear game search">×</button>
-            </div>
-            <p id="gamesSearchHelp" class="visually-hidden">Search by game title, composer, publisher, genre, or year.</p>
-
-            <div class="games-filter" data-games-filter>
-                <div class="games-filter__controls" role="group" aria-label="Filter games by system">
-                    <button class="games-filter__btn is-active" type="button" data-system-filter="all" aria-pressed="true">
-                        All Games
-                    </button>
-                    <button class="games-filter__btn" type="button" data-system-filter="c64" aria-pressed="false">
-                        Commodore 64
-                    </button>
-                    <button class="games-filter__btn" type="button" data-system-filter="amiga" aria-pressed="false">
-                        Amiga
-                    </button>
+            <div class="games-tools__controls" role="group" aria-label="Find and filter games">
+                <div class="games-search">
+                    <label class="visually-hidden" for="gamesSearchInput">Search the games library</label>
+                    <input type="search" id="gamesSearchInput" placeholder="Search games…" aria-describedby="gamesSearchHelp" />
+                    <button id="gamesSearchClear" type="button" aria-label="Clear game search">×</button>
                 </div>
-                <div class="games-filter__range" data-games-year-filter>
-                    <div class="games-filter__range-header">
-                        <label class="games-filter__range-label" for="gamesYearSelect">Year</label>
+                <p id="gamesSearchHelp" class="visually-hidden">Search by game title, composer, publisher, genre, or year.</p>
+
+                <div class="games-filter" data-games-filter>
+                    <div class="games-filter__controls" role="group" aria-label="Filter games by system">
+                        <button class="games-filter__btn is-active" type="button" data-system-filter="all" aria-pressed="true">
+                            All Games
+                        </button>
+                        <button class="games-filter__btn" type="button" data-system-filter="c64" aria-pressed="false">
+                            Commodore 64
+                        </button>
+                        <button class="games-filter__btn" type="button" data-system-filter="amiga" aria-pressed="false">
+                            Amiga
+                        </button>
                     </div>
-                    <select id="gamesYearSelect" class="games-filter__year-select" aria-label="Filter games by release year">
-                        <option value="all">All years</option>
-                    </select>
+                    <div class="games-filter__range" data-games-year-filter>
+                        <div class="games-filter__range-header">
+                            <label class="games-filter__range-label" for="gamesYearSelect">Year</label>
+                        </div>
+                        <select id="gamesYearSelect" class="games-filter__year-select" aria-label="Filter games by release year">
+                            <option value="all">All years</option>
+                        </select>
+                    </div>
+                    <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
                 </div>
-                <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
             </div>
 
-            <div class="games-alpha">
-                <div id="gamesAlphaStrip"></div>
-            </div>
+            <details class="games-tools__optional">
+                <summary class="games-tools__optional-title">Browse A–Z and other game sections</summary>
+                <div class="games-tools__optional-content">
+                <div class="games-alpha">
+                    <div id="gamesAlphaStrip"></div>
+                </div>
 
-            <nav class="games-archive-shortcuts" aria-label="More ways to browse the C64 and Amiga games archive">
-                <span class="games-archive-shortcuts__label">More ways to browse</span>
-                <a href="/games/genres/">Genres</a>
-                <a href="/games/publishers/">Publishers</a>
-                <a href="/games/collections/">Collections</a>
-                <a href="/games/years/">Release Years</a>
-                <a href="/games/platforms/">C64 / Amiga</a>
-                <a href="/games/developers/">Developers</a>
-                <a href="/games/downloads/">Manuals A–Z</a>
-            </nav>
+                <nav class="games-archive-shortcuts" aria-label="More ways to browse the C64 and Amiga games archive">
+                    <span class="games-archive-shortcuts__label">More ways to browse</span>
+                    <a href="/games/genres/">Genres</a>
+                    <a href="/games/publishers/">Publishers</a>
+                    <a href="/games/collections/">Collections</a>
+                    <a href="/games/years/">Release Years</a>
+                    <a href="/games/platforms/">C64 / Amiga</a>
+                    <a href="/games/developers/">Developers</a>
+                    <a href="/games/downloads/">Manuals A–Z</a>
+                </nav>
+                </div>
+            </details>
         </section>
+
+        <!-- CCG GAMES INDEX OMEGA DISCOVERY START -->
+        <section class="games-omega-discovery ccg-chapter" aria-labelledby="gamesOmegaDiscoveryTitle">
+            <div class="games-omega-discovery__header">
+                <span class="games-omega-discovery__eyebrow">Explore the Commodore archive</span>
+                <h2 id="gamesOmegaDiscoveryTitle">Find C64 &amp; Amiga Games Your Way</h2>
+                <p>Use the search and filters above, or browse by genre, publisher, release year, platform or curated collection.</p>
+            </div>
+            <details class="games-omega-discovery__more">
+                <summary class="games-omega-discovery__summary">Browse genres, publishers, years and more</summary>
+            <nav class="games-omega-discovery__grid" aria-label="C64 and Amiga game archive sections">
+                <a class="games-omega-discovery__card" href="/games/genres/" data-archive-mark="GENRE"><strong>Browse by Genre</strong><span>Racing, arcade, adventure, platform, strategy, shooters and more.</span></a>
+                <a class="games-omega-discovery__card" href="/games/publishers/" data-archive-mark="PUB"><strong>Game Publishers</strong><span>Explore C64 and Amiga games by publisher and software house.</span></a>
+                <a class="games-omega-discovery__card" href="/games/collections/" data-archive-mark="CCG"><strong>Curated Collections</strong><span>Licensed games, cartridges, CCG favourites and specialist archive groups.</span></a>
+                <a class="games-omega-discovery__card" href="/games/years/" data-archive-mark="YEAR"><strong>Browse by Release Year</strong><span>Follow the Commodore game library through its release timeline.</span></a>
+                <a class="games-omega-discovery__card" href="/games/platforms/" data-archive-mark="64/A"><strong>Browse by Platform</strong><span>Go directly to the Commodore 64 or Amiga game archives.</span></a>
+                <a class="games-omega-discovery__card" href="/games/developers/" data-archive-mark="DEV"><strong>Game Developers</strong><span>Discover games through the people and studios behind them.</span></a>
+                <a class="games-omega-discovery__card" href="/games/downloads/" data-archive-mark="PDF"><strong>Game Manuals A–Z</strong><span>Browse available manuals and documentation for games in the archive.</span></a>
+                <a class="games-omega-discovery__card" href="/music/" data-archive-mark="SID"><strong>C64 &amp; Amiga Music</strong><span>Explore composers, SID music and the wider Commodore music archive.</span></a>
+            </nav>
+            </details>
+        </section>
+        <!-- CCG GAMES INDEX OMEGA DISCOVERY END -->
 
         <!-- ACCORDION -->
         <div class="ccg-omega-divider" aria-hidden="true">

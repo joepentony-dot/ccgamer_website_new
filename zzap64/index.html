@@ -206,7 +206,13 @@
                 <section class="zzap-archive__hero">
                     <p class="zzap-archive__kicker">Magazine reviews &amp; awards · C64 &amp; Amiga</p>
                     <h1 class="zzap-archive__title">Zzap!64 Reviews &amp; Awards Archive</h1>
-                    <p class="zzap-archive__intro">Browse the award-winning Gold Medals, Sizzlers and Silver Medals from the year-by-year retrospectives, then search every verified Zzap!64 review scan that can be linked to a game already in the CCG archive — including ordinary reviews and later budget re-reviews.</p>
+                    <p class="zzap-archive__intro">Explore Gold Medals, Sizzlers and Silver Medals from the year-by-year retrospectives, or find other verified Zzap!64 reviews linked to CCG games.</p>
+                    <nav class="zzap-archive__jump-nav" aria-label="Jump to Zzap!64 archive section">
+                        <span class="zzap-archive__jump-label">Go straight to:</span>
+                        <a href="#zzap-award-videos">Award videos by year</a>
+                        <a href="#zzap-award-search">Find award winners</a>
+                        <a href="#zzap-additional-reviews">Other magazine reviews</a>
+                    </nav>
                     <div class="zzap-archive__stats">
                         <div class="zzap-archive__stat"><strong id="zzapTotalCount">—</strong><span>indexed award records</span></div>
                         <div class="zzap-archive__stat"><strong id="zzapYearRange">1985–1989</strong><span id="zzapYearCount">5 award years covered</span></div>
@@ -215,15 +221,15 @@
                     </div>
                 </section>
 
-                <section aria-labelledby="zzap-video-years-title">
+                <section id="zzap-award-videos" class="zzap-archive__destination" aria-labelledby="zzap-video-years-title">
                     <p class="zzap-section__kicker">Watch the complete award series</p>
-                    <h2 id="zzap-video-years-title" class="visually-hidden">Zzap!64 retrospective years</h2>
+                    <h2 id="zzap-video-years-title" class="zzap-archive__section-title">Award videos by year</h2>
                     <div class="zzap-years" id="zzapYearCards"></div>
                 </section>
 
-                <section aria-labelledby="zzap-index-title">
+                <section id="zzap-award-search" class="zzap-archive__destination" aria-labelledby="zzap-index-title">
                     <p class="zzap-section__kicker">Searchable award index</p>
-                    <h2 id="zzap-index-title" class="visually-hidden">Search Zzap!64 awards</h2>
+                    <h2 id="zzap-index-title" class="zzap-archive__section-title">Find Gold Medals, Sizzlers &amp; Silver Medals</h2>
 
                     <div class="zzap-loading" id="zzapLoading" role="status" aria-live="polite" aria-busy="true">
                         <div class="zzap-loading__header">
@@ -252,11 +258,11 @@
                     <div class="zzap-awards" id="zzapAwardsGrid" aria-busy="true"><div class="zzap-empty">Loading the Zzap!64 awards archive…</div></div>
                 </section>
 
-                <section class="zzap-review-browser" aria-labelledby="zzap-all-reviews-title">
+                <section class="zzap-review-browser zzap-archive__destination" id="zzap-additional-reviews" aria-labelledby="zzap-all-reviews-title">
                     <div class="zzap-review-browser__heading">
                         <p class="zzap-section__kicker">Additional magazine reviews</p>
                         <h2 id="zzap-all-reviews-title">More Zzap!64 Reviews for CCG Games</h2>
-                        <p class="zzap-review-browser__intro">Award-winning reviews are already listed in the searchable award index above, so they are deliberately not repeated here. This section contains the additional ordinary reviews and later re-reviews linked to CCG games. Multiple scan pages from the same game, platform and issue are treated as one review entry rather than duplicated cards.</p>
+                        <p class="zzap-review-browser__intro">Find original magazine reviews and later budget re-reviews linked to CCG games. Award winners appear only in the awards index above. Multiple scan pages from the same game and issue are grouped together.</p>
                     </div>
 
                     <div class="zzap-review-browser__tools">

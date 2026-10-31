@@ -17,7 +17,7 @@ const library = JSON.parse(fs.readFileSync(path.join(root, "emulator/c64/library
 const records = Array.isArray(library.entries) ? library.entries : [];
 
 // Mirror the emulator's catalogue title normalisation (no substring guesses).
-const normalise = value => String(value || "").normalize("NFKD")
+const normalise = value => String(value || "").replace(/\+/g, " plus ").normalize("NFKD")
   .replace(/[\u0300-\u036f]/g, "").replace(/&/g, " and ")
   .replace(/['\u2018\u2019\u0060]/g, "").replace(/[^a-zA-Z0-9]+/g, " ")
   .trim().replace(/\s+/g, " ").toLowerCase();
@@ -146,9 +146,79 @@ for (const entry of [...validMedia, ...additionalCRT, ...packed, ...activatedArc
   const key = normalise(entry.title);
   mediaByTitle.set(key, [...(mediaByTitle.get(key) || []), entry]);
 }
+// Individually reviewed C64 page-title spellings versus existing approved
+// emulator catalogue titles. Never use fuzzy matching for autoplay/editions.
+// The source game titles, original media and existing stable IDs stay intact.
+const verifiedPageTitleAliases = new Map([
+  ["bcs-quest-for-tires",["BC's Quest For Tires","owner-crt-more-bcsquestfortires-e801a4272e1d"]],
+  ["bc2-grogs-revenge",["BC II - Grog's Revenge","owner-crt-more-bc-ii-grogs-revenge"]],
+  ["beach-head-2",["Beach-head 2","blast-0180"]],
+  ["boulder-dash",["Boulderdash","blast-0260"]],
+  ["the-captive",["Captive, The","owner-crt-more-captive-the"]],
+  ["ghetto-blaster",["Ghettoblaster","owner-crt-more-ghettoblaster"]],
+  ["the-great-escape",["Great Escape, The","owner-crt-more-great-escape-the"]],
+  ["halls-of-the-things",["Halls of the Things, The","owner-crt-more-halls-of-the-things-the"]],
+  ["the-hitchhikers-guide-to-the-galaxy",["Hitchhiker's Guide to the Galaxy, The","archive-04070"]],
+  ["jack-the-nipper-2-in-coconut-capers",["Jack the Nipper 2 - In Coconut Capers","archive-04412"]],
+  ["the-last-ninja",["Last Ninja, The","owner-crt-more-last-ninja-the"]],
+  ["leader-board",["Leaderboard","owner-crt-more-leaderboard"]],
+  ["the-lords-of-midnight",["Lords of Midnight","owner-crt-more-lords-of-midnight"]],
+  ["the-movie-monster-game",["Movie Monster Game, The","archive-05771"]],
+  ["the-official-father-christmas",["Official Father Christmas, The","owner-crt-more-officialfatherchristmasthe-b87bc59b307d"]],
+  ["pitfall-2-lost-caverns",["Pitfall 2 - Lost Caverns","archive-06519"]],
+  ["the-prince",["Prince, The","owner-crt-more-princethe-2cf0124d5000"]],
+  ["the-sacred-armour-of-antiriad",["Sacred Armour of Antiriad, The","owner-crt-more-sacred-armour-of-antiriad-the"]],
+  ["the-staff-of-karnath",["Staff of Karnath, The","owner-crt-more-staff-of-karnath-the"]],
+  ["summer-games-2",["Summer Games 2","blast-1566"]],
+  ["the-sword-of-fargoal",["Sword of Fargoal, The","owner-crt-more-sword-of-fargoal-the"]],
+  ["thunder-blade",["Thunderblade","owner-crt-more-thunderblade"]],
+  ["through-the-trap-door",["Through the Trapdoor","owner-crt-more-through-the-trapdoor"]],
+  ["up-n-down",["Up 'n Down","archive-09161"]],
+  ["water-polo",["Waterpolo","owner-crt-more-waterpolo"]],
+  ["the-way-of-the-exploding-fist",["Way of the Exploding Fist, The","owner-crt-more-way-of-the-exploding-fist-the"]],
+  ["the-willow-pattern-adventure",["Willow Pattern Adventure, The","owner-crt-more-willow-pattern-adventure-the"]],
+  ["wonder-boy",["Wonderboy","owner-crt-more-wonderboy-8ec329e8ba3d"]],
+  ["the-wombles",["Wombles, The","owner-crt-more-womblesthe-eeeeb83dbe3e"]],
+  ["the-transformers",["Transformers","owner-crt-more-transformers"]],
+  ["the-trap-door",["Trap Door, The","owner-crt-more-trapdoorthe-f9e40ebe1021"]],
+  ["he-man-and-the-masters-of-the-universe-the-ilearth-stone",["He-Man and Masters of the Universe - The Ilearth Stone","archive-03945"]],
+  // The owner-approved Turrican Trilogy CRT opens a selection menu for all three games.
+  ["turrican",["Turrican Trilogy","turrican-trilogy"]],
+  ["turrican-2-the-final-fight",["Turrican Trilogy","turrican-trilogy"]],
+  ["the-faces-of-haarne",["Faces of Haarne","owner-crt-more-facesofhaarne-3f498ebd2059"]],
+  ["the-sentinel",["Sentinel, The","owner-crt-more-sentinel-the"]],
+  ["the-snowman",["Snowman, The","archive-07817"]],
+  ["the-train-escape-to-normandy",["The Train","owner-crt-more-the-train"]],
+  ["archon-the-light-and-the-dark",["Archon","owner-crt-more-archon"]],
+  ["the-activision-decathlon",["Decathlon","owner-crt-decathlon"]],
+  ["creatures-2-torture-trouble",["Creatures 2","creatures-2"]],
+  ["last-ninja-2-back-with-a-vengeance",["Last Ninja 2","last-ninja-2"]],
+  ["sid-meiers-pirates",["Pirates!","pirates"]],
+  ["teenage-mutant-hero-turtles",["Teenage Mutant Ninja Turtles, The","archive-08639"]],
+  ["kobyashi-naru",["Kobayashi Naru","owner-crt-more-kobayashi-naru"]],
+  ["cops-n-robbers",["Cops & Robbers","owner-crt-more-cops-and-robbers"]],
+]);
+
+// Owner-reviewed exact-title duplicate CRTs: the pinned ID is the first
+// approved, preferred cartridge in the live emulator catalogue. Never apply
+// this exception to duplicate site titles (e.g. two distinct Popeye editions).
+const verifiedDuplicateMediaSelections = new Map([
+  ["badlands","owner-crt-badlands"],
+  ["congo-bongo","owner-crt-congo-bongo"],
+  ["gateway-to-apshai","owner-crt-gateway-to-apshai"],
+  ["ghostbusters","owner-crt-ghostbusters"],
+  ["hero","owner-crt-h-e-r-o"],
+  ["kung-fu-master","owner-crt-kung-fu-master"],
+  ["tapper","owner-crt-tapper"],
+]);
+
 function emulatorMatch(game) {
   const title = normalise(game.title);
-  const matches = mediaByTitle.get(title) || [];
+  const literalMatches = mediaByTitle.get(title) || [];
+  const auditedAlias = verifiedPageTitleAliases.get(game.slug);
+  const matches = literalMatches.length ? literalMatches :
+    (auditedAlias ? (mediaByTitle.get(normalise(auditedAlias[0])) || [])
+      .filter(entry => entry.id === auditedAlias[1]) : []);
   if (!title || !matches.length) return null;
   // Duplicate archive titles require an exact slug identity; never guess.
   if (gameCounts.get(title) !== 1) {
@@ -157,13 +227,29 @@ function emulatorMatch(game) {
   }
   const best = Math.min(...matches.map(e => priority[e.format] ?? 99));
   const preferred = matches.filter(e => (priority[e.format] ?? 99) === best);
+  // The Domark 1988 game page must not select the older same-title cartridge.
+  // The matching runtime deep link validates this precise edition again.
+  if (game.slug === "star-wars") {
+    const pinned = matches.filter(e =>
+      e.id === "owner-crt-more-starwars-1e41e83051d1" &&
+      e.format === "crt" && validMedia.includes(e));
+    return pinned.length === 1 ? pinned[0] : null;
+  }
   // Direct approved files precede extra CRT, Blast and optional packed PRGs.
   // A tie at the same priority needs an exact ID or is deliberately unlinked.
   if (preferred.length === 1) return preferred[0];
   const exact = preferred.filter(e => e.id === game.slug);
   if (exact.length === 1) return exact[0];
   const direct = preferred.filter(e => validMedia.includes(e));
-  return direct.length === 1 ? direct[0] : null;
+  if (direct.length === 1) return direct[0];
+  // A fixed exception only succeeds if the pinned approved CRT is still
+  // preferred and is the first of its exact-title variants in the runtime list.
+  const verifiedId = verifiedDuplicateMediaSelections.get(game.slug);
+  if (verifiedId && preferred[0]?.id === verifiedId &&
+      preferred[0]?.format === "crt" && validMedia.includes(preferred[0])) {
+    return preferred[0];
+  }
+  return null;
 }
 
 const playAnchor = id => [

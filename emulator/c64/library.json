@@ -23464,6 +23464,20 @@
       "year": 2026,
       "license": "Owner-supplied CCG modified edition; public redistribution authorised by the CCG website owner on 2026-10-16",
       "approved": true
+    },
+    {
+      "id": "owner-d64-gary-linekers-superstar-soccer",
+      "title": "Gary Lineker's Superstar Soccer",
+      "filename": "gary-linekers-superstar-soccer.d64",
+      "format": "d64",
+      "description": "Owner-supplied Commodore 64 disk image; boots from disk in the CCG emulator.",
+      "url": "/emulator/c64/media/gary-linekers-superstar-soccer.d64",
+      "bytes": 174848,
+      "sha256": "4728a449bda1182f75f4c985f054d5846ab80c46de9d29c52910ddcb8ccbd8e3",
+      "publisher": "Gremlin Graphics",
+      "year": 1987,
+      "license": "Public redistribution authorised by CCG website owner on 2026-10-19 (owner-supplied D64)",
+      "approved": true
     }
   ]
 }

@@ -793,7 +793,7 @@ function drawChests(){
     // their next movement step would trigger its lock. Fog/LOS may lag behind
     // the exact movement boundary, otherwise the key prompt appears on an
     // apparently empty tile. Distant undiscovered chests remain concealed.
-    const nextStepChest=Boolean(focus&&md(c,focus)<=1);
+    const nextStepChest=Boolean(focus&&Math.max(Math.abs(c.x-focus.x),Math.abs(c.y-focus.y))<=1);
     if(!tileInRenderView(c.x,c.y,2)||(!nextStepChest&&!visibleTo(focus,c.x,c.y)))continue;
     const s=ws(c.x,c.y),rar=c.loot?.rarity,col=PGR.colourForRarity(rar),cx=s.x+C.tile/2,pulse=.6+.4*Math.sin(now/180+c.x*3);
     // Stage-1 CC0 chest frames are the default live presentation. Explicit
@@ -1110,16 +1110,16 @@ function drawEnemyChargeTelegraph(e,cx,cy){
   ctx.restore();return true
 }
 function drawEnemy(e){
-  if(!e.alive||!tileInRenderView(e.x,e.y,3)||!visibleTo(focus,e.x,e.y))return;const s=enemyScreen(e),f=e.follower,isDeathStalker=Boolean(e.deathStalker&&e.voidStalker),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
+  if(!e.alive||!tileInRenderView(e.x,e.y,3)||!visibleTo(focus,e.x,e.y))return;const s=enemyScreen(e),f=e.follower,isDeathStalker=Boolean(e.deathStalker&&e.voidStalker),wardBroken=Boolean(e.v142WardBroken&&e.v142WardState!=="defeated"),cx=s.x+C.tile/2,cy=s.y+C.tile/2;
   if(f){const r=(C.enemy.followerLightRadius||5)*C.tile,g=ctx.createRadialGradient(cx,cy,8,cx,cy,r);g.addColorStop(0,"rgba(255,213,112,.13)");g.addColorStop(.45,"rgba(255,160,70,.05)");g.addColorStop(1,"rgba(255,140,50,0)");ctx.fillStyle=g;ctx.fillRect(s.x-r,s.y-r,r*2,r*2)}
   if(isDeathStalker){const aura=ctx.createRadialGradient(cx,cy,5,cx,cy,C.tile*.85);aura.addColorStop(0,"rgba(255,25,62,.22)");aura.addColorStop(1,"rgba(255,25,62,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile,cy-C.tile,C.tile*2,C.tile*2)}ctx.fillStyle="rgba(0,0,0,.42)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,isDeathStalker?19:13,isDeathStalker?6:4,0,0,Math.PI*2);ctx.fill();if(!drawGrotesqueBossSprite(e,cx,cy)&&!drawPunyEnemySprite(e,cx,cy)&&!drawAuthoredDungeonEnemySprite(e,cx,cy))drawPixelEnemySprite(e,cx,cy);drawEnemyChargeTelegraph(e,cx,cy);
   const identityName=window.CCGDungeonEnemyIdentity?.label?.(e,{floor:Number(run?.floor||e.v142Floor||1),guardianName:"FLOOR GUARDIAN"});const name=e.r114BossName||identityName||e.r114Archetype||(e.exitWarden?"SIGIL WARDEN":e.guardian?"FLOOR GUARDIAN":isDeathStalker?"DEATH STALKER":e.champion?e.championName:e.treasureGoblin?"TREASURE GOBLIN":f?.name||({spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Tape Scout",hunter:"Joystick Hunter",ambusher:"Raster Ambusher",guard:"1541 Guard",ghost:"Ghost Byte",charger:"Charger",ranger:"Ranger",root:"Root Crawler",cook:"CPU Cook",firebreather:"Firebreather"}[e.kind]||"Enemy"));
-  label(isDeathStalker?`${name} — INDESTRUCTIBLE`:name,s,isDeathStalker?P.red:e.exitWarden?P.gold:e.guardian?P.red:e.champion?P.cyan:f?P.gold:P.white);if(!isDeathStalker)drawTransientHealth(e,s,f?P.gold:P.white);
+  label(isDeathStalker?`${name} — ${wardBroken?"VULNERABLE":"INDESTRUCTIBLE"}`:name,s,isDeathStalker?(wardBroken?P.purple:P.red):e.exitWarden?P.gold:e.guardian?P.red:e.champion?P.cyan:f?P.gold:P.white);if(!isDeathStalker||wardBroken)drawTransientHealth(e,s,wardBroken?P.purple:f?P.gold:P.white);
   if((e.hitStunMs||0)>0){ctx.font='bold 9px "Courier New"';ctx.textAlign="center";ctx.fillStyle=P.cyan;ctx.fillText("STUNNED",cx,s.y-25)}else if(e.aiState==="chase"||e.aiState==="search"){ctx.font='bold 14px "Courier New"';ctx.textAlign="center";ctx.fillStyle=e.aiState==="chase"?P.red:P.gold;ctx.fillText(e.aiState==="chase"?"!":"?",cx,s.y-25)}
   if(e.champion||e.guardian){const pct=Math.max(0,e.hp/e.maxHp);ctx.fillStyle="#1a0b12";ctx.fillRect(s.x+3,s.y+C.tile+2,C.tile-6,3);ctx.fillStyle=e.guardian?P.red:P.cyan;ctx.fillRect(s.x+3,s.y+C.tile+2,(C.tile-6)*pct,3)}
 }
 function drawStalker(){
-  const s=host.stalker;if(!s?.awake||!visibleTo(focus,s.x,s.y))return;const q=ws(s.x,s.y),cx=q.x+C.tile/2,cy=q.y+C.tile/2,now=performance.now(),t=now/260,pulse=.68+.32*Math.sin(t),v=s.vulnerableMs>0,col=v?P.purple:"#ff314f";ctx.save();ctx.translate(cx,cy+Math.sin(t*.55)*2);ctx.imageSmoothingEnabled=false;
+  const s=host.stalker;if(!s?.awake||!visibleTo(focus,s.x,s.y))return;const q=ws(s.x,s.y),cx=q.x+C.tile/2,cy=q.y+C.tile/2,now=performance.now(),t=now/260,pulse=.68+.32*Math.sin(t),v=s.vulnerableMs>0||Boolean(s.v142WardBroken&&s.v142WardState!=="defeated"),col=v?P.purple:"#ff314f";ctx.save();ctx.translate(cx,cy+Math.sin(t*.55)*2);ctx.imageSmoothingEnabled=false;
   ctx.fillStyle="rgba(0,0,0,.58)";ctx.beginPath();ctx.ellipse(0,18,21,6,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=v?30:23;
   // Orbiting clock fragments reinforce Count Loadula's unnatural persistence.
   ctx.save();ctx.globalAlpha=.45+.2*pulse;ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.rotate(t*.16);for(let n=0;n<8;n++){ctx.rotate(Math.PI/4);ctx.strokeRect(22,-2,5,4)}ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();ctx.restore();
@@ -1577,7 +1577,11 @@ function drawDedicatedHazards(){
       const spin=active?(now/54+cell.group*.7):warning?(Math.sin(now/105+cell.group)*.42):0;
       ctx.save();ctx.translate(cx,cy);ctx.rotate(spin);
       if(blade?.complete&&blade.naturalWidth){
-        const size=active?C.tile*.9:warning?C.tile*.8:C.tile*.72;
+        // Idle blade hardware must recede rather than cover whole rooms with pale glyphs.
+        const size=active?C.tile*.78:warning?C.tile*.68:C.tile*.54;
+        ctx.fillStyle="#141a23";ctx.fillRect(-C.tile*.30,-C.tile*.30,C.tile*.60,C.tile*.60);
+        ctx.strokeStyle=active?P.red:warning?P.gold:"#555e6c";ctx.lineWidth=2;
+        ctx.strokeRect(-C.tile*.28,-C.tile*.28,C.tile*.56,C.tile*.56);
         ctx.shadowColor=active?P.red:warning?P.gold:"rgba(145,154,166,.35)";ctx.shadowBlur=active?14:warning?9:4;
         ctx.drawImage(blade,-size/2,-size/2,size,size)
       }else{
@@ -1694,6 +1698,11 @@ function drawRadarCross(ctx,x,y,colour,size=6){
   ctx.fillRect(x-2,y-size,4,size*2);ctx.fillRect(x-size,y-2,size*2,4);
   ctx.strokeRect(x-2.5,y-size-.5,5,size*2+1);ctx.strokeRect(x-size-.5,y-2.5,size*2+1,5);ctx.restore()
 }
+function radarBridgeThief(hostState){
+  const bridge=hostState?.weightBridge;
+  if(!bridge?.crossed||bridge.thiefDefeated||!bridge.thiefId)return null;
+  return (hostState.enemies||[]).find(e=>e?.bridgeThief&&e.alive&&e.id===bridge.thiefId)||null;
+}
 function renderRadarPanel(p){
   if(!radarCtx||!radarCanvasEl||!world||!p)return;
   /* Keep the radar backing bitmap aligned to the visible canvas. Fixed minimum
@@ -1728,6 +1737,22 @@ function renderRadarPanel(p){
   for(const cache of host.deathCaches||[])if(cache.active&&inside(cache)){const cx=px(cache),cy=py(cache);radarCtx.save();radarCtx.strokeStyle="#ff6076";radarCtx.lineWidth=2;radarCtx.beginPath();radarCtx.moveTo(cx-3,cy-3);radarCtx.lineTo(cx+3,cy+3);radarCtx.moveTo(cx+3,cy-3);radarCtx.lineTo(cx-3,cy+3);radarCtx.stroke();radarCtx.restore()}
   for(const shop of host.shops||[])if(shop.active&&(shop.discovered||revealAll)&&inside(shop)){const sx=px(shop),sy=py(shop);radarCtx.fillStyle=P.gold;radarCtx.strokeStyle="#fff4bb";radarCtx.fillRect(sx-4,sy-3,8,6);radarCtx.strokeRect(sx-4,sy-3,8,6);radarCtx.fillStyle=P.cyan;radarCtx.fillRect(sx-3,sy-1,2,3);radarCtx.fillRect(sx+1,sy-1,2,3)}
   if(ex.has(`${world.exit.x},${world.exit.y}`)&&inside(world.exit)){radarCtx.fillStyle=host.exitOpen?P.purple:"#71637d";radarCtx.fillRect(px(world.exit)-2,py(world.exit)-2,5,5)}
+  // After the theft, track the live thief even outside this room-sized radar.
+  // Clamping its marker indicates direction without revealing map geometry.
+  const fleeingThief=radarBridgeThief(host);
+  if(fleeingThief){
+    const onMap=inside(fleeingThief),
+      x=ox+(Math.max(minX+.5,Math.min(maxX-1.5,Number(fleeingThief.x)))-minX)*sc,
+      y=oy+(Math.max(minY+.5,Math.min(maxY-1.5,Number(fleeingThief.y)))-minY)*sc;
+    radarCtx.save();radarCtx.fillStyle="#ffb75b";radarCtx.strokeStyle="#fff0c3";
+    radarCtx.lineWidth=1.3;radarCtx.beginPath();radarCtx.arc(x,y,onMap?5:4.5,0,Math.PI*2);
+    radarCtx.fill();radarCtx.stroke();radarCtx.fillStyle="#29120b";
+    radarCtx.font="bold 8px monospace";radarCtx.textAlign="center";
+    radarCtx.textBaseline="middle";radarCtx.fillText("T",x,y+.25);radarCtx.restore();
+    try{window.__CCG_RADAR_DIAGNOSTICS__.thiefMarker={
+      worldX:Number(fleeingThief.x),worldY:Number(fleeingThief.y),shape:"T",onMap,count:1
+    }}catch(_){}
+  }
   radarCtx.strokeStyle="rgba(108,236,255,.24)";radarCtx.strokeRect(ox+.5,oy+.5,mw-1,mh-1);
   const playerCx=px(p)+sc/2,playerCy=py(p)+sc/2,playerSize=Math.max(7,Math.min(11,sc*.82));radarCtx.save();radarCtx.fillStyle=P.cyan;radarCtx.strokeStyle=P.white;radarCtx.lineWidth=1.5;radarCtx.shadowColor=P.cyan;radarCtx.shadowBlur=4;radarCtx.fillRect(playerCx-playerSize/2,playerCy-playerSize/2,playerSize,playerSize);radarCtx.strokeRect(playerCx-playerSize/2-.5,playerCy-playerSize/2-.5,playerSize+1,playerSize+1);radarCtx.fillStyle="#091018";radarCtx.fillRect(playerCx-1,playerCy-1,2,2);radarCtx.restore()
 }

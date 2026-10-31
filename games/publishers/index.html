@@ -1342,6 +1342,20 @@
   <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-shell-style="true">
   <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
   <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
+  <link rel="stylesheet" href="/resources/css/ccg-nav-viewport-overlay.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-inner-page-density.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-scroll-authority.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-global-search.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-mode-identity.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mode.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mobile-fix.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-ui-regression-fixes.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-engagement-engine.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-identity.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-amiga-mobile-alignment.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-responsive-safety.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-responsive-page-polish.css" data-ccg-public-header-first-paint-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-sitewide-layout-optimization.css" data-ccg-public-header-first-paint-style="true">
   <link rel="stylesheet" href="/resources/css/ccg-nav-labelled-bridge.css" data-ccg-public-header-first-paint-style="true">
 </head>
 <body class="ccg-body ccg-publishers-page" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -1545,7 +1559,7 @@
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="amiga" aria-pressed="false">Amiga</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="both" aria-pressed="false">Both</button>
                 </div>
-                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">206</strong> publishers shown</p>
+                <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">206</strong> publishers available</p>
             </section>
 
             <section class="ccg-publishers-section ccg-publishers-section--featured" aria-labelledby="featured-publishers-title">
@@ -1738,10 +1752,12 @@
                 </div>
             </section>
 
+            <details class="ccg-publisher-directory-disclosure" data-publisher-directory-disclosure>
+                <summary class="ccg-publisher-directory-disclosure__summary">Browse the other 194 publishers A–Z</summary>
             <section class="ccg-publishers-section" aria-labelledby="all-publishers-title">
                 <div class="ccg-publishers-section__heading">
                     <p class="ccg-publishers-section__kicker">Full directory</p>
-                    <h2 id="all-publishers-title">All Publishers</h2>
+                    <h2 id="all-publishers-title">Other Publishers</h2>
                 </div>
                 <div class="ccg-publisher-grid" id="publisherGrid">
 
@@ -4191,6 +4207,7 @@
                 </div>
                 <p class="ccg-publishers-empty" id="publisherEmptyState" hidden>No publishers match that search.</p>
             </section>
+            </details>
         </main>
 
         <footer class="ccg-footer">

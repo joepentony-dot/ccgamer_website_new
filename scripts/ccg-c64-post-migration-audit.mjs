@@ -19,14 +19,14 @@ const archiveAliases = file(root + "prg-archive/retired-ids.json");
 const sha = data => createHash("sha256").update(data).digest("hex");
 assert.equal(library.version, 1);
 assert.equal(active.recordCount, active.games.length);
-assert.equal(active.recordCount, 2064);
+assert.equal(active.recordCount, 2063);
 assert.equal(blast.recordCount, blast.games.length);
 assert.equal(blast.recordCount, 1150);
 assert.equal(archive.recordCount, archive.games.length);
 assert.equal(archive.recordCount, 8321);
 assert.equal(blastAliases.recordCount, 728);
 assert.equal(archiveAliases.recordCount, 1528);
-assert.equal(library.entries.length, 1771);
+assert.equal(library.entries.length, 1772);
 const directIds = new Set(library.entries.map(x => x.id));
 assert.equal(directIds.size, library.entries.length, "Duplicate direct game ID");
 

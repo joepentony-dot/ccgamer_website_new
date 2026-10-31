@@ -153,7 +153,7 @@ test('normalisation is idempotent including inline auth bootstrap and direct sty
   assert.equal(second.changed, false);
   assert.equal(second.html, first.html);
   assert.equal(count(second.html, 'data-ccg-auth-snapshot-bootstrap="true"'), 1);
-  assert.equal(count(second.html, 'data-ccg-public-header-first-paint-style="true"'), 1);
+  assert.equal(count(second.html, 'data-ccg-public-header-first-paint-style="true"'), PUBLIC_HEADER_FIRST_PAINT_STYLES.length);
 });
 
 test('admin, auth and supabase paths stay outside the deployment normaliser', () => {

@@ -13,7 +13,8 @@ import {
   PACK_ROOT, PACK_CATALOG_URL, ARCHIVE_PACK_ROOT, ARCHIVE_CATALOG_URL,
   ARCHIVE_READY_URL, ADDITIONAL_CRT_CATALOG_URL, parseAdditionalCrtCatalog,
   parsePackedCatalog, suggestCatalogGames, loadPackedGameBytes,
-  preferSelectedCartridges, catalogGameIdentity,
+  preferSelectedCartridges, catalogGameIdentity, selectVerifiedExactCrtEdition,
+  findVerifiedExactCrtEdition,
 } from "./game-catalog.js";
 
 // Safari privacy settings can deny localStorage, even though the page and
@@ -1094,9 +1095,17 @@ function releaseHeldMatrixBinding(event, heldKey) {
   if (!binding) return false;
 
   heldMatrixKeys.delete(heldKey);
-  // If the same C64 key is also held on the touchscreen, leave it pressed.
-  if (![...touchFunctionKeyHolds.values()].some(held =>
-      held.col === binding.col && held.row === binding.row)) {
+  // Multiple physical host keys (notably Tab/F9 RUN/STOP) and on-screen
+  // keys may point to the SAME C64 CIA matrix position. Releasing one host
+  // key must not release the shared C64 key until every holder is gone.
+  const stillHeldPhysically = [...heldMatrixKeys.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnTouchscreen = [...touchFunctionKeyHolds.values()].some(held =>
+    held.col === binding.col && held.row === binding.row);
+  const stillHeldOnMobileKeyboard = [...mobileVirtualHeld.values()].some(held =>
+    (held.col === binding.col && held.row === binding.row) ||
+    (binding.col === 1 && binding.row === 7 && held.shift));
+  if (!stillHeldPhysically && !stillHeldOnTouchscreen && !stillHeldOnMobileKeyboard) {
     machine.cia1.setKey(binding.col, binding.row, false);
   }
   if (inputStatus && !heldMatrixKeys.size) inputStatus.textContent = "KEYBOARD READY";
@@ -1147,6 +1156,34 @@ function handleC64Key(event, pressed) {
   if (pressed && (setup?.hidden === false ||
     usesTextInput(event.target) || usesTextInput(document.activeElement) ||
     nativeActivation)) return;
+
+  // Plain Tab is C64 RUN/STOP. Keep modified Tab combinations available
+  // for browser navigation, but ALWAYS release a previously-held plain Tab
+  // even if the user presses a modifier before the Tab key-up arrives.
+  if (event.code === "Tab" &&
+      (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
+    if (!pressed && releaseHeldMatrixBinding(event, "Tab")) event.preventDefault();
+    return;
+  }
+
+  // VICE-style emulator shortcuts (key-down edge only). Keep native text
+  // inputs, setup dialogs, AltGr characters and system combinations intact.
+  // Key-up must also be consumed, so the browser doesn't shift focus.
+  if (event.altKey && !event.ctrlKey && !event.metaKey &&
+      !event.getModifierState?.("AltGraph") &&
+      ["KeyJ", "KeyW"].includes(event.code)) {
+    event.preventDefault();
+    if (!pressed) {
+      // J/W may have been pressed as an ordinary C64 key or keyboard-joystick
+      // direction BEFORE Alt went down. Never swallow their release edges.
+      if (keyboardJoystickKeys.delete(event.code)) applyJoystickInput();
+      releaseHeldMatrixBinding(event, event.code || `key:${event.key}`);
+    } else if (!event.repeat) {
+      if (event.code === "KeyJ") swapJoystickPort();
+      else toggleWarpLoad();
+    }
+    return;
+  }
 
   // Leave operating-system/browser shortcuts alone (AltGr remains available).
   if (event.metaKey || (event.altKey && !event.getModifierState?.("AltGraph"))) return;
@@ -2533,6 +2570,10 @@ async function initialiseOnlineLibrary() {
   const validLinkedId = /^[a-z0-9][a-z0-9-]{0,100}$/.test(linkedGameId);
   const linkedOriginal = validLinkedId
     ? allHostedEntries.find(entry => entry.id === linkedGameId) : null;
+  // Preserve the verified Domark cartridge on its game-page deep link even
+  // when an older same-title CRT wins the normal one-row catalogue view.
+  onlineLibraryEntries = selectVerifiedExactCrtEdition(
+    onlineLibraryEntries, allHostedEntries, linkedGameId);
   // Preserve bookmarks to directly hosted D64s retired after the matching
   // owner-selected CRT was installed. These IDs no longer occur in the
   // direct library, so they need an explicit, reviewed identity mapping.
@@ -2548,13 +2589,22 @@ async function initialiseOnlineLibrary() {
   };
   const retiredTitle = Object.hasOwn(retiredDirectAliases, linkedGameId)
     ? retiredDirectAliases[linkedGameId] : "";
+  // The historical Domark edition is identity-pinned, never title-fallback.
+  // If the exact SHA-audited CRT disappears or changes, do not boot the
+  // older Star Wars image in its place.
+  const pinnedDomarkLink = linkedGameId === "owner-crt-more-starwars-1e41e83051d1";
+  const verifiedDomark = pinnedDomarkLink
+    ? findVerifiedExactCrtEdition(allHostedEntries, linkedGameId) : null;
   let linkedGame = validLinkedId
-    ? (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
-       (linkedOriginal && onlineLibraryEntries.find(entry =>
-         catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
-       (retiredTitle && onlineLibraryEntries.find(entry =>
-         entry.format === "crt" &&
-         catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle))))
+    ? (pinnedDomarkLink
+        ? (verifiedDomark && onlineLibraryEntries.find(entry =>
+            entry === verifiedDomark)) || null
+        : (onlineLibraryEntries.find(entry => entry.id === linkedGameId) ||
+           (linkedOriginal && onlineLibraryEntries.find(entry =>
+             catalogGameIdentity(entry.title) === catalogGameIdentity(linkedOriginal.title))) ||
+           (retiredTitle && onlineLibraryEntries.find(entry =>
+             entry.format === "crt" &&
+             catalogGameIdentity(entry.title) === catalogGameIdentity(retiredTitle)))))
     : null;
   // Packed PRG IDs are stable bookmarks. After retiring an exact-title PRG,
   // request the small SHA-audited retirement map ONLY for an unresolved legacy

@@ -42,27 +42,27 @@ html[data-ccg-page="home"] .home-support-art__hotspot {
   white-space: nowrap;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--paypal {
-  left: 69.3%;
-  top: 55.7%;
-  width: 23.2%;
+  left: 73.7%;
+  top: 60.0%;
+  width: 24.2%;
   height: 16.0%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--patreon {
-  left: 69.9%;
-  top: 75.7%;
-  width: 4.5%;
+  left: 74.2%;
+  top: 80.0%;
+  width: 5.1%;
   height: 6.3%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--youtube {
-  left: 75.6%;
-  top: 75.7%;
-  width: 4.2%;
+  left: 80.2%;
+  top: 80.0%;
+  width: 5.1%;
   height: 6.3%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot--more {
-  left: 81.3%;
-  top: 75.7%;
-  width: 10.9%;
+  left: 85.8%;
+  top: 80.0%;
+  width: 12.4%;
   height: 6.3%;
 }
 html[data-ccg-page="home"] .home-support-art__hotspot:focus-visible {

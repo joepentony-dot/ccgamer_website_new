@@ -1,10 +1,10 @@
 /* ============================================================
    CCG ADAPTIVE DESKTOP NAVIGATION
    ------------------------------------------------------------
-   Desktop More is owned here and nowhere else. CCG Games,
-   Install CCG App, About Me and Contact are deliberately reserved
-   for More, with additional destinations moved there only when the
-   visible navigation genuinely overflows.
+   Desktop More is owned here and nowhere else. Archive destinations
+   appear by relevance, followed by merchandise, installation, CCG
+   Games, About Me and Contact. The canonical lists and mobile drawer
+   remain unchanged.
 ============================================================ */
 
 (function () {
@@ -17,16 +17,32 @@
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
     const PINNED_MORE_LABELS = new Set(["ccg games", "install ccg app", "about", "about me", "contact"]);
+    const UX_PINNED_MORE_LABELS = new Set(["browse by genre", "publishers", "collections", "music hub", "find me a game", "zzap!64 reviews & awards", "quiz", "emulation"]);
+    /* The More menu prioritises game discovery, with supporting links last.
+       This does not change canonical source lists or the mobile drawer. */
+    const MORE_ARCHIVE_ORDER = [
+        "browse by genre",
+        "publishers",
+        "collections",
+        "find me a game",
+        "music hub",
+        "zzap!64 reviews & awards",
+        "quiz",
+        "emulation"
+    ];
     const BASE_MORE_LINKS = [
         ["Merch Shop", "https://cheeky-commodore-gamer-shop.fourthwall.com/en-gbp"],
-        ["CCG Games", "/games/ccg-games/"],
         ["Install CCG App", "/install-app.html"],
+        ["CCG Games", "/games/ccg-games/"],
         ["About Me", "/about.html"],
         ["Contact", "/contact.html"]
     ];
     let fitFrame = 0;
     let fitTimer = 0;
     let fitting = false;
+    let lastFitSignature = "";
+    let lastFittedNav = null;
+    const menuSignatures = new WeakMap();
 
     function ensureCss() {
         if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
@@ -244,7 +260,8 @@
     }
 
     function isPinnedMoreItem(item) {
-        return PINNED_MORE_LABELS.has(normalizeLabel(item?.querySelector(".ccg-nav__link")?.textContent));
+        const label = normalizeLabel(item?.querySelector(".ccg-nav__link")?.textContent);
+        return PINNED_MORE_LABELS.has(label) || UX_PINNED_MORE_LABELS.has(label);
     }
 
     function restoreItems(items) {
@@ -274,16 +291,29 @@
     }
 
     function populateMore(menu, hiddenItems) {
+        const signature = hiddenItems.map(item => item.querySelector(".ccg-nav__link")?.outerHTML || "").join("\n");
+        if (menuSignatures.get(menu) === signature && menu.children.length) return;
+        menuSignatures.set(menu, signature);
         menu.textContent = "";
         const seen = new Set();
+        const supportingHrefs = new Set(BASE_MORE_LINKS.map(([, href]) => new URL(href, window.location.href).href));
 
-        BASE_MORE_LINKS.forEach(([label, href]) => appendMoreLink(menu, label, href, seen));
+        /* The full archive comes first even when it spans primary and
+           secondary canonical lists. Unknown overflow links stay behind the
+           named archive destinations, but ahead of supporting links. */
+        const sortedItems = hiddenItems
+            .map((item, index) => {
+                const source = item.querySelector(".ccg-nav__link");
+                const label = normalizeLabel(source?.textContent);
+                const rank = MORE_ARCHIVE_ORDER.indexOf(label);
+                return { source, index, rank: rank < 0 ? MORE_ARCHIVE_ORDER.length : rank };
+            })
+            .sort((a, b) => a.rank - b.rank || a.index - b.index);
 
-        hiddenItems.forEach((item) => {
-            const source = item.querySelector(".ccg-nav__link");
+        sortedItems.forEach(({ source }) => {
             if (!source) return;
             const absolute = new URL(source.href, window.location.href).href;
-            if (seen.has(absolute)) return;
+            if (seen.has(absolute) || supportingHrefs.has(absolute)) return;
             const link = source.cloneNode(true);
             link.classList.add("ccg-nav-fit__link");
             link.removeAttribute("id");
@@ -291,10 +321,30 @@
             menu.appendChild(link);
             seen.add(absolute);
         });
+
+        /* Merchandise, installation, CCG Games and information belong at
+           the foot, with About Me and Contact always the final two links. */
+        BASE_MORE_LINKS.forEach(([label, href]) => appendMoreLink(menu, label, href, seen));
     }
 
     function announceFitted(nav) {
         document.dispatchEvent(new CustomEvent("ccg:navigation-fitted", { detail: { nav } }));
+    }
+
+    /* A single direct Play C64 action uses the existing header styling;
+       secondary archive destinations remain in the existing More menu. */
+    function ensurePlayOnlineLink(nav) {
+        const bar = nav?.querySelector(".ccg-nav__bar");
+        const more = bar?.querySelector(".ccg-nav__more");
+        if (!bar || !more) return;
+        let link = bar.querySelector("[data-ccg-play-online-link]");
+        if (link) return;
+        link = document.createElement("a");
+        link.href = "/emulator/c64/";
+        link.className = "ccg-nav__link ccg-nav-fit__play";
+        link.setAttribute("data-ccg-play-online-link", "true");
+        link.textContent = "Play C64";
+        bar.insertBefore(link, more);
     }
 
     function fitNavigation() {
@@ -307,15 +357,25 @@
         if (!header || !nav || !more || !toggle || !menu) return;
 
         const desktop = isDesktop();
+        const items = allNavItems(nav);
+        const signature = `${window.innerWidth}|${desktop}|${document.fonts?.status}|${items.map(item => item.querySelector(".ccg-nav__link")?.outerHTML || "").join("\n")}`;
+        if (lastFittedNav === nav && lastFitSignature === signature) {
+            // Height-only resizes still change popover clearance and its 70vh
+            // maximum. Keep the same links, but keep the open menu on screen.
+            if (!menu.hidden && isPopoverOpen(menu)) positionPopover(toggle, menu);
+            return;
+        }
+        lastFittedNav = nav;
+        lastFitSignature = signature;
+        if (desktop) ensurePlayOnlineLink(nav);
+        nav.classList.toggle("ccg-nav--ux-compact", desktop);
         const restoreOpen = desktop
             && toggle.getAttribute("aria-expanded") === "true"
             && !menu.hidden;
 
         fitting = true;
-        const items = allNavItems(nav);
         restoreItems(items);
         nav.classList.remove("ccg-nav--fit-compact", "ccg-nav--fit-tight", "ccg-nav--has-overflow");
-        menu.textContent = "";
         closeMore(toggle, menu);
 
         if (!desktop) {
@@ -410,13 +470,13 @@
         scheduleFit();
 
         if (document.fonts?.ready) {
-            document.fonts.ready.then(() => scheduleFit()).catch(() => {});
+            document.fonts.ready.then(() => { lastFitSignature = ""; scheduleFit(); }).catch(() => {});
         }
         window.addEventListener("load", () => scheduleFit(), { once: true, passive: true });
         window.addEventListener("resize", () => scheduleFit(30), { passive: true });
         window.addEventListener("orientationchange", () => scheduleFit(60), { passive: true });
         window.addEventListener("pageshow", () => scheduleFit(20), { passive: true });
-        document.addEventListener("ccg:navigation-ready", () => scheduleFit());
+        document.addEventListener("ccg:navigation-ready", () => { lastFitSignature = ""; scheduleFit(); });
         desktopMedia?.addEventListener?.("change", () => scheduleFit());
 
         const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");

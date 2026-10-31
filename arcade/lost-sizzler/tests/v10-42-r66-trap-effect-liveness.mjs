@@ -11,11 +11,13 @@ assert.match(play,/MAX_PROJECTILE_WALL_MS=2600/,
   "R66 must wall-clock expire stale projectiles during browser slowdown");
 assert.match(play,/__ccgWallBornAt/,
   "R66 must wall-clock age visual effects independently of capped simulation dt");
-assert.match(play,/expired\(particles\[i\],260\)/,
+assert.match(play,/retainLive\(particles,260,MAX_GAMEPLAY_PARTICLES\)/,
   "R66 must expire stale particles after real-time stalls");
-assert.match(play,/expired\(rings\[i\],220\)/,
+assert.match(play,/retainLive\(rings,220,MAX_GAMEPLAY_RINGS\)/,
   "R66 must expire stale rings after real-time stalls");
-assert.match(play,/expired\(floaters\[i\],360\)/,
+assert.match(play,/retainLive\(floaters,360,96\)/,
   "R66 must expire stale floaters after real-time stalls");
+assert.ok(play.includes("!expired(row,pad)"),
+  "R66 effect retirement must still invoke wall-clock expiry on each live candidate");
 
 console.log("Dungeon Carnage R66 trap-boundary and wall-clock effect lifetime contract passed");

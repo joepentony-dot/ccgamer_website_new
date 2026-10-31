@@ -682,3 +682,57 @@ body[data-ccg-mode] .ccg-consent-close {
         transform: none;
     }
 }
+
+
+/* GoatCounter: permanent visible badge in every canonical game footer.
+   The count is rendered in published HTML and updated by the shared runtime.
+   Keep this in the shared footer stylesheet so a missed game-page stylesheet
+   does not hide archive statistics. */
+html[data-ccg-page="single-game"] .ccg-footer--game > .ccg-game-views {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+    position: relative;
+    z-index: 2;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: fit-content;
+    max-width: calc(100% - 32px);
+    margin: 8px auto 12px;
+    padding: 8px 16px;
+    border: 1px solid rgba(114, 215, 255, 0.45);
+    border-radius: 999px;
+    background: rgba(16, 21, 34, 0.82);
+    color: #e8f3fc;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    font-weight: 500;
+    text-align: center;
+}
+html[data-ccg-page="single-game"] .ccg-footer--game .ccg-game-views__count {
+    color: #72d7ff;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+/* Cumulative hourly sessions are separate from recovered archive visits. */
+.ccg-footer__counter-wrap .ccg-footer__hourly-visitors {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 0.2rem;
+    color: rgba(232, 236, 255, 0.78);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-align: center;
+}
+.ccg-footer__hourly-visitors .ccg-footer__hourly-number {
+    color: #72d7ff;
+    font-family: var(--ccg-font-main, "Orbitron", sans-serif);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}

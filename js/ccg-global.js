@@ -528,28 +528,42 @@ if (IS_ADMIN_PATH) {
     ====================================================== */
     function setupScrollPerfPause() {
         const root = document.documentElement;
+        // A document-root class invalidates all descendant styles during
+        // native scrolling, particularly on large music/game archives.
+        // Where a decorative universe exists, pause only that small layer.
+        // Music hubs with no decorative universe need no scroll-pause work.
+        const pauseTarget = document.querySelector(".ccg-bg");
+        if (!pauseTarget) return;
         const PAUSE_CLASS = "ccg-perf-paused";
         const resumeDelay = 160;
         let resumeTimer = null;
+        let pauseFrame = 0;
 
         const setPaused = (paused) => {
             if (paused) {
-                root.classList.add(PAUSE_CLASS);
+                pauseTarget.classList.add(PAUSE_CLASS);
             } else {
-                root.classList.remove(PAUSE_CLASS);
+                pauseTarget.classList.remove(PAUSE_CLASS);
             }
             window.dispatchEvent(new CustomEvent("ccg-perf-pause", { detail: { paused } }));
         };
 
         const onScroll = () => {
-            if (!root.classList.contains(PAUSE_CLASS)) {
-                setPaused(true);
+            // Native scroll listeners must return before decorative class
+            // mutations and their style recalculation. Coalesce to one frame.
+            if (!pauseTarget.classList.contains(PAUSE_CLASS) && !pauseFrame) {
+                pauseFrame = requestAnimationFrame(() => {
+                    pauseFrame = 0;
+                    setPaused(true);
+                });
             }
             if (resumeTimer) {
                 window.clearTimeout(resumeTimer);
             }
             resumeTimer = window.setTimeout(() => {
-                setPaused(false);
+                if (pauseFrame) cancelAnimationFrame(pauseFrame);
+                pauseFrame = 0;
+                if (pauseTarget.classList.contains(PAUSE_CLASS)) setPaused(false);
             }, resumeDelay);
         };
 
@@ -698,8 +712,10 @@ if (IS_ADMIN_PATH) {
 
     let headerHeightFrame = 0;
     let lastHeaderHeight = -1;
+    let observedHeaderHeight = null;
 
-    function setHeaderHeightVar() {
+    function setHeaderHeightVar(measuredHeight) {
+        if (typeof measuredHeight === "number") observedHeaderHeight = measuredHeight;
         if (headerHeightFrame) return;
         headerHeightFrame = requestAnimationFrame(() => {
             headerHeightFrame = 0;
@@ -711,7 +727,7 @@ if (IS_ADMIN_PATH) {
              * reached the next animation frame. The previous synchronous read
              * here forced layout immediately after mobile/header writes.
              */
-            const h = Math.max(0, Math.round(header.getBoundingClientRect().height));
+            const h = Math.max(0, Math.round(observedHeaderHeight ?? header.getBoundingClientRect().height));
             if (h === lastHeaderHeight) return;
             lastHeaderHeight = h;
             document.documentElement.style.setProperty("--ccg-header-height", `${h}px`);
@@ -1862,6 +1878,18 @@ if (IS_ADMIN_PATH) {
             }, { capture: true, passive: false });
         });
 
+        // The overlay owns background-scroll blocking. Keeping document overflow
+        // untouched avoids mobile browsers clamping the page's existing scrollY.
+        ["wheel", "touchmove"].forEach(eventName => {
+            modal.addEventListener(eventName, event => {
+                const content = event.target instanceof Element
+                    ? event.target.closest(".ccg-secret-modal__content")
+                    : null;
+                if (content) return;
+                event.preventDefault();
+            }, { passive: false });
+        });
+
         modal.addEventListener("pointerdown", event => {
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
@@ -1882,52 +1910,47 @@ if (IS_ADMIN_PATH) {
     function lockSecretModalScroll() {
         if (secretState.scrollLock) return;
 
-        const scrollX = window.scrollX || document.documentElement.scrollLeft || 0;
-        const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-        const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-        const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
-
+        const root = document.documentElement;
+        const body = document.body;
+        const scrollX = window.scrollX || root.scrollLeft || 0;
+        const scrollY = window.scrollY || root.scrollTop || 0;
+        // Preserve the document height during the fixed modal without
+        // artificially extending the page beyond its existing bottom.
+        // The floating navigation's off-screen translation is corrected
+        // separately in ccg-master.css.
         const lockedDocumentHeight = Math.max(
-            document.documentElement.scrollHeight,
-            document.body.scrollHeight,
+            root.scrollHeight,
+            body?.scrollHeight || 0,
             window.innerHeight
         );
 
         secretState.scrollLock = {
             scrollX,
             scrollY,
-            bodyOverflow: document.body.style.overflow,
-            bodyMinHeight: document.body.style.minHeight,
-            bodyPaddingRight: document.body.style.paddingRight,
-            bodyOverscrollBehavior: document.body.style.overscrollBehavior,
-            htmlOverflow: document.documentElement.style.overflow,
-            htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
+            bodyMinHeight: body?.style.minHeight || "",
         };
 
-        // Preserve the pre-lock document height before root overflow changes can
-        // trigger a responsive reflow and clamp the current mobile scroll offset.
-        document.body.style.minHeight = `${lockedDocumentHeight}px`;
-        document.documentElement.style.overflow = "hidden";
-        document.documentElement.style.overscrollBehavior = "none";
-        document.body.style.overflow = "hidden";
-        document.body.style.overscrollBehavior = "none";
-        if (scrollbarGap > 0) {
-            document.body.style.paddingRight = `${computedPaddingRight + scrollbarGap}px`;
-        }
+        // Keep the pre-open page geometry stable without changing the document
+        // overflow owner. This prevents bottom-of-page scroll clamping when a
+        // fixed modal and focus state alter viewport rounding by a few pixels.
+        if (body) body.style.minHeight = `${lockedDocumentHeight}px`;
     }
 
     function unlockSecretModalScroll() {
         const lock = secretState.scrollLock;
         if (!lock) return;
 
-        document.documentElement.style.overflow = lock.htmlOverflow;
-        document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
-        document.body.style.overflow = lock.bodyOverflow;
-        document.body.style.minHeight = lock.bodyMinHeight;
-        document.body.style.paddingRight = lock.bodyPaddingRight;
-        document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
-        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
+        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
+        requestAnimationFrame(() => {
+            if (secretState.scrollLock) return;
+            if (document.body) document.body.style.minHeight = lock.bodyMinHeight;
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
+            requestAnimationFrame(() => {
+                if (secretState.scrollLock) return;
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
+            });
+        });
     }
 
     function openSecretModal(openEvent) {
@@ -1959,14 +1982,19 @@ if (IS_ADMIN_PATH) {
 
         requestAnimationFrame(() => {
             if (!modal) return;
+            lockSecretModalScroll();
+            document.body.classList.add("ccg-secret-modal-open");
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
-            document.body.classList.add("ccg-secret-modal-open");
-            lockSecretModalScroll();
+            const lock = secretState.scrollLock;
+            window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
+            if (content) content.scrollTop = 0;
 
             requestAnimationFrame(() => {
                 if (content) content.scrollTop = 0;
                 closeButton?.focus({ preventScroll: true });
+                // Reaffirm the bookmarked position after focus and overlay layout.
+                window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "instant" });
             });
 
             secretState.backdropUnlockTimer = setTimeout(() => {
@@ -2214,6 +2242,13 @@ if (IS_ADMIN_PATH) {
     /* ======================================================
        NAV TOGGLE (MOBILE)
     ====================================================== */
+    // A header shell can be replaced after the first page bootstrap. The
+    // dataset marker survives cloneNode(true), but its event listeners do not.
+    // Track actual nodes, shared across repeated script evaluations.
+    const navBoundButtons = window.__ccgNavBoundButtons instanceof WeakSet
+        ? window.__ccgNavBoundButtons
+        : (window.__ccgNavBoundButtons = new WeakSet());
+
     function setupNavToggle() {
         const header = document.querySelector("[data-ccg-header]");
         if (!header) return;
@@ -2235,6 +2270,11 @@ if (IS_ADMIN_PATH) {
 
         if (!toggle || !nav || !primaryList || !moreWrap || !moreMenu) return;
 
+        // The shared runtime can be requested twice by differing page shells.
+        // Never bind two toggles to the same button: the second would close
+        // the drawer immediately after the first opens it.
+        if (navBoundButtons.has(toggle)) return;
+
         const isMobileViewport = () => mobileMatch ? mobileMatch.matches : window.innerWidth <= 1199;
 
         const cloneLink = (link, extraClasses = []) => {
@@ -2244,6 +2284,10 @@ if (IS_ADMIN_PATH) {
         };
 
         const buildMoreMenu = () => {
+            // The adaptive controller owns the complete desktop menu, including
+            // primary archive destinations. Do not replace its nodes during a
+            // later global bootstrap with only the secondary-list fallback.
+            if (window.CCG_NAV_FIT_READY) return;
             moreMenu.innerHTML = "";
             secondaryList?.querySelectorAll("a").forEach(link => {
                 const clone = cloneLink(link, ["ccg-nav__link--overflow"]);
@@ -2255,11 +2299,22 @@ if (IS_ADMIN_PATH) {
         const buildDrawer = () => {
             if (!drawer) return;
 
+            const otherPrimary = [];
             if (drawerPrimary) {
-                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Primary</div>";
+                drawerPrimary.innerHTML = "<div class=\"ccg-nav-drawer__label\">Quick links</div>";
                 primaryList?.querySelectorAll("a").forEach(link => {
-                    drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                    const pathname = new URL(link.href, window.location.href).pathname;
+                    if (pathname === "/home.html" || pathname === "/games/") {
+                        drawerPrimary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                    } else {
+                        otherPrimary.push(link);
+                    }
                 });
+                const playOnline = document.createElement("a");
+                playOnline.href = "/emulator/c64/";
+                playOnline.className = "ccg-nav__link ccg-nav__link--mobile";
+                playOnline.textContent = "Play C64";
+                drawerPrimary.appendChild(playOnline);
             }
 
             if (drawerSecondary) {
@@ -2277,6 +2332,9 @@ if (IS_ADMIN_PATH) {
                 merchLink.setAttribute("aria-label", "Open the official CCG merch shop (new tab)");
                 drawerSecondary.appendChild(merchLink);
 
+                otherPrimary.forEach(link => {
+                    drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
+                });
                 secondaryList?.querySelectorAll("a").forEach(link => {
                     drawerSecondary.appendChild(cloneLink(link, ["ccg-nav__link--mobile"]));
                 });
@@ -2285,6 +2343,20 @@ if (IS_ADMIN_PATH) {
 
         let isMoreOpen = false;
         let isNavOpen = false;
+        const traceNavState = (label) => {
+            // Only enabled by disposable CI diagnostics; no public logging.
+            if (!Array.isArray(window.__ccgNavDiagnostic)) return;
+            window.__ccgNavDiagnostic.push({
+                label,
+                open: isNavOpen,
+                expanded: toggle.getAttribute("aria-expanded"),
+                hidden: drawer?.getAttribute("aria-hidden"),
+                connected: toggle.isConnected,
+                at: Math.round(performance.now()),
+                stack: new Error().stack?.split("\n").slice(2, 5).join(" | ")
+            });
+        };
+        traceNavState("listener-installed");
 
         const refreshMoreRefs = (sourceEl = null) => {
             const nextWrap = sourceEl?.closest(".ccg-nav__more") || nav?.querySelector(".ccg-nav__more");
@@ -2338,15 +2410,18 @@ if (IS_ADMIN_PATH) {
         };
 
         const closeNav = () => {
+            traceNavState("close-before");
             isNavOpen = false;
             header.classList.remove("ccg-header--nav-open");
             nav.classList.remove("ccg-nav--open");
             drawer?.setAttribute("aria-hidden", "true");
             toggle.setAttribute("aria-expanded", "false");
             syncBodyLock(false);
+            traceNavState("close-after");
         };
 
         const openNav = () => {
+            traceNavState("open-before");
             isNavOpen = true;
             buildDrawer();
             header.classList.add("ccg-header--nav-open");
@@ -2355,12 +2430,13 @@ if (IS_ADMIN_PATH) {
             toggle.setAttribute("aria-expanded", "true");
             syncBodyLock(true);
             setHeaderHeightVar();
+            traceNavState("open-after");
         };
 
         const syncMobileNavState = () => {
             if (!isMobileViewport()) {
                 closeNav();
-                closeMore();
+                if (!window.CCG_NAV_FIT_READY) closeMore();
                 syncNavContainerVisibility();
                 return;
             }
@@ -2372,13 +2448,37 @@ if (IS_ADMIN_PATH) {
             syncNavContainerVisibility();
         };
 
-        toggle.addEventListener("click", () => {
+        toggle.addEventListener("click", (event) => {
+            // This shared header owns the mobile drawer. Browser regression
+            // traces proved that a second target-level click listener closed
+            // the drawer immediately after openNav() had completed. Do not
+            // allow competing button listeners or bubbling navigation helpers
+            // to reverse the authorised menu state in the same click.
+            event.stopImmediatePropagation();
+            traceNavState("click-handler-before");
             if (isNavOpen) {
                 closeNav();
             } else {
                 openNav();
             }
+            traceNavState("click-handler-after");
         });
+        toggle.dataset.ccgNavToggleBound = "true";
+        navBoundButtons.add(toggle);
+
+        if (!window.__ccgNavLiveButtonRecoveryBound) {
+            window.__ccgNavLiveButtonRecoveryBound = true;
+            document.addEventListener("click", event => {
+                const target = event.target instanceof Element
+                    ? event.target.closest("[data-ccg-nav-toggle]")
+                    : null;
+                if (target && !navBoundButtons.has(target)) {
+                    // Capture happens before the button's own click listeners.
+                    // Rebind its cloned live node now so this click opens Menu.
+                    setupNavToggle();
+                }
+            }, { capture: true });
+        }
 
         if (!header.dataset.ccgMoreToggleBound) {
             header.addEventListener("click", event => {
@@ -2923,7 +3023,14 @@ function setupFooterSignatureRotator() {
         };
 
         window.addEventListener("scroll", onScroll, { passive: true });
-        window.addEventListener("resize", onScroll, { passive: true });
+        window.addEventListener("resize", () => {
+            // A resize is not a visit to the bottom of the page. Avoid forcing
+            // layout of all deferred sections before the first real scroll.
+            if (hasScrolled && !ticking) {
+                ticking = true;
+                window.requestAnimationFrame(updateVisibility);
+            }
+        }, { passive: true });
     }
 
     function setupOmegaMobileKeyboardGuard() {
@@ -3150,179 +3257,39 @@ function setupFooterSignatureRotator() {
         /* -------------------------------
            Keep header height var accurate
         ------------------------------- */
+        const observedHeader = document.querySelector("[data-ccg-header]");
+        if (observedHeader && typeof ResizeObserver === "function") {
+            new ResizeObserver((entries) => {
+                const size = entries[0]?.borderBoxSize?.[0]?.blockSize;
+                if (typeof size === "number") setHeaderHeightVar(size);
+            }).observe(observedHeader);
+        }
         setHeaderHeightVar();
         window.addEventListener("load", setHeaderHeightVar, { passive: true });
     });
 
 })();
 
-/* ============================================================
-   VISITOR COUNTER — GOATCOUNTER STATISTICS API
-   ------------------------------------------------------------
-   • Footer-only (safe if missing)
-   • Cached for 1 hour (localStorage)
-   • Silent failure (never breaks UI)
-============================================================ */
+/* ================================================================
+   GOATCOUNTER DISPLAY FAILSAFE — SHARED PUBLIC RUNTIME
+   The public GitHub Pages branch build can publish source HTML instead
+   of the staged copy. Every CCG public game and the home page already
+   include ccg-global.js, so load the display runtime from this shared
+   entrypoint even if the staged HTML tag was omitted.
+   The runtime also restores pageview tracking if the deployed HTML lacks it;
+   existing trackers are not duplicated.
+================================================================ */
+(function ccgEnsureVisitorMetrics() {
+    "use strict";
+    if (typeof document === "undefined") return;
+    const path = String(window.location.pathname || "/");
+    if (/^\/(?:admin|auth)(?:\/|$)/i.test(path)) return;
+    if (document.documentElement.getAttribute("data-ccg-page") === "intro") return;
+    if (document.querySelector('script[data-ccg-visitor-metrics]')) return;
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    const counterEl = document.getElementById("ccg-visit-count");
-    if (!counterEl) return;
-
-    const GOATCOUNTER_API_URL = "https://cheekycommodoregamer.goatcounter.com/api/v0/stats/total?start=2020-01-01";
-    const GOATCOUNTER_API_TOKEN = "1h55dk144yvt99xms45tiubge13ctobm2ezngxfwd0a64az1cm";
-    const GOATCOUNTER_CACHE_KEY = "ccg_goatcounter_total";
-    const GOATCOUNTER_CACHE_TTL = 60 * 60 * 1000;
-
-    const parseCount = value => {
-        if (value === null || value === undefined || value === "") {
-            return null;
-        }
-
-        const numeric = Number(value);
-        if (!Number.isFinite(numeric)) {
-            return null;
-        }
-
-        return numeric;
-    };
-
-    const extractCount = data => {
-        if (!data || typeof data !== "object") return null;
-
-        const candidates = [
-            data.total,
-            data.count,
-            data.counts ? data.counts.total : null,
-            data.stats ? data.stats.total : null,
-            data.pageviews,
-        ];
-
-        for (const candidate of candidates) {
-            const parsed = parseCount(candidate);
-            if (parsed !== null) return parsed;
-        }
-
-        return null;
-    };
-
-    const setDisplay = value => {
-        if (!Number.isFinite(value)) {
-            counterEl.textContent = "—";
-            return;
-        }
-
-        counterEl.textContent = value.toLocaleString();
-    };
-
-    const counterContainer = counterEl.closest(".ccg-footer__counter") || counterEl.parentElement;
-    const visitorTokenRegex = /\bvisitors?\b/gi;
-    const visitorTokenTestRegex = /\bvisitors?\b/i;
-
-    const removeVisitorLabel = () => {
-        if (!counterContainer) return;
-
-        const walker = document.createTreeWalker(
-            counterContainer,
-            NodeFilter.SHOW_TEXT,
-            {
-                acceptNode: node => visitorTokenTestRegex.test(node.nodeValue || "")
-                    ? NodeFilter.FILTER_ACCEPT
-                    : NodeFilter.FILTER_REJECT,
-            }
-        );
-
-        const nodes = [];
-        while (walker.nextNode()) {
-            nodes.push(walker.currentNode);
-        }
-
-        nodes.forEach(node => {
-            const cleaned = (node.nodeValue || "")
-                .replace(visitorTokenRegex, "")
-                .replace(/\s{2,}/g, " ")
-                .trim();
-
-            if (!cleaned) {
-                node.remove();
-                return;
-            }
-
-            node.nodeValue = cleaned;
-        });
-    };
-
-    if (counterContainer) {
-        removeVisitorLabel();
-
-        const observer = new MutationObserver(() => {
-            removeVisitorLabel();
-        });
-
-        observer.observe(counterContainer, {
-            childList: true,
-            characterData: true,
-            subtree: true,
-        });
-
-        window.addEventListener("load", removeVisitorLabel, { once: true });
-    }
-
-    const readCache = () => {
-        try {
-            const raw = localStorage.getItem(GOATCOUNTER_CACHE_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            const cachedAt = Number(parsed && parsed.cachedAt);
-            const cachedValue = Number(parsed && parsed.value);
-            if (!Number.isFinite(cachedAt) || !Number.isFinite(cachedValue)) return null;
-            if (Date.now() - cachedAt > GOATCOUNTER_CACHE_TTL) return null;
-            return cachedValue;
-        } catch (error) {
-            return null;
-        }
-    };
-
-    const writeCache = value => {
-        try {
-            localStorage.setItem(GOATCOUNTER_CACHE_KEY, JSON.stringify({
-                value,
-                cachedAt: Date.now(),
-            }));
-        } catch (error) {
-            // Ignore cache write failures.
-        }
-    };
-
-    const cachedValue = readCache();
-    if (cachedValue !== null) {
-        setDisplay(cachedValue);
-        return;
-    }
-
-    fetch(GOATCOUNTER_API_URL, {
-        headers: {
-            Authorization: `Bearer ${GOATCOUNTER_API_TOKEN}`,
-            "Content-Type": "application/json",
-        },
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("GoatCounter stats request failed.");
-            }
-            return response.json();
-        })
-        .then(data => {
-            const total = extractCount(data);
-            if (total === null) {
-                setDisplay(null);
-                return;
-            }
-            writeCache(total);
-            setDisplay(total);
-        })
-        .catch(() => {
-            setDisplay(null);
-        });
-
-});
+    const script = document.createElement("script");
+    script.src = "/js/ccg-visitor-metrics.js?v=20261026-full-archive-visible-counters-v3";
+    script.async = true;
+    script.setAttribute("data-ccg-visitor-metrics", "shared-loader");
+    (document.head || document.documentElement).appendChild(script);
+})();

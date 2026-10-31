@@ -10,6 +10,7 @@ const normalizer = require('../scripts/normalize-public-header-shell.js');
 
 const root = path.resolve('.');
 const musicHeaderSource = fs.readFileSync('js/ccg-music-navigation.js', 'utf8');
+const musicHubStyles = fs.readFileSync('resources/css/music-hub-omega.css', 'utf8');
 const musicStylePaths = normalizer.extractMusicStylePaths(root);
 const completeFirstPaintStyles = [...musicStylePaths, ...normalizer.MUSIC_GLOBAL_FIRST_PAINT_STYLES];
 
@@ -76,9 +77,15 @@ test('Music first-paint styles include maintained Music and global final-layout 
     '/resources/css/ccg-responsive-page-polish.css',
     '/resources/css/ccg-sitewide-layout-optimization.css'
   ]);
-  assert.deepEqual(normalizer.PUBLIC_HEADER_FIRST_PAINT_STYLES, [
-    '/resources/css/ccg-nav-labelled-bridge.css'
-  ]);
+  assert.equal(new Set(normalizer.PUBLIC_HEADER_FIRST_PAINT_STYLES).size, normalizer.PUBLIC_HEADER_FIRST_PAINT_STYLES.length);
+  for (const href of normalizer.MUSIC_GLOBAL_FIRST_PAINT_STYLES) assert.ok(normalizer.PUBLIC_HEADER_FIRST_PAINT_STYLES.includes(href));
+  assert.equal(normalizer.PUBLIC_HEADER_FIRST_PAINT_STYLES.at(-1), '/resources/css/ccg-nav-labelled-bridge.css');
+});
+
+test('Music Hub keeps the featured grid paint-bounded without forcing one large compositor layer', () => {
+  const featuredGridRule = musicHubStyles.match(/\.ccg-music-hub \.composer-grid-featured-omega\s*\{([\s\S]*?)\}/)?.[1] || '';
+  assert.match(featuredGridRule, /contain:\s*layout paint;/);
+  assert.doesNotMatch(featuredGridRule, /(?:transform|will-change)\s*:/);
 });
 
 test('staged mode identity matches the runtime element contract so runtime updates instead of inserting', () => {

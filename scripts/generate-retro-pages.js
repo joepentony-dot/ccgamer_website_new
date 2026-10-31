@@ -317,6 +317,14 @@ function generateDatasetPages(config, template) {
     const { seoTitle, seoDescription } = buildSeo(entry, entry.title || '', description);
     const manualsHtml = buildManualsSection(entry);
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
+    const deferredPlayer = entry.deferYouTubePlayer === true;
+    const playerUrl = `https://www.youtube-nocookie.com/embed/${youtubeId}`;
+    const playerFacadeHtml = deferredPlayer
+      ? `        <button type="button" class="retro-video-page__video-facade" data-ccg-video-facade-play aria-label="Play ${escapeHtml(entry.title)}">
+          <img src="${escapeHtml(entry.thumbnail)}" alt="" width="480" height="360" decoding="async" fetchpriority="high" />
+          <span class="retro-video-page__play-label">Play video</span>
+        </button>`
+      : '';
 
     const renderedHtml = applyTemplate(template, {
       SEO_TITLE: escapeHtml(seoTitle),
@@ -333,6 +341,9 @@ function generateDatasetPages(config, template) {
       TITLE_JSON: escapeJsonTemplateValue(entry.title || ''),
       SUMMARY: escapeHtml(summary),
       YOUTUBE_ID: escapeHtml(youtubeId),
+      YOUTUBE_PLAYER_SRC: deferredPlayer ? 'about:blank' : escapeHtml(playerUrl),
+      YOUTUBE_DEFER_ATTRIBUTE: deferredPlayer ? ` data-ccg-youtube-src="${escapeHtml(playerUrl)}"` : '',
+      YOUTUBE_FACADE_HTML: playerFacadeHtml,
       EMBED_URL_JSON: escapeJsonTemplateValue(`https://www.youtube.com/embed/${youtubeId}`),
       DESCRIPTION: escapeHtml(description),
       DESCRIPTION_JSON: escapeJsonTemplateValue(description),
