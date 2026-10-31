@@ -47,3 +47,9 @@ Review corrections, 19 October: independent first-head review identified a P1 wr
 - Publisher UX PR #2847 passed 18 of 19 workflows at prior head `33be552286ab4a68006039c58b3d9864fb2a97c3`. `CCG UI Regression Fixes` failed because an old test still expected homepage text "Zzap!64 Awards", "Browse Genres" and class `home-cta-upgrade--streamlined`; the merged homepage actually has the longer Zzap label, "Genres" category, and `home-cta-upgrade` with support artwork. Updated the assertion to preserve the real current destinations and support structure, rather than exempting the whole test.
 - Publisher PR's public code cache advanced from v167 to **v168** to avoid overwriting the already-merged menu release. Fresh-main reconciliation and a full new CI/review cycle are required before merging; do not reuse old 18/19 results.
 - All six prior publisher review threads were resolved with code and current-head review before this test correction; solicit another independent review of the newer exact head.
+
+## 31 October 2026 — developer search result count accessibility (candidate)
+
+- Bounded developer-directory follow-up on main 117e2f38f30662bb3d96204dab5c02c9b98b0526: runtime search/filter count currently says “1 developers found/available” for a single result. The current generated index count is not a live region, so changes may be missed by assistive technology.
+- Candidate updates only the existing developer runtime, its authoritative generator and generated index, the existing archive-directory regression test, and public-code service-worker cache v210→v211. It retains all 47 static routes, featured/disclosure behaviour, game cards, styles and Omega presentation.
+- Regression executes the actual runtime count formatter for 0/1/2/47 results and verifies generated/source live-region parity. Full exact-head GitHub CI, mobile/desktop behaviour, deployment and live acceptance remain mandatory; this entry does not claim any of those outcomes.

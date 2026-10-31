@@ -393,7 +393,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-developer-system="c64" aria-pressed="false">C64</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-developer-system="amiga" aria-pressed="false">Amiga</button>
                 </div>
-                <p class="ccg-developers-visible-count"><strong id="developerVisibleCount">${groups.length}</strong> developers available</p>
+                <p class="ccg-developers-visible-count" role="status" aria-live="polite" aria-atomic="true"><strong id="developerVisibleCount">${groups.length}</strong> developers available</p>
             </section>
 
             <section class="ccg-developers-section" aria-labelledby="represented-developers-title">
