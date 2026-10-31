@@ -527,7 +527,7 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
         <main class="ccg-main ccg-developers-main">
             <section class="ccg-developers-hero ccg-developer-hero">
                 <p class="ccg-developers-hero__kicker">Developer credit archive · ${htmlEscape(systemLabel)}</p>
-                <h1 class="ccg-developers-hero__title">${htmlEscape(single ? `${group.name}: ${single.title}` : `${group.name} Games`)}</h1>
+                <h1 class="ccg-developers-hero__title">${htmlEscape(single ? `${group.name}: ${single.title}` : /\bgames$/i.test(group.name) ? `${group.name} — Developer Archive` : `${group.name} Games`)}</h1>
                 <p class="ccg-developers-hero__intro">
                     ${single
                         ? `${htmlEscape(single.title)}${htmlEscape(singleYear)} is recorded with a ${htmlEscape(group.name)} developer credit on ${htmlEscape(singlePlatform)}. Follow the game link below for its catalogue details.`
@@ -559,7 +559,7 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
                     ${group.c64Count ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-developer-game-system="c64" aria-pressed="false">C64</button>` : ""}
                     ${group.amigaCount ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-developer-game-system="amiga" aria-pressed="false">Amiga</button>` : ""}
                 </div>
-                <p class="ccg-developers-visible-count"><strong id="developerGameVisibleCount">${group.count}</strong> games shown</p>
+                <p class="ccg-developers-visible-count"><strong id="developerGameVisibleCount">${group.count}</strong> ${group.count === 1 ? "game" : "games"} shown</p>
             </section>
 
             <section class="ccg-developers-section" aria-labelledby="developer-games-title">

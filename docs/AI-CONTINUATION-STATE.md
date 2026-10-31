@@ -1,3 +1,8 @@
+## 31 October 2026 — Developer detail language correction (BRANCH ONLY)
+
+- Developers directory #2853 MERGED/DEPLOYED at main `e9948bbbc45bc9565f0b3b48244e90d0946bd9ad`; live search/filter acceptance remains outstanding. New bounded ACTIVE defect: 36 single-credit routes say “1 games shown”; Lucasfilm Games renders “Lucasfilm Games Games”.
+- Correct authoritative generator, live filtering and only 37 affected detail pages; add 47-route generator parity test and cache v208→v209. Preserve catalogue, links, structured data, existing developer SEO and Omega design. Branch candidate only, pending exact-head CI, browser performance, guarded merge, Pages deployment and live verification.
+
 ## 31 October 2026 — measured genre regression parked; Developers directory reconciliation active (branch-only)
 
 - Existing genre-performance PR #2964 **PARKED/DRAFT** after second measured CLS failure at head `185691d5`: Category Omega run `41177238247` failed desktop CLS 0.214 baseline → 0.742 candidate, despite 10/11 workflows passing. Raw artifact `13033243940`. No merge, deployment or test waiver. Resume only with reproducible hero stability fix.
